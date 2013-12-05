@@ -32,7 +32,7 @@ namespace NHibernate.Test.TypesTest
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			// this test only works where the driver has set an explicit length on the IDbDataParameter
+			// this test only works where the driver has set an explicit length on the DbParameter
 			return dialect is MsSql2008Dialect;
 		}
 

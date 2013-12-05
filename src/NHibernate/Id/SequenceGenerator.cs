@@ -113,8 +113,8 @@ namespace NHibernate.Id
 		{
 			try
 			{
-				IDbCommand cmd = session.Batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
-				IDataReader reader = null;
+				DbCommand cmd = session.Batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
+				DbDataReader reader = null;
 				try
 				{
 					reader = session.Batcher.ExecuteReader(cmd);

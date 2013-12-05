@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -110,10 +109,10 @@ namespace NHibernate.Tool.hbm2ddl
 				string sql = dialect.QuerySequencesString;
 				if (sql != null)
 				{
-					using (IDbCommand statement = connection.CreateCommand())
+					using (DbCommand statement = connection.CreateCommand())
 					{
 						statement.CommandText = sql;
-						using (IDataReader rs = statement.ExecuteReader())
+						using (DbDataReader rs = statement.ExecuteReader())
 						{
 							while (rs.Read())
 								sequences.Add(((string) rs[0]).ToLower().Trim());

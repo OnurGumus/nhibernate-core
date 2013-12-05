@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Data.Common;
 using NHibernate.Driver;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -131,7 +132,7 @@ namespace NHibernate.Test.DriverTest
 			_connectionString = cfg.GetProperty("connection.connection_string");
 		}
 
-		private IDbConnection MakeConnection()
+		private DbConnection MakeConnection()
 		{
 			var result = _driver.CreateConnection();
 			result.ConnectionString = _connectionString;
@@ -158,7 +159,7 @@ namespace NHibernate.Test.DriverTest
 			}
 		}
 
-		private IDbCommand BuildSelectCaseCommand(SqlType paramType)
+		private DbCommand BuildSelectCaseCommand(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
 					.Add("select (case when col = ")
@@ -173,7 +174,7 @@ namespace NHibernate.Test.DriverTest
 			return _driver.GenerateCommand(CommandType.Text, sqlString, new SqlType[] { paramType, paramType, paramType });
 		}
 
-		private IDbCommand BuildSelectConcatCommand(SqlType paramType)
+		private DbCommand BuildSelectConcatCommand(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
 					.Add("select col || ")
@@ -186,7 +187,7 @@ namespace NHibernate.Test.DriverTest
 			return _driver.GenerateCommand(CommandType.Text, sqlString, new SqlType[] { paramType });
 		}
 
-		private IDbCommand BuildSelectAddCommand(SqlType paramType)
+		private DbCommand BuildSelectAddCommand(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
 					.Add("select col + ")
@@ -197,7 +198,7 @@ namespace NHibernate.Test.DriverTest
 			return _driver.GenerateCommand(CommandType.Text, sqlString, new SqlType[] { paramType });
 		}
 
-		private IDbCommand BuildInsertWithParamsInSelectCommand(SqlType paramType)
+		private DbCommand BuildInsertWithParamsInSelectCommand(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
 				.Add("insert into table1 (col1, col2) ")
@@ -208,6 +209,5 @@ namespace NHibernate.Test.DriverTest
 
 			return _driver.GenerateCommand(CommandType.Text, sqlString, new SqlType[] { paramType });
 		}
-
 	}
 }

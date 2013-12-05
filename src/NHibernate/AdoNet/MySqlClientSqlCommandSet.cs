@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Reflection;
 
@@ -13,7 +13,7 @@ namespace NHibernate.AdoNet
 		private readonly object instance;
 		private readonly Action doInitialise;
 		private readonly Action<int> batchSizeSetter;
-		private readonly Func<IDbCommand, int> doAppend;
+		private readonly Func<DbCommand, int> doAppend;
 		private readonly Func<int> doExecuteNonQuery;
 		private readonly Action doDispose;
 		private int countOfCommands;
@@ -30,7 +30,7 @@ namespace NHibernate.AdoNet
 			instance = Activator.CreateInstance(adapterType, true);
 			doInitialise = (Action) Delegate.CreateDelegate(typeof (Action), instance, "InitializeBatching");
 			batchSizeSetter = (Action<int>) Delegate.CreateDelegate(typeof (Action<int>), instance, "set_UpdateBatchSize");
-			doAppend = (Func<IDbCommand, int>) Delegate.CreateDelegate(typeof (Func<IDbCommand, int>), instance, "AddToBatch");
+			doAppend = (Func<DbCommand, int>) Delegate.CreateDelegate(typeof (Func<DbCommand, int>), instance, "AddToBatch");
 			doExecuteNonQuery = (Func<int>) Delegate.CreateDelegate(typeof (Func<int>), instance, "ExecuteBatch");
 			doDispose = (Action)Delegate.CreateDelegate(typeof(Action), instance, "Dispose");
 
@@ -43,7 +43,7 @@ namespace NHibernate.AdoNet
 			batchSizeSetter(batchSize);
 		}
 
-		public void Append(IDbCommand command)
+		public void Append(DbCommand command)
 		{
 			doAppend(command);
 			countOfCommands++;
