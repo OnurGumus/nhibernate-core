@@ -7,6 +7,7 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
+using System.Data.Common;
 
 namespace NHibernate.Driver
 {
@@ -43,7 +44,7 @@ namespace NHibernate.Driver
 		}
 
 		public abstract IDbConnection CreateConnection();
-		public abstract IDbCommand CreateCommand();
+		public abstract DbCommand CreateCommand();
 
 		/// <summary>
 		/// Does this Driver require the use of a Named Prefix in the SQL statement.  
@@ -125,9 +126,9 @@ namespace NHibernate.Driver
 			get { return true; }
 		}
 
-		public virtual IDbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
+		public virtual DbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
 		{
-			IDbCommand cmd = CreateCommand();
+			DbCommand cmd = CreateCommand();
 			cmd.CommandType = type;
 
 			SetCommandTimeout(cmd);

@@ -13,6 +13,7 @@ using NHibernate.Loader.Custom;
 using NHibernate.Persister.Entity;
 using NHibernate.Transaction;
 using NHibernate.Type;
+using System.Threading.Tasks;
 
 namespace NHibernate.Engine
 {
@@ -81,7 +82,7 @@ namespace NHibernate.Engine
 		/// <param name="parameters"></param>
 		/// <returns></returns>
 		[Obsolete("Use overload with IQueryExpression")]
-		IList List(string query, QueryParameters parameters);
+		Task<IList> List(string query, QueryParameters parameters, bool async);
 
 		/// <summary>
 		/// Execute a <c>List()</c> expression query
@@ -89,7 +90,7 @@ namespace NHibernate.Engine
 		/// <param name="queryExpression"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
-		IList List(IQueryExpression queryExpression, QueryParameters parameters);
+		Task<IList> List(IQueryExpression queryExpression, QueryParameters parameters, bool async);
 
 		/// <summary>
 		/// Create a new instance of <c>Query</c> for the given query expression
@@ -99,20 +100,20 @@ namespace NHibernate.Engine
 		IQuery CreateQuery(IQueryExpression queryExpression);
 
 		[Obsolete("Use overload with IQueryExpression")]
-		void List(string query, QueryParameters parameters, IList results);
+		Task List(string query, QueryParameters parameters, IList results, bool async);
 
-		void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results);
+		Task List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results, bool async);
 
 		/// <summary>
-		/// Strongly-typed version of <see cref="List(string,QueryParameters)" />
+		/// Strongly-typed version of <see cref="List(string,QueryParameters, bool)" />
 		/// </summary>
 		[Obsolete("Use overload with IQueryExpression")]
-		IList<T> List<T>(string query, QueryParameters queryParameters);
+		Task<IList<T>> List<T>(string query, QueryParameters queryParameters, bool async);
 
 		/// <summary>
-		/// Strongly-typed version of <see cref="List(IQueryExpression,QueryParameters)" />
+		/// Strongly-typed version of <see cref="List(IQueryExpression,QueryParameters, bool)" />
 		/// </summary>
-		IList<T> List<T>(IQueryExpression queryExpression, QueryParameters queryParameters);
+		Task<IList<T>> List<T>(IQueryExpression queryExpression, QueryParameters queryParameters, bool async);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="List(CriteriaImpl)" />
@@ -206,14 +207,14 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Execute an SQL Query
 		/// </summary>
-		IList List(NativeSQLQuerySpecification spec, QueryParameters queryParameters);
+		Task<IList> List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, bool async);
 
-		void List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results);
+		Task List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results, bool async);
 
 		/// <summary>
-		/// Strongly-typed version of <see cref="List(NativeSQLQuerySpecification, QueryParameters)" />
+		/// Strongly-typed version of <see cref="List(NativeSQLQuerySpecification, QueryParameters,bool)" />
 		/// </summary>
-		IList<T> List<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters);
+		Task<IList<T>> List<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters, bool async);
 
 		/// <summary> Execute an SQL Query</summary>
 		void ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results);

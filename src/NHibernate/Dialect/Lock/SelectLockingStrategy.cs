@@ -5,6 +5,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Impl;
 using NHibernate.Exceptions;
+using System.Data.Common;
 
 namespace NHibernate.Dialect.Lock
 {
@@ -56,7 +57,7 @@ namespace NHibernate.Dialect.Lock
 			ISessionFactoryImplementor factory = session.Factory;
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes);
+				DbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes);
 				IDataReader rs = null;
 				try
 				{
@@ -66,7 +67,7 @@ namespace NHibernate.Dialect.Lock
 						lockable.VersionType.NullSafeSet(st, version, lockable.IdentifierType.GetColumnSpan(factory), session);
 					}
 
-					rs = session.Batcher.ExecuteReader(st);
+					rs = session.Batcher.ExecuteReader(st, false).Result;
 					try
 					{
 						if (!rs.Read())

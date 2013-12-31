@@ -3,6 +3,7 @@ using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Type;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
@@ -33,14 +34,14 @@ namespace NHibernate.Impl
 			return Session.EnumerableFilter<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
 		}
 
-		public override IList List()
+		public override async Task<IList> List(bool async)
 		{
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			return Session.ListFilter(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
 		}
 
-		public override IList<T> List<T>()
+		public override async Task<IList<T>> List<T>(bool async)
 		{
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;

@@ -13,6 +13,7 @@ using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
+using System.Threading.Tasks;
 
 namespace NHibernate.Loader.Custom
 {
@@ -270,9 +271,9 @@ namespace NHibernate.Loader.Custom
 			get { return collectionPersisters; }
 		}
 
-		public IList List(ISessionImplementor session, QueryParameters queryParameters)
+		public async Task<IList> List(ISessionImplementor session, QueryParameters queryParameters,bool async)
 		{
-			return List(session, queryParameters, querySpaces, resultTypes);
+			return await List(session, queryParameters, querySpaces, resultTypes, async);
 		}
 
 		// Not ported: scroll

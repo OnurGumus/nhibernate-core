@@ -17,6 +17,7 @@ using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
+using System.Threading.Tasks;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
@@ -82,7 +83,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			DoCompile(replacements, shallow, collectionRole);
 		}
 
-		public IList List(ISessionImplementor session, QueryParameters queryParameters)
+		public async Task<IList> List(ISessionImplementor session, QueryParameters queryParameters,bool async)
 		{
 			// Delegate to the QueryLoader...
 			ErrorIfDML();
@@ -107,7 +108,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				queryParametersToUse = queryParameters;
 			}
 
-			IList results = _queryLoader.List(session, queryParametersToUse);
+			IList results = await _queryLoader.List(session, queryParametersToUse,async);
 
 			if ( needsDistincting ) 
 			{

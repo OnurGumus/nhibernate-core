@@ -10,6 +10,7 @@ using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
@@ -886,7 +887,7 @@ namespace NHibernate.Impl
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return List<T>();
+				return List<T>(false).Result;
 			}
 
 			session.FutureQueryBatch.Add<T>(this);
@@ -897,7 +898,7 @@ namespace NHibernate.Impl
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return new FutureValue<T>(List<T>);
+				return new FutureValue<T>(() => (List<T>(false).Result));
 			}
 			
 			session.FutureQueryBatch.Add<T>(this);
@@ -930,12 +931,12 @@ namespace NHibernate.Impl
 		public abstract int ExecuteUpdate();
 		public abstract IEnumerable Enumerable();
 		public abstract IEnumerable<T> Enumerable<T>();
-		public abstract IList List();
-		public abstract void List(IList results);
-		public abstract IList<T> List<T>();
-		public T UniqueResult<T>()
+		public abstract Task<IList> List(bool async);
+		public abstract Task List(IList results, bool async);
+		public abstract Task<IList<T>> List<T>(bool async);
+		public async Task<T> UniqueResult<T>(bool async)
 		{
-			object result = UniqueResult();
+			object result =  await UniqueResult(async);
 			if (result == null && typeof(T).IsValueType)
 			{
 				return default(T);
@@ -946,9 +947,9 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public object UniqueResult()
+		public async Task<object> UniqueResult(bool async)
 		{
-			return UniqueElement(List());
+			return  UniqueElement(await List(async));
 		}
 
 		internal static object UniqueElement(IList list)

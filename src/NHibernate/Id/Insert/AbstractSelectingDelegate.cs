@@ -53,11 +53,11 @@ namespace NHibernate.Id.Insert
 			try
 			{
 				//fetch the generated id in a separate query
-				IDbCommand idSelect = session.Batcher.PrepareCommand(CommandType.Text, selectSQL, ParametersTypes);
+				DbCommand idSelect = session.Batcher.PrepareCommand(CommandType.Text, selectSQL, ParametersTypes);
 				try
 				{
 					BindParameters(session, idSelect, binder.Entity);
-					IDataReader rs = session.Batcher.ExecuteReader(idSelect);
+					IDataReader rs = session.Batcher.ExecuteReader(idSelect, false).Result;
 					try
 					{
 						return GetResult(session, rs, binder.Entity);

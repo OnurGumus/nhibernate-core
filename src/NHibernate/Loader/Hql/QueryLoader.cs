@@ -17,6 +17,8 @@ using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
+using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace NHibernate.Loader.Hql
 {
@@ -283,10 +285,10 @@ namespace NHibernate.Loader.Hql
 			_defaultLockModes = ArrayHelper.Fill(LockMode.None, size);
 		}
 
-		public IList List(ISessionImplementor session, QueryParameters queryParameters)
+		public async Task<IList> List(ISessionImplementor session, QueryParameters queryParameters, bool async)
 		{
 			CheckQuery(queryParameters);
-			return List(session, queryParameters, _queryTranslator.QuerySpaces, _queryReturnTypes);
+			return await List(session, queryParameters, _queryTranslator.QuerySpaces, _queryReturnTypes, async);
 		}
 
 		public override IList GetResultList(IList results, IResultTransformer resultTransformer)
@@ -402,10 +404,10 @@ namespace NHibernate.Loader.Hql
 				stopWath.Start();
 			}
 
-			IDbCommand cmd = PrepareQueryCommand(queryParameters, false, session);
+			DbCommand cmd = PrepareQueryCommand(queryParameters, false, session);
 
 			// This IDataReader is disposed of in EnumerableImpl.Dispose
-			IDataReader rs = GetResultSet(cmd, queryParameters.HasAutoDiscoverScalarTypes, false, queryParameters.RowSelection, session);
+			IDataReader rs = GetResultSet(cmd, queryParameters.HasAutoDiscoverScalarTypes, false, queryParameters.RowSelection, session, false).Result;
 
 			HolderInstantiator hi = 
 				HolderInstantiator.GetHolderInstantiator(_selectNewTransformer, queryParameters.ResultTransformer, _queryReturnAliases);

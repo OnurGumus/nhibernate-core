@@ -22,6 +22,7 @@ using NHibernate.Proxy;
 using NHibernate.Stat;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
@@ -603,7 +604,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				return List(query.ToQueryExpression(), new QueryParameters(types, values));
+				return List(query.ToQueryExpression(), new QueryParameters(types, values), false).Result;
 			}
 		}
 
@@ -612,7 +613,7 @@ namespace NHibernate.Impl
 			Dispose(true);
 		}
 
-		public override void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
+		public override async Task List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -625,7 +626,7 @@ namespace NHibernate.Impl
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 				try
 				{
-					plan.PerformList(queryParameters, this, results);
+					await plan.PerformList(queryParameters, this, results, async);
 					success = true;
 				}
 				catch (HibernateException)
@@ -1711,7 +1712,7 @@ namespace NHibernate.Impl
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 				try
 				{
-					plan.PerformList(queryParameters, this, results);
+					plan.PerformList(queryParameters, this, results, false).Wait();
 					success = true;
 				}
 				catch (HibernateException)
@@ -1897,7 +1898,7 @@ namespace NHibernate.Impl
 				{
 					for (int i = size - 1; i >= 0; i--)
 					{
-						ArrayHelper.AddAll(results, loaders[i].List(this));
+						ArrayHelper.AddAll(results, loaders[i].List(this,false).Result);
 					}
 					success = true;
 				}
@@ -1991,7 +1992,7 @@ namespace NHibernate.Impl
 				dontFlushFromFind++;
 				try
 				{
-					ArrayHelper.AddAll(results, loader.List(this, queryParameters));
+					ArrayHelper.AddAll(results, loader.List(this, queryParameters,false).Result);
 					success = true;
 				}
 				finally

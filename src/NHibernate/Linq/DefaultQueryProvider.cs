@@ -7,12 +7,14 @@ using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Type;
+using System.Threading.Tasks;
 
 namespace NHibernate.Linq
 {
 	public interface INhQueryProvider : IQueryProvider
 	{
 		object ExecuteFuture(Expression expression);
+		Task<TResult> ExecuteAsync<TResult>(Expression expression);
 		void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters);
 	}
 
@@ -27,20 +29,31 @@ namespace NHibernate.Linq
 
 		#region IQueryProvider Members
 
+		public virtual async Task<object> Execute(Expression expression, bool async)
+		{
+			IQuery query;
+			NhLinqExpression nhQuery;
+			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query, out nhQuery);
+
+			return await ExecuteQuery(nhLinqExpression, query, nhQuery,async);
+		}
 		public virtual object Execute(Expression expression)
 		{
 			IQuery query;
 			NhLinqExpression nhQuery;
 			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query, out nhQuery);
 
-			return ExecuteQuery(nhLinqExpression, query, nhQuery);
+			return  ExecuteQuery(nhLinqExpression, query, nhQuery, false).Result;
 		}
-
 		public TResult Execute<TResult>(Expression expression)
 		{
-			return (TResult) Execute(expression);
+			return (TResult)Execute(expression, false).Result;
 		}
 
+		public async Task<TResult> ExecuteAsync<TResult>(Expression expression)
+		{
+			return (TResult) await Execute(expression, true);
+		}
 		public virtual IQueryable CreateQuery(Expression expression)
 		{
 			MethodInfo m = ReflectionHelper.GetMethodDefinition((DefaultQueryProvider p) => p.CreateQuery<object>(null)).MakeGenericMethod(expression.Type.GetGenericArguments()[0]);
@@ -99,9 +112,9 @@ namespace NHibernate.Linq
 			return result;
 		}
 
-		protected virtual object ExecuteQuery(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery)
+		protected virtual async Task<object> ExecuteQuery(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery, bool async)
 		{
-			IList results = query.List();
+			IList results = await query.List(async);
 
 			if (nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer != null)
 			{

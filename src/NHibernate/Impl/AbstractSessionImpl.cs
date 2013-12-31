@@ -16,6 +16,7 @@ using NHibernate.Loader.Custom.Sql;
 using NHibernate.Persister.Entity;
 using NHibernate.Transaction;
 using NHibernate.Type;
+using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
@@ -99,40 +100,40 @@ namespace NHibernate.Impl
 		public abstract void CloseSessionFromDistributedTransaction();
 
 		[Obsolete("Use overload with IQueryExpression")]
-		public virtual IList List(string query, QueryParameters parameters)
+		public virtual async Task<IList> List(string query, QueryParameters parameters, bool async)
 		{
-			return List(query.ToQueryExpression(), parameters);
+			return await List(query.ToQueryExpression(), parameters,async);
 		}
 
 		[Obsolete("Use overload with IQueryExpression")]
-		public virtual void List(string query, QueryParameters queryParameters, IList results)
+		public virtual async Task List(string query, QueryParameters queryParameters, IList results, bool async)
 		{
-			List(query.ToQueryExpression(), queryParameters, results);
+			await List(query.ToQueryExpression(), queryParameters, results,async);
 		}
 
 		[Obsolete("Use overload with IQueryExpression")]
-		public virtual IList<T> List<T>(string query, QueryParameters queryParameters)
+		public virtual async Task<IList<T>> List<T>(string query, QueryParameters queryParameters, bool async)
 		{
-			return List<T>(query.ToQueryExpression(), queryParameters);
+			return await List<T>(query.ToQueryExpression(), queryParameters, async);
 		}
 
-		public virtual IList List(IQueryExpression queryExpression, QueryParameters parameters)
+		public virtual async Task<IList> List(IQueryExpression queryExpression, QueryParameters parameters, bool async)
 		{
 			var results = (IList) typeof (List<>).MakeGenericType(queryExpression.Type)
 												 .GetConstructor(System.Type.EmptyTypes)
 												 .Invoke(null);
-			List(queryExpression, parameters, results);
+			await List(queryExpression, parameters, results, async);
 			return results;
 		}
 
-		public abstract void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results);
+		public abstract Task List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results, bool async);
 
-		public virtual IList<T> List<T>(IQueryExpression query, QueryParameters parameters)
+		public virtual async Task<IList<T>> List<T>(IQueryExpression query, QueryParameters parameters, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				var results = new List<T>();
-				List(query, parameters, results);
+				await List(query, parameters, results, async);
 				return results;
 			}
 		}
@@ -170,17 +171,17 @@ namespace NHibernate.Impl
 		public abstract object GetContextEntityIdentifier(object obj);
 		public abstract object Instantiate(string clazz, object id);
 
-		public virtual IList List(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
+		public virtual async Task<IList> List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				var results = new List<object>();
-				List(spec, queryParameters, results);
+				await List(spec, queryParameters, results,async);
 				return results;
 			}
 		}
 
-		public virtual void List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results)
+		public virtual async Task List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -193,12 +194,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public virtual IList<T> List<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
+		public virtual async Task<IList<T>> List<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				var results = new List<T>();
-				List(spec, queryParameters, results);
+				await List(spec, queryParameters, results, async);
 				return results;
 			}
 		}

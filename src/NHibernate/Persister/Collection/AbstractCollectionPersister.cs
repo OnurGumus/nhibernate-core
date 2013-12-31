@@ -1517,12 +1517,12 @@ namespace NHibernate.Persister.Collection
 					
 				}
 
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, GenerateSelectSizeString(session), KeyType.SqlTypes(factory));
+				DbCommand st = session.Batcher.PrepareCommand(CommandType.Text, GenerateSelectSizeString(session), KeyType.SqlTypes(factory));
 				IDataReader rs = null;
 				try
 				{
 					KeyType.NullSafeSet(st, key, 0, session);
-					rs = session.Batcher.ExecuteReader(st);
+					rs = session.Batcher.ExecuteReader(st, false).Result;
 					return rs.Read() ? Convert.ToInt32(rs.GetValue(0)) - baseIndex : 0;
 				}
 				finally
@@ -1556,13 +1556,13 @@ namespace NHibernate.Persister.Collection
 			{
 				List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));
 				sqlTl.AddRange(indexOrElementType.SqlTypes(factory));
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTl.ToArray());
+				DbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTl.ToArray());
 				IDataReader rs = null;
 				try
 				{
 					KeyType.NullSafeSet(st, key, 0, session);
 					indexOrElementType.NullSafeSet(st, indexOrElement, keyColumnNames.Length, session);
-					rs = session.Batcher.ExecuteReader(st);
+					rs = session.Batcher.ExecuteReader(st, false).Result;
 					try
 					{
 						return rs.Read();
@@ -1596,13 +1596,13 @@ namespace NHibernate.Persister.Collection
 			{
 				List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));
 				sqlTl.AddRange(IndexType.SqlTypes(factory));
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sqlSelectRowByIndexString, sqlTl.ToArray());
+				DbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sqlSelectRowByIndexString, sqlTl.ToArray());
 				IDataReader rs = null;
 				try
 				{
 					KeyType.NullSafeSet(st, key, 0, session);
 					IndexType.NullSafeSet(st, IncrementIndexByBase(index), keyColumnNames.Length, session);
-					rs = session.Batcher.ExecuteReader(st);
+					rs = session.Batcher.ExecuteReader(st, false).Result;
 					try
 					{
 						if (rs.Read())

@@ -4,6 +4,7 @@ using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Event;
 using NHibernate.Type;
+using System.Threading.Tasks;
 
 namespace NHibernate.Hql
 {
@@ -35,7 +36,7 @@ namespace NHibernate.Hql
 		/// <param name="queryParameters">The query bind parameters.</param>
 		/// <returns>The query list results.</returns>
 		/// <exception cref="NHibernate.HibernateException"></exception>
-		IList List(ISessionImplementor session, QueryParameters queryParameters);
+		Task<IList> List(ISessionImplementor session, QueryParameters queryParameters, bool async);
 
 		IEnumerable GetEnumerable(QueryParameters queryParameters, IEventSource session);
 

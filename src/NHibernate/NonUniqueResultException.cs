@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace NHibernate
 {
 	/// <summary>
-	/// Thrown when the application calls <see cref="IQuery.UniqueResult()">IQuery.UniqueResult()</see> 
+	/// Thrown when the application calls <see cref="IQuery.UniqueResult(bool)">IQuery.UniqueResult()</see> 
 	/// and the query returned more than one result. Unlike all other NHibernate 
 	/// exceptions, this one is recoverable!
 	/// </summary>

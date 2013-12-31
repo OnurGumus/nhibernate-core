@@ -1234,7 +1234,7 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				object result = null;
-				IDbCommand ps = null;
+				DbCommand ps = null;
 				IDataReader rs = null;
 				try
 				{
@@ -1246,7 +1246,7 @@ namespace NHibernate.Persister.Entity
 						// handled differently in the Type#nullSafeGet code...
 						ps = session.Batcher.PrepareCommand(CommandType.Text, lazySelect, IdentifierType.SqlTypes(Factory));
 						IdentifierType.NullSafeSet(ps, id, 0, session);
-						rs = session.Batcher.ExecuteReader(ps);
+						rs = session.Batcher.ExecuteReader(ps, false).Result;
 						rs.Read();
 					}
 					object[] snapshot = entry.LoadedState;
@@ -1410,12 +1410,12 @@ namespace NHibernate.Persister.Entity
 			using (new SessionIdLoggingContext(session.SessionId))
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, SQLSnapshotSelectString, IdentifierType.SqlTypes(factory));
+				DbCommand st = session.Batcher.PrepareCommand(CommandType.Text, SQLSnapshotSelectString, IdentifierType.SqlTypes(factory));
 				IDataReader rs = null;
 				try
 				{
 					IdentifierType.NullSafeSet(st, id, 0, session);
-					rs = session.Batcher.ExecuteReader(st);
+					rs = session.Batcher.ExecuteReader(st, false).Result;
 
 					if (!rs.Read())
 					{
@@ -1665,12 +1665,12 @@ namespace NHibernate.Persister.Entity
 			using(new SessionIdLoggingContext(session.SessionId))
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareQueryCommand(CommandType.Text, VersionSelectString, IdentifierType.SqlTypes(Factory));
+				DbCommand st = session.Batcher.PrepareQueryCommand(CommandType.Text, VersionSelectString, IdentifierType.SqlTypes(Factory));
 				IDataReader rs = null;
 				try
 				{
 					IdentifierType.NullSafeSet(st, id, 0, session);
-					rs = session.Batcher.ExecuteReader(st);
+					rs = session.Batcher.ExecuteReader(st, false).Result;
 					if (!rs.Read())
 					{
 						return null;
@@ -2445,7 +2445,7 @@ namespace NHibernate.Persister.Entity
 			AbstractEntityPersister rootPersister = (AbstractEntityPersister)rootLoadable;
 
 			bool hasDeferred = rootPersister.HasSequentialSelect;
-			IDbCommand sequentialSelect = null;
+			DbCommand sequentialSelect = null;
 			IDataReader sequentialResultSet = null;
 			bool sequentialSelectEmpty = false;
 			using (new SessionIdLoggingContext(session.SessionId)) 
@@ -2459,7 +2459,7 @@ namespace NHibernate.Persister.Entity
 						//TODO: I am not so sure about the exception handling in this bit!
 						sequentialSelect = session.Batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));
 						rootPersister.IdentifierType.NullSafeSet(sequentialSelect, id, 0, session);
-						sequentialResultSet = session.Batcher.ExecuteReader(sequentialSelect);
+						sequentialResultSet = session.Batcher.ExecuteReader(sequentialSelect, false).Result;
 						if (!sequentialResultSet.Read())
 						{
 							// TODO: Deal with the "optional" attribute in the <join> mapping;
@@ -3984,13 +3984,13 @@ namespace NHibernate.Persister.Entity
 			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
-				IDbCommand cmd =
+				DbCommand cmd =
 					session.Batcher.PrepareQueryCommand(CommandType.Text, selectionSQL, IdentifierType.SqlTypes(Factory));
 				IDataReader rs = null;
 				try
 				{
 					IdentifierType.NullSafeSet(cmd, id, 0, session);
-					rs = session.Batcher.ExecuteReader(cmd);
+					rs = session.Batcher.ExecuteReader(cmd, false).Result;
 					if (!rs.Read())
 					{
 						throw new HibernateException("Unable to locate row for retrieval of generated properties: "
@@ -4074,12 +4074,12 @@ namespace NHibernate.Persister.Entity
 			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
-				IDbCommand ps = session.Batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));
+				DbCommand ps = session.Batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));
 				IDataReader rs = null;
 				try
 				{
 					IdentifierType.NullSafeSet(ps, id, 0, session);
-					rs = session.Batcher.ExecuteReader(ps);
+					rs = session.Batcher.ExecuteReader(ps, false).Result;
 					//if there is no resulting row, return null
 					if (!rs.Read())
 					{

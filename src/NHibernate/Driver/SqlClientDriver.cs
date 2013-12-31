@@ -4,6 +4,7 @@ using NHibernate.AdoNet;
 using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
+using System.Data.Common;
 
 namespace NHibernate.Driver
 {
@@ -38,7 +39,7 @@ namespace NHibernate.Driver
 		/// the SqlClientDriver.
 		/// </summary>
 		/// <value>An unitialized <see cref="System.Data.SqlClient.SqlCommand"/> object.</value>
-		public override IDbCommand CreateCommand()
+		public override DbCommand CreateCommand()
 		{
 			return new System.Data.SqlClient.SqlCommand();
 		}

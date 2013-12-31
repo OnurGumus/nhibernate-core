@@ -20,6 +20,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
@@ -108,7 +109,7 @@ namespace NHibernate.Impl
 			Dispose(true);
 		}
 
-		public override void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
+		public override async Task List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -119,7 +120,7 @@ namespace NHibernate.Impl
 				bool success = false;
 				try
 				{
-					plan.PerformList(queryParameters, this, results);
+					await plan.PerformList(queryParameters, this, results, async);
 					success = true;
 				}
 				catch (HibernateException)
@@ -159,7 +160,7 @@ namespace NHibernate.Impl
 				{
 					for (int i = size - 1; i >= 0; i--)
 					{
-						ArrayHelper.AddAll(results, loaders[i].List(this));
+						ArrayHelper.AddAll(results, loaders[i].List(this,false).Result);
 					}
 					success = true;
 				}
@@ -252,7 +253,7 @@ namespace NHibernate.Impl
 				var success = false;
 				try
 				{
-					ArrayHelper.AddAll(results, loader.List(this, queryParameters));
+					ArrayHelper.AddAll(results, loader.List(this, queryParameters,false).Result);
 					success = true;
 				}
 				finally

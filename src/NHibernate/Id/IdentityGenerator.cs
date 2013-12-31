@@ -3,6 +3,7 @@ using System.Data;
 using NHibernate.Engine;
 using NHibernate.Id.Insert;
 using NHibernate.SqlCommand;
+using System.Data.Common;
 
 namespace NHibernate.Id
 {
@@ -64,14 +65,14 @@ namespace NHibernate.Id
 				return insert;
 			}
 
-			protected internal override IDbCommand Prepare(SqlCommandInfo insertSQL, ISessionImplementor session)
+			protected internal override DbCommand Prepare(SqlCommandInfo insertSQL, ISessionImplementor session)
 			{
 				return session.Batcher.PrepareCommand(CommandType.Text, insertSQL.Text, insertSQL.ParameterTypes);
 			}
 
-			public override object ExecuteAndExtract(IDbCommand insert, ISessionImplementor session)
+			public override object ExecuteAndExtract(DbCommand insert, ISessionImplementor session)
 			{
-				IDataReader rs = session.Batcher.ExecuteReader(insert);
+				IDataReader rs = session.Batcher.ExecuteReader(insert, false).Result;
 				try
 				{
 					return IdentifierGeneratorFactory.GetGeneratedIdentity(rs, persister.IdentifierType, session);

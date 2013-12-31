@@ -60,7 +60,7 @@ namespace NHibernate.Driver
 			return connectionCommandProvider.CreateConnection();
 		}
 
-		public override IDbCommand CreateCommand()
+		public override DbCommand CreateCommand()
 		{
 			return connectionCommandProvider.CreateCommand();
 		}

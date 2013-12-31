@@ -3,6 +3,7 @@ using System.Data;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
+using System.Data.Common;
 
 namespace NHibernate.Driver
 {
@@ -67,7 +68,7 @@ namespace NHibernate.Driver
 		/// <param name="sqlString">The SqlString that contains the SQL.</param>
 		/// <param name="parameterTypes">The types of the parameters to generate for the command.</param>
 		/// <returns>An IDbCommand with the CommandText and Parameters fully set.</returns>
-		IDbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes);
+		DbCommand GenerateCommand(CommandType type, SqlString sqlString, SqlType[] parameterTypes);
 
 		/// <summary>
 		/// Prepare the <paramref name="command" /> by calling <see cref="IDbCommand.Prepare()" />.

@@ -7,6 +7,7 @@ using NHibernate.Hql;
 using NHibernate.Linq;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Threading.Tasks;
 
 namespace NHibernate.Engine.Query
 {
@@ -16,7 +17,7 @@ namespace NHibernate.Engine.Query
         ISet<string> QuerySpaces { get; }
         IQueryTranslator[] Translators { get; }
         ReturnMetadata ReturnMetadata { get; }
-        void PerformList(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, IList results);
+        Task PerformList(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, IList results, bool async);
         int PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl);
         IEnumerable<T> PerformIterate<T>(QueryParameters queryParameters, IEventSource session);
         IEnumerable PerformIterate(QueryParameters queryParameters, IEventSource session);
@@ -83,7 +84,7 @@ namespace NHibernate.Engine.Query
             private set;
         }
 
-		public void PerformList(QueryParameters queryParameters, ISessionImplementor session, IList results)
+		public async Task PerformList(QueryParameters queryParameters, ISessionImplementor session, IList results, bool async)
 		{
 			if (Log.IsDebugEnabled)
 			{
@@ -112,7 +113,7 @@ namespace NHibernate.Engine.Query
 			int includedCount = -1;
 			for (int i = 0; i < Translators.Length; i++)
 			{
-				IList tmp = Translators[i].List(session, queryParametersToUse);
+				IList tmp = await Translators[i].List(session, queryParametersToUse, async);
 				if (needsLimit)
 				{
 					// NOTE : firstRow is zero-based

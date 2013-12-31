@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
+using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
@@ -71,14 +72,14 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override IList List()
+		public override async Task<IList> List(bool async)
 		{
 			VerifyParameters();
 			var namedParams = NamedParams;
 			Before();
 			try
 			{
-				return Session.List(ExpandParameters(namedParams), GetQueryParameters(namedParams));
+				return await Session.List(ExpandParameters(namedParams), GetQueryParameters(namedParams), async);
 			}
 			finally
 			{
@@ -86,14 +87,14 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override void List(IList results)
+		public override async Task List(IList results, bool async)
 		{
 			VerifyParameters();
 			var namedParams = NamedParams;
 			Before();
 			try
 			{
-				Session.List(ExpandParameters(namedParams), GetQueryParameters(namedParams), results);
+				await Session.List(ExpandParameters(namedParams), GetQueryParameters(namedParams), results, false);
 			}
 			finally
 			{
@@ -101,14 +102,14 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override IList<T> List<T>()
+		public override async Task<IList<T>> List<T>(bool async)
 		{
 			VerifyParameters();
 			var namedParams = NamedParams;
 			Before();
 			try
 			{
-				return Session.List<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams));
+				return await Session.List<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams),async);
 			}
 			finally
 			{

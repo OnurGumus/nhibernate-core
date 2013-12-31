@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using NHibernate.Impl;
 using Remotion.Linq;
 using Remotion.Linq.Parsing.ExpressionTreeVisitors;
+using System.Threading.Tasks;
 
 namespace NHibernate.Linq
 {
@@ -76,6 +77,20 @@ namespace NHibernate.Linq
 			var future = provider.ExecuteFuture(nhQueryable.Expression);
 			return (IEnumerable<T>)future;
 		}
+
+
+
+		public static async Task<IEnumerable<T>> ToListAsync<T>(this IQueryable<T> query)
+		{
+			var nhQueryable = query as QueryableBase<T>;
+			if (nhQueryable == null)
+				throw new NotSupportedException("Query needs to be of type QueryableBase<T>");
+
+			var provider = (INhQueryProvider)nhQueryable.Provider;
+			var result = await provider.ExecuteAsync<IEnumerable<T>>(nhQueryable.Expression);
+			return (IEnumerable<T>)result;
+		}
+
 
 		public static IFutureValue<T> ToFutureValue<T>(this IQueryable<T> query)
 		{

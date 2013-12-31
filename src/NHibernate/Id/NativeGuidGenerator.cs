@@ -6,6 +6,7 @@ using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
+using System.Data.Common;
 
 namespace NHibernate.Id
 {
@@ -24,11 +25,11 @@ namespace NHibernate.Id
 			var sql = new SqlString(session.Factory.Dialect.SelectGUIDString);
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
+				DbCommand st = (DbCommand)session.Batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
 				IDataReader reader = null;
 				try
 				{
-					reader = session.Batcher.ExecuteReader(st);
+					reader = session.Batcher.ExecuteReader(st, false).Result;
 					object result;
 					try
 					{

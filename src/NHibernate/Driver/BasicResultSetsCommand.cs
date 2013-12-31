@@ -5,6 +5,7 @@ using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
+using System.Data.Common;
 
 namespace NHibernate.Driver
 {
@@ -84,7 +85,7 @@ namespace NHibernate.Driver
 		private readonly IDbCommand command;
 		private readonly IDataReader reader;
 
-		public BatcherDataReaderWrapper(IBatcher batcher, IDbCommand command)
+		public BatcherDataReaderWrapper(IBatcher batcher, DbCommand command)
 		{
 			if (batcher == null)
 			{
@@ -96,7 +97,7 @@ namespace NHibernate.Driver
 			}
 			this.batcher = batcher;
 			this.command = command;
-			reader = batcher.ExecuteReader(command);
+			reader = batcher.ExecuteReader(command, false).Result;
 		}
 
 		public void Dispose()

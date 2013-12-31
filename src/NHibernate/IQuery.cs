@@ -3,6 +3,7 @@ using System.Collections;
 using NHibernate.Transform;
 using NHibernate.Type;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace NHibernate
 {
@@ -46,7 +47,7 @@ namespace NHibernate
 	/// You may not mix and match unnamed parameters and named parameters in the same query.
 	/// </para>
 	/// <para>
-	/// Queries are executed by calling <see cref="IQuery.List()" /> or <see cref="IQuery.Enumerable()" />. A query
+	/// Queries are executed by calling <see cref="IQuery.List(bool)" /> or <see cref="IQuery.Enumerable()" />. A query
 	/// may be re-executed by subsequent invocations. Its lifespan is, however, bounded by the lifespan
 	/// of the <c>ISession</c> that created it.
 	/// </para>
@@ -128,18 +129,18 @@ namespace NHibernate
 		/// This is a good strategy to use if you expect few of the objects being returned are already loaded
 		/// or if you want to fill the 2nd level cache.
 		/// </remarks>
-		IList List();
+		Task<IList> List(bool async);
 
 		/// <summary>
 		/// Return the query results an place them into the <see cref="IList"/>.
 		/// </summary>
 		/// <param name="results">The <see cref="IList"/> to place the results in.</param>
-		void List(IList results);
+		Task List(IList results, bool async);
 
 		/// <summary>
-		/// Strongly-typed version of <see cref="List()"/>.
+		/// Strongly-typed version of <see cref="List(bool)"/>.
 		/// </summary>
-		IList<T> List<T>();
+		Task<IList<T>> List<T>(bool async);
 
 		/// <summary>
 		/// Convenience method to return a single instance that matches
@@ -149,12 +150,12 @@ namespace NHibernate
 		/// <exception cref="HibernateException">
 		/// Thrown when there is more than one matching result.
 		/// </exception>
-		object UniqueResult();
+		Task<object> UniqueResult(bool async);
 
 		/// <summary>
-		/// Strongly-typed version of <see cref="UniqueResult()"/>.
+		/// Strongly-typed version of <see cref="UniqueResult(bool)"/>.
 		/// </summary>
-		T UniqueResult<T>();
+		Task<T> UniqueResult<T>(bool async);
 
 		/// <summary>
 		/// Execute the update or delete statement.

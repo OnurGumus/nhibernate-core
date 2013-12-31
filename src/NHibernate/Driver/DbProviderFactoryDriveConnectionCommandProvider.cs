@@ -22,7 +22,7 @@ namespace NHibernate.Driver
 			return dbProviderFactory.CreateConnection();
 		}
 
-		public IDbCommand CreateCommand()
+		public DbCommand CreateCommand()
 		{
 			return dbProviderFactory.CreateCommand();
 		}

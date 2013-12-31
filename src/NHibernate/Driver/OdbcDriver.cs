@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.Odbc;
 using NHibernate.SqlTypes;
+using System.Data.Common;
 
 namespace NHibernate.Driver
 {
@@ -18,7 +19,7 @@ namespace NHibernate.Driver
 			return new OdbcConnection();
 		}
 
-		public override IDbCommand CreateCommand()
+		public override DbCommand CreateCommand()
 		{
 			return new OdbcCommand();
 		}

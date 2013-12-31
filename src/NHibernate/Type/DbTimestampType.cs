@@ -57,13 +57,13 @@ namespace NHibernate.Type
 		protected virtual object UsePreparedStatement(string timestampSelectString, ISessionImplementor session)
 		{
 			var tsSelect = new SqlString(timestampSelectString);
-			IDbCommand ps = null;
+			DbCommand ps = null;
 			IDataReader rs = null;
 			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
 				ps = session.Batcher.PrepareCommand(CommandType.Text, tsSelect, EmptyParams);
-				rs = session.Batcher.ExecuteReader(ps);
+				rs = session.Batcher.ExecuteReader(ps, false).Result;
 				rs.Read();
 				DateTime ts = rs.GetDateTime(0);
 				if (log.IsDebugEnabled)

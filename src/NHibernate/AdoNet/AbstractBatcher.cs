@@ -11,6 +11,8 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 using NHibernate.AdoNet.Util;
+using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace NHibernate.AdoNet
 {
@@ -66,11 +68,11 @@ namespace NHibernate.AdoNet
 			get { return _batchCommand; }
 		}
 
-		public IDbCommand Generate(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
+		public DbCommand Generate(CommandType type, SqlString sqlString, SqlType[] parameterTypes)
 		{
 			SqlString sql = GetSQL(sqlString);
 
-			IDbCommand cmd = _factory.ConnectionProvider.Driver.GenerateCommand(type, sql, parameterTypes);
+			DbCommand cmd = _factory.ConnectionProvider.Driver.GenerateCommand(type, sql, parameterTypes);
 			LogOpenPreparedCommand();
 			if (Log.IsDebugEnabled)
 			{
@@ -136,7 +138,7 @@ namespace NHibernate.AdoNet
 			return _batchCommand;
 		}
 
-		public IDbCommand PrepareCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
+		public DbCommand PrepareCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
 		{
 			OnPreparedCommand();
 
@@ -154,13 +156,13 @@ namespace NHibernate.AdoNet
 			ExecuteBatch();
 		}
 
-		public IDbCommand PrepareQueryCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
+		public DbCommand PrepareQueryCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
 		{
 			// do not actually prepare the Command here - instead just generate it because
 			// if the command is associated with an ADO.NET Transaction/Connection while
 			// another open one Command is doing something then an exception will be 
 			// thrown.
-			IDbCommand command = Generate(type, sql, parameterTypes);
+			DbCommand command = Generate(type, sql, parameterTypes);
 			_lastQuery = command;
 			return command;
 		}
@@ -208,7 +210,7 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		public virtual IDataReader ExecuteReader(IDbCommand cmd)
+		public virtual async Task<IDataReader> ExecuteReader(DbCommand cmd, bool async)
 		{
 			CheckReaders();
 			LogCommand(cmd);
@@ -219,7 +221,12 @@ namespace NHibernate.AdoNet
 			IDataReader reader = null;
 			try
 			{
-				reader = cmd.ExecuteReader();
+				if (async)
+				{
+					reader = await cmd.ExecuteReaderAsync();
+				}
+				else
+					reader = cmd.ExecuteReader();
 			}
 			catch (Exception e)
 			{

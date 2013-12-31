@@ -3,6 +3,8 @@ using System.Data;
 using NHibernate.AdoNet;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
+using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace NHibernate.Engine
 {
@@ -44,7 +46,7 @@ namespace NHibernate.Engine
 		/// does NOT cause the batch to execute...
 		/// </para>
 		/// </remarks>
-		IDbCommand PrepareQueryCommand(CommandType commandType, SqlString sql, SqlType[] parameterTypes);
+		DbCommand PrepareQueryCommand(CommandType commandType, SqlString sql, SqlType[] parameterTypes);
 
 		/// <summary>
 		/// Get a non-batchable an <see cref="IDbCommand"/> to use for inserting / deleting / updating.
@@ -58,7 +60,7 @@ namespace NHibernate.Engine
 		/// An <see cref="IDbCommand"/> that is ready to have the parameter values set
 		/// and then executed.
 		/// </returns>
-		IDbCommand PrepareCommand(CommandType commandType, SqlString sql, SqlType[] parameterTypes);
+		DbCommand PrepareCommand(CommandType commandType, SqlString sql, SqlType[] parameterTypes);
 
 		/// <summary>
 		/// Close a <see cref="IDbCommand"/> opened using <c>PrepareCommand()</c>
@@ -118,7 +120,7 @@ namespace NHibernate.Engine
 		/// The Batcher is responsible for ensuring that all of the Drivers rules for how many open
 		/// <see cref="IDataReader"/>s it can have are followed.
 		/// </remarks>
-		IDataReader ExecuteReader(IDbCommand cmd);
+		Task<IDataReader> ExecuteReader(DbCommand cmd, bool async);
 
 		/// <summary>
 		/// Executes the <see cref="IDbCommand"/>. 

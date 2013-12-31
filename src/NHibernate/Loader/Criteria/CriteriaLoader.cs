@@ -10,6 +10,7 @@ using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Threading.Tasks;
 
 namespace NHibernate.Loader.Criteria
 {
@@ -70,9 +71,9 @@ namespace NHibernate.Loader.Criteria
 			get { return resultTypes; }
 		}
 
-		public IList List(ISessionImplementor session)
+		public async Task<IList> List(ISessionImplementor session, bool async)
 		{
-			return List(session, translator.GetQueryParameters(), querySpaces, resultTypes);
+			return await List(session, translator.GetQueryParameters(), querySpaces, resultTypes,false);
 		}
 
 		protected override object GetResultColumnOrRow(object[] row, IResultTransformer customResultTransformer, IDataReader rs,
