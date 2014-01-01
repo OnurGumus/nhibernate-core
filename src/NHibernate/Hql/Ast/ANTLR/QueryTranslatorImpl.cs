@@ -157,10 +157,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return _queryLoader.GetEnumerable(queryParameters, session);
 		}
 
-		public int ExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session)
+		public async Task<int> ExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session, bool async)
 		{
 			ErrorIfSelect();
-			return _statementExecutor.Execute(queryParameters, session);
+			return await _statementExecutor.Execute(queryParameters, session,async);
 		}
 
 		private void ErrorIfSelect()

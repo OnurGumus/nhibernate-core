@@ -26,15 +26,22 @@ namespace NHibernate.Impl
 			_lockModes[alias] = lockMode;
 			return this;
 		}
-
 		public override int ExecuteUpdate()
+		{
+			return this.ExecuteUpdate(false).Result;
+		}
+		public override async Task<int> ExecuteUpdateAsync()
+		{
+			return await this.ExecuteUpdate(true);
+		}
+		public override async Task<int> ExecuteUpdate(bool async)
 		{
 			VerifyParameters();
 			var namedParams = NamedParams;
 			Before();
 			try
 			{
-				return Session.ExecuteUpdate(ExpandParameters(namedParams), GetQueryParameters(namedParams));
+				return await Session.ExecuteUpdate(ExpandParameters(namedParams), GetQueryParameters(namedParams),async);
 			}
 			finally
 			{

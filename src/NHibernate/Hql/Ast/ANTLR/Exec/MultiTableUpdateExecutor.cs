@@ -89,7 +89,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			get { return updates; }
 		}
 
-		public override int Execute(QueryParameters parameters, ISessionImplementor session)
+		public override async Task<int> Execute(QueryParameters parameters, ISessionImplementor session, bool async)
 		{
 			CoordinateSharedCacheCleanup(session);
 
@@ -120,7 +120,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 							parameterSpecification.Bind(ps, sqlQueryParametersList, parameters, session);
 						}
 
-						resultCount =  session.Batcher.ExecuteNonQuery(ps, false).Result;
+						resultCount =  await session.Batcher.ExecuteNonQuery(ps, async);
 					}
 					finally
 					{

@@ -217,9 +217,9 @@ namespace NHibernate.Engine
 		Task<IList<T>> List<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters, bool async);
 
 		/// <summary> Execute an SQL Query</summary>
-		void ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results);
+		Task ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results, bool async);
 
-		IList<T> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters);
+		Task<IList<T>> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters, bool async);
 
 		/// <summary>
 		/// Retrieve the currently set value for a filter parameter.
@@ -309,6 +309,8 @@ namespace NHibernate.Engine
 
 		void Flush();
 
+		Task FlushAsync();
+
 		/// <summary> 
 		/// Does this <tt>Session</tt> have an active Hibernate transaction
 		/// or is there a JTA transaction in progress?
@@ -319,14 +321,14 @@ namespace NHibernate.Engine
 		EntityMode EntityMode { get; }
 
 		/// <summary> Execute a native SQL update or delete query</summary>
-		int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
+		Task<int> ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters, bool async);
 
 		/// <summary> Execute a HQL update or delete query</summary>
 		[Obsolete("Use overload with IQueryExpression")]
-		int ExecuteUpdate(string query, QueryParameters queryParameters);
+		Task<int> ExecuteUpdate(string query, QueryParameters queryParameters, bool async);
 
 		/// <summary> Execute a HQL update or delete query</summary>
-		int ExecuteUpdate(IQueryExpression query, QueryParameters queryParameters);
+		Task<int> ExecuteUpdate(IQueryExpression query, QueryParameters queryParameters, bool async);
 
 		FutureCriteriaBatch FutureCriteriaBatch { get; }
 

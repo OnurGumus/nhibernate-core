@@ -50,7 +50,7 @@ namespace NHibernate.Hql
 		/// <param name="session">The session owning this query.</param>
 		/// <returns>The number of entities updated or deleted.</returns>
 		/// <exception cref="NHibernate.HibernateException"></exception>
-		int ExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session);
+		Task<int> ExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session, bool async);
 
 		/// <summary>
 		/// The set of query spaces (table names) that the query referrs to.

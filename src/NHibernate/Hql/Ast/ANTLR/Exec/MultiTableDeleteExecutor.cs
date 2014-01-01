@@ -10,6 +10,7 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
+using System.Threading.Tasks;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
@@ -66,7 +67,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			get { return deletes; }
 		}
 
-		public override int Execute(QueryParameters parameters, ISessionImplementor session)
+		public override  async Task<int> Execute(QueryParameters parameters, ISessionImplementor session, bool async)
 		{
 			CoordinateSharedCacheCleanup(session);
 
@@ -91,7 +92,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 							parameterSpecification.Bind(ps, sqlQueryParametersList, parameters, session);
 						}
 
-						resultCount = session.Batcher.ExecuteNonQuery(ps, false).Result;
+						resultCount = await session.Batcher.ExecuteNonQuery(ps, async);
 					}
 					finally
 					{

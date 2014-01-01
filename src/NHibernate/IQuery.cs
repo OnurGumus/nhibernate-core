@@ -203,6 +203,12 @@ namespace NHibernate
 		int ExecuteUpdate();
 
 		/// <summary>
+		/// Execute the update or delete statement.
+		/// </summary>
+		/// <returns> The number of entities updated or deleted. </returns>
+		Task<int> ExecuteUpdateAsync();
+
+		/// <summary>
 		/// Set the maximum number of rows to retrieve.
 		/// </summary>
 		/// <param name="maxResults">The maximum number of rows to retreive.</param>

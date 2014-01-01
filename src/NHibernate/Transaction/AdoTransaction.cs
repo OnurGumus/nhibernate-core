@@ -4,6 +4,7 @@ using System.Data;
 
 using NHibernate.Engine;
 using NHibernate.Impl;
+using System.Threading.Tasks;
 
 namespace NHibernate.Transaction
 {
@@ -118,7 +119,7 @@ namespace NHibernate.Transaction
 				{
 					throw new TransactionException("Cannot restart transaction after failed commit");
 				}
-				
+
 				if (isolationLevel == IsolationLevel.Unspecified)
 				{
 					isolationLevel = session.Factory.Settings.IsolationLevel;
@@ -177,6 +178,32 @@ namespace NHibernate.Transaction
 		/// </exception>
 		public void Commit()
 		{
+			this.CommitAsync(false).Wait();
+		}
+
+		/// <summary>
+		/// Commits the <see cref="ITransaction"/> by flushing the <see cref="ISession"/>
+		/// and committing the <see cref="IDbTransaction"/>.
+		/// </summary>
+		/// <exception cref="TransactionException">
+		/// Thrown if there is any exception while trying to call <c>Commit()</c> on 
+		/// the underlying <see cref="IDbTransaction"/>.
+		/// </exception>
+		public async Task CommitAsync()
+		{
+			await this.CommitAsync(true);
+		}
+
+		/// <summary>
+		/// Commits the <see cref="ITransaction"/> by flushing the <see cref="ISession"/>
+		/// and committing the <see cref="IDbTransaction"/>.
+		/// </summary>
+		/// <exception cref="TransactionException">
+		/// Thrown if there is any exception while trying to call <c>Commit()</c> on 
+		/// the underlying <see cref="IDbTransaction"/>.
+		/// </exception>
+		public async Task CommitAsync(bool async)
+		{
 			using (new SessionIdLoggingContext(sessionId))
 			{
 				CheckNotDisposed();
@@ -187,7 +214,10 @@ namespace NHibernate.Transaction
 
 				if (session.FlushMode != FlushMode.Never)
 				{
-					session.Flush();
+					if (async)
+						await session.FlushAsync();
+					else
+						session.Flush();
 				}
 
 				NotifyLocalSynchsBeforeTransactionCompletion();
@@ -223,6 +253,7 @@ namespace NHibernate.Transaction
 				}
 			}
 		}
+
 
 		/// <summary>
 		/// Rolls back the <see cref="ITransaction"/> by calling the method <c>Rollback</c> 

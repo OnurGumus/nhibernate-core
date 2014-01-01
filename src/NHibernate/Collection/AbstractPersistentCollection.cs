@@ -283,7 +283,7 @@ namespace NHibernate.Collection
 					{
 						if (HasQueuedOperations)
 						{
-							session.Flush();
+							await session.FlushAsync();
 						}
 						cachedSize = await persister.GetSize(entry.LoadedKey, session,async);
 						return true;
@@ -305,7 +305,7 @@ namespace NHibernate.Collection
 				{
 					if (HasQueuedOperations)
 					{
-						session.Flush();
+						await session.FlushAsync();
 					}
 					return await persister.IndexExists(entry.LoadedKey, index, session, async);
 				}
@@ -325,7 +325,7 @@ namespace NHibernate.Collection
 				{
 					if (HasQueuedOperations)
 					{
-						session.Flush();
+						await session.FlushAsync();
 					}
 					return await persister.ElementExists(entry.LoadedKey, element, session, async);
 				}
@@ -345,7 +345,7 @@ namespace NHibernate.Collection
 				{
 					if (HasQueuedOperations)
 					{
-						session.Flush();
+						await session.FlushAsync();
 					}
 					var elementByIndex =await  persister.GetElementByIndex(entry.LoadedKey, index, session, owner, async );
 					return persister.NotFoundObject == elementByIndex ? NotFound : elementByIndex;

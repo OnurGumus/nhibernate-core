@@ -1117,6 +1117,7 @@ namespace NHibernate.Impl
 		/// named in the query and, if so, complete execution the flush
 		/// </summary>
 		/// <param name="querySpaces"></param>
+		/// <param name="async"></param>
 		/// <returns></returns>
 		private async Task<bool> AutoFlushIfRequired(ISet<string> querySpaces, bool async)
 		{
@@ -1518,7 +1519,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public  async Task FlushAsync()
+		public  override async Task FlushAsync()
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2050,20 +2051,20 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override void ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results)
+		public override async Task ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 
 				CustomLoader loader = new CustomLoader(customQuery, Factory);
-				AutoFlushIfRequired(loader.QuerySpaces,false).Wait();
+				await AutoFlushIfRequired(loader.QuerySpaces, async);
 
 				bool success = false;
 				dontFlushFromFind++;
 				try
 				{
-					ArrayHelper.AddAll(results, loader.List(this, queryParameters,false).Result);
+					ArrayHelper.AddAll(results, await loader.List(this, queryParameters,async));
 					success = true;
 				}
 				finally
@@ -2634,7 +2635,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override int ExecuteNativeUpdate(NativeSQLQuerySpecification nativeQuerySpecification, QueryParameters queryParameters)
+		public override  async Task<int> ExecuteNativeUpdate(NativeSQLQuerySpecification nativeQuerySpecification, QueryParameters queryParameters, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2642,13 +2643,13 @@ namespace NHibernate.Impl
 				queryParameters.ValidateParameters();
 				NativeSQLQueryPlan plan = GetNativeSQLQueryPlan(nativeQuerySpecification);
 
-				AutoFlushIfRequired(plan.CustomQuery.QuerySpaces,false).Wait();
+				await AutoFlushIfRequired(plan.CustomQuery.QuerySpaces, async);
 
 				bool success = false;
 				int result;
 				try
 				{
-					result = plan.PerformExecuteUpdate(queryParameters, this);
+					result = await plan.PerformExecuteUpdate(queryParameters, this,async);
 					success = true;
 				}
 				finally
@@ -2659,20 +2660,20 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override int ExecuteUpdate(IQueryExpression queryExpression, QueryParameters queryParameters)
+		public override async Task<int> ExecuteUpdate(IQueryExpression queryExpression, QueryParameters queryParameters, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(queryExpression, false);
-				AutoFlushIfRequired(plan.QuerySpaces,false).Wait();
+				await AutoFlushIfRequired(plan.QuerySpaces,async);
 
 				bool success = false;
 				int result;
 				try
 				{
-					result = plan.PerformExecuteUpdate(queryParameters, this);
+					result = await plan.PerformExecuteUpdate(queryParameters, this, async);
 					success = true;
 				}
 				finally

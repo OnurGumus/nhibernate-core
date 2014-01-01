@@ -190,7 +190,7 @@ namespace NHibernate.Impl
 					spec.QueryString,
 					spec.QuerySpaces,
 					Factory);
-				ListCustomQuery(query, queryParameters, results);
+				await ListCustomQuery(query, queryParameters, results, async);
 			}
 		}
 
@@ -204,14 +204,14 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public abstract void ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results);
+		public abstract Task ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results, bool async);
 
-		public virtual IList<T> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters)
+		public virtual async Task<IList<T>> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				var results = new List<T>();
-				ListCustomQuery(customQuery, queryParameters, results);
+				await ListCustomQuery(customQuery, queryParameters, results, async);
 				return results;
 			}
 		}
@@ -260,7 +260,7 @@ namespace NHibernate.Impl
 		public abstract string BestGuessEntityName(object entity);
 		public abstract string GuessEntityName(object entity);
 		public abstract IDbConnection Connection { get; }
-		public abstract int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
+		public abstract Task<int> ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters, bool async);
 		public abstract FutureCriteriaBatch FutureCriteriaBatch { get; internal set; }
 		public abstract FutureQueryBatch FutureQueryBatch { get; internal set; }
 
@@ -320,6 +320,8 @@ namespace NHibernate.Impl
 		}
 
 		public abstract void Flush();
+
+		public abstract Task FlushAsync();
 
 		public abstract bool TransactionInProgress { get; }
 
@@ -476,11 +478,11 @@ namespace NHibernate.Impl
 		public abstract IEnumerable<T> Enumerable<T>(IQueryExpression queryExpression, QueryParameters queryParameters);
 
 		[Obsolete("Use overload with IQueryExpression")]
-		public virtual int ExecuteUpdate(string query, QueryParameters queryParameters)
+		public virtual async Task<int> ExecuteUpdate(string query, QueryParameters queryParameters, bool async)
 		{
-			return ExecuteUpdate(query.ToQueryExpression(), queryParameters);
+			return await ExecuteUpdate(query.ToQueryExpression(), queryParameters, async);
 		}
 
-		public abstract int ExecuteUpdate(IQueryExpression queryExpression, QueryParameters queryParameters);
+		public abstract Task<int> ExecuteUpdate(IQueryExpression queryExpression, QueryParameters queryParameters, bool async);
 	}
 }

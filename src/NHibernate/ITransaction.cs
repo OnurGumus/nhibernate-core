@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using NHibernate.Transaction;
+using System.Threading.Tasks;
 
 namespace NHibernate
 {
@@ -37,6 +38,15 @@ namespace NHibernate
 		/// was initiated by this object.
 		/// </remarks>
 		void Commit();
+
+		/// <summary>
+		/// Flush the associated <c>ISession</c> and end the unit of work.
+		/// </summary>
+		/// <remarks>
+		/// This method will commit the underlying transaction if and only if the transaction
+		/// was initiated by this object.
+		/// </remarks>
+		Task CommitAsync();
 
 		/// <summary>
 		/// Force the underlying transaction to roll back.

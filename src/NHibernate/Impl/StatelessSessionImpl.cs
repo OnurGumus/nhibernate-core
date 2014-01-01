@@ -242,7 +242,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override void ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results)
+		public override async Task ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -253,7 +253,7 @@ namespace NHibernate.Impl
 				var success = false;
 				try
 				{
-					ArrayHelper.AddAll(results, loader.List(this, queryParameters,false).Result);
+					ArrayHelper.AddAll(results, await loader.List(this, queryParameters,async));
 					success = true;
 				}
 				finally
@@ -377,6 +377,12 @@ namespace NHibernate.Impl
 			{
 				ManagedFlush(); // NH Different behavior since ADOContext.Context is not implemented
 			}
+		}
+
+		public override async Task FlushAsync()
+		{
+			await Task.Yield();
+			this.Flush();
 		}
 
 		public void ManagedFlush()
@@ -893,7 +899,7 @@ namespace NHibernate.Impl
 
 		#endregion
 
-		public override int ExecuteNativeUpdate(NativeSQLQuerySpecification nativeSQLQuerySpecification, QueryParameters queryParameters)
+		public override async Task<int> ExecuteNativeUpdate(NativeSQLQuerySpecification nativeSQLQuerySpecification, QueryParameters queryParameters, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -905,7 +911,7 @@ namespace NHibernate.Impl
 				int result;
 				try
 				{
-					result = plan.PerformExecuteUpdate(queryParameters, this);
+					result = await plan.PerformExecuteUpdate(queryParameters, this, async);
 					success = true;
 				}
 				finally
@@ -917,7 +923,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override int ExecuteUpdate(IQueryExpression queryExpression, QueryParameters queryParameters)
+		public override async Task<int> ExecuteUpdate(IQueryExpression queryExpression, QueryParameters queryParameters, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -928,7 +934,7 @@ namespace NHibernate.Impl
 				int result;
 				try
 				{
-					result = plan.PerformExecuteUpdate(queryParameters, this);
+					result =  await plan.PerformExecuteUpdate(queryParameters, this,async);
 					success = true;
 				}
 				finally

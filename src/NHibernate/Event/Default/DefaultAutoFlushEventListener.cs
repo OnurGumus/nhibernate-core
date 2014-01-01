@@ -35,7 +35,7 @@ namespace NHibernate.Event.Default
 					if (log.IsDebugEnabled)
 						log.Debug("Need to execute flush");
 
-					PerformExecutions(source,  async);
+					await PerformExecutions(source,  async);
 					PostFlush(source);
 					// note: performExecutions() clears all collectionXxxxtion
 					// collections (the collection actions) in the session

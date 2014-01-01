@@ -308,14 +308,21 @@ namespace NHibernate.Impl
 		{
 			throw new NotSupportedException("cannot set the lock mode for a native SQL query");
 		}
-
-		public override int ExecuteUpdate()
+		public override  int ExecuteUpdate()
+		{
+			return this.ExecuteUpdate(false).Result;
+		}
+		public override async Task<int> ExecuteUpdateAsync()
+		{
+			return await this.ExecuteUpdate(true);
+		}
+		public override async Task<int> ExecuteUpdate(bool async)
 		{
 			IDictionary<string,TypedValue> namedParams = NamedParams;
 			Before();
 			try
 			{
-				return Session.ExecuteNativeUpdate(GenerateQuerySpecification(namedParams), GetQueryParameters(namedParams));
+				return await Session.ExecuteNativeUpdate(GenerateQuerySpecification(namedParams), GetQueryParameters(namedParams), async);
 			}
 			finally
 			{

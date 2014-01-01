@@ -18,7 +18,7 @@ namespace NHibernate.Engine.Query
         IQueryTranslator[] Translators { get; }
         ReturnMetadata ReturnMetadata { get; }
         Task PerformList(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, IList results, bool async);
-        int PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl);
+        Task<int> PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, bool async);
         IEnumerable<T> PerformIterate<T>(QueryParameters queryParameters, IEventSource session);
         IEnumerable PerformIterate(QueryParameters queryParameters, IEventSource session);
     }
@@ -167,7 +167,7 @@ namespace NHibernate.Engine.Query
 			return new SafetyEnumerable<T>(PerformIterate(queryParameters, session));
 		}
 
-        public int PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session)
+        public async Task<int> PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session, bool async)
         {
             if (Log.IsDebugEnabled)
             {
@@ -181,7 +181,7 @@ namespace NHibernate.Engine.Query
             int result = 0;
             for (int i = 0; i < Translators.Length; i++)
             {
-                result += Translators[i].ExecuteUpdate(queryParameters, session);
+                result += await Translators[i].ExecuteUpdate(queryParameters, session,  async);
             }
             return result;
         }

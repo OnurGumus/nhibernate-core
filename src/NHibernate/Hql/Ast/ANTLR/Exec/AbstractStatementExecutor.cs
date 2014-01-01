@@ -14,6 +14,7 @@ using NHibernate.SqlTypes;
 using NHibernate.Util;
 using NHibernate.AdoNet.Util;
 using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
@@ -34,7 +35,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 
 		public abstract SqlString[] SqlStatements { get; }
 
-		public abstract int Execute(QueryParameters parameters, ISessionImplementor session);
+		public abstract Task<int> Execute(QueryParameters parameters, ISessionImplementor session, bool async);
 
 		protected abstract IQueryable[] AffectedQueryables { get; }
 
