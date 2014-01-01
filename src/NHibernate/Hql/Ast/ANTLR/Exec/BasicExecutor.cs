@@ -13,6 +13,7 @@ using NHibernate.Param;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
+using System.Threading.Tasks;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
@@ -52,7 +53,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		{
 			CoordinateSharedCacheCleanup(session);
 
-			IDbCommand st = null;
+			DbCommand st = null;
 			RowSelection selection = parameters.RowSelection;
 
 			try
@@ -77,7 +78,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 							st.CommandTimeout = selection.Timeout;
 						}
 					}
-					return session.Batcher.ExecuteNonQuery(st);
+					return  session.Batcher.ExecuteNonQuery(st, false).Result;
 				}
 				finally
 				{

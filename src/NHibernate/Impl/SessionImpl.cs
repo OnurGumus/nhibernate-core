@@ -1145,7 +1145,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				LoadEvent loadEvent = new LoadEvent(id, obj, this);
-				FireLoad(loadEvent, LoadEventListener.Reload);
+				FireLoad(loadEvent, LoadEventListener.Reload, false).Wait();
 			}
 		}
 
@@ -1200,7 +1200,7 @@ namespace NHibernate.Impl
 				bool success = false;
 				try
 				{
-					FireLoad(@event, LoadEventListener.Load);
+					FireLoad(@event, LoadEventListener.Load,false).Wait();
 					if (@event.Result == null)
 					{
 						Factory.EntityNotFoundDelegate.HandleEntityNotFound(entityName, id);
@@ -1220,7 +1220,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				var @event = new LoadEvent(id, entityName, lockMode, this);
-				FireLoad(@event, LoadEventListener.Load);
+				FireLoad(@event, LoadEventListener.Load,false).Wait();
 				return @event.Result;
 			}
 		}
@@ -1270,14 +1270,59 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object Get(System.Type clazz, object id, LockMode lockMode)
 		{
+			return this.GetAsync(clazz, id, lockMode, false).Result;
+		}
+
+		public async Task<T> GetAsync<T>(object id)
+		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				LoadEvent loadEvent = new LoadEvent(id, clazz.FullName, lockMode, this);
-				FireLoad(loadEvent, LoadEventListener.Get);
-				return loadEvent.Result;
+				return (T) await GetAsync(typeof(T), id);
 			}
 		}
 
+		public async Task<T> GetAsync<T>(object id, LockMode lockMode)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return (T) await GetAsync(typeof(T), id, lockMode);
+			}
+		}
+
+		public async Task<object> GetAsync(System.Type entityClass, object id)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return await GetAsync(entityClass.FullName, id);
+			}
+		}
+
+		/// <summary>
+		/// Load the data for the object with the specified id into a newly created object
+		/// using "for update", if supported. A new key will be assigned to the object.
+		/// This should return an existing proxy where appropriate.
+		///
+		/// If the object does not exist in the database, null is returned.
+		/// </summary>
+		/// <param name="clazz"></param>
+		/// <param name="id"></param>
+		/// <param name="lockMode"></param>
+		/// <returns></returns>
+		public async Task<object> GetAsync(System.Type clazz, object id, LockMode lockMode)
+		{
+			return await this.GetAsync(clazz, id, lockMode, true);
+		}
+
+
+		protected async Task<object> GetAsync(System.Type clazz, object id, LockMode lockMode, bool async)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				LoadEvent loadEvent = new LoadEvent(id, clazz.FullName, lockMode, this);
+				await FireLoad(loadEvent, LoadEventListener.Get, async);
+				return loadEvent.Result;
+			}
+		}
 		public string GetEntityName(object obj)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -1310,13 +1355,23 @@ namespace NHibernate.Impl
 
 		public object Get(string entityName, object id)
 		{
+			return this.GetAsync(entityName, id, false).Result;
+		}
+
+		public async  Task<object> GetAsync(string entityName, object id)
+		{
+			return await this.GetAsync(entityName,id,true);
+		}
+
+		public async Task<object> GetAsync(string entityName, object id, bool async)
+		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				LoadEvent loadEvent = new LoadEvent(id, entityName, false, this);
 				bool success = false;
 				try
 				{
-					FireLoad(loadEvent, LoadEventListener.Get);
+					await FireLoad(loadEvent, LoadEventListener.Get, async);
 					success = true;
 					return loadEvent.Result;
 				}
@@ -1326,7 +1381,6 @@ namespace NHibernate.Impl
 				}
 			}
 		}
-
 		/// <summary>
 		/// Load the data for the object with the specified id into a newly created object.
 		/// This is only called when lazily initializing a proxy.
@@ -1343,7 +1397,7 @@ namespace NHibernate.Impl
 				}
 
 				LoadEvent loadEvent = new LoadEvent(id, entityName, true, this);
-				FireLoad(loadEvent, LoadEventListener.ImmediateLoad);
+				FireLoad(loadEvent, LoadEventListener.ImmediateLoad,false).Wait();
 				return loadEvent.Result;
 			}
 		}
@@ -1362,7 +1416,7 @@ namespace NHibernate.Impl
 									? LoadEventListener.InternalLoadNullable
 									: (eager ? LoadEventListener.InternalLoadEager : LoadEventListener.InternalLoadLazy);
 				LoadEvent loadEvent = new LoadEvent(id, entityName, true, this);
-				FireLoad(loadEvent, type);
+				FireLoad(loadEvent, type,false).Wait();
 				if (!isNullable)
 				{
 					UnresolvableObjectException.ThrowIfNull(loadEvent.Result, id, entityName);
@@ -2379,7 +2433,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private void FireLoad(LoadEvent @event, LoadType loadType)
+		private async Task FireLoad(LoadEvent @event, LoadType loadType, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2387,7 +2441,7 @@ namespace NHibernate.Impl
 				ILoadEventListener[] loadEventListener = listeners.LoadEventListeners;
 				for (int i = 0; i < loadEventListener.Length; i++)
 				{
-					loadEventListener[i].OnLoad(@event, loadType);
+					loadEventListener[i].OnLoad(@event, loadType, async);
 				}
 			}
 		}

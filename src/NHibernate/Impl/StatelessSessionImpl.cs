@@ -602,11 +602,11 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <returns> a detached entity instance </returns>
 		public object Get(string entityName, object id, LockMode lockMode)
-		{
+		{			
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				object result = Factory.GetEntityPersister(entityName).Load(id, null, lockMode, this);
+				object result = Factory.GetEntityPersister(entityName).Load(id, null, lockMode, this,false).Result;
 				if (temporaryPersistenceContext.IsLoadFinished)
 				{
 					temporaryPersistenceContext.Clear();
@@ -702,7 +702,7 @@ namespace NHibernate.Impl
 				try
 				{
 					FetchProfile = "refresh";
-					result = persister.Load(id, entity, lockMode, this);
+					result = persister.Load(id, entity, lockMode, this, false).Result;
 				}
 				finally
 				{

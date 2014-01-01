@@ -9,6 +9,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Util;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace NHibernate.Type
 {
@@ -436,7 +437,7 @@ namespace NHibernate.Type
 				}
 				else
 				{
-					return LoadByUniqueKey(GetAssociatedEntityName(), uniqueKeyPropertyName, value, session);
+					return LoadByUniqueKey(GetAssociatedEntityName(), uniqueKeyPropertyName, value, session,false).Result;
 				}
 			}
 		}
@@ -543,7 +544,7 @@ namespace NHibernate.Type
 		/// <param name="key">The unique key property value. </param>
 		/// <param name="session">The originating session. </param>
 		/// <returns> The loaded entity </returns>
-		public object LoadByUniqueKey(string entityName, string uniqueKeyPropertyName, object key, ISessionImplementor session)
+		public async Task<object> LoadByUniqueKey(string entityName, string uniqueKeyPropertyName, object key, ISessionImplementor session, bool async)
 		{
 
 			ISessionFactoryImplementor factory = session.Factory;
@@ -561,7 +562,7 @@ namespace NHibernate.Type
 				object result = persistenceContext.GetEntity(euk);
 				if (result == null)
 				{
-					result = persister.LoadByUniqueKey(uniqueKeyPropertyName, key, session);
+					result = await persister.LoadByUniqueKey(uniqueKeyPropertyName, key, session, async);
 				}
 				return result == null ? null : persistenceContext.ProxyFor(result);
 			}

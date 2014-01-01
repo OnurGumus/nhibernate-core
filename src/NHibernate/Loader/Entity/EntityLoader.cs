@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
+using System.Threading.Tasks;
 
 namespace NHibernate.Loader.Entity
 {
@@ -39,9 +40,9 @@ namespace NHibernate.Loader.Entity
 			log.Debug("Static select for entity " + entityName + ": " + SqlString);
 		}
 
-		public object LoadByUniqueKey(ISessionImplementor session, object key)
+		public async Task<object> LoadByUniqueKey(ISessionImplementor session, object key, bool async)
 		{
-			return Load(session, key, null, null);
+			return await Load(session, key, null, null, async);
 		}
 
 		protected override bool IsSingleRowLoader

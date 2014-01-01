@@ -4,6 +4,7 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace NHibernate.Id.Insert
 {
@@ -59,9 +60,9 @@ namespace NHibernate.Id.Insert
 			return command;
 		}
 
-		public override object ExecuteAndExtract(DbCommand insert, ISessionImplementor session)
+		public override async Task<object> ExecuteAndExtract(DbCommand insert, ISessionImplementor session, bool async)
 		{
-			session.Batcher.ExecuteNonQuery(insert);
+			await session.Batcher.ExecuteNonQuery(insert, async);
 			return ((IDbDataParameter)insert.Parameters[driveGeneratedParamName]).Value;
 		}
 

@@ -66,7 +66,7 @@ namespace NHibernate.Event.Default
 					}
 					else
 					{
-						persister.Lock(entry.Id, entry.Version, entity, requestedLockMode, source);
+						persister.Lock(entry.Id, entry.Version, entity, requestedLockMode, source, false).Wait();
 					}
 					entry.LockMode = requestedLockMode;
 				}

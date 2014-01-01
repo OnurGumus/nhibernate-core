@@ -106,7 +106,7 @@ namespace NHibernate.Event.Default
 
 			string previousFetchProfile = source.FetchProfile;
 			source.FetchProfile = "refresh";
-			object result = persister.Load(id, obj, @event.LockMode, source);
+			object result = persister.Load(id, obj, @event.LockMode, source, false).Result;
 			
 			if (result != null)
 				if (!persister.IsMutable)

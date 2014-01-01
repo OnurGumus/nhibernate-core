@@ -5,6 +5,7 @@ using NHibernate.Exceptions;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
+using System.Threading.Tasks;
 
 namespace NHibernate.Id.Insert
 {
@@ -26,16 +27,16 @@ namespace NHibernate.Id.Insert
 
 		public abstract IdentifierGeneratingInsert PrepareIdentifierGeneratingInsert();
 
-		public object PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder)
+		public async Task<object> PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder, bool async)
 		{
 			try
 			{
 				// prepare and execute the insert
-				IDbCommand insert = session.Batcher.PrepareCommand(insertSQL.CommandType, insertSQL.Text, insertSQL.ParameterTypes);
+				DbCommand insert = session.Batcher.PrepareCommand(insertSQL.CommandType, insertSQL.Text, insertSQL.ParameterTypes);
 				try
 				{
 					binder.BindValues(insert);
-					session.Batcher.ExecuteNonQuery(insert);
+					await session.Batcher.ExecuteNonQuery(insert,async);
 				}
 				finally
 				{

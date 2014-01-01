@@ -6,6 +6,7 @@ using NHibernate.Metadata;
 using NHibernate.Tuple.Entity;
 using NHibernate.Type;
 using System.Collections;
+using System.Threading.Tasks;
 
 namespace NHibernate.Persister.Entity
 {
@@ -341,12 +342,12 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Load an instance of the persistent class.
 		/// </summary>
-		object Load(object id, object optionalObject, LockMode lockMode, ISessionImplementor session);
+		Task<object> Load(object id, object optionalObject, LockMode lockMode, ISessionImplementor session, bool async);
 
 		/// <summary>
 		/// Do a version check (optional operation)
 		/// </summary>
-		void Lock(object id, object version, object obj, LockMode lockMode, ISessionImplementor session);
+		Task Lock(object id, object version, object obj, LockMode lockMode, ISessionImplementor session, bool async);
 
 		/// <summary>
 		/// Persist an instance

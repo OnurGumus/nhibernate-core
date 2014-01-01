@@ -28,6 +28,7 @@ using Array=System.Array;
 using Property=NHibernate.Mapping.Property;
 using NHibernate.SqlTypes;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace NHibernate.Persister.Entity
 {
@@ -1611,13 +1612,13 @@ namespace NHibernate.Persister.Entity
 			SqlCommandInfo versionIncrementCommand = GenerateVersionIncrementUpdateString();
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand(versionIncrementCommand.CommandType, versionIncrementCommand.Text, versionIncrementCommand.ParameterTypes);
+				DbCommand st = session.Batcher.PrepareCommand(versionIncrementCommand.CommandType, versionIncrementCommand.Text, versionIncrementCommand.ParameterTypes);
 				try
 				{
 					VersionType.NullSafeSet(st, nextVersion, 0, session);
 					IdentifierType.NullSafeSet(st, id, 1, session);
 					VersionType.NullSafeSet(st, currentVersion, 1 + IdentifierColumnSpan, session);
-					Check(session.Batcher.ExecuteNonQuery(st), id, 0, expectation, st);
+					Check(session.Batcher.ExecuteNonQuery(st,false).Result, id, 0, expectation, st);
 				}
 				finally
 				{
@@ -1725,9 +1726,9 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public virtual void Lock(object id, object version, object obj, LockMode lockMode, ISessionImplementor session)
+		public virtual async Task Lock(object id, object version, object obj, LockMode lockMode, ISessionImplementor session, bool async)
 		{
-			GetLocker(lockMode).Lock(id, version, obj, session);
+			await GetLocker(lockMode).Lock(id, version, obj, session, async);
 		}
 
 		public virtual string GetRootTableAlias(string drivingAlias)
@@ -2043,9 +2044,9 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public object LoadByUniqueKey(string propertyName, object uniqueKey, ISessionImplementor session)
+		public async Task<object> LoadByUniqueKey(string propertyName, object uniqueKey, ISessionImplementor session, bool async)
 		{
-			return GetAppropriateUniqueKeyLoader(propertyName, session.EnabledFilters).LoadByUniqueKey(session, uniqueKey);
+			return  await GetAppropriateUniqueKeyLoader(propertyName, session.EnabledFilters).LoadByUniqueKey(session, uniqueKey, async);
 		}
 
 		private EntityLoader GetAppropriateUniqueKeyLoader(string propertyName, IDictionary<string, IFilter> enabledFilters)
@@ -2570,7 +2571,7 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 			IBinder binder = new GeneratedIdentifierBinder(fields, notNull, session, obj, this);
-			return identityDelegate.PerformInsert(sql, session, binder);
+			return identityDelegate.PerformInsert(sql, session, binder,false).Result;
 		}
 
 		public virtual SqlString GetSelectByUniqueKeyString(string propertyName)
@@ -2621,7 +2622,7 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				// Render the SQL query
-				IDbCommand insertCmd = useBatch
+				DbCommand insertCmd = useBatch
 																? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
 																: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
 
@@ -2642,7 +2643,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(insertCmd), insertCmd);
+						expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(insertCmd,false).Result, insertCmd);
 					}
 				}
 				catch (Exception e)
@@ -2730,7 +2731,7 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				int index = 0;
-				IDbCommand statement = useBatch
+				DbCommand statement = useBatch
 																? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
 																: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
 				try
@@ -2775,7 +2776,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						return Check(session.Batcher.ExecuteNonQuery(statement), id, j, expectation, statement);
+						return Check(session.Batcher.ExecuteNonQuery(statement,false).Result, id, j, expectation, statement);
 					}
 				}
 				catch (StaleStateException e)
@@ -2857,7 +2858,7 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				int index = 0;
-				IDbCommand statement;
+				DbCommand statement;
 				if (useBatch)
 				{
 					statement = session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
@@ -2905,7 +2906,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						Check(session.Batcher.ExecuteNonQuery(statement), id, j, expectation, statement);
+						Check(session.Batcher.ExecuteNonQuery(statement,false).Result, id, j, expectation, statement);
 					}
 				}
 				catch (Exception e)
@@ -3470,7 +3471,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Load an instance using the appropriate loader (as determined by <see cref="GetAppropriateLoader" />
 		/// </summary>
-		public object Load(object id, object optionalObject, LockMode lockMode, ISessionImplementor session)
+		public async Task<object> Load(object id, object optionalObject, LockMode lockMode, ISessionImplementor session, bool async)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -3478,7 +3479,7 @@ namespace NHibernate.Persister.Entity
 			}
 
 			IUniqueEntityLoader loader = GetAppropriateLoader(lockMode, session);
-			return loader.Load(id, optionalObject, session);
+			return await loader.Load(id, optionalObject, session, async);
 		}
 
 		private IUniqueEntityLoader GetAppropriateLoader(LockMode lockMode, ISessionImplementor session)

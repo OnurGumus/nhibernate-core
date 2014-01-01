@@ -6,6 +6,7 @@ using NHibernate.SqlCommand;
 using NHibernate.Impl;
 using NHibernate.Exceptions;
 using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace NHibernate.Dialect.Lock
 {
@@ -52,7 +53,7 @@ namespace NHibernate.Dialect.Lock
 
 		#region ILockingStrategy Members
 
-		public void Lock(object id, object version, object obj, ISessionImplementor session)
+		public async Task Lock(object id, object version, object obj, ISessionImplementor session, bool async)
 		{
 			ISessionFactoryImplementor factory = session.Factory;
 			try
@@ -67,7 +68,7 @@ namespace NHibernate.Dialect.Lock
 						lockable.VersionType.NullSafeSet(st, version, lockable.IdentifierType.GetColumnSpan(factory), session);
 					}
 
-					rs = session.Batcher.ExecuteReader(st, false).Result;
+					rs = await session.Batcher.ExecuteReader(st, async);
 					try
 					{
 						if (!rs.Read())

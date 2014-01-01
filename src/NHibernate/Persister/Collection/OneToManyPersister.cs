@@ -164,7 +164,7 @@ namespace NHibernate.Persister.Collection
 					IExpectation deleteExpectation = Expectations.AppropriateExpectation(DeleteCheckStyle);
 					bool useBatch = deleteExpectation.CanBeBatched;
 					SqlCommandInfo sql = SqlDeleteRowString;
-					IDbCommand st = null;
+					DbCommand st = null;
 					// update removed rows fks to null
 					try
 					{
@@ -195,7 +195,7 @@ namespace NHibernate.Persister.Collection
 								}
 								else
 								{
-									deleteExpectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+									deleteExpectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st,false).Result, st);
 								}
 								count++;
 							}
@@ -225,7 +225,7 @@ namespace NHibernate.Persister.Collection
 					//bool callable = InsertCallable;
 					bool useBatch = insertExpectation.CanBeBatched;
 					SqlCommandInfo sql = SqlInsertRowString;
-					IDbCommand st = null;
+					DbCommand st = null;
 
 					// now update all changed or added rows fks
 					try
@@ -260,7 +260,7 @@ namespace NHibernate.Persister.Collection
 								}
 								else
 								{
-									insertExpectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+									insertExpectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st,false).Result, st);
 								}
 								count++;
 							}

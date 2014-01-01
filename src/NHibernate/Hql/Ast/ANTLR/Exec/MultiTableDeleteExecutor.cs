@@ -75,7 +75,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			try
 			{
 				// First, save off the pertinent ids, saving the number of pertinent ids for return
-				IDbCommand ps = null;
+				DbCommand ps = null;
 				int resultCount;
 				try
 				{
@@ -91,7 +91,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 							parameterSpecification.Bind(ps, sqlQueryParametersList, parameters, session);
 						}
 
-						resultCount = session.Batcher.ExecuteNonQuery(ps);
+						resultCount = session.Batcher.ExecuteNonQuery(ps, false).Result;
 					}
 					finally
 					{
@@ -114,7 +114,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 						try
 						{
 							ps = session.Batcher.PrepareCommand(CommandType.Text, deletes[i], new SqlType[0]);
-							session.Batcher.ExecuteNonQuery(ps);
+							session.Batcher.ExecuteNonQuery(ps,false).Wait();
 						}
 						finally
 						{

@@ -15,6 +15,7 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Data.Common;
 
 namespace NHibernate.Engine.Query
 {
@@ -78,7 +79,7 @@ namespace NHibernate.Engine.Query
 				var sqlParametersList = sql.GetParameters().ToList();
 				SqlType[] sqlTypes = parametersSpecifications.GetQueryParameterTypes(sqlParametersList, session.Factory);
 				
-				IDbCommand ps = session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTypes);
+				DbCommand ps = session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTypes);
 
 				try
 				{
@@ -93,7 +94,7 @@ namespace NHibernate.Engine.Query
 						parameterSpecification.Bind(ps, sqlParametersList, queryParameters, session);
 					}
 					
-					result = session.Batcher.ExecuteNonQuery(ps);
+					result = session.Batcher.ExecuteNonQuery(ps,false).Result;
 				}
 				finally
 				{

@@ -9,6 +9,7 @@ using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
+using System.Threading.Tasks;
 
 namespace NHibernate.Event.Default
 {
@@ -24,7 +25,7 @@ namespace NHibernate.Event.Default
 		public static readonly object InconsistentRTNClassMarker= new object();
 		public static readonly LockMode DefaultLockMode = LockMode.None;
 
-		public virtual void OnLoad(LoadEvent @event, LoadType loadType)
+		public virtual async Task OnLoad(LoadEvent @event, LoadType loadType, bool async)
 		{
 			ISessionImplementor source = @event.Session;
 
@@ -72,18 +73,18 @@ namespace NHibernate.Event.Default
 				{
 					//do not return a proxy!
 					//(this option indicates we are initializing a proxy)
-					@event.Result = Load(@event, persister, keyToLoad, loadType);
+					@event.Result = await Load(@event, persister, keyToLoad, loadType, async);
 				}
 				else
 				{
 					//return a proxy if appropriate
 					if (@event.LockMode == LockMode.None)
 					{
-						@event.Result = ProxyOrLoad(@event, persister, keyToLoad, loadType);
+						@event.Result = await ProxyOrLoad(@event, persister, keyToLoad, loadType,async);
 					}
 					else
 					{
-						@event.Result = LockAndLoad(@event, persister, keyToLoad, loadType, source);
+						@event.Result = await LockAndLoad(@event, persister, keyToLoad, loadType, source, async);
 					}
 				}
 			}
@@ -96,7 +97,7 @@ namespace NHibernate.Event.Default
 
 		/// <summary> Perfoms the load of an entity. </summary>
 		/// <returns> The loaded entity. </returns>
-		protected virtual object Load(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
+		protected virtual async Task<object> Load(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, bool async)
 		{
 			if (@event.InstanceToLoad != null)
 			{
@@ -107,7 +108,7 @@ namespace NHibernate.Event.Default
 				persister.SetIdentifier(@event.InstanceToLoad, @event.EntityId, @event.Session.EntityMode);
 			}
 
-			object entity = DoLoad(@event, persister, keyToLoad, options);
+			object entity = await DoLoad(@event, persister, keyToLoad, options, async);
 
 			bool isOptionalInstance = @event.InstanceToLoad != null;
 
@@ -132,7 +133,7 @@ namespace NHibernate.Event.Default
 		/// generate a new proxy, or perform an actual load.
 		/// </summary>
 		/// <returns> The result of the proxy/load operation.</returns>
-		protected virtual object ProxyOrLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
+		protected virtual async Task<object> ProxyOrLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, bool async)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -142,7 +143,7 @@ namespace NHibernate.Event.Default
 			if (!persister.HasProxy)
 			{
 				// this class has no proxies (so do a shortcut)
-				return Load(@event, persister, keyToLoad, options);
+				return  await Load(@event, persister, keyToLoad, options, async);
 			}
 			else
 			{
@@ -152,7 +153,7 @@ namespace NHibernate.Event.Default
 				object proxy = persistenceContext.GetProxy(keyToLoad);
 				if (proxy != null)
 				{
-					return ReturnNarrowedProxy(@event, persister, keyToLoad, options, persistenceContext, proxy);
+					return await ReturnNarrowedProxy(@event, persister, keyToLoad, options, persistenceContext, proxy, false);
 				}
 				else
 				{
@@ -163,7 +164,7 @@ namespace NHibernate.Event.Default
 					else
 					{
 						// return a newly loaded object
-						return Load(@event, persister, keyToLoad, options);
+						return await Load(@event, persister, keyToLoad, options, async);
 					}
 				}
 			}
@@ -173,7 +174,7 @@ namespace NHibernate.Event.Default
 		/// Given that there is a pre-existing proxy.
 		/// Initialize it if necessary; narrow if necessary.
 		/// </summary>
-		private object ReturnNarrowedProxy(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, IPersistenceContext persistenceContext, object proxy)
+		private async Task<object> ReturnNarrowedProxy(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, IPersistenceContext persistenceContext, object proxy, bool async)
 		{
 			log.Debug("entity proxy found in session cache");
 			var castedProxy = (INHibernateProxy) proxy;
@@ -185,7 +186,7 @@ namespace NHibernate.Event.Default
 			object impl = null;
 			if (!options.IsAllowProxyCreation)
 			{
-				impl = Load(@event, persister, keyToLoad, options);
+				impl = await Load(@event, persister, keyToLoad, options, async);
 				// NH Different behavior : NH-1252
 				if (impl == null && !options.IsAllowNulls)
 				{
@@ -242,7 +243,7 @@ namespace NHibernate.Event.Default
 		/// given id in that cache and then perform the load.
 		/// </summary>
 		/// <returns> The loaded entity </returns>
-		protected virtual object LockAndLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, ISessionImplementor source)
+		protected virtual async Task<object> LockAndLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, ISessionImplementor source, bool async)
 		{
 			ISoftLock sLock = null;
 			CacheKey ck;
@@ -259,7 +260,7 @@ namespace NHibernate.Event.Default
 			object entity;
 			try
 			{
-				entity = Load(@event, persister, keyToLoad, options);
+				entity = await Load(@event, persister, keyToLoad, options, async);
 			}
 			finally
 			{
@@ -284,7 +285,7 @@ namespace NHibernate.Event.Default
 		/// <param name="keyToLoad">The EntityKey representing the entity to be loaded. </param>
 		/// <param name="options">The load options. </param>
 		/// <returns> The loaded entity, or null. </returns>
-		protected virtual object DoLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
+		protected virtual async Task<object> DoLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, bool async)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -326,7 +327,7 @@ namespace NHibernate.Event.Default
 				log.Debug("object not resolved in any cache: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 			}
 
-			return LoadFromDatasource(@event, persister, keyToLoad, options);
+			return await LoadFromDatasource(@event, persister, keyToLoad, options, async);
 		}
 
 		/// <summary>
@@ -337,7 +338,7 @@ namespace NHibernate.Event.Default
 		/// <param name="keyToLoad">The EntityKey representing the entity to be loaded. </param>
 		/// <param name="options">The load options. </param>
 		/// <returns> The object loaded from the datasource, or null if not found. </returns>
-		protected virtual object LoadFromDatasource(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
+		protected virtual async Task<object> LoadFromDatasource(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, bool async)
 		{
 			ISessionImplementor source = @event.Session;
 
@@ -348,7 +349,7 @@ namespace NHibernate.Event.Default
 				stopWath.Start();
 			}
 
-			object entity = persister.Load(@event.EntityId, @event.InstanceToLoad, @event.LockMode, source);
+			object entity = await persister.Load(@event.EntityId, @event.InstanceToLoad, @event.LockMode, source, async);
 
 			if (@event.IsAssociationFetch && statsEnabled)
 			{

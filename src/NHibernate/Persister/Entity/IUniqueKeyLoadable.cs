@@ -1,4 +1,5 @@
 using NHibernate.Engine;
+using System.Threading.Tasks;
 
 namespace NHibernate.Persister.Entity
 {
@@ -10,7 +11,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Load an instance of the persistent class, by a unique key other than the primary key.
 		/// </summary>
-		object LoadByUniqueKey(string propertyName, object uniqueKey, ISessionImplementor session);
+		Task<object> LoadByUniqueKey(string propertyName, object uniqueKey, ISessionImplementor session, bool async);
 
 		/// <summary>
 		/// Get the property number of the unique key property

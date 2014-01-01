@@ -3,6 +3,7 @@ using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
+using System.Threading.Tasks;
 
 namespace NHibernate.Id.Insert
 {
@@ -30,7 +31,7 @@ namespace NHibernate.Id.Insert
 
 		public abstract IdentifierGeneratingInsert PrepareIdentifierGeneratingInsert();
 
-		public object PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder)
+		public async Task<object> PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder, bool async)
 		{
 			try
 			{
@@ -39,7 +40,7 @@ namespace NHibernate.Id.Insert
 				try
 				{
 					binder.BindValues(insert);
-					return ExecuteAndExtract(insert, session);
+					return await ExecuteAndExtract(insert, session, async);
 				}
 				finally
 				{
@@ -62,6 +63,6 @@ namespace NHibernate.Id.Insert
 
 		protected internal abstract DbCommand Prepare(SqlCommandInfo insertSQL, ISessionImplementor session);
 
-		public abstract object ExecuteAndExtract(DbCommand insert, ISessionImplementor session);
+		public abstract Task<object> ExecuteAndExtract(DbCommand insert, ISessionImplementor session, bool async);
 	}
 }

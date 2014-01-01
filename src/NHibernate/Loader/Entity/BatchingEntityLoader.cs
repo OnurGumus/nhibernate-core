@@ -5,6 +5,7 @@ using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Threading.Tasks;
 
 namespace NHibernate.Loader.Entity
 {
@@ -44,7 +45,7 @@ namespace NHibernate.Loader.Entity
 			return null;
 		}
 
-		public object Load(object id, object optionalObject, ISessionImplementor session)
+		public  async Task<object> Load(object id, object optionalObject, ISessionImplementor session, bool async)
 		{
 			object[] batch =
 				session.PersistenceContext.BatchFetchQueue.GetEntityBatch(persister, id, batchSizes[0]);
@@ -58,13 +59,13 @@ namespace NHibernate.Loader.Entity
 					Array.Copy(batch, 0, smallBatch, 0, smallBatchSize);
 
 					IList results =
-						loaders[i].LoadEntityBatch(session, smallBatch, idType, optionalObject, persister.EntityName, id, persister);
+						await loaders[i].LoadEntityBatch(session, smallBatch, idType, optionalObject, persister.EntityName, id, persister, async);
 
 					return GetObjectFromList(results, id, session); //EARLY EXIT
 				}
 			}
 
-			return ((IUniqueEntityLoader) loaders[batchSizes.Length - 1]).Load(id, optionalObject, session);
+			return await ((IUniqueEntityLoader) loaders[batchSizes.Length - 1]).Load(id, optionalObject, session, async);
 		}
 
 		public static IUniqueEntityLoader CreateBatchingEntityLoader(IOuterJoinLoadable persister, int maxBatchSize,

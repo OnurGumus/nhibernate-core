@@ -1020,7 +1020,7 @@ namespace NHibernate.Persister.Collection
 					IExpectation expectation = Expectations.AppropriateExpectation(DeleteAllCheckStyle);
 					//bool callable = DeleteAllCallable;
 					bool useBatch = expectation.CanBeBatched;
-					IDbCommand st = useBatch
+					DbCommand st = useBatch
 										? session.Batcher.PrepareBatchCommand(SqlDeleteString.CommandType, SqlDeleteString.Text,
 																			  SqlDeleteString.ParameterTypes)
 										: session.Batcher.PrepareCommand(SqlDeleteString.CommandType, SqlDeleteString.Text,
@@ -1036,7 +1036,7 @@ namespace NHibernate.Persister.Collection
 						}
 						else
 						{
-							expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+							expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st,false).Result, st);
 						}
 					}
 					catch (Exception e)
@@ -1155,7 +1155,7 @@ namespace NHibernate.Persister.Collection
 
 						while (deletes.MoveNext())
 						{
-							IDbCommand st;
+							DbCommand st;
 							IExpectation expectation = Expectations.AppropriateExpectation(deleteCheckStyle);
 							//bool callable = DeleteCallable;
 
@@ -1199,7 +1199,7 @@ namespace NHibernate.Persister.Collection
 								}
 								else
 								{
-									expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+									expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st,false).Result, st);
 								}
 								count++;
 							}
@@ -1960,7 +1960,7 @@ namespace NHibernate.Persister.Collection
 		{
 			object entryId = null;
 			int offset = 0;
-			IDbCommand st = useBatch
+			DbCommand st = useBatch
 								? session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, SqlInsertRowString.Text,
 																	  SqlInsertRowString.ParameterTypes)
 								: session.Batcher.PrepareCommand(SqlInsertRowString.CommandType, SqlInsertRowString.Text,
@@ -1985,7 +1985,7 @@ namespace NHibernate.Persister.Collection
 				}
 				else
 				{
-					expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+					expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st,false).Result, st);
 				}
 			}
 			catch (Exception e)
@@ -2071,7 +2071,7 @@ namespace NHibernate.Persister.Collection
 									   ISessionImplementor session)
 		{
 			IBinder binder = new GeneratedIdentifierBinder(ownerId, collection, entry, index, session, this);
-			return identityDelegate.PerformInsert(SqlInsertRowString, session, binder);
+			return identityDelegate.PerformInsert(SqlInsertRowString, session, binder,false).Result;
 		}
 
 		protected class GeneratedIdentifierBinder : IBinder

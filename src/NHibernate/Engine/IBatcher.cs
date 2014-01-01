@@ -88,7 +88,7 @@ namespace NHibernate.Engine
 		/// <param name="parameterTypes">The <see cref="SqlType">SqlTypes</see> of parameters
 		/// in <paramref name="sql" />.</param>
 		/// <returns></returns>
-		IDbCommand PrepareBatchCommand(CommandType commandType, SqlString sql, SqlType[] parameterTypes);
+		DbCommand PrepareBatchCommand(CommandType commandType, SqlString sql, SqlType[] parameterTypes);
 
 		/// <summary>
 		/// Add an insert / delete / update to the current batch (might be called multiple times
@@ -131,7 +131,7 @@ namespace NHibernate.Engine
 		/// The Batcher is responsible for ensuring that all of the Drivers rules for how many open
 		/// <see cref="IDataReader"/>s it can have are followed.
 		/// </remarks>
-		int ExecuteNonQuery(IDbCommand cmd);
+		Task<int> ExecuteNonQuery(DbCommand cmd, bool async);
 
 		/// <summary>
 		/// Must be called when an exception occurs.

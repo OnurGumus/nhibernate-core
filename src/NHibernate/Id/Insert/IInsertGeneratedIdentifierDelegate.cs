@@ -1,5 +1,6 @@
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
+using System.Threading.Tasks;
 
 namespace NHibernate.Id.Insert
 {
@@ -27,6 +28,6 @@ namespace NHibernate.Id.Insert
 		/// <param name="session"> </param>
 		/// <param name="binder"> </param>
 		/// <returns> The generated identifier value. </returns>
-		object PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder);
+		Task<object> PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder, bool async);
 	}
 }

@@ -1266,8 +1266,8 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Called by subclasses that load entities
 		/// </summary>
-		protected IList LoadEntity(ISessionImplementor session, object id, IType identifierType, object optionalObject,
-								   string optionalEntityName, object optionalIdentifier, IEntityPersister persister)
+		protected async Task<IList> LoadEntity(ISessionImplementor session, object id, IType identifierType, object optionalObject,
+								   string optionalEntityName, object optionalIdentifier, IEntityPersister persister, bool async)
 		{
 			if (Log.IsDebugEnabled)
 			{
@@ -1281,7 +1281,7 @@ namespace NHibernate.Loader
 				QueryParameters qp =
 					new QueryParameters(new IType[] { identifierType }, new object[] { id }, optionalObject, optionalEntityName,
 										optionalIdentifier);
-				result = DoQueryAndInitializeNonLazyCollections(session, qp, false, false).Result;
+				result = await DoQueryAndInitializeNonLazyCollections(session, qp, false, async);
 			}
 			catch (HibernateException)
 			{
@@ -1329,9 +1329,9 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Called by subclasses that batch load entities
 		/// </summary>
-		protected internal IList LoadEntityBatch(ISessionImplementor session, object[] ids, IType idType,
+		protected internal async Task<IList> LoadEntityBatch(ISessionImplementor session, object[] ids, IType idType,
 												 object optionalObject, string optionalEntityName, object optionalId,
-												 IEntityPersister persister)
+												 IEntityPersister persister, bool async)
 		{
 			if (Log.IsDebugEnabled)
 			{
@@ -1344,9 +1344,9 @@ namespace NHibernate.Loader
 			try
 			{
 				result =
-					DoQueryAndInitializeNonLazyCollections(session,
+					await DoQueryAndInitializeNonLazyCollections(session,
 														   new QueryParameters(types, ids, optionalObject, optionalEntityName,
-																			   optionalId), false, false).Result;
+																			   optionalId), false, async);
 			}
 			catch (HibernateException)
 			{

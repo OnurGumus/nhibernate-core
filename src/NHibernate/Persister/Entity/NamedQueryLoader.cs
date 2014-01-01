@@ -2,6 +2,7 @@
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader.Entity;
+using System.Threading.Tasks;
 
 namespace NHibernate.Persister.Entity
 {
@@ -21,7 +22,7 @@ namespace NHibernate.Persister.Entity
 			this.persister = persister;
 		}
 
-		public object Load(object id, object optionalObject, ISessionImplementor session)
+		public async Task<object> Load(object id, object optionalObject, ISessionImplementor session, bool async)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -41,7 +42,7 @@ namespace NHibernate.Persister.Entity
 			query.SetOptionalEntityName(persister.EntityName);
 			query.SetOptionalObject(optionalObject);
 			query.SetFlushMode(FlushMode.Never);
-			query.ListAsync().Wait();
+			await query.ListAsync(async);
 
 			// now look up the object we are really interested in!
 			// (this lets us correctly handle proxies and multi-row

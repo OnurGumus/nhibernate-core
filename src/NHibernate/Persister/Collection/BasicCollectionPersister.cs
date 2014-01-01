@@ -162,7 +162,7 @@ namespace NHibernate.Persister.Collection
 
 			try
 			{
-				IDbCommand st = null;
+				DbCommand st = null;
 				IExpectation expectation = Expectations.AppropriateExpectation(UpdateCheckStyle);
 				//bool callable = UpdateCallable;
 				bool useBatch = expectation.CanBeBatched;
@@ -218,7 +218,7 @@ namespace NHibernate.Persister.Collection
 							}
 							else
 							{
-								expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+								expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st, false).Result, st);
 							}
 						}
 						catch (Exception e)

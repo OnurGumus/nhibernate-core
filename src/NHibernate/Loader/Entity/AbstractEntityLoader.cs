@@ -8,6 +8,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
+using System.Threading.Tasks;
 
 namespace NHibernate.Loader.Entity
 {
@@ -34,14 +35,14 @@ namespace NHibernate.Loader.Entity
 			get { return true; }
 		}
 
-		public object Load(object id, object optionalObject, ISessionImplementor session)
+		public async Task<object> Load(object id, object optionalObject, ISessionImplementor session, bool async)
 		{
-			return Load(session, id, optionalObject, id);
+			return await Load(session, id, optionalObject, id, async);
 		}
 
-		protected virtual object Load(ISessionImplementor session, object id, object optionalObject, object optionalId)
+		protected virtual async Task<object> Load(ISessionImplementor session, object id, object optionalObject, object optionalId, bool async)
 		{
-			IList list = LoadEntity(session, id, UniqueKeyType, optionalObject, entityName, optionalId, persister);
+			IList list = await LoadEntity(session, id, UniqueKeyType, optionalObject, entityName, optionalId, persister, async);
 
 			if (list.Count == 1)
 			{

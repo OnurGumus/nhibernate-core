@@ -13,6 +13,7 @@ using Antlr.Runtime;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 using NHibernate.AdoNet.Util;
+using System.Data.Common;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
@@ -183,12 +184,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			else
 			{
 				// at the very least cleanup the data :)
-				IDbCommand ps = null;
+				DbCommand ps = null;
 				try
 				{
 					var commandText = new SqlString("delete from " + persister.TemporaryIdTableName);
 					ps = session.Batcher.PrepareCommand(CommandType.Text, commandText, new SqlType[0]);
-					session.Batcher.ExecuteNonQuery(ps);
+					session.Batcher.ExecuteNonQuery(ps,false).Wait();
 				}
 				catch (Exception t)
 				{

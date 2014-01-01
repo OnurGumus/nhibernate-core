@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using NHibernate.AdoNet;
 using NHibernate.Engine;
+using System.Data.Common;
 
 namespace NHibernate.AdoNet
 {
@@ -35,9 +36,9 @@ namespace NHibernate.AdoNet
 		/// </exception>
 		public override void AddToBatch(IExpectation expectation)
 		{
-			IDbCommand cmd = CurrentCommand;
+			DbCommand cmd = CurrentCommand;
 			Driver.AdjustCommand(cmd);
-			int rowCount = ExecuteNonQuery(cmd);
+			int rowCount = ExecuteNonQuery(cmd, false).Result;
 			expectation.VerifyOutcomeNonBatched(rowCount, cmd);
 		}
 

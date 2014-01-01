@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using NHibernate.Engine;
 using NHibernate.Stat;
 using NHibernate.Type;
+using System.Threading.Tasks;
 
 namespace NHibernate
 {
@@ -864,6 +865,46 @@ namespace NHibernate
 		/// </summary>
 		T Get<T>(object id, LockMode lockMode);
 
+		/// <summary>
+		/// Return the persistent instance of the given entity class with the given identifier, or null
+		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
+		/// already associated with the session, return that instance or proxy.)
+		/// </summary>
+		/// <param name="clazz">a persistent class</param>
+		/// <param name="id">an identifier</param>
+		/// <returns>a persistent instance or null</returns>
+		Task<object> GetAsync(System.Type clazz, object id);
+
+		/// <summary>
+		/// Return the persistent instance of the given entity class with the given identifier, or null
+		/// if there is no such persistent instance. Obtain the specified lock mode if the instance
+		/// exists.
+		/// </summary>
+		/// <param name="clazz">a persistent class</param>
+		/// <param name="id">an identifier</param>
+		/// <param name="lockMode">the lock mode</param>
+		/// <returns>a persistent instance or null</returns>
+		Task<object> GetAsync(System.Type clazz, object id, LockMode lockMode);
+
+		/// <summary>
+		/// Return the persistent instance of the given named entity with the given identifier,
+		/// or null if there is no such persistent instance. (If the instance, or a proxy for the
+		/// instance, is already associated with the session, return that instance or proxy.)
+		/// </summary>
+		/// <param name="entityName">the entity name </param>
+		/// <param name="id">an identifier </param>
+		/// <returns> a persistent instance or null </returns>
+		Task<object> GetAsync(string entityName, object id);
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="Get(System.Type, object)" />
+		/// </summary>
+		Task<T> GetAsync<T>(object id);
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="Get(System.Type, object, LockMode)" />
+		/// </summary>
+		Task<T> GetAsync<T>(object id, LockMode lockMode);
 		/// <summary>
 		/// Return the entity name for a persistent entity
 		/// </summary>

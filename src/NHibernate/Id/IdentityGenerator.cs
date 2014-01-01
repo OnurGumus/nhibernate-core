@@ -4,6 +4,7 @@ using NHibernate.Engine;
 using NHibernate.Id.Insert;
 using NHibernate.SqlCommand;
 using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace NHibernate.Id
 {
@@ -70,9 +71,9 @@ namespace NHibernate.Id
 				return session.Batcher.PrepareCommand(CommandType.Text, insertSQL.Text, insertSQL.ParameterTypes);
 			}
 
-			public override object ExecuteAndExtract(DbCommand insert, ISessionImplementor session)
+			public override async Task<object> ExecuteAndExtract(DbCommand insert, ISessionImplementor session,bool async)
 			{
-				IDataReader rs = session.Batcher.ExecuteReader(insert, false).Result;
+				IDataReader rs = await session.Batcher.ExecuteReader(insert, async);
 				try
 				{
 					return IdentifierGeneratorFactory.GetGeneratedIdentity(rs, persister.IdentifierType, session);

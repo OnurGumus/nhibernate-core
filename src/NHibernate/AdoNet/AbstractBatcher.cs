@@ -33,7 +33,7 @@ namespace NHibernate.AdoNet
 		// batchCommand used to be called batchUpdate - that name to me implied that updates
 		// were being sent - however this could be just INSERT/DELETE/SELECT SQL statement not
 		// just update.  However I haven't seen this being used with read statements...
-		private IDbCommand _batchCommand;
+		private DbCommand _batchCommand;
 		private SqlString _batchCommandSql;
 		private SqlType[] _batchCommandParameterTypes;
 		private readonly HashSet<IDbCommand> _commandsToClose = new HashSet<IDbCommand>();
@@ -63,7 +63,7 @@ namespace NHibernate.AdoNet
 		/// Gets the current <see cref="IDbCommand"/> that is contained for this Batch
 		/// </summary>
 		/// <value>The current <see cref="IDbCommand"/>.</value>
-		protected IDbCommand CurrentCommand
+		protected DbCommand CurrentCommand
 		{
 			get { return _batchCommand; }
 		}
@@ -119,7 +119,7 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		public virtual IDbCommand PrepareBatchCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
+		public virtual DbCommand PrepareBatchCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
 		{
 			if (sql.Equals(_batchCommandSql) && ArrayHelper.ArrayEquals(parameterTypes, _batchCommandParameterTypes))
 			{
@@ -185,7 +185,7 @@ namespace NHibernate.AdoNet
 			_batchCommandParameterTypes = null;
 		}
 
-		public int ExecuteNonQuery(IDbCommand cmd)
+		public async Task<int> ExecuteNonQuery(DbCommand cmd, bool async)
 		{
 			CheckReaders();
 			LogCommand(cmd);
@@ -195,7 +195,10 @@ namespace NHibernate.AdoNet
 				duration = Stopwatch.StartNew();
 			try
 			{
-				return cmd.ExecuteNonQuery();
+				if (async)
+					return await cmd.ExecuteNonQueryAsync();
+				else
+					return cmd.ExecuteNonQuery();
 			}
 			catch (Exception e)
 			{

@@ -12,6 +12,7 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
+using System.Threading.Tasks;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
@@ -97,7 +98,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			try
 			{
 				// First, save off the pertinent ids, as the return value
-				IDbCommand ps = null;
+				DbCommand ps = null;
 				int resultCount;
 				try
 				{
@@ -119,7 +120,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 							parameterSpecification.Bind(ps, sqlQueryParametersList, parameters, session);
 						}
 
-						resultCount = session.Batcher.ExecuteNonQuery(ps);
+						resultCount =  session.Batcher.ExecuteNonQuery(ps, false).Result;
 					}
 					finally
 					{
@@ -156,7 +157,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 								parameterSpecification.Bind(ps, sqlQueryParametersList, parameters, session);
 							}
 
-							session.Batcher.ExecuteNonQuery(ps);
+							session.Batcher.ExecuteNonQuery(ps,false).Wait();
 						}
 						finally
 						{
