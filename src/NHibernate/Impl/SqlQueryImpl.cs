@@ -115,7 +115,11 @@ namespace NHibernate.Impl
 			get { throw new NotSupportedException("not yet implemented for SQL queries"); }
 		}
 
-		public override async Task<IList> List(bool async)
+		public override async Task<IList> ListAsync()
+		{
+			return await this.ListAsync(true);
+		}
+		public override async Task<IList> ListAsync(bool async)
 		{
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
@@ -132,8 +136,11 @@ namespace NHibernate.Impl
 				After();
 			}
 		}
-
-		public override async Task List(IList results,bool async)
+		public override async Task ListAsync(IList results)
+		{
+			 await this.ListAsync(results,true);
+		}
+		public  async Task ListAsync(IList results, bool async)
 		{
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
@@ -150,8 +157,11 @@ namespace NHibernate.Impl
 				After();
 			}
 		}
-
-		public override async Task<IList<T>> List<T>(bool async)
+		public override async Task<IList<T>> ListAsync<T>()
+		{
+			return await this.ListAsync<T>(true);
+		}
+		public  async Task<IList<T>> ListAsync<T>(bool async)
 		{
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
@@ -161,7 +171,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				return await Session.List<T>(spec, qp,async);
+				return await Session.List<T>(spec, qp, async);
 			}
 			finally
 			{

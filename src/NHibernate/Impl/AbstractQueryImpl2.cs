@@ -71,8 +71,11 @@ namespace NHibernate.Impl
 				After();
 			}
 		}
-
-		public override async Task<IList> List(bool async)
+		public override async Task<IList> ListAsync()
+		{
+			return await this.ListAsync(true);
+		}
+		public override async Task<IList> ListAsync(bool async)
 		{
 			VerifyParameters();
 			var namedParams = NamedParams;
@@ -87,7 +90,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task List(IList results, bool async)
+		public override async Task ListAsync(IList results)
 		{
 			VerifyParameters();
 			var namedParams = NamedParams;
@@ -102,21 +105,24 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task<IList<T>> List<T>(bool async)
+		public override async Task<IList<T>> ListAsync<T>()
+		{
+			return await this.ListAsync<T>(true);
+		}
+		public  async Task<IList<T>> ListAsync<T>(bool async)
 		{
 			VerifyParameters();
 			var namedParams = NamedParams;
 			Before();
 			try
 			{
-				return await Session.List<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams),async);
+				return await Session.List<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams), async);
 			}
 			finally
 			{
 				After();
 			}
 		}
-
 		/// <summary> 
 		/// Warning: adds new parameters to the argument by side-effect, as well as mutating the query expression tree!
 		/// </summary>

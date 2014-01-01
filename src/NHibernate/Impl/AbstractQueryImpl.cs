@@ -887,7 +887,7 @@ namespace NHibernate.Impl
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return List<T>(false).Result;
+				return ListAsync<T>().Result;
 			}
 
 			session.FutureQueryBatch.Add<T>(this);
@@ -898,7 +898,7 @@ namespace NHibernate.Impl
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return new FutureValue<T>(() => (List<T>(false).Result));
+				return new FutureValue<T>(() => (ListAsync<T>().Result));
 			}
 			
 			session.FutureQueryBatch.Add<T>(this);
@@ -931,12 +931,17 @@ namespace NHibernate.Impl
 		public abstract int ExecuteUpdate();
 		public abstract IEnumerable Enumerable();
 		public abstract IEnumerable<T> Enumerable<T>();
-		public abstract Task<IList> List(bool async);
-		public abstract Task List(IList results, bool async);
-		public abstract Task<IList<T>> List<T>(bool async);
-		public async Task<T> UniqueResult<T>(bool async)
+		public abstract Task<IList> ListAsync();
+		public abstract Task<IList> ListAsync(bool async);
+		public abstract Task ListAsync(IList results);
+		public abstract Task<IList<T>> ListAsync<T>();
+		public async Task<T> UniqueResultAsync<T>()
 		{
-			object result =  await UniqueResult(async);
+			return await this.UniqueResultAsync<T>(true);
+		}
+		public async Task<T> UniqueResultAsync<T>(bool async)
+		{
+			object result = await UniqueResultAsync(async);
 			if (result == null && typeof(T).IsValueType)
 			{
 				return default(T);
@@ -946,10 +951,13 @@ namespace NHibernate.Impl
 				return (T)result;
 			}
 		}
-
-		public async Task<object> UniqueResult(bool async)
+		public async Task<object> UniqueResultAsync()
 		{
-			return  UniqueElement(await List(async));
+			return await this.UniqueResultAsync(true);
+		}
+		public async Task<object> UniqueResultAsync(bool async)
+		{
+			return UniqueElement(await ListAsync(async));
 		}
 
 		internal static object UniqueElement(IList list)
@@ -1041,5 +1049,31 @@ namespace NHibernate.Impl
 		}
 
 		protected internal abstract IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters);
+
+
+		public IList List()
+		{
+			return this.ListAsync(false).Result;
+		}
+
+		public void List(IList results)
+		{
+			throw new NotImplementedException();
+		}
+
+		public IList<T> List<T>()
+		{
+			throw new NotImplementedException();
+		}
+
+		public object UniqueResult()
+		{
+			throw new NotImplementedException();
+		}
+
+		public T UniqueResult<T>()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

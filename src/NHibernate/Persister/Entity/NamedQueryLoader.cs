@@ -41,7 +41,7 @@ namespace NHibernate.Persister.Entity
 			query.SetOptionalEntityName(persister.EntityName);
 			query.SetOptionalObject(optionalObject);
 			query.SetFlushMode(FlushMode.Never);
-			query.List(false).Wait();
+			query.ListAsync().Wait();
 
 			// now look up the object we are really interested in!
 			// (this lets us correctly handle proxies and multi-row

@@ -34,14 +34,14 @@ namespace NHibernate.Impl
 			return Session.EnumerableFilter<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
 		}
 
-		public override async Task<IList> List(bool async)
+		public override async Task<IList> ListAsync()
 		{
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			return Session.ListFilter(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
 		}
 
-		public override async Task<IList<T>> List<T>(bool async)
+		public override async Task<IList<T>> ListAsync<T>()
 		{
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
