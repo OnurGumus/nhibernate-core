@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 namespace NHibernate.Event
 {
 	/// <summary> Defines the contract for handling of session flush events. </summary>
@@ -5,6 +6,6 @@ namespace NHibernate.Event
 	{
 		/// <summary>Handle the given flush event. </summary>
 		/// <param name="event">The flush event to be handled.</param>
-		void OnFlush(FlushEvent @event);
+		Task OnFlush(FlushEvent @event, bool async);
 	}
 }

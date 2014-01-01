@@ -4,6 +4,7 @@ using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Persister.Collection;
+using System.Threading.Tasks;
 
 namespace NHibernate.Action
 {
@@ -18,7 +19,7 @@ namespace NHibernate.Action
 		/// This method is called when a new non-null collection is persisted
 		/// or when an existing (non-null) collection is moved to a new owner
 		/// </remarks>
-		public override void Execute()
+		public override async Task Execute(bool async)
 		{
 			bool statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
 			Stopwatch stopwatch = null;
@@ -30,7 +31,7 @@ namespace NHibernate.Action
 
 			PreRecreate();
 
-			Persister.Recreate(collection, Key, Session);
+			await Persister.Recreate(collection, Key, Session, async);
 
 			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
 
@@ -42,6 +43,7 @@ namespace NHibernate.Action
 				stopwatch.Stop();
 				Session.Factory.StatisticsImplementor.RecreateCollection(Persister.Role, stopwatch.Elapsed);
 			}
+			
 		}
 
 		private void PreRecreate()

@@ -2560,7 +2560,7 @@ namespace NHibernate.Persister.Entity
 		/// <remarks>
 		/// This form is used for PostInsertIdentifierGenerator-style ids (IDENTITY, select, etc).
 		/// </remarks>
-		protected object Insert(object[] fields, bool[] notNull, SqlCommandInfo sql, object obj, ISessionImplementor session)
+		protected async Task<object> Insert(object[] fields, bool[] notNull, SqlCommandInfo sql, object obj, ISessionImplementor session, bool async)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -2571,7 +2571,7 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 			IBinder binder = new GeneratedIdentifierBinder(fields, notNull, session, obj, this);
-			return identityDelegate.PerformInsert(sql, session, binder,false).Result;
+			return await identityDelegate.PerformInsert(sql, session, binder, async);
 		}
 
 		public virtual SqlString GetSelectByUniqueKeyString(string propertyName)
@@ -2589,8 +2589,8 @@ namespace NHibernate.Persister.Entity
 		/// This for is used for all non-root tables as well as the root table
 		/// in cases where the identifier value is known before the insert occurs.
 		/// </remarks>
-		protected void Insert(object id, object[] fields, bool[] notNull, int j,
-			SqlCommandInfo sql, object obj, ISessionImplementor session)
+		protected async Task Insert(object id, object[] fields, bool[] notNull, int j,
+			SqlCommandInfo sql, object obj, ISessionImplementor session, bool async)
 		{
 			if (IsInverseTable(j))
 			{
@@ -2677,8 +2677,8 @@ namespace NHibernate.Persister.Entity
 		}
 
 		/// <summary> Perform an SQL UPDATE or SQL INSERT</summary>
-		protected internal virtual void UpdateOrInsert(object id, object[] fields, object[] oldFields, object rowId,
-			bool[] includeProperty, int j, object oldVersion, object obj, SqlCommandInfo sql, ISessionImplementor session)
+		protected internal async virtual Task UpdateOrInsert(object id, object[] fields, object[] oldFields, object rowId,
+			bool[] includeProperty, int j, object oldVersion, object obj, SqlCommandInfo sql, ISessionImplementor session, bool async)
 		{
 			if (!IsInverseTable(j))
 			{
@@ -2692,13 +2692,13 @@ namespace NHibernate.Persister.Entity
 				{
 					//if all fields are null, we might need to delete existing row
 					isRowToUpdate = true;
-					Delete(id, oldVersion, j, obj, SqlDeleteStrings[j], session, null);
+					await Delete(id, oldVersion, j, obj, SqlDeleteStrings[j], session, null,async);
 				}
 				else
 				{
 					//there is probably a row there, so try to update
 					//if no rows were updated, we will find out
-					isRowToUpdate = Update(id, fields, oldFields, rowId, includeProperty, j, oldVersion, obj, sql, session);
+					isRowToUpdate = await Update(id, fields, oldFields, rowId, includeProperty, j, oldVersion, obj, sql, session,async);
 				}
 
 				if (!isRowToUpdate && !IsAllNull(fields, j))
@@ -2706,13 +2706,13 @@ namespace NHibernate.Persister.Entity
 					// assume that the row was not there since it previously had only null
 					// values, so do an INSERT instead
 					//TODO: does not respect dynamic-insert
-					Insert(id, fields, PropertyInsertability, j, SqlInsertStrings[j], obj, session);
+					await Insert(id, fields, PropertyInsertability, j, SqlInsertStrings[j], obj, session, async);
 				}
 			}
 		}
 
-		protected bool Update(object id, object[] fields, object[] oldFields, object rowId, bool[] includeProperty, int j,
-			object oldVersion, object obj, SqlCommandInfo sql, ISessionImplementor session)
+		protected async Task<bool> Update(object id, object[] fields, object[] oldFields, object rowId, bool[] includeProperty, int j,
+			object oldVersion, object obj, SqlCommandInfo sql, ISessionImplementor session, bool async)
 		{
 			bool useVersion = j == 0 && IsVersioned;
 			IExpectation expectation = Expectations.AppropriateExpectation(updateResultCheckStyles[j]);
@@ -2776,7 +2776,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						return Check(session.Batcher.ExecuteNonQuery(statement,false).Result, id, j, expectation, statement);
+						return Check(await session.Batcher.ExecuteNonQuery(statement, async), id, j, expectation, statement);
 					}
 				}
 				catch (StaleStateException e)
@@ -2822,8 +2822,8 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Perform an SQL DELETE
 		/// </summary>
-		public void Delete(object id, object version, int j, object obj, SqlCommandInfo sql, ISessionImplementor session,
-											 object[] loadedState)
+		public async Task Delete(object id, object version, int j, object obj, SqlCommandInfo sql, ISessionImplementor session,
+											 object[] loadedState, bool async)
 		{
 			if (IsInverseTable(j))
 			{
@@ -2906,7 +2906,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						Check(session.Batcher.ExecuteNonQuery(statement,false).Result, id, j, expectation, statement);
+						Check(await session.Batcher.ExecuteNonQuery(statement,async), id, j, expectation, statement);
 					}
 				}
 				catch (Exception e)
@@ -2947,8 +2947,8 @@ namespace NHibernate.Persister.Entity
 				return lazy ? SQLLazyUpdateStrings : SqlUpdateStrings;
 		}
 
-		public void Update(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection,
-			object[] oldFields, object oldVersion, object obj, object rowId, ISessionImplementor session)
+		public async Task Update(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection,
+			object[] oldFields, object oldVersion, object obj, object rowId, ISessionImplementor session, bool async)
 		{
 			//note: dirtyFields==null means we had no snapshot, and we couldn't get one using select-before-update
 			//	  oldFields==null just means we had no snapshot to begin with (we might have used select-before-update to get the dirtyFields)
@@ -3008,12 +3008,12 @@ namespace NHibernate.Persister.Entity
 				// Now update only the tables with dirty properties (and the table with the version number)
 				if (tableUpdateNeeded[j])
 				{
-					UpdateOrInsert(id, fields, oldFields, j == 0 ? rowId : null, propsToUpdate, j, oldVersion, obj, updateStrings[j], session);
+					await UpdateOrInsert(id, fields, oldFields, j == 0 ? rowId : null, propsToUpdate, j, oldVersion, obj, updateStrings[j], session, async);
 				}
 			}
 		}
 
-		public object Insert(object[] fields, object obj, ISessionImplementor session)
+		public async Task<object> Insert(object[] fields, object obj, ISessionImplementor session, bool async)
 		{
 			int span = TableSpan;
 			object id;
@@ -3022,26 +3022,26 @@ namespace NHibernate.Persister.Entity
 			{
 				// For the case of dynamic-insert="true", we need to generate the INSERT SQL
 				bool[] notNull = GetPropertiesToInsert(fields);
-				id = Insert(fields, notNull, GenerateInsertString(true, notNull), obj, session);
+				id = await Insert(fields, notNull, GenerateInsertString(true, notNull), obj, session, async);
 				for (int j = 1; j < span; j++)
 				{
-					Insert(id, fields, notNull, j, GenerateInsertString(notNull, j), obj, session);
+					await Insert(id, fields, notNull, j, GenerateInsertString(notNull, j), obj, session,async);
 				}
 			}
 			else
 			{
 				// For the case of dynamic-insert="false", use the static SQL
-				id = Insert(fields, PropertyInsertability, SQLIdentityInsertString, obj, session);
+				id = await Insert(fields, PropertyInsertability, SQLIdentityInsertString, obj, session,async);
 				for (int j = 1; j < span; j++)
 				{
-					Insert(id, fields, PropertyInsertability, j, SqlInsertStrings[j], obj, session);
+					await Insert(id, fields, PropertyInsertability, j, SqlInsertStrings[j], obj, session,  async);
 				}
 			}
 
 			return id;
 		}
 
-		public void Insert(object id, object[] fields, object obj, ISessionImplementor session)
+		public async Task Insert(object id, object[] fields, object obj, ISessionImplementor session, bool async)
 		{
 			int span = TableSpan;
 			if (entityMetamodel.IsDynamicInsert)
@@ -3050,7 +3050,7 @@ namespace NHibernate.Persister.Entity
 				// For the case of dynamic-insert="true", we need to generate the INSERT SQL
 				for (int j = 0; j < span; j++)
 				{
-					Insert(id, fields, notNull, j, GenerateInsertString(notNull, j), obj, session);
+					await Insert(id, fields, notNull, j, GenerateInsertString(notNull, j), obj, session,async);
 				}
 			}
 			else
@@ -3058,12 +3058,12 @@ namespace NHibernate.Persister.Entity
 				// For the case of dynamic-insert="false", use the static SQL
 				for (int j = 0; j < span; j++)
 				{
-					Insert(id, fields, PropertyInsertability, j, SqlInsertStrings[j], obj, session);
+					await Insert(id, fields, PropertyInsertability, j, SqlInsertStrings[j], obj, session, async);
 				}
 			}
 		}
 
-		public void Delete(object id, object version, object obj, ISessionImplementor session)
+		public  async Task Delete(object id, object version, object obj, ISessionImplementor session, bool async)
 		{
 			int span = TableSpan;
 			bool isImpliedOptimisticLocking = !entityMetamodel.IsVersioned &&
@@ -3098,7 +3098,7 @@ namespace NHibernate.Persister.Entity
 
 			for (int j = span - 1; j >= 0; j--)
 			{
-				Delete(id, version, j, obj, deleteStrings[j], session, loadedState);
+				 await Delete(id, version, j, obj, deleteStrings[j], session, loadedState, async);
 			}
 		}
 

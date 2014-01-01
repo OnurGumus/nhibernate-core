@@ -1,5 +1,6 @@
 using System;
 using NHibernate.Engine;
+using System.Threading.Tasks;
 
 namespace NHibernate.Event.Default
 {
@@ -7,7 +8,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultSaveEventListener : DefaultSaveOrUpdateEventListener
 	{
-		protected override object PerformSaveOrUpdate(SaveOrUpdateEvent @event)
+		protected override async Task<object> PerformSaveOrUpdate(SaveOrUpdateEvent @event, bool async)
 		{
 			// this implementation is supposed to tolerate incorrect unsaved-value
 			// mappings, for the purpose of backward-compatibility
@@ -18,7 +19,7 @@ namespace NHibernate.Event.Default
 			}
 			else
 			{
-				return EntityIsTransient(@event);
+				return await EntityIsTransient(@event, async);
 			}
 		}
 

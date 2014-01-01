@@ -282,11 +282,11 @@ namespace NHibernate.Event.Default
 			// graphs, since it helps ensure uniqueness
 			if (requestedId == null)
 			{
-				SaveWithGeneratedId(entity, entityName, copyCache, source, false);
+				SaveWithGeneratedId(entity, entityName, copyCache, source, false,false).Wait();
 			}
 			else
 			{
-				SaveWithRequestedId(entity, requestedId, entityName, copyCache, source);
+				SaveWithRequestedId(entity, requestedId, entityName, copyCache, source, false).Wait();
 			}
 		}
 

@@ -487,7 +487,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				return FireSave(new SaveOrUpdateEvent(null, obj, this));
+				return FireSave(new SaveOrUpdateEvent(null, obj, this), false).Result;
 			}
 		}
 
@@ -495,7 +495,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				return FireSave(new SaveOrUpdateEvent(entityName, obj, this));
+				return FireSave(new SaveOrUpdateEvent(entityName, obj, this),false).Result;
 			}
 		}
 
@@ -503,7 +503,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireSave(new SaveOrUpdateEvent(entityName, obj, id, this));
+				FireSave(new SaveOrUpdateEvent(entityName, obj, id, this),false).Wait();
 			}
 		}
 
@@ -516,7 +516,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireSave(new SaveOrUpdateEvent(null, obj, id, this));
+				FireSave(new SaveOrUpdateEvent(null, obj, id, this),false).Wait();
 			}
 		}
 
@@ -545,7 +545,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireUpdate(new SaveOrUpdateEvent(null, obj, this));
+				FireUpdate(new SaveOrUpdateEvent(null, obj, this),false).Wait();
 			}
 		}
 
@@ -553,7 +553,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireUpdate(new SaveOrUpdateEvent(entityName, obj, this));
+				FireUpdate(new SaveOrUpdateEvent(entityName, obj, this),false).Wait();
 			}
 		}
 
@@ -561,7 +561,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireUpdate(new SaveOrUpdateEvent(entityName, obj, id, this));
+				FireUpdate(new SaveOrUpdateEvent(entityName, obj, id, this),false).Wait();
 			}
 		}
 
@@ -569,7 +569,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireSaveOrUpdate(new SaveOrUpdateEvent(null, obj, this));
+				FireSaveOrUpdate(new SaveOrUpdateEvent(null, obj, this),false).Wait();
 			}
 		}
 
@@ -577,7 +577,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireSaveOrUpdate(new SaveOrUpdateEvent(entityName, obj, this));
+				FireSaveOrUpdate(new SaveOrUpdateEvent(entityName, obj, this),false).Wait();
 			}
 		}
 
@@ -585,7 +585,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireSaveOrUpdate(new SaveOrUpdateEvent(entityName, obj, id, this));
+				FireSaveOrUpdate(new SaveOrUpdateEvent(entityName, obj, id, this),false).Wait();
 			}
 		}
 
@@ -593,7 +593,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireUpdate(new SaveOrUpdateEvent(null, obj, id, this));
+				FireUpdate(new SaveOrUpdateEvent(null, obj, id, this),false).Wait();
 			}
 		}
 
@@ -620,7 +620,7 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(queryExpression, false);
-				AutoFlushIfRequired(plan.QuerySpaces);
+				await AutoFlushIfRequired(plan.QuerySpaces, async);
 
 				bool success = false;
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
@@ -651,7 +651,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				var plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, enabledFilters);
-				AutoFlushIfRequired(plan.QuerySpaces);
+				AutoFlushIfRequired(plan.QuerySpaces,false).Wait();
 				return plan.Translators;
 			}
 		}
@@ -663,7 +663,7 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(queryExpression, true);
-				AutoFlushIfRequired(plan.QuerySpaces);
+				AutoFlushIfRequired(plan.QuerySpaces,false).Wait();
 
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 				try
@@ -684,7 +684,7 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(queryExpression, true);
-				AutoFlushIfRequired(plan.QuerySpaces);
+				AutoFlushIfRequired(plan.QuerySpaces,false).Wait();
 
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 				try
@@ -814,7 +814,7 @@ namespace NHibernate.Impl
 					// otherwise, we only need to flush if there are in-memory changes
 					// to the queried tables
 					plan = Factory.QueryPlanCache.GetFilterQueryPlan(filter, roleBeforeFlush.Role, shallow, EnabledFilters);
-					if (AutoFlushIfRequired(plan.QuerySpaces))
+					if (AutoFlushIfRequired(plan.QuerySpaces,false).Result)
 					{
 						// might need to run a different filter entirely after the flush
 						// because the collection role may have changed
@@ -1118,7 +1118,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="querySpaces"></param>
 		/// <returns></returns>
-		private bool AutoFlushIfRequired(ISet<string> querySpaces)
+		private async Task<bool> AutoFlushIfRequired(ISet<string> querySpaces, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -1132,7 +1132,7 @@ namespace NHibernate.Impl
 				IAutoFlushEventListener[] autoFlushEventListener = listeners.AutoFlushEventListeners;
 				for (int i = 0; i < autoFlushEventListener.Length; i++)
 				{
-					autoFlushEventListener[i].OnAutoFlush(autoFlushEvent);
+					await autoFlushEventListener[i].OnAutoFlush(autoFlushEvent, async);
 				}
 				return autoFlushEvent.FlushRequired;
 			}
@@ -1513,7 +1513,24 @@ namespace NHibernate.Impl
 				IFlushEventListener[] flushEventListener = listeners.FlushEventListeners;
 				for (int i = 0; i < flushEventListener.Length; i++)
 				{
-					flushEventListener[i].OnFlush(new FlushEvent(this));
+					flushEventListener[i].OnFlush(new FlushEvent(this),false).Wait();
+				}
+			}
+		}
+
+		public  async Task FlushAsync()
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				if (persistenceContext.CascadeLevel > 0)
+				{
+					throw new HibernateException("Flush during cascade is dangerous");
+				}
+				IFlushEventListener[] flushEventListener = listeners.FlushEventListeners;
+				for (int i = 0; i < flushEventListener.Length; i++)
+				{
+					await flushEventListener[i].OnFlush(new FlushEvent(this), true);
 				}
 			}
 		}
@@ -1943,7 +1960,7 @@ namespace NHibernate.Impl
 					spaces.UnionWith(loaders[i].QuerySpaces);
 				}
 
-				AutoFlushIfRequired(spaces);
+				AutoFlushIfRequired(spaces,false).Wait();
 
 				dontFlushFromFind++;
 
@@ -2040,7 +2057,7 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 
 				CustomLoader loader = new CustomLoader(customQuery, Factory);
-				AutoFlushIfRequired(loader.QuerySpaces);
+				AutoFlushIfRequired(loader.QuerySpaces,false).Wait();
 
 				bool success = false;
 				dontFlushFromFind++;
@@ -2577,7 +2594,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private object FireSave(SaveOrUpdateEvent @event)
+		private async Task<object> FireSave(SaveOrUpdateEvent @event, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2585,13 +2602,13 @@ namespace NHibernate.Impl
 				ISaveOrUpdateEventListener[] saveEventListener = listeners.SaveEventListeners;
 				for (int i = 0; i < saveEventListener.Length; i++)
 				{
-					saveEventListener[i].OnSaveOrUpdate(@event);
+					await saveEventListener[i].OnSaveOrUpdate(@event, async);
 				}
 				return @event.ResultId;
 			}
 		}
 
-		private void FireSaveOrUpdate(SaveOrUpdateEvent @event)
+		private async Task FireSaveOrUpdate(SaveOrUpdateEvent @event, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2599,12 +2616,12 @@ namespace NHibernate.Impl
 				ISaveOrUpdateEventListener[] saveOrUpdateEventListener = listeners.SaveOrUpdateEventListeners;
 				for (int i = 0; i < saveOrUpdateEventListener.Length; i++)
 				{
-					saveOrUpdateEventListener[i].OnSaveOrUpdate(@event);
+					await saveOrUpdateEventListener[i].OnSaveOrUpdate(@event, async);
 				}
 			}
 		}
 
-		private void FireUpdate(SaveOrUpdateEvent @event)
+		private async Task FireUpdate(SaveOrUpdateEvent @event, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2612,7 +2629,7 @@ namespace NHibernate.Impl
 				ISaveOrUpdateEventListener[] updateEventListener = listeners.UpdateEventListeners;
 				for (int i = 0; i < updateEventListener.Length; i++)
 				{
-					updateEventListener[i].OnSaveOrUpdate(@event);
+					await updateEventListener[i].OnSaveOrUpdate(@event, async);
 				}
 			}
 		}
@@ -2625,7 +2642,7 @@ namespace NHibernate.Impl
 				queryParameters.ValidateParameters();
 				NativeSQLQueryPlan plan = GetNativeSQLQueryPlan(nativeQuerySpecification);
 
-				AutoFlushIfRequired(plan.CustomQuery.QuerySpaces);
+				AutoFlushIfRequired(plan.CustomQuery.QuerySpaces,false).Wait();
 
 				bool success = false;
 				int result;
@@ -2649,7 +2666,7 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(queryExpression, false);
-				AutoFlushIfRequired(plan.QuerySpaces);
+				AutoFlushIfRequired(plan.QuerySpaces,false).Wait();
 
 				bool success = false;
 				int result;

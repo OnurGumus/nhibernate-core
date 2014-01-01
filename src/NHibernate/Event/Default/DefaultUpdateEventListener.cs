@@ -1,6 +1,7 @@
 using System;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
+using System.Threading.Tasks;
 
 namespace NHibernate.Event.Default
 {
@@ -8,11 +9,13 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultUpdateEventListener : DefaultSaveOrUpdateEventListener
 	{
-		protected override object PerformSaveOrUpdate(SaveOrUpdateEvent @event)
+		protected override async Task<object> PerformSaveOrUpdate(SaveOrUpdateEvent @event, bool async)
 		{
 			// this implementation is supposed to tolerate incorrect unsaved-value
 			// mappings, for the purpose of backward-compatibility
 			EntityEntry entry = @event.Session.PersistenceContext.GetEntry(@event.Entity);
+			if (async)
+				await Task.Yield();
 			if (entry != null)
 			{
 				if (entry.Status == Status.Deleted)
@@ -31,9 +34,9 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected override object SaveWithGeneratedOrRequestedId(SaveOrUpdateEvent @event)
+		protected override async Task<object> SaveWithGeneratedOrRequestedId(SaveOrUpdateEvent @event, bool async)
 		{
-			return SaveWithGeneratedId(@event.Entity, @event.EntityName, null, @event.Session, true);
+			return await SaveWithGeneratedId(@event.Entity, @event.EntityName, null, @event.Session, true, async);
 		}
 
 		/// <summary> 

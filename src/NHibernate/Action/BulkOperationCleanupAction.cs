@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
+using System.Threading.Tasks;
 
 namespace NHibernate.Action
 {
@@ -106,9 +107,11 @@ namespace NHibernate.Action
 			// nothing to do
 		}
 
-		public void Execute()
+		public async Task Execute(bool async)
 		{
 			// nothing to do
+			if(async)
+				await Task.Yield();
 		}
 
 		public BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess

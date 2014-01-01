@@ -10,6 +10,7 @@ using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Threading.Tasks;
 
 namespace NHibernate.Loader.Entity
 {
@@ -69,9 +70,9 @@ namespace NHibernate.Loader.Entity
 			get { return true; }
 		}
 
-		public virtual object LoadElement(ISessionImplementor session, object key, object index)
+		public virtual async Task<object> LoadElement(ISessionImplementor session, object key, object index, bool async)
 		{
-			IList list = LoadEntity(session, key, index, keyType, indexType, persister);
+			IList list = await LoadEntity(session, key, index, keyType, indexType, persister, async);
 
 			if (list.Count == 1)
 			{

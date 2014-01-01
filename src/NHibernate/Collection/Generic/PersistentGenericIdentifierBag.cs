@@ -387,7 +387,7 @@ namespace NHibernate.Collection.Generic
 
 		public int Count
 		{
-			get { return ReadSize() ? CachedSize : values.Count; }
+			get { return ReadSize(false).Result ? CachedSize : values.Count; }
 		}
 
 		void ICollection.CopyTo(Array array, int index)

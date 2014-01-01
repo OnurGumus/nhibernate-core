@@ -3,6 +3,7 @@ using System.Diagnostics;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Persister.Entity;
+using System.Threading.Tasks;
 
 namespace NHibernate.Action
 {
@@ -53,7 +54,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		public override void Execute()
+		public override async Task Execute(bool async)
 		{
 			IEntityPersister persister = Persister;
 			object instance = Instance;
@@ -72,7 +73,7 @@ namespace NHibernate.Action
 
 			if (!veto)
 			{
-				generatedId = persister.Insert(state, instance, Session);
+				generatedId = await persister.Insert(state, instance, Session,async);
 				if (persister.HasInsertGeneratedProperties)
 				{
 					persister.ProcessInsertGeneratedProperties(generatedId, instance, state, Session);

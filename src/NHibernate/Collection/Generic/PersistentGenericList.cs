@@ -304,7 +304,7 @@ namespace NHibernate.Collection.Generic
 			{
 				throw new IndexOutOfRangeException("negative index");
 			}
-			object old = PutQueueEnabled ? ReadElementByIndex(index) : Unknown;
+			object old = PutQueueEnabled ? ReadElementByIndex(index,false).Result : Unknown;
 			if (old == Unknown)
 			{
 				Write();
@@ -368,7 +368,7 @@ namespace NHibernate.Collection.Generic
 				{
 					throw new IndexOutOfRangeException("negative index");
 				}
-				object result = ReadElementByIndex(index);
+				object result = ReadElementByIndex(index,false).Result;
 				if (result == Unknown)
 				{
 					return WrappedList[index];
@@ -390,7 +390,7 @@ namespace NHibernate.Collection.Generic
 				{
 					throw new IndexOutOfRangeException("negative index");
 				}
-				object old = PutQueueEnabled ? ReadElementByIndex(index) : Unknown;
+				object old = PutQueueEnabled ? ReadElementByIndex(index,false).Result : Unknown;
 				if (old == Unknown)
 				{
 					Write();
@@ -418,7 +418,7 @@ namespace NHibernate.Collection.Generic
 
 		public int Count
 		{
-			get { return ReadSize() ? CachedSize : WrappedList.Count; }
+			get { return ReadSize(false).Result	 ? CachedSize : WrappedList.Count; }
 		}
 
 		object ICollection.SyncRoot
@@ -451,7 +451,7 @@ namespace NHibernate.Collection.Generic
 
 		public bool Contains(T item)
 		{
-			bool? exists = ReadElementExistence(item);
+			bool? exists = ReadElementExistence(item,false).Result;
 			return !exists.HasValue ? WrappedList.Contains(item) : exists.Value;
 		}
 
@@ -469,7 +469,7 @@ namespace NHibernate.Collection.Generic
 
 		public bool Remove(T item)
 		{
-			bool? exists = PutQueueEnabled ? ReadElementExistence(item) : null;
+			bool? exists = PutQueueEnabled ? ReadElementExistence(item,false).Result : null;
 			if (!exists.HasValue)
 			{
 				Initialize(true);

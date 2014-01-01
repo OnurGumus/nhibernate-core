@@ -9,6 +9,7 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
+using System.Threading.Tasks;
 
 namespace NHibernate.Event.Default
 {
@@ -224,7 +225,7 @@ namespace NHibernate.Event.Default
 		/// <item> <description>Deletes, in the order they were performed</description> </item>
 		/// </list>
 		/// </summary>
-		protected virtual void PerformExecutions(IEventSource session)
+		protected virtual async Task PerformExecutions(IEventSource session, bool async)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -238,7 +239,7 @@ namespace NHibernate.Event.Default
 				// executing entity inserts/updates in order to
 				// account for bidi associations
 				session.ActionQueue.PrepareActions();
-				session.ActionQueue.ExecuteActions();
+				await session.ActionQueue.ExecuteActions(async);
 			}
 			catch (HibernateException he)
 			{

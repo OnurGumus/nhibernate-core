@@ -1,4 +1,5 @@
 using NHibernate.Engine;
+using System.Threading.Tasks;
 
 namespace NHibernate.Action
 {
@@ -39,7 +40,7 @@ namespace NHibernate.Action
 		void BeforeExecutions();
 
 		/// <summary> Execute this action</summary>
-		void Execute();
+		Task Execute(bool async);
 
 		/// <summary>
 		/// Get the before-transaction-completion process, if any, for this action.

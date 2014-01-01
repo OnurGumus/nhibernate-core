@@ -289,14 +289,14 @@ namespace NHibernate.Collection.Generic
 
 		public bool Contains(T item)
 		{
-			bool? exists = ReadElementExistence(item);
+			bool? exists = ReadElementExistence(item,false).Result;
 			return exists == null ? set.Contains(item) : exists.Value;
 		}
 
 
 		public bool Add(T o)
 		{
-			bool? exists = IsOperationQueueEnabled ? ReadElementExistence(o) : null;
+			bool? exists = IsOperationQueueEnabled ? ReadElementExistence(o,false).Result : null;
 			if (!exists.HasValue)
 			{
 				Initialize(true);
@@ -416,7 +416,7 @@ namespace NHibernate.Collection.Generic
 
 		public bool Remove(T o)
 		{
-			bool? exists = PutQueueEnabled ? ReadElementExistence(o) : null;
+			bool? exists = PutQueueEnabled ? ReadElementExistence(o,false).Result : null;
 			if (!exists.HasValue)
 			{
 				Initialize(true);
@@ -466,7 +466,7 @@ namespace NHibernate.Collection.Generic
 
 		public int Count
 		{
-			get { return ReadSize() ? CachedSize : set.Count; }
+			get { return ReadSize(false).Result ? CachedSize : set.Count; }
 		}
 
 		public bool IsReadOnly

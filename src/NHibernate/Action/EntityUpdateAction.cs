@@ -7,6 +7,7 @@ using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
+using System.Threading.Tasks;
 
 namespace NHibernate.Action
 {
@@ -41,7 +42,7 @@ namespace NHibernate.Action
 			get { return Session.Listeners.PostCommitUpdateEventListeners.Length > 0; }
 		}
 
-		public override void Execute()
+		public override async Task Execute(bool async)
 		{
 			ISessionImplementor session = Session;
 			object id = Id;
@@ -76,7 +77,7 @@ namespace NHibernate.Action
 
 			if (!veto)
 			{
-				persister.Update(id, state, dirtyFields, hasDirtyCollection, previousState, previousVersion, instance, null, session);
+				await persister.Update(id, state, dirtyFields, hasDirtyCollection, previousState, previousVersion, instance, null, session, async);
 			}
 
 			EntityEntry entry = Session.PersistenceContext.GetEntry(instance);

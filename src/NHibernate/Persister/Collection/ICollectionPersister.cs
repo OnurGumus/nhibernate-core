@@ -8,6 +8,7 @@ using NHibernate.Id;
 using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
+using System.Threading.Tasks;
 
 namespace NHibernate.Persister.Collection
 {
@@ -186,7 +187,7 @@ namespace NHibernate.Persister.Collection
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="session"></param>
-		void Remove(object id, ISessionImplementor session);
+		Task Remove(object id, ISessionImplementor session, bool async);
 
 		/// <summary>
 		/// (Re)create the collection's persistent state
@@ -194,7 +195,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="collection"></param>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
-		void Recreate(IPersistentCollection collection, object key, ISessionImplementor session);
+		Task Recreate(IPersistentCollection collection, object key, ISessionImplementor session, bool async);
 
 		/// <summary>
 		/// Delete the persistent state of any elements that were removed from the collection
@@ -202,7 +203,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="collection"></param>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
-		void DeleteRows(IPersistentCollection collection, object key, ISessionImplementor session);
+		Task DeleteRows(IPersistentCollection collection, object key, ISessionImplementor session, bool async);
 
 		/// <summary>
 		/// Update the persistent state of any elements that were modified
@@ -210,7 +211,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="collection"></param>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
-		void UpdateRows(IPersistentCollection collection, object key, ISessionImplementor session);
+		Task UpdateRows(IPersistentCollection collection, object key, ISessionImplementor session, bool async);
 
 		/// <summary>
 		/// Insert the persistent state of any new collection elements
@@ -218,7 +219,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="collection"></param>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
-		void InsertRows(IPersistentCollection collection, object key, ISessionImplementor session);
+		Task InsertRows(IPersistentCollection collection, object key, ISessionImplementor session, bool async);
 
 		/// <summary>
 		/// Does this collection implement "orphan delete"?
@@ -270,9 +271,9 @@ namespace NHibernate.Persister.Collection
 		/// <returns>The identifier column aliases.</returns>
 		string GetIdentifierColumnAlias(string suffix);
 
-		int GetSize(object key, ISessionImplementor session);
-		bool IndexExists(object key, object index, ISessionImplementor session);
-		bool ElementExists(object key, object element, ISessionImplementor session);
+		Task<int> GetSize(object key, ISessionImplementor session, bool async);
+		Task<bool> IndexExists(object key, object index, ISessionImplementor session, bool async);
+		Task<bool> ElementExists(object key, object element, ISessionImplementor session, bool async);
 		
 		/// <summary>
 		/// Try to find an element by a given index.
@@ -282,7 +283,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="session">The active <see cref="ISession"/>.</param>
 		/// <param name="owner">The owner of the collection.</param>
 		/// <returns>The value of the element where available; otherwise <see cref="NotFoundObject"/>.</returns>
-		object GetElementByIndex(object key, object index, ISessionImplementor session, object owner);
+		Task<object> GetElementByIndex(object key, object index, ISessionImplementor session, object owner, bool async);
 		
 		/// <summary>
 		/// A place-holder to inform that the data-reader was empty.

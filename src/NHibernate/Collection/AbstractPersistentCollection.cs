@@ -9,6 +9,7 @@ using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Threading.Tasks;
 
 namespace NHibernate.Collection
 {
@@ -265,7 +266,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary> Called by the <tt>Count</tt> property</summary>
-		protected virtual bool ReadSize()
+		protected virtual async Task<bool> ReadSize(bool async)
 		{
 			if (!initialized)
 			{
@@ -284,7 +285,7 @@ namespace NHibernate.Collection
 						{
 							session.Flush();
 						}
-						cachedSize = persister.GetSize(entry.LoadedKey, session);
+						cachedSize = await persister.GetSize(entry.LoadedKey, session,async);
 						return true;
 					}
 				}
@@ -293,7 +294,7 @@ namespace NHibernate.Collection
 			return false;
 		}
 
-		protected virtual bool? ReadIndexExistence(object index)
+		protected virtual  async Task<bool?> ReadIndexExistence(object index, bool async)
 		{
 			if (!initialized)
 			{
@@ -306,14 +307,14 @@ namespace NHibernate.Collection
 					{
 						session.Flush();
 					}
-					return persister.IndexExists(entry.LoadedKey, index, session);
+					return await persister.IndexExists(entry.LoadedKey, index, session, async);
 				}
 			}
 			Read();
 			return null;
 		}
 
-		protected virtual bool? ReadElementExistence(object element)
+		protected virtual async Task<bool?> ReadElementExistence(object element, bool async)
 		{
 			if (!initialized)
 			{
@@ -326,14 +327,14 @@ namespace NHibernate.Collection
 					{
 						session.Flush();
 					}
-					return persister.ElementExists(entry.LoadedKey, element, session);
+					return await persister.ElementExists(entry.LoadedKey, element, session, async);
 				}
 			}
 			Read();
 			return null;
 		}
 
-		protected virtual object ReadElementByIndex(object index)
+		protected virtual  async Task<object> ReadElementByIndex(object index, bool async)
 		{
 			if (!initialized)
 			{
@@ -346,7 +347,7 @@ namespace NHibernate.Collection
 					{
 						session.Flush();
 					}
-					var elementByIndex = persister.GetElementByIndex(entry.LoadedKey, index, session, owner);
+					var elementByIndex =await  persister.GetElementByIndex(entry.LoadedKey, index, session, owner, async );
 					return persister.NotFoundObject == elementByIndex ? NotFound : elementByIndex;
 				}
 			}

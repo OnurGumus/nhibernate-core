@@ -352,17 +352,17 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Persist an instance
 		/// </summary>
-		void Insert(object id, object[] fields, object obj, ISessionImplementor session);
+		Task Insert(object id, object[] fields, object obj, ISessionImplementor session, bool async);
 
 		/// <summary>
 		/// Persist an instance, using a natively generated identifier (optional operation)
 		/// </summary>
-		object Insert(object[] fields, object obj, ISessionImplementor session);
+		Task<object> Insert(object[] fields, object obj, ISessionImplementor session, bool async);
 
 		/// <summary>
 		/// Delete a persistent instance
 		/// </summary>
-		void Delete(object id, object version, object obj, ISessionImplementor session);
+		Task Delete(object id, object version, object obj, ISessionImplementor session, bool async);
 
 		/// <summary>
 		/// Update a persistent instance
@@ -376,8 +376,8 @@ namespace NHibernate.Persister.Entity
 		/// <param name="obj">The obj.</param>
 		/// <param name="rowId">The rowId</param>
 		/// <param name="session">The session.</param>
-		void Update(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, object[] oldFields,
-								object oldVersion, object obj, object rowId, ISessionImplementor session);
+		Task Update(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, object[] oldFields,
+								object oldVersion, object obj, object rowId, ISessionImplementor session, bool async);
 
 		/// <summary>
 		/// Gets if the Property is updatable

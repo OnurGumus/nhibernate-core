@@ -147,7 +147,7 @@ namespace NHibernate.Collection.Generic
 
 		public int Count
 		{
-			get { return ReadSize() ? CachedSize : gbag.Count; }
+			get { return ReadSize(false).Result ? CachedSize : gbag.Count; }
 		}
 
 		public bool IsReadOnly
@@ -187,7 +187,7 @@ namespace NHibernate.Collection.Generic
 
 		public bool Contains(T item)
 		{
-			var exists = ReadElementExistence(item);
+			var exists = ReadElementExistence(item,false).Result;
 			return !exists.HasValue ? gbag.Contains(item) : exists.Value;
 		}
 

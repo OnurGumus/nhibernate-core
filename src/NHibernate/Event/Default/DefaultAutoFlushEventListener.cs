@@ -1,6 +1,7 @@
 using System;
 
 using NHibernate.Engine;
+using System.Threading.Tasks;
 
 namespace NHibernate.Event.Default
 {
@@ -19,7 +20,7 @@ namespace NHibernate.Event.Default
 		/// Handle the given auto-flush event.
 		/// </summary>
 		/// <param name="event">The auto-flush event to be handled.</param>
-		public virtual void OnAutoFlush(AutoFlushEvent @event)
+		public virtual async Task OnAutoFlush(AutoFlushEvent @event, bool async)
 		{
 			IEventSource source = @event.Session;
 
@@ -34,7 +35,7 @@ namespace NHibernate.Event.Default
 					if (log.IsDebugEnabled)
 						log.Debug("Need to execute flush");
 
-					PerformExecutions(source);
+					PerformExecutions(source,  async);
 					PostFlush(source);
 					// note: performExecutions() clears all collectionXxxxtion
 					// collections (the collection actions) in the session

@@ -491,11 +491,11 @@ namespace NHibernate.Impl
 				}
 				if (id == IdentifierGeneratorFactory.PostInsertIndicator)
 				{
-					id = persister.Insert(state, entity, this);
+					id = persister.Insert(state, entity, this,false).Result;
 				}
 				else
 				{
-					persister.Insert(id, state, entity, this);
+					persister.Insert(id, state, entity, this,false).Wait();
 				}
 				persister.SetIdentifier(entity, id, EntityMode.Poco);
 				return id;
@@ -516,7 +516,7 @@ namespace NHibernate.Impl
 		/// <summary>Update a entity.</summary>
 		/// <param name="entityName">The entityName for the entity to be updated </param>
 		/// <param name="entity">a detached entity instance </param>
-		public void Update(string entityName, object entity)
+		public async void Update(string entityName, object entity)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -536,7 +536,7 @@ namespace NHibernate.Impl
 				{
 					oldVersion = null;
 				}
-				persister.Update(id, state, null, false, null, oldVersion, entity, null, this);
+				 persister.Update(id, state, null, false, null, oldVersion, entity, null, this,false).Wait();
 			}
 		}
 
@@ -562,7 +562,7 @@ namespace NHibernate.Impl
 				IEntityPersister persister = GetEntityPersister(entityName, entity);
 				object id = persister.GetIdentifier(entity, EntityMode.Poco);
 				object version = persister.GetVersion(entity, EntityMode.Poco);
-				persister.Delete(id, version, entity, this);
+				persister.Delete(id, version, entity, this,false).Wait();
 			}
 		}
 

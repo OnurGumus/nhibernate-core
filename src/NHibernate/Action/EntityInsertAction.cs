@@ -5,6 +5,7 @@ using NHibernate.Cache.Entry;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Persister.Entity;
+using System.Threading.Tasks;
 
 namespace NHibernate.Action
 {
@@ -35,7 +36,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		public override void Execute()
+		public override async Task Execute(bool async)
 		{
 			IEntityPersister persister = Persister;
 			ISessionImplementor session = Session;
@@ -56,7 +57,7 @@ namespace NHibernate.Action
 			if (!veto)
 			{
 
-				persister.Insert(id, state, instance, Session);
+				await persister.Insert(id, state, instance, Session, async);
 
 				EntityEntry entry = Session.PersistenceContext.GetEntry(instance);
 				if (entry == null)

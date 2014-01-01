@@ -232,7 +232,7 @@ namespace NHibernate.Collection.Generic
 
 		public bool ContainsKey(TKey key)
 		{
-			bool? exists = ReadIndexExistence(key);
+			bool? exists = ReadIndexExistence(key,false).Result;
 			return !exists.HasValue ? gmap.ContainsKey(key) : exists.Value;
 		}
 
@@ -244,7 +244,7 @@ namespace NHibernate.Collection.Generic
 			}
 			if (PutQueueEnabled)
 			{
-				object old = ReadElementByIndex(key);
+				object old = ReadElementByIndex(key,false).Result;
 				if (old != Unknown)
 				{
 					QueueOperation(new PutDelayedOperation(this, key, value, old == NotFound ? null : old));
@@ -258,7 +258,7 @@ namespace NHibernate.Collection.Generic
 
 		public bool Remove(TKey key)
 		{
-			object old = PutQueueEnabled ? ReadElementByIndex(key) : Unknown;
+			object old = PutQueueEnabled ? ReadElementByIndex(key,false).Result : Unknown;
 			if (old == Unknown) // queue is not enabled for 'puts', or element not found
 			{
 				Initialize(true);
@@ -279,7 +279,7 @@ namespace NHibernate.Collection.Generic
 
 		public bool TryGetValue(TKey key, out TValue value)
 		{
-			object result = ReadElementByIndex(key);
+			object result = ReadElementByIndex(key,false).Result;
 			if (result == Unknown)
 			{
 				return gmap.TryGetValue(key, out value);
@@ -297,7 +297,7 @@ namespace NHibernate.Collection.Generic
 		{
 			get
 			{
-				object result = ReadElementByIndex(key);
+				object result = ReadElementByIndex(key,false).Result;
 				if (result == Unknown)
 				{
 					return gmap[key];
@@ -313,7 +313,7 @@ namespace NHibernate.Collection.Generic
 				// NH Note: the assignment in NET work like the put method in JAVA (mean assign or add)
 				if (PutQueueEnabled)
 				{
-					object old = ReadElementByIndex(key);
+					object old = ReadElementByIndex(key,false).Result;
 					if (old != Unknown)
 					{
 						QueueOperation(new PutDelayedOperation(this, key, value, old == NotFound ? null : old));
@@ -382,7 +382,7 @@ namespace NHibernate.Collection.Generic
 
 		public bool Contains(KeyValuePair<TKey, TValue> item)
 		{
-			bool? exists = ReadIndexExistence(item.Key);
+			bool? exists = ReadIndexExistence(item.Key,false).Result;
 			if (!exists.HasValue)
 			{
 				return gmap.Contains(item);
@@ -439,7 +439,7 @@ namespace NHibernate.Collection.Generic
 
 		public int Count
 		{
-			get { return ReadSize() ? CachedSize : gmap.Count; }
+			get { return ReadSize(false).Result ? CachedSize : gmap.Count; }
 		}
 
 		public bool IsReadOnly

@@ -7,6 +7,7 @@ using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
+using System.Threading.Tasks;
 
 namespace NHibernate.Action
 {
@@ -22,7 +23,7 @@ namespace NHibernate.Action
 			this.emptySnapshot = emptySnapshot;
 		}
 
-		public override void Execute()
+		public override async Task Execute(bool async)
 		{
 			object id = Key;
 			ISessionImplementor session = Session;
@@ -51,7 +52,7 @@ namespace NHibernate.Action
 			{
 				if (!emptySnapshot)
 				{
-					persister.Remove(id, session);
+					await persister.Remove(id, session, async);
 				}
 			}
 			else if (collection.NeedsRecreate(persister))
@@ -63,15 +64,15 @@ namespace NHibernate.Action
 				}
 				if (!emptySnapshot)
 				{
-					persister.Remove(id, session);
+					await persister.Remove(id, session, async);
 				}
-				persister.Recreate(collection, id, session);
+				await persister.Recreate(collection, id, session, async);
 			}
 			else
 			{
-				persister.DeleteRows(collection, id, session);
-				persister.UpdateRows(collection, id, session);
-				persister.InsertRows(collection, id, session);
+				await persister.DeleteRows(collection, id, session, async);
+				await persister.UpdateRows(collection, id, session, async);
+				await persister.InsertRows(collection, id, session, async);
 			}
 
 			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);

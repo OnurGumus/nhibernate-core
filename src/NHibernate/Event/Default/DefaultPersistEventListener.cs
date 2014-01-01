@@ -5,6 +5,7 @@ using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Util;
+using System.Threading.Tasks;
 
 namespace NHibernate.Event.Default
 {
@@ -108,7 +109,7 @@ namespace NHibernate.Event.Default
 		/// <summary> Handle the given create event. </summary>
 		/// <param name="event">The save event to be handled. </param>
 		/// <param name="createCache"></param>
-		protected virtual void EntityIsTransient(PersistEvent @event, IDictionary createCache)
+		protected virtual async Task EntityIsTransient(PersistEvent @event, IDictionary createCache)
 		{
 			log.Debug("saving transient instance");
 
@@ -120,7 +121,7 @@ namespace NHibernate.Event.Default
 			createCache[entity] = entity;
 			if (tempObject == null)
 			{
-				SaveWithGeneratedId(entity, @event.EntityName, createCache, source, false);
+				await SaveWithGeneratedId(entity, @event.EntityName, createCache, source, false,false);
 			}
 		}
 	}

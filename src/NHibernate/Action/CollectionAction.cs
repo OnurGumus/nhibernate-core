@@ -7,6 +7,7 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 using NHibernate.Util;
+using System.Threading.Tasks;
 
 namespace NHibernate.Action
 {
@@ -102,7 +103,7 @@ namespace NHibernate.Action
 		}
 
 		/// <summary>Execute this action</summary>
-		public abstract void Execute();
+		public abstract Task Execute(bool async);
 
 		public virtual BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess
 		{

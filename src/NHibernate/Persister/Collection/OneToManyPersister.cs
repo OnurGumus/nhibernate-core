@@ -16,6 +16,7 @@ using NHibernate.Loader.Entity;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
+using System.Threading.Tasks;
 
 namespace NHibernate.Persister.Collection
 {
@@ -368,9 +369,9 @@ namespace NHibernate.Persister.Collection
 				session.EnabledFilters);
 		}
 
-		public override object GetElementByIndex(object key, object index, ISessionImplementor session, object owner)
+		public override async Task<object> GetElementByIndex(object key, object index, ISessionImplementor session, object owner, bool async)
 		{
-			return new CollectionElementLoader(this, Factory, session.EnabledFilters).LoadElement(session, key, IncrementIndexByBase(index)) ?? NotFoundObject;
+			return await new CollectionElementLoader(this, Factory, session.EnabledFilters).LoadElement(session, key, IncrementIndexByBase(index), async) ?? NotFoundObject;
 		}
 
 		#region NH Specific

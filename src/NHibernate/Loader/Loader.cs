@@ -1302,8 +1302,8 @@ namespace NHibernate.Loader
 			return result;
 		}
 
-		protected IList LoadEntity(ISessionImplementor session, object key, object index, IType keyType, IType indexType,
-								   IEntityPersister persister)
+		protected async Task<IList> LoadEntity(ISessionImplementor session, object key, object index, IType keyType, IType indexType,
+								   IEntityPersister persister, bool async)
 		{
 			Log.Debug("loading collection element by index");
 
@@ -1311,9 +1311,9 @@ namespace NHibernate.Loader
 			try
 			{
 				result =
-					DoQueryAndInitializeNonLazyCollections(session,
+					await DoQueryAndInitializeNonLazyCollections(session,
 														   new QueryParameters(new IType[] { keyType, indexType },
-																			   new object[] { key, index }), false, false).Result;
+																			   new object[] { key, index }), false, async);
 			}
 			catch (Exception sqle)
 			{
