@@ -2643,7 +2643,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(insertCmd,false).Result, insertCmd);
+						expectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(insertCmd,async), insertCmd);
 					}
 				}
 				catch (Exception e)

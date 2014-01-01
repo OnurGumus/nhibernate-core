@@ -17,6 +17,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		/// </summary>
 		/// <param name="parameters">Essentially bind information for this processing. </param>
 		/// <param name="session">The session originating the request. </param>
+		/// <param name="async"></param>
 		/// <returns> The number of entities updated/deleted. </returns>
 		/// <exception cref="HibernateException"/>
 		Task<int> Execute(QueryParameters parameters, ISessionImplementor session, bool async);

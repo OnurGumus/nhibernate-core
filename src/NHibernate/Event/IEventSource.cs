@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
+using System.Threading.Tasks;
 
 namespace NHibernate.Event
 {
@@ -27,7 +28,7 @@ namespace NHibernate.Event
 		void Persist(string entityName, object obj, IDictionary createdAlready);
 
 		/// <summary> Cascade persist an entity instance during the flush process</summary>
-		void PersistOnFlush(string entityName, object obj, IDictionary copiedAlready);
+		Task PersistOnFlush(string entityName, object obj, IDictionary copiedAlready, bool async);
 
 		/// <summary> Cascade refresh an entity instance</summary>
 		void Refresh(object obj, IDictionary refreshedAlready);

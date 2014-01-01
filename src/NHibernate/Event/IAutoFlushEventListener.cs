@@ -8,6 +8,7 @@ namespace NHibernate.Event
 		/// Handle the given auto-flush event.
 		/// </summary>
 		/// <param name="event">The auto-flush event to be handled.</param>
+		/// <param name="async"></param>
 		Task OnAutoFlush(AutoFlushEvent @event, bool async);
 	}
 }

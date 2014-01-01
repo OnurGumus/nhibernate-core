@@ -36,6 +36,7 @@ namespace NHibernate.Impl
 
 		public override async Task<IList> ListAsync()
 		{
+			await Task.Yield();
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			return Session.ListFilter(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
@@ -43,6 +44,7 @@ namespace NHibernate.Impl
 
 		public override async Task<IList<T>> ListAsync<T>()
 		{
+			await Task.Yield();
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			return Session.ListFilter<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));

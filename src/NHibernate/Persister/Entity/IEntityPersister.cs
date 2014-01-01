@@ -375,6 +375,7 @@ namespace NHibernate.Persister.Entity
 		/// <param name="oldVersion">The old version.</param>
 		/// <param name="obj">The obj.</param>
 		/// <param name="rowId">The rowId</param>
+		/// <param name="async"></param>
 		/// <param name="session">The session.</param>
 		Task Update(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, object[] oldFields,
 								object oldVersion, object obj, object rowId, ISessionImplementor session, bool async);

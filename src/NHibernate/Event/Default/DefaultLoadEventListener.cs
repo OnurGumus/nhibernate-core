@@ -284,6 +284,7 @@ namespace NHibernate.Event.Default
 		/// <param name="persister">The persister for the entity being requested for load </param>
 		/// <param name="keyToLoad">The EntityKey representing the entity to be loaded. </param>
 		/// <param name="options">The load options. </param>
+		/// <param name="async"></param>
 		/// <returns> The loaded entity, or null. </returns>
 		protected virtual async Task<object> DoLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, bool async)
 		{
@@ -337,6 +338,7 @@ namespace NHibernate.Event.Default
 		/// <param name="persister">The persister for the entity being requested for load </param>
 		/// <param name="keyToLoad">The EntityKey representing the entity to be loaded. </param>
 		/// <param name="options">The load options. </param>
+		/// <param name="async"></param>
 		/// <returns> The object loaded from the datasource, or null if not found. </returns>
 		protected virtual async Task<object> LoadFromDatasource(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, bool async)
 		{

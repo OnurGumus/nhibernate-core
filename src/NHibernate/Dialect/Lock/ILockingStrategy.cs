@@ -23,6 +23,7 @@ namespace NHibernate.Dialect.Lock
 		/// <param name="version">The current version (or null if not versioned) </param>
 		/// <param name="obj">The object logically being locked (currently not used) </param>
 		/// <param name="session">The session from which the lock request originated </param>
+		/// <param name="async"></param>
 		Task Lock(object id, object version, object obj, ISessionImplementor session, bool async);
 	}
 }

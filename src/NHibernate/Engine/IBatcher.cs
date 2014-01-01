@@ -115,6 +115,7 @@ namespace NHibernate.Engine
 		/// Gets an <see cref="IDataReader"/> by calling ExecuteReader on the <see cref="IDbCommand"/>.
 		/// </summary>
 		/// <param name="cmd">The <see cref="IDbCommand"/> to execute to get the <see cref="IDataReader"/>.</param>
+		/// <param name="async"></param>
 		/// <returns>The <see cref="IDataReader"/> from the <see cref="IDbCommand"/>.</returns>
 		/// <remarks>
 		/// The Batcher is responsible for ensuring that all of the Drivers rules for how many open
@@ -126,6 +127,7 @@ namespace NHibernate.Engine
 		/// Executes the <see cref="IDbCommand"/>. 
 		/// </summary>
 		/// <param name="cmd">The <see cref="IDbCommand"/> to execute.</param>
+		/// <param name="async"></param>
 		/// <returns>The number of rows affected.</returns>
 		/// <remarks>
 		/// The Batcher is responsible for ensuring that all of the Drivers rules for how many open

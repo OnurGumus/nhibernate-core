@@ -28,12 +28,12 @@ namespace NHibernate.Event.Default
 			get { return true; }
 		}
 
-		public virtual void OnPersist(PersistEvent @event)
+		public virtual async Task OnPersist(PersistEvent @event, bool async)
 		{
-			OnPersist(@event, IdentityMap.Instantiate(10));
+			 await OnPersist(@event, IdentityMap.Instantiate(10), async);
 		}
 
-		public virtual void OnPersist(PersistEvent @event, IDictionary createdAlready)
+		public virtual async Task OnPersist(PersistEvent @event, IDictionary createdAlready, bool async)
 		{
 			ISessionImplementor source = @event.Session;
 			object obj = @event.Entity;
@@ -68,7 +68,7 @@ namespace NHibernate.Event.Default
 					EntityIsPersistent(@event, createdAlready);
 					break;
 				case EntityState.Transient:
-					EntityIsTransient(@event, createdAlready);
+					await EntityIsTransient(@event, createdAlready, async);
 					break;
 				case EntityState.Detached:
 					throw new PersistentObjectException("detached entity passed to persist: " + GetLoggableName(@event.EntityName, entity));
@@ -109,7 +109,8 @@ namespace NHibernate.Event.Default
 		/// <summary> Handle the given create event. </summary>
 		/// <param name="event">The save event to be handled. </param>
 		/// <param name="createCache"></param>
-		protected virtual async Task EntityIsTransient(PersistEvent @event, IDictionary createCache)
+		/// <param name="async"></param>
+		protected virtual async Task EntityIsTransient(PersistEvent @event, IDictionary createCache, bool async)
 		{
 			log.Debug("saving transient instance");
 
@@ -121,7 +122,7 @@ namespace NHibernate.Event.Default
 			createCache[entity] = entity;
 			if (tempObject == null)
 			{
-				await SaveWithGeneratedId(entity, @event.EntityName, createCache, source, false,false);
+				await SaveWithGeneratedId(entity, @event.EntityName, createCache, source, false,async);
 			}
 		}
 	}

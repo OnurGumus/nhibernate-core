@@ -543,6 +543,7 @@ namespace NHibernate.Type
 		/// <param name="uniqueKeyPropertyName">The name of the property defining the uniqie key. </param>
 		/// <param name="key">The unique key property value. </param>
 		/// <param name="session">The originating session. </param>
+		/// <param name="async"></param>
 		/// <returns> The loaded entity </returns>
 		public async Task<object> LoadByUniqueKey(string entityName, string uniqueKeyPropertyName, object key, ISessionImplementor session, bool async)
 		{

@@ -135,8 +135,7 @@ namespace NHibernate
 		/// <summary>
 		/// Return the query results an place them into the <see cref="IList"/>.
 		/// </summary>
-		/// <param name="results">The <see cref="IList"/> to place the results in.</param>
-		/// <param name="results">The <see cref="IList"/> to place the results in.</param>
+		/// <param name="results">The <see cref="IList"/> to place the results in.</param>		
 		void List(IList results);
 
 		/// <summary>
@@ -172,8 +171,7 @@ namespace NHibernate
 		/// <summary>
 		/// Return the query results an place them into the <see cref="IList"/>.
 		/// </summary>
-		/// <param name="results">The <see cref="IList"/> to place the results in.</param>
-	    /// <param name="results">The <see cref="IList"/> to place the results in.</param>
+		/// <param name="results">The <see cref="IList"/> to place the results in.</param>	    
 		Task ListAsync(IList results);
 
 		/// <summary>

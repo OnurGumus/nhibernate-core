@@ -187,6 +187,7 @@ namespace NHibernate.Persister.Collection
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="session"></param>
+		/// <param name="async"></param>
 		Task Remove(object id, ISessionImplementor session, bool async);
 
 		/// <summary>
@@ -195,6 +196,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="collection"></param>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
+		/// <param name="async"></param>
 		Task Recreate(IPersistentCollection collection, object key, ISessionImplementor session, bool async);
 
 		/// <summary>
@@ -203,6 +205,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="collection"></param>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
+		/// <param name="async"></param>
 		Task DeleteRows(IPersistentCollection collection, object key, ISessionImplementor session, bool async);
 
 		/// <summary>
@@ -211,6 +214,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="collection"></param>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
+		/// <param name="async"></param>
 		Task UpdateRows(IPersistentCollection collection, object key, ISessionImplementor session, bool async);
 
 		/// <summary>
@@ -219,6 +223,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="collection"></param>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
+		/// <param name="async"></param>
 		Task InsertRows(IPersistentCollection collection, object key, ISessionImplementor session, bool async);
 
 		/// <summary>
@@ -282,6 +287,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="index">The given index.</param>
 		/// <param name="session">The active <see cref="ISession"/>.</param>
 		/// <param name="owner">The owner of the collection.</param>
+		/// <param name="async"></param>
 		/// <returns>The value of the element where available; otherwise <see cref="NotFoundObject"/>.</returns>
 		Task<object> GetElementByIndex(object key, object index, ISessionImplementor session, object owner, bool async);
 		

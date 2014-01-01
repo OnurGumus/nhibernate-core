@@ -923,11 +923,11 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary> Cascade persist an entity instance during the flush process</summary>
-		public void PersistOnFlush(string entityName, object obj, IDictionary copiedAlready)
+		public async Task PersistOnFlush(string entityName, object obj, IDictionary copiedAlready, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FirePersistOnFlush(copiedAlready, new PersistEvent(entityName, obj, this));
+				await FirePersistOnFlush(copiedAlready, new PersistEvent(entityName, obj, this), async);
 			}
 		}
 
@@ -993,11 +993,11 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public void PersistOnFlush(string entityName, object obj)
+		public async Task PersistOnFlush(string entityName, object obj, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FirePersistOnFlush(new PersistEvent(entityName, obj, this));
+				await FirePersistOnFlush(new PersistEvent(entityName, obj, this), async);
 			}
 		}
 
@@ -1315,7 +1315,7 @@ namespace NHibernate.Impl
 		}
 
 
-		protected async Task<object> GetAsync(System.Type clazz, object id, LockMode lockMode, bool async)
+		public async Task<object> GetAsync(System.Type clazz, object id, LockMode lockMode, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2459,7 +2459,7 @@ namespace NHibernate.Impl
 				ILoadEventListener[] loadEventListener = listeners.LoadEventListeners;
 				for (int i = 0; i < loadEventListener.Length; i++)
 				{
-					loadEventListener[i].OnLoad(@event, loadType, async);
+					await loadEventListener[i].OnLoad(@event, loadType, async);
 				}
 			}
 		}
@@ -2512,7 +2512,7 @@ namespace NHibernate.Impl
 				IPersistEventListener[] persistEventListener = listeners.PersistEventListeners;
 				for (int i = 0; i < persistEventListener.Length; i++)
 				{
-					persistEventListener[i].OnPersist(@event, copiedAlready);
+					persistEventListener[i].OnPersist(@event, copiedAlready,false).Wait();
 				}
 			}
 		}
@@ -2525,12 +2525,12 @@ namespace NHibernate.Impl
 				IPersistEventListener[] createEventListener = listeners.PersistEventListeners;
 				for (int i = 0; i < createEventListener.Length; i++)
 				{
-					createEventListener[i].OnPersist(@event);
+					createEventListener[i].OnPersist(@event,false).Wait();
 				}
 			}
 		}
 
-		private void FirePersistOnFlush(IDictionary copiedAlready, PersistEvent @event)
+		private async Task FirePersistOnFlush(IDictionary copiedAlready, PersistEvent @event, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2538,12 +2538,12 @@ namespace NHibernate.Impl
 				IPersistEventListener[] persistEventListener = listeners.PersistOnFlushEventListeners;
 				for (int i = 0; i < persistEventListener.Length; i++)
 				{
-					persistEventListener[i].OnPersist(@event, copiedAlready);
+					await persistEventListener[i].OnPersist(@event, copiedAlready,async);
 				}
 			}
 		}
 
-		private void FirePersistOnFlush(PersistEvent @event)
+		private async Task FirePersistOnFlush(PersistEvent @event, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2551,7 +2551,7 @@ namespace NHibernate.Impl
 				IPersistEventListener[] createEventListener = listeners.PersistOnFlushEventListeners;
 				for (int i = 0; i < createEventListener.Length; i++)
 				{
-					createEventListener[i].OnPersist(@event);
+					await createEventListener[i].OnPersist(@event, async);
 				}
 			}
 		}

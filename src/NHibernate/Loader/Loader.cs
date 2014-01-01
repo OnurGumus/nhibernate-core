@@ -1193,6 +1193,7 @@ namespace NHibernate.Loader
 		/// <param name="autoDiscoverTypes">true if result types need to be auto-discovered by the loader; false otherwise.</param>
 		/// <param name="session">The <see cref="ISession" /> to load in.</param>
 		/// <param name="callable"></param>
+		/// <param name="async"></param>
 		/// <returns>An IDataReader advanced to the first record in RowSelection.</returns>
 		protected async Task<IDataReader> GetResultSet(DbCommand st, bool autoDiscoverTypes, bool callable, RowSelection selection, ISessionImplementor session, bool async)
 		{
@@ -1460,6 +1461,7 @@ namespace NHibernate.Loader
 		/// <param name="queryParameters"></param>
 		/// <param name="querySpaces"></param>
 		/// <param name="resultTypes"></param>
+		/// <param name="async"></param>
 		/// <returns></returns>
 		protected async Task<IList> List(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, IType[] resultTypes, bool async)
 		{
@@ -1552,7 +1554,9 @@ namespace NHibernate.Loader
 		/// Actually execute a query, ignoring the query cache
 		/// </summary>
 		/// <param name="session"></param>
+		/// <param name="async"></param>
 		/// <param name="queryParameters"></param>
+		/// <param name="async"></param>
 		/// <returns></returns>
 		protected async Task<IList> DoList(ISessionImplementor session, QueryParameters queryParameters, bool async)
 		{

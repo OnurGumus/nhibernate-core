@@ -6,6 +6,7 @@ namespace NHibernate.Event
 	{
 		/// <summary>Handle the given flush event. </summary>
 		/// <param name="event">The flush event to be handled.</param>
+		/// <param name="async"></param>
 		Task OnFlush(FlushEvent @event, bool async);
 	}
 }

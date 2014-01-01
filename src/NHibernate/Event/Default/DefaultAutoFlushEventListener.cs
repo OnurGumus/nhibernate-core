@@ -20,6 +20,7 @@ namespace NHibernate.Event.Default
 		/// Handle the given auto-flush event.
 		/// </summary>
 		/// <param name="event">The auto-flush event to be handled.</param>
+		/// <param name="async"></param>
 		public virtual async Task OnAutoFlush(AutoFlushEvent @event, bool async)
 		{
 			IEventSource source = @event.Session;

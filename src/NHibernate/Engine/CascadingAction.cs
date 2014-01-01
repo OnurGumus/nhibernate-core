@@ -6,6 +6,7 @@ using NHibernate.Event;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
+using System.Threading.Tasks;
 
 namespace NHibernate.Engine
 {
@@ -316,7 +317,7 @@ namespace NHibernate.Engine
 				{
 					log.Debug("cascading to persistOnFlush: " + entityName);
 				}
-				session.PersistOnFlush(entityName, child, (IDictionary)anything);
+				session.PersistOnFlush(entityName, child, (IDictionary)anything, false).Wait();
 			}
 			public override IEnumerable GetCascadableChildrenIterator(IEventSource session, CollectionType collectionType, object collection)
 			{

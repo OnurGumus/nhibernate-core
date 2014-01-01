@@ -127,6 +127,7 @@ namespace NHibernate.Event.Default
 		/// Here, we will perform the save processing. 
 		/// </summary>
 		/// <param name="event">The save event to be handled. </param>
+		/// <param name="async"></param>
 		/// <returns> The entity's identifier after saving. </returns>
 		protected virtual async Task<object> EntityIsTransient(SaveOrUpdateEvent @event, bool async)
 		{
@@ -157,6 +158,7 @@ namespace NHibernate.Event.Default
 		/// Save the transient instance, assigning the right identifier 
 		/// </summary>
 		/// <param name="event">The initiating event. </param>
+		/// <param name="async"></param>
 		/// <returns> The entity's identifier value after saving.</returns>
 		protected virtual async Task<object> SaveWithGeneratedOrRequestedId(SaveOrUpdateEvent @event, bool async)
 		{

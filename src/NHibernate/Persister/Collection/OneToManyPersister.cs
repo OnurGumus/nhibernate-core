@@ -151,7 +151,7 @@ namespace NHibernate.Persister.Collection
 			return true;
 		}
 
-		protected override int DoUpdateRows(object id, IPersistentCollection collection, ISessionImplementor session)
+		protected override async Task<int> DoUpdateRows(object id, IPersistentCollection collection, ISessionImplementor session, bool async)
 		{
 			// we finish all the "removes" first to take care of possible unique 
 			// constraints and so that we can take better advantage of batching
@@ -196,7 +196,7 @@ namespace NHibernate.Persister.Collection
 								}
 								else
 								{
-									deleteExpectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st,false).Result, st);
+									 deleteExpectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(st,async), st);
 								}
 								count++;
 							}

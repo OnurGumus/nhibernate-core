@@ -522,7 +522,7 @@ namespace NHibernate.Impl
 		/// <summary>Update a entity.</summary>
 		/// <param name="entityName">The entityName for the entity to be updated </param>
 		/// <param name="entity">a detached entity instance </param>
-		public async void Update(string entityName, object entity)
+		public void Update(string entityName, object entity)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{

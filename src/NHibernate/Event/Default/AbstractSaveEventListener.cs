@@ -80,6 +80,7 @@ namespace NHibernate.Event.Default
 		/// <param name="entityName">The name of the entity being saved. </param>
 		/// <param name="anything">Generally cascade-specific information. </param>
 		/// <param name="source">The session which is the source of this save event. </param>
+		/// <param name="async"></param>
 		/// <returns> The id used to save the entity. </returns>
 		protected virtual async Task<object> SaveWithRequestedId(object entity, object requestedId, string entityName, object anything, IEventSource source, bool async)
 		{
@@ -93,6 +94,7 @@ namespace NHibernate.Event.Default
 		/// <param name="entityName">The entity-name for the entity to be saved </param>
 		/// <param name="anything">Generally cascade-specific information. </param>
 		/// <param name="source">The session which is the source of this save event. </param>
+		/// <param name="async"></param>
 		/// <param name="requiresImmediateIdAccess">
 		/// does the event context require
 		/// access to the identifier immediately after execution of this method (if
@@ -141,6 +143,7 @@ namespace NHibernate.Event.Default
 		/// <param name="useIdentityColumn">Is an identity column being used? </param>
 		/// <param name="anything">Generally cascade-specific information. </param>
 		/// <param name="source">The session from which the event originated. </param>
+		/// <param name="async"></param>
 		/// <param name="requiresImmediateIdAccess">
 		/// does the event context require
 		/// access to the identifier immediately after execution of this method (if
@@ -198,6 +201,7 @@ namespace NHibernate.Event.Default
 		/// <param name="useIdentityColumn">Should an identity column be used for id generation? </param>
 		/// <param name="anything">Generally cascade-specific information. </param>
 		/// <param name="source">The session which is the source of the current event. </param>
+		/// <param name="async"></param>
 		/// <param name="requiresImmediateIdAccess">
 		/// Is access to the identifier required immediately
 		/// after the completion of the save?  persist(), for example, does not require this... 

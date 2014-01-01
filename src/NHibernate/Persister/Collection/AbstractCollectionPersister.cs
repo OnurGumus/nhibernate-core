@@ -1381,7 +1381,7 @@ namespace NHibernate.Persister.Collection
 				}
 
 				// update all the modified entries
-				int count = DoUpdateRows(id, collection, session);
+				int count = await DoUpdateRows(id, collection, session, async);
 
 				if (log.IsDebugEnabled)
 				{
@@ -1390,7 +1390,7 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
-		protected abstract int DoUpdateRows(object key, IPersistentCollection collection, ISessionImplementor session);
+		protected abstract Task<int> DoUpdateRows(object key, IPersistentCollection collection, ISessionImplementor session, bool async);
 
 		protected virtual string FilterFragment(string alias)
 		{

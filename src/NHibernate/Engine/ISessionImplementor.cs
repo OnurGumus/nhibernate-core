@@ -80,6 +80,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="query"></param>
 		/// <param name="parameters"></param>
+		/// <param name="async"></param>
 		/// <returns></returns>
 		[Obsolete("Use overload with IQueryExpression")]
 		Task<IList> List(string query, QueryParameters parameters, bool async);
@@ -89,6 +90,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="queryExpression"></param>
 		/// <param name="parameters"></param>
+		/// <param name="async"></param>
 		/// <returns></returns>
 		Task<IList> List(IQueryExpression queryExpression, QueryParameters parameters, bool async);
 
