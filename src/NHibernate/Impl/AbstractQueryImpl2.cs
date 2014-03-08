@@ -4,6 +4,7 @@ using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using System.Threading.Tasks;
+using System;
 
 namespace NHibernate.Impl
 {
@@ -28,7 +29,14 @@ namespace NHibernate.Impl
 		}
 		public override int ExecuteUpdate()
 		{
-			return this.ExecuteUpdate(false).Result;
+			try
+			{
+				return this.ExecuteUpdate(false).Result;
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
 		}
 		public override async Task<int> ExecuteUpdateAsync()
 		{
@@ -41,7 +49,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				return await Session.ExecuteUpdate(ExpandParameters(namedParams), GetQueryParameters(namedParams),async);
+				return await Session.ExecuteUpdate(ExpandParameters(namedParams), GetQueryParameters(namedParams), async);
 			}
 			finally
 			{
@@ -78,6 +86,19 @@ namespace NHibernate.Impl
 				After();
 			}
 		}
+
+
+		public override IList List()
+		{
+			try
+			{
+				return this.ListAsync(false).Result;
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
+		}
 		public override async Task<IList> ListAsync()
 		{
 			return await this.ListAsync(true);
@@ -96,15 +117,29 @@ namespace NHibernate.Impl
 				After();
 			}
 		}
-
+		public override void List(IList results)
+		{
+			try
+			{
+				this.ListAsync(results, true).Wait();
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
+		}
 		public override async Task ListAsync(IList results)
+		{
+			await this.ListAsync(results, true);
+		}
+		public override async Task ListAsync(IList results, bool async)
 		{
 			VerifyParameters();
 			var namedParams = NamedParams;
 			Before();
 			try
 			{
-				await Session.List(ExpandParameters(namedParams), GetQueryParameters(namedParams), results, false);
+				await Session.List(ExpandParameters(namedParams), GetQueryParameters(namedParams), results, async);
 			}
 			finally
 			{
@@ -112,11 +147,22 @@ namespace NHibernate.Impl
 			}
 		}
 
+		public override IList<T> List<T>()
+		{
+			try
+			{
+				return this.ListAsync<T>(false).Result;
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
+		}
 		public override async Task<IList<T>> ListAsync<T>()
 		{
 			return await this.ListAsync<T>(true);
 		}
-		public  async Task<IList<T>> ListAsync<T>(bool async)
+		public async override Task<IList<T>> ListAsync<T>(bool async)
 		{
 			VerifyParameters();
 			var namedParams = NamedParams;

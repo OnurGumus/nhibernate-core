@@ -70,8 +70,8 @@ namespace NHibernate.Event.Default
 
 				bool canReplicate =
 					replicationMode.ShouldOverwriteCurrentVersion(entity, realOldVersion,
-					                                              persister.GetVersion(entity, source.EntityMode),
-					                                              persister.VersionType);
+																  persister.GetVersion(entity, source.EntityMode),
+																  persister.VersionType);
 
 				if (canReplicate)
 				{
@@ -97,7 +97,14 @@ namespace NHibernate.Event.Default
 				bool regenerate = persister.IsIdentifierAssignedByInsert; // prefer re-generation of identity!
 				EntityKey key = regenerate ? null : source.GenerateEntityKey(id, persister);
 
-				PerformSaveOrReplicate(entity, key, persister, regenerate, replicationMode, source, true,false).Wait();
+				try
+				{
+					PerformSaveOrReplicate(entity, key, persister, regenerate, replicationMode, source, true, false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 		}
 
@@ -111,15 +118,15 @@ namespace NHibernate.Event.Default
 			new OnReplicateVisitor(source, id, entity, true).Process(entity, persister);
 
 			source.PersistenceContext.AddEntity(
-				entity, 
+				entity,
 				persister.IsMutable ? Status.Loaded : Status.ReadOnly,
 				null,
 				source.GenerateEntityKey(id, persister),
-				version, 
-				LockMode.None, 
-				true, 
+				version,
+				LockMode.None,
+				true,
 				persister,
-				true, 
+				true,
 				false);
 
 			CascadeAfterReplicate(entity, persister, replicationMode, source);

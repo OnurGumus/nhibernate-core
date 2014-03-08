@@ -138,7 +138,7 @@ namespace NHibernate.Driver
 			return cmd;
 		}
 
-		private void SetCommandTimeout(IDbCommand cmd)
+		protected virtual void SetCommandTimeout(IDbCommand cmd)
 		{
 			if (commandTimeout >= 0)
 			{

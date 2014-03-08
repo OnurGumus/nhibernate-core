@@ -35,6 +35,8 @@
     <StartProgram>$(MSBuildProjectDirectory)\..\..\Tools\nunit\nunit-x86.exe</StartProgram>
     <StartArguments>NHibernate.Test.dll</StartArguments>
     <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -71,31 +73,27 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Antlr.3.1.1\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Antlr3.Utility">
-      <HintPath>..\packages\Antlr.3.1.1\lib\Antlr3.Utility.dll</HintPath>
+    <Reference Include="Antlr4.StringTemplate, Version=4.0.6.9004, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Antlr4.StringTemplate.4.0.6.9004\lib\net35\Antlr4.StringTemplate.dll</HintPath>
     </Reference>
     <Reference Include="Iesi.Collections, Version=4.0.0.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Iesi.Collections.4.0.1.4000\lib\net40\Iesi.Collections.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\log4net.2.0.2\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="log4net">
+      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Remotion.Linq, Version=1.15.2.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Remotion.Linq.1.15.2.0\lib\net45\Remotion.Linq.dll</HintPath>
+    <Reference Include="Remotion.Linq">
+      <HintPath>..\packages\Remotion.Linq.1.15.9.0\lib\net45\Remotion.Linq.dll</HintPath>
     </Reference>
     <Reference Include="SharpTestsEx.NUnit, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8c60d8070630b1c1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\SharpTestsEx.NUnit.dll</HintPath>
-    </Reference>
-    <Reference Include="StringTemplate">
-      <HintPath>..\packages\Antlr.3.1.1\lib\StringTemplate.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -235,6 +233,7 @@
     <Compile Include="DialectTest\MsSqlCe40DialectFixture.cs" />
     <Compile Include="DialectTest\SchemaTests\ColumnMetaDataFixture.cs" />
     <Compile Include="DriverTest\DbProviderFactoryDriveConnectionCommandProviderTest.cs" />
+    <Compile Include="DriverTest\FirebirdClientDriverFixture.cs" />
     <Compile Include="DriverTest\ReflectionBasedDriverTest.cs" />
     <Compile Include="DriverTest\Sql2008DateTime2Test.cs" />
     <Compile Include="DriverTest\SqlClientDriverFixture.cs" />
@@ -526,6 +525,7 @@
     <Compile Include="Linq\CasingTest.cs" />
     <Compile Include="Linq\CharComparisonTests.cs" />
     <Compile Include="Linq\DateTimeTests.cs" />
+    <Compile Include="Linq\ExpressionSessionLeakTest.cs" />
     <Compile Include="Linq\LoggingTests.cs" />
     <Compile Include="Linq\QueryLock.cs" />
     <Compile Include="Linq\QueryTimeoutTests.cs" />
@@ -707,6 +707,8 @@
     <Compile Include="NHSpecificTest\NH1082\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1082\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1082\SessionInterceptorThatThrowsExceptionAtBeforeTransactionCompletion.cs" />
+    <Compile Include="NHSpecificTest\NH3571\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3571\Product.cs" />
     <Compile Include="NHSpecificTest\NH3459\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3459\Order.cs" />
     <Compile Include="NHSpecificTest\NH2692\Fixture.cs" />
@@ -778,6 +780,8 @@
     <Compile Include="NHSpecificTest\NH3202\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3234\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3234\Domain.cs" />
     <Compile Include="NHSpecificTest\Futures\LinqToFutureValueFixture.cs" />
     <Compile Include="NHSpecificTest\NH2955\Employee.cs" />
     <Compile Include="NHSpecificTest\NH2955\Fixture.cs" />
@@ -797,7 +801,7 @@
     <Compile Include="NHSpecificTest\NH3332\TestJoinsWithSameTable.cs" />
     <Compile Include="NHSpecificTest\NH3057\Domain.cs" />
     <Compile Include="NHSpecificTest\NH3057\Fixture.cs" />
-    <Compile Include="NHSpecificTest\NH3237\DateTimeOffsetUserType.cs" />
+    <Compile Include="DateTimeOffsetUserType.cs" />
     <Compile Include="NHSpecificTest\NH3237\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3237\ByCodeFixture.cs" />
     <Compile Include="NHSpecificTest\NH3237\EnumUserType.cs" />
@@ -820,6 +824,11 @@
     <Compile Include="NHSpecificTest\NH2808\Model.cs" />
     <Compile Include="NHSpecificTest\NH2812\Entities.cs" />
     <Compile Include="NHSpecificTest\NH2812\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2439\NH2439Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH2439\Organisation.cs" />
+    <Compile Include="NHSpecificTest\NH2439\OrganisationSearchResult.cs" />
+    <Compile Include="NHSpecificTest\NH2439\RtoScope.cs" />
+    <Compile Include="NHSpecificTest\NH2439\TrainingComponent.cs" />
     <Compile Include="NHSpecificTest\NH2880\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2880\Model.cs" />
     <Compile Include="NHSpecificTest\NH2500\Fixture.cs" />
@@ -1161,6 +1170,8 @@
     <Compile Include="NHSpecificTest\ProxyValidator\ShouldBeProxiableTests.cs" />
     <Compile Include="NHSpecificTest\NH2898\ItemWithLazyProperty.cs" />
     <Compile Include="NHSpecificTest\NH2898\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3590\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3590\Fixture.cs" />
     <Compile Include="NHSpecificTest\SqlConverterAndMultiQuery\Fixture.cs" />
     <Compile Include="NHSpecificTest\SqlConverterAndMultiQuery\Model.cs" />
     <Compile Include="NHSpecificTest\SqlConverterAndMultiQuery\SqlConverter.cs" />
@@ -1191,6 +1202,7 @@
     <Compile Include="ReadOnly\TextHolder.cs" />
     <Compile Include="ReadOnly\VersionedNode.cs" />
     <Compile Include="SqlCommandTest\SqlTokenizerFixture.cs" />
+    <Compile Include="RecordingInterceptor.cs" />
     <Compile Include="Stateless\Contact.cs" />
     <Compile Include="Stateless\Country.cs" />
     <Compile Include="Stateless\FetchingLazyCollections\LazyCollectionFetchTests.cs" />
@@ -3015,6 +3027,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH3590\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3377\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2865\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2756\Mappings.hbm.xml" />
@@ -3023,6 +3036,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Unionsubclass\DatabaseKeyword.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1082\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3571\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2692\Mappings.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -3045,6 +3059,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH2033\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3202\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3221\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3234\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3057\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2969\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2806\Mappings.hbm.xml">
@@ -3079,6 +3094,7 @@
     <Compile Include="IdGen\Enhanced\Forcedtable\HiLoForcedTableSequenceTest.cs" />
     <Compile Include="IdGen\Enhanced\Forcedtable\PooledForcedTableSequenceTest.cs" />
     <EmbeddedResource Include="NHSpecificTest\NH3010\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2439\Mappings.hbm.xml" />
     <EmbeddedResource Include="MappingByCode\IntegrationTests\NH2825\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2880\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2982\Mappings.hbm.xml" />
@@ -3584,4 +3600,11 @@ if exist hibernate.cfg.xml (del hibernate.cfg.xml)
 if exist "$(ProjectDir)hibernate.cfg.xml" (copy "$(ProjectDir)hibernate.cfg.xml" "hibernate.cfg.xml")
 copy /y "..\..\..\NHibernate.DomainModel\ABC.hbm.xml" "ABC.hbm.xml"</PostBuildEvent>
   </PropertyGroup>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
 </Project>

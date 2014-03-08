@@ -102,27 +102,34 @@ namespace NHibernate.Id.Enhanced
 					IDataReader rs = null;
 					try
 					{
-						rs = _session.Batcher.ExecuteReader(st, false).Result;
 						try
 						{
-							rs.Read();
-							long result = Convert.ToInt64(rs.GetValue(0));
-							if (Log.IsDebugEnabled)
-							{
-								Log.Debug("Sequence value obtained: " + result);
-							}
-							return result;
-						}
-						finally
-						{
+							rs = _session.Batcher.ExecuteReader(st, false).Result;
 							try
 							{
-								rs.Close();
+								rs.Read();
+								long result = Convert.ToInt64(rs.GetValue(0));
+								if (Log.IsDebugEnabled)
+								{
+									Log.Debug("Sequence value obtained: " + result);
+								}
+								return result;
 							}
-							catch
+							finally
 							{
-								// intentionally empty
+								try
+								{
+									rs.Close();
+								}
+								catch
+								{
+									// intentionally empty
+								}
 							}
+						}
+						catch (AggregateException e)
+						{
+							throw e.InnerException;
 						}
 					}
 					finally

@@ -1378,7 +1378,14 @@ namespace NHibernate.Loader
 			object[] ids = new object[] { id };
 			try
 			{
-				var res = DoQueryAndInitializeNonLazyCollections(session, new QueryParameters(new IType[] { type }, ids, ids), true, false).Result;
+				try
+				{
+					var res = DoQueryAndInitializeNonLazyCollections(session, new QueryParameters(new IType[] { type }, ids, ids), true, false).Result;
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 			catch (HibernateException)
 			{
@@ -1409,7 +1416,15 @@ namespace NHibernate.Loader
 			ArrayHelper.Fill(idTypes, type);
 			try
 			{
-				DoQueryAndInitializeNonLazyCollections(session, new QueryParameters(idTypes, ids, ids), true, false).Wait();
+				try
+				{
+					DoQueryAndInitializeNonLazyCollections(session, new QueryParameters(idTypes, ids, ids), true, false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
+
 			}
 			catch (HibernateException)
 			{
@@ -1435,9 +1450,16 @@ namespace NHibernate.Loader
 		{
 			try
 			{
-				DoQueryAndInitializeNonLazyCollections(session,
-													   new QueryParameters(parameterTypes, parameterValues, namedParameters, ids),
-													   true,false).Wait();
+				try
+				{
+					DoQueryAndInitializeNonLazyCollections(session,
+														   new QueryParameters(parameterTypes, parameterValues, namedParameters, ids),
+														   true, false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 			catch (HibernateException)
 			{
@@ -1469,7 +1491,7 @@ namespace NHibernate.Loader
 
 			if (cacheable)
 			{
-				return await ListUsingQueryCache(session, queryParameters, querySpaces, resultTypes,async);
+				return await ListUsingQueryCache(session, queryParameters, querySpaces, resultTypes, async);
 			}
 			return await ListIgnoreQueryCache(session, queryParameters, async);
 		}

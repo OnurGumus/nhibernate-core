@@ -18,7 +18,7 @@ namespace NHibernate.Collection.Generic
 	/// <typeparam name="T">The type of the element the list should hold.</typeparam>
 	/// <remarks>The underlying collection used is a <see cref="List{T}"/></remarks>
 	[Serializable]
-	[DebuggerTypeProxy(typeof (CollectionProxy<>))]
+	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
 	public class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IList
 	{
 		protected IList<T> WrappedList;
@@ -28,14 +28,14 @@ namespace NHibernate.Collection.Generic
 			get { return default(T); }
 		}
 
-		public PersistentGenericList() {}
+		public PersistentGenericList() { }
 
 		/// <summary>
 		/// Initializes an instance of the <see cref="PersistentGenericList&lt;T&gt;"/>
 		/// in the <paramref name="session"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the list is in.</param>
-		public PersistentGenericList(ISessionImplementor session) : base(session) {}
+		public PersistentGenericList(ISessionImplementor session) : base(session) { }
 
 		/// <summary>
 		/// Initializes an instance of the <see cref="PersistentGenericList&lt;T&gt;"/>
@@ -43,7 +43,8 @@ namespace NHibernate.Collection.Generic
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the list is in.</param>
 		/// <param name="list">The <see cref="IList"/> to wrap.</param>
-		public PersistentGenericList(ISessionImplementor session, IList<T> list) : base(session)
+		public PersistentGenericList(ISessionImplementor session, IList<T> list)
+			: base(session)
 		{
 			WrappedList = list;
 			SetInitialized();
@@ -68,13 +69,13 @@ namespace NHibernate.Collection.Generic
 		public override ICollection GetOrphans(object snapshot, string entityName)
 		{
 			var sn = (IList<T>)snapshot;
-			return GetOrphans((ICollection)sn, (ICollection) WrappedList, entityName, Session);
+			return GetOrphans((ICollection)sn, (ICollection)WrappedList, entityName, Session);
 		}
 
 		public override bool EqualsSnapshot(ICollectionPersister persister)
 		{
 			IType elementType = persister.ElementType;
-			var sn = (IList<T>) GetSnapshot();
+			var sn = (IList<T>)GetSnapshot();
 			if (sn.Count != WrappedList.Count)
 			{
 				return false;
@@ -96,7 +97,7 @@ namespace NHibernate.Collection.Generic
 
 		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
 		{
-			WrappedList = (IList<T>) persister.CollectionType.Instantiate(anticipatedSize);
+			WrappedList = (IList<T>)persister.CollectionType.Instantiate(anticipatedSize);
 		}
 
 		public override bool IsWrapper(object collection)
@@ -149,7 +150,7 @@ namespace NHibernate.Collection.Generic
 			for (int i = 0; i < size; i++)
 			{
 				var element = persister.ElementType.Assemble(array[i], Session, owner);
-				WrappedList.Add((T) (element ?? DefaultForType));
+				WrappedList.Add((T)(element ?? DefaultForType));
 			}
 		}
 
@@ -173,7 +174,7 @@ namespace NHibernate.Collection.Generic
 			{
 				for (int i = WrappedList.Count; i < sn.Count; i++)
 				{
-					deletes.Add(indexIsFormula ? (object) sn[i] : i);
+					deletes.Add(indexIsFormula ? (object)sn[i] : i);
 				}
 				end = WrappedList.Count;
 			}
@@ -185,7 +186,7 @@ namespace NHibernate.Collection.Generic
 			{
 				if (WrappedList[i] == null && sn[i] != null)
 				{
-					deletes.Add(indexIsFormula ? (object) sn[i] : i);
+					deletes.Add(indexIsFormula ? (object)sn[i] : i);
 				}
 			}
 			return deletes;
@@ -251,19 +252,17 @@ namespace NHibernate.Collection.Generic
 				Write();
 				return ((IList)WrappedList).Add(value);
 			}
-			else
-			{
-				QueueOperation(new SimpleAddDelayedOperation(this, (T) value));
-				//TODO: take a look at this - I don't like it because it changes the 
-				// meaning of Add - instead of returning the index it was added at 
-				// returns a "fake" index - not consistent with IList interface...
-				return -1;
-			}
+
+			QueueOperation(new SimpleAddDelayedOperation(this, (T)value));
+			//TODO: take a look at this - I don't like it because it changes the 
+			// meaning of Add - instead of returning the index it was added at 
+			// returns a "fake" index - not consistent with IList interface...
+			return -1;
 		}
 
 		bool IList.Contains(object value)
 		{
-			return Contains((T) value);
+			return Contains((T)value);
 		}
 
 		public void Clear()
@@ -285,17 +284,17 @@ namespace NHibernate.Collection.Generic
 
 		int IList.IndexOf(object value)
 		{
-			return IndexOf((T) value);
+			return IndexOf((T)value);
 		}
 
 		void IList.Insert(int index, object value)
 		{
-			Insert(index, (T) value);
+			Insert(index, (T)value);
 		}
 
 		void IList.Remove(object value)
 		{
-			Remove((T) value);
+			Remove((T)value);
 		}
 
 		public void RemoveAt(int index)
@@ -304,27 +303,34 @@ namespace NHibernate.Collection.Generic
 			{
 				throw new IndexOutOfRangeException("negative index");
 			}
-			object old = PutQueueEnabled ? ReadElementByIndex(index,false).Result : Unknown;
-			if (old == Unknown)
+			try
 			{
-				Write();
-				WrappedList.RemoveAt(index);
+				object old = PutQueueEnabled ? ReadElementByIndex(index, false).Result : Unknown;
+				if (old == Unknown)
+				{
+					Write();
+					WrappedList.RemoveAt(index);
+				}
+				else
+				{
+					QueueOperation(new RemoveDelayedOperation(this, index, old == NotFound ? null : old));
+				}
 			}
-			else
+			catch (AggregateException e)
 			{
-				QueueOperation(new RemoveDelayedOperation(this, index, old == NotFound ? null : old));
+				throw e.InnerException;
 			}
 		}
 
 		object IList.this[int index]
 		{
 			get { return this[index]; }
-			set { this[index] = (T) value; }
+			set { this[index] = (T)value; }
 		}
 
 		bool IList.IsReadOnly
 		{
-			get { return ((ICollection<T>) this).IsReadOnly; }
+			get { return ((ICollection<T>)this).IsReadOnly; }
 		}
 
 		bool IList.IsFixedSize
@@ -368,21 +374,28 @@ namespace NHibernate.Collection.Generic
 				{
 					throw new IndexOutOfRangeException("negative index");
 				}
-				object result = ReadElementByIndex(index,false).Result;
-				if (result == Unknown)
+				try
 				{
-					return WrappedList[index];
-				}
-				if (result == NotFound)
-				{
-					// check if the index is valid
-					if (index >= Count)
+					object result = ReadElementByIndex(index, false).Result;
+					if (result == Unknown)
 					{
-						throw new ArgumentOutOfRangeException("index");
+						return WrappedList[index];
 					}
-					return default(T);
+					if (result == NotFound)
+					{
+						// check if the index is valid
+						if (index >= Count)
+						{
+							throw new ArgumentOutOfRangeException("index");
+						}
+						return default(T);
+					}
+					return (T)result;
 				}
-				return (T) result;
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 			set
 			{
@@ -390,15 +403,22 @@ namespace NHibernate.Collection.Generic
 				{
 					throw new IndexOutOfRangeException("negative index");
 				}
-				object old = PutQueueEnabled ? ReadElementByIndex(index,false).Result : Unknown;
-				if (old == Unknown)
+				try
 				{
-					Write();
-					WrappedList[index] = value;
+					object old = PutQueueEnabled ? ReadElementByIndex(index, false).Result : Unknown;
+					if (old == Unknown)
+					{
+						Write();
+						WrappedList[index] = value;
+					}
+					else
+					{
+						QueueOperation(new SetDelayedOperation(this, index, value, old == NotFound ? null : old));
+					}
 				}
-				else
+				catch (AggregateException e)
 				{
-					QueueOperation(new SetDelayedOperation(this, index, value, old == NotFound ? null : old));
+					throw e.InnerException;
 				}
 			}
 		}
@@ -418,7 +438,17 @@ namespace NHibernate.Collection.Generic
 
 		public int Count
 		{
-			get { return ReadSize(false).Result	 ? CachedSize : WrappedList.Count; }
+			get
+			{
+				try
+				{
+					return ReadSize(false).Result ? CachedSize : WrappedList.Count;
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
+			}
 		}
 
 		object ICollection.SyncRoot
@@ -451,8 +481,15 @@ namespace NHibernate.Collection.Generic
 
 		public bool Contains(T item)
 		{
-			bool? exists = ReadElementExistence(item,false).Result;
-			return !exists.HasValue ? WrappedList.Contains(item) : exists.Value;
+			try
+			{
+				bool? exists = ReadElementExistence(item, false).Result;
+				return !exists.HasValue ? WrappedList.Contains(item) : exists.Value;
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
 		}
 
 		public void CopyTo(T[] array, int arrayIndex)
@@ -463,29 +500,37 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		bool ICollection<T>.IsReadOnly {
+		bool ICollection<T>.IsReadOnly
+		{
 			get { return false; }
 		}
 
 		public bool Remove(T item)
 		{
-			bool? exists = PutQueueEnabled ? ReadElementExistence(item,false).Result : null;
-			if (!exists.HasValue)
+			try
 			{
-				Initialize(true);
-				bool contained = WrappedList.Remove(item);
-				if (contained)
+				bool? exists = PutQueueEnabled ? ReadElementExistence(item, false).Result : null;
+				if (!exists.HasValue)
 				{
-					Dirty();
+					Initialize(true);
+					bool contained = WrappedList.Remove(item);
+					if (contained)
+					{
+						Dirty();
+						return true;
+					}
+				}
+				else if (exists.Value)
+				{
+					QueueOperation(new SimpleRemoveDelayedOperation(this, item));
 					return true;
 				}
+				return false;
 			}
-			else if (exists.Value)
+			catch (AggregateException e)
 			{
-				QueueOperation(new SimpleRemoveDelayedOperation(this, item));
-				return true;
+				throw e.InnerException;
 			}
-			return false;
 		}
 
 		#endregion

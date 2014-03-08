@@ -5,7 +5,7 @@ using NHibernate.Cache.Access;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;
-using Status=NHibernate.Engine.Status;
+using Status = NHibernate.Engine.Status;
 
 namespace NHibernate.Event.Default
 {
@@ -66,7 +66,14 @@ namespace NHibernate.Event.Default
 					}
 					else
 					{
-						persister.Lock(entry.Id, entry.Version, entity, requestedLockMode, source, false).Wait();
+						try
+						{
+							persister.Lock(entry.Id, entry.Version, entity, requestedLockMode, source, false).Wait();
+						}
+						catch (AggregateException e)
+						{
+							throw e.InnerException;
+						}
 					}
 					entry.LockMode = requestedLockMode;
 				}

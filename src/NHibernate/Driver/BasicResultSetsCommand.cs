@@ -9,7 +9,7 @@ using System.Data.Common;
 
 namespace NHibernate.Driver
 {
-	public class BasicResultSetsCommand: IResultSetsCommand
+	public class BasicResultSetsCommand : IResultSetsCommand
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(BasicResultSetsCommand));
 		private SqlString sqlString = SqlString.Empty;
@@ -79,7 +79,7 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// Datareader wrapper with the same life cycle of its command (through the batcher)
 	/// </summary>
-	public class BatcherDataReaderWrapper: IDataReader
+	public class BatcherDataReaderWrapper : IDataReader
 	{
 		private readonly IBatcher batcher;
 		private readonly IDbCommand command;
@@ -97,7 +97,14 @@ namespace NHibernate.Driver
 			}
 			this.batcher = batcher;
 			this.command = command;
-			reader = batcher.ExecuteReader(command, false).Result;
+			try
+			{
+				reader = batcher.ExecuteReader(command, false).Result;
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
 		}
 
 		public void Dispose()

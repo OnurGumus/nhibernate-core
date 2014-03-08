@@ -11,6 +11,7 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NUnit.Framework;
 using SharpTestsEx;
+using System.Data.Common;
 
 namespace NHibernate.Test.Insertordering
 {
@@ -100,9 +101,9 @@ namespace NHibernate.Test.Insertordering
 				batchSQL = null;
 			}
 
-			public override IDbCommand PrepareBatchCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
+			public override System.Data.Common.DbCommand PrepareBatchCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
 			{
-				IDbCommand result = base.PrepareBatchCommand(type, sql, parameterTypes);
+				DbCommand result = base.PrepareBatchCommand(type, sql, parameterTypes);
 				string sqlstring = sql.ToString();
 				if (batchSQL == null || !sqlstring.Equals(batchSQL))
 				{
@@ -114,6 +115,7 @@ namespace NHibernate.Test.Insertordering
 				}
 				return result;
 			}
+			
 
 			public override void AddToBatch(IExpectation expectation)
 			{

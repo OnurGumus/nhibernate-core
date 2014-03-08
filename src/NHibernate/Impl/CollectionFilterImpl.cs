@@ -4,6 +4,7 @@ using NHibernate.Engine.Query;
 using NHibernate.Type;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
 
 namespace NHibernate.Impl
 {
@@ -33,10 +34,34 @@ namespace NHibernate.Impl
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			return Session.EnumerableFilter<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
 		}
-
+		public override IList List()
+		{
+			try
+			{
+				return this.ListAsync().Result;
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
+		}
+		public override IList<T> List<T>()
+		{
+			try
+			{
+				return this.ListAsync<T>().Result;
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
+		}
 		public override async Task<IList> ListAsync()
 		{
+
+
 			await Task.Yield();
+
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			return Session.ListFilter(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
@@ -44,7 +69,9 @@ namespace NHibernate.Impl
 
 		public override async Task<IList<T>> ListAsync<T>()
 		{
+
 			await Task.Yield();
+
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			return Session.ListFilter<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));

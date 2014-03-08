@@ -37,41 +37,41 @@ namespace NHibernate.Event.Default
 		public virtual void OnMerge(MergeEvent @event)
 		{
 			EventCache copyCache = new EventCache();
-			
+
 			OnMerge(@event, copyCache);
-			
+
 			// TODO: iteratively get transient entities and retry merge until one of the following conditions:
 			//   1) transientCopyCache.size() == 0
 			//   2) transientCopyCache.size() is not decreasing and copyCache.size() is not increasing
-			
+
 			// TODO: find out if retrying can add entities to copyCache (don't think it can...)
 			// For now, just retry once; throw TransientObjectException if there are still any transient entities
-			
+
 			IDictionary transientCopyCache = this.GetTransientCopyCache(@event, copyCache);
-			
+
 			if (transientCopyCache.Count > 0)
 			{
 				RetryMergeTransientEntities(@event, transientCopyCache, copyCache);
-				
+
 				// find any entities that are still transient after retry
 				transientCopyCache = this.GetTransientCopyCache(@event, copyCache);
-				
+
 				if (transientCopyCache.Count > 0)
 				{
 					ISet<string> transientEntityNames = new HashSet<string>();
-					
+
 					foreach (object transientEntity in transientCopyCache.Keys)
 					{
 						string transientEntityName = @event.Session.GuessEntityName(transientEntity);
-						
+
 						transientEntityNames.Add(transientEntityName);
-						
+
 						log.InfoFormat(
 							"transient instance could not be processed by merge: {0} [{1}]",
 							transientEntityName,
 							transientEntity.ToString());
 					}
-					
+
 					throw new TransientObjectException("one or more objects is an unsaved transient instance - save transient instance(s) before merging: " + transientEntityNames);
 				}
 			}
@@ -79,7 +79,7 @@ namespace NHibernate.Event.Default
 			copyCache.Clear();
 			copyCache = null;
 		}
-		
+
 		public virtual void OnMerge(MergeEvent @event, IDictionary copiedAlready)
 		{
 			EventCache copyCache = (EventCache)copiedAlready;
@@ -107,7 +107,7 @@ namespace NHibernate.Event.Default
 				{
 					entity = original;
 				}
-				
+
 				if (copyCache.Contains(entity) && copyCache.IsOperatedOn(entity))
 				{
 					log.Debug("already in merge process");
@@ -120,7 +120,7 @@ namespace NHibernate.Event.Default
 						log.Info("already in copyCache; setting in merge process");
 						copyCache.SetOperatedOn(entity, true);
 					}
-					
+
 					@event.Entity = entity;
 					EntityState entityState = EntityState.Undefined;
 					if (ReferenceEquals(null, @event.EntityName))
@@ -180,7 +180,7 @@ namespace NHibernate.Event.Default
 			log.Debug("ignoring persistent instance");
 
 			//TODO: check that entry.getIdentifier().equals(requestedId)
-			
+
 			object entity = @event.Entity;
 			IEventSource source = @event.Session;
 			IEntityPersister persister = source.GetEntityPersister(@event.EntityName, entity);
@@ -202,17 +202,17 @@ namespace NHibernate.Event.Default
 
 			IEntityPersister persister = source.GetEntityPersister(@event.EntityName, entity);
 			string entityName = persister.EntityName;
-			
+
 			@event.Result = this.MergeTransientEntity(entity, entityName, @event.RequestedId, source, copyCache);
 		}
-	
+
 		private object MergeTransientEntity(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache)
 		{
 			IEntityPersister persister = source.GetEntityPersister(entityName, entity);
 
 			object id = persister.HasIdentifierProperty ? persister.GetIdentifier(entity, source.EntityMode) : null;
 			object copy = null;
-			
+
 			if (copyCache.Contains(entity))
 			{
 				copy = copyCache[entity];
@@ -237,6 +237,7 @@ namespace NHibernate.Event.Default
 			}
 			catch (PropertyValueException ex)
 			{
+			
 				string propertyName = ex.PropertyName;
 				object propertyFromCopy = persister.GetPropertyValue(copy, propertyName, source.EntityMode);
 				object propertyFromEntity = persister.GetPropertyValue(entity, propertyName, source.EntityMode);
@@ -254,7 +255,7 @@ namespace NHibernate.Event.Default
 					log.InfoFormat("property '{0}.{1}' from original entity is not in copyCache; {1} =[{2}]", copyEntry.EntityName, propertyName, propertyFromEntity);
 					throw;
 				}
-				
+
 				if (((EventCache)copyCache).IsOperatedOn(propertyFromEntity))
 				{
 					log.InfoFormat("property '{0}.{1}' from original entity is in copyCache and is in the process of being merged; {1} =[{2}]", copyEntry.EntityName, propertyName, propertyFromEntity);
@@ -263,10 +264,10 @@ namespace NHibernate.Event.Default
 				{
 					log.InfoFormat("property '{0}.{1}' from original entity is in copyCache and is not in the process of being merged; {1} =[{2}]", copyEntry.EntityName, propertyName, propertyFromEntity);
 				}
-				
+
 				// continue...; we'll find out if it ends up not getting saved later
 			}
-			
+
 			// cascade first, so that all unsaved objects get their
 			// copy created before we actually copy
 			base.CascadeAfterSave(source, persister, entity, copyCache);
@@ -274,7 +275,7 @@ namespace NHibernate.Event.Default
 
 			return copy;
 		}
-	
+
 		private void SaveTransientEntity(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache)
 		{
 			// this bit is only *really* absolutely necessary for handling
@@ -282,11 +283,25 @@ namespace NHibernate.Event.Default
 			// graphs, since it helps ensure uniqueness
 			if (requestedId == null)
 			{
-				SaveWithGeneratedId(entity, entityName, copyCache, source, false,false).Wait();
+				try
+				{
+					SaveWithGeneratedId(entity, entityName, copyCache, source, false, false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 			else
 			{
-				SaveWithRequestedId(entity, requestedId, entityName, copyCache, source, false).Wait();
+				try
+				{
+					SaveWithRequestedId(entity, requestedId, entityName, copyCache, source, false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 		}
 
@@ -354,7 +369,7 @@ namespace NHibernate.Event.Default
 				else if (!source.GetEntityName(target).Equals(entityName))
 				{
 					throw new WrongClassException("class of the given object did not match class of persistent copy",
-					                              @event.RequestedId, persister.EntityName);
+												  @event.RequestedId, persister.EntityName);
 				}
 				else if (IsVersionChanged(entity, source, persister, target))
 				{
@@ -421,7 +436,7 @@ namespace NHibernate.Event.Default
 			// originally persisted/saved
 			bool changed =
 				!persister.VersionType.IsSame(persister.GetVersion(target, source.EntityMode),
-				                              persister.GetVersion(entity, source.EntityMode), source.EntityMode);
+											  persister.GetVersion(entity, source.EntityMode), source.EntityMode);
 
 			// TODO : perhaps we should additionally require that the incoming entity
 			// version be equivalent to the defined unsaved-value?
@@ -458,8 +473,8 @@ namespace NHibernate.Event.Default
 		{
 			object[] copiedValues =
 				TypeHelper.Replace(persister.GetPropertyValues(entity, source.EntityMode),
-				                    persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes, source, target,
-				                    copyCache);
+									persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes, source, target,
+									copyCache);
 
 			persister.SetPropertyValues(target, copiedValues, source.EntityMode);
 		}
@@ -468,22 +483,22 @@ namespace NHibernate.Event.Default
 		{
 			object[] copiedValues;
 
-			if (foreignKeyDirection.Equals( ForeignKeyDirection.ForeignKeyToParent))
+			if (foreignKeyDirection.Equals(ForeignKeyDirection.ForeignKeyToParent))
 			{
 				// this is the second pass through on a merge op, so here we limit the
 				// replacement to associations types (value types were already replaced
 				// during the first pass)
 				copiedValues =
 					TypeHelper.ReplaceAssociations(persister.GetPropertyValues(entity, source.EntityMode),
-					                                persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes,
-					                                source, target, copyCache, foreignKeyDirection);
+													persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes,
+													source, target, copyCache, foreignKeyDirection);
 			}
 			else
 			{
 				copiedValues =
 					TypeHelper.Replace(persister.GetPropertyValues(entity, source.EntityMode),
-					                    persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes, source, target,
-					                    copyCache, foreignKeyDirection);
+										persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes, source, target,
+										copyCache, foreignKeyDirection);
 			}
 
 			persister.SetPropertyValues(target, copiedValues, source.EntityMode);
@@ -508,7 +523,7 @@ namespace NHibernate.Event.Default
 				source.PersistenceContext.DecrementCascadeLevel();
 			}
 		}
-		
+
 		/// <summary>
 		/// Determine which merged entities in the copyCache are transient.
 		/// </summary>
@@ -520,18 +535,18 @@ namespace NHibernate.Event.Default
 		{
 			EventCache transientCopyCache = new EventCache();
 
-			foreach(object entity in copyCache.Keys)
+			foreach (object entity in copyCache.Keys)
 			{
 				object entityCopy = copyCache[entity];
-				
+
 				if (entityCopy.IsProxy())
 					entityCopy = ((INHibernateProxy)entityCopy).HibernateLazyInitializer.GetImplementation();
-				
+
 				// NH-specific: Disregard entities that implement ILifecycle and manage their own state - they 
 				// don't have an EntityEntry, and we can't determine if they are transient or not
 				if (entityCopy is ILifecycle)
 					continue;
-			
+
 				EntityEntry copyEntry = @event.Session.PersistenceContext.GetEntry(entityCopy);
 
 				if (copyEntry == null)
@@ -542,12 +557,12 @@ namespace NHibernate.Event.Default
 						"transient instance could not be processed by merge: {0} [{1}]",
 						@event.Session.GuessEntityName(entityCopy),
 						entity);
-					
+
 					// merge did not cascade to this entity; it's in copyCache because a
 					// different entity has a non-nullable reference to it;
 					// this entity should not be put in transientCopyCache, because it was
 					// not included in the merge;
-					
+
 					throw new TransientObjectException(
 						"object is an unsaved transient instance - save the transient instance before merging: " + @event.Session.GuessEntityName(entityCopy));
 				}
@@ -566,7 +581,7 @@ namespace NHibernate.Event.Default
 			}
 			return transientCopyCache;
 		}
-		
+
 		/// <summary>
 		/// Retry merging transient entities
 		/// </summary>
@@ -582,19 +597,19 @@ namespace NHibernate.Event.Default
 			// 1) there are no transient entities left in transientCopyCache
 			// or 2) no transient entities were saved in the last batch.
 			// For now, just run through the transient entities and retry the merge
-			
-			foreach(object entity in transientCopyCache.Keys)
+
+			foreach (object entity in transientCopyCache.Keys)
 			{
 				object copy = transientCopyCache[entity];
 				EntityEntry copyEntry = @event.Session.PersistenceContext.GetEntry(copy);
-				
+
 				if (entity == @event.Entity)
 					MergeTransientEntity(entity, copyEntry.EntityName, @event.RequestedId, @event.Session, copyCache);
 				else
 					MergeTransientEntity(entity, copyEntry.EntityName, copyEntry.Id, @event.Session, copyCache);
 			}
 		}
-		
+
 		/// <summary> Cascade behavior is redefined by this subclass, disable superclass behavior</summary>
 		protected override void CascadeAfterSave(IEventSource source, IEntityPersister persister, object entity, object anything)
 		{

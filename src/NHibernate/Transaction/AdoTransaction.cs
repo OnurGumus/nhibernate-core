@@ -178,7 +178,15 @@ namespace NHibernate.Transaction
 		/// </exception>
 		public void Commit()
 		{
-			this.CommitAsync(false).Wait();
+			try
+			{
+				this.CommitAsync(false).Wait();
+			}
+
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
 		}
 
 		/// <summary>

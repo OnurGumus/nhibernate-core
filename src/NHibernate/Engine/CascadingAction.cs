@@ -317,7 +317,14 @@ namespace NHibernate.Engine
 				{
 					log.Debug("cascading to persistOnFlush: " + entityName);
 				}
-				session.PersistOnFlush(entityName, child, (IDictionary)anything, false).Wait();
+				try
+				{
+					session.PersistOnFlush(entityName, child, (IDictionary)anything, false).Wait();
+				}
+				catch(AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 			public override IEnumerable GetCascadableChildrenIterator(IEventSource session, CollectionType collectionType, object collection)
 			{

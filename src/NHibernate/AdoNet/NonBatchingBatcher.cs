@@ -38,8 +38,16 @@ namespace NHibernate.AdoNet
 		{
 			DbCommand cmd = CurrentCommand;
 			Driver.AdjustCommand(cmd);
-			int rowCount = ExecuteNonQuery(cmd, false).Result;
-			expectation.VerifyOutcomeNonBatched(rowCount, cmd);
+			try
+			{
+				int rowCount = ExecuteNonQuery(cmd, false).Result;
+
+				expectation.VerifyOutcomeNonBatched(rowCount, cmd);
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
 		}
 
 		/// <summary>

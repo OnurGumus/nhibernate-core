@@ -30,7 +30,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				throw new HibernateException("cannot perform multi-table deletes using dialect not supporting temp tables");
 			}
 
-			var deleteStatement = (DeleteStatement) statement;
+			var deleteStatement = (DeleteStatement)statement;
 
 			FromElement fromElement = deleteStatement.FromClause.GetFromElement();
 			string bulkTargetAlias = fromElement.TableAlias;
@@ -67,7 +67,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			get { return deletes; }
 		}
 
-		public override  async Task<int> Execute(QueryParameters parameters, ISessionImplementor session, bool async)
+		public override async Task<int> Execute(QueryParameters parameters, ISessionImplementor session, bool async)
 		{
 			CoordinateSharedCacheCleanup(session);
 
@@ -115,7 +115,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 						try
 						{
 							ps = session.Batcher.PrepareCommand(CommandType.Text, deletes[i], new SqlType[0]);
-							session.Batcher.ExecuteNonQuery(ps,false).Wait();
+							try
+							{
+								session.Batcher.ExecuteNonQuery(ps, false).Wait();
+							}
+							catch (AggregateException e)
+							{
+								throw e.InnerException;
+							}
 						}
 						finally
 						{

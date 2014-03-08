@@ -20,14 +20,19 @@ namespace NHibernate.Linq
 
 	public class DefaultQueryProvider : INhQueryProvider
 	{
+		private static readonly MethodInfo CreateQueryMethodDefinition = ReflectionHelper.GetMethodDefinition((DefaultQueryProvider p) => p.CreateQuery<object>(null));
+
+		private readonly WeakReference _session;
+
 		public DefaultQueryProvider(ISessionImplementor session)
 		{
-			Session = session;
+			_session = new WeakReference(session, true);
 		}
 
-		protected virtual ISessionImplementor Session { get; private set; }
-
-		#region IQueryProvider Members
+		protected virtual ISessionImplementor Session
+		{
+			get { return _session.Target as ISessionImplementor; }
+		}
 
 		public virtual async Task<object> Execute(Expression expression, bool async)
 		{
@@ -35,7 +40,7 @@ namespace NHibernate.Linq
 			NhLinqExpression nhQuery;
 			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query, out nhQuery);
 
-			return await ExecuteQuery(nhLinqExpression, query, nhQuery,async);
+			return await ExecuteQuery(nhLinqExpression, query, nhQuery, async);
 		}
 		public virtual object Execute(Expression expression)
 		{
@@ -43,30 +48,42 @@ namespace NHibernate.Linq
 			NhLinqExpression nhQuery;
 			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query, out nhQuery);
 
-			return  ExecuteQuery(nhLinqExpression, query, nhQuery, false).Result;
+			try
+			{
+				return ExecuteQuery(nhLinqExpression, query, nhQuery, false).Result;
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
 		}
 		public TResult Execute<TResult>(Expression expression)
 		{
-			return (TResult)Execute(expression, false).Result;
+			try
+			{
+				return (TResult)Execute(expression, false).Result;
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
 		}
 
 		public async Task<TResult> ExecuteAsync<TResult>(Expression expression)
 		{
-			return (TResult) await Execute(expression, true);
+			return (TResult)await Execute(expression, true);
 		}
 		public virtual IQueryable CreateQuery(Expression expression)
 		{
-			MethodInfo m = ReflectionHelper.GetMethodDefinition((DefaultQueryProvider p) => p.CreateQuery<object>(null)).MakeGenericMethod(expression.Type.GetGenericArguments()[0]);
+			MethodInfo m = CreateQueryMethodDefinition.MakeGenericMethod(expression.Type.GetGenericArguments()[0]);
 
-			return (IQueryable) m.Invoke(this, new[] {expression});
+			return (IQueryable)m.Invoke(this, new object[] { expression });
 		}
 
 		public virtual IQueryable<T> CreateQuery<T>(Expression expression)
 		{
 			return new NhQueryable<T>(this, expression);
 		}
-
-		#endregion
 
 		public virtual object ExecuteFuture(Expression expression)
 		{
@@ -82,7 +99,7 @@ namespace NHibernate.Linq
 
 			query = Session.CreateQuery(nhLinqExpression);
 
-			nhQuery = (NhLinqExpression) ((ExpressionQueryImpl) query).QueryExpression;
+			nhQuery = (NhLinqExpression)((ExpressionQueryImpl)query).QueryExpression;
 
 			SetParameters(query, nhLinqExpression.ParameterValuesByName);
 			SetResultTransformerAndAdditionalCriteria(query, nhQuery, nhLinqExpression.ParameterValuesByName);
@@ -94,19 +111,18 @@ namespace NHibernate.Linq
 			MethodInfo method;
 			if (nhLinqExpression.ReturnType == NhLinqExpressionReturnType.Sequence)
 			{
-				method = typeof (IQuery).GetMethod("Future").MakeGenericMethod(nhQuery.Type);
+				method = typeof(IQuery).GetMethod("Future").MakeGenericMethod(nhQuery.Type);
 			}
 			else
 			{
-				method = typeof (IQuery).GetMethod("FutureValue").MakeGenericMethod(nhQuery.Type);
+				method = typeof(IQuery).GetMethod("FutureValue").MakeGenericMethod(nhQuery.Type);
 			}
 
 			object result = method.Invoke(query, new object[0]);
 
-
 			if (nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer != null)
 			{
-				((IDelayedValue) result).ExecuteOnEval = nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer;
+				((IDelayedValue)result).ExecuteOnEval = nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer;
 			}
 
 			return result;

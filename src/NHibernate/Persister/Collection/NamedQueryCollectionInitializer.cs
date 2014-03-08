@@ -2,6 +2,7 @@
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader.Collection;
+using System;
 
 namespace NHibernate.Persister.Collection
 {
@@ -26,7 +27,7 @@ namespace NHibernate.Persister.Collection
 			}
 
 			//TODO: is there a more elegant way than downcasting?
-			AbstractQueryImpl query = (AbstractQueryImpl) session.GetNamedSQLQuery(queryName);
+			AbstractQueryImpl query = (AbstractQueryImpl)session.GetNamedSQLQuery(queryName);
 			if (query.NamedParameters.Length > 0)
 			{
 				query.SetParameter(query.NamedParameters[0], key, persister.KeyType);
@@ -35,7 +36,14 @@ namespace NHibernate.Persister.Collection
 			{
 				query.SetParameter(0, key, persister.KeyType);
 			}
-			query.SetCollectionKey(key).SetFlushMode(FlushMode.Never).ListAsync().Wait();
+			try
+			{
+				query.SetCollectionKey(key).SetFlushMode(FlushMode.Never).ListAsync().Wait();
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
 		}
 	}
 }

@@ -81,12 +81,17 @@ namespace NHibernate.Test.Linq
 				: base(connectionManager, interceptor)
 			{
 			}
-
+			public override async System.Threading.Tasks.Task<System.Data.IDataReader> ExecuteReader(System.Data.Common.DbCommand cmd, bool async)
+			{
+				LastCommandTimeout = cmd.CommandTimeout;
+				return await base.ExecuteReader(cmd, async);
+			}
+			/*
 			public override System.Data.IDataReader ExecuteReader(System.Data.IDbCommand cmd)
 			{
 				LastCommandTimeout = cmd.CommandTimeout;
 				return base.ExecuteReader(cmd);
-			}
+			}*/
 		}
 
 

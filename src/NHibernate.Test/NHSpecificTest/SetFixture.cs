@@ -394,6 +394,52 @@ namespace NHibernate.Test.NHSpecificTest
 		}
 
 		#endregion
+
+
+		public System.Threading.Tasks.Task Remove(object id, ISessionImplementor session, bool async)
+		{
+			throw new NotImplementedException();
+		}
+
+		public System.Threading.Tasks.Task Recreate(IPersistentCollection collection, object key, ISessionImplementor session, bool async)
+		{
+			throw new NotImplementedException();
+		}
+
+		public System.Threading.Tasks.Task DeleteRows(IPersistentCollection collection, object key, ISessionImplementor session, bool async)
+		{
+			throw new NotImplementedException();
+		}
+
+		public System.Threading.Tasks.Task UpdateRows(IPersistentCollection collection, object key, ISessionImplementor session, bool async)
+		{
+			throw new NotImplementedException();
+		}
+
+		public System.Threading.Tasks.Task InsertRows(IPersistentCollection collection, object key, ISessionImplementor session, bool async)
+		{
+			throw new NotImplementedException();
+		}
+
+		public System.Threading.Tasks.Task<int> GetSize(object key, ISessionImplementor session, bool async)
+		{
+			throw new NotImplementedException();
+		}
+
+		public System.Threading.Tasks.Task<bool> IndexExists(object key, object index, ISessionImplementor session, bool async)
+		{
+			throw new NotImplementedException();
+		}
+
+		public System.Threading.Tasks.Task<bool> ElementExists(object key, object element, ISessionImplementor session, bool async)
+		{
+			throw new NotImplementedException();
+		}
+
+		public System.Threading.Tasks.Task<object> GetElementByIndex(object key, object index, ISessionImplementor session, object owner, bool async)
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 	[TestFixture]

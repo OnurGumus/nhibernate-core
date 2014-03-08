@@ -154,6 +154,16 @@ namespace NHibernate.Test.CompositeId
 			{
 				ClassWithCompositeId theClass4 = (ClassWithCompositeId) s4.Load(typeof(ClassWithCompositeId), id);
 			}
+			catch(AggregateException exc)
+			{
+				ObjectNotFoundException ex = exc.InnerException as ObjectNotFoundException;
+				if (ex != null)
+				{
+					Assert.IsNotNull(ex); //gett
+				}
+				else throw exc;
+			}
+			
 			catch (ObjectNotFoundException onfe)
 			{
 				// I expect this to be thrown because the object no longer exists...

@@ -115,6 +115,28 @@ namespace NHibernate.Impl
 			get { throw new NotSupportedException("not yet implemented for SQL queries"); }
 		}
 
+		public override IList<T> List<T>()
+		{
+			try
+			{
+				return this.ListAsync<T>(false).Result;
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
+		}
+		public override IList List()
+		{
+			try
+			{
+				return this.ListAsync(false).Result;
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
+		}
 		public override async Task<IList> ListAsync()
 		{
 			return await this.ListAsync(true);
@@ -136,11 +158,23 @@ namespace NHibernate.Impl
 				After();
 			}
 		}
+
+		public override void List(IList results)
+		{
+			try
+			{
+				this.ListAsync(results, false).Wait();
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
+		}
 		public override async Task ListAsync(IList results)
 		{
-			 await this.ListAsync(results,true);
+			await this.ListAsync(results, true);
 		}
-		public  async Task ListAsync(IList results, bool async)
+		public async override Task ListAsync(IList results, bool async)
 		{
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
@@ -157,11 +191,12 @@ namespace NHibernate.Impl
 				After();
 			}
 		}
+
 		public override async Task<IList<T>> ListAsync<T>()
 		{
 			return await this.ListAsync<T>(true);
 		}
-		public  async Task<IList<T>> ListAsync<T>(bool async)
+		public override async Task<IList<T>> ListAsync<T>(bool async)
 		{
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
@@ -292,7 +327,7 @@ namespace NHibernate.Impl
 				{
 					if (rtn is NativeSQLQueryScalarReturn)
 					{
-						NativeSQLQueryScalarReturn scalar = (NativeSQLQueryScalarReturn) rtn;
+						NativeSQLQueryScalarReturn scalar = (NativeSQLQueryScalarReturn)rtn;
 						if (scalar.Type == null)
 						{
 							autoDiscoverTypes = true;
@@ -308,9 +343,16 @@ namespace NHibernate.Impl
 		{
 			throw new NotSupportedException("cannot set the lock mode for a native SQL query");
 		}
-		public override  int ExecuteUpdate()
+		public override int ExecuteUpdate()
 		{
-			return this.ExecuteUpdate(false).Result;
+			try
+			{
+				return this.ExecuteUpdate(false).Result;
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
 		}
 		public override async Task<int> ExecuteUpdateAsync()
 		{
@@ -318,7 +360,7 @@ namespace NHibernate.Impl
 		}
 		public override async Task<int> ExecuteUpdate(bool async)
 		{
-			IDictionary<string,TypedValue> namedParams = NamedParams;
+			IDictionary<string, TypedValue> namedParams = NamedParams;
 			Before();
 			try
 			{

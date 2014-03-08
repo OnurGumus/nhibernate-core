@@ -11,6 +11,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Tuple.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
+using System.Threading.Tasks;
 
 namespace NHibernate.DomainModel
 {
@@ -309,8 +310,9 @@ namespace NHibernate.DomainModel
 			get { return false; }
 		}
 
-		public object Load(object id, object optionalObject, LockMode lockMode, ISessionImplementor session)
+		public async Task<object> Load(object id, object optionalObject, LockMode lockMode, ISessionImplementor session, bool async)
 		{
+			await Task.Yield();
 			// fails when optional object is supplied
 			Custom clone = null;
 			Custom obj = (Custom)Instances[id];
@@ -326,30 +328,36 @@ namespace NHibernate.DomainModel
 			return clone;
 		}
 
-		public void Lock(object id, object version, object obj, LockMode lockMode, ISessionImplementor session)
+		public async Task Lock(object id, object version, object obj, LockMode lockMode, ISessionImplementor session, bool async)
 		{
+			await Task.Yield();
 			throw new NotSupportedException();
 		}
 
-		public void Insert(object id, object[] fields, object obj, ISessionImplementor session)
+		public async Task Insert(object id, object[] fields, object obj, ISessionImplementor session, bool async)
 		{
+			await Task.Yield();
 			Instances[id] = ((Custom)obj).Clone();
 		}
 
-		public object Insert(object[] fields, object obj, ISessionImplementor session)
+		public async Task<object> Insert(object[] fields, object obj, ISessionImplementor session, bool async)
 		{
+			await Task.Yield();
 			throw new NotSupportedException();
 		}
 
-		public void Delete(object id, object version, object obj, ISessionImplementor session)
+		public async Task Delete(object id, object version, object obj, ISessionImplementor session, bool async)
 		{
+			await Task.Yield();
 			Instances.Remove(id);
 		}
 
-		public void Update(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, object[] oldFields,
-		                   object oldVersion, object obj, object rowId, ISessionImplementor session)
+		public async Task Update(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, object[] oldFields,
+		                   object oldVersion, object obj, object rowId, ISessionImplementor session, bool async)
 		{
+			await Task.Yield();
 			Instances[id] = ((Custom)obj).Clone();
+
 		}
 
 		public bool[] PropertyUpdateability

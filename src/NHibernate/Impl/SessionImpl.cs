@@ -487,7 +487,14 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				return FireSave(new SaveOrUpdateEvent(null, obj, this), false).Result;
+				try
+				{
+					return FireSave(new SaveOrUpdateEvent(null, obj, this), false).Result;
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 		}
 
@@ -495,7 +502,14 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				return FireSave(new SaveOrUpdateEvent(entityName, obj, this),false).Result;
+				try
+				{
+					return FireSave(new SaveOrUpdateEvent(entityName, obj, this), false).Result;
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 		}
 
@@ -503,7 +517,21 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireSave(new SaveOrUpdateEvent(entityName, obj, id, this),false).Wait();
+				try
+				{
+					try
+					{
+						FireSave(new SaveOrUpdateEvent(entityName, obj, id, this), false).Wait();
+					}
+					catch (AggregateException e)
+					{
+						throw e.InnerException;
+					}
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 		}
 
@@ -516,7 +544,21 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireSave(new SaveOrUpdateEvent(null, obj, id, this),false).Wait();
+				try
+				{
+					try
+					{
+						FireSave(new SaveOrUpdateEvent(null, obj, id, this), false).Wait();
+					}
+					catch (AggregateException e)
+					{
+						throw e.InnerException;
+					}
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 		}
 
@@ -545,7 +587,14 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireUpdate(new SaveOrUpdateEvent(null, obj, this),false).Wait();
+				try
+				{
+					FireUpdate(new SaveOrUpdateEvent(null, obj, this), false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 		}
 
@@ -553,7 +602,14 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireUpdate(new SaveOrUpdateEvent(entityName, obj, this),false).Wait();
+				try
+				{
+					FireUpdate(new SaveOrUpdateEvent(entityName, obj, this), false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 		}
 
@@ -561,7 +617,14 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireUpdate(new SaveOrUpdateEvent(entityName, obj, id, this),false).Wait();
+				try
+				{
+					FireUpdate(new SaveOrUpdateEvent(entityName, obj, id, this), false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 		}
 
@@ -569,7 +632,14 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireSaveOrUpdate(new SaveOrUpdateEvent(null, obj, this),false).Wait();
+				try
+				{
+					FireSaveOrUpdate(new SaveOrUpdateEvent(null, obj, this), false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 		}
 
@@ -577,7 +647,14 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireSaveOrUpdate(new SaveOrUpdateEvent(entityName, obj, this),false).Wait();
+				try
+				{
+					FireSaveOrUpdate(new SaveOrUpdateEvent(entityName, obj, this), false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 		}
 
@@ -585,7 +662,14 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireSaveOrUpdate(new SaveOrUpdateEvent(entityName, obj, id, this),false).Wait();
+				try
+				{
+					FireSaveOrUpdate(new SaveOrUpdateEvent(entityName, obj, id, this), false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 		}
 
@@ -593,7 +677,14 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireUpdate(new SaveOrUpdateEvent(null, obj, id, this),false).Wait();
+				try
+				{
+					FireUpdate(new SaveOrUpdateEvent(null, obj, id, this), false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 		}
 
@@ -604,7 +695,14 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				return List(query.ToQueryExpression(), new QueryParameters(types, values), false).Result;
+				try
+				{
+					return List(query.ToQueryExpression(), new QueryParameters(types, values), false).Result;
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 		}
 
@@ -651,7 +749,14 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				var plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, enabledFilters);
-				AutoFlushIfRequired(plan.QuerySpaces,false).Wait();
+				try
+				{
+					AutoFlushIfRequired(plan.QuerySpaces, false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 				return plan.Translators;
 			}
 		}
@@ -663,7 +768,14 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(queryExpression, true);
-				AutoFlushIfRequired(plan.QuerySpaces,false).Wait();
+				try
+				{
+					AutoFlushIfRequired(plan.QuerySpaces, false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 				try
@@ -684,7 +796,14 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(queryExpression, true);
-				AutoFlushIfRequired(plan.QuerySpaces,false).Wait();
+				try
+				{
+					AutoFlushIfRequired(plan.QuerySpaces, false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 				try
@@ -814,7 +933,17 @@ namespace NHibernate.Impl
 					// otherwise, we only need to flush if there are in-memory changes
 					// to the queried tables
 					plan = Factory.QueryPlanCache.GetFilterQueryPlan(filter, roleBeforeFlush.Role, shallow, EnabledFilters);
-					if (AutoFlushIfRequired(plan.QuerySpaces,false).Result)
+
+					bool res = false;
+					try
+					{
+						res = AutoFlushIfRequired(plan.QuerySpaces, false).Result;
+					}
+					catch (AggregateException e)
+					{
+						throw e.InnerException;
+					}
+					if (res)
 					{
 						// might need to run a different filter entirely after the flush
 						// because the collection role may have changed
@@ -1146,7 +1275,14 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				LoadEvent loadEvent = new LoadEvent(id, obj, this);
-				FireLoad(loadEvent, LoadEventListener.Reload, false).Wait();
+				try
+				{
+					FireLoad(loadEvent, LoadEventListener.Reload, false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 		}
 
@@ -1201,7 +1337,15 @@ namespace NHibernate.Impl
 				bool success = false;
 				try
 				{
-					FireLoad(@event, LoadEventListener.Load,false).Wait();
+					try
+					{
+						FireLoad(@event, LoadEventListener.Load, false).Wait();
+					}
+
+					catch (AggregateException e)
+					{
+						throw e.InnerException;
+					}
 					if (@event.Result == null)
 					{
 						Factory.EntityNotFoundDelegate.HandleEntityNotFound(entityName, id);
@@ -1221,7 +1365,14 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				var @event = new LoadEvent(id, entityName, lockMode, this);
-				FireLoad(@event, LoadEventListener.Load,false).Wait();
+				try
+				{
+					FireLoad(@event, LoadEventListener.Load, false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 				return @event.Result;
 			}
 		}
@@ -1271,14 +1422,21 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object Get(System.Type clazz, object id, LockMode lockMode)
 		{
-			return this.GetAsync(clazz, id, lockMode, false).Result;
+			try
+			{
+				return this.GetAsync(clazz, id, lockMode, false).Result;
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
 		}
 
 		public async Task<T> GetAsync<T>(object id)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				return (T) await GetAsync(typeof(T), id);
+				return (T)await GetAsync(typeof(T), id);
 			}
 		}
 
@@ -1286,7 +1444,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				return (T) await GetAsync(typeof(T), id, lockMode);
+				return (T)await GetAsync(typeof(T), id, lockMode);
 			}
 		}
 
@@ -1356,12 +1514,19 @@ namespace NHibernate.Impl
 
 		public object Get(string entityName, object id)
 		{
-			return this.GetAsync(entityName, id, false).Result;
+			try
+			{
+				return this.GetAsync(entityName, id, false).Result;
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
 		}
 
-		public async  Task<object> GetAsync(string entityName, object id)
+		public async Task<object> GetAsync(string entityName, object id)
 		{
-			return await this.GetAsync(entityName,id,true);
+			return await this.GetAsync(entityName, id, true);
 		}
 
 		public async Task<object> GetAsync(string entityName, object id, bool async)
@@ -1398,7 +1563,14 @@ namespace NHibernate.Impl
 				}
 
 				LoadEvent loadEvent = new LoadEvent(id, entityName, true, this);
-				FireLoad(loadEvent, LoadEventListener.ImmediateLoad,false).Wait();
+				try
+				{
+					FireLoad(loadEvent, LoadEventListener.ImmediateLoad, false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 				return loadEvent.Result;
 			}
 		}
@@ -1417,7 +1589,14 @@ namespace NHibernate.Impl
 									? LoadEventListener.InternalLoadNullable
 									: (eager ? LoadEventListener.InternalLoadEager : LoadEventListener.InternalLoadLazy);
 				LoadEvent loadEvent = new LoadEvent(id, entityName, true, this);
-				FireLoad(loadEvent, type,false).Wait();
+				try
+				{
+					FireLoad(loadEvent, type, false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 				if (!isNullable)
 				{
 					UnresolvableObjectException.ThrowIfNull(loadEvent.Result, id, entityName);
@@ -1514,12 +1693,19 @@ namespace NHibernate.Impl
 				IFlushEventListener[] flushEventListener = listeners.FlushEventListeners;
 				for (int i = 0; i < flushEventListener.Length; i++)
 				{
-					flushEventListener[i].OnFlush(new FlushEvent(this),false).Wait();
+					try
+					{
+						flushEventListener[i].OnFlush(new FlushEvent(this), false).Wait();
+					}
+					catch (AggregateException e)
+					{
+						throw e.InnerException;
+					}
 				}
 			}
 		}
 
-		public  override async Task FlushAsync()
+		public override async Task FlushAsync()
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -1784,7 +1970,14 @@ namespace NHibernate.Impl
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 				try
 				{
-					plan.PerformList(queryParameters, this, results, false).Wait();
+					try
+					{
+						plan.PerformList(queryParameters, this, results, false).Wait();
+					}
+					catch (AggregateException e)
+					{
+						throw e.InnerException;
+					}
 					success = true;
 				}
 				catch (HibernateException)
@@ -1961,7 +2154,14 @@ namespace NHibernate.Impl
 					spaces.UnionWith(loaders[i].QuerySpaces);
 				}
 
-				AutoFlushIfRequired(spaces,false).Wait();
+				try
+				{
+					AutoFlushIfRequired(spaces, false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 
 				dontFlushFromFind++;
 
@@ -1970,7 +2170,14 @@ namespace NHibernate.Impl
 				{
 					for (int i = size - 1; i >= 0; i--)
 					{
-						ArrayHelper.AddAll(results, loaders[i].List(this,false).Result);
+						try
+						{
+							ArrayHelper.AddAll(results, loaders[i].List(this, false).Result);
+						}
+						catch (AggregateException e)
+						{
+							throw e.InnerException;
+						}
 					}
 					success = true;
 				}
@@ -2064,7 +2271,7 @@ namespace NHibernate.Impl
 				dontFlushFromFind++;
 				try
 				{
-					ArrayHelper.AddAll(results, await loader.List(this, queryParameters,async));
+					ArrayHelper.AddAll(results, await loader.List(this, queryParameters, async));
 					success = true;
 				}
 				finally
@@ -2512,7 +2719,14 @@ namespace NHibernate.Impl
 				IPersistEventListener[] persistEventListener = listeners.PersistEventListeners;
 				for (int i = 0; i < persistEventListener.Length; i++)
 				{
-					persistEventListener[i].OnPersist(@event, copiedAlready,false).Wait();
+					try
+					{
+						persistEventListener[i].OnPersist(@event, copiedAlready, false).Wait();
+					}
+					catch (AggregateException e)
+					{
+						throw e.InnerException;
+					}
 				}
 			}
 		}
@@ -2525,7 +2739,14 @@ namespace NHibernate.Impl
 				IPersistEventListener[] createEventListener = listeners.PersistEventListeners;
 				for (int i = 0; i < createEventListener.Length; i++)
 				{
-					createEventListener[i].OnPersist(@event,false).Wait();
+					try
+					{
+						createEventListener[i].OnPersist(@event, false).Wait();
+					}
+					catch (AggregateException e)
+					{
+						throw e.InnerException;
+					}
 				}
 			}
 		}
@@ -2538,7 +2759,7 @@ namespace NHibernate.Impl
 				IPersistEventListener[] persistEventListener = listeners.PersistOnFlushEventListeners;
 				for (int i = 0; i < persistEventListener.Length; i++)
 				{
-					await persistEventListener[i].OnPersist(@event, copiedAlready,async);
+					await persistEventListener[i].OnPersist(@event, copiedAlready, async);
 				}
 			}
 		}
@@ -2635,7 +2856,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override  async Task<int> ExecuteNativeUpdate(NativeSQLQuerySpecification nativeQuerySpecification, QueryParameters queryParameters, bool async)
+		public override async Task<int> ExecuteNativeUpdate(NativeSQLQuerySpecification nativeQuerySpecification, QueryParameters queryParameters, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2649,7 +2870,7 @@ namespace NHibernate.Impl
 				int result;
 				try
 				{
-					result = await plan.PerformExecuteUpdate(queryParameters, this,async);
+					result = await plan.PerformExecuteUpdate(queryParameters, this, async);
 					success = true;
 				}
 				finally
@@ -2667,7 +2888,7 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(queryExpression, false);
-				await AutoFlushIfRequired(plan.QuerySpaces,async);
+				await AutoFlushIfRequired(plan.QuerySpaces, async);
 
 				bool success = false;
 				int result;

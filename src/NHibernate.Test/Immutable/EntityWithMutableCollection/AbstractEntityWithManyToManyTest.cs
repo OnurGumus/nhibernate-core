@@ -5,6 +5,7 @@ using NHibernate;
 using NHibernate.Impl;
 using NHibernate.Criterion;
 using NUnit.Framework;
+using System;
 
 namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 {
@@ -951,6 +952,15 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			{
 				t.Commit();
 				Assert.That(isContractVersioned, Is.False);
+			}
+			catch (AggregateException ex)
+			{
+				var e = ex.InnerException as StaleStateException;
+				if(e != null)
+				{
+					Assert.That(isContractVersioned, Is.True);
+					t.Rollback();
+				}
 			}
 			catch (StaleObjectStateException)
 			{

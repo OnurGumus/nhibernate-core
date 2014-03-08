@@ -196,7 +196,7 @@ namespace NHibernate.Persister.Collection
 								}
 								else
 								{
-									 deleteExpectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(st,async), st);
+									deleteExpectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(st, async), st);
 								}
 								count++;
 							}
@@ -261,7 +261,14 @@ namespace NHibernate.Persister.Collection
 								}
 								else
 								{
-									insertExpectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st,false).Result, st);
+									try
+									{
+										insertExpectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st, false).Result, st);
+									}
+									catch (AggregateException e)
+									{
+										throw e.InnerException;
+									}
 								}
 								count++;
 							}

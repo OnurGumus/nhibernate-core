@@ -160,7 +160,14 @@ namespace NHibernate.Impl
 				{
 					for (int i = size - 1; i >= 0; i--)
 					{
-						ArrayHelper.AddAll(results, loaders[i].List(this,false).Result);
+						try
+						{
+							ArrayHelper.AddAll(results, loaders[i].List(this, false).Result);
+						}
+						catch (AggregateException e)
+						{
+							throw e.InnerException;
+						}
 					}
 					success = true;
 				}
@@ -180,7 +187,7 @@ namespace NHibernate.Impl
 				temporaryPersistenceContext.Clear();
 			}
 		}
-		
+
 		public override IEnumerable Enumerable(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
 			throw new NotImplementedException();
@@ -253,7 +260,7 @@ namespace NHibernate.Impl
 				var success = false;
 				try
 				{
-					ArrayHelper.AddAll(results, await loader.List(this, queryParameters,async));
+					ArrayHelper.AddAll(results, await loader.List(this, queryParameters, async));
 					success = true;
 				}
 				finally
@@ -497,11 +504,25 @@ namespace NHibernate.Impl
 				}
 				if (id == IdentifierGeneratorFactory.PostInsertIndicator)
 				{
-					id = persister.Insert(state, entity, this,false).Result;
+					try
+					{
+						id = persister.Insert(state, entity, this, false).Result;
+					}
+					catch (AggregateException e)
+					{
+						throw e.InnerException;
+					}
 				}
 				else
 				{
-					persister.Insert(id, state, entity, this,false).Wait();
+					try
+					{
+						persister.Insert(id, state, entity, this, false).Wait();
+					}
+					catch (AggregateException e)
+					{
+						throw e.InnerException;
+					}
 				}
 				persister.SetIdentifier(entity, id, EntityMode.Poco);
 				return id;
@@ -542,7 +563,14 @@ namespace NHibernate.Impl
 				{
 					oldVersion = null;
 				}
-				 persister.Update(id, state, null, false, null, oldVersion, entity, null, this,false).Wait();
+				try
+				{
+					persister.Update(id, state, null, false, null, oldVersion, entity, null, this, false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 		}
 
@@ -568,7 +596,14 @@ namespace NHibernate.Impl
 				IEntityPersister persister = GetEntityPersister(entityName, entity);
 				object id = persister.GetIdentifier(entity, EntityMode.Poco);
 				object version = persister.GetVersion(entity, EntityMode.Poco);
-				persister.Delete(id, version, entity, this,false).Wait();
+				try
+				{
+					persister.Delete(id, version, entity, this, false).Wait();
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 		}
 
@@ -608,16 +643,24 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <returns> a detached entity instance </returns>
 		public object Get(string entityName, object id, LockMode lockMode)
-		{			
+		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				object result = Factory.GetEntityPersister(entityName).Load(id, null, lockMode, this,false).Result;
-				if (temporaryPersistenceContext.IsLoadFinished)
+				try
 				{
-					temporaryPersistenceContext.Clear();
+					object result = Factory.GetEntityPersister(entityName).Load(id, null, lockMode, this, false).Result;
+
+					if (temporaryPersistenceContext.IsLoadFinished)
+					{
+						temporaryPersistenceContext.Clear();
+					}
+					return result;
 				}
-				return result;
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 		}
 
@@ -708,7 +751,15 @@ namespace NHibernate.Impl
 				try
 				{
 					FetchProfile = "refresh";
-					result = persister.Load(id, entity, lockMode, this, false).Result;
+					try
+					{
+						result = persister.Load(id, entity, lockMode, this, false).Result;
+					}
+
+					catch (AggregateException e)
+					{
+						throw e.InnerException;
+					}
 				}
 				finally
 				{
@@ -934,7 +985,7 @@ namespace NHibernate.Impl
 				int result;
 				try
 				{
-					result =  await plan.PerformExecuteUpdate(queryParameters, this,async);
+					result = await plan.PerformExecuteUpdate(queryParameters, this, async);
 					success = true;
 				}
 				finally

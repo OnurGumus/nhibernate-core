@@ -6,6 +6,7 @@ using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using System.Threading.Tasks;
+using System;
 
 namespace NHibernate.Id.Insert
 {
@@ -36,7 +37,7 @@ namespace NHibernate.Id.Insert
 				try
 				{
 					binder.BindValues(insert);
-					await session.Batcher.ExecuteNonQuery(insert,async);
+					await session.Batcher.ExecuteNonQuery(insert, async);
 				}
 				finally
 				{
@@ -46,39 +47,46 @@ namespace NHibernate.Id.Insert
 			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
-				                                 "could not insert: " + persister.GetInfoString(), insertSQL.Text);
+												 "could not insert: " + persister.GetInfoString(), insertSQL.Text);
 			}
 
 			SqlString selectSQL = SelectSQL;
-			using (new SessionIdLoggingContext(session.SessionId)) 
-			try
-			{
-				//fetch the generated id in a separate query
-				DbCommand idSelect = session.Batcher.PrepareCommand(CommandType.Text, selectSQL, ParametersTypes);
+			using (new SessionIdLoggingContext(session.SessionId))
 				try
 				{
-					BindParameters(session, idSelect, binder.Entity);
-					IDataReader rs = session.Batcher.ExecuteReader(idSelect, false).Result;
+					//fetch the generated id in a separate query
+					DbCommand idSelect = session.Batcher.PrepareCommand(CommandType.Text, selectSQL, ParametersTypes);
 					try
 					{
-						return GetResult(session, rs, binder.Entity);
+						BindParameters(session, idSelect, binder.Entity);
+						try
+						{
+							IDataReader rs = session.Batcher.ExecuteReader(idSelect, false).Result;
+							try
+							{
+								return GetResult(session, rs, binder.Entity);
+							}
+							finally
+							{
+								session.Batcher.CloseReader(rs);
+							}
+						}
+						catch (AggregateException e)
+						{
+							throw e.InnerException;
+						}
 					}
 					finally
 					{
-						session.Batcher.CloseReader(rs);
+						session.Batcher.CloseCommand(idSelect, null);
 					}
 				}
-				finally
+				catch (DbException sqle)
 				{
-					session.Batcher.CloseCommand(idSelect, null);
+					throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
+													 "could not retrieve generated id after insert: " + persister.GetInfoString(),
+													 insertSQL.Text);
 				}
-			}
-			catch (DbException sqle)
-			{
-				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
-				                                 "could not retrieve generated id after insert: " + persister.GetInfoString(),
-				                                 insertSQL.Text);
-			}
 		}
 
 		#endregion

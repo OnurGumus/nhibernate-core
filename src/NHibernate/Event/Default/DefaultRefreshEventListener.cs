@@ -59,7 +59,7 @@ namespace NHibernate.Event.Default
 				EntityKey key = source.GenerateEntityKey(id, persister);
 				if (source.PersistenceContext.GetEntry(key) != null)
 				{
-					throw new PersistentObjectException("attempted to refresh transient instance when persistent instance was already associated with the Session: " + 
+					throw new PersistentObjectException("attempted to refresh transient instance when persistent instance was already associated with the Session: " +
 						MessageHelper.InfoString(persister, id, source.Factory));
 				}
 			}
@@ -106,20 +106,27 @@ namespace NHibernate.Event.Default
 
 			string previousFetchProfile = source.FetchProfile;
 			source.FetchProfile = "refresh";
-			object result = persister.Load(id, obj, @event.LockMode, source, false).Result;
-			
-			if (result != null)
-				if (!persister.IsMutable)
-					source.SetReadOnly(result, true);
-				else
-					source.SetReadOnly(result, (e == null ? source.DefaultReadOnly : e.IsReadOnly));
-			
-			source.FetchProfile = previousFetchProfile;
+			try
+			{
+				object result = persister.Load(id, obj, @event.LockMode, source, false).Result;
 
-			// NH Different behavior : we are ignoring transient entities without throw any kind of exception
-			// because a transient entity is "self refreshed"
-			if (!ForeignKeys.IsTransient(persister.EntityName, obj, result == null, @event.Session))
-				UnresolvableObjectException.ThrowIfNull(result, id, persister.EntityName);
+				if (result != null)
+					if (!persister.IsMutable)
+						source.SetReadOnly(result, true);
+					else
+						source.SetReadOnly(result, (e == null ? source.DefaultReadOnly : e.IsReadOnly));
+
+				source.FetchProfile = previousFetchProfile;
+
+				// NH Different behavior : we are ignoring transient entities without throw any kind of exception
+				// because a transient entity is "self refreshed"
+				if (!ForeignKeys.IsTransient(persister.EntityName, obj, result == null, @event.Session))
+					UnresolvableObjectException.ThrowIfNull(result, id, persister.EntityName);
+			}
+			catch (AggregateException ex)
+			{
+				throw ex.InnerException;
+			}
 		}
 
 		// Evict collections from the factory-level cache

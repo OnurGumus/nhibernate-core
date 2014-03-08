@@ -405,8 +405,7 @@ namespace NHibernate.Impl
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				throw new NotImplementedException();
-				//return new FutureValue<T>(List<T>);
+				return new FutureValue<T>(List<T>);
 			}
 
 			session.FutureCriteriaBatch.Add<T>(this);

@@ -1869,8 +1869,8 @@ public partial class HqlParser : Parser
             	}
 
 
-            				if (((f != null) ? ((IASTNode)f.Tree) : null) == null && !filter) 
-            					throw new RecognitionException("FROM expected (non-filter queries must contain a FROM clause)");
+            				if (((f != null) ? ((IASTNode)f.Tree) : null) == null && !filter)
+								throw new RecognitionException("FROM expected (non-filter queries must contain a FROM clause)", input);
             			
 
 

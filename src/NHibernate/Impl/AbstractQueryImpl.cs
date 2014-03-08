@@ -239,7 +239,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		private string ExpandParameterList(string query, string name, TypedValue typedList, IDictionary<string, TypedValue> namedParamsCopy)
 		{
-			var vals = (IEnumerable) typedList.Value;
+			var vals = (IEnumerable)typedList.Value;
 			var type = typedList.Type;
 
 			var typedValues = (from object value in vals
@@ -251,13 +251,13 @@ namespace NHibernate.Impl
 				namedParamsCopy[name] = typedValues[0];
 				return query;
 			}
-			
+
 			var isJpaPositionalParam = parameterMetadata.GetNamedParameterDescriptor(name).JpaStyle;
 			var aliases = new string[typedValues.Count];
 			for (var index = 0; index < typedValues.Count; index++)
 			{
 				var value = typedValues[index];
-				var alias =  (isJpaPositionalParam ? 'x' + name : name + StringHelper.Underscore) + index + StringHelper.Underscore;
+				var alias = (isJpaPositionalParam ? 'x' + name : name + StringHelper.Underscore) + index + StringHelper.Underscore;
 				namedParamsCopy[alias] = value;
 				aliases[index] = ParserHelper.HqlVariablePrefix + alias;
 			}
@@ -328,7 +328,7 @@ namespace NHibernate.Impl
 
 		public IQuery SetParameter<T>(string name, T val)
 		{
-			return SetParameter(name, val, parameterMetadata.GetNamedParameterExpectedType(name) ?? GuessType(typeof (T)));
+			return SetParameter(name, val, parameterMetadata.GetNamedParameterExpectedType(name) ?? GuessType(typeof(T)));
 		}
 
 		public IQuery SetParameter(string name, object val)
@@ -649,7 +649,7 @@ namespace NHibernate.Impl
 				}
 				if (obj is IEnumerable && !(obj is string))
 				{
-					SetParameterList(namedParam, (IEnumerable) obj);
+					SetParameterList(namedParam, (IEnumerable)obj);
 				}
 				else
 				{
@@ -673,7 +673,7 @@ namespace NHibernate.Impl
 					var obj = getter.Get(bean);
 					if (typeof(IEnumerable).IsAssignableFrom(retType) && retType != typeof(string))
 					{
-						SetParameterList(namedParam, (IEnumerable) obj);
+						SetParameterList(namedParam, (IEnumerable)obj);
 					}
 					else
 					{
@@ -699,9 +699,9 @@ namespace NHibernate.Impl
 			}
 			if (type == null)
 			{
-				throw new ArgumentNullException("type","Can't determine the type of parameter-list elements.");
+				throw new ArgumentNullException("type", "Can't determine the type of parameter-list elements.");
 			}
-			if(!vals.Any())
+			if (!vals.Any())
 			{
 				throw new QueryException(string.Format("An empty parameter-list generates wrong SQL; parameter name '{0}'", name));
 			}
@@ -767,13 +767,13 @@ namespace NHibernate.Impl
 		{
 			get { return session.Factory.GetReturnAliases(queryString); }
 		}
-		
+
 		// TODO: maybe call it RowSelection ?
 		public RowSelection Selection
 		{
 			get { return selection; }
 		}
-		
+
 		public IQuery SetMaxResults(int maxResults)
 		{
 			selection.MaxRows = maxResults;
@@ -887,7 +887,14 @@ namespace NHibernate.Impl
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return ListAsync<T>().Result;
+				try
+				{
+					return ListAsync<T>().Result;
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
 
 			session.FutureQueryBatch.Add<T>(this);
@@ -898,9 +905,16 @@ namespace NHibernate.Impl
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return new FutureValue<T>(() => (ListAsync<T>().Result));
+				try
+				{
+					return new FutureValue<T>(() => (ListAsync<T>().Result));
+				}
+				catch (AggregateException e)
+				{
+					throw e.InnerException;
+				}
 			}
-			
+
 			session.FutureQueryBatch.Add<T>(this);
 			return session.FutureQueryBatch.GetFutureValue<T>();
 		}
@@ -922,7 +936,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		protected internal abstract IDictionary<string, LockMode> LockModes { get;}
+		protected internal abstract IDictionary<string, LockMode> LockModes { get; }
 
 		#endregion
 
@@ -936,7 +950,9 @@ namespace NHibernate.Impl
 		public abstract Task<IList> ListAsync();
 		public abstract Task<IList> ListAsync(bool async);
 		public abstract Task ListAsync(IList results);
+		public abstract Task ListAsync(IList results, bool async);
 		public abstract Task<IList<T>> ListAsync<T>();
+		public abstract Task<IList<T>> ListAsync<T>(bool async);
 		public async Task<T> UniqueResultAsync<T>()
 		{
 			return await this.UniqueResultAsync<T>(true);
@@ -1053,29 +1069,48 @@ namespace NHibernate.Impl
 		protected internal abstract IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters);
 
 
-		public IList List()
+		public abstract IList List();
+		/*
 		{
 			return this.ListAsync(false).Result;
-		}
+		}*/
 
-		public void List(IList results)
-		{
-			throw new NotImplementedException();
+		public abstract void List(IList results);
+		/*{
+			this.ListAsync(results, false).Wait();
 		}
+			*/
+		public abstract IList<T> List<T>();
+		/*
+	{
+		return this.ListAsync<T>(false).Result;
+	}*/
 
-		public IList<T> List<T>()
+
+
+		public T UniqueResult<T>()
 		{
-			throw new NotImplementedException();
+			try
+			{
+				return this.UniqueResultAsync<T>(false).Result;
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
 		}
 
 		public object UniqueResult()
 		{
-			throw new NotImplementedException();
-		}
+			try
+			{
+				return this.UniqueResultAsync(false).Result;
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
 
-		public T UniqueResult<T>()
-		{
-			throw new NotImplementedException();
 		}
 	}
 }
