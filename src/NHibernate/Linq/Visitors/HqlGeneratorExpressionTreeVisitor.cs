@@ -20,6 +20,14 @@ namespace NHibernate.Linq.Visitors
 
 		public static HqlTreeNode Visit(Expression expression, VisitorParameters parameters)
 		{
+			var conditionalExpr = expression as ConditionalExpression;
+			if(conditionalExpr != null)
+			{
+				if(conditionalExpr.IfTrue.ToString() == "null")
+				{
+					expression = conditionalExpr.IfFalse;
+				}
+			}
 			return new HqlGeneratorExpressionTreeVisitor(parameters).VisitExpression(expression);
 		}
 
@@ -442,7 +450,7 @@ namespace NHibernate.Linq.Visitors
 							   : null);
 
 			var @case = _hqlTreeBuilder.Case(new[] {_hqlTreeBuilder.When(test, ifTrue)}, ifFalse);
-
+			
 			return (expression.Type == typeof (bool) || expression.Type == (typeof (bool?)))
 					   ? (HqlTreeNode) _hqlTreeBuilder.Equality(@case, _hqlTreeBuilder.True())
 					   : _hqlTreeBuilder.Cast(@case, expression.Type);

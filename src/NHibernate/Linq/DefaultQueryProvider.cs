@@ -130,7 +130,7 @@ namespace NHibernate.Linq
 
 		protected virtual async Task<object> ExecuteQuery(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery, bool async)
 		{
-			IList results = await query.ListAsync();
+			IList results = (async) ? await query.ListAsync() : query.List();
 
 			if (nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer != null)
 			{
