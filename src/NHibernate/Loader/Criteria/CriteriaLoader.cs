@@ -29,6 +29,8 @@ namespace NHibernate.Loader.Criteria
 		//the user visible aliases, which are unknown to the superclass,
 		//these are not the actual "physical" SQL aliases
 		private readonly string[] userAliases;
+		private readonly bool[] includeInResultRow;
+		private readonly int resultRowLength;
 
 		public CriteriaLoader(IOuterJoinLoadable persister, ISessionFactoryImplementor factory, CriteriaImpl rootCriteria,
 							  string rootEntityName, IDictionary<string, IFilter> enabledFilters)
@@ -45,6 +47,8 @@ namespace NHibernate.Loader.Criteria
 
 			userAliases = walker.UserAliases;
 			resultTypes = walker.ResultTypes;
+			includeInResultRow = walker.IncludeInResultRow;
+			resultRowLength = ArrayHelper.CountTrue(IncludeInResultRow);
 
 			PostInstantiate();
 		}
@@ -71,13 +75,41 @@ namespace NHibernate.Loader.Criteria
 			get { return resultTypes; }
 		}
 
-		public async Task<IList> List(ISessionImplementor session, bool async)
+	
+		protected string[] ResultRowAliases
+		{
+			get { return userAliases; }
+		}
+
+		protected override bool[] IncludeInResultRow
+		{
+			get { return includeInResultRow; }
+		}
+
+                public async Task<IList> List(ISessionImplementor session, bool async)
 		{
 			return await List(session, translator.GetQueryParameters(), querySpaces, resultTypes,false);
 		}
 
+		protected override IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)
+		{
+			return translator.RootCriteria.ResultTransformer;
+		}
+
+		protected override bool AreResultSetRowsTransformedImmediately()
+		{
+			return true;
+		}
+
 		protected override object GetResultColumnOrRow(object[] row, IResultTransformer customResultTransformer, IDataReader rs,
 													   ISessionImplementor session)
+		{
+			return ResolveResultTransformer(customResultTransformer)
+				.TransformTuple(GetResultRow(row, rs, session), ResultRowAliases);
+		}
+
+
+		protected override object[] GetResultRow(object[] row, IDataReader rs, ISessionImplementor session)
 		{
 			object[] result;
 
@@ -105,14 +137,25 @@ namespace NHibernate.Loader.Criteria
 			}
 			else
 			{
-				result = row;
+				result = ToResultRow(row);
+			}
+			return result;
+		}
+
+
+		private object[] ToResultRow(object[] row)
+		{
+			if (resultRowLength == row.Length)
+				return row;
+
+			var result = new object[resultRowLength];
+			int j = 0;
+			for (int i = 0; i < row.Length; i++)
+			{
+				if (includeInResultRow[i])
+					result[j++] = row[i];
 			}
 
-			if (customResultTransformer == null)
-			{
-				// apply the defaut transformer of criteria aka RootEntityResultTransformer
-				return result[result.Length - 1];
-			}
 			return result;
 		}
 
@@ -166,20 +209,9 @@ namespace NHibernate.Loader.Criteria
 			return lockModesArray;
 		}
 
-		public override IList GetResultList(IList results, IResultTransformer customResultTransformer)
+		public override IList GetResultList(IList results, IResultTransformer resultTransformer)
 		{
-			if (customResultTransformer == null)
-			{
-				// apply the defaut transformer of criteria aka RootEntityResultTransformer
-				return results;
-			}
-			for (int i = 0; i < results.Count; i++)
-			{
-				var row = results[i] as object[] ?? new object[] { results[i] };
-				object result = customResultTransformer.TransformTuple(row, translator.HasProjection ? translator.ProjectedAliases : userAliases);
-				results[i] = result;
-			}
-			return customResultTransformer.TransformList(results);
+			return ResolveResultTransformer(resultTransformer).TransformList(results);
 		}
 
 		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications()
