@@ -5,6 +5,7 @@ using NHibernate.Linq.Visitors;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Collections;
+using System.Collections.ObjectModel;
 
 namespace NHibernate.Linq.Clauses
 {

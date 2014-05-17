@@ -24,3 +24,5 @@ src/packages/log4net.2.0.3/lib/net35-full/log4net.xml
 src/packages/log4net.2.0.3/lib/net40-client/log4net.xml
 src/packages/log4net.2.0.3/lib/net40-full/log4net.xml
 src/packages/log4net.2.0.3/log4net.2.0.3.nupkg
+src/packages/Remotion.Linq.1.15.15.0/Remotion.Linq.1.15.15.0.nupkg
+src/packages/Remotion.Linq.1.15.15.0/lib/portable-net45+wp80+wpa81+win/Remotion.Linq.xml
