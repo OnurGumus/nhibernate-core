@@ -3647,4 +3647,4 @@ copy /y "..\..\..\NHibernate.DomainModel\ABC.hbm.xml" "ABC.hbm.xml"</PostBuildEv
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
 </Project>
-</Project>
+
