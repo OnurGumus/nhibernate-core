@@ -1,7 +1,7 @@
-Build vNext
+Build 4.0.0.Alpha2
 =============================
 
-** Known BREAKING CHANGES from NH4.0.0.Alpha1 to 4.0.0.Alpha1
+** Known BREAKING CHANGES from NH4.0.0.Alpha1 to 4.0.0.Alpha2
 
     Fixed mapping by code behaviour when map child subclasses (see NH-3135 and NH-3269)
     
@@ -10,6 +10,41 @@ Build vNext
     directly from AbstractComponentTuplizer need to add this line of code in their constructor:
       instantiator = BuildInstantiator(component);
 
+
+** Bug
+    * [NH-2380] - Cannot perform distinct when selecting an anonymous type
+    * [NH-2486] - Distinct() extension method problem with Object Initialisers
+    * [NH-2655] - DbType.Double should be float(53) instead of DOUBLE PRECISION in the SQL-Severer2000 Dialect
+    * [NH-2692] - Using Any() on a collection of components results in invalid SQL: Column of parent ID is used instead of key column
+    * [NH-2861] - <filter> doesn't work in conjunction with <join>
+    * [NH-2865] - "Expression type 'NhSumExpression' is not supported by this SelectClauseVisitor."
+    * [NH-2961] - "Index was outside the bounds of the array" error when executing cached query for single result with distinct results transformer
+    * [NH-3135] - Collection of Components in BaseClass cannot be mapped to a different table
+    * [NH-3269] - UniqueKey on property of base class will affect all inherited class
+    * [NH-3392] - Add ability to expand subcollections with composites ids with WCF Data Services
+    * [NH-3417] - Nested projection of subcollection throws
+    * [NH-3423] - MemberInitExpression causing problem in HqlGeneratorExpressionTreeVisitor (WCF DS)
+    * [NH-3571] - Linq does not support dynamic components inside components
+    * [NH-3579] - Session leak in the Query Plan Cache
+    * [NH-3586] - Firebird Decimals
+    * [NH-3588] - Creating and dropping of Temporary Tables in an isolated transaction is broken
+    * [NH-3590] - Detached entity with set of primitives throws
+    * [NH-3591] - IncrementGenerator unnecessarily creates a new connection to the db
+
+** Improvement
+    * [NH-1082] - Exceptions thrown in IInterceptor.BeforeTransactionCompletion should cause the transaction to be rolled back
+    * [NH-3041] - Expression-based PropertyRef missing in OneToOne mapping
+    * [NH-3072] - OneToManyPersister improvements
+    * [NH-3141] - Don't fetch id from proxy target
+    * [NH-3437] - Turn SqlMethods.Like into an extension method
+
+
+** Patch
+    * [NH-3558] - Table check and enhanced id generators in Mapping By Code
+    * [NH-3559] - UnionSubclassEntityPersister does not quote column names
+
+** Task
+    * [NH-3363] - Refactor Loader/Result Transformer interaction to match Hibernate
 
 Build 4.0.0.Alpha1
 =============================
@@ -125,6 +160,56 @@ Build 4.0.0.Alpha1
     * [NH-3346] - Remove members obsolete in NH3 from NH4
     * [NH-3347] - Remove obsolete dialects for NH4
 
+Build 3.4.0.CR1
+=============================
+
+** Sub-task
+    * [NH-3434] - Need to be sure NH-3428 is resolved in 3.Next.  
+
+
+** Bug
+    * [NH-2128] - Interceptor fires AfterTransactionCompletion too many times with distributed transactions and user-supplied connections
+    * [NH-2921] - IsSpecialName of getter/setter method of proxy property returns false
+    * [NH-2923] - Extra lazy indexed collection throws InvalidCastException fetching Count
+    * [NH-2943] - Mapping XmlDocument (.NET) to XmlType (Oracle). Class XmlDocType not working.
+    * [NH-2963] - Validation on a collection property (mapped with Loquacious config) raise an exception [Invalid expression type: Expected ExpressionType.MemberAccess, Found Convert]
+    * [NH-3103] - ManyToAny ByCode does not use field customizer 
+    * [NH-3140] - Bag ManyToMany column is ignored if it's the same as the child entity name and is replaced with "elt" in the sql.
+    * [NH-3190] - QuerySyntaxException is thrown when where contains subselect that matches bool value
+    * [NH-3234] - Merge is failing with "Unable to resolve property"
+    * [NH-3237] - Max and Min aggregate expressions do not work for custom UserType due to unnecessary HQL Cast
+    * [NH-3277] - LINQ Projection of Int64 using ToString method causes "cast as char" instead of "cast as nvarchar" in MsSqlCe dialect
+    * [NH-3280] - Mapping OneToOne doesn't work for inherited members
+    * [NH-3315] - Distinct paging problem with alias SQL Server 2005
+    * [NH-3405] - Cannot Use XDocument When Setting Wrap Resultsets
+    * [NH-3496] - NHibernate SqlServer2012Dialect drop sequence bug
+    * [NH-3505] - Stateless sessions fail to save relationships pointing to proxies when versioning is enabled
+    * [NH-3572] - AfterTransactionCompletion called twice if a distributed transaction is rolled back
+    * [NH-3592] - Failed to execute multi criteria with Ms Sql Ce 4.0
+    * [NH-3614] - Cannot create project an enumerable of non-mapped objects (List<string>)
+    * [NH-3615] - Incorrect assumption that namespace always exists
+
+** Improvement
+    * [NH-2005] - hql concat function not registered in MsSqlCeDialect
+    * [NH-2958] - Delay creation of instance of XmlSerializer (loading xml assembly) until its needed.
+    * [NH-3465] - Add support of IIF function for Oracle
+    * [NH-3466] - Register MySQL functions
+    * [NH-3467] - Add support of 2-arg LOCATE function
+    * [NH-3608] - AbstractSessionImpl abstract method visibility
+
+** New Feature
+    * [NH-2405] - MySQL5InnoDBDialect
+    * [NH-3192] - MsSqlCeDialect should override date manipulation functions
+    * [NH-3193] - MsSqlCeDialect should correct override string manipulation functions
+    * [NH-3194] - MsSqlCe40Dialect should support variable limits
+    * [NH-3195] - MsSqlCeDialect should support TOP limit
+    * [NH-3196] - MsSqlCeDialect should support guid.native id generator
+
+** Patch
+    * [NH-2996] - MySQL 5.5 + .NET Connector 6.2+ and GUIDs: Need to use CHAR(36)
+    * [NH-3209] - DateTimeOffset properties have not been considered; only the properties of DateTime have been considered
+
+
 Build 3.3.3.SP1
 =============================
 
@@ -151,6 +236,7 @@ BEWARE: In versions prior to 3.3.3.CR1, the handling of the LINQ Take() method
 
 ** Bug
     * [NH-2408] - SQL Server pessimistic locking syntax incorrect for union-subclass
+    * [NH-3096] - Linq - does not support GetValueOrDefault()
     * [NH-3109] - Rounding float values in aggregate functions with group by statements (MySQL).
     * [NH-3324] - HQL: ArgumentNullException when using LEFT OUTER JOIN and SetMaxResults
     * [NH-3408] - System.IndexOutOfRangeException when using Contains on a List<byte[]>

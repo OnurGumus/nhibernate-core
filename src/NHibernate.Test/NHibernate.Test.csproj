@@ -270,6 +270,7 @@
     <Compile Include="EngineTest\NativeSQLQueryScalarReturnTest.cs" />
     <Compile Include="EngineTest\NativeSQLQuerySpecificationTest.cs" />
     <Compile Include="Events\DisposableListenersTest.cs" />
+    <Compile Include="ExceptionsTest\FbExceptionConverterExample.cs" />
     <Compile Include="ExceptionsTest\NullQueryTest.cs" />
     <Compile Include="ExpressionTest\RestrictionsFixture.cs" />
     <Compile Include="Criteria\Student.cs" />
@@ -708,6 +709,8 @@
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
     <Compile Include="Linq\ByMethod\DistinctTests.cs" />
     <Compile Include="Component\Basic\ComponentWithUniqueConstraintTests.cs" />
+    <Compile Include="NHSpecificTest\NH3620\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3620\TwoBlobs.cs" />
     <Compile Include="NHSpecificTest\NH1082\SynchronizationThatThrowsExceptionAtBeforeTransactionCompletion.cs" />
     <Compile Include="NHSpecificTest\NH2756\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2756\Model.cs" />
@@ -733,6 +736,10 @@
     <Compile Include="NHSpecificTest\NH1818\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH1818\Fixture1818.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\ClassWithoutNamespaceTests.cs" />
+    <Compile Include="NHSpecificTest\NH1882\Author.cs" />
+    <Compile Include="NHSpecificTest\NH1882\Book.cs" />
+    <Compile Include="NHSpecificTest\NH1882\Publisher.cs" />
+    <Compile Include="NHSpecificTest\NH1882\TestCollectionInitializingDuringFlush.cs" />
     <Compile Include="NHSpecificTest\NH3614\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3614\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3505\Student.cs" />
@@ -745,6 +752,8 @@
     <Compile Include="MappingByCode\IntegrationTests\NH3140\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3428\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3428\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3316\ByCodeFixture.cs" />
+    <Compile Include="NHSpecificTest\NH3316\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3408\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3408\Model.cs" />
     <Compile Include="NHSpecificTest\NH2297\CustomCompositeUserType.cs" />
@@ -1182,6 +1191,8 @@
     <Compile Include="NHSpecificTest\NH2985\Model.cs" />
     <Compile Include="NHSpecificTest\NH2860\ClassA.cs" />
     <Compile Include="NHSpecificTest\NH2860\SampleTest.cs" />
+    <Compile Include="NHSpecificTest\NH3641\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH3641\TestFixture.cs" />
     <Compile Include="NHSpecificTest\Properties\CompositePropertyRefTest.cs" />
     <Compile Include="NHSpecificTest\Properties\DynamicEntityTest.cs" />
     <Compile Include="NHSpecificTest\Properties\Model.cs" />
@@ -3068,6 +3079,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH3614\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3505\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3428\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3641\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3408\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2408\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2297\MappingsNames.hbm.xml" />
@@ -3394,6 +3406,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1810\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1092\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1507\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3620\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1044\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1427\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1531\Mappings.hbm.xml" />
@@ -3633,4 +3646,5 @@ copy /y "..\..\..\NHibernate.DomainModel\ABC.hbm.xml" "ABC.hbm.xml"</PostBuildEv
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
+</Project>
 </Project>
