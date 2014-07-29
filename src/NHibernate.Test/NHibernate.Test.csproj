@@ -711,6 +711,10 @@
     <Compile Include="Component\Basic\ComponentWithUniqueConstraintTests.cs" />
     <Compile Include="NHSpecificTest\NH3620\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3620\TwoBlobs.cs" />
+    <Compile Include="NHSpecificTest\NH3455\Address.cs" />
+    <Compile Include="NHSpecificTest\NH3455\PersonDto.cs" />
+    <Compile Include="NHSpecificTest\NH3455\Person.cs" />
+    <Compile Include="NHSpecificTest\NH3455\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1082\SynchronizationThatThrowsExceptionAtBeforeTransactionCompletion.cs" />
     <Compile Include="NHSpecificTest\NH2756\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2756\Model.cs" />
@@ -735,11 +739,15 @@
     <Compile Include="NHSpecificTest\NH3058\SampleTest.cs" />
     <Compile Include="NHSpecificTest\NH1818\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH1818\Fixture1818.cs" />
+    <Compile Include="NHSpecificTest\NH1863\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH1863\Fixture.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\ClassWithoutNamespaceTests.cs" />
     <Compile Include="NHSpecificTest\NH1882\Author.cs" />
     <Compile Include="NHSpecificTest\NH1882\Book.cs" />
     <Compile Include="NHSpecificTest\NH1882\Publisher.cs" />
     <Compile Include="NHSpecificTest\NH1882\TestCollectionInitializingDuringFlush.cs" />
+    <Compile Include="NHSpecificTest\NH2049\Model.cs" />
+    <Compile Include="NHSpecificTest\NH2049\Fixture2049.cs" />
     <Compile Include="NHSpecificTest\NH3614\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3614\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3505\Student.cs" />
@@ -3060,6 +3068,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH1291AnonExample\Mappings.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="NHSpecificTest\NH3455\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3590\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3377\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2865\Mappings.hbm.xml" />
@@ -3076,6 +3085,8 @@
     <EmbeddedResource Include="NHSpecificTest\NH3058\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2985\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1818\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH2049\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH1863\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3614\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3505\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3428\Mappings.hbm.xml" />
