@@ -68,6 +68,8 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
 
+			RegisterFunction("round", new StandardSQLFunction("round"));
+
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlServerCeDriver";
 			DefaultProperties[Environment.PrepareSql] = "false";
 		}
@@ -190,6 +192,15 @@ namespace NHibernate.Dialect
 				return 6;
 			}
 			throw new NotSupportedException("The query should start with 'SELECT' or 'SELECT DISTINCT'");
+		}
+
+		public override long TimestampResolutionInTicks
+		{
+			get
+			{
+				// MS SQL resolution is actually 3.33 ms, rounded here to 10 ms
+				return TimeSpan.TicksPerMillisecond*10L;
+			}
 		}
 	}
 }

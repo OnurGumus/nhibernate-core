@@ -1,10 +1,89 @@
-Build 4.0.0.XXXX
+Build 4.0.0.GA
 =============================
 
-** Known BREAKING CHANGES from NH4.0.0.Alpha2 to 4.0.0.Alpha1
+** Known BREAKING CHANGES from NH3.3.3.GA to 4.0.0.GA
 
+    NHibernate now targets .Net 4.0. Many uses of set types from Iesi.Collections have
+    now been changed to use corresponding types from the BCL. The API for these types
+    are slightly different.
+
+    Support for persistent non-generic collections removed. Use the generic counterparts instead.
+
+    ##### Possible Breaking Changes #####
+        * IDeleteEventListener, IEventSource: Use generic ISet<> instead of non-generic in method signatures.
+        * SqlString.Parts removed. Use SqlString.Count and SqlString.GetEnumerator().
+        * IPersistentCollection.GetSnapshot() now returns object instead of ICollection. The snapshot should be opaque to outside code.
+        * Removed IsDiscriminatorFormula, DiscriminatorFormula and GenerateSelectString from UnionSubclassEntityPersister class.
+        * Removed ManagedWebSessionContext. Any configuration files which use the "managed_web" session context should now use "web"
+        * SybaseASADialect removed: Use SybaseSQLAnywhere10Dialect instead.
+        * ASA10ClientDriver, ASAClientDriver and SQLiteDriver removed: Use SybaseSQLAnywhereDriver, SybaseAsaClientDriver, SQLite20Driver instead.
+        * Removed Classic HQL Parser.
+        * Removed IQueryTranslatorFactory2. It's methods were pulled up to IQueryTranslatorFactory. Method CreateQueryTranslators accepting string as first argument marked as Obsolete. 
+        * IQueryExpression.Translate now has second boolean argument 'filter'
+        * Added several methods which accepts IQueryExpression to ISessionImplementor, which is duplicating methods which accepts string.
+        * Miss-spelled AdoNetWithDistrubtedTransactionFactory removed: Use AdoNetWithDistributedTransactionFactory instead
+        * HqlDistinctHolder removed: Use HqlExpressionSubTreeHolder instead
+        * DisableLogFormattedSql method removed: the default is disabled
+        * ISession.SaveOrUpdateCopy removed: Use Merge instead
+        * Oracle and MySQL: The atan2 and power functions now return double (instead of single) for consistency with other dialects.
+        * Removed FirebirdDriver. It was the same as FirebirdClientDriver since 3.2, and the latter have been the default since then.
+        * Removed bunch of unused methods on *Helper classes
+        * Static fields on NHibernateUtil are declared as their exact class
+
+    From NH4.0.0.Alpha1 to 4.0.0.Alpha2:
+    Fixed mapping by code behaviour when map child subclasses (see NH-3135 and NH-3269)
+    
+    The constructor of AbstractComponentTuplizer now behaves like AbstractEntityTuplizer in the way
+    that it doesn't create the instantiator any more. Custom component tuplizers that derive
+    directly from AbstractComponentTuplizer need to add this line of code in their constructor:
+      instantiator = BuildInstantiator(component);
+
+    From NH4.0.0.Alpha2 to 4.0.0.CR1:
     The interface IEnhancedProjection was removed and its methods moved to IProjection.
     Two other overloads of the GetColumnAliases() methods was removed from IProjection.
+
+        * [NH-2290] Invalid hql parenthesis expansion in generated sql
+            Unary minus before parentheses in HQL lost the parentheses when translated
+            to SQL and therefore the wrong value was returned. This use of unary minus is now
+            implemented in the mathematically correct way.
+
+
+** Bug
+    * [NH-3638] - Mapping-by-code is occasionally picking the wrong column name
+    * [NH-3654] - Internal access of PersistentGenericBag removed
+
+** Improvement
+    * [NH-3415] - Add Overload to IGeneratorMapper.Params That Receives a Dictionary
+    * [NH-3657] - Map By Code - One to One Missing Class Action
+
+** Patch
+    * [NH-3529] - Add linqtohql.generatorsregistry to nhibernate-configuration.xsd
+
+
+Build 4.0.0.CR1
+=============================
+
+** Bug
+    * [NH-3455] - QueryOver + selecting a component + OrderBy = wrong OrderBy in SQL
+    * [NH-3581] - nhibernate.everything.sln doesn't compile
+    * [NH-3587] - Parameters within a select clause
+    * [NH-3620] - ORA-01483 when inserting two blobs and a date using the OracleManagedDataClientDriver
+    * [NH-3624] - broken insert statement with select
+    * [NH-3629] - Translation of string.IndexOf() in Linq is broken for firebird
+    * [NH-3641] - Missing Outer Join
+    * [NH-3642] - PostgreSQL: Support LINQ DateTime.Date in select clause
+    * [NH-3649] - Missing support for round() in SQLite and SQL Server CE dialects (affected criteria queries)
+
+** Improvement
+    * [NH-3623] - Add FirebirdExceptionConverterExample
+    * [NH-3626] - avoid double parens around a select statement
+    * [NH-3627] - change some id mappings from native to assigned in linq tests
+    * [NH-3628] - add keyword "date" and function "date" to FirebirdDialect
+    * [NH-3647] - Support Math.Round() in QueryOver projections
+
+** Task
+    * [NH-3251] - Update to antlr 3.5.0.2
+    * [NH-3644] - Merge IEnhancedProjection into IProjection
 
 Build 4.0.0.Alpha2
 =============================
@@ -168,15 +247,46 @@ Build 4.0.0.Alpha1
     * [NH-3346] - Remove members obsolete in NH3 from NH4
     * [NH-3347] - Remove obsolete dialects for NH4
 
+
+Build 3.4.0.GA
+=============================
+** Known BREAKING CHANGES from NH3.3.0.GA to NH3.4.0.GA
+
+    ##### Possible Breaking Changes #####
+        * [NH-2290] Invalid hql parenthesis expansion in generated sql
+            Unary minus before parentheses in HQL lost the parentheses when translated
+            to SQL and therefore the wrong value was returned. This use of unary minus is now
+            implemented in the mathematically correct way.
+
+
+** Sub-task
+    * [NH-3432] - Merge fix for bug NH-3058 into 3.Next
+
+** Bug
+    * [NH-2819] - DefaultDynamicLazyFieldInterceptor does not handle generic methods correctly
+    * [NH-2977] - MsSqlServer dialects reject custom SQL Server queries with limits 
+    * [NH-3058] - Methods on entities with lazy properties do not trigger load of lazy properties
+    * [NH-3132] - Property with access="field.camelcase" not working when another property is lazy
+    * [NH-3244] - Proxying fails for methods with generic class as generic parameter constraints or generic parameter attributes
+    * [NH-3638] - Mapping-by-code is occasionally picking the wrong column name
+
+** Patch
+    * [NH-3529] - Add linqtohql.generatorsregistry to nhibernate-configuration.xsd
+
+** Task
+    * [NH-3412] - Need to reconcile changes to MsSql2005DialectQueryPager for NH-2977 between 3.3.3 and vNext
+
+
 Build 3.4.0.CR1
 =============================
 
 ** Sub-task
     * [NH-3434] - Need to be sure NH-3428 is resolved in 3.Next.  
 
-
 ** Bug
+    * [NH-1882] - Collection was not processed by flush when iterate through collection in PostUpdateEvent
     * [NH-2128] - Interceptor fires AfterTransactionCompletion too many times with distributed transactions and user-supplied connections
+    * [NH-2290] - Invalid hql parenthesis expansion in generated sql
     * [NH-2921] - IsSpecialName of getter/setter method of proxy property returns false
     * [NH-2923] - Extra lazy indexed collection throws InvalidCastException fetching Count
     * [NH-2943] - Mapping XmlDocument (.NET) to XmlType (Oracle). Class XmlDocType not working.
@@ -189,13 +299,17 @@ Build 3.4.0.CR1
     * [NH-3277] - LINQ Projection of Int64 using ToString method causes "cast as char" instead of "cast as nvarchar" in MsSqlCe dialect
     * [NH-3280] - Mapping OneToOne doesn't work for inherited members
     * [NH-3315] - Distinct paging problem with alias SQL Server 2005
+    * [NH-3316] - Mapping parent property on component in a set adds bogus property element
     * [NH-3405] - Cannot Use XDocument When Setting Wrap Resultsets
     * [NH-3496] - NHibernate SqlServer2012Dialect drop sequence bug
     * [NH-3505] - Stateless sessions fail to save relationships pointing to proxies when versioning is enabled
     * [NH-3572] - AfterTransactionCompletion called twice if a distributed transaction is rolled back
     * [NH-3592] - Failed to execute multi criteria with Ms Sql Ce 4.0
+    * [NH-3611] - NHibernateUtil.GuessType(typeof(string)) returns ClassMetaType
     * [NH-3614] - Cannot create project an enumerable of non-mapped objects (List<string>)
     * [NH-3615] - Incorrect assumption that namespace always exists
+    * [NH-3618] - ManyToOne does not allow to set "unique"="true", "unique-key" and "index" for multi-column properties
+    * [NH-3641] - Missing Outer Join
 
 ** Improvement
     * [NH-2005] - hql concat function not registered in MsSqlCeDialect
@@ -217,6 +331,14 @@ Build 3.4.0.CR1
     * [NH-2996] - MySQL 5.5 + .NET Connector 6.2+ and GUIDs: Need to use CHAR(36)
     * [NH-3209] - DateTimeOffset properties have not been considered; only the properties of DateTime have been considered
 
+** Task
+    * [NH-3251] - Update to antlr 3.5.0.2
+
+Build 3.3.4.GA
+=============================
+
+** Bug
+    * [NH-3638] - Mapping-by-code is occasionally picking the wrong column name
 
 Build 3.3.3.SP1
 =============================
@@ -244,7 +366,6 @@ BEWARE: In versions prior to 3.3.3.CR1, the handling of the LINQ Take() method
 
 ** Bug
     * [NH-2408] - SQL Server pessimistic locking syntax incorrect for union-subclass
-    * [NH-3096] - Linq - does not support GetValueOrDefault()
     * [NH-3109] - Rounding float values in aggregate functions with group by statements (MySQL).
     * [NH-3324] - HQL: ArgumentNullException when using LEFT OUTER JOIN and SetMaxResults
     * [NH-3408] - System.IndexOutOfRangeException when using Contains on a List<byte[]>

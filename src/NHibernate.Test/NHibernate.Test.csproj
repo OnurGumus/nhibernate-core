@@ -614,6 +614,7 @@
     <Compile Include="MappingByCode\For.cs" />
     <Compile Include="MappingByCode\ImportTests.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH3041\Domain.cs" />
+    <Compile Include="MappingByCode\IntegrationTests\NH3657\OneToOneToPropertyReferenceWithExplicitClassSet.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH3041\OneToOneToPropertyReference.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH2728\Cat.cs" />
     <Compile Include="MappingByCode\IntegrationTests\NH2728\Dog.cs" />
@@ -733,12 +734,15 @@
     <Compile Include="NHSpecificTest\NH3459\Order.cs" />
     <Compile Include="NHSpecificTest\NH2692\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2692\Model.cs" />
+    <Compile Include="NHSpecificTest\NH3383\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH2772\Model.cs" />
     <Compile Include="NHSpecificTest\NH2772\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3058\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH3058\SampleTest.cs" />
     <Compile Include="NHSpecificTest\NH1818\DomainClass.cs" />
     <Compile Include="NHSpecificTest\NH1818\Fixture1818.cs" />
+    <Compile Include="NHSpecificTest\NH3401\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3401\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH1863\Domain.cs" />
     <Compile Include="NHSpecificTest\NH1863\Fixture.cs" />
     <Compile Include="MappingByCode\ExpliticMappingTests\ClassWithoutNamespaceTests.cs" />
@@ -811,6 +815,8 @@
     </Compile>
     <Compile Include="NHSpecificTest\NH3202\Domain.cs" />
     <Compile Include="NHSpecificTest\NH3202\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3604\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3604\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
     <Compile Include="NHSpecificTest\NH646\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3234\Fixture.cs" />
@@ -1256,6 +1262,7 @@
     <Compile Include="TestDialects\MsSql2008TestDialect.cs" />
     <Compile Include="TestDialects\PostgreSQL82TestDialect.cs" />
     <Compile Include="TestDialects\SQLiteTestDialect.cs" />
+    <Compile Include="Tools\hbm2ddl\SchemaExportTests\ExportToFileFixture.cs" />
     <Compile Include="TransformTests\ImplementationOfEqualityTests.cs" />
     <Compile Include="TypesTest\CharClass.cs" />
     <Compile Include="TypesTest\CharClassFixture.cs" />
@@ -2391,7 +2398,7 @@
     <Compile Include="TypesTest\TimeAsTimeSpanClass.cs" />
     <Compile Include="TypesTest\TimeAsTimeSpanTypeFixture.cs" />
     <Compile Include="TypesTest\TimeSpanClass.cs" />
-    <Compile Include="TypesTest\Decima2lTypeFixture.cs" />
+    <Compile Include="TypesTest\DateTime2TypeFixture.cs" />
     <Compile Include="TypesTest\DateTimeTypeFixture.cs" />
     <Compile Include="TypesTest\DecimalClass.cs" />
     <Compile Include="TypesTest\DecimalTypeFixture.cs" />
@@ -3085,6 +3092,7 @@
     <EmbeddedResource Include="NHSpecificTest\NH3058\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2985\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1818\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3401\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2049\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1863\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3614\Mappings.hbm.xml" />
@@ -3658,4 +3666,3 @@ copy /y "..\..\..\NHibernate.DomainModel\ABC.hbm.xml" "ABC.hbm.xml"</PostBuildEv
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
 </Project>
-
