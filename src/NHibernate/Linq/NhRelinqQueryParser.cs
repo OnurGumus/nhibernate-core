@@ -77,6 +77,13 @@ namespace NHibernate.Linq
 						ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.Timeout<object>(null, 0)),
 					}, typeof(TimeoutExpressionNode)
 				);
+			methodInfoRegistry.Register(
+				new[]
+					{
+						ReflectionHelper.GetMethodDefinition(() => LinqExtensionMethods.SetLockMode<object>(null, LockMode.Read)),
+					}, typeof(LockExpressionNode)
+				);
+
 
 			methodInfoRegistry.Register(
 				new[]
@@ -144,6 +151,30 @@ namespace NHibernate.Linq
 			return new CacheableResultOperator(_parseInfo, _data);
 		}
 	}
+
+	internal class LockExpressionNode : ResultOperatorExpressionNodeBase
+	{
+		private readonly MethodCallExpressionParseInfo _parseInfo;
+		private readonly ConstantExpression _lockMode;
+
+		public LockExpressionNode(MethodCallExpressionParseInfo parseInfo, ConstantExpression lockMode)
+			: base(parseInfo, null, null)
+		{
+			_parseInfo = parseInfo;
+			_lockMode = lockMode;
+		}
+
+		public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
+		{
+			return Source.Resolve(inputParameter, expressionToBeResolved, clauseGenerationContext);
+		}
+
+		protected override ResultOperatorBase CreateResultOperator(ClauseGenerationContext clauseGenerationContext)
+		{
+			return new LockResultOperator(_parseInfo, _lockMode);
+		}
+	}
+
 
 	public class CacheableResultOperator : ResultOperatorBase
 	{
