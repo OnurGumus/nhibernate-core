@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{7AEE5B37-C552-4E59-9B6F-88755BCB5070}</ProjectGuid>
+    <ProjectGuid>{5278DDEA-DFE0-4951-A938-2F1D8E337FAA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NHibernate.Test</RootNamespace>
@@ -135,7 +135,6 @@
     <Compile Include="Any\PropertySet.cs" />
     <Compile Include="Any\IPropertyValue.cs" />
     <Compile Include="Any\StringPropertyValue.cs" />
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BulkManipulation\BaseFixture.cs" />
     <Compile Include="BulkManipulation\HQLBulkOperations.cs" />
     <Compile Include="BulkManipulation\SimpleClass.cs" />
@@ -1226,6 +1225,7 @@
     <Compile Include="Parameters\NamedParameterSpecificationTest.cs" />
     <Compile Include="PolymorphicGetAndLoad\Domain.cs" />
     <Compile Include="PolymorphicGetAndLoad\PolymorphicGetAndLoadTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyTest\FieldCamelCaseMUnderscoreFixture.cs" />
     <Compile Include="PropertyTest\NoSetterCamelCaseMUnderscoreFixture.cs" />
     <Compile Include="QueryTest\MultipleMixedQueriesFixture.cs" />
@@ -3626,7 +3626,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="NHSpecificTest\NH3615\" />
-    <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

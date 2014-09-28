@@ -58,6 +58,12 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>NHibernate.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Iesi.Collections, Version=4.0.0.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -74,7 +80,6 @@
     <Compile Include="A.cs" />
     <Compile Include="Abstract.cs" />
     <Compile Include="AbstractProxy.cs" />
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Assignable.cs" />
     <Compile Include="B.cs" />
     <Compile Include="Bar.cs" />
@@ -185,6 +190,7 @@
     <Compile Include="Parent.cs" />
     <Compile Include="Part.cs" />
     <Compile Include="Po.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Qux.cs" />
     <Compile Include="Result.cs" />
     <Compile Include="ReverseComparator.cs" />
@@ -280,6 +286,7 @@
     <EmbeddedResource Include="Northwind\Mappings\Territory.hbm.xml" />
     <EmbeddedResource Include="Northwind\Mappings\TimeSheet.hbm.xml" />
     <EmbeddedResource Include="Northwind\Mappings\User.hbm.xml" />
+    <None Include="NHibernate.snk" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -298,9 +305,7 @@
   <ItemGroup>
     <Service Include="..\..\..\..\trunk\nhibernate\src\NHibernate.DomainModel\{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
       <Visible>False</Visible>

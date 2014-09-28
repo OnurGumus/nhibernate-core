@@ -92,7 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.Test\NHibernate.Test.csproj">
-      <Project>{7AEE5B37-C552-4E59-9B6F-88755BCB5070}</Project>
+      <Project>{5278ddea-dfe0-4951-a938-2f1d8e337faa}</Project>
       <Name>NHibernate.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\NHibernate\NHibernate.csproj">

@@ -239,14 +239,7 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(query.Provider, callExpression);
 		}
 
-		public static IQueryable<T> SetLockMode<T>(this IQueryable<T> query, LockMode lockMode)
-		{
-			var method = ReflectionHelper.GetMethodDefinition(() => SetLockMode<object>(null, LockMode.Read)).MakeGenericMethod(typeof(T));
-
-			var callExpression = Expression.Call(method, query.Expression, Expression.Constant(lockMode));
-
-			return new NhQueryable<T>(query.Provider, callExpression);
-		}
+	
 
 		public static IEnumerable<T> ToFuture<T>(this IQueryable<T> query)
 		{
