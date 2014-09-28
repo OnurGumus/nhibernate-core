@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode
 {
@@ -25,6 +26,8 @@ namespace NHibernate.Mapping.ByCode
 		void Filter(string filterName, Action<IFilterMapper> filterMapping);
 		void Where(string whereClause);
 		void SchemaAction(SchemaAction action);
+		void Polymorphism(PolymorphismType type);
+		void OptimisticLock(OptimisticLockMode mode);
 	}
 
 	public interface IClassMapper : IClassAttributesMapper, IPropertyContainerMapper
@@ -64,6 +67,8 @@ namespace NHibernate.Mapping.ByCode
 		void Filter(string filterName, Action<IFilterMapper> filterMapping);
 		void Where(string whereClause);
 		void SchemaAction(SchemaAction action);
+		void Polymorphism(PolymorphismType type);
+		void OptimisticLock(OptimisticLockMode mode);
 	}
 
 	public interface IClassMapper<TEntity> : IClassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class

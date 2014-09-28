@@ -30,6 +30,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		#region Implementation of IClassAttributesMapper<TEntity>
 
+		public void OptimisticLock(OptimisticLockMode mode)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.OptimisticLock(mode));
+		}
+
 		public void Id<TProperty>(Expression<Func<TEntity, TProperty>> idProperty)
 		{
 			Id(idProperty, x => { });
@@ -114,6 +119,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void Schema(string schemaName)
 		{
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Schema(schemaName));
+		}
+
+		public void Polymorphism(PolymorphismType type)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Polymorphism(type));
 		}
 
 		#endregion

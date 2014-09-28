@@ -362,7 +362,9 @@
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\ManyToAnyCustomizer.cs" />
     <Compile Include="Mapping\ByCode\Impl\DynamicComponentMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\ManyToAnyMapper.cs" />
+    <Compile Include="Mapping\ByCode\OptimisticLockMode.cs" />
     <Compile Include="Mapping\ByCode\Import.cs" />
+    <Compile Include="Mapping\ByCode\PolymorphismType.cs" />
     <Compile Include="Mapping\ByCode\PropertyGeneration.cs" />
     <Compile Include="Mapping\ByCode\PropertyToField.cs" />
     <Compile Include="Mapping\ByCode\SimpleModelInspector.cs" />
@@ -507,6 +509,7 @@
     <Compile Include="Mapping\ByCode\NotFoundMode.cs" />
     <Compile Include="Mapping\ByCode\SchemaAction.cs" />
     <Compile Include="Mapping\ByCode\TypeExtensions.cs" />
+    <Compile Include="Mapping\ByCode\UnsavedValueType.cs" />
     <Compile Include="Mapping\ByCode\VersionGeneration.cs" />
     <Compile Include="Mapping\Collection.cs" />
     <Compile Include="Mapping\Column.cs" />
