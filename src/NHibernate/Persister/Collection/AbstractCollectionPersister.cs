@@ -88,6 +88,7 @@ namespace NHibernate.Persister.Collection
 		private readonly string[] keyColumnAliases;
 		private readonly string identifierColumnName;
 		private readonly string identifierColumnAlias;
+		private readonly string[] joinColumnNames;
 
 		#endregion
 
@@ -229,17 +230,43 @@ namespace NHibernate.Persister.Collection
 
 			isVersioned = collection.IsOptimisticLocked;
 
-			keyType = collection.Key.Type;
-			int keySpan = collection.Key.ColumnSpan;
-			keyColumnNames = new string[keySpan];
-			keyColumnAliases = new string[keySpan];
-			int k = 0;
-			foreach (Column col in collection.Key.ColumnIterator)
+			if (collection.CollectionType.UseLHSPrimaryKey)
 			{
-				keyColumnNames[k] = col.GetQuotedName(dialect);
-				keyColumnAliases[k] = col.GetAlias(dialect);
-				k++;
+				keyType = collection.Key.Type;
+				int keySpan = collection.Key.ColumnSpan;
+				keyColumnNames = new string[keySpan];
+				keyColumnAliases = new string[keySpan];
+				int k = 0;
+				foreach (Column col in collection.Key.ColumnIterator)
+				{
+					keyColumnNames[k] = col.GetQuotedName(dialect);
+					keyColumnAliases[k] = col.GetAlias(dialect);
+					k++;
+				}
+				joinColumnNames = keyColumnNames;
 			}
+			else
+			{
+				keyType = collection.Owner.Key.Type;
+				int keySpan = collection.Owner.Key.ColumnSpan;
+				keyColumnNames = new string[keySpan];
+				keyColumnAliases = new string[keySpan];
+				int k = 0;
+				foreach (Column col in collection.Owner.Key.ColumnIterator)
+				{
+					keyColumnNames[k] = col.GetQuotedName(dialect);
+					keyColumnAliases[k] = col.GetAlias(dialect) + "_owner_"; // Force the alias to be unique in case it conflicts with an alias in the entity
+					k++;
+				}
+				joinColumnNames = new string[collection.Key.ColumnSpan];
+				k = 0;
+				foreach (Column col in collection.Key.ColumnIterator)
+				{
+					joinColumnNames[k] = col.GetQuotedName(dialect);
+					k++;
+				}
+			}
+
 			HashSet<string> distinctColumns = new HashSet<string>();
 			CheckColumnDuplication(distinctColumns, collection.Key.ColumnIterator);
 
@@ -1011,7 +1038,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Deleting collection: " + MessageHelper.InfoString(this, id, Factory));
+					log.Debug("Deleting collection: " + MessageHelper.CollectionInfoString(this, id, Factory));
 				}
 
 				// Remove all the old entries
@@ -1064,7 +1091,7 @@ namespace NHibernate.Persister.Collection
 				catch (DbException sqle)
 				{
 					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle,
-													 "could not delete collection: " + MessageHelper.InfoString(this, id));
+													 "could not delete collection: " + MessageHelper.CollectionInfoString(this, id));
 				}
 			}
 		}
@@ -1075,7 +1102,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Inserting collection: " + MessageHelper.InfoString(this, id));
+					log.Debug("Inserting collection: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 
 				try
@@ -1128,7 +1155,7 @@ namespace NHibernate.Persister.Collection
 				catch (DbException sqle)
 				{
 					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle,
-													 "could not insert collection: " + MessageHelper.InfoString(this, id));
+													 "could not insert collection: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 			}
 		}
@@ -1139,7 +1166,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Deleting rows of collection: " + MessageHelper.InfoString(this, id));
+					log.Debug("Deleting rows of collection: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 
 				bool deleteByIndex = !IsOneToMany && hasIndex && !indexContainsFormula;
@@ -1237,7 +1264,7 @@ namespace NHibernate.Persister.Collection
 				catch (DbException sqle)
 				{
 					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle,
-													 "could not delete collection rows: " + MessageHelper.InfoString(this, id));
+													 "could not delete collection rows: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 			}
 		}
@@ -1248,7 +1275,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Inserting rows of collection: " + MessageHelper.InfoString(this, id, Factory));
+					log.Debug("Inserting rows of collection: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 
 				try
@@ -1290,7 +1317,7 @@ namespace NHibernate.Persister.Collection
 				catch (DbException sqle)
 				{
 					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle,
-													 "could not insert collection rows: " + MessageHelper.InfoString(this, id));
+													 "could not insert collection rows: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 			}
 		}
@@ -1535,7 +1562,7 @@ namespace NHibernate.Persister.Collection
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
 												 "could not retrieve collection size: "
-												 + MessageHelper.InfoString(this, key, Factory), GenerateSelectSizeString(session));
+												 + MessageHelper.CollectionInfoString(this, key, Factory), GenerateSelectSizeString(session));
 			}
 		}
 
@@ -1585,7 +1612,7 @@ namespace NHibernate.Persister.Collection
 			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
-												 "could not check row existence: " + MessageHelper.InfoString(this, key, Factory),
+												 "could not check row existence: " + MessageHelper.CollectionInfoString(this, key, Factory),
 												 GenerateSelectSizeString(session));
 			}
 		}
@@ -1628,7 +1655,7 @@ namespace NHibernate.Persister.Collection
 			catch (DbException sqle)
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
-												 "could not read row: " + MessageHelper.InfoString(this, key, Factory),
+												 "could not read row: " + MessageHelper.CollectionInfoString(this, key, Factory),
 												 GenerateSelectSizeString(session));
 			}
 		}
@@ -1762,6 +1789,11 @@ namespace NHibernate.Persister.Collection
 		public string[] KeyColumnNames
 		{
 			get { return keyColumnNames; }
+		}
+
+		public string[] JoinColumnNames
+		{
+			get { return joinColumnNames; }
 		}
 
 		protected string[] KeyColumnAliases
@@ -1956,8 +1988,14 @@ namespace NHibernate.Persister.Collection
 		public abstract bool CascadeDeleteEnabled { get; }
 		public abstract bool IsOneToMany { get; }
 
+		public virtual string GenerateTableAliasForKeyColumns(string alias)
+		{
+			return alias;
+		}
+
 		protected async Task<object> PerformInsert(object ownerId, IPersistentCollection collection, IExpectation expectation,
 									   object entry, int index, bool useBatch, bool callable, ISessionImplementor session, bool async)
+									   
 		{
 			object entryId = null;
 			int offset = 0;
@@ -2057,7 +2095,7 @@ namespace NHibernate.Persister.Collection
 
 		public string GetInfoString()
 		{
-			return MessageHelper.InfoString(this, null);
+			return MessageHelper.CollectionInfoString(this, null);
 		}
 		#endregion
 

@@ -67,8 +67,17 @@ namespace NHibernate.Persister.Collection
 		{
 			var update = new SqlUpdateBuilder(Factory.Dialect, Factory)
 				.SetTableName(qualifiedTableName)
-				.AddColumns(KeyColumnNames, "null")
-				.SetIdentityColumn(KeyColumnNames, KeyType);
+				.AddColumns(JoinColumnNames, "null");
+
+			if (CollectionType.UseLHSPrimaryKey)
+			{
+				update.SetIdentityColumn(KeyColumnNames, KeyType);
+			}
+			else
+			{
+				var ownerPersister = (IOuterJoinLoadable)OwnerEntityPersister;
+				update.SetJoin(ownerPersister.TableName, KeyColumnNames, KeyType, JoinColumnNames, ownerPersister.GetPropertyColumnNames(CollectionType.LHSPropertyName));
+			}
 
 			if (HasIndex)
 				update.AddColumns(IndexColumnNames, "null");
@@ -151,6 +160,11 @@ namespace NHibernate.Persister.Collection
 			return true;
 		}
 
+		public override string GenerateTableAliasForKeyColumns(string alias)
+		{
+			return CollectionType.UseLHSPrimaryKey ? alias : alias + "owner_";
+		}
+
 		protected override async Task<int> DoUpdateRows(object id, IPersistentCollection collection, ISessionImplementor session, bool async)
 		{
 			// we finish all the "removes" first to take care of possible unique 
@@ -167,27 +181,27 @@ namespace NHibernate.Persister.Collection
 					SqlCommandInfo sql = SqlDeleteRowString;
 					DbCommand st = null;
 					// update removed rows fks to null
-					try
+					int i = 0;
+					IEnumerable entries = collection.Entries(this);
+
+					foreach (object entry in entries)
 					{
-						int i = 0;
-						IEnumerable entries = collection.Entries(this);
-
-						foreach (object entry in entries)
+						if (collection.NeedsUpdating(entry, i, ElementType))
 						{
-							if (collection.NeedsUpdating(entry, i, ElementType))
+							// will still be issued when it used to be null
+							if (useBatch)
 							{
-								// will still be issued when it used to be null
-								if (useBatch)
-								{
-									st = session.Batcher.PrepareBatchCommand(SqlDeleteRowString.CommandType, sql.Text,
-																			 SqlDeleteRowString.ParameterTypes);
-								}
-								else
-								{
-									st = session.Batcher.PrepareCommand(SqlDeleteRowString.CommandType, sql.Text,
-																		SqlDeleteRowString.ParameterTypes);
-								}
+								st = session.Batcher.PrepareBatchCommand(SqlDeleteRowString.CommandType, sql.Text,
+																		 SqlDeleteRowString.ParameterTypes);
+							}
+							else
+							{
+								st = session.Batcher.PrepareCommand(SqlDeleteRowString.CommandType, sql.Text,
+																	SqlDeleteRowString.ParameterTypes);
+							}
 
+							try
+							{
 								int loc = WriteKey(st, id, offset, session);
 								WriteElementToWhere(st, collection.GetSnapshotElement(entry, i), loc, session);
 								if (useBatch)
@@ -198,25 +212,25 @@ namespace NHibernate.Persister.Collection
 								{
 									deleteExpectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(st, async), st);
 								}
-								count++;
 							}
-							i++;
+							catch (Exception e)
+							{
+								if (useBatch)
+								{
+									session.Batcher.AbortBatch(e);
+								}
+								throw;
+							}
+							finally
+							{
+								if (!useBatch && st != null)
+								{
+									session.Batcher.CloseCommand(st, null);
+								}
+							}
+							count++;
 						}
-					}
-					catch (Exception e)
-					{
-						if (useBatch)
-						{
-							session.Batcher.AbortBatch(e);
-						}
-						throw;
-					}
-					finally
-					{
-						if (!useBatch && st != null)
-						{
-							session.Batcher.CloseCommand(st, null);
-						}
+						i++;
 					}
 				}
 
@@ -229,25 +243,25 @@ namespace NHibernate.Persister.Collection
 					DbCommand st = null;
 
 					// now update all changed or added rows fks
-					try
+					int i = 0;
+					IEnumerable entries = collection.Entries(this);
+					foreach (object entry in entries)
 					{
-						int i = 0;
-						IEnumerable entries = collection.Entries(this);
-						foreach (object entry in entries)
+						if (collection.NeedsUpdating(entry, i, ElementType))
 						{
-							if (collection.NeedsUpdating(entry, i, ElementType))
+							if (useBatch)
 							{
-								if (useBatch)
-								{
-									st = session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, sql.Text,
-																			 SqlInsertRowString.ParameterTypes);
-								}
-								else
-								{
-									st = session.Batcher.PrepareCommand(SqlInsertRowString.CommandType, sql.Text,
-																		SqlInsertRowString.ParameterTypes);
-								}
+								st = session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, sql.Text,
+																		 SqlInsertRowString.ParameterTypes);
+							}
+							else
+							{
+								st = session.Batcher.PrepareCommand(SqlInsertRowString.CommandType, sql.Text,
+																	SqlInsertRowString.ParameterTypes);
+							}
 
+							try
+							{
 								//offset += insertExpectation.Prepare(st, Factory.ConnectionProvider.Driver);
 								int loc = WriteKey(st, id, offset, session);
 								if (HasIndex && !indexContainsFormula)
@@ -270,32 +284,32 @@ namespace NHibernate.Persister.Collection
 										throw e.InnerException;
 									}
 								}
-								count++;
 							}
-							i++;
+							catch (Exception e)
+							{
+								if (useBatch)
+								{
+									session.Batcher.AbortBatch(e);
+								}
+								throw;
+							}
+							finally
+							{
+								if (!useBatch && st != null)
+								{
+									session.Batcher.CloseCommand(st, null);
+								}
+							}
+							count++;
 						}
-					}
-					catch (Exception e)
-					{
-						if (useBatch)
-						{
-							session.Batcher.AbortBatch(e);
-						}
-						throw;
-					}
-					finally
-					{
-						if (!useBatch && st != null)
-						{
-							session.Batcher.CloseCommand(st, null);
-						}
+						i++;
 					}
 				}
 				return count;
 			}
 			catch (DbException sqle)
 			{
-				throw ADOExceptionHelper.Convert(SQLExceptionConverter, sqle, "could not update collection rows: " + MessageHelper.InfoString(this, id));
+				throw ADOExceptionHelper.Convert(SQLExceptionConverter, sqle, "could not update collection rows: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 			}
 		}
 
@@ -328,7 +342,7 @@ namespace NHibernate.Persister.Collection
 			for (int i = 0; i < columnNames.Length; i++)
 			{
 				var column = columnNames[i];
-				var tableAlias = ojl.GenerateTableAliasForColumn(alias, column);
+				var tableAlias = CollectionType.UseLHSPrimaryKey ? ojl.GenerateTableAliasForColumn(alias, column) : GenerateTableAliasForKeyColumns(alias);
 				selectFragment.AddColumn(tableAlias, column, columnAliases[i]);
 			}
 			return selectFragment;
@@ -344,7 +358,26 @@ namespace NHibernate.Persister.Collection
 
 		public override SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
 		{
-			return ((IJoinable)ElementPersister).FromJoinFragment(alias, innerJoin, includeSubclasses);
+			var elementJoinFragment = ((IJoinable)ElementPersister).FromJoinFragment(alias, innerJoin, includeSubclasses);
+
+			if (CollectionType.UseLHSPrimaryKey)
+			{
+				return elementJoinFragment;
+			}
+
+			JoinFragment join = Factory.Dialect.CreateOuterJoinFragment();
+
+			var lhsKeyColumnNames = new string[JoinColumnNames.Length];
+			int k = 0;
+			foreach (string columnName in JoinColumnNames)
+			{
+				lhsKeyColumnNames[k] = alias + StringHelper.Dot + columnName;
+				k++;
+			}
+
+			var ownerPersister = (IOuterJoinLoadable)OwnerEntityPersister;
+			join.AddJoin(ownerPersister.TableName, GenerateTableAliasForKeyColumns(alias), lhsKeyColumnNames, ownerPersister.GetPropertyColumnNames(CollectionType.LHSPropertyName), innerJoin ? JoinType.InnerJoin : JoinType.LeftOuterJoin);
+			return join.ToFromFragmentString + elementJoinFragment;
 		}
 
 		public override SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses)

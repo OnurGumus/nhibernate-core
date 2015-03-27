@@ -12,12 +12,12 @@ namespace NHibernate.Linq.ReWriters
 	{
 		private readonly QueryModel _model;
 
-		private static readonly System.Type[] FlattenableResultOperators = new[]
-																				{
-																					typeof(CacheableResultOperator),
-																					typeof (TimeoutResultOperator),
-                                                                                    typeof (LockResultOperator),
-																				};
+		internal static readonly System.Type[] FlattenableResultOperators =
+		{
+			typeof (CacheableResultOperator),
+			typeof (TimeoutResultOperator),
+			typeof (LockResultOperator),
+		};
 
 		private QueryReferenceExpressionFlattener(QueryModel model)
 		{

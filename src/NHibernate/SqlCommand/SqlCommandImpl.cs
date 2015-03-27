@@ -33,7 +33,7 @@ namespace NHibernate.SqlCommand
 		/// <param name="command">The command into which the value should be bound.</param>
 		/// <param name="commandQueryParametersList">The parameter-list of the whole query of the command.</param>
 		/// <param name="singleSqlParametersOffset">The offset from where start the list of <see cref="IDataParameter"/>, in the given <paramref name="command"/>, for the this <see cref="SqlCommandImpl"/>. </param>
-		/// <param name="session">The session against which the current execution is occuring.</param>
+		/// <param name="session">The session against which the current execution is occurring.</param>
 		/// <remarks>
 		/// Suppose the <paramref name="command"/> is composed by two queries. The <paramref name="singleSqlParametersOffset"/> for the first query is zero.
 		/// If the first query in <paramref name="command"/> has 12 parameters (size of its SqlType array) the offset to bind all <see cref="IParameterSpecification"/>s, of the second query in the
@@ -45,7 +45,7 @@ namespace NHibernate.SqlCommand
 		/// Bind the appropriate value into the given command.
 		/// </summary>
 		/// <param name="command">The command into which the value should be bound.</param>
-		/// <param name="session">The session against which the current execution is occuring.</param>
+		/// <param name="session">The session against which the current execution is occurring.</param>
 		/// <remarks>
 		/// Use this method when the <paramref name="command"/> contains just 'this' instance of <see cref="ISqlCommand"/>.
 		/// Use the overload <see cref="Bind(IDbCommand, IList{Parameter}, int, ISessionImplementor)"/> when the <paramref name="command"/> contains more instances of <see cref="ISqlCommand"/>.
@@ -60,7 +60,7 @@ namespace NHibernate.SqlCommand
 		private readonly QueryParameters queryParameters;
 		private readonly ISessionFactoryImplementor factory;
 		private SqlType[] parameterTypes;
-		List<Parameter> sqlQueryParametersList;
+		IList<Parameter> sqlQueryParametersList;
 
 		public SqlCommandImpl(SqlString query, ICollection<IParameterSpecification> specifications, QueryParameters queryParameters, ISessionFactoryImplementor factory)
 		{
@@ -70,9 +70,9 @@ namespace NHibernate.SqlCommand
 			this.factory = factory;
 		}
 
-		public List<Parameter> SqlQueryParametersList
+		public IList<Parameter> SqlQueryParametersList
 		{
-			get { return sqlQueryParametersList ?? (sqlQueryParametersList = query.GetParameters().ToList()); }
+			get { return sqlQueryParametersList ?? (sqlQueryParametersList = query.GetParameters().ToBackTrackCacheParameterList()); }
 		}
 
 		public SqlType[] ParameterTypes
@@ -103,6 +103,7 @@ namespace NHibernate.SqlCommand
 			{
 				throw new AssertionFailure("singleSqlParametersOffset < 0 - this indicate a bug in NHibernate ");
 			}
+
 			// due to IType.NullSafeSet(System.Data.IDbCommand , object, int, ISessionImplementor) the SqlType[] is supposed to be in a certain sequence.
 			// this mean that found the first location of a parameter for the IType span, the others are in secuence
 			foreach (IParameterSpecification specification in Specifications)
@@ -111,7 +112,7 @@ namespace NHibernate.SqlCommand
 				int[] effectiveParameterLocations = SqlQueryParametersList.GetEffectiveParameterLocations(firstParameterId).ToArray();
 				if (effectiveParameterLocations.Length > 0) // Parameters previously present might have been removed from the SQL at a later point.
 				{
-					int firstParamNameIndex = effectiveParameterLocations.First() + singleSqlParametersOffset;
+					int firstParamNameIndex = effectiveParameterLocations[0] + singleSqlParametersOffset;
 					foreach (int location in effectiveParameterLocations)
 					{
 						int parameterSpan = specification.ExpectedType.GetColumnSpan(factory);

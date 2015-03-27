@@ -10,7 +10,6 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NUnit.Framework;
-using SharpTestsEx;
 using System.Data.Common;
 
 namespace NHibernate.Test.Insertordering
@@ -38,11 +37,11 @@ namespace NHibernate.Test.Insertordering
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.DataBaseIntegration(x =>
-			                                  {
+											  {
 																					x.BatchSize = batchSize;
 																					x.OrderInserts = true;
 																					x.Batcher<StatsBatcherFactory>();
-			                                  });
+											  });
 		}
 
 		[Test]
@@ -64,7 +63,7 @@ namespace NHibernate.Test.Insertordering
 			}
 
 			int expectedBatchesPerEntity = (instancesPerEach / batchSize) + ((instancesPerEach % batchSize) == 0 ?  0 : 1);
-			StatsBatcher.BatchSizes.Count.Should().Be(expectedBatchesPerEntity * typesOfEntities);
+			Assert.That(StatsBatcher.BatchSizes.Count, Is.EqualTo(expectedBatchesPerEntity * typesOfEntities));
 
 			using (ISession s = OpenSession())
 			{

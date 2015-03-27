@@ -115,13 +115,25 @@ namespace NHibernate.Linq.Visitors
 						   methodCallExpression.Object.NodeType != ExpressionType.Constant; // does not belong to parameter 
 				}
 			}
+			else if (expression.NodeType == (ExpressionType)NhExpressionType.Sum ||
+						expression.NodeType == (ExpressionType)NhExpressionType.Count ||
+						expression.NodeType == (ExpressionType)NhExpressionType.Average ||
+						expression.NodeType == (ExpressionType)NhExpressionType.Max ||
+						expression.NodeType == (ExpressionType)NhExpressionType.Min)
+			{
+				return true;
+			}
 			return false;
+
 		}
 
 		private bool CanBeEvaluatedInHqlSelectStatement(Expression expression, bool projectConstantsInHql)
 		{
 			// HQL can't do New or Member Init
-			if ((expression.NodeType == ExpressionType.MemberInit) || (expression.NodeType == ExpressionType.New))
+			if (expression.NodeType == ExpressionType.MemberInit || 
+				expression.NodeType == ExpressionType.New || 
+				expression.NodeType == ExpressionType.NewArrayInit ||
+				expression.NodeType == ExpressionType.NewArrayBounds)
 			{
 				return false;
 			}

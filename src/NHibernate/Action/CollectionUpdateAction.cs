@@ -17,7 +17,7 @@ namespace NHibernate.Action
 		private readonly bool emptySnapshot;
 
 		public CollectionUpdateAction(IPersistentCollection collection, ICollectionPersister persister, object key,
-		                              bool emptySnapshot, ISessionImplementor session)
+									  bool emptySnapshot, ISessionImplementor session)
 			: base(persister, collection, key, session)
 		{
 			this.emptySnapshot = emptySnapshot;
@@ -60,7 +60,7 @@ namespace NHibernate.Action
 				if (affectedByFilters)
 				{
 					throw new HibernateException("cannot recreate collection while filter is enabled: "
-					                             + MessageHelper.InfoString(persister, id, persister.Factory));
+												 + MessageHelper.CollectionInfoString(persister, collection, id, session));
 				}
 				if (!emptySnapshot)
 				{
