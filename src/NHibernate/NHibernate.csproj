@@ -238,6 +238,7 @@
     <Compile Include="FetchMode.cs" />
     <Compile Include="FlushMode.cs" />
     <Compile Include="HibernateException.cs" />
+    <Compile Include="Hql\Ast\ANTLR\HqlFilterPreprocessor.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\ResultVariableRefNode.cs" />
     <Compile Include="Hql\StringQueryExpression.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\ComponentJoin.cs" />
@@ -306,10 +307,12 @@
     <Compile Include="Linq\Functions\EqualsGenerator.cs" />
     <Compile Include="Linq\GroupBy\KeySelectorVisitor.cs" />
     <Compile Include="Linq\GroupBy\PagingRewriter.cs" />
+    <Compile Include="Linq\GroupResultOperatorExtensions.cs" />
     <Compile Include="Linq\NestedSelects\NestedSelectDetector.cs" />
     <Compile Include="Linq\NestedSelects\Tuple.cs" />
     <Compile Include="Linq\NestedSelects\SelectClauseRewriter.cs" />
     <Compile Include="Linq\NestedSelects\ExpressionHolder.cs" />
+    <Compile Include="Linq\ReWriters\ArrayIndexExpressionFlattener.cs" />
     <Compile Include="Linq\Visitors\IQueryModelRewriterFactory.cs" />
     <Compile Include="Linq\QueryProviderFactory.cs" />
     <Compile Include="Linq\Visitors\LeftJoinRewriter.cs" />
@@ -330,10 +333,10 @@
     <Compile Include="Linq\Visitors\QuerySourceIdentifier.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorAndOrderByJoinDetector.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessLock.cs" />
+    <Compile Include="Linq\Visitors\MemberExpressionJoinDetector.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessTimeout.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAggregateFromSeed.cs" />
     <Compile Include="Linq\NestedSelects\NestedSelectRewriter.cs" />
-    <Compile Include="Linq\Visitors\SelectJoinDetector.cs" />
     <Compile Include="Linq\Visitors\SelectClauseNominator.cs" />
     <Compile Include="Linq\Visitors\SimplifyConditionalVisitor.cs" />
     <Compile Include="Linq\Visitors\SubQueryFromClauseFlattener.cs" />
@@ -1104,7 +1107,6 @@
     <Compile Include="Hql\Ast\ANTLR\Tree\FromReferenceNode.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\HqlSqlWalkerNode.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\HqlSqlWalkerTreeAdapter.cs" />
-    <Compile Include="Hql\Ast\ANTLR\Tree\HqlSqlWalkerTreeNodeStream.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\IASTFactory.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\IASTNode.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\IBinaryOperatorNode.cs" />

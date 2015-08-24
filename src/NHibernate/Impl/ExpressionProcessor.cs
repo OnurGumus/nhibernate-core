@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using NHibernate.Criterion;
 using NHibernate.Util;
 using Expression = System.Linq.Expressions.Expression;
@@ -290,6 +291,21 @@ namespace NHibernate.Impl
 			return ProjectionInfo.ForProperty(FindMemberExpression(expression));
 		}
 
+		//http://stackoverflow.com/a/2509524/259946
+		private static readonly Regex GeneratedMemberNameRegex = new Regex(@"^(CS\$)?<\w*>[1-9a-s]__[a-zA-Z]+[0-9]*$", RegexOptions.Compiled | RegexOptions.Singleline);
+
+		private static bool IsCompilerGeneratedMemberExpressionOfCompilerGeneratedClass(Expression expression)
+		{
+			var memberExpression = expression as MemberExpression;
+			if (memberExpression != null && memberExpression.Member.DeclaringType != null)
+			{
+				return Attribute.GetCustomAttribute(memberExpression.Member.DeclaringType, typeof(CompilerGeneratedAttribute)) != null 
+					&& GeneratedMemberNameRegex.IsMatch(memberExpression.Member.Name);
+			}
+
+			return false;
+		}
+
 		/// <summary>
 		/// Retrieves the name of the property from a member expression
 		/// </summary>
@@ -301,23 +317,32 @@ namespace NHibernate.Impl
 			var memberExpression = expression as MemberExpression;
 			if (memberExpression != null)
 			{
-				if (memberExpression.Expression.NodeType == ExpressionType.MemberAccess
-					|| memberExpression.Expression.NodeType == ExpressionType.Call)
+				var parentExpression = memberExpression.Expression;
+				if (parentExpression != null)
 				{
-					if (memberExpression.Member.DeclaringType.IsNullable())
+					if (parentExpression.NodeType == ExpressionType.MemberAccess
+						|| parentExpression.NodeType == ExpressionType.Call)
 					{
-						// it's a Nullable<T>, so ignore any .Value
-						if (memberExpression.Member.Name == "Value")
-							return FindMemberExpression(memberExpression.Expression);
-					}
+						if (memberExpression.Member.DeclaringType.IsNullable())
+						{
+							// it's a Nullable<T>, so ignore any .Value
+							if (memberExpression.Member.Name == "Value")
+								return FindMemberExpression(parentExpression);
+						}
 
-					return FindMemberExpression(memberExpression.Expression) + "." + memberExpression.Member.Name;
+						if (IsCompilerGeneratedMemberExpressionOfCompilerGeneratedClass(parentExpression))
+						{
+							return memberExpression.Member.Name;
+						}
+
+						return FindMemberExpression(parentExpression) + "." + memberExpression.Member.Name;
+					}
+					if (IsConversion(parentExpression.NodeType))
+					{
+						return (FindMemberExpression(parentExpression) + "." + memberExpression.Member.Name).TrimStart('.');
+					}
 				}
-				if (IsConversion(memberExpression.Expression.NodeType))
-				{
-					return (FindMemberExpression(memberExpression.Expression) + "." + memberExpression.Member.Name).TrimStart('.');
-				}
-				
+
 				return memberExpression.Member.Name;
 			}
 

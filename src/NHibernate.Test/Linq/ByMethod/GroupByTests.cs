@@ -507,17 +507,212 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(result[15].FirstOrder, Is.EqualTo(10255));
 		}
 
-		[Test(Description = "NH-3681"), KnownBug("NH-3681 not yet fixed", "NHibernate.HibernateException")]
+		[Test(Description = "NH-3681")]
 		public void SelectManyGroupByAggregateProjection()
 		{
 			var result = (from o in db.Orders
-			              from ol in o.OrderLines
-			              group ol by ol.Product.ProductId
-			              into grp
-			              select new {ProductId = grp.Key, Sum = grp.Sum(x => x.UnitPrice)}
+						  from ol in o.OrderLines
+						  group ol by ol.Product.ProductId
+							  into grp
+							  select new
+							  {
+								  ProductId = grp.Key,
+								  Sum = grp.Sum(x => x.UnitPrice),
+								  Count = grp.Count(),
+								  Avg = grp.Average(x => x.UnitPrice),
+								  Min = grp.Min(x => x.UnitPrice),
+								  Max = grp.Max(x => x.UnitPrice),
+							  }
 				).ToList();
 
 			Assert.That(result.Count, Is.EqualTo(77));
+		}
+
+		[Test(Description = "NH-3797")]
+		public void GroupByComputedValue()
+		{
+			var orderGroups = db.Orders.GroupBy(o => o.Customer.CustomerId == null ? 0 : 1).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(830, orderGroups.Sum(g => g.Count));
+		}
+
+		[Test(Description = "NH-3797")]
+		public void GroupByComputedValueInAnonymousType()
+		{
+			var orderGroups = db.Orders.GroupBy(o => new { Key = o.Customer.CustomerId == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(830, orderGroups.Sum(g => g.Count));
+		}
+
+		[Test(Description = "NH-3797")]
+		public void GroupByComputedValueInObjectArray()
+		{
+			var orderGroups = db.Orders.GroupBy(o => new[] { o.Customer.CustomerId == null ? 0 : 1, }).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(830, orderGroups.Sum(g => g.Count));
+		}
+
+		[Test(Description = "NH-3474")]
+		public void GroupByConstant()
+		{
+			var totals = db.Orders.GroupBy(o => 1).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) }).ToList();
+			Assert.That(totals.Count, Is.EqualTo(1));
+			Assert.That(totals, Has.All.With.Property("Key").EqualTo(1));
+		}
+
+		[Test(Description = "NH-3474")]
+		public void GroupByConstantAnonymousType()
+		{
+			var totals = db.Orders.GroupBy(o => new { A = 1 }).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) }).ToList();
+			Assert.That(totals.Count, Is.EqualTo(1));
+			Assert.That(totals, Has.All.With.Property("Key").With.Property("A").EqualTo(1));
+		}
+
+		[Test(Description = "NH-3474")]
+		public void GroupByConstantArray()
+		{
+			var totals = db.Orders.GroupBy(o => new object[] { 1 }).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) }).ToList();
+			Assert.That(totals.Count, Is.EqualTo(1));
+			Assert.That(totals, Has.All.With.Property("Key").EqualTo(new object[] { 1 }));
+		}
+
+		[Test(Description = "NH-3474")]
+		public void GroupByKeyWithConstantInAnonymousType()
+		{
+			var totals = db.Orders.GroupBy(o => new { A = 1, B = o.Shipper.ShipperId }).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) }).ToList();
+			Assert.That(totals.Count, Is.EqualTo(3));
+			Assert.That(totals, Has.All.With.Property("Key").With.Property("A").EqualTo(1));
+		}
+
+		[Test(Description = "NH-3474")]
+		public void GroupByKeyWithConstantInArray()
+		{
+			var totals = db.Orders.GroupBy(o => new[] { 1, o.Shipper.ShipperId }).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) }).ToList();
+			Assert.That(totals.Count, Is.EqualTo(3));
+			Assert.That(totals, Has.All.With.Property("Key").Contains(1));
+		}
+
+		private int constKey;
+		[Test(Description = "NH-3474")]
+		public void GroupByKeyWithConstantFromVariable()
+		{
+			constKey = 1;
+			var q1 = db.Orders.GroupBy(o => constKey).Select(g => new {Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight)});
+			var q1a = db.Orders.GroupBy(o => "").Select(g => new {Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight)});
+			var q2 = db.Orders.GroupBy(o => new {A = constKey}).Select(g => new {Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight)});
+			var q3 = db.Orders.GroupBy(o => new object[] {constKey}).Select(g => new {Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight)});
+			var q3a = db.Orders.GroupBy(o => (IEnumerable<object>) new object[] {constKey}).Select(g => new {Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight)});
+			var q4 = db.Orders.GroupBy(o => new {A = constKey, B = o.Shipper.ShipperId}).Select(g => new {Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight)});
+			var q5 = db.Orders.GroupBy(o => new[] {constKey, o.Shipper.ShipperId}).Select(g => new {Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight)});
+			var q5a = db.Orders.GroupBy(o => (IEnumerable<int>) new[] {constKey, o.Shipper.ShipperId}).Select(g => new {Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight)});
+
+			var r1_1 = q1.ToList();
+			Assert.That(r1_1.Count, Is.EqualTo(1));
+			Assert.That(r1_1, Has.All.With.Property("Key").EqualTo(1));
+
+			var r1a_1 = q1a.ToList();
+			Assert.That(r1a_1.Count, Is.EqualTo(1));
+			Assert.That(r1a_1, Has.All.With.Property("Key").EqualTo(""));
+
+			var r2_1 = q2.ToList();
+			Assert.That(r2_1.Count, Is.EqualTo(1));
+			Assert.That(r2_1, Has.All.With.Property("Key").With.Property("A").EqualTo(1));
+
+			var r3_1 = q3.ToList();
+			Assert.That(r3_1.Count, Is.EqualTo(1));
+			Assert.That(r3_1, Has.All.With.Property("Key").EquivalentTo(new object[] { 1 }));
+
+			var r3a_1 = q3a.ToList();
+			Assert.That(r3a_1.Count, Is.EqualTo(1));
+			Assert.That(r3a_1, Has.All.With.Property("Key").EquivalentTo(new object[] { 1 }));
+
+			var r4_1 = q4.ToList();
+			Assert.That(r4_1.Count, Is.EqualTo(3));
+			Assert.That(r4_1, Has.All.With.Property("Key").With.Property("A").EqualTo(1));
+
+			var r5_1 = q5.ToList();
+			Assert.That(r5_1.Count, Is.EqualTo(3));
+			Assert.That(r5_1, Has.All.With.Property("Key").Contains(1));
+
+			var r6_1 = q5a.ToList();
+			Assert.That(r6_1.Count, Is.EqualTo(3));
+			Assert.That(r6_1, Has.All.With.Property("Key").Contains(1));
+
+			constKey = 2;
+
+			var r1_2 = q1.ToList();
+			Assert.That(r1_2.Count, Is.EqualTo(1));
+			Assert.That(r1_2, Has.All.With.Property("Key").EqualTo(2));
+
+			var r2_2 = q2.ToList();
+			Assert.That(r2_2.Count, Is.EqualTo(1));
+			Assert.That(r2_2, Has.All.With.Property("Key").With.Property("A").EqualTo(2));
+
+			var r3_2 = q3.ToList();
+			Assert.That(r3_2.Count, Is.EqualTo(1));
+			Assert.That(r3_2, Has.All.With.Property("Key").EquivalentTo(new object[] { 2 }));
+
+			var r3a_2 = q3a.ToList();
+			Assert.That(r3a_2.Count, Is.EqualTo(1));
+			Assert.That(r3a_2, Has.All.With.Property("Key").EquivalentTo(new object[] { 2 }));
+
+			var r4_2 = q4.ToList();
+			Assert.That(r4_2.Count, Is.EqualTo(3));
+			Assert.That(r4_2, Has.All.With.Property("Key").With.Property("A").EqualTo(2));
+
+			var r5_2 = q5.ToList();
+			Assert.That(r5_2.Count, Is.EqualTo(3));
+			Assert.That(r5_2, Has.All.With.Property("Key").Contains(2));
+
+			var r6_2 = q5.ToList();
+			Assert.That(r6_2.Count, Is.EqualTo(3));
+			Assert.That(r6_2, Has.All.With.Property("Key").Contains(2));
+		}
+
+		[Test(Description = "NH-3801")]
+		public void GroupByComputedValueWithJoinOnObject()
+		{
+			var orderGroups = db.OrderLines.GroupBy(o => o.Order.Customer == null ? 0 : 1).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
+		}
+
+		[Test(Description = "NH-3801")]
+		public void GroupByComputedValueWithJoinOnId()
+		{
+			var orderGroups = db.OrderLines.GroupBy(o => o.Order.Customer.CustomerId == null ? 0 : 1).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
+		}
+
+		[Test(Description = "NH-3801")]
+		public void GroupByComputedValueInAnonymousTypeWithJoinOnObject()
+		{
+			var orderGroups = db.OrderLines.GroupBy(o => new { Key = o.Order.Customer == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
+		}
+
+		[Test(Description = "NH-3801")]
+		public void GroupByComputedValueInAnonymousTypeWithJoinOnId()
+		{
+			var orderGroups = db.OrderLines.GroupBy(o => new { Key = o.Order.Customer.CustomerId == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
+		}
+
+		[Test(Description = "NH-3801")]
+		public void GroupByComputedValueInObjectArrayWithJoinOnObject()
+		{
+			var orderGroups = db.OrderLines.GroupBy(o => new[] { o.Order.Customer == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
+		}
+
+		[Test(Description = "NH-3801")]
+		public void GroupByComputedValueInObjectArrayWithJoinOnId()
+		{
+			var orderGroups = db.OrderLines.GroupBy(o => new[] { o.Order.Customer.CustomerId == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
+		}
+
+		[Test(Description = "NH-3801")]
+		public void GroupByComputedValueInObjectArrayWithJoinInRightSideOfCase()
+		{
+			var orderGroups = db.OrderLines.GroupBy(o => new[] { o.Order.Customer.CustomerId == null ? "unknown" : o.Order.Customer.CompanyName }).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
+			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
 		}
 
 		private static void CheckGrouping<TKey, TElement>(IEnumerable<IGrouping<TKey, TElement>> groupedItems, Func<TElement, TKey> groupBy)
