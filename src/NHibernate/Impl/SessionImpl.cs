@@ -2128,7 +2128,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override void List(CriteriaImpl criteria, IList results)
+		async public override Task List(CriteriaImpl criteria, IList results, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2155,7 +2155,7 @@ namespace NHibernate.Impl
 
 				try
 				{
-					AutoFlushIfRequired(spaces, false).Wait();
+					await AutoFlushIfRequired(spaces, async);
 				}
 				catch (AggregateException e)
 				{
@@ -2171,7 +2171,7 @@ namespace NHibernate.Impl
 					{
 						try
 						{
-							ArrayHelper.AddAll(results, loaders[i].List(this, false).Result);
+							ArrayHelper.AddAll(results, await loaders[i].List(this, async));
 						}
 						catch (AggregateException e)
 						{
