@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Top-level .gitignore.
 # Rules that apply mainly for for Visual Studio projects should go in src/.gitignore
 # to avoid applying to e.g. the Tools and lib directories.
@@ -12,6 +11,7 @@ current-test-configuration
 # This will be copied from the build directory to the lib directory in order
 # to satisfy later build steps. But it should not be committed.
 NHibernate.dll
+<<<<<<< HEAD
 src/packages/Antlr4.StringTemplate.4.0.6.9004/Antlr4.StringTemplate.4.0.6.9004.nupkg
 src/packages/Iesi.Collections.4.0.1.4000/Iesi.Collections.4.0.1.4000.nupkg
 src/packages/Iesi.Collections.4.0.1.4000/lib/net40/Iesi.Collections.xml
@@ -32,17 +32,5 @@ src/UpgradeLog.htm
 src/NHibernate/Event/Default/AbstractFlushingEventListener.cs.orig
 src/UpgradeLog2.htm
 =======
-# Top-level .gitignore.
-# Rules that apply mainly for for Visual Studio projects should go in src/.gitignore
-# to avoid applying to e.g. the Tools and lib directories.
-
-build
-*.bak
-NHibernate.VisualState.xml
-available-test-configurations
-current-test-configuration
-
-# This will be copied from the build directory to the lib directory in order
-# to satisfy later build steps. But it should not be committed.
-NHibernate.dll
+TestResult.xml
 >>>>>>> master
