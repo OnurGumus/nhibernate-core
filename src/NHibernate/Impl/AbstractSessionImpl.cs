@@ -138,24 +138,24 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public virtual IList<T> List<T>(CriteriaImpl criteria)
+		public virtual async Task<IList<T>> List<T>(CriteriaImpl criteria, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				var results = new List<T>();
-				List(criteria, results);
+				await List(criteria, results,async);
 				return results;
 			}
 		}
 
-		public abstract void List(CriteriaImpl criteria, IList results);
+		public abstract Task List(CriteriaImpl criteria, IList results, bool async);
 		
-		public virtual IList List(CriteriaImpl criteria)
+		public virtual async Task<IList> List(CriteriaImpl criteria, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				var results = new List<object>();
-				List(criteria, results);
+				await List(criteria, results, async);
 				return results;
 			}
 		}
