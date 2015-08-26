@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
 using System.Text;
+using System.Threading.Tasks;
 using NHibernate.Criterion;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -256,14 +258,42 @@ namespace NHibernate.Impl
 			List(results);
 			return results;
 		}
+		
+		async public Task<IList> ListAsync()
+		{
+			var results = new List<object>();
+			await ListAsync(results);
+			return results;
+		}
 
 		public void List(IList results)
 		{
 			Before();
 			try
 			{
-				session.List(this, results);
+				session.List(this, results, false).Wait();
 			}
+			catch (AggregateException ex)
+			{
+				ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+ 			}
+			finally
+			{
+				After();
+			}
+		}
+		
+		async public Task ListAsync(IList results)
+		{
+			Before();
+			try
+			{
+				await session.List(this, results, true);
+			}
+			catch (AggregateException ex)
+			{
+				ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+ 			}
 			finally
 			{
 				After();
@@ -274,6 +304,13 @@ namespace NHibernate.Impl
 		{
 			List<T> results = new List<T>();
 			List(results);
+			return results;
+		}
+		
+		async public Task<IList<T>> ListAsync<T>()
+		{
+			List<T> results = new List<T>();
+			await ListAsync(results);
 			return results;
 		}
 
@@ -287,6 +324,19 @@ namespace NHibernate.Impl
 			else
 			{
 				return (T) result;
+			}
+		}
+		
+		async public Task<T> UniqueResultAsync<T>()
+		{
+			var result = await UniqueResultAsync();
+			if (result == null && typeof(T).IsValueType)
+			{
+				return default(T);
+			}
+			else
+			{
+				return (T)result;
 			}
 		}
 
@@ -426,6 +476,11 @@ namespace NHibernate.Impl
 		public object UniqueResult()
 		{
 			return AbstractQueryImpl.UniqueElement(List());
+		}
+		
+		async public Task<object> UniqueResultAsync()
+		{
+			return AbstractQueryImpl.UniqueElement(await ListAsync());
 		}
 
 		public ICriteria SetLockMode(LockMode lockMode)
@@ -799,10 +854,20 @@ namespace NHibernate.Impl
 			{
 				root.List(results);
 			}
+			
+			async public Task ListAsync(IList results)
+			{
+				await root.ListAsync(results);
+			}
 
 			public IList<T> List<T>()
 			{
 				return root.List<T>();
+			}
+			
+			async public Task<IList<T>> ListAsync<T>()
+			{
+				return await root.ListAsync<T>();
 			}
 
 			public T UniqueResult<T>()
@@ -818,6 +883,21 @@ namespace NHibernate.Impl
 					return (T) result;
 				}
 			}
+			
+			async public Task<T> UniqueResultAsync<T>()
+			{
+				object result = await UniqueResultAsync();
+				if (result == null && typeof(T).IsValueType)
+				{
+					throw new InvalidCastException(
+						"UniqueResult<T>() cannot cast null result to value type. Call UniqueResult<T?>() instead");
+				}
+				else
+				{
+					return (T)result;
+				}
+			}
+
 
 			public void ClearOrders()
 			{
@@ -827,6 +907,11 @@ namespace NHibernate.Impl
 			public object UniqueResult()
 			{
 				return root.UniqueResult();
+			}
+			
+			async public Task<object> UniqueResultAsync()
+			{
+				return await root.UniqueResultAsync();
 			}
 
 			public ICriteria SetFetchMode(string associationPath, FetchMode mode)

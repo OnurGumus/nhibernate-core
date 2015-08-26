@@ -118,13 +118,13 @@ namespace NHibernate.Engine
 		Task<IList<T>> List<T>(IQueryExpression queryExpression, QueryParameters queryParameters, bool async);
 
 		/// <summary>
-		/// Strongly-typed version of <see cref="List(CriteriaImpl)" />
+		/// Strongly-typed version of <see cref="List(CriteriaImpl,bool)" />
 		/// </summary>
-		IList<T> List<T>(CriteriaImpl criteria);
+		Task<IList<T>> List<T>(CriteriaImpl criteria, bool async);
 
-		void List(CriteriaImpl criteria, IList results);
+		Task List(CriteriaImpl criteria, IList results, bool async);
 
-		IList List(CriteriaImpl criteria);
+		Task<IList> List(CriteriaImpl criteria, bool async);
 
 		/// <summary>
 		/// Execute an <c>Iterate()</c> query
