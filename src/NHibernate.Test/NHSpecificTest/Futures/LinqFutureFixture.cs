@@ -2,6 +2,7 @@
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.Futures
 {
@@ -19,6 +20,47 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 				var persons = s.Query<Person>().ToFuture();
 
 				Assert.IsTrue(persons.All(p => s.IsReadOnly(p)));
+			}
+		}
+
+		[Test]
+		public async Task DefaultReadOnlyTestAsync()
+		{
+			using (var s = sessions.OpenSession())
+			{
+				s.DefaultReadOnly = true;
+
+				var persons = s.Query<Person>().ToFutureAsync();
+
+				Assert.IsTrue(await persons.All(p => s.IsReadOnly(p)));
+			}
+		}
+
+		[Test]
+		public async Task CastAsync()
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var p1 = new Person { Name = "inserted name" };
+				s.Save(p1);
+				tx.Commit();
+			}
+
+			using (var s = sessions.OpenSession())
+			{
+				var cats = await s.Query<Person>()
+					.Cast<IPerson>()
+					.ToFutureAsync()
+					.ToList();
+				Assert.AreEqual(cats.Count, 1);
+			}
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				s.Delete("from Person");
+				tx.Commit();
 			}
 		}
 

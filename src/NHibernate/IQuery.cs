@@ -670,6 +670,14 @@ namespace NHibernate
 		IEnumerable<T> Future<T>();
 
 		/// <summary>
+		/// Get a enumerable that when enumerated will execute
+		/// a batch of queries in a single database roundtrip
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		IAsyncEnumerable<T> FutureAsync<T>();
+
+		/// <summary>
 		/// Get an IFutureValue instance, whose value can be retrieved through
 		/// its Value property. The query is not executed until the Value property
 		/// is retrieved, which will execute other Future queries as well in a
@@ -678,5 +686,15 @@ namespace NHibernate
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
 		IFutureValue<T> FutureValue<T>();
+
+		/// <summary>
+		/// Get an IFutureValueAsync instance, whose value can be retrieved through
+		/// its GetValue method. The query is not executed until the GetValue method
+		/// is called, which will execute other Future queries as well in a
+		/// single roundtrip
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		IFutureValueAsync<T> FutureValueAsync<T>();
 	}
 }

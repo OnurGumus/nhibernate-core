@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using NHibernate.Cache;
 using NHibernate.Criterion;
 using NHibernate.Driver;
@@ -60,6 +61,18 @@ namespace NHibernate.Impl
 
 		public IList List()
 		{
+			try
+			{
+				return ListAsync(false).Result;
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
+		}
+
+		public async Task<IList> ListAsync(bool async = true)
+		{
 			using (new SessionIdLoggingContext(session.SessionId))
 			{
 				bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
@@ -78,18 +91,18 @@ namespace NHibernate.Impl
 
 				if (cacheable)
 				{
-					criteriaResults = ListUsingQueryCache();
+					criteriaResults = await ListUsingQueryCache(async);
 				}
 				else
 				{
-					criteriaResults = ListIgnoreQueryCache();
+					criteriaResults = await ListIgnoreQueryCache(async);
 				}
 
 				return criteriaResults;
 			}
 		}
 
-		private IList ListUsingQueryCache()
+		private async Task<IList> ListUsingQueryCache(bool async)
 		{
 			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);
 
@@ -135,7 +148,7 @@ namespace NHibernate.Impl
 			if (result == null)
 			{
 				log.Debug("Cache miss for multi criteria query");
-				IList list = DoList();
+				IList list = await DoList(async);
 				result = list;
 				if ((session.CacheMode & CacheMode.Put) == CacheMode.Put)
 				{
@@ -150,9 +163,9 @@ namespace NHibernate.Impl
 			return GetResultList(result);
 		}
 
-		private IList ListIgnoreQueryCache()
+		private async Task<IList> ListIgnoreQueryCache(bool async)
 		{
-			return GetResultList(DoList());
+			return GetResultList(await DoList(async));
 		}
 
 		protected virtual IList GetResultList(IList results)
@@ -189,11 +202,10 @@ namespace NHibernate.Impl
 			return resultCollections;
 		}
 
-		private IList DoList()
+		private async Task<IList> DoList(bool async)
 		{
 			List<IList> results = new List<IList>();
-			GetResultsFromDatabase(results);
-			return results;
+			return await GetResultsFromDatabase(results, async);
 		}
 
 		private void CombineCriteriaQueries()
@@ -209,7 +221,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private void GetResultsFromDatabase(IList results)
+		private async Task<IList> GetResultsFromDatabase(IList results, bool async)
 		{
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
 			var stopWatch = new Stopwatch();
@@ -221,7 +233,7 @@ namespace NHibernate.Impl
 
 			try
 			{
-				using (var reader = resultSetsCommand.GetReader(null))
+				using (var reader = await resultSetsCommand.GetReader(null, async))
 				{
 					var hydratedObjects = new List<object>[loaders.Count];
 					List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[loaders.Count];
@@ -286,6 +298,7 @@ namespace NHibernate.Impl
 				stopWatch.Stop();
 				session.Factory.StatisticsImplementor.QueryExecuted(string.Format("{0} queries (MultiCriteria)", loaders.Count), rowCount, stopWatch.Elapsed);
 			}
+		    return results;
 		}
 
 		private void CreateCriteriaLoaders()

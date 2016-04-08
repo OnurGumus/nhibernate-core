@@ -429,8 +429,16 @@ namespace NHibernate.Loader.Hql
 			DbCommand cmd = PrepareQueryCommand(queryParameters, false, session);
 
 			// This IDataReader is disposed of in EnumerableImpl.Dispose
-			IDataReader rs = GetResultSet(cmd, queryParameters.HasAutoDiscoverScalarTypes, false, queryParameters.RowSelection, session, false).Result;
-
+			IDataReader rs;
+            try
+			{
+				rs = GetResultSet(cmd, queryParameters.HasAutoDiscoverScalarTypes, false, queryParameters.RowSelection, session, false).Result;
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
+			
 			HolderInstantiator hi = 
 				HolderInstantiator.GetHolderInstantiator(_selectNewTransformer, queryParameters.ResultTransformer, _queryReturnAliases);
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using NHibernate.Transform;
 using NHibernate.Type;
 
@@ -17,6 +18,8 @@ namespace NHibernate
 		/// The result is a IList of IList.
 		/// </remarks>
 		IList List();
+
+		Task<IList> ListAsync(bool async = true);
 
 		/// <summary>
 		/// Adds the specified query to the query. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>

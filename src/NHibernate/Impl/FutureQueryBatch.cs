@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
@@ -14,18 +15,18 @@ namespace NHibernate.Impl
 					.SetCacheRegion(cacheRegion);
     	}
 
-    	protected override void AddTo(IMultiQuery multiApproach, IQuery query, System.Type resultType)
-    	{
+		protected override void AddTo(IMultiQuery multiApproach, IQuery query, System.Type resultType)
+		{
 			multiApproach.Add(resultType, query);
-    	}
+		}
 
-    	protected override IList GetResultsFrom(IMultiQuery multiApproach)
-    	{
-			return multiApproach.List();
-    	}
+		protected override Task<IList> GetResultsFrom(IMultiQuery multiApproach, bool async)
+		{
+			return multiApproach.ListAsync(async);
+		}
 
-    	protected override void ClearCurrentFutureBatch()
-    	{
+		protected override void ClearCurrentFutureBatch()
+		{
 			session.FutureQueryBatch = null;
 		}
 
