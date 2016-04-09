@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using NHibernate.Linq;
 
@@ -47,11 +48,26 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(result, Is.False);
 		}
 
+		[Test()]
+		public async Task AnyWithCountAsync()
+		{
+			var result = await db.Orders
+				.AnyAsync(p => p.OrderLines.Count == 0);
+
+			Assert.That(result, Is.False);
+		}
+
 		[Test]
 		public void AnyWithFetch()
 		{
 			//NH-3241
 			var result = db.Orders.Fetch(x => x.Customer).FetchMany(x => x.OrderLines).Any();
+		}
+
+		[Test]
+		public async Task AnyWithFetchAsync()
+		{
+			var result = await db.Orders.Fetch(x => x.Customer).FetchMany(x => x.OrderLines).AnyAsync();
 		}
 	}
 }

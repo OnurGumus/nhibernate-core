@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Linq;
 using NUnit.Framework;
@@ -16,12 +17,41 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 		[Test]
+		public async Task CastCountAsync()
+		{
+			Assert.That(await session.Query<Cat>()
+							   .Cast<Animal>()
+							   .CountAsync(), Is.EqualTo(1));
+		}
+
+
+		[Test]
+		public async Task CastToListAsync()
+		{
+			var cats = await session.Query<Cat>()
+				.Cast<Animal>()
+				.ToListAsync();
+
+			Assert.That(cats.Count, Is.EqualTo(1));
+		}
+
+		[Test]
 		public void CastWithWhere()
 		{
 			var pregnatMammal = (from a
 									in session.Query<Animal>().Cast<Cat>()
 								  where a.Pregnant
 								  select a).FirstOrDefault();
+			Assert.That(pregnatMammal, Is.Not.Null);
+		}
+
+		[Test]
+		public async Task CastWithWhereAsync()
+		{
+			var pregnatMammal = await (from a
+									in session.Query<Animal>().Cast<Cat>()
+								 where a.Pregnant
+								 select a).FirstOrDefaultAsync();
 			Assert.That(pregnatMammal, Is.Not.Null);
 		}
 

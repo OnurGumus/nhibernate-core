@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using NHibernate.Cfg;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq.ByMethod
@@ -26,6 +28,16 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 		[Test]
+        public async Task CountDistinctProperty_ReturnsNumberOfDistinctEntriesForThatPropertyAsync()
+        {
+            var result = await db.Orders
+                .Select(x => x.ShippingDate)
+                .Distinct()
+                .CountAsync();
+            Assert.That(result, Is.EqualTo(387));
+        }
+
+        [Test]
 		public void CountProperty_ReturnsNumberOfNonNullEntriesForThatProperty()
 		{
 			//NH-2722
@@ -37,11 +49,30 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 		[Test]
+		public async Task CountProperty_ReturnsNumberOfNonNullEntriesForThatPropertyAsync()
+		{
+			var result = await db.Orders
+				.Select(x => x.ShippingDate)
+				.CountAsync();
+
+			Assert.That(result, Is.EqualTo(809));
+		}
+
+		[Test]
 		public void Count_ReturnsNumberOfRecords()
 		{
 			//NH-2722
 			var result = db.Orders
 				.Count();
+
+			Assert.That(result, Is.EqualTo(830));
+		}
+
+		[Test]
+		public async Task Count_ReturnsNumberOfRecordsAsync()
+		{
+			var result = await db.Orders
+				.CountAsync();
 
 			Assert.That(result, Is.EqualTo(830));
 		}
@@ -59,6 +90,17 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 		[Test]
+		public async Task LongCountDistinctProperty_ReturnsNumberOfDistinctEntriesForThatPropertyAsync()
+		{
+			var result = await db.Orders
+				.Select(x => x.ShippingDate)
+				.Distinct()
+				.LongCountAsync();
+
+			Assert.That(result, Is.EqualTo(387));
+		}
+
+		[Test]
 		public void LongCountProperty_ReturnsNumberOfNonNullEntriesForThatProperty()
 		{
 			//NH-2722
@@ -70,11 +112,31 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 		[Test]
+		public async Task LongCountProperty_ReturnsNumberOfNonNullEntriesForThatPropertyAsync()
+		{
+			var result = await db.Orders
+				.Select(x => x.ShippingDate)
+				.LongCountAsync();
+
+			Assert.That(result, Is.EqualTo(809));
+		}
+
+		[Test]
 		public void LongCount_ReturnsNumberOfRecords()
 		{
 			//NH-2722
 			var result = db.Orders
 				.LongCount();
+
+			Assert.That(result, Is.EqualTo(830));
+		}
+
+		[Test]
+		public async Task LongCount_ReturnsNumberOfRecordsAsync()
+		{
+			//NH-2722
+			var result = await db.Orders
+				.LongCountAsync();
 
 			Assert.That(result, Is.EqualTo(830));
 		}

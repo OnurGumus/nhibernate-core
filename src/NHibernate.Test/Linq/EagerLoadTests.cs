@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using NHibernate.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
@@ -325,6 +326,20 @@ namespace NHibernate.Test.Linq
 			var order = db.Orders
 				.Fetch(x => x.Shipper)
 				.SingleOrDefault(x => x.OrderId == firstOrderId);
+
+			Assert.IsTrue(NHibernateUtil.IsInitialized(order.Shipper));
+		}
+
+		[Test]
+		public async Task WhereAfterFetchAndSingleOrDefaultAsync()
+		{
+			var firstOrderId = await db.Orders.OrderBy(x => x.OrderId)
+				.Select(x => x.OrderId)
+				.FirstAsync();
+
+			var order = await db.Orders
+				.Fetch(x => x.Shipper)
+				.SingleOrDefaultAsync(x => x.OrderId == firstOrderId);
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(order.Shipper));
 		}

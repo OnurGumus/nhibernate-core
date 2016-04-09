@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using NHibernate.Engine.Query;
 using NHibernate.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
@@ -64,6 +65,16 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task FirstAsyncElementWithWhere()
+		{
+			var query = await (from user in db.Users
+						 where user.Name == "ayende"
+						 select user).FirstAsync();
+
+			Assert.That(query.Name, Is.EqualTo("ayende"));
+		}
+
+		[Test]
 		public void FirstElementWithQueryThatReturnsNoResults()
 		{
 			var users = from user in db.Users
@@ -100,6 +111,27 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task SingleAsyncElementWithQueryThatReturnsNoResults()
+		{
+			var users = from user in db.Users
+						where user.Name == "xxx"
+						select user;
+			try
+			{
+				await users.SingleAsync();
+			}
+			catch (InvalidOperationException)
+			{
+				return;
+			}
+			catch (Exception)
+			{
+				Assert.Fail("This should've thrown an InvalidOperationException");
+			}
+			Assert.Fail("This should've thrown an InvalidOperationException");
+		}
+
+		[Test]
 		public void SingleElementWithQueryThatReturnsMultipleResults()
 		{
 			var users = from user in db.Users
@@ -122,11 +154,31 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task SingleOrDefaultAsyncElementWithQueryThatReturnsNoResults()
+		{
+			var query = await (from user in db.Users
+							   where user.Name == "xxx"
+							   select user).SingleOrDefaultAsync();
+
+			Assert.That(query, Is.Null);
+		}
+
+		[Test]
 		public void UsersRegisteredAtOrAfterY2K()
 		{
 			var query = (from user in db.Users
 						 where user.RegisteredAt >= new DateTime(2000, 1, 1)
 						 select user).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+
+		[Test]
+		public async Task UsersRegisteredAtOrAfterY2KAsync()
+		{
+			var query = await (from user in db.Users
+						 where user.RegisteredAt >= new DateTime(2000, 1, 1)
+						 select user).ToListAsync();
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}

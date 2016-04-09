@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -426,6 +428,14 @@ namespace NHibernate.Test.Linq
 			Console.WriteLine(q);
 		}
 
+		[Category("COUNT/SUM/MIN/MAX/AVG")]
+		[Test(Description = "This sample uses Count to find the number of Customers in the database.")]
+		public async Task DLinq19Async()
+		{
+			int q = await db.Customers.CountAsync();
+			Console.WriteLine(q);
+		}
+
 		[Category("WHERE")]
 		[Test(Description = "This sample uses WHERE to filter for Employees hired during or after 1994.")]
 		public void DLinq2()
@@ -448,10 +458,27 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Category("COUNT/SUM/MIN/MAX/AVG")]
+		[Test(Description = "This sample uses CountAsync to find the number of Products in the database " +
+							"that are not discontinued.")]
+		public async Task DLinq20Async()
+		{
+			int q = await db.Products.CountAsync(p => !p.Discontinued);
+			Console.WriteLine(q);
+		}
+
+		[Category("COUNT/SUM/MIN/MAX/AVG")]
 		[Test(Description = "This sample uses Sum to find the total freight over all Orders.")]
 		public void DLinq21()
 		{
 			decimal? q = db.Orders.Select(o => o.Freight).Sum();
+			Console.WriteLine(q);
+		}
+
+		[Category("COUNT/SUM/MIN/MAX/AVG")]
+		[Test(Description = "This sample uses Sum to find the total freight over all Orders.")]
+		public async Task DLinq21Async()
+		{
+			decimal? q = await db.Orders.Select(o => o.Freight).SumAsync();
 			Console.WriteLine(q);
 		}
 
@@ -464,6 +491,14 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Category("COUNT/SUM/MIN/MAX/AVG")]
+		[Test(Description = "This sample uses Sum to find the total number of units on order over all Products.")]
+		public async Task DLinq22Async()
+		{
+			int? q = await db.Products.SumAsync(p => p.UnitsOnOrder);
+			Console.WriteLine(q);
+		}
+
+		[Category("COUNT/SUM/MIN/MAX/AVG")]
 		[Test(Description = "This sample uses Min to find the lowest unit price of any Product.")]
 		public void DLinq23()
 		{
@@ -472,10 +507,26 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Category("COUNT/SUM/MIN/MAX/AVG")]
+		[Test(Description = "This sample uses Min to find the lowest unit price of any Product.")]
+		public async Task DLinq23Async()
+		{
+			decimal? q = await db.Products.Select(p => p.UnitPrice).MinAsync();
+			Console.WriteLine(q);
+		}
+
+		[Category("COUNT/SUM/MIN/MAX/AVG")]
 		[Test(Description = "This sample uses Min to find the lowest freight of any Order.")]
 		public void DLinq24()
 		{
 			decimal? q = db.Orders.Min(o => o.Freight);
+			Console.WriteLine(q);
+		}
+
+		[Category("COUNT/SUM/MIN/MAX/AVG")]
+		[Test(Description = "This sample uses Min to find the lowest freight of any Order.")]
+		public async Task DLinq24Async()
+		{
+			decimal? q = await db.Orders.MinAsync(o => o.Freight);
 			Console.WriteLine(q);
 		}
 
@@ -546,10 +597,26 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Category("COUNT/SUM/MIN/MAX/AVG")]
+		[Test(Description = "This sample uses Max to find the latest hire date of any Employee.")]
+		public async Task DLinq26Async()
+		{
+			DateTime? q = await db.Employees.Select(e => e.HireDate).MaxAsync();
+			Console.WriteLine(q);
+		}
+
+		[Category("COUNT/SUM/MIN/MAX/AVG")]
 		[Test(Description = "This sample uses Max to find the most units in stock of any Product.")]
 		public void DLinq27()
 		{
 			int? q = db.Products.Max(p => p.UnitsInStock);
+			Console.WriteLine(q);
+		}
+
+		[Category("COUNT/SUM/MIN/MAX/AVG")]
+		[Test(Description = "This sample uses Max to find the most units in stock of any Product.")]
+		public async Task DLinq27Async()
+		{
+			int? q = await db.Products.MaxAsync(p => p.UnitsInStock);
 			Console.WriteLine(q);
 		}
 
@@ -583,6 +650,14 @@ namespace NHibernate.Test.Linq
 			Console.WriteLine(q);
 		}
 
+		[Category("COUNT/SUM/MIN/MAX/AVG")]
+		[Test(Description = "This sample uses Average to find the average freight of all Orders.")]
+		public async Task DLinq29Async()
+		{
+			decimal? q = await db.Orders.Select(o => o.Freight).AverageAsync();
+			Console.WriteLine(q);
+		}
+
 		[Category("WHERE")]
 		[Test(
 			Description =
@@ -604,6 +679,14 @@ namespace NHibernate.Test.Linq
 		public void DLinq30()
 		{
 			decimal? q = db.Products.Average(p => p.UnitPrice);
+			Console.WriteLine(q);
+		}
+
+		[Category("COUNT/SUM/MIN/MAX/AVG")]
+		[Test(Description = "This sample uses Average to find the average unit price of all Products.")]
+		public async Task DLinq30Async()
+		{
+			decimal? q = await db.Products.AverageAsync(p => p.UnitPrice);
 			Console.WriteLine(q);
 		}
 
