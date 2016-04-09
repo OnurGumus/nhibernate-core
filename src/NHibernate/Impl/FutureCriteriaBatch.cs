@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
@@ -19,9 +20,9 @@ namespace NHibernate.Impl
 			multiApproach.Add(resultType, query);
 		}
 
-		protected override IList GetResultsFrom(IMultiCriteria multiApproach)
+		protected override Task<IList> GetResultsFrom(IMultiCriteria multiApproach, bool async)
 		{
-			return multiApproach.List();
+			return multiApproach.ListAsync(async);
 		}
 
 		protected override void ClearCurrentFutureBatch()

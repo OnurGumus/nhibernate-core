@@ -28,6 +28,7 @@
 			<include name="NHibernate.dll" />
 			<include name="nunit.framework.dll" />
  			<include name="System.Linq.Dynamic.dll" />
+			<include name="System.Interactive.Async.dll" />
 		</assemblyfileset>
 		<resourcefileset id="project.resources" prefix="NHibernate.Test" dynamicprefix="true">
 			<include name="**/*.xml" />

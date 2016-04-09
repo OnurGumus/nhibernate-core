@@ -86,6 +86,10 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Interactive.Async, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ix-Async.1.2.5\lib\net45\System.Interactive.Async.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.ServiceModel">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -264,6 +268,7 @@
     <Compile Include="Id\TableHiLoGenerator.cs" />
     <Compile Include="Id\UUIDHexGenerator.cs" />
     <Compile Include="Id\UUIDStringGenerator.cs" />
+    <Compile Include="IFutureValueAsync.cs" />
     <Compile Include="IInterceptor.cs" />
     <Compile Include="Impl\AbstractQueryImpl.cs" />
     <Compile Include="AdoNet\AbstractBatcher.cs" />
@@ -275,8 +280,10 @@
     <Compile Include="Impl\AbstractQueryImpl2.cs" />
     <Compile Include="Impl\CriteriaImpl.cs" />
     <Compile Include="Engine\EntityEntry.cs" />
+    <Compile Include="Impl\DelayedAsyncEnumerator.cs" />
     <Compile Include="Impl\EnumerableImpl.cs" />
     <Compile Include="Impl\FilterImpl.cs" />
+    <Compile Include="Impl\FutureValueAsync.cs" />
     <Compile Include="Impl\MessageHelper.cs" />
     <Compile Include="AdoNet\NonBatchingBatcher.cs" />
     <Compile Include="Impl\Printer.cs" />

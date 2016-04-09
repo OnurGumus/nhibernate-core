@@ -901,22 +901,47 @@ namespace NHibernate.Impl
 			return session.FutureQueryBatch.GetEnumerator<T>();
 		}
 
+		public IAsyncEnumerable<T> FutureAsync<T>()
+		{
+			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
+			{
+				return new DelayedAsyncEnumerator<T>(async () => await ListAsync<T>());
+			}
+
+			session.FutureQueryBatch.Add<T>(this);
+			return session.FutureQueryBatch.GetAsyncEnumerator<T>();
+		}
+
 		public IFutureValue<T> FutureValue<T>()
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				try
+				return new FutureValue<T>(() =>
 				{
-					return new FutureValue<T>(() => (ListAsync<T>().Result));
-				}
-				catch (AggregateException e)
-				{
-					throw e.InnerException;
-				}
+					try
+					{
+						return (ListAsync<T>().Result);
+					}
+					catch (AggregateException e)
+					{
+						throw e.InnerException;
+					}
+                });
 			}
 
 			session.FutureQueryBatch.Add<T>(this);
 			return session.FutureQueryBatch.GetFutureValue<T>();
+		}
+
+		public IFutureValueAsync<T> FutureValueAsync<T>()
+		{
+			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
+			{
+				return new FutureValueAsync<T>(async () => await ListAsync<T>());
+			}
+
+			session.FutureQueryBatch.Add<T>(this);
+			return session.FutureQueryBatch.GetFutureValueAsync<T>();
 		}
 
 		/// <summary> Override the current session cache mode, just for this query.

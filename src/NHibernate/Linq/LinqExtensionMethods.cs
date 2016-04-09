@@ -239,7 +239,6 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(query.Provider, callExpression);
 		}
 
-	
 
 		public static IEnumerable<T> ToFuture<T>(this IQueryable<T> query)
 		{
@@ -252,7 +251,15 @@ namespace NHibernate.Linq
 			return (IEnumerable<T>)future;
 		}
 
+		public static IAsyncEnumerable<T> ToFutureAsync<T>(this IQueryable<T> query)
+		{
+			var nhQueryable = query as QueryableBase<T>;
+			if (nhQueryable == null)
+				throw new NotSupportedException("Query needs to be of type QueryableBase<T>");
 
+			var provider = (INhQueryProvider)nhQueryable.Provider;
+			return (IAsyncEnumerable<T>)provider.ExecuteFuture(nhQueryable.Expression, true);
+		}
 
 		public static async Task<IEnumerable<T>> ToListAsync<T>(this IQueryable<T> query)
 		{
@@ -264,7 +271,6 @@ namespace NHibernate.Linq
 			var result = await provider.ExecuteAsync<IEnumerable<T>>(nhQueryable.Expression);
 			return (IEnumerable<T>)result;
 		}
-
 
 		public static IFutureValue<T> ToFutureValue<T>(this IQueryable<T> query)
 		{
@@ -280,6 +286,22 @@ namespace NHibernate.Linq
 			}
 
 			return (IFutureValue<T>)future;
+		}
+
+		public static IFutureValueAsync<T> ToFutureValueAsync<T>(this IQueryable<T> query)
+		{
+			var nhQueryable = query as QueryableBase<T>;
+			if (nhQueryable == null)
+				throw new NotSupportedException("Query needs to be of type QueryableBase<T>");
+
+			var provider = (INhQueryProvider)nhQueryable.Provider;
+			var future = provider.ExecuteFuture(nhQueryable.Expression, true);
+			if (future is IAsyncEnumerable<T>)
+			{
+				return new FutureValueAsync<T>(async () => await ((IAsyncEnumerable<T>)future).ToList());
+			}
+
+			return (FutureValueAsync<T>)future;
 		}
 
 		public static T MappedAs<T>(this T parameter, IType type)

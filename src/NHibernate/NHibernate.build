@@ -29,6 +29,7 @@
 			<include name="Iesi.Collections.dll" />
 			<include name="Antlr3.Runtime.dll" />
 			<include name="Remotion.Linq.dll" />
+			<include name="System.Interactive.Async.dll" />
 		</assemblyfileset>
 
 		<resourcefileset id="project.resources" prefix="NHibernate" dynamicprefix="true">

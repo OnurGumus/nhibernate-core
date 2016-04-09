@@ -6,6 +6,7 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace NHibernate.Driver
 {
@@ -40,7 +41,7 @@ namespace NHibernate.Driver
 			get { return sqlString; }
 		}
 
-		public virtual IDataReader GetReader(int? commandTimeout)
+		public virtual Task<IDataReader> GetReader(int? commandTimeout, bool async)
 		{
 			var batcher = Session.Batcher;
 			SqlType[] sqlTypes = Commands.SelectMany(c => c.ParameterTypes).ToArray();
@@ -52,7 +53,8 @@ namespace NHibernate.Driver
 			}
 			log.Info(command.CommandText);
 			BindParameters(command);
-			return new BatcherDataReaderWrapper(batcher, command);
+			var wrapper = new BatcherDataReaderWrapper(batcher);
+			return wrapper.ExecuteReader(command, async);
 		}
 
 		protected virtual void BindParameters(IDbCommand command)
@@ -82,24 +84,29 @@ namespace NHibernate.Driver
 	public class BatcherDataReaderWrapper : IDataReader
 	{
 		private readonly IBatcher batcher;
-		private readonly IDbCommand command;
-		private readonly IDataReader reader;
+		private IDbCommand command;
+		private IDataReader reader;
 
-		public BatcherDataReaderWrapper(IBatcher batcher, DbCommand command)
+		public BatcherDataReaderWrapper(IBatcher batcher)
 		{
 			if (batcher == null)
 			{
 				throw new ArgumentNullException("batcher");
 			}
+			this.batcher = batcher;
+		}
+
+		public async Task<IDataReader> ExecuteReader(DbCommand command, bool async)
+		{
 			if (command == null)
 			{
 				throw new ArgumentNullException("command");
 			}
-			this.batcher = batcher;
 			this.command = command;
 			try
 			{
-				reader = batcher.ExecuteReader(command, false).Result;
+				reader = await batcher.ExecuteReader(command, async);
+				return reader;
 			}
 			catch (AggregateException e)
 			{

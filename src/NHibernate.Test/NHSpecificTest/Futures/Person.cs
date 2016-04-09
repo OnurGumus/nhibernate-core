@@ -2,7 +2,12 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.Futures
 {
-	public class Person
+	public interface IPerson
+	{
+		string Name { get; set; }
+	}
+
+	public class Person : IPerson
 	{
 		private IList<Person> children = new List<Person>();
 		private IList<Person> friends = new List<Person>();

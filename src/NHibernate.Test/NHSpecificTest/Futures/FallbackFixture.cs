@@ -1,4 +1,6 @@
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.Criterion;
@@ -138,6 +140,16 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 			{
 				var results = session.Query<Person>().ToFuture();
 				results.GetEnumerator().MoveNext();
+			}
+		}
+
+		[Test]
+		public async Task FutureOfLinqFallsBackToListImplementationWhenQueryBatchingIsNotSupportedAsync()
+		{
+			using (var session = sessions.OpenSession())
+			{
+				var results = session.Query<Person>().ToFutureAsync();
+				await results.GetEnumerator().MoveNext(CancellationToken.None);
 			}
 		}
 

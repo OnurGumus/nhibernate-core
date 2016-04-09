@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using NHibernate.Cache;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -388,10 +389,22 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		public IList List()
+		{
+			try
+			{
+				return ListAsync(false).Result;
+			}
+			catch (AggregateException e)
+			{
+				throw e.InnerException;
+			}
+		}
+
 		/// <summary>
 		/// Return the query results of all the queries
 		/// </summary>
-		public IList List()
+		public async Task<IList> ListAsync(bool async = true)
 		{
 			using (new SessionIdLoggingContext(session.SessionId))
 			{
@@ -410,7 +423,7 @@ namespace NHibernate.Impl
 				try
 				{
 					Before();
-					return cacheable ? ListUsingQueryCache() : ListIgnoreQueryCache();
+					return cacheable ? await ListUsingQueryCache(async) : await ListIgnoreQueryCache(async);
 				}
 				finally
 				{
@@ -499,7 +512,7 @@ namespace NHibernate.Impl
 			return resultTransformer != null;
 		}
 
-		protected List<object> DoList()
+		protected async Task<List<object>> DoList(bool async)
 		{
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
 			var stopWatch = new Stopwatch();
@@ -517,7 +530,7 @@ namespace NHibernate.Impl
 
 			try
 			{
-				using (var reader = resultSetsCommand.GetReader(commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null))
+				using (var reader = await resultSetsCommand.GetReader(commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null, async))
 				{
 					if (log.IsDebugEnabled)
 					{
@@ -672,12 +685,12 @@ namespace NHibernate.Impl
 
 		#region Implementation
 
-		private IList ListIgnoreQueryCache()
+		private async Task<IList> ListIgnoreQueryCache(bool async)
 		{
-			return GetResultList(DoList());
+			return GetResultList(await DoList(async));
 		}
 
-		private IList ListUsingQueryCache()
+		private async Task<IList> ListUsingQueryCache(bool async)
 		{
 			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);
 
@@ -711,7 +724,7 @@ namespace NHibernate.Impl
 			if (result == null)
 			{
 				log.Debug("Cache miss for multi query");
-				var list = DoList();
+				var list = await DoList(async);
 				queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, false, session);
 				result = list;
 			}
