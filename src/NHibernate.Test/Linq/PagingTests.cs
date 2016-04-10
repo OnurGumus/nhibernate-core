@@ -1,6 +1,8 @@
 using System.Linq;
+using System.Threading.Tasks;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -23,6 +25,18 @@ namespace NHibernate.Test.Linq
 						 .Skip(5).Take(10)
 						 .Select(a => new { a.Name, a.ProductId })
 						 .ToList();
+
+			Assert.That(list, Has.Count.EqualTo(10));
+		}
+
+		[Test]
+		public async Task PageBetweenProjectionsAsync()
+		{
+			var list = await db.Products
+						 .Select(p => new { p.ProductId, p.Name })
+						 .Skip(5).Take(10)
+						 .Select(a => new { a.Name, a.ProductId })
+						 .ToListAsync();
 
 			Assert.That(list, Has.Count.EqualTo(10));
 		}

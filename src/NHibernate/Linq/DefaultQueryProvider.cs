@@ -42,6 +42,7 @@ namespace NHibernate.Linq
 
 			return await ExecuteQuery(nhLinqExpression, query, nhQuery, async);
 		}
+
 		public virtual object Execute(Expression expression)
 		{
 			IQuery query;
@@ -57,7 +58,8 @@ namespace NHibernate.Linq
 				throw e.InnerException;
 			}
 		}
-		public TResult Execute<TResult>(Expression expression)
+
+		public virtual TResult Execute<TResult>(Expression expression)
 		{
 			try
 			{
@@ -69,10 +71,11 @@ namespace NHibernate.Linq
 			}
 		}
 
-		public async Task<TResult> ExecuteAsync<TResult>(Expression expression)
+		public virtual async Task<TResult> ExecuteAsync<TResult>(Expression expression)
 		{
 			return (TResult)await Execute(expression, true);
 		}
+
 		public virtual IQueryable CreateQuery(Expression expression)
 		{
 			MethodInfo m = CreateQueryMethodDefinition.MakeGenericMethod(expression.Type.GetGenericArguments()[0]);
