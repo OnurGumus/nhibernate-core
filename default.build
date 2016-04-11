@@ -16,7 +16,7 @@
 		Supported versions of .NET Framework, separated by spaces.
 		Used by *-all-frameworks targets.
 	-->
-	<property name="supported.frameworks" value="net-4.0" />
+	<property name="supported.frameworks" value="net-4.5.1" />
 
 	<fileset id="buildfiles.all" basedir="src">
 		<!-- Files have to be in dependency order -->
@@ -90,7 +90,7 @@
 	
 	<target name="check-framework-version">
 			<echo>Running with ${framework::get-target-framework()}</echo>
-			<fail message="ERROR: NHibernate requires .Net 4.0." if="${framework::get-target-framework()!='net-4.0'}"/>
+			<fail message="ERROR: NHibernate requires .Net 4.5.1" if="${framework::get-target-framework()!='net-4.5.1'}"/>
 	</target>
 
 	<target name="test-report" if="${nunit2report.installed}">
@@ -274,7 +274,7 @@
 		</copy>
 	</target>
 	
-	<target name="package" depends="init binaries test reference-zip sources-zip binaries-zip"
+	<target name="package" depends="init binaries reference-zip sources-zip binaries-zip"
 		description="Creates files for the General Available Release on SourceForge">
 
 		<echo message="Created a '${project.config}' package in ${build.dir}" />

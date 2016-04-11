@@ -12,7 +12,7 @@
 		<property name="clover.instrument" value="false" />
     <property name="sign" value="false" />
     <assemblyfileset id="project.references" basedir="${bin.dir}">
-			<include name="System.dll" />
+			<!--<include name="System.dll" />
 			<include name="System.Core.dll" />
 			<include name="System.Transactions.dll" />
 			<include name="System.Configuration.dll" />
@@ -20,7 +20,7 @@
 			<include name="System.Data.dll" />
 			<include name="System.Data.OracleClient.dll" />
 			<include name="Iesi.Collections.dll" />
-			<include name="log4net.dll" />
+			<include name="log4net.dll" />-->
 			<include name="NHibernate.Test.dll" />
 			<include name="NHibernate.DomainModel.dll" />
 			<include name="NHibernate.dll" />
