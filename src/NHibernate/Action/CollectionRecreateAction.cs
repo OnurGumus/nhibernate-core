@@ -31,7 +31,7 @@ namespace NHibernate.Action
 
 			PreRecreate();
 
-			await Persister.Recreate(collection, Key, Session, async);
+			await Persister.Recreate(collection, Key, Session, async).ConfigureAwait(false);
 
 			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
 

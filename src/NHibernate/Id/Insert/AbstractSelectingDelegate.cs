@@ -37,7 +37,7 @@ namespace NHibernate.Id.Insert
 				try
 				{
 					binder.BindValues(insert);
-					await session.Batcher.ExecuteNonQuery(insert, async);
+					await session.Batcher.ExecuteNonQuery(insert, async).ConfigureAwait(false);
 				}
 				finally
 				{
@@ -59,21 +59,14 @@ namespace NHibernate.Id.Insert
 					try
 					{
 						BindParameters(session, idSelect, binder.Entity);
+						IDataReader rs = session.Batcher.ExecuteReader(idSelect, false).ConfigureAwait(false).GetAwaiter().GetResult();
 						try
 						{
-							IDataReader rs = session.Batcher.ExecuteReader(idSelect, false).Result;
-							try
-							{
-								return GetResult(session, rs, binder.Entity);
-							}
-							finally
-							{
-								session.Batcher.CloseReader(rs);
-							}
+							return GetResult(session, rs, binder.Entity);
 						}
-						catch (AggregateException e)
+						finally
 						{
-							throw e.InnerException;
+							session.Batcher.CloseReader(rs);
 						}
 					}
 					finally

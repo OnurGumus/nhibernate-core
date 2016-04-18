@@ -63,7 +63,7 @@ namespace NHibernate.Type
 			try
 			{
 				ps = session.Batcher.PrepareCommand(CommandType.Text, tsSelect, EmptyParams);
-				rs = session.Batcher.ExecuteReader(ps, false).Result;
+				rs = session.Batcher.ExecuteReader(ps, false).ConfigureAwait(false).GetAwaiter().GetResult();
 				rs.Read();
 				DateTime ts = rs.GetDateTime(0);
 				if (log.IsDebugEnabled)

@@ -303,22 +303,15 @@ namespace NHibernate.Collection.Generic
 			{
 				throw new IndexOutOfRangeException("negative index");
 			}
-			try
+			object old = PutQueueEnabled ? ReadElementByIndex(index, false).ConfigureAwait(false).GetAwaiter().GetResult() : Unknown;
+			if (old == Unknown)
 			{
-				object old = PutQueueEnabled ? ReadElementByIndex(index, false).Result : Unknown;
-				if (old == Unknown)
-				{
-					Write();
-					WrappedList.RemoveAt(index);
-				}
-				else
-				{
-					QueueOperation(new RemoveDelayedOperation(this, index, old == NotFound ? null : old));
-				}
+				Write();
+				WrappedList.RemoveAt(index);
 			}
-			catch (AggregateException e)
+			else
 			{
-				throw e.InnerException;
+				QueueOperation(new RemoveDelayedOperation(this, index, old == NotFound ? null : old));
 			}
 		}
 
@@ -374,28 +367,21 @@ namespace NHibernate.Collection.Generic
 				{
 					throw new IndexOutOfRangeException("negative index");
 				}
-				try
+				object result = ReadElementByIndex(index, false).ConfigureAwait(false).GetAwaiter().GetResult();
+				if (result == Unknown)
 				{
-					object result = ReadElementByIndex(index, false).Result;
-					if (result == Unknown)
-					{
-						return WrappedList[index];
-					}
-					if (result == NotFound)
-					{
-						// check if the index is valid
-						if (index >= Count)
-						{
-							throw new ArgumentOutOfRangeException("index");
-						}
-						return default(T);
-					}
-					return (T)result;
+					return WrappedList[index];
 				}
-				catch (AggregateException e)
+				if (result == NotFound)
 				{
-					throw e.InnerException;
+					// check if the index is valid
+					if (index >= Count)
+					{
+						throw new ArgumentOutOfRangeException("index");
+					}
+					return default(T);
 				}
+				return (T)result;
 			}
 			set
 			{
@@ -403,22 +389,15 @@ namespace NHibernate.Collection.Generic
 				{
 					throw new IndexOutOfRangeException("negative index");
 				}
-				try
+				object old = PutQueueEnabled ? ReadElementByIndex(index, false).ConfigureAwait(false).GetAwaiter().GetResult() : Unknown;
+				if (old == Unknown)
 				{
-					object old = PutQueueEnabled ? ReadElementByIndex(index, false).Result : Unknown;
-					if (old == Unknown)
-					{
-						Write();
-						WrappedList[index] = value;
-					}
-					else
-					{
-						QueueOperation(new SetDelayedOperation(this, index, value, old == NotFound ? null : old));
-					}
+					Write();
+					WrappedList[index] = value;
 				}
-				catch (AggregateException e)
+				else
 				{
-					throw e.InnerException;
+					QueueOperation(new SetDelayedOperation(this, index, value, old == NotFound ? null : old));
 				}
 			}
 		}
@@ -440,14 +419,7 @@ namespace NHibernate.Collection.Generic
 		{
 			get
 			{
-				try
-				{
-					return ReadSize(false).Result ? CachedSize : WrappedList.Count;
-				}
-				catch (AggregateException e)
-				{
-					throw e.InnerException;
-				}
+				return ReadSize(false).ConfigureAwait(false).GetAwaiter().GetResult() ? CachedSize : WrappedList.Count;
 			}
 		}
 
@@ -481,15 +453,8 @@ namespace NHibernate.Collection.Generic
 
 		public bool Contains(T item)
 		{
-			try
-			{
-				bool? exists = ReadElementExistence(item, false).Result;
-				return !exists.HasValue ? WrappedList.Contains(item) : exists.Value;
-			}
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
+			bool? exists = ReadElementExistence(item, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return !exists.HasValue ? WrappedList.Contains(item) : exists.Value;
 		}
 
 		public void CopyTo(T[] array, int arrayIndex)
@@ -507,30 +472,23 @@ namespace NHibernate.Collection.Generic
 
 		public bool Remove(T item)
 		{
-			try
+			bool? exists = PutQueueEnabled ? ReadElementExistence(item, false).ConfigureAwait(false).GetAwaiter().GetResult() : null;
+			if (!exists.HasValue)
 			{
-				bool? exists = PutQueueEnabled ? ReadElementExistence(item, false).Result : null;
-				if (!exists.HasValue)
+				Initialize(true);
+				bool contained = WrappedList.Remove(item);
+				if (contained)
 				{
-					Initialize(true);
-					bool contained = WrappedList.Remove(item);
-					if (contained)
-					{
-						Dirty();
-						return true;
-					}
-				}
-				else if (exists.Value)
-				{
-					QueueOperation(new SimpleRemoveDelayedOperation(this, item));
+					Dirty();
 					return true;
 				}
-				return false;
 			}
-			catch (AggregateException e)
+			else if (exists.Value)
 			{
-				throw e.InnerException;
+				QueueOperation(new SimpleRemoveDelayedOperation(this, item));
+				return true;
 			}
+			return false;
 		}
 
 		#endregion

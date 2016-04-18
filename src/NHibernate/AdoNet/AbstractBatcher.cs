@@ -196,7 +196,7 @@ namespace NHibernate.AdoNet
 			try
 			{
 				if (async)
-					return await cmd.ExecuteNonQueryAsync();
+					return await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
 				else
 					return cmd.ExecuteNonQuery();
 			}
@@ -226,7 +226,7 @@ namespace NHibernate.AdoNet
 			{
 				if (async)
 				{
-					reader = await cmd.ExecuteReaderAsync();
+					reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false);
 				}
 				else
 					reader = cmd.ExecuteReader();

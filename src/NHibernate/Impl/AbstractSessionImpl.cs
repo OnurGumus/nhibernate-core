@@ -100,21 +100,21 @@ namespace NHibernate.Impl
 		public abstract void CloseSessionFromDistributedTransaction();
 
 		[Obsolete("Use overload with IQueryExpression")]
-		public virtual async Task<IList> List(string query, QueryParameters parameters, bool async)
+		public virtual Task<IList> List(string query, QueryParameters parameters, bool async)
 		{
-			return await List(query.ToQueryExpression(), parameters,async);
+			return List(query.ToQueryExpression(), parameters,async);
 		}
 
 		[Obsolete("Use overload with IQueryExpression")]
-		public virtual async Task List(string query, QueryParameters queryParameters, IList results, bool async)
+		public virtual Task List(string query, QueryParameters queryParameters, IList results, bool async)
 		{
-			await List(query.ToQueryExpression(), queryParameters, results,async);
+			return List(query.ToQueryExpression(), queryParameters, results,async);
 		}
 
 		[Obsolete("Use overload with IQueryExpression")]
-		public virtual async Task<IList<T>> List<T>(string query, QueryParameters queryParameters, bool async)
+		public virtual Task<IList<T>> List<T>(string query, QueryParameters queryParameters, bool async)
 		{
-			return await List<T>(query.ToQueryExpression(), queryParameters, async);
+			return List<T>(query.ToQueryExpression(), queryParameters, async);
 		}
 
 		public virtual async Task<IList> List(IQueryExpression queryExpression, QueryParameters parameters, bool async)
@@ -122,7 +122,7 @@ namespace NHibernate.Impl
 			var results = (IList) typeof (List<>).MakeGenericType(queryExpression.Type)
 												 .GetConstructor(System.Type.EmptyTypes)
 												 .Invoke(null);
-			await List(queryExpression, parameters, results, async);
+			await List(queryExpression, parameters, results, async).ConfigureAwait(false);
 			return results;
 		}
 
@@ -133,7 +133,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				var results = new List<T>();
-				await List(query, parameters, results, async);
+				await List(query, parameters, results, async).ConfigureAwait(false);
 				return results;
 			}
 		}
@@ -143,7 +143,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				var results = new List<T>();
-				await List(criteria, results,async);
+				await List(criteria, results, async).ConfigureAwait(false);
 				return results;
 			}
 		}
@@ -155,7 +155,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				var results = new List<object>();
-				await List(criteria, results, async);
+				await List(criteria, results, async).ConfigureAwait(false);
 				return results;
 			}
 		}
@@ -176,7 +176,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				var results = new List<object>();
-				await List(spec, queryParameters, results,async);
+				await List(spec, queryParameters, results, async).ConfigureAwait(false);
 				return results;
 			}
 		}
@@ -190,7 +190,7 @@ namespace NHibernate.Impl
 					spec.QueryString,
 					spec.QuerySpaces,
 					Factory);
-				await ListCustomQuery(query, queryParameters, results, async);
+				await ListCustomQuery(query, queryParameters, results, async).ConfigureAwait(false);
 			}
 		}
 
@@ -199,7 +199,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				var results = new List<T>();
-				await List(spec, queryParameters, results, async);
+				await List(spec, queryParameters, results, async).ConfigureAwait(false);
 				return results;
 			}
 		}
@@ -211,7 +211,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				var results = new List<T>();
-				await ListCustomQuery(customQuery, queryParameters, results, async);
+				await ListCustomQuery(customQuery, queryParameters, results, async).ConfigureAwait(false);
 				return results;
 			}
 		}
@@ -479,9 +479,9 @@ namespace NHibernate.Impl
 		public abstract IEnumerable<T> Enumerable<T>(IQueryExpression queryExpression, QueryParameters queryParameters);
 
 		[Obsolete("Use overload with IQueryExpression")]
-		public virtual async Task<int> ExecuteUpdate(string query, QueryParameters queryParameters, bool async)
+		public virtual Task<int> ExecuteUpdate(string query, QueryParameters queryParameters, bool async)
 		{
-			return await ExecuteUpdate(query.ToQueryExpression(), queryParameters, async);
+			return ExecuteUpdate(query.ToQueryExpression(), queryParameters, async);
 		}
 
 		public abstract Task<int> ExecuteUpdate(IQueryExpression queryExpression, QueryParameters queryParameters, bool async);

@@ -66,14 +66,7 @@ namespace NHibernate.Event.Default
 					}
 					else
 					{
-						try
-						{
-							persister.Lock(entry.Id, entry.Version, entity, requestedLockMode, source, false).Wait();
-						}
-						catch (AggregateException e)
-						{
-							throw e.InnerException;
-						}
+						persister.Lock(entry.Id, entry.Version, entity, requestedLockMode, source, false).ConfigureAwait(false).GetAwaiter().GetResult();
 					}
 					entry.LockMode = requestedLockMode;
 				}

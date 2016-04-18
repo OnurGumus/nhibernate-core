@@ -391,14 +391,7 @@ namespace NHibernate.Impl
 
 		public IList List()
 		{
-			try
-			{
-				return ListAsync(false).Result;
-			}
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
+			return ListAsync(false).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		/// <summary>
@@ -423,7 +416,7 @@ namespace NHibernate.Impl
 				try
 				{
 					Before();
-					return cacheable ? await ListUsingQueryCache(async) : await ListIgnoreQueryCache(async);
+					return cacheable ? await ListUsingQueryCache(async).ConfigureAwait(false) : await ListIgnoreQueryCache(async).ConfigureAwait(false);
 				}
 				finally
 				{
@@ -530,7 +523,7 @@ namespace NHibernate.Impl
 
 			try
 			{
-				using (var reader = await resultSetsCommand.GetReader(commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null, async))
+				using (var reader = await resultSetsCommand.GetReader(commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null, async).ConfigureAwait(false))
 				{
 					if (log.IsDebugEnabled)
 					{
@@ -687,7 +680,7 @@ namespace NHibernate.Impl
 
 		private async Task<IList> ListIgnoreQueryCache(bool async)
 		{
-			return GetResultList(await DoList(async));
+			return GetResultList(await DoList(async).ConfigureAwait(false));
 		}
 
 		private async Task<IList> ListUsingQueryCache(bool async)
@@ -724,7 +717,7 @@ namespace NHibernate.Impl
 			if (result == null)
 			{
 				log.Debug("Cache miss for multi query");
-				var list = await DoList(async);
+				var list = await DoList(async).ConfigureAwait(false);
 				queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, false, session);
 				result = list;
 			}

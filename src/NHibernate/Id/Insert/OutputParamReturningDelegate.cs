@@ -63,7 +63,7 @@ namespace NHibernate.Id.Insert
 
 		public override async Task<object> ExecuteAndExtract(DbCommand insert, ISessionImplementor session, bool async)
 		{
-			await session.Batcher.ExecuteNonQuery(insert, async);
+			await session.Batcher.ExecuteNonQuery(insert, async).ConfigureAwait(false);
 			return Convert.ChangeType(((IDbDataParameter) insert.Parameters[driveGeneratedParamName]).Value, Persister.IdentifierType.ReturnedClass);
 		}
 

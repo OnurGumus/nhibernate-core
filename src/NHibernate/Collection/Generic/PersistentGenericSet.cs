@@ -298,47 +298,32 @@ namespace NHibernate.Collection.Generic
 
 		public bool Contains(T item)
 		{
-			try
-			{
-				bool? exists = ReadElementExistence(item, false).Result;
-				return exists == null ? WrappedSet.Contains(item) : exists.Value;
-			}
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
-
+			bool? exists = ReadElementExistence(item, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return exists == null ? WrappedSet.Contains(item) : exists.Value;
 		}
 
 
 		public bool Add(T o)
 		{
-			try
+			bool? exists = IsOperationQueueEnabled ? ReadElementExistence(o, false).ConfigureAwait(false).GetAwaiter().GetResult() : null;
+			if (!exists.HasValue)
 			{
-				bool? exists = IsOperationQueueEnabled ? ReadElementExistence(o, false).Result : null;
-				if (!exists.HasValue)
+				Initialize(true);
+				if (WrappedSet.Add(o))
 				{
-					Initialize(true);
-					if (WrappedSet.Add(o))
-					{
-						Dirty();
-						return true;
-					}
-					return false;
+					Dirty();
+					return true;
 				}
-
-				if (exists.Value)
-				{
-					return false;
-				}
-
-				QueueOperation(new SimpleAddDelayedOperation(this, o));
-				return true;
+				return false;
 			}
-			catch (AggregateException e)
+
+			if (exists.Value)
 			{
-				throw e.InnerException;
+				return false;
 			}
+
+			QueueOperation(new SimpleAddDelayedOperation(this, o));
+			return true;
 		}
 
 		public void UnionWith(IEnumerable<T> other)
@@ -441,31 +426,24 @@ namespace NHibernate.Collection.Generic
 
 		public bool Remove(T o)
 		{
-			try
+			bool? exists = PutQueueEnabled ? ReadElementExistence(o, false).ConfigureAwait(false).GetAwaiter().GetResult() : null;
+			if (!exists.HasValue)
 			{
-				bool? exists = PutQueueEnabled ? ReadElementExistence(o, false).Result : null;
-				if (!exists.HasValue)
+				Initialize(true);
+				if (WrappedSet.Remove(o))
 				{
-					Initialize(true);
-					if (WrappedSet.Remove(o))
-					{
-						Dirty();
-						return true;
-					}
-					return false;
-				}
-
-				if (exists.Value)
-				{
-					QueueOperation(new SimpleRemoveDelayedOperation(this, o));
+					Dirty();
 					return true;
 				}
 				return false;
 			}
-			catch (AggregateException e)
+
+			if (exists.Value)
 			{
-				throw e.InnerException;
+				QueueOperation(new SimpleRemoveDelayedOperation(this, o));
+				return true;
 			}
+			return false;
 		}
 
 		public void Clear()
@@ -500,14 +478,7 @@ namespace NHibernate.Collection.Generic
 		{
 			get
 			{
-				try
-				{
-					return ReadSize(false).Result ? CachedSize : WrappedSet.Count;
-				}
-				catch (AggregateException e)
-				{
-					throw e.InnerException;
-				}
+				return ReadSize(false).ConfigureAwait(false).GetAwaiter().GetResult() ? CachedSize : WrappedSet.Count;
 			}
 		}
 

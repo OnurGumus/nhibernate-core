@@ -120,7 +120,7 @@ namespace NHibernate.Impl
 				bool success = false;
 				try
 				{
-					await plan.PerformList(queryParameters, this, results, async);
+					await plan.PerformList(queryParameters, this, results, async).ConfigureAwait(false);
 					success = true;
 				}
 				catch (HibernateException)
@@ -140,7 +140,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		async public override Task List(CriteriaImpl criteria, IList results, bool async)
+		public override async Task List(CriteriaImpl criteria, IList results, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -160,14 +160,7 @@ namespace NHibernate.Impl
 				{
 					for (int i = size - 1; i >= 0; i--)
 					{
-						try
-						{
-							ArrayHelper.AddAll(results,await loaders[i].List(this, async));
-						}
-						catch (AggregateException e)
-						{
-							throw e.InnerException;
-						}
+						ArrayHelper.AddAll(results, await loaders[i].List(this, async).ConfigureAwait(false));
 					}
 					success = true;
 				}
@@ -260,7 +253,7 @@ namespace NHibernate.Impl
 				var success = false;
 				try
 				{
-					ArrayHelper.AddAll(results, await loader.List(this, queryParameters, async));
+					ArrayHelper.AddAll(results, await loader.List(this, queryParameters, async).ConfigureAwait(false));
 					success = true;
 				}
 				finally
@@ -392,10 +385,10 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task FlushAsync()
+		public override Task FlushAsync()
 		{
-			await Task.Yield();
 			this.Flush();
+			return TaskHelper.CompletedTask;
 		}
 
 		public void ManagedFlush()
@@ -510,25 +503,11 @@ namespace NHibernate.Impl
 				}
 				if (id == IdentifierGeneratorFactory.PostInsertIndicator)
 				{
-					try
-					{
-						id = persister.Insert(state, entity, this, false).Result;
-					}
-					catch (AggregateException e)
-					{
-						throw e.InnerException;
-					}
+					id = persister.Insert(state, entity, this, false).ConfigureAwait(false).GetAwaiter().GetResult();
 				}
 				else
 				{
-					try
-					{
-						persister.Insert(id, state, entity, this, false).Wait();
-					}
-					catch (AggregateException e)
-					{
-						throw e.InnerException;
-					}
+					persister.Insert(id, state, entity, this, false).ConfigureAwait(false).GetAwaiter().GetResult();
 				}
 				persister.SetIdentifier(entity, id, EntityMode.Poco);
 				return id;
@@ -569,14 +548,7 @@ namespace NHibernate.Impl
 				{
 					oldVersion = null;
 				}
-				try
-				{
-					persister.Update(id, state, null, false, null, oldVersion, entity, null, this, false).Wait();
-				}
-				catch (AggregateException e)
-				{
-					throw e.InnerException;
-				}
+				persister.Update(id, state, null, false, null, oldVersion, entity, null, this, false).ConfigureAwait(false).GetAwaiter().GetResult();
 			}
 		}
 
@@ -602,14 +574,7 @@ namespace NHibernate.Impl
 				IEntityPersister persister = GetEntityPersister(entityName, entity);
 				object id = persister.GetIdentifier(entity, EntityMode.Poco);
 				object version = persister.GetVersion(entity, EntityMode.Poco);
-				try
-				{
-					persister.Delete(id, version, entity, this, false).Wait();
-				}
-				catch (AggregateException e)
-				{
-					throw e.InnerException;
-				}
+				persister.Delete(id, version, entity, this, false).ConfigureAwait(false).GetAwaiter().GetResult();
 			}
 		}
 
@@ -653,20 +618,13 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				try
-				{
-					object result = Factory.GetEntityPersister(entityName).Load(id, null, lockMode, this, false).Result;
+				object result = Factory.GetEntityPersister(entityName).Load(id, null, lockMode, this, false).ConfigureAwait(false).GetAwaiter().GetResult();
 
-					if (temporaryPersistenceContext.IsLoadFinished)
-					{
-						temporaryPersistenceContext.Clear();
-					}
-					return result;
-				}
-				catch (AggregateException e)
+				if (temporaryPersistenceContext.IsLoadFinished)
 				{
-					throw e.InnerException;
+					temporaryPersistenceContext.Clear();
 				}
+				return result;
 			}
 		}
 
@@ -757,15 +715,7 @@ namespace NHibernate.Impl
 				try
 				{
 					FetchProfile = "refresh";
-					try
-					{
-						result = persister.Load(id, entity, lockMode, this, false).Result;
-					}
-
-					catch (AggregateException e)
-					{
-						throw e.InnerException;
-					}
+					result = persister.Load(id, entity, lockMode, this, false).ConfigureAwait(false).GetAwaiter().GetResult();
 				}
 				finally
 				{
@@ -968,7 +918,7 @@ namespace NHibernate.Impl
 				int result;
 				try
 				{
-					result = await plan.PerformExecuteUpdate(queryParameters, this, async);
+					result = await plan.PerformExecuteUpdate(queryParameters, this, async).ConfigureAwait(false);
 					success = true;
 				}
 				finally
@@ -991,7 +941,7 @@ namespace NHibernate.Impl
 				int result;
 				try
 				{
-					result = await plan.PerformExecuteUpdate(queryParameters, this, async);
+					result = await plan.PerformExecuteUpdate(queryParameters, this, async).ConfigureAwait(false);
 					success = true;
 				}
 				finally

@@ -34,13 +34,13 @@ namespace NHibernate.Linq
 			get { return _session.Target as ISessionImplementor; }
 		}
 
-		public virtual async Task<object> Execute(Expression expression, bool async)
+		public virtual Task<object> Execute(Expression expression, bool async)
 		{
 			IQuery query;
 			NhLinqExpression nhQuery;
 			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query, out nhQuery);
 
-			return await ExecuteQuery(nhLinqExpression, query, nhQuery, async);
+			return ExecuteQuery(nhLinqExpression, query, nhQuery, async);
 		}
 
 		public virtual object Execute(Expression expression)
@@ -49,31 +49,17 @@ namespace NHibernate.Linq
 			NhLinqExpression nhQuery;
 			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query, out nhQuery);
 
-			try
-			{
-				return ExecuteQuery(nhLinqExpression, query, nhQuery, false).Result;
-			}
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
+			return ExecuteQuery(nhLinqExpression, query, nhQuery, false).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		public virtual TResult Execute<TResult>(Expression expression)
 		{
-			try
-			{
-				return (TResult)Execute(expression, false).Result;
-			}
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
+			return (TResult)Execute(expression, false).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		public virtual async Task<TResult> ExecuteAsync<TResult>(Expression expression)
 		{
-			return (TResult)await Execute(expression, true);
+			return (TResult)(await Execute(expression, true).ConfigureAwait(false));
 		}
 
 		public virtual IQueryable CreateQuery(Expression expression)
@@ -132,7 +118,7 @@ namespace NHibernate.Linq
 
 		protected virtual async Task<object> ExecuteQuery(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery, bool async)
 		{
-			IList results = (async) ? await query.ListAsync() : query.List();
+			IList results = (async) ? await query.ListAsync().ConfigureAwait(false) : query.List();
 
 			if (nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer != null)
 			{

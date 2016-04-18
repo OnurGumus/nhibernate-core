@@ -29,18 +29,11 @@ namespace NHibernate.Impl
 		}
 		public override int ExecuteUpdate()
 		{
-			try
-			{
-				return this.ExecuteUpdate(false).Result;
-			}
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
+			return this.ExecuteUpdate(false).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
-		public override async Task<int> ExecuteUpdateAsync()
+		public override Task<int> ExecuteUpdateAsync()
 		{
-			return await this.ExecuteUpdate(true);
+			return this.ExecuteUpdate(true);
 		}
 		public override async Task<int> ExecuteUpdate(bool async)
 		{
@@ -49,7 +42,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				return await Session.ExecuteUpdate(ExpandParameters(namedParams), GetQueryParameters(namedParams), async);
+				return await Session.ExecuteUpdate(ExpandParameters(namedParams), GetQueryParameters(namedParams), async).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -90,18 +83,11 @@ namespace NHibernate.Impl
 
 		public override IList List()
 		{
-			try
-			{
-				return this.ListAsync(false).Result;
-			}
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
+			return this.ListAsync(false).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
-		public override async Task<IList> ListAsync()
+		public override Task<IList> ListAsync()
 		{
-			return await this.ListAsync(true);
+			return this.ListAsync(true);
 		}
 		public override async Task<IList> ListAsync(bool async)
 		{
@@ -110,7 +96,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				return await Session.List(ExpandParameters(namedParams), GetQueryParameters(namedParams), async);
+				return await Session.List(ExpandParameters(namedParams), GetQueryParameters(namedParams), async).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -119,18 +105,11 @@ namespace NHibernate.Impl
 		}
 		public override void List(IList results)
 		{
-			try
-			{
-				this.ListAsync(results, true).Wait();
-			}
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
+			this.ListAsync(results, false).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
-		public override async Task ListAsync(IList results)
+		public override Task ListAsync(IList results)
 		{
-			await this.ListAsync(results, true);
+			return this.ListAsync(results, true);
 		}
 		public override async Task ListAsync(IList results, bool async)
 		{
@@ -139,7 +118,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				await Session.List(ExpandParameters(namedParams), GetQueryParameters(namedParams), results, async);
+				await Session.List(ExpandParameters(namedParams), GetQueryParameters(namedParams), results, async).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -149,18 +128,11 @@ namespace NHibernate.Impl
 
 		public override IList<T> List<T>()
 		{
-			try
-			{
-				return this.ListAsync<T>(false).Result;
-			}
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
+			return this.ListAsync<T>(false).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
-		public override async Task<IList<T>> ListAsync<T>()
+		public override Task<IList<T>> ListAsync<T>()
 		{
-			return await this.ListAsync<T>(true);
+			return this.ListAsync<T>(true);
 		}
 		public async override Task<IList<T>> ListAsync<T>(bool async)
 		{
@@ -169,7 +141,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				return await Session.List<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams), async);
+				return await Session.List<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams), async).ConfigureAwait(false);
 			}
 			finally
 			{

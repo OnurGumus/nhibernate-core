@@ -390,14 +390,7 @@ namespace NHibernate.Collection.Generic
 		{
 			get
 			{
-				try
-				{
-					return ReadSize(false).Result ? CachedSize : _values.Count;
-				}
-				catch (AggregateException e)
-				{
-					throw e.InnerException;
-				}
+				return ReadSize(false).ConfigureAwait(false).GetAwaiter().GetResult() ? CachedSize : _values.Count;
 			}
 		}
 

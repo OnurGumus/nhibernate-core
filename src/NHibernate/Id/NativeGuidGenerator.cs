@@ -29,26 +29,19 @@ namespace NHibernate.Id
 				IDataReader reader = null;
 				try
 				{
+					reader = session.Batcher.ExecuteReader(st, false).ConfigureAwait(false).GetAwaiter().GetResult();
+					object result;
 					try
 					{
-						reader = session.Batcher.ExecuteReader(st, false).Result;
-						object result;
-						try
-						{
-							reader.Read();
-							result = IdentifierGeneratorFactory.Get(reader, identifierType, session);
-						}
-						finally
-						{
-							reader.Close();
-						}
-						log.Debug("GUID identifier generated: " + result);
-						return result;
+						reader.Read();
+						result = IdentifierGeneratorFactory.Get(reader, identifierType, session);
 					}
-					catch (AggregateException e)
+					finally
 					{
-						throw e.InnerException;
+						reader.Close();
 					}
+					log.Debug("GUID identifier generated: " + result);
+					return result;
 				}
 				finally
 				{

@@ -70,7 +70,7 @@ namespace NHibernate.Action
 
 			if (!emptySnapshot)
 			{
-				await Persister.Remove(Key, Session, async);
+				await Persister.Remove(Key, Session, async).ConfigureAwait(false);
 			}
 
 			IPersistentCollection collection = Collection;

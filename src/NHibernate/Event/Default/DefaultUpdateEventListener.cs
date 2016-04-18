@@ -9,13 +9,11 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultUpdateEventListener : DefaultSaveOrUpdateEventListener
 	{
-		protected override async Task<object> PerformSaveOrUpdate(SaveOrUpdateEvent @event, bool async)
+		protected override Task<object> PerformSaveOrUpdate(SaveOrUpdateEvent @event, bool async)
 		{
 			// this implementation is supposed to tolerate incorrect unsaved-value
 			// mappings, for the purpose of backward-compatibility
 			EntityEntry entry = @event.Session.PersistenceContext.GetEntry(@event.Entity);
-			if (async)
-				await Task.Yield();
 			if (entry != null)
 			{
 				if (entry.Status == Status.Deleted)
@@ -24,19 +22,19 @@ namespace NHibernate.Event.Default
 				}
 				else
 				{
-					return EntityIsPersistent(@event);
+					return Task.FromResult(EntityIsPersistent(@event));
 				}
 			}
 			else
 			{
 				EntityIsDetached(@event);
-				return null;
+				return Task.FromResult<object>(null);
 			}
 		}
 
-		protected override async Task<object> SaveWithGeneratedOrRequestedId(SaveOrUpdateEvent @event, bool async)
+		protected override Task<object> SaveWithGeneratedOrRequestedId(SaveOrUpdateEvent @event, bool async)
 		{
-			return await SaveWithGeneratedId(@event.Entity, @event.EntityName, null, @event.Session, true, async);
+			return SaveWithGeneratedId(@event.Entity, @event.EntityName, null, @event.Session, true, async);
 		}
 
 		/// <summary> 

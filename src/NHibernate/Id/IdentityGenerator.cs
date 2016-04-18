@@ -71,9 +71,9 @@ namespace NHibernate.Id
 				return session.Batcher.PrepareCommand(CommandType.Text, insertSQL.Text, insertSQL.ParameterTypes);
 			}
 
-			public override async Task<object> ExecuteAndExtract(DbCommand insert, ISessionImplementor session,bool async)
+			public override async Task<object> ExecuteAndExtract(DbCommand insert, ISessionImplementor session, bool async)
 			{
-				IDataReader rs = await session.Batcher.ExecuteReader(insert, async);
+				IDataReader rs = await session.Batcher.ExecuteReader(insert, async).ConfigureAwait(false);
 				try
 				{
 					return IdentifierGeneratorFactory.GetGeneratedIdentity(rs, persister.IdentifierType, session);

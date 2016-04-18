@@ -68,7 +68,7 @@ namespace NHibernate.Dialect.Lock
 						lockable.VersionType.NullSafeSet(st, version, lockable.IdentifierType.GetColumnSpan(factory), session);
 					}
 
-					rs = await session.Batcher.ExecuteReader(st, async);
+					rs = await session.Batcher.ExecuteReader(st, async).ConfigureAwait(false);
 					try
 					{
 						if (!rs.Read())

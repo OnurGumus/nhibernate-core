@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using NHibernate.AdoNet;
 using NHibernate.Engine;
@@ -38,16 +38,8 @@ namespace NHibernate.AdoNet
 		{
 			DbCommand cmd = CurrentCommand;
 			Driver.AdjustCommand(cmd);
-			try
-			{
-				int rowCount = ExecuteNonQuery(cmd, false).Result;
-
-				expectation.VerifyOutcomeNonBatched(rowCount, cmd);
-			}
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
+			int rowCount = ExecuteNonQuery(cmd, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			expectation.VerifyOutcomeNonBatched(rowCount, cmd);
 		}
 
 		/// <summary>

@@ -85,9 +85,9 @@ namespace NHibernate.Loader.Criteria
 			get { return includeInResultRow; }
 		}
 
-                public async Task<IList> List(ISessionImplementor session, bool async)
+		public Task<IList> List(ISessionImplementor session, bool async)
 		{
-			return await List(session, translator.GetQueryParameters(), querySpaces, resultTypes,async);
+			return List(session, translator.GetQueryParameters(), querySpaces, resultTypes, async);
 		}
 
 		protected override IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)

@@ -754,6 +754,7 @@
     <Compile Include="Util\SequencedHashMap.cs" />
     <Compile Include="Util\StringHelper.cs" />
     <Compile Include="Util\StringTokenizer.cs" />
+    <Compile Include="Util\TaskHelper.cs" />
     <Compile Include="Util\TypeExtensions.cs" />
     <Compile Include="WrongClassException.cs" />
   </ItemGroup>

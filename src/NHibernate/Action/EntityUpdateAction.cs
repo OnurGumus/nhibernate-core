@@ -77,7 +77,7 @@ namespace NHibernate.Action
 
 			if (!veto)
 			{
-				await persister.Update(id, state, dirtyFields, hasDirtyCollection, previousState, previousVersion, instance, null, session, async);
+				await persister.Update(id, state, dirtyFields, hasDirtyCollection, previousState, previousVersion, instance, null, session, async).ConfigureAwait(false);
 			}
 
 			EntityEntry entry = Session.PersistenceContext.GetEntry(instance);

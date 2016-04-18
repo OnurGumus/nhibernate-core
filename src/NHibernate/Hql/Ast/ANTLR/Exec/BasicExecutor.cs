@@ -78,7 +78,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 							st.CommandTimeout = selection.Timeout;
 						}
 					}
-					return  await session.Batcher.ExecuteNonQuery(st,async );
+					return await session.Batcher.ExecuteNonQuery(st, async).ConfigureAwait(false);
 				}
 				finally
 				{

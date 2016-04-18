@@ -61,14 +61,7 @@ namespace NHibernate.Impl
 
 		public IList List()
 		{
-			try
-			{
-				return ListAsync(false).Result;
-			}
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
+			return ListAsync(false).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		public async Task<IList> ListAsync(bool async = true)
@@ -91,11 +84,11 @@ namespace NHibernate.Impl
 
 				if (cacheable)
 				{
-					criteriaResults = await ListUsingQueryCache(async);
+					criteriaResults = await ListUsingQueryCache(async).ConfigureAwait(false);
 				}
 				else
 				{
-					criteriaResults = await ListIgnoreQueryCache(async);
+					criteriaResults = await ListIgnoreQueryCache(async).ConfigureAwait(false);
 				}
 
 				return criteriaResults;
@@ -148,7 +141,7 @@ namespace NHibernate.Impl
 			if (result == null)
 			{
 				log.Debug("Cache miss for multi criteria query");
-				IList list = await DoList(async);
+				IList list = await DoList(async).ConfigureAwait(false);
 				result = list;
 				if ((session.CacheMode & CacheMode.Put) == CacheMode.Put)
 				{
@@ -165,7 +158,7 @@ namespace NHibernate.Impl
 
 		private async Task<IList> ListIgnoreQueryCache(bool async)
 		{
-			return GetResultList(await DoList(async));
+			return GetResultList(await DoList(async).ConfigureAwait(false));
 		}
 
 		protected virtual IList GetResultList(IList results)
@@ -202,10 +195,10 @@ namespace NHibernate.Impl
 			return resultCollections;
 		}
 
-		private async Task<IList> DoList(bool async)
+		private Task<IList> DoList(bool async)
 		{
 			List<IList> results = new List<IList>();
-			return await GetResultsFromDatabase(results, async);
+			return GetResultsFromDatabase(results, async);
 		}
 
 		private void CombineCriteriaQueries()
@@ -233,7 +226,7 @@ namespace NHibernate.Impl
 
 			try
 			{
-				using (var reader = await resultSetsCommand.GetReader(null, async))
+				using (var reader = await resultSetsCommand.GetReader(null, async).ConfigureAwait(false))
 				{
 					var hydratedObjects = new List<object>[loaders.Count];
 					List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[loaders.Count];

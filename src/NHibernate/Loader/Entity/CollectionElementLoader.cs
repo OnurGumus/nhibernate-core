@@ -72,7 +72,7 @@ namespace NHibernate.Loader.Entity
 
 		public virtual async Task<object> LoadElement(ISessionImplementor session, object key, object index, bool async)
 		{
-			IList list = await LoadEntity(session, key, index, keyType, indexType, persister, async);
+			IList list = await LoadEntity(session, key, index, keyType, indexType, persister, async).ConfigureAwait(false);
 
 			if (list.Count == 1)
 			{

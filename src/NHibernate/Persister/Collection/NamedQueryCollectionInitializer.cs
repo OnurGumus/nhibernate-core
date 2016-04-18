@@ -36,14 +36,7 @@ namespace NHibernate.Persister.Collection
 			{
 				query.SetParameter(0, key, persister.KeyType);
 			}
-			try
-			{
-				query.SetCollectionKey(key).SetFlushMode(FlushMode.Never).ListAsync().Wait();
-			}
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
+			query.SetCollectionKey(key).SetFlushMode(FlushMode.Never).ListAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 	}
 }

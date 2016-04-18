@@ -178,15 +178,7 @@ namespace NHibernate.Transaction
 		/// </exception>
 		public void Commit()
 		{
-			try
-			{
-				this.CommitAsync(false).Wait();
-			}
-
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
+			this.CommitAsync(false).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		/// <summary>
@@ -197,9 +189,9 @@ namespace NHibernate.Transaction
 		/// Thrown if there is any exception while trying to call <c>Commit()</c> on 
 		/// the underlying <see cref="IDbTransaction"/>.
 		/// </exception>
-		public async Task CommitAsync()
+		public Task CommitAsync()
 		{
-			await this.CommitAsync(true);
+			return this.CommitAsync(true);
 		}
 
 		/// <summary>
@@ -223,7 +215,7 @@ namespace NHibernate.Transaction
 				if (session.FlushMode != FlushMode.Never)
 				{
 					if (async)
-						await session.FlushAsync();
+						await session.FlushAsync().ConfigureAwait(false);
 					else
 						session.Flush();
 				}

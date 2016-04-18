@@ -8,6 +8,7 @@ using NHibernate.Linq;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Threading.Tasks;
+using Task = System.Threading.Tasks.Task;
 
 namespace NHibernate.Engine.Query
 {
@@ -113,7 +114,7 @@ namespace NHibernate.Engine.Query
 			int includedCount = -1;
 			for (int i = 0; i < Translators.Length; i++)
 			{
-				IList tmp = await Translators[i].List(session, queryParametersToUse, async);
+				IList tmp = await Translators[i].List(session, queryParametersToUse, async).ConfigureAwait(false);
 				if (needsLimit)
 				{
 					// NOTE : firstRow is zero-based
@@ -181,7 +182,7 @@ namespace NHibernate.Engine.Query
             int result = 0;
             for (int i = 0; i < Translators.Length; i++)
             {
-                result += await Translators[i].ExecuteUpdate(queryParameters, session,  async);
+                result += await Translators[i].ExecuteUpdate(queryParameters, session, async).ConfigureAwait(false);
             }
             return result;
         }

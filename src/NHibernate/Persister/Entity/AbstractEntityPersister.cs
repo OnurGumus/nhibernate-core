@@ -29,6 +29,7 @@ using Property = NHibernate.Mapping.Property;
 using NHibernate.SqlTypes;
 using System.Linq;
 using System.Threading.Tasks;
+using Task = System.Threading.Tasks.Task;
 
 namespace NHibernate.Persister.Entity
 {
@@ -1293,15 +1294,8 @@ namespace NHibernate.Persister.Entity
 							// handled differently in the Type#nullSafeGet code...
 							ps = session.Batcher.PrepareCommand(CommandType.Text, lazySelect, IdentifierType.SqlTypes(Factory));
 							IdentifierType.NullSafeSet(ps, id, 0, session);
-							try
-							{
-								rs = session.Batcher.ExecuteReader(ps, false).Result;
-								rs.Read();
-							}
-							catch (AggregateException e)
-							{
-								throw e.InnerException;
-							}
+							rs = session.Batcher.ExecuteReader(ps, false).ConfigureAwait(false).GetAwaiter().GetResult();
+							rs.Read();
 						}
 						object[] snapshot = entry.LoadedState;
 						for (int j = 0; j < lazyPropertyNames.Length; j++)
@@ -1469,33 +1463,26 @@ namespace NHibernate.Persister.Entity
 					try
 					{
 						IdentifierType.NullSafeSet(st, id, 0, session);
-						try
-						{
-							rs = session.Batcher.ExecuteReader(st, false).Result;
+						rs = session.Batcher.ExecuteReader(st, false).ConfigureAwait(false).GetAwaiter().GetResult();
 
-							if (!rs.Read())
-							{
-								//if there is no resulting row, return null
-								return null;
-							}
-
-							//otherwise return the "hydrated" state (ie. associations are not resolved)
-							IType[] types = PropertyTypes;
-							object[] values = new object[types.Length];
-							bool[] includeProperty = PropertyUpdateability;
-							for (int i = 0; i < types.Length; i++)
-							{
-								if (includeProperty[i])
-								{
-									values[i] = types[i].Hydrate(rs, GetPropertyAliases(string.Empty, i), session, null); //null owner ok??
-								}
-							}
-							return values;
-						}
-						catch (AggregateException e)
+						if (!rs.Read())
 						{
-							throw e.InnerException;
+							//if there is no resulting row, return null
+							return null;
 						}
+
+						//otherwise return the "hydrated" state (ie. associations are not resolved)
+						IType[] types = PropertyTypes;
+						object[] values = new object[types.Length];
+						bool[] includeProperty = PropertyUpdateability;
+						for (int i = 0; i < types.Length; i++)
+						{
+							if (includeProperty[i])
+							{
+								values[i] = types[i].Hydrate(rs, GetPropertyAliases(string.Empty, i), session, null); //null owner ok??
+							}
+						}
+						return values;
 					}
 					finally
 					{
@@ -1678,14 +1665,7 @@ namespace NHibernate.Persister.Entity
 					VersionType.NullSafeSet(st, nextVersion, 0, session);
 					IdentifierType.NullSafeSet(st, id, 1, session);
 					VersionType.NullSafeSet(st, currentVersion, 1 + IdentifierColumnSpan, session);
-					try
-					{
-						Check(session.Batcher.ExecuteNonQuery(st, false).Result, id, 0, expectation, st);
-					}
-					catch (AggregateException e)
-					{
-						throw e.InnerException;
-					}
+					Check(session.Batcher.ExecuteNonQuery(st, false).ConfigureAwait(false).GetAwaiter().GetResult(), id, 0, expectation, st);
 				}
 				finally
 				{
@@ -1737,24 +1717,17 @@ namespace NHibernate.Persister.Entity
 					IDataReader rs = null;
 					try
 					{
-						try
+						IdentifierType.NullSafeSet(st, id, 0, session);
+						rs = session.Batcher.ExecuteReader(st, false).ConfigureAwait(false).GetAwaiter().GetResult();
+						if (!rs.Read())
 						{
-							IdentifierType.NullSafeSet(st, id, 0, session);
-							rs = session.Batcher.ExecuteReader(st, false).Result;
-							if (!rs.Read())
-							{
-								return null;
-							}
-							if (!IsVersioned)
-							{
-								return this;
-							}
-							return VersionType.NullSafeGet(rs, VersionColumnName, session, null);
+							return null;
 						}
-						catch (AggregateException e)
+						if (!IsVersioned)
 						{
-							throw e.InnerException;
+							return this;
 						}
+						return VersionType.NullSafeGet(rs, VersionColumnName, session, null);
 					}
 					finally
 					{
@@ -1800,9 +1773,9 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public virtual async Task Lock(object id, object version, object obj, LockMode lockMode, ISessionImplementor session, bool async)
+		public virtual Task Lock(object id, object version, object obj, LockMode lockMode, ISessionImplementor session, bool async)
 		{
-			await GetLocker(lockMode).Lock(id, version, obj, session, async);
+			return GetLocker(lockMode).Lock(id, version, obj, session, async);
 		}
 
 		public virtual string GetRootTableAlias(string drivingAlias)
@@ -2118,9 +2091,9 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public async Task<object> LoadByUniqueKey(string propertyName, object uniqueKey, ISessionImplementor session, bool async)
+		public Task<object> LoadByUniqueKey(string propertyName, object uniqueKey, ISessionImplementor session, bool async)
 		{
-			return await GetAppropriateUniqueKeyLoader(propertyName, session.EnabledFilters).LoadByUniqueKey(session, uniqueKey, async);
+			return GetAppropriateUniqueKeyLoader(propertyName, session.EnabledFilters).LoadByUniqueKey(session, uniqueKey, async);
 		}
 
 		private EntityLoader GetAppropriateUniqueKeyLoader(string propertyName, IDictionary<string, IFilter> enabledFilters)
@@ -2535,14 +2508,7 @@ namespace NHibernate.Persister.Entity
 							//TODO: I am not so sure about the exception handling in this bit!
 							sequentialSelect = session.Batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));
 							rootPersister.IdentifierType.NullSafeSet(sequentialSelect, id, 0, session);
-							try
-							{
-								sequentialResultSet = session.Batcher.ExecuteReader(sequentialSelect, false).Result;
-							}
-							catch (AggregateException e)
-							{
-								throw e.InnerException;
-							}
+							sequentialResultSet = session.Batcher.ExecuteReader(sequentialSelect, false).ConfigureAwait(false).GetAwaiter().GetResult();
 							if (!sequentialResultSet.Read())
 							{
 								// TODO: Deal with the "optional" attribute in the <join> mapping;
@@ -2642,7 +2608,7 @@ namespace NHibernate.Persister.Entity
 		/// <remarks>
 		/// This form is used for PostInsertIdentifierGenerator-style ids (IDENTITY, select, etc).
 		/// </remarks>
-		protected async Task<object> Insert(object[] fields, bool[] notNull, SqlCommandInfo sql, object obj, ISessionImplementor session, bool async)
+		protected Task<object> Insert(object[] fields, bool[] notNull, SqlCommandInfo sql, object obj, ISessionImplementor session, bool async)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -2653,7 +2619,7 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 			IBinder binder = new GeneratedIdentifierBinder(fields, notNull, session, obj, this);
-			return await identityDelegate.PerformInsert(sql, session, binder, async);
+			return identityDelegate.PerformInsert(sql, session, binder, async);
 		}
 
 		public virtual SqlString GetSelectByUniqueKeyString(string propertyName)
@@ -2728,7 +2694,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						expectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(insertCmd, async), insertCmd);
+						expectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(insertCmd, async).ConfigureAwait(false), insertCmd);
 					}
 				}
 				catch (Exception e)
@@ -2780,13 +2746,13 @@ namespace NHibernate.Persister.Entity
 				{
 					//if all fields are null, we might need to delete existing row
 					isRowToUpdate = true;
-					await Delete(id, oldVersion, j, obj, SqlDeleteStrings[j], session, null, async);
+					await Delete(id, oldVersion, j, obj, SqlDeleteStrings[j], session, null, async).ConfigureAwait(false);
 				}
 				else
 				{
 					//there is probably a row there, so try to update
 					//if no rows were updated, we will find out
-					isRowToUpdate = await Update(id, fields, oldFields, rowId, includeProperty, j, oldVersion, obj, sql, session, async);
+					isRowToUpdate = await Update(id, fields, oldFields, rowId, includeProperty, j, oldVersion, obj, sql, session, async).ConfigureAwait(false);
 				}
 
 				if (!isRowToUpdate && !IsAllNull(fields, j))
@@ -2794,7 +2760,7 @@ namespace NHibernate.Persister.Entity
 					// assume that the row was not there since it previously had only null
 					// values, so do an INSERT instead
 					//TODO: does not respect dynamic-insert
-					await Insert(id, fields, PropertyInsertability, j, SqlInsertStrings[j], obj, session, async);
+					await Insert(id, fields, PropertyInsertability, j, SqlInsertStrings[j], obj, session, async).ConfigureAwait(false);
 				}
 			}
 		}
@@ -2864,7 +2830,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						return Check(await session.Batcher.ExecuteNonQuery(statement, async), id, j, expectation, statement);
+						return Check(await session.Batcher.ExecuteNonQuery(statement, async).ConfigureAwait(false), id, j, expectation, statement);
 					}
 				}
 				catch (StaleStateException e)
@@ -2998,7 +2964,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						Check(await session.Batcher.ExecuteNonQuery(statement, async), id, j, expectation, statement);
+						Check(await session.Batcher.ExecuteNonQuery(statement, async).ConfigureAwait(false), id, j, expectation, statement);
 					}
 				}
 				catch (Exception e)
@@ -3100,7 +3066,7 @@ namespace NHibernate.Persister.Entity
 				// Now update only the tables with dirty properties (and the table with the version number)
 				if (tableUpdateNeeded[j])
 				{
-					await UpdateOrInsert(id, fields, oldFields, j == 0 ? rowId : null, propsToUpdate, j, oldVersion, obj, updateStrings[j], session, async);
+					await UpdateOrInsert(id, fields, oldFields, j == 0 ? rowId : null, propsToUpdate, j, oldVersion, obj, updateStrings[j], session, async).ConfigureAwait(false);
 				}
 			}
 		}
@@ -3114,19 +3080,19 @@ namespace NHibernate.Persister.Entity
 			{
 				// For the case of dynamic-insert="true", we need to generate the INSERT SQL
 				bool[] notNull = GetPropertiesToInsert(fields);
-				id = await Insert(fields, notNull, GenerateInsertString(true, notNull), obj, session, async);
+				id = await Insert(fields, notNull, GenerateInsertString(true, notNull), obj, session, async).ConfigureAwait(false);
 				for (int j = 1; j < span; j++)
 				{
-					await Insert(id, fields, notNull, j, GenerateInsertString(notNull, j), obj, session, async);
+					await Insert(id, fields, notNull, j, GenerateInsertString(notNull, j), obj, session, async).ConfigureAwait(false);
 				}
 			}
 			else
 			{
 				// For the case of dynamic-insert="false", use the static SQL
-				id = await Insert(fields, PropertyInsertability, SQLIdentityInsertString, obj, session, async);
+				id = await Insert(fields, PropertyInsertability, SQLIdentityInsertString, obj, session, async).ConfigureAwait(false);
 				for (int j = 1; j < span; j++)
 				{
-					await Insert(id, fields, PropertyInsertability, j, SqlInsertStrings[j], obj, session, async);
+					await Insert(id, fields, PropertyInsertability, j, SqlInsertStrings[j], obj, session, async).ConfigureAwait(false);
 				}
 			}
 
@@ -3142,7 +3108,7 @@ namespace NHibernate.Persister.Entity
 				// For the case of dynamic-insert="true", we need to generate the INSERT SQL
 				for (int j = 0; j < span; j++)
 				{
-					await Insert(id, fields, notNull, j, GenerateInsertString(notNull, j), obj, session, async);
+					await Insert(id, fields, notNull, j, GenerateInsertString(notNull, j), obj, session, async).ConfigureAwait(false);
 				}
 			}
 			else
@@ -3150,7 +3116,7 @@ namespace NHibernate.Persister.Entity
 				// For the case of dynamic-insert="false", use the static SQL
 				for (int j = 0; j < span; j++)
 				{
-					await Insert(id, fields, PropertyInsertability, j, SqlInsertStrings[j], obj, session, async);
+					await Insert(id, fields, PropertyInsertability, j, SqlInsertStrings[j], obj, session, async).ConfigureAwait(false);
 				}
 			}
 		}
@@ -3190,7 +3156,7 @@ namespace NHibernate.Persister.Entity
 
 			for (int j = span - 1; j >= 0; j--)
 			{
-				await Delete(id, version, j, obj, deleteStrings[j], session, loadedState, async);
+				await Delete(id, version, j, obj, deleteStrings[j], session, loadedState, async).ConfigureAwait(false);
 			}
 		}
 
@@ -3626,7 +3592,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Load an instance using the appropriate loader (as determined by <see cref="GetAppropriateLoader" />
 		/// </summary>
-		public async Task<object> Load(object id, object optionalObject, LockMode lockMode, ISessionImplementor session, bool async)
+		public Task<object> Load(object id, object optionalObject, LockMode lockMode, ISessionImplementor session, bool async)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -3634,7 +3600,7 @@ namespace NHibernate.Persister.Entity
 			}
 
 			IUniqueEntityLoader loader = GetAppropriateLoader(lockMode, session);
-			return await loader.Load(id, optionalObject, session, async);
+			return loader.Load(id, optionalObject, session, async);
 		}
 
 		private IUniqueEntityLoader GetAppropriateLoader(LockMode lockMode, ISessionImplementor session)
@@ -4172,19 +4138,12 @@ namespace NHibernate.Persister.Entity
 					IDataReader rs = null;
 					try
 					{
-						try
+						IdentifierType.NullSafeSet(cmd, id, 0, session);
+						rs = session.Batcher.ExecuteReader(cmd, false).ConfigureAwait(false).GetAwaiter().GetResult();
+						if (!rs.Read())
 						{
-							IdentifierType.NullSafeSet(cmd, id, 0, session);
-							rs = session.Batcher.ExecuteReader(cmd, false).Result;
-							if (!rs.Read())
-							{
-								throw new HibernateException("Unable to locate row for retrieval of generated properties: "
-																						 + MessageHelper.InfoString(this, id, Factory));
-							}
-						}
-						catch (AggregateException e)
-						{
-							throw e.InnerException;
+							throw new HibernateException("Unable to locate row for retrieval of generated properties: "
+																						+ MessageHelper.InfoString(this, id, Factory));
 						}
 						for (int i = 0; i < PropertySpan; i++)
 						{
@@ -4287,31 +4246,24 @@ namespace NHibernate.Persister.Entity
 					try
 					{
 						IdentifierType.NullSafeSet(ps, id, 0, session);
-						try
+						rs = session.Batcher.ExecuteReader(ps, false).ConfigureAwait(false).GetAwaiter().GetResult();
+						//if there is no resulting row, return null
+						if (!rs.Read())
 						{
-							rs = session.Batcher.ExecuteReader(ps, false).Result;
-							//if there is no resulting row, return null
-							if (!rs.Read())
-							{
-								return null;
-							}
-
-							for (int i = 0; i < naturalIdPropertyCount; i++)
-							{
-								snapshot[i] =
-									extractionTypes[i].Hydrate(rs, GetPropertyAliases(string.Empty, naturalIdPropertyIndexes[i]), session, null);
-								if (extractionTypes[i].IsEntityType)
-								{
-									snapshot[i] = extractionTypes[i].ResolveIdentifier(snapshot[i], session, null);
-								}
-							}
-
-							return snapshot;
+							return null;
 						}
-						catch (AggregateException e)
+
+						for (int i = 0; i < naturalIdPropertyCount; i++)
 						{
-							throw e.InnerException;
+							snapshot[i] =
+								extractionTypes[i].Hydrate(rs, GetPropertyAliases(string.Empty, naturalIdPropertyIndexes[i]), session, null);
+							if (extractionTypes[i].IsEntityType)
+							{
+								snapshot[i] = extractionTypes[i].ResolveIdentifier(snapshot[i], session, null);
+							}
 						}
+
+						return snapshot;
 					}
 					finally
 					{

@@ -17,7 +17,7 @@ namespace NHibernate.Event.Default
 			if ((source.PersistenceContext.EntityEntries.Count > 0) || (source.PersistenceContext.CollectionEntries.Count > 0))
 			{
 				FlushEverythingToExecutions(@event);
-				await PerformExecutions(source,async);
+				await PerformExecutions(source, async).ConfigureAwait(false);
 				PostFlush(source);
 
 				if (source.Factory.Statistics.IsStatisticsEnabled)

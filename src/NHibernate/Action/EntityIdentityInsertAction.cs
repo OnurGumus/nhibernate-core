@@ -73,7 +73,7 @@ namespace NHibernate.Action
 
 			if (!veto)
 			{
-				generatedId = await persister.Insert(state, instance, Session,async);
+				generatedId = await persister.Insert(state, instance, Session, async).ConfigureAwait(false);
 				if (persister.HasInsertGeneratedProperties)
 				{
 					persister.ProcessInsertGeneratedProperties(generatedId, instance, state, Session);

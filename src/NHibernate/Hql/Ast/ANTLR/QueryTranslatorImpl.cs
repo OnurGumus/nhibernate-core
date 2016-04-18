@@ -108,7 +108,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				queryParametersToUse = queryParameters;
 			}
 
-			IList results = await _queryLoader.List(session, queryParametersToUse,async);
+			IList results = await _queryLoader.List(session, queryParametersToUse, async).ConfigureAwait(false);
 
 			if ( needsDistincting ) 
 			{
@@ -157,10 +157,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return _queryLoader.GetEnumerable(queryParameters, session);
 		}
 
-		public async Task<int> ExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session, bool async)
+		public Task<int> ExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session, bool async)
 		{
 			ErrorIfSelect();
-			return await _statementExecutor.Execute(queryParameters, session,async);
+			return _statementExecutor.Execute(queryParameters, session, async);
 		}
 
 		private void ErrorIfSelect()

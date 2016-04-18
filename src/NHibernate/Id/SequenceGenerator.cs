@@ -117,27 +117,20 @@ namespace NHibernate.Id
 				IDataReader reader = null;
 				try
 				{
+					reader = session.Batcher.ExecuteReader(cmd, false).ConfigureAwait(false).GetAwaiter().GetResult();
 					try
 					{
-						reader = session.Batcher.ExecuteReader(cmd, false).Result;
-						try
+						reader.Read();
+						object result = IdentifierGeneratorFactory.Get(reader, identifierType, session);
+						if (log.IsDebugEnabled)
 						{
-							reader.Read();
-							object result = IdentifierGeneratorFactory.Get(reader, identifierType, session);
-							if (log.IsDebugEnabled)
-							{
-								log.Debug("Sequence identifier generated: " + result);
-							}
-							return result;
+							log.Debug("Sequence identifier generated: " + result);
 						}
-						finally
-						{
-							reader.Close();
-						}
+						return result;
 					}
-					catch (AggregateException e)
+					finally
 					{
-						throw e.InnerException;
+						reader.Close();
 					}
 				}
 				finally

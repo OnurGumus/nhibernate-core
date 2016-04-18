@@ -45,7 +45,7 @@ namespace NHibernate.Loader.Entity
 			return null;
 		}
 
-		public  async Task<object> Load(object id, object optionalObject, ISessionImplementor session, bool async)
+		public async Task<object> Load(object id, object optionalObject, ISessionImplementor session, bool async)
 		{
 			object[] batch =
 				session.PersistenceContext.BatchFetchQueue.GetEntityBatch(persister, id, batchSizes[0]);
@@ -59,13 +59,13 @@ namespace NHibernate.Loader.Entity
 					Array.Copy(batch, 0, smallBatch, 0, smallBatchSize);
 
 					IList results =
-						await loaders[i].LoadEntityBatch(session, smallBatch, idType, optionalObject, persister.EntityName, id, persister, async);
+						await loaders[i].LoadEntityBatch(session, smallBatch, idType, optionalObject, persister.EntityName, id, persister, async).ConfigureAwait(false);
 
 					return GetObjectFromList(results, id, session); //EARLY EXIT
 				}
 			}
 
-			return await ((IUniqueEntityLoader) loaders[batchSizes.Length - 1]).Load(id, optionalObject, session, async);
+			return await ((IUniqueEntityLoader) loaders[batchSizes.Length - 1]).Load(id, optionalObject, session, async).ConfigureAwait(false);
 		}
 
 		public static IUniqueEntityLoader CreateBatchingEntityLoader(IOuterJoinLoadable persister, int maxBatchSize,

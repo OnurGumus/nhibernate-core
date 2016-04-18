@@ -90,7 +90,7 @@ namespace NHibernate.Dialect.Lock
 						lockable.VersionType.NullSafeSet(st, version, offset, session);
 					}
 
-					int affected = await session.Batcher.ExecuteNonQuery(st, async);
+					int affected = await session.Batcher.ExecuteNonQuery(st, async).ConfigureAwait(false);
 					if (affected < 0)
 					{
 						factory.StatisticsImplementor.OptimisticFailure(lockable.EntityName);

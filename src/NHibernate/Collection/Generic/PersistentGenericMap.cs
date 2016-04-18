@@ -231,19 +231,8 @@ namespace NHibernate.Collection.Generic
 
 		public bool ContainsKey(TKey key)
 		{
-
-			try
-			{
-
-				bool? exists = ReadIndexExistence(key, false).Result;
-
-				return !exists.HasValue ? WrappedMap.ContainsKey(key) : exists.Value;
-
-			}
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
+			bool? exists = ReadIndexExistence(key, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return !exists.HasValue ? WrappedMap.ContainsKey(key) : exists.Value;
 		}
 
 		public void Add(TKey key, TValue value)
@@ -254,18 +243,11 @@ namespace NHibernate.Collection.Generic
 			}
 			if (PutQueueEnabled)
 			{
-				try
+				object old = ReadElementByIndex(key, false).ConfigureAwait(false).GetAwaiter().GetResult();
+				if (old != Unknown)
 				{
-					object old = ReadElementByIndex(key, false).Result;
-					if (old != Unknown)
-					{
-						QueueOperation(new PutDelayedOperation(this, key, value, old == NotFound ? null : old));
-						return;
-					}
-				}
-				catch (AggregateException e)
-				{
-					throw e.InnerException;
+					QueueOperation(new PutDelayedOperation(this, key, value, old == NotFound ? null : old));
+					return;
 				}
 			}
 			Initialize(true);
@@ -275,94 +257,64 @@ namespace NHibernate.Collection.Generic
 
 		public bool Remove(TKey key)
 		{
-			try
+			object old = PutQueueEnabled ? ReadElementByIndex(key, false).ConfigureAwait(false).GetAwaiter().GetResult() : Unknown;
+			if (old == Unknown) // queue is not enabled for 'puts', or element not found
 			{
-
-				object old = PutQueueEnabled ? ReadElementByIndex(key, false).Result : Unknown;
-				if (old == Unknown) // queue is not enabled for 'puts', or element not found
+				Initialize(true);
+				bool contained = WrappedMap.Remove(key);
+				if (contained)
 				{
-					Initialize(true);
-					bool contained = WrappedMap.Remove(key);
-					if (contained)
-					{
-						Dirty();
-					}
-					return contained;
+					Dirty();
 				}
+				return contained;
+			}
 
-				QueueOperation(new RemoveDelayedOperation(this, key, old == NotFound ? null : old));
-				return true;
-			}
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
+			QueueOperation(new RemoveDelayedOperation(this, key, old == NotFound ? null : old));
+			return true;
 		}
 
 
 		public bool TryGetValue(TKey key, out TValue value)
 		{
-			try
+			object result = ReadElementByIndex(key, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			if (result == Unknown)
 			{
-				object result = ReadElementByIndex(key, false).Result;
-				if (result == Unknown)
-				{
-					return WrappedMap.TryGetValue(key, out value);
-				}
-				if (result == NotFound)
-				{
-					value = default(TValue);
-					return false;
-				}
-				value = (TValue)result;
-				return true;
+				return WrappedMap.TryGetValue(key, out value);
 			}
-			catch (AggregateException e)
+			if (result == NotFound)
 			{
-				throw e.InnerException;
+				value = default(TValue);
+				return false;
 			}
+			value = (TValue)result;
+			return true;
 		}
 
 		public TValue this[TKey key]
 		{
 			get
 			{
-				try
+				object result = ReadElementByIndex(key, false).ConfigureAwait(false).GetAwaiter().GetResult();
+				if (result == Unknown)
 				{
-					object result = ReadElementByIndex(key, false).Result;
-					if (result == Unknown)
-					{
-						return WrappedMap[key];
-					}
-					if (result == NotFound)
-					{
-						throw new KeyNotFoundException();
-					}
-					return (TValue)result;
+					return WrappedMap[key];
 				}
-				catch (AggregateException e)
+				if (result == NotFound)
 				{
-					throw e.InnerException;
+					throw new KeyNotFoundException();
 				}
-
+				return (TValue)result;
 			}
 			set
 			{
 				// NH Note: the assignment in NET work like the put method in JAVA (mean assign or add)
 				if (PutQueueEnabled)
 				{
-					try
+					object old = ReadElementByIndex(key, false).ConfigureAwait(false).GetAwaiter().GetResult();
+					if (old != Unknown)
 					{
-						object old = ReadElementByIndex(key, false).Result;
-						if (old != Unknown)
-						{
-							QueueOperation(new PutDelayedOperation(this, key, value, old == NotFound ? null : old));
-							return;
-						}
-					}
-					catch (AggregateException e)
-					{
-						throw e.InnerException;
+						QueueOperation(new PutDelayedOperation(this, key, value, old == NotFound ? null : old));
+						return;
 					}
 				}
 				Initialize(true);
@@ -427,27 +379,20 @@ namespace NHibernate.Collection.Generic
 
 		public bool Contains(KeyValuePair<TKey, TValue> item)
 		{
-			try
+			bool? exists = ReadIndexExistence(item.Key, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			if (!exists.HasValue)
 			{
-				bool? exists = ReadIndexExistence(item.Key, false).Result;
-				if (!exists.HasValue)
-				{
-					return WrappedMap.Contains(item);
-				}
-
-				if (exists.Value)
-				{
-					TValue x = ((IDictionary<TKey, TValue>)this)[item.Key];
-					TValue y = item.Value;
-					return EqualityComparer<TValue>.Default.Equals(x, y);
-				}
-
-				return false;
+				return WrappedMap.Contains(item);
 			}
-			catch (AggregateException e)
+
+			if (exists.Value)
 			{
-				throw e.InnerException;
+				TValue x = ((IDictionary<TKey, TValue>)this)[item.Key];
+				TValue y = item.Value;
+				return EqualityComparer<TValue>.Default.Equals(x, y);
 			}
+
+			return false;
 		}
 
 		public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
@@ -487,14 +432,7 @@ namespace NHibernate.Collection.Generic
 		{
 			get
 			{
-				try
-				{
-					return ReadSize(false).Result ? CachedSize : WrappedMap.Count;
-				}
-				catch (AggregateException e)
-				{
-					throw e.InnerException;
-				}
+				return ReadSize(false).ConfigureAwait(false).GetAwaiter().GetResult() ? CachedSize : WrappedMap.Count;
 			}
 		}
 

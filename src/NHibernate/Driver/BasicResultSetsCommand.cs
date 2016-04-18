@@ -96,22 +96,14 @@ namespace NHibernate.Driver
 			this.batcher = batcher;
 		}
 
-		public async Task<IDataReader> ExecuteReader(DbCommand command, bool async)
+		public Task<IDataReader> ExecuteReader(DbCommand command, bool async)
 		{
 			if (command == null)
 			{
 				throw new ArgumentNullException("command");
 			}
 			this.command = command;
-			try
-			{
-				reader = await batcher.ExecuteReader(command, async);
-				return reader;
-			}
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
+			return batcher.ExecuteReader(command, async);
 		}
 
 		public void Dispose()

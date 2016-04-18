@@ -4,6 +4,7 @@ using NHibernate.Engine;
 using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Action
 {
@@ -107,11 +108,9 @@ namespace NHibernate.Action
 			// nothing to do
 		}
 
-		public async Task Execute(bool async)
+		public Task Execute(bool async)
 		{
-			// nothing to do
-			if(async)
-				await Task.Yield();
+			return TaskHelper.CompletedTask;
 		}
 
 		public BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess

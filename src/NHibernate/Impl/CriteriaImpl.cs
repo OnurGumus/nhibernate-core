@@ -9,6 +9,7 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Util;
+using Task = System.Threading.Tasks.Task;
 
 namespace NHibernate.Impl
 {
@@ -259,10 +260,10 @@ namespace NHibernate.Impl
 			return results;
 		}
 		
-		async public Task<IList> ListAsync()
+		public async Task<IList> ListAsync()
 		{
 			var results = new List<object>();
-			await ListAsync(results);
+			await ListAsync(results).ConfigureAwait(false);
 			return results;
 		}
 
@@ -271,12 +272,8 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				session.List(this, results, false).Wait();
+				session.List(this, results, false).ConfigureAwait(false).GetAwaiter().GetResult();
 			}
-			catch (AggregateException ex)
-			{
-				ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
- 			}
 			finally
 			{
 				After();
@@ -288,12 +285,8 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				await session.List(this, results, true);
+				await session.List(this, results, true).ConfigureAwait(false);
 			}
-			catch (AggregateException ex)
-			{
-				ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
- 			}
 			finally
 			{
 				After();
@@ -307,10 +300,10 @@ namespace NHibernate.Impl
 			return results;
 		}
 		
-		async public Task<IList<T>> ListAsync<T>()
+		public async Task<IList<T>> ListAsync<T>()
 		{
 			List<T> results = new List<T>();
-			await ListAsync(results);
+			await ListAsync(results).ConfigureAwait(false);
 			return results;
 		}
 
@@ -329,7 +322,7 @@ namespace NHibernate.Impl
 		
 		async public Task<T> UniqueResultAsync<T>()
 		{
-			var result = await UniqueResultAsync();
+			var result = await UniqueResultAsync().ConfigureAwait(false);
 			if (result == null && typeof(T).IsValueType)
 			{
 				return default(T);
@@ -478,9 +471,9 @@ namespace NHibernate.Impl
 			return AbstractQueryImpl.UniqueElement(List());
 		}
 		
-		async public Task<object> UniqueResultAsync()
+		public async Task<object> UniqueResultAsync()
 		{
-			return AbstractQueryImpl.UniqueElement(await ListAsync());
+			return AbstractQueryImpl.UniqueElement(await ListAsync().ConfigureAwait(false));
 		}
 
 		public ICriteria SetLockMode(LockMode lockMode)
@@ -855,9 +848,9 @@ namespace NHibernate.Impl
 				root.List(results);
 			}
 			
-			async public Task ListAsync(IList results)
+			public Task ListAsync(IList results)
 			{
-				await root.ListAsync(results);
+				return root.ListAsync(results);
 			}
 
 			public IList<T> List<T>()
@@ -865,9 +858,9 @@ namespace NHibernate.Impl
 				return root.List<T>();
 			}
 			
-			async public Task<IList<T>> ListAsync<T>()
+			public Task<IList<T>> ListAsync<T>()
 			{
-				return await root.ListAsync<T>();
+				return root.ListAsync<T>();
 			}
 
 			public T UniqueResult<T>()
@@ -886,7 +879,7 @@ namespace NHibernate.Impl
 			
 			async public Task<T> UniqueResultAsync<T>()
 			{
-				object result = await UniqueResultAsync();
+				object result = await UniqueResultAsync().ConfigureAwait(false);
 				if (result == null && typeof(T).IsValueType)
 				{
 					throw new InvalidCastException(
@@ -909,9 +902,9 @@ namespace NHibernate.Impl
 				return root.UniqueResult();
 			}
 			
-			async public Task<object> UniqueResultAsync()
+			public Task<object> UniqueResultAsync()
 			{
-				return await root.UniqueResultAsync();
+				return root.UniqueResultAsync();
 			}
 
 			public ICriteria SetFetchMode(string associationPath, FetchMode mode)

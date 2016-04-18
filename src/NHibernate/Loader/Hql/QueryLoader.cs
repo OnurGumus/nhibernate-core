@@ -285,10 +285,10 @@ namespace NHibernate.Loader.Hql
 			_defaultLockModes = ArrayHelper.Fill(LockMode.None, size);
 		}
 
-		public async Task<IList> List(ISessionImplementor session, QueryParameters queryParameters, bool async)
+		public Task<IList> List(ISessionImplementor session, QueryParameters queryParameters, bool async)
 		{
 			CheckQuery(queryParameters);
-			return await List(session, queryParameters, _queryTranslator.QuerySpaces, _queryReturnTypes, async);
+			return List(session, queryParameters, _queryTranslator.QuerySpaces, _queryReturnTypes, async);
 		}
 
 		public override IList GetResultList(IList results, IResultTransformer resultTransformer)
@@ -429,15 +429,8 @@ namespace NHibernate.Loader.Hql
 			DbCommand cmd = PrepareQueryCommand(queryParameters, false, session);
 
 			// This IDataReader is disposed of in EnumerableImpl.Dispose
-			IDataReader rs;
-            try
-			{
-				rs = GetResultSet(cmd, queryParameters.HasAutoDiscoverScalarTypes, false, queryParameters.RowSelection, session, false).Result;
-			}
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
+			IDataReader rs = GetResultSet(cmd, queryParameters.HasAutoDiscoverScalarTypes, false, queryParameters.RowSelection, session, false)
+				.ConfigureAwait(false).GetAwaiter().GetResult();
 			
 			HolderInstantiator hi = 
 				HolderInstantiator.GetHolderInstantiator(_selectNewTransformer, queryParameters.ResultTransformer, _queryReturnAliases);

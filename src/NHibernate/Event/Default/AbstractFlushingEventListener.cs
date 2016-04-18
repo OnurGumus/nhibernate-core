@@ -11,6 +11,7 @@ using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
 using System.Threading.Tasks;
+using Task = System.Threading.Tasks.Task;
 
 namespace NHibernate.Event.Default
 {
@@ -246,7 +247,7 @@ namespace NHibernate.Event.Default
 				// executing entity inserts/updates in order to
 				// account for bidi associations
 				session.ActionQueue.PrepareActions();
-				await session.ActionQueue.ExecuteActions(async);
+				await session.ActionQueue.ExecuteActions(async).ConfigureAwait(false);
 			}
 			catch (HibernateException he)
 			{

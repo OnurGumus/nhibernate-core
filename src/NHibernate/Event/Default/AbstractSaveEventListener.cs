@@ -82,9 +82,9 @@ namespace NHibernate.Event.Default
 		/// <param name="source">The session which is the source of this save event. </param>
 		/// <param name="async"></param>
 		/// <returns> The id used to save the entity. </returns>
-		protected virtual async Task<object> SaveWithRequestedId(object entity, object requestedId, string entityName, object anything, IEventSource source, bool async)
+		protected virtual Task<object> SaveWithRequestedId(object entity, object requestedId, string entityName, object anything, IEventSource source, bool async)
 		{
-			return await PerformSave(entity, requestedId, source.GetEntityPersister(entityName, entity), false, anything, source, true, async);
+			return PerformSave(entity, requestedId, source.GetEntityPersister(entityName, entity), false, anything, source, true, async);
 		}
 
 		/// <summary> 
@@ -105,7 +105,7 @@ namespace NHibernate.Event.Default
 		/// The id used to save the entity; may be null depending on the
 		/// type of id generator used and the requiresImmediateIdAccess value
 		/// </returns>
-		protected virtual async Task<object> SaveWithGeneratedId(object entity, string entityName, object anything, IEventSource source, bool requiresImmediateIdAccess, bool async)
+		protected virtual Task<object> SaveWithGeneratedId(object entity, string entityName, object anything, IEventSource source, bool requiresImmediateIdAccess, bool async)
 		{
 			IEntityPersister persister = source.GetEntityPersister(entityName, entity);
 			object generatedId = persister.IdentifierGenerator.Generate(source, entity);
@@ -115,11 +115,11 @@ namespace NHibernate.Event.Default
 			}
 			else if (generatedId == IdentifierGeneratorFactory.ShortCircuitIndicator)
 			{
-				return source.GetIdentifier(entity);
+				return Task.FromResult(source.GetIdentifier(entity));
 			}
 			else if (generatedId == IdentifierGeneratorFactory.PostInsertIndicator)
 			{
-				return await PerformSave(entity, null, persister, true, anything, source, requiresImmediateIdAccess,async);
+				return PerformSave(entity, null, persister, true, anything, source, requiresImmediateIdAccess,async);
 			}
 			else
 			{
@@ -129,7 +129,7 @@ namespace NHibernate.Event.Default
 						persister.IdentifierType.ToLoggableString(generatedId, source.Factory),
 						persister.IdentifierGenerator.GetType().FullName));
 				}
-				return await PerformSave(entity, generatedId, persister, false, anything, source, true, async);
+				return PerformSave(entity, generatedId, persister, false, anything, source, true, async);
 			}
 		}
 
@@ -154,7 +154,7 @@ namespace NHibernate.Event.Default
 		/// The id used to save the entity; may be null depending on the
 		/// type of id generator used and the requiresImmediateIdAccess value
 		/// </returns>
-		protected virtual async Task<object> PerformSave(object entity, object id, IEntityPersister persister, bool useIdentityColumn, object anything, IEventSource source, bool requiresImmediateIdAccess, bool async)
+		protected virtual Task<object> PerformSave(object entity, object id, IEntityPersister persister, bool useIdentityColumn, object anything, IEventSource source, bool requiresImmediateIdAccess, bool async)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -186,9 +186,9 @@ namespace NHibernate.Event.Default
 
 			if (InvokeSaveLifecycle(entity, persister, source))
 			{
-				return id; //EARLY EXIT
+				return Task.FromResult(id); //EARLY EXIT
 			}
-			return await PerformSaveOrReplicate(entity, key, persister, useIdentityColumn, anything, source, requiresImmediateIdAccess, async);
+			return PerformSaveOrReplicate(entity, key, persister, useIdentityColumn, anything, source, requiresImmediateIdAccess, async);
 		}
 
 		/// <summary> 
@@ -232,7 +232,7 @@ namespace NHibernate.Event.Default
 			if (useIdentityColumn && !shouldDelayIdentityInserts)
 			{
 				log.Debug("executing insertions");
-				await source.ActionQueue.ExecuteInserts(async);
+				await source.ActionQueue.ExecuteInserts(async).ConfigureAwait(false);
 			}
 
 			object[] values = persister.GetPropertyValuesToInsert(entity, GetMergeMap(anything), source);
@@ -261,7 +261,7 @@ namespace NHibernate.Event.Default
 				if (!shouldDelayIdentityInserts)
 				{
 					log.Debug("executing identity-insert immediately");
-					await source.ActionQueue.Execute(insert, async);
+					await source.ActionQueue.Execute(insert, async).ConfigureAwait(false);
 					id = insert.GeneratedId;
 					//now done in EntityIdentityInsertAction
 					//persister.setIdentifier( entity, id, source.getEntityMode() );

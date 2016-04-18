@@ -40,7 +40,7 @@ namespace NHibernate.Id.Insert
 				try
 				{
 					binder.BindValues(insert);
-					return await ExecuteAndExtract(insert, session, async);
+					return await ExecuteAndExtract(insert, session, async).ConfigureAwait(false);
 				}
 				finally
 				{

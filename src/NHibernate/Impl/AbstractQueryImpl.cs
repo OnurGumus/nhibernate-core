@@ -11,6 +11,7 @@ using NHibernate.Type;
 using NHibernate.Util;
 using System.Linq;
 using System.Threading.Tasks;
+using Task = System.Threading.Tasks.Task;
 
 namespace NHibernate.Impl
 {
@@ -887,14 +888,7 @@ namespace NHibernate.Impl
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				try
-				{
-					return ListAsync<T>().Result;
-				}
-				catch (AggregateException e)
-				{
-					throw e.InnerException;
-				}
+				return ListAsync<T>().ConfigureAwait(false).GetAwaiter().GetResult();
 			}
 
 			session.FutureQueryBatch.Add<T>(this);
@@ -905,7 +899,7 @@ namespace NHibernate.Impl
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return new DelayedAsyncEnumerator<T>(async () => await ListAsync<T>());
+				return new DelayedAsyncEnumerator<T>(async() => await ListAsync<T>().ConfigureAwait(false));
 			}
 
 			session.FutureQueryBatch.Add<T>(this);
@@ -918,14 +912,7 @@ namespace NHibernate.Impl
 			{
 				return new FutureValue<T>(() =>
 				{
-					try
-					{
-						return (ListAsync<T>().Result);
-					}
-					catch (AggregateException e)
-					{
-						throw e.InnerException;
-					}
+					return (ListAsync<T>().ConfigureAwait(false).GetAwaiter().GetResult());
                 });
 			}
 
@@ -937,7 +924,7 @@ namespace NHibernate.Impl
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return new FutureValueAsync<T>(async () => await ListAsync<T>());
+				return new FutureValueAsync<T>(async () => await ListAsync<T>().ConfigureAwait(false));
 			}
 
 			session.FutureQueryBatch.Add<T>(this);
@@ -978,13 +965,13 @@ namespace NHibernate.Impl
 		public abstract Task ListAsync(IList results, bool async);
 		public abstract Task<IList<T>> ListAsync<T>();
 		public abstract Task<IList<T>> ListAsync<T>(bool async);
-		public async Task<T> UniqueResultAsync<T>()
+		public Task<T> UniqueResultAsync<T>()
 		{
-			return await this.UniqueResultAsync<T>(true);
+			return this.UniqueResultAsync<T>(true);
 		}
 		public async Task<T> UniqueResultAsync<T>(bool async)
 		{
-			object result = await UniqueResultAsync(async);
+			object result = await UniqueResultAsync(async).ConfigureAwait(false);
 			if (result == null && typeof(T).IsValueType)
 			{
 				return default(T);
@@ -994,13 +981,13 @@ namespace NHibernate.Impl
 				return (T)result;
 			}
 		}
-		public async Task<object> UniqueResultAsync()
+		public Task<object> UniqueResultAsync()
 		{
-			return await this.UniqueResultAsync(true);
+			return this.UniqueResultAsync(true);
 		}
 		public async Task<object> UniqueResultAsync(bool async)
 		{
-			return UniqueElement(await ListAsync(async));
+			return UniqueElement(await ListAsync(async).ConfigureAwait(false));
 		}
 
 		internal static object UniqueElement(IList list)
@@ -1093,49 +1080,20 @@ namespace NHibernate.Impl
 
 		protected internal abstract IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters);
 
-
 		public abstract IList List();
-		/*
-		{
-			return this.ListAsync(false).Result;
-		}*/
 
 		public abstract void List(IList results);
-		/*{
-			this.ListAsync(results, false).Wait();
-		}
-			*/
+
 		public abstract IList<T> List<T>();
-		/*
-	{
-		return this.ListAsync<T>(false).Result;
-	}*/
-
-
 
 		public T UniqueResult<T>()
 		{
-			try
-			{
-				return this.UniqueResultAsync<T>(false).Result;
-			}
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
+			return this.UniqueResultAsync<T>(false).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		public object UniqueResult()
 		{
-			try
-			{
-				return this.UniqueResultAsync(false).Result;
-			}
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
-
+			return this.UniqueResultAsync(false).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 	}
 }

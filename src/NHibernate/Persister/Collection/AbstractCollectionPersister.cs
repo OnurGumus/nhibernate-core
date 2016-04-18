@@ -25,6 +25,7 @@ using NHibernate.Type;
 using NHibernate.Util;
 using Array=NHibernate.Mapping.Array;
 using System.Threading.Tasks;
+using Task = System.Threading.Tasks.Task;
 
 namespace NHibernate.Persister.Collection
 {
@@ -1064,7 +1065,7 @@ namespace NHibernate.Persister.Collection
 						}
 						else
 						{
-							expectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(st,async), st);
+							expectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(st, async).ConfigureAwait(false), st);
 						}
 					}
 					catch (Exception e)
@@ -1132,11 +1133,11 @@ namespace NHibernate.Persister.Collection
 							if (!IsIdentifierAssignedByInsert)
 							{
 								// NH Different implementation: write once
-								entryId = await PerformInsert(id, collection, expectation, entry, i, useBatch, false, session, async);
+								entryId = await PerformInsert(id, collection, expectation, entry, i, useBatch, false, session, async).ConfigureAwait(false);
 							}
 							else
 							{
-								entryId = await PerformInsert(id, collection, entry, i, session,async);
+								entryId = await PerformInsert(id, collection, entry, i, session, async).ConfigureAwait(false);
 							}
 							collection.AfterRowInsert(this, entry, i, entryId);
 							count++;
@@ -1227,7 +1228,7 @@ namespace NHibernate.Persister.Collection
 								}
 								else
 								{
-									expectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(st,async), st);
+									expectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(st, async).ConfigureAwait(false), st);
 								}
 								count++;
 							}
@@ -1297,11 +1298,11 @@ namespace NHibernate.Persister.Collection
 							if (!IsIdentifierAssignedByInsert)
 							{
 								// NH Different implementation: write once
-								entryId = await PerformInsert(id, collection, expectation, entry, i, useBatch, false, session, async);
+								entryId = await PerformInsert(id, collection, expectation, entry, i, useBatch, false, session, async).ConfigureAwait(false);
 							}
 							else
 							{
-								entryId = await PerformInsert(id, collection, entry, i, session, async);
+								entryId = await PerformInsert(id, collection, entry, i, session, async).ConfigureAwait(false);
 							}
 							collection.AfterRowInsert(this, entry, i, entryId);
 							count++;
@@ -1408,7 +1409,7 @@ namespace NHibernate.Persister.Collection
 				}
 
 				// update all the modified entries
-				int count = await DoUpdateRows(id, collection, session, async);
+				int count = await DoUpdateRows(id, collection, session, async).ConfigureAwait(false);
 
 				if (log.IsDebugEnabled)
 				{
@@ -1550,7 +1551,7 @@ namespace NHibernate.Persister.Collection
 				try
 				{
 					KeyType.NullSafeSet(st, key, 0, session);
-					rs = await session.Batcher.ExecuteReader(st, async);
+					rs = await session.Batcher.ExecuteReader(st, async).ConfigureAwait(false);
 					return rs.Read() ? Convert.ToInt32(rs.GetValue(0)) - baseIndex : 0;
 				}
 				finally
@@ -1566,14 +1567,14 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
-		public async Task<bool> IndexExists(object key, object index, ISessionImplementor session, bool async)
+		public Task<bool> IndexExists(object key, object index, ISessionImplementor session, bool async)
 		{
-			return await Exists(key, IncrementIndexByBase(index), IndexType, sqlDetectRowByIndexString, session, async);
+			return Exists(key, IncrementIndexByBase(index), IndexType, sqlDetectRowByIndexString, session, async);
 		}
 
-		public async Task<bool> ElementExists(object key, object element, ISessionImplementor session, bool async)
+		public Task<bool> ElementExists(object key, object element, ISessionImplementor session, bool async)
 		{
-			return await Exists(key, element, ElementType, sqlDetectRowByElementString, session, async);
+			return Exists(key, element, ElementType, sqlDetectRowByElementString, session, async);
 		}
 
 		private async Task<bool> Exists(object key, object indexOrElement, IType indexOrElementType, SqlString sql,
@@ -1590,7 +1591,7 @@ namespace NHibernate.Persister.Collection
 				{
 					KeyType.NullSafeSet(st, key, 0, session);
 					indexOrElementType.NullSafeSet(st, indexOrElement, keyColumnNames.Length, session);
-					rs = await session.Batcher.ExecuteReader(st, async);
+					rs = await session.Batcher.ExecuteReader(st, async).ConfigureAwait(false);
 					try
 					{
 						return rs.Read();
@@ -1630,7 +1631,7 @@ namespace NHibernate.Persister.Collection
 				{
 					KeyType.NullSafeSet(st, key, 0, session);
 					IndexType.NullSafeSet(st, IncrementIndexByBase(index), keyColumnNames.Length, session);
-					rs = await session.Batcher.ExecuteReader(st, async);
+					rs = await session.Batcher.ExecuteReader(st, async).ConfigureAwait(false);
 					try
 					{
 						if (rs.Read())
@@ -2024,7 +2025,7 @@ namespace NHibernate.Persister.Collection
 				}
 				else
 				{
-					expectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(st, async), st);
+					expectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(st, async).ConfigureAwait(false), st);
 				}
 			}
 			catch (Exception e)
@@ -2106,11 +2107,11 @@ namespace NHibernate.Persister.Collection
 		/// <remarks>
 		/// This form is used for PostInsertIdentifierGenerator-style ids (IDENTITY, select, etc).
 		/// </remarks>
-		protected async Task<object> PerformInsert(object ownerId, IPersistentCollection collection, object entry, int index,
+		protected Task<object> PerformInsert(object ownerId, IPersistentCollection collection, object entry, int index,
 									   ISessionImplementor session, bool async)
 		{
 			IBinder binder = new GeneratedIdentifierBinder(ownerId, collection, entry, index, session, this);
-			return await identityDelegate.PerformInsert(SqlInsertRowString, session, binder, async);
+			return identityDelegate.PerformInsert(SqlInsertRowString, session, binder, async);
 		}
 
 		protected class GeneratedIdentifierBinder : IBinder

@@ -50,7 +50,7 @@ namespace NHibernate.Impl
 				cancellationToken.ThrowIfCancellationRequested();
 				if (enumerator == null)
 				{
-					data = await result();
+					data = await result().ConfigureAwait(false);
 					if (executeOnEval != null)
 						data = (IEnumerable)executeOnEval.DynamicInvoke(data);
 					enumerator = data.GetEnumerator();

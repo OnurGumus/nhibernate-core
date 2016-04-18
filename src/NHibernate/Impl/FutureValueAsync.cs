@@ -19,7 +19,7 @@ namespace NHibernate.Impl
 
 		public async Task<T> GetValue()
 		{
-			var result = await getResult();
+			var result = await getResult().ConfigureAwait(false);
 			var enumerator = result.GetEnumerator();
 
 			if (!enumerator.MoveNext())

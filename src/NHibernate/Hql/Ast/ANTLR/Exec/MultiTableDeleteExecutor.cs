@@ -92,7 +92,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 							parameterSpecification.Bind(ps, sqlQueryParametersList, parameters, session);
 						}
 
-						resultCount = await session.Batcher.ExecuteNonQuery(ps, async);
+						resultCount = await session.Batcher.ExecuteNonQuery(ps, async).ConfigureAwait(false);
 					}
 					finally
 					{
@@ -115,14 +115,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 						try
 						{
 							ps = session.Batcher.PrepareCommand(CommandType.Text, deletes[i], new SqlType[0]);
-							try
-							{
-								session.Batcher.ExecuteNonQuery(ps, false).Wait();
-							}
-							catch (AggregateException e)
-							{
-								throw e.InnerException;
-							}
+							session.Batcher.ExecuteNonQuery(ps, false).ConfigureAwait(false).GetAwaiter().GetResult();
 						}
 						finally
 						{

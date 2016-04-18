@@ -210,7 +210,7 @@ namespace NHibernate.Persister.Collection
 								}
 								else
 								{
-									deleteExpectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(st, async), st);
+									deleteExpectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(st, async).ConfigureAwait(false), st);
 								}
 							}
 							catch (Exception e)
@@ -275,14 +275,8 @@ namespace NHibernate.Persister.Collection
 								}
 								else
 								{
-									try
-									{
-										insertExpectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st, false).Result, st);
-									}
-									catch (AggregateException e)
-									{
-										throw e.InnerException;
-									}
+									insertExpectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st, false)
+										.ConfigureAwait(false).GetAwaiter().GetResult(), st);
 								}
 							}
 							catch (Exception e)
@@ -411,7 +405,7 @@ namespace NHibernate.Persister.Collection
 
 		public override async Task<object> GetElementByIndex(object key, object index, ISessionImplementor session, object owner, bool async)
 		{
-			return await new CollectionElementLoader(this, Factory, session.EnabledFilters).LoadElement(session, key, IncrementIndexByBase(index), async) ?? NotFoundObject;
+			return await new CollectionElementLoader(this, Factory, session.EnabledFilters).LoadElement(session, key, IncrementIndexByBase(index), async).ConfigureAwait(false) ?? NotFoundObject;
 		}
 
 		#region NH Specific

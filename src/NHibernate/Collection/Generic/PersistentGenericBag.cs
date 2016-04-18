@@ -156,14 +156,7 @@ namespace NHibernate.Collection.Generic
 		{
 			get
 			{
-				try
-				{
-					return ReadSize(false).Result ? CachedSize : _gbag.Count;
-				}
-				catch (AggregateException e)
-				{
-					throw e.InnerException;
-				}
+				return ReadSize(false).ConfigureAwait(false).GetAwaiter().GetResult() ? CachedSize : _gbag.Count;
 			}
 		}
 
@@ -204,16 +197,8 @@ namespace NHibernate.Collection.Generic
 
 		public bool Contains(T item)
 		{
-			try
-			{
-				var exists = ReadElementExistence(item, false).Result;
-
-				return !exists.HasValue ? _gbag.Contains(item) : exists.Value;
-			}
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
+			var exists = ReadElementExistence(item, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return !exists.HasValue ? _gbag.Contains(item) : exists.Value;
 		}
 
 		public void CopyTo(T[] array, int arrayIndex)

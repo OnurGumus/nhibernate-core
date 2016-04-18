@@ -8,18 +8,18 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultSaveEventListener : DefaultSaveOrUpdateEventListener
 	{
-		protected override async Task<object> PerformSaveOrUpdate(SaveOrUpdateEvent @event, bool async)
+		protected override Task<object> PerformSaveOrUpdate(SaveOrUpdateEvent @event, bool async)
 		{
 			// this implementation is supposed to tolerate incorrect unsaved-value
 			// mappings, for the purpose of backward-compatibility
 			EntityEntry entry = @event.Session.PersistenceContext.GetEntry(@event.Entity);
 			if (entry != null && entry.Status != Status.Deleted)
 			{
-				return EntityIsPersistent(@event);
+				return Task.FromResult(EntityIsPersistent(@event));
 			}
 			else
 			{
-				return await EntityIsTransient(@event, async);
+				return EntityIsTransient(@event, async);
 			}
 		}
 

@@ -57,7 +57,7 @@ namespace NHibernate.Action
 			if (!veto)
 			{
 
-				await persister.Insert(id, state, instance, Session, async);
+				await persister.Insert(id, state, instance, Session, async).ConfigureAwait(false);
 
 				EntityEntry entry = Session.PersistenceContext.GetEntry(instance);
 				if (entry == null)

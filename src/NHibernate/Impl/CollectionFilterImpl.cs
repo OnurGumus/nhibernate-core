@@ -34,47 +34,29 @@ namespace NHibernate.Impl
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			return Session.EnumerableFilter<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
 		}
+
 		public override IList List()
 		{
-			try
-			{
-				return this.ListAsync().Result;
-			}
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
+			return this.ListAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
+
 		public override IList<T> List<T>()
 		{
-			try
-			{
-				return this.ListAsync<T>().Result;
-			}
-			catch (AggregateException e)
-			{
-				throw e.InnerException;
-			}
-		}
-		public override async Task<IList> ListAsync()
-		{
-
-
-			await Task.Yield();
-
-			VerifyParameters();
-			IDictionary<string, TypedValue> namedParams = NamedParams;
-			return Session.ListFilter(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
+			return this.ListAsync<T>().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public override async Task<IList<T>> ListAsync<T>()
+		public override Task<IList> ListAsync()
 		{
-
-			await Task.Yield();
-
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
-			return Session.ListFilter<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
+			return Task.FromResult(Session.ListFilter(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams)));
+		}
+
+		public override Task<IList<T>> ListAsync<T>()
+		{
+			VerifyParameters();
+			IDictionary<string, TypedValue> namedParams = NamedParams;
+			return Task.FromResult(Session.ListFilter<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams)));
 		}
 
 		public override IType[] TypeArray()

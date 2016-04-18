@@ -106,27 +106,20 @@ namespace NHibernate.Event.Default
 
 			string previousFetchProfile = source.FetchProfile;
 			source.FetchProfile = "refresh";
-			try
-			{
-				object result = persister.Load(id, obj, @event.LockMode, source, false).Result;
+			object result = persister.Load(id, obj, @event.LockMode, source, false).ConfigureAwait(false).GetAwaiter().GetResult();
 
-				if (result != null)
-					if (!persister.IsMutable)
-						source.SetReadOnly(result, true);
-					else
-						source.SetReadOnly(result, (e == null ? source.DefaultReadOnly : e.IsReadOnly));
+			if (result != null)
+				if (!persister.IsMutable)
+					source.SetReadOnly(result, true);
+				else
+					source.SetReadOnly(result, (e == null ? source.DefaultReadOnly : e.IsReadOnly));
 
-				source.FetchProfile = previousFetchProfile;
+			source.FetchProfile = previousFetchProfile;
 
-				// NH Different behavior : we are ignoring transient entities without throw any kind of exception
-				// because a transient entity is "self refreshed"
-				if (!ForeignKeys.IsTransient(persister.EntityName, obj, result == null, @event.Session))
-					UnresolvableObjectException.ThrowIfNull(result, id, persister.EntityName);
-			}
-			catch (AggregateException ex)
-			{
-				throw ex.InnerException;
-			}
+			// NH Different behavior : we are ignoring transient entities without throw any kind of exception
+			// because a transient entity is "self refreshed"
+			if (!ForeignKeys.IsTransient(persister.EntityName, obj, result == null, @event.Session))
+				UnresolvableObjectException.ThrowIfNull(result, id, persister.EntityName);
 		}
 
 		// Evict collections from the factory-level cache

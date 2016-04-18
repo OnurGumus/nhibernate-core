@@ -28,12 +28,12 @@ namespace NHibernate.Event.Default
 			get { return true; }
 		}
 
-		public virtual async Task OnPersist(PersistEvent @event, bool async)
+		public virtual Task OnPersist(PersistEvent @event, bool async)
 		{
-			 await OnPersist(@event, IdentityMap.Instantiate(10), async);
+			 return OnPersist(@event, IdentityMap.Instantiate(10), async);
 		}
 
-		public virtual async Task OnPersist(PersistEvent @event, IDictionary createdAlready, bool async)
+		public virtual Task OnPersist(PersistEvent @event, IDictionary createdAlready, bool async)
 		{
 			ISessionImplementor source = @event.Session;
 			object obj = @event.Entity;
@@ -46,7 +46,7 @@ namespace NHibernate.Event.Default
 				{
 					if (li.Session == source)
 					{
-						return; //NOTE EARLY EXIT!
+						return TaskHelper.CompletedTask; //NOTE EARLY EXIT!
 					}
 					else
 					{
@@ -68,13 +68,13 @@ namespace NHibernate.Event.Default
 					EntityIsPersistent(@event, createdAlready);
 					break;
 				case EntityState.Transient:
-					await EntityIsTransient(@event, createdAlready, async);
-					break;
+					return EntityIsTransient(@event, createdAlready, async);
 				case EntityState.Detached:
 					throw new PersistentObjectException("detached entity passed to persist: " + GetLoggableName(@event.EntityName, entity));
 				default:
 					throw new ObjectDeletedException("deleted instance passed to merge", null, GetLoggableName(@event.EntityName, entity));
 			}
+			return TaskHelper.CompletedTask;
 		}
 
 		protected virtual void EntityIsPersistent(PersistEvent @event, IDictionary createCache)
@@ -110,7 +110,7 @@ namespace NHibernate.Event.Default
 		/// <param name="event">The save event to be handled. </param>
 		/// <param name="createCache"></param>
 		/// <param name="async"></param>
-		protected virtual async Task EntityIsTransient(PersistEvent @event, IDictionary createCache, bool async)
+		protected virtual Task EntityIsTransient(PersistEvent @event, IDictionary createCache, bool async)
 		{
 			log.Debug("saving transient instance");
 
@@ -122,8 +122,9 @@ namespace NHibernate.Event.Default
 			createCache[entity] = entity;
 			if (tempObject == null)
 			{
-				await SaveWithGeneratedId(entity, @event.EntityName, createCache, source, false,async);
+				return SaveWithGeneratedId(entity, @event.EntityName, createCache, source, false, async);
 			}
+			return TaskHelper.CompletedTask;
 		}
 	}
 }

@@ -51,7 +51,7 @@ namespace NHibernate.Event.Default
 				@event.Entity = entity;
 				@event.Entry = source.PersistenceContext.GetEntry(entity);
 				//return the id in the event object
-				@event.ResultId =await PerformSaveOrUpdate(@event, async);
+				@event.ResultId = await PerformSaveOrUpdate(@event, async).ConfigureAwait(false);
 			}
 		}
 
@@ -60,7 +60,7 @@ namespace NHibernate.Event.Default
 			return source.PersistenceContext.ReassociateIfUninitializedProxy(obj);
 		}
 
-		protected virtual async Task<object> PerformSaveOrUpdate(SaveOrUpdateEvent @event, bool async)
+		protected virtual Task<object> PerformSaveOrUpdate(SaveOrUpdateEvent @event, bool async)
 		{
 			EntityState entityState = GetEntityState(@event.Entity, @event.EntityName, @event.Entry, @event.Session);
 
@@ -68,13 +68,13 @@ namespace NHibernate.Event.Default
 			{
 				case EntityState.Detached:
 					EntityIsDetached(@event);
-					return null;
+					return Task.FromResult<object>(null);
 
 				case EntityState.Persistent:
-					return EntityIsPersistent(@event);
+					return Task.FromResult(EntityIsPersistent(@event));
 
 				default:  //TRANSIENT or DELETED
-					return await EntityIsTransient(@event, async);
+					return EntityIsTransient(@event, async);
 			}
 		}
 
@@ -147,7 +147,7 @@ namespace NHibernate.Event.Default
 				}
 			}
 
-			object id =await SaveWithGeneratedOrRequestedId(@event, async);
+			object id = await SaveWithGeneratedOrRequestedId(@event, async).ConfigureAwait(false);
 
 			source.PersistenceContext.ReassociateProxy(@event.Entity, id);
 
@@ -160,15 +160,15 @@ namespace NHibernate.Event.Default
 		/// <param name="event">The initiating event. </param>
 		/// <param name="async"></param>
 		/// <returns> The entity's identifier value after saving.</returns>
-		protected virtual async Task<object> SaveWithGeneratedOrRequestedId(SaveOrUpdateEvent @event, bool async)
+		protected virtual Task<object> SaveWithGeneratedOrRequestedId(SaveOrUpdateEvent @event, bool async)
 		{
 			if (@event.RequestedId == null)
 			{
-				 return await SaveWithGeneratedId(@event.Entity, @event.EntityName, null, @event.Session, true, async);
+				 return SaveWithGeneratedId(@event.Entity, @event.EntityName, null, @event.Session, true, async);
 			}
 			else
 			{
-				return await SaveWithRequestedId(@event.Entity, @event.RequestedId, @event.EntityName, null, @event.Session, async);
+				return SaveWithRequestedId(@event.Entity, @event.RequestedId, @event.EntityName, null, @event.Session, async);
 			}
 		}
 

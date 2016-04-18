@@ -105,31 +105,24 @@ namespace NHibernate.Id
 				IDataReader reader = null;
 				try
 				{
+					reader = session.Batcher.ExecuteReader(cmd, false).ConfigureAwait(false).GetAwaiter().GetResult();
 					try
 					{
-						reader = session.Batcher.ExecuteReader(cmd, false).Result;
-						try
+						if (reader.Read())
 						{
-							if (reader.Read())
-							{
-								_next = !reader.IsDBNull(0) ? Convert.ToInt64(reader.GetValue(0)) + 1 : 1L;
-							}
-							else
-							{
-								_next = 1L;
-							}
-							_sql = null;
-							Logger.Debug("first free id: " + _next);
+							_next = !reader.IsDBNull(0) ? Convert.ToInt64(reader.GetValue(0)) + 1 : 1L;
+						}
+						else
+						{
+							_next = 1L;
+						}
+						_sql = null;
+						Logger.Debug("first free id: " + _next);
 
-						}
-						finally
-						{
-							reader.Close();
-						}
 					}
-					catch (AggregateException e)
+					finally
 					{
-						throw e.InnerException;
+						reader.Close();
 					}
 				}
 				finally

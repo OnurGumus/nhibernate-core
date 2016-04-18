@@ -47,21 +47,14 @@ namespace NHibernate.Impl
 			return new FutureValue<TResult>(
 				() =>
 				{
-					try
-					{
-						return GetCurrentResult<TResult>(currentIndex, false).Result;
-					}
-					catch (AggregateException e)
-					{
-						throw e.InnerException;
-					}
+					return GetCurrentResult<TResult>(currentIndex, false).ConfigureAwait(false).GetAwaiter().GetResult();
 				});
 		}
 
 		public IFutureValueAsync<TResult> GetFutureValueAsync<TResult>()
 		{
 			int currentIndex = index;
-			return new FutureValueAsync<TResult>(async () => await GetCurrentResult<TResult>(currentIndex, true));
+			return new FutureValueAsync<TResult>(() => GetCurrentResult<TResult>(currentIndex, true));
 		}
 
 		public IEnumerable<TResult> GetEnumerator<TResult>()
@@ -70,21 +63,14 @@ namespace NHibernate.Impl
 			return new DelayedEnumerator<TResult>(
 				() =>
 				{
-					try
-					{
-						return GetCurrentResult<TResult>(currentIndex, false).Result;
-					}
-					catch (AggregateException e)
-					{
-						throw e.InnerException;
-					}
+					return GetCurrentResult<TResult>(currentIndex, false).ConfigureAwait(false).GetAwaiter().GetResult();
 				});
 		}
 
 		public IAsyncEnumerable<TResult> GetAsyncEnumerator<TResult>()
 		{
 			int currentIndex = index;
-			return new DelayedAsyncEnumerator<TResult>(async () => await GetCurrentResult<TResult>(currentIndex, true));
+			return new DelayedAsyncEnumerator<TResult>(() => GetCurrentResult<TResult>(currentIndex, true));
 		}
 
 		private async Task<IList> GetResults(bool async)
@@ -98,14 +84,14 @@ namespace NHibernate.Impl
 			{
 				AddTo(multiApproach, queries[i], resultTypes[i]);
 			}
-			results = await GetResultsFrom(multiApproach, async);
+			results = await GetResultsFrom(multiApproach, async).ConfigureAwait(false);
 			ClearCurrentFutureBatch();
 			return results;
 		}
 
 		private async Task<IEnumerable<TResult>> GetCurrentResult<TResult>(int currentIndex, bool async)
 		{
-			var result = await GetResults(async);
+			var result = await GetResults(async).ConfigureAwait(false);
 			return ((IList) (result)[currentIndex]).Cast<TResult>();
 		}
 

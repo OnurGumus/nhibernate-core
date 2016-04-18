@@ -68,7 +68,7 @@ namespace NHibernate.Action
 
 			if (!isCascadeDeleteEnabled && !veto)
 			{
-				await persister.Delete(id, tmpVersion, instance, session,async);
+				await persister.Delete(id, tmpVersion, instance, session, async).ConfigureAwait(false);
 			}
 
 			//postDelete:

@@ -73,18 +73,18 @@ namespace NHibernate.Event.Default
 				{
 					//do not return a proxy!
 					//(this option indicates we are initializing a proxy)
-					@event.Result = await Load(@event, persister, keyToLoad, loadType, async);
+					@event.Result = await Load(@event, persister, keyToLoad, loadType, async).ConfigureAwait(false);
 				}
 				else
 				{
 					//return a proxy if appropriate
 					if (@event.LockMode == LockMode.None)
 					{
-						@event.Result = await ProxyOrLoad(@event, persister, keyToLoad, loadType,async);
+						@event.Result = await ProxyOrLoad(@event, persister, keyToLoad, loadType, async).ConfigureAwait(false);
 					}
 					else
 					{
-						@event.Result = await LockAndLoad(@event, persister, keyToLoad, loadType, source, async);
+						@event.Result = await LockAndLoad(@event, persister, keyToLoad, loadType, source, async).ConfigureAwait(false);
 					}
 				}
 			}
@@ -108,7 +108,7 @@ namespace NHibernate.Event.Default
 				persister.SetIdentifier(@event.InstanceToLoad, @event.EntityId, @event.Session.EntityMode);
 			}
 
-			object entity = await DoLoad(@event, persister, keyToLoad, options, async);
+			object entity = await DoLoad(@event, persister, keyToLoad, options, async).ConfigureAwait(false);
 
 			bool isOptionalInstance = @event.InstanceToLoad != null;
 
@@ -133,7 +133,7 @@ namespace NHibernate.Event.Default
 		/// generate a new proxy, or perform an actual load.
 		/// </summary>
 		/// <returns> The result of the proxy/load operation.</returns>
-		protected virtual async Task<object> ProxyOrLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, bool async)
+		protected virtual Task<object> ProxyOrLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, bool async)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -143,7 +143,7 @@ namespace NHibernate.Event.Default
 			if (!persister.HasProxy)
 			{
 				// this class has no proxies (so do a shortcut)
-				return  await Load(@event, persister, keyToLoad, options, async);
+				return Load(@event, persister, keyToLoad, options, async);
 			}
 			else
 			{
@@ -153,18 +153,18 @@ namespace NHibernate.Event.Default
 				object proxy = persistenceContext.GetProxy(keyToLoad);
 				if (proxy != null)
 				{
-					return await ReturnNarrowedProxy(@event, persister, keyToLoad, options, persistenceContext, proxy, false);
+					return ReturnNarrowedProxy(@event, persister, keyToLoad, options, persistenceContext, proxy, false);
 				}
 				else
 				{
 					if (options.IsAllowProxyCreation)
 					{
-						return CreateProxyIfNecessary(@event, persister, keyToLoad, options, persistenceContext);
+						return Task.FromResult(CreateProxyIfNecessary(@event, persister, keyToLoad, options, persistenceContext));
 					}
 					else
 					{
 						// return a newly loaded object
-						return await Load(@event, persister, keyToLoad, options, async);
+						return Load(@event, persister, keyToLoad, options, async);
 					}
 				}
 			}
@@ -186,7 +186,7 @@ namespace NHibernate.Event.Default
 			object impl = null;
 			if (!options.IsAllowProxyCreation)
 			{
-				impl = await Load(@event, persister, keyToLoad, options, async);
+				impl = await Load(@event, persister, keyToLoad, options, async).ConfigureAwait(false);
 				// NH Different behavior : NH-1252
 				if (impl == null && !options.IsAllowNulls)
 				{
@@ -260,7 +260,7 @@ namespace NHibernate.Event.Default
 			object entity;
 			try
 			{
-				entity = await Load(@event, persister, keyToLoad, options, async);
+				entity = await Load(@event, persister, keyToLoad, options, async).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -286,7 +286,7 @@ namespace NHibernate.Event.Default
 		/// <param name="options">The load options. </param>
 		/// <param name="async"></param>
 		/// <returns> The loaded entity, or null. </returns>
-		protected virtual async Task<object> DoLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, bool async)
+		protected virtual Task<object> DoLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, bool async)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -297,12 +297,12 @@ namespace NHibernate.Event.Default
 			if (entity == RemovedEntityMarker)
 			{
 				log.Debug("load request found matching entity in context, but it is scheduled for removal; returning null");
-				return null;
+				return Task.FromResult<object>(null);
 			}
 			if (entity == InconsistentRTNClassMarker)
 			{
 				log.Debug("load request found matching entity in context, but the matched entity was of an inconsistent return type; returning null");
-				return null;
+				return Task.FromResult<object>(null);
 			}
 			if (entity != null)
 			{
@@ -310,7 +310,7 @@ namespace NHibernate.Event.Default
 				{
 					log.Debug("resolved object in session cache: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 				}
-				return entity;
+				return Task.FromResult(entity);
 			}
 
 			entity = LoadFromSecondLevelCache(@event, persister, options);
@@ -320,7 +320,7 @@ namespace NHibernate.Event.Default
 				{
 					log.Debug("resolved object in second-level cache: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 				}
-				return entity;
+				return Task.FromResult(entity);
 			}
 
 			if (log.IsDebugEnabled)
@@ -328,7 +328,7 @@ namespace NHibernate.Event.Default
 				log.Debug("object not resolved in any cache: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 			}
 
-			return await LoadFromDatasource(@event, persister, keyToLoad, options, async);
+			return LoadFromDatasource(@event, persister, keyToLoad, options, async);
 		}
 
 		/// <summary>
@@ -351,7 +351,7 @@ namespace NHibernate.Event.Default
 				stopWath.Start();
 			}
 
-			object entity = await persister.Load(@event.EntityId, @event.InstanceToLoad, @event.LockMode, source, async);
+			object entity = await persister.Load(@event.EntityId, @event.InstanceToLoad, @event.LockMode, source, async).ConfigureAwait(false);
 
 			if (@event.IsAssociationFetch && statsEnabled)
 			{

@@ -52,7 +52,7 @@ namespace NHibernate.Action
 			{
 				if (!emptySnapshot)
 				{
-					await persister.Remove(id, session, async);
+					await persister.Remove(id, session, async).ConfigureAwait(false);
 				}
 			}
 			else if (collection.NeedsRecreate(persister))
@@ -64,15 +64,15 @@ namespace NHibernate.Action
 				}
 				if (!emptySnapshot)
 				{
-					await persister.Remove(id, session, async);
+					await persister.Remove(id, session, async).ConfigureAwait(false);
 				}
-				await persister.Recreate(collection, id, session, async);
+				await persister.Recreate(collection, id, session, async).ConfigureAwait(false);
 			}
 			else
 			{
-				await persister.DeleteRows(collection, id, session, async);
-				await persister.UpdateRows(collection, id, session, async);
-				await persister.InsertRows(collection, id, session, async);
+				await persister.DeleteRows(collection, id, session, async).ConfigureAwait(false);
+				await persister.UpdateRows(collection, id, session, async).ConfigureAwait(false);
+				await persister.InsertRows(collection, id, session, async).ConfigureAwait(false);
 			}
 
 			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);

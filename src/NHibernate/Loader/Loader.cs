@@ -228,13 +228,13 @@ namespace NHibernate.Loader
 		/// persister from each row of the <c>DataReader</c>. If an object is supplied, will attempt to
 		/// initialize that object. If a collection is supplied, attempt to initialize that collection.
 		/// </summary>
-		private async Task<IList> DoQueryAndInitializeNonLazyCollections(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies, bool async)		                                                     
+		private Task<IList> DoQueryAndInitializeNonLazyCollections(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies, bool async)		                                                     
 		{
-			return await DoQueryAndInitializeNonLazyCollections(session, queryParameters, returnProxies, null, async);
+			return DoQueryAndInitializeNonLazyCollections(session, queryParameters, returnProxies, null, async);
 		}
 
 
-		private  async Task<IList> DoQueryAndInitializeNonLazyCollections(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies, IResultTransformer forcedResultTransformer, bool async)
+		private async Task<IList> DoQueryAndInitializeNonLazyCollections(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies, IResultTransformer forcedResultTransformer, bool async)
 		{
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 			bool defaultReadOnlyOrig = persistenceContext.DefaultReadOnly;
@@ -250,7 +250,7 @@ namespace NHibernate.Loader
 			{
 				try
 				{
-					result = await DoQuery(session, queryParameters, returnProxies,forcedResultTransformer,async);
+					result = await DoQuery(session, queryParameters, returnProxies,forcedResultTransformer, async).ConfigureAwait(false);
 				}
 				finally
 				{
@@ -436,7 +436,7 @@ namespace NHibernate.Loader
 				IDataReader rs;
 
 				rs = await GetResultSet(st, queryParameters.HasAutoDiscoverScalarTypes, queryParameters.Callable, selection,
-											 session, async);
+											 session, async).ConfigureAwait(false);
 
 
 				// would be great to move all this below here into another method that could also be used
@@ -1265,7 +1265,7 @@ namespace NHibernate.Loader
 				Log.Info(st.CommandText);
 				// TODO NH: Callable
 
-				rs = await session.Batcher.ExecuteReader(st, async);
+				rs = await session.Batcher.ExecuteReader(st, async).ConfigureAwait(false);
 
 				//NH: this is checked outside the WrapResultSet because we
 				// want to avoid the syncronization overhead in the vast majority
@@ -1344,7 +1344,7 @@ namespace NHibernate.Loader
 				QueryParameters qp =
 					new QueryParameters(new IType[] { identifierType }, new object[] { id }, optionalObject, optionalEntityName,
 										optionalIdentifier);
-				result = await DoQueryAndInitializeNonLazyCollections(session, qp, false, async);
+				result = await DoQueryAndInitializeNonLazyCollections(session, qp, false, async).ConfigureAwait(false);
 			}
 			catch (HibernateException)
 			{
@@ -1376,7 +1376,7 @@ namespace NHibernate.Loader
 				result =
 					await DoQueryAndInitializeNonLazyCollections(session,
 														   new QueryParameters(new IType[] { keyType, indexType },
-																			   new object[] { key, index }), false, async);
+																			   new object[] { key, index }), false, async).ConfigureAwait(false);
 			}
 			catch (Exception sqle)
 			{
@@ -1409,7 +1409,7 @@ namespace NHibernate.Loader
 				result =
 					await DoQueryAndInitializeNonLazyCollections(session,
 														   new QueryParameters(types, ids, optionalObject, optionalEntityName,
-																			   optionalId), false, async);
+																			   optionalId), false, async).ConfigureAwait(false);
 			}
 			catch (HibernateException)
 			{
@@ -1440,14 +1440,8 @@ namespace NHibernate.Loader
 			object[] ids = new object[] { id };
 			try
 			{
-				try
-				{
-					var res = DoQueryAndInitializeNonLazyCollections(session, new QueryParameters(new IType[] { type }, ids, ids), true, false).Result;
-				}
-				catch (AggregateException e)
-				{
-					throw e.InnerException;
-				}
+				var res = DoQueryAndInitializeNonLazyCollections(session, new QueryParameters(new IType[] { type }, ids, ids), true, false)
+					.ConfigureAwait(false).GetAwaiter().GetResult();
 			}
 			catch (HibernateException)
 			{
@@ -1478,15 +1472,7 @@ namespace NHibernate.Loader
 			ArrayHelper.Fill(idTypes, type);
 			try
 			{
-				try
-				{
-					DoQueryAndInitializeNonLazyCollections(session, new QueryParameters(idTypes, ids, ids), true, false).Wait();
-				}
-				catch (AggregateException e)
-				{
-					throw e.InnerException;
-				}
-
+				DoQueryAndInitializeNonLazyCollections(session, new QueryParameters(idTypes, ids, ids), true, false).ConfigureAwait(false).GetAwaiter().GetResult();
 			}
 			catch (HibernateException)
 			{
@@ -1512,16 +1498,9 @@ namespace NHibernate.Loader
 		{
 			try
 			{
-				try
-				{
-					DoQueryAndInitializeNonLazyCollections(session,
-														   new QueryParameters(parameterTypes, parameterValues, namedParameters, ids),
-														   true, false).Wait();
-				}
-				catch (AggregateException e)
-				{
-					throw e.InnerException;
-				}
+				DoQueryAndInitializeNonLazyCollections(session,
+														new QueryParameters(parameterTypes, parameterValues, namedParameters, ids),
+														true, false).ConfigureAwait(false).GetAwaiter().GetResult();
 			}
 			catch (HibernateException)
 			{
@@ -1547,20 +1526,20 @@ namespace NHibernate.Loader
 		/// <param name="resultTypes"></param>
 		/// <param name="async"></param>
 		/// <returns></returns>
-		protected async Task<IList> List(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, IType[] resultTypes, bool async)
+		protected Task<IList> List(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, IType[] resultTypes, bool async)
 		{
 			bool cacheable = _factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable;
 
 			if (cacheable)
 			{
-				return await ListUsingQueryCache(session, queryParameters, querySpaces, resultTypes, async);
+				return ListUsingQueryCache(session, queryParameters, querySpaces, resultTypes, async);
 			}
-			return await ListIgnoreQueryCache(session, queryParameters, async);
+			return ListIgnoreQueryCache(session, queryParameters, async);
 		}
 
 		private async Task<IList> ListIgnoreQueryCache(ISessionImplementor session, QueryParameters queryParameters, bool async)
 		{
-			return GetResultList(await DoList(session, queryParameters, async), queryParameters.ResultTransformer);
+			return GetResultList(await DoList(session, queryParameters, async).ConfigureAwait(false), queryParameters.ResultTransformer);
 		}
 
 		private async Task<IList> ListUsingQueryCache(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, IType[] resultTypes, bool async)
@@ -1573,7 +1552,7 @@ namespace NHibernate.Loader
 
 			if (result == null)
 			{
-				result = await DoList(session, queryParameters, key.ResultTransformer, async);
+				result = await DoList(session, queryParameters, key.ResultTransformer, async).ConfigureAwait(false);
 				PutResultInQueryCache(session, queryParameters, resultTypes, queryCache, key, result);
 			}
 
@@ -1668,9 +1647,9 @@ namespace NHibernate.Loader
 		/// <param name="queryParameters"></param>
 		/// <param name="async"></param>
 		/// <returns></returns>
-		protected async Task<IList> DoList(ISessionImplementor session, QueryParameters queryParameters, bool async)
+		protected Task<IList> DoList(ISessionImplementor session, QueryParameters queryParameters, bool async)
 		{
-			return await DoList(session, queryParameters, null, async);
+			return DoList(session, queryParameters, null, async);
 		}
 
 		protected async Task<IList> DoList(ISessionImplementor session, QueryParameters queryParameters, IResultTransformer forcedResultTransformer, bool async)
@@ -1685,7 +1664,7 @@ namespace NHibernate.Loader
 			IList result;
 			try
 			{
-				result = await DoQueryAndInitializeNonLazyCollections(session, queryParameters, true,forcedResultTransformer, async);
+				result = await DoQueryAndInitializeNonLazyCollections(session, queryParameters, true,forcedResultTransformer, async).ConfigureAwait(false);
 			}
 			catch (HibernateException)
 			{

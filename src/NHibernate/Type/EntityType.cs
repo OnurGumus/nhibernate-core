@@ -452,7 +452,8 @@ namespace NHibernate.Type
 				}
 				else
 				{
-					return LoadByUniqueKey(GetAssociatedEntityName(), uniqueKeyPropertyName, value, session,false).Result;
+					return LoadByUniqueKey(GetAssociatedEntityName(), uniqueKeyPropertyName, value, session,false)
+						.ConfigureAwait(false).GetAwaiter().GetResult();
 				}
 			}
 		}
@@ -578,7 +579,7 @@ namespace NHibernate.Type
 				object result = persistenceContext.GetEntity(euk);
 				if (result == null)
 				{
-					result = await persister.LoadByUniqueKey(uniqueKeyPropertyName, key, session, async);
+					result = await persister.LoadByUniqueKey(uniqueKeyPropertyName, key, session, async).ConfigureAwait(false);
 				}
 				return result == null ? null : persistenceContext.ProxyFor(result);
 			}

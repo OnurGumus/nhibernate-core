@@ -281,9 +281,9 @@ namespace NHibernate.Loader.Custom
 			get { return collectionPersisters; }
 		}
 
-		public async Task<IList> List(ISessionImplementor session, QueryParameters queryParameters,bool async)
+		public Task<IList> List(ISessionImplementor session, QueryParameters queryParameters,bool async)
 		{
-			return await List(session, queryParameters, querySpaces, resultTypes, async);
+			return List(session, queryParameters, querySpaces, resultTypes, async);
 		}
 
 		// Not ported: scroll

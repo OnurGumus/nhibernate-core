@@ -219,7 +219,7 @@ namespace NHibernate.Persister.Collection
 							}
 							else
 							{
-								expectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(st, async), st);
+								expectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(st, async).ConfigureAwait(false), st);
 							}
 						}
 						catch (Exception e)

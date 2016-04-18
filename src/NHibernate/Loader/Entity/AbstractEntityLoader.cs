@@ -35,14 +35,14 @@ namespace NHibernate.Loader.Entity
 			get { return true; }
 		}
 
-		public async Task<object> Load(object id, object optionalObject, ISessionImplementor session, bool async)
+		public Task<object> Load(object id, object optionalObject, ISessionImplementor session, bool async)
 		{
-			return await Load(session, id, optionalObject, id, async);
+			return Load(session, id, optionalObject, id, async);
 		}
 
 		protected virtual async Task<object> Load(ISessionImplementor session, object id, object optionalObject, object optionalId, bool async)
 		{
-			IList list = await LoadEntity(session, id, UniqueKeyType, optionalObject, entityName, optionalId, persister, async);
+			IList list = await LoadEntity(session, id, UniqueKeyType, optionalObject, entityName, optionalId, persister, async).ConfigureAwait(false);
 
 			if (list.Count == 1)
 			{
