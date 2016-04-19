@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-
+using System.Threading.Tasks;
 using NHibernate.Criterion;
 using NHibernate.Criterion.Lambda;
 using NHibernate.SqlCommand;
@@ -48,7 +48,19 @@ namespace NHibernate
 		/// Get the results of the root type and fill the <see cref="IList&lt;T&gt;"/>
 		/// </summary>
 		/// <returns>The list filled with the results.</returns>
+		Task<IList<TRoot>> ListAsync();
+
+		/// <summary>
+		/// Get the results of the root type and fill the <see cref="IList&lt;T&gt;"/>
+		/// </summary>
+		/// <returns>The list filled with the results.</returns>
 		IList<U> List<U>();
+
+		/// <summary>
+		/// Get the results of the root type and fill the <see cref="IList&lt;T&gt;"/>
+		/// </summary>
+		/// <returns>The list filled with the results.</returns>
+		Task<IList<U>> ListAsync<U>();
 
 		/// <summary>
 		/// Clones the QueryOver, removes orders and paging, and projects the row-count
@@ -68,9 +80,19 @@ namespace NHibernate
 		int RowCount();
 
 		/// <summary>
+		/// Short for ToRowCountQuery().SingleOrDefault&lt;int&gt;()
+		/// </summary>
+		Task<int> RowCountAsync();
+
+		/// <summary>
 		/// Short for ToRowCountInt64Query().SingleOrDefault&lt;long&gt;()
 		/// </summary>
 		long RowCountInt64();
+
+		/// <summary>
+		/// Short for ToRowCountInt64Query().SingleOrDefault&lt;long&gt;()
+		/// </summary>
+		Task<long> RowCountInt64Async();
 
 		/// <summary>
 		/// Convenience method to return a single instance that matches
@@ -83,9 +105,24 @@ namespace NHibernate
 		TRoot SingleOrDefault();
 
 		/// <summary>
+		/// Convenience method to return a single instance that matches
+		/// the query, or null if the query returns no results.
+		/// </summary>
+		/// <returns>the single result or <see langword="null" /></returns>
+		/// <exception cref="HibernateException">
+		/// If there is more than one matching result
+		/// </exception>
+		Task<TRoot> SingleOrDefaultAsync();
+
+		/// <summary>
 		/// Override type of <see cref="SingleOrDefault()" />.
 		/// </summary>
 		U SingleOrDefault<U>();
+
+		/// <summary>
+		/// Override type of <see cref="SingleOrDefaultAsync()" />.
+		/// </summary>
+		Task<U> SingleOrDefaultAsync<U>();
 
 		/// <summary>
 		/// Get a enumerable that when enumerated will execute

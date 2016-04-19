@@ -80,10 +80,17 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="query"></param>
 		/// <param name="parameters"></param>
-		/// <param name="async"></param>
 		/// <returns></returns>
 		[Obsolete("Use overload with IQueryExpression")]
-		Task<IList> List(string query, QueryParameters parameters, bool async);
+		IList List(string query, QueryParameters parameters);
+
+		/// <summary>
+		/// Execute a <c>List()</c> expression query
+		/// </summary>
+		/// <param name="queryExpression"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		IList List(IQueryExpression queryExpression, QueryParameters parameters);
 
 		/// <summary>
 		/// Execute a <c>List()</c> expression query
@@ -92,7 +99,7 @@ namespace NHibernate.Engine
 		/// <param name="parameters"></param>
 		/// <param name="async"></param>
 		/// <returns></returns>
-		Task<IList> List(IQueryExpression queryExpression, QueryParameters parameters, bool async);
+		Task<IList> ListAsync(IQueryExpression queryExpression, QueryParameters parameters, bool async = true);
 
 		/// <summary>
 		/// Create a new instance of <c>Query</c> for the given query expression
@@ -102,29 +109,45 @@ namespace NHibernate.Engine
 		IQuery CreateQuery(IQueryExpression queryExpression);
 
 		[Obsolete("Use overload with IQueryExpression")]
-		Task List(string query, QueryParameters parameters, IList results, bool async);
+		void List(string query, QueryParameters parameters, IList results);
 
-		Task List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results, bool async);
+		void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results);
+
+		Task ListAsync(IQueryExpression queryExpression, QueryParameters queryParameters, IList results, bool async = true);
 
 		/// <summary>
-		/// Strongly-typed version of <see cref="List(string,QueryParameters, bool)" />
+		/// Strongly-typed version of <see cref="List(string,QueryParameters)" />
 		/// </summary>
 		[Obsolete("Use overload with IQueryExpression")]
-		Task<IList<T>> List<T>(string query, QueryParameters queryParameters, bool async);
+		IList<T> List<T>(string query, QueryParameters queryParameters);
 
 		/// <summary>
-		/// Strongly-typed version of <see cref="List(IQueryExpression,QueryParameters, bool)" />
+		/// Strongly-typed version of <see cref="List(IQueryExpression,QueryParameters)" />
 		/// </summary>
-		Task<IList<T>> List<T>(IQueryExpression queryExpression, QueryParameters queryParameters, bool async);
+		IList<T> List<T>(IQueryExpression queryExpression, QueryParameters queryParameters);
 
 		/// <summary>
-		/// Strongly-typed version of <see cref="List(CriteriaImpl,bool)" />
+		/// Strongly-typed version of <see cref="List(IQueryExpression,QueryParameters)" />
 		/// </summary>
-		Task<IList<T>> List<T>(CriteriaImpl criteria, bool async);
+		Task<IList<T>> ListAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters, bool async = true);
 
-		Task List(CriteriaImpl criteria, IList results, bool async);
+		/// <summary>
+		/// Strongly-typed version of <see cref="List(CriteriaImpl)" />
+		/// </summary>
+		IList<T> List<T>(CriteriaImpl criteria);
 
-		Task<IList> List(CriteriaImpl criteria, bool async);
+		/// <summary>
+		/// Strongly-typed version of <see cref="List(CriteriaImpl)" />
+		/// </summary>
+		Task<IList<T>> ListAsync<T>(CriteriaImpl criteria, bool async = true);
+
+		void List(CriteriaImpl criteria, IList results);
+
+		Task ListAsync(CriteriaImpl criteria, IList results, bool async = true);
+
+		IList List(CriteriaImpl criteria);
+
+		Task<IList> ListAsync(CriteriaImpl criteria, bool async = true);
 
 		/// <summary>
 		/// Execute an <c>Iterate()</c> query
@@ -144,6 +167,15 @@ namespace NHibernate.Engine
 		IEnumerable Enumerable(IQueryExpression query, QueryParameters parameters);
 
 		/// <summary>
+		/// Execute an <c>Iterate()</c> query
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="parameters"></param>
+		/// <param name="async"></param>
+		/// <returns></returns>
+		Task<IEnumerable> EnumerableAsync(IQueryExpression query, QueryParameters parameters, bool async = true);
+
+		/// <summary>
 		/// Strongly-typed version of <see cref="Enumerable(string, QueryParameters)" />
 		/// </summary>
 		[Obsolete("Use overload with IQueryExpression")]
@@ -155,9 +187,19 @@ namespace NHibernate.Engine
 		IEnumerable<T> Enumerable<T>(IQueryExpression query, QueryParameters queryParameters);
 
 		/// <summary>
+		/// Strongly-typed version of <see cref="Enumerable(IQueryExpression, QueryParameters)" />
+		/// </summary>
+		Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression query, QueryParameters queryParameters, bool async = true);
+
+		/// <summary>
 		/// Execute a filter
 		/// </summary>
 		IList ListFilter(object collection, string filter, QueryParameters parameters);
+
+		/// <summary>
+		/// Execute a filter
+		/// </summary>
+		Task<IList> ListFilterAsync(object collection, string filter, QueryParameters parameters, bool async = true);
 
 		/// <summary>
 		/// Execute a filter (strongly-typed version).
@@ -165,14 +207,29 @@ namespace NHibernate.Engine
 		IList<T> ListFilter<T>(object collection, string filter, QueryParameters parameters);
 
 		/// <summary>
+		/// Execute a filter (strongly-typed version).
+		/// </summary>
+		Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters, bool async = true);
+
+		/// <summary>
 		/// Collection from a filter
 		/// </summary>
 		IEnumerable EnumerableFilter(object collection, string filter, QueryParameters parameters);
 
 		/// <summary>
+		/// Collection from a filter
+		/// </summary>
+		Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters, bool async = true);
+
+		/// <summary>
 		/// Strongly-typed version of <see cref="EnumerableFilter(object, string, QueryParameters)" />
 		/// </summary>
 		IEnumerable<T> EnumerableFilter<T>(object collection, string filter, QueryParameters parameters);
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="EnumerableFilter(object, string, QueryParameters)" />
+		/// </summary>
+		Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters, bool async = true);
 
 		/// <summary> Get the <see cref="IEntityPersister"/> for any instance</summary>
 		/// <param name="entityName">optional entity name </param>
@@ -209,19 +266,36 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Execute an SQL Query
 		/// </summary>
-		Task<IList> List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, bool async);
-
-		Task List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results, bool async);
+		IList List(NativeSQLQuerySpecification spec, QueryParameters queryParameters);
 
 		/// <summary>
-		/// Strongly-typed version of <see cref="List(NativeSQLQuerySpecification, QueryParameters,bool)" />
+		/// Execute an SQL Query
 		/// </summary>
-		Task<IList<T>> List<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters, bool async);
+		Task<IList> ListAsync(NativeSQLQuerySpecification spec, QueryParameters queryParameters, bool async = true);
+
+		void List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results);
+
+		Task ListAsync(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results, bool async = true);
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="List(NativeSQLQuerySpecification, QueryParameters)" />
+		/// </summary>
+		IList<T> List<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters);
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="List(NativeSQLQuerySpecification, QueryParameters)" />
+		/// </summary>
+		Task<IList<T>> ListAsync<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters, bool async = true);
 
 		/// <summary> Execute an SQL Query</summary>
-		Task ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results, bool async);
+		void ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results);
 
-		Task<IList<T>> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters, bool async);
+		/// <summary> Execute an SQL Query</summary>
+		Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results, bool async = true);
+
+		IList<T> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters);
+
+		Task<IList<T>> ListCustomQueryAsync<T>(ICustomQuery customQuery, QueryParameters queryParameters, bool async = true);
 
 		/// <summary>
 		/// Retrieve the currently set value for a filter parameter.
@@ -323,14 +397,20 @@ namespace NHibernate.Engine
 		EntityMode EntityMode { get; }
 
 		/// <summary> Execute a native SQL update or delete query</summary>
-		Task<int> ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters, bool async);
+		int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
+
+		/// <summary> Execute a native SQL update or delete query</summary>
+		Task<int> ExecuteNativeUpdateAsync(NativeSQLQuerySpecification specification, QueryParameters queryParameters, bool async = true);
 
 		/// <summary> Execute a HQL update or delete query</summary>
 		[Obsolete("Use overload with IQueryExpression")]
-		Task<int> ExecuteUpdate(string query, QueryParameters queryParameters, bool async);
+		int ExecuteUpdate(string query, QueryParameters queryParameters);
 
 		/// <summary> Execute a HQL update or delete query</summary>
-		Task<int> ExecuteUpdate(IQueryExpression query, QueryParameters queryParameters, bool async);
+		int ExecuteUpdate(IQueryExpression query, QueryParameters queryParameters);
+
+		/// <summary> Execute a HQL update or delete query</summary>
+		Task<int> ExecuteUpdateAsync(IQueryExpression query, QueryParameters queryParameters, bool async = true);
 
 		FutureCriteriaBatch FutureCriteriaBatch { get; }
 

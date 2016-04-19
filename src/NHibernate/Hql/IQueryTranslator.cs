@@ -40,7 +40,7 @@ namespace NHibernate.Hql
 		/// <exception cref="NHibernate.HibernateException"></exception>
 		Task<IList> List(ISessionImplementor session, QueryParameters queryParameters, bool async);
 
-		IEnumerable GetEnumerable(QueryParameters queryParameters, IEventSource session);
+		Task<IEnumerable> GetEnumerable(QueryParameters queryParameters, IEventSource session, bool async);
 
 		// Not ported:
 		//IScrollableResults scroll(QueryParameters queryParameters, ISessionImplementor session);

@@ -956,9 +956,13 @@ namespace NHibernate.Impl
 
 		public abstract int ExecuteUpdate();
 		public abstract Task<int> ExecuteUpdateAsync();
-		public abstract Task<int> ExecuteUpdate(bool async);
+		public abstract Task<int> ExecuteUpdateAsync(bool async);
 		public abstract IEnumerable Enumerable();
+		public abstract Task<IEnumerable> EnumerableAsync();
+		public abstract Task<IEnumerable> EnumerableAsync(bool async);
 		public abstract IEnumerable<T> Enumerable<T>();
+		public abstract Task<IEnumerable<T>> EnumerableAsync<T>();
+		public abstract Task<IEnumerable<T>> EnumerableAsync<T>(bool async);
 		public abstract Task<IList> ListAsync();
 		public abstract Task<IList> ListAsync(bool async);
 		public abstract Task ListAsync(IList results);

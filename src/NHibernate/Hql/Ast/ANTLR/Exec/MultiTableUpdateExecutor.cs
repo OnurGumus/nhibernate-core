@@ -156,7 +156,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 							{
 								parameterSpecification.Bind(ps, sqlQueryParametersList, parameters, session);
 							}
-							session.Batcher.ExecuteNonQuery(ps, false).ConfigureAwait(false).GetAwaiter().GetResult();
+							await session.Batcher.ExecuteNonQuery(ps, async).ConfigureAwait(false);
 						}
 						finally
 						{

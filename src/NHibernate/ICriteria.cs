@@ -307,6 +307,14 @@ namespace NHibernate
 		IEnumerable<T> Future<T>();
 
 		/// <summary>
+		/// Get a enumerable that when enumerated will execute
+		/// a batch of queries in a single database roundtrip
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		IAsyncEnumerable<T> FutureAsync<T>();
+
+		/// <summary>
 		/// Get an IFutureValue instance, whose value can be retrieved through
 		/// its Value property. The query is not executed until the Value property
 		/// is retrieved, which will execute other Future queries as well in a
@@ -315,7 +323,17 @@ namespace NHibernate
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
 		IFutureValue<T> FutureValue<T>();
-		
+
+		/// <summary>
+		/// Get an IFutureValue instance, whose value can be retrieved through
+		/// its Value property. The query is not executed until the Value property
+		/// is retrieved, which will execute other Future queries as well in a
+		/// single roundtrip
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		IFutureValueAsync<T> FutureValueAsync<T>();
+
 		/// <summary>
 		/// Set the read-only mode for entities (and proxies) loaded by this Criteria. This
 		/// setting overrides the default for the session (see <see cref="ISession.DefaultReadOnly" />).

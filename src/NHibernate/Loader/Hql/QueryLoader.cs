@@ -415,7 +415,7 @@ namespace NHibernate.Loader.Hql
 			get { return _queryReturnTypes; }
 		}
 
-		internal IEnumerable GetEnumerable(QueryParameters queryParameters, IEventSource session)
+		internal async Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session, bool async)
 		{
 			CheckQuery(queryParameters);
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
@@ -429,8 +429,8 @@ namespace NHibernate.Loader.Hql
 			DbCommand cmd = PrepareQueryCommand(queryParameters, false, session);
 
 			// This IDataReader is disposed of in EnumerableImpl.Dispose
-			IDataReader rs = GetResultSet(cmd, queryParameters.HasAutoDiscoverScalarTypes, false, queryParameters.RowSelection, session, false)
-				.ConfigureAwait(false).GetAwaiter().GetResult();
+			IDataReader rs = await GetResultSet(cmd, queryParameters.HasAutoDiscoverScalarTypes, false, queryParameters.RowSelection, session, async)
+				.ConfigureAwait(false);
 			
 			HolderInstantiator hi = 
 				HolderInstantiator.GetHolderInstantiator(_selectNewTransformer, queryParameters.ResultTransformer, _queryReturnAliases);

@@ -115,7 +115,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 						try
 						{
 							ps = session.Batcher.PrepareCommand(CommandType.Text, deletes[i], new SqlType[0]);
-							session.Batcher.ExecuteNonQuery(ps, false).ConfigureAwait(false).GetAwaiter().GetResult();
+							await session.Batcher.ExecuteNonQuery(ps, async).ConfigureAwait(false);
 						}
 						finally
 						{

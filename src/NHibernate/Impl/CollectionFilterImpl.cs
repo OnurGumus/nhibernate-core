@@ -49,14 +49,14 @@ namespace NHibernate.Impl
 		{
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
-			return Task.FromResult(Session.ListFilter(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams)));
+			return Session.ListFilterAsync(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
 		}
 
 		public override Task<IList<T>> ListAsync<T>()
 		{
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
-			return Task.FromResult(Session.ListFilter<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams)));
+			return Session.ListFilterAsync<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
 		}
 
 		public override IType[] TypeArray()

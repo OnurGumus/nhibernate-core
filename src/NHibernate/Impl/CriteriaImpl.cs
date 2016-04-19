@@ -272,7 +272,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				session.List(this, results, false).ConfigureAwait(false).GetAwaiter().GetResult();
+				session.List(this, results);
 			}
 			finally
 			{
@@ -285,7 +285,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				await session.List(this, results, true).ConfigureAwait(false);
+				await session.ListAsync(this, results).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -455,6 +455,17 @@ namespace NHibernate.Impl
 			return session.FutureCriteriaBatch.GetFutureValue<T>();
 		}
 
+		public IFutureValueAsync<T> FutureValueAsync<T>()
+		{
+			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
+			{
+				return new FutureValueAsync<T>(async () => await ListAsync<T>().ConfigureAwait(false));
+			}
+
+			session.FutureCriteriaBatch.Add<T>(this);
+			return session.FutureCriteriaBatch.GetFutureValueAsync<T>();
+		}
+
 		public IEnumerable<T> Future<T>()
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
@@ -464,6 +475,17 @@ namespace NHibernate.Impl
 
 			session.FutureCriteriaBatch.Add<T>(this);
 			return session.FutureCriteriaBatch.GetEnumerator<T>();
+		}
+
+		public IAsyncEnumerable<T> FutureAsync<T>()
+		{
+			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
+			{
+				return new DelayedAsyncEnumerator<T>(async () => await ListAsync<T>());
+			}
+
+			session.FutureCriteriaBatch.Add<T>(this);
+			return session.FutureCriteriaBatch.GetAsyncEnumerator<T>();
 		}
 
 		public object UniqueResult()
@@ -833,9 +855,19 @@ namespace NHibernate.Impl
 				return root.List();
 			}
 
+			public Task<IList> ListAsync()
+			{
+				return root.ListAsync();
+			}
+
 			public IFutureValue<T> FutureValue<T>()
 			{
 				return root.FutureValue<T>();
+			}
+
+			public IFutureValueAsync<T> FutureValueAsync<T>()
+			{
+				return root.FutureValueAsync<T>();
 			}
 
 			public IEnumerable<T> Future<T>()
@@ -843,11 +875,16 @@ namespace NHibernate.Impl
 				return root.Future<T>();
 			}
 
+			public IAsyncEnumerable<T> FutureAsync<T>()
+			{
+				return root.FutureAsync<T>();
+			}
+
 			public void List(IList results)
 			{
 				root.List(results);
 			}
-			
+
 			public Task ListAsync(IList results)
 			{
 				return root.ListAsync(results);
@@ -877,7 +914,7 @@ namespace NHibernate.Impl
 				}
 			}
 			
-			async public Task<T> UniqueResultAsync<T>()
+			public async Task<T> UniqueResultAsync<T>()
 			{
 				object result = await UniqueResultAsync().ConfigureAwait(false);
 				if (result == null && typeof(T).IsValueType)

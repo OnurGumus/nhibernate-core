@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-
+using System.Threading.Tasks;
 using NHibernate.Criterion.Lambda;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -67,9 +67,19 @@ namespace NHibernate.Criterion
 			return criteria.List<TRoot>();
 		}
 
+		private Task<IList<TRoot>> ListAsync()
+		{
+			return criteria.ListAsync<TRoot>();
+		}
+
 		private IList<U> List<U>()
 		{
 			return criteria.List<U>();
+		}
+
+		private Task<IList<U>> ListAsync<U>()
+		{
+			return criteria.ListAsync<U>();
 		}
 
 		private TRoot SingleOrDefault()
@@ -77,9 +87,19 @@ namespace NHibernate.Criterion
 			return criteria.UniqueResult<TRoot>();
 		}
 
+		private Task<TRoot> SingleOrDefaultAsync()
+		{
+			return criteria.UniqueResultAsync<TRoot>();
+		}
+
 		private U SingleOrDefault<U>()
 		{
 			return criteria.UniqueResult<U>();
+		}
+
+		private Task<U> SingleOrDefaultAsync<U>()
+		{
+			return criteria.UniqueResultAsync<U>();
 		}
 
 		private IEnumerable<TRoot> Future()
@@ -213,8 +233,14 @@ namespace NHibernate.Criterion
 		IList<TRoot> IQueryOver<TRoot>.List()
 		{ return List(); }
 
+		Task<IList<TRoot>> IQueryOver<TRoot>.ListAsync()
+		{ return ListAsync(); }
+
 		IList<U> IQueryOver<TRoot>.List<U>()
 		{ return List<U>(); }
+
+		Task<IList<U>> IQueryOver<TRoot>.ListAsync<U>()
+		{ return ListAsync<U>(); }
 
 		IQueryOver<TRoot,TRoot> IQueryOver<TRoot>.ToRowCountQuery()
 		{ return ToRowCountQuery(); }
@@ -225,14 +251,26 @@ namespace NHibernate.Criterion
 		int IQueryOver<TRoot>.RowCount()
 		{ return ToRowCountQuery().SingleOrDefault<int>(); }
 
+		Task<int> IQueryOver<TRoot>.RowCountAsync()
+		{ return ToRowCountQuery().SingleOrDefaultAsync<int>(); }
+
 		long IQueryOver<TRoot>.RowCountInt64()
 		{ return ToRowCountInt64Query().SingleOrDefault<long>(); }
+
+		Task<long> IQueryOver<TRoot>.RowCountInt64Async()
+		{ return ToRowCountInt64Query().SingleOrDefaultAsync<long>(); }
 
 		TRoot IQueryOver<TRoot>.SingleOrDefault()
 		{ return SingleOrDefault(); }
 
+		Task<TRoot> IQueryOver<TRoot>.SingleOrDefaultAsync()
+		{ return SingleOrDefaultAsync(); }
+
 		U IQueryOver<TRoot>.SingleOrDefault<U>()
 		{ return SingleOrDefault<U>(); }
+
+		Task<U> IQueryOver<TRoot>.SingleOrDefaultAsync<U>()
+		{ return SingleOrDefaultAsync<U>(); }
 
 		IEnumerable<TRoot> IQueryOver<TRoot>.Future()
 		{ return Future(); }

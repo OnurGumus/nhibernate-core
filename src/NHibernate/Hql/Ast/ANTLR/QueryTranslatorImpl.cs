@@ -151,10 +151,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return results;
 		}
 
-		public IEnumerable GetEnumerable(QueryParameters queryParameters, IEventSource session)
+		public Task<IEnumerable> GetEnumerable(QueryParameters queryParameters, IEventSource session, bool async)
 		{
 			ErrorIfDML();
-			return _queryLoader.GetEnumerable(queryParameters, session);
+			return _queryLoader.GetEnumerableAsync(queryParameters, session, async);
 		}
 
 		public Task<int> ExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session, bool async)

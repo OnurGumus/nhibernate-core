@@ -109,7 +109,7 @@ namespace NHibernate.Impl
 			Dispose(true);
 		}
 
-		public override async Task List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results, bool async)
+		public override async Task ListAsync(IQueryExpression queryExpression, QueryParameters queryParameters, IList results, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -140,7 +140,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task List(CriteriaImpl criteria, IList results, bool async)
+		public override async Task ListAsync(CriteriaImpl criteria, IList results, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -186,7 +186,17 @@ namespace NHibernate.Impl
 			throw new NotImplementedException();
 		}
 
+		public override Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters, bool async = true)
+		{
+			throw new NotImplementedException();
+		}
+
 		public override IEnumerable<T> Enumerable<T>(IQueryExpression queryExpression, QueryParameters queryParameters)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters, bool async = true)
 		{
 			throw new NotImplementedException();
 		}
@@ -196,7 +206,17 @@ namespace NHibernate.Impl
 			throw new NotSupportedException();
 		}
 
+		public override Task<IList> ListFilterAsync(object collection, string filter, QueryParameters parameters, bool async = true)
+		{
+			throw new NotSupportedException();
+		}
+
 		public override IList<T> ListFilter<T>(object collection, string filter, QueryParameters parameters)
+		{
+			throw new NotSupportedException();
+		}
+
+		public override Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters, bool async = true)
 		{
 			throw new NotSupportedException();
 		}
@@ -206,7 +226,17 @@ namespace NHibernate.Impl
 			throw new NotSupportedException();
 		}
 
+		public override Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters, bool async = true)
+		{
+			throw new NotSupportedException();
+		}
+
 		public override IEnumerable<T> EnumerableFilter<T>(object collection, string filter, QueryParameters parameters)
+		{
+			throw new NotSupportedException();
+		}
+
+		public override Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters, bool async = true)
 		{
 			throw new NotSupportedException();
 		}
@@ -242,7 +272,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results, bool async)
+		public override async Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results, bool async = true)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -906,7 +936,7 @@ namespace NHibernate.Impl
 
 		#endregion
 
-		public override async Task<int> ExecuteNativeUpdate(NativeSQLQuerySpecification nativeSQLQuerySpecification, QueryParameters queryParameters, bool async)
+		public override async Task<int> ExecuteNativeUpdateAsync(NativeSQLQuerySpecification nativeSQLQuerySpecification, QueryParameters queryParameters, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -930,7 +960,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task<int> ExecuteUpdate(IQueryExpression queryExpression, QueryParameters queryParameters, bool async)
+		public override async Task<int> ExecuteUpdateAsync(IQueryExpression queryExpression, QueryParameters queryParameters, bool async)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{

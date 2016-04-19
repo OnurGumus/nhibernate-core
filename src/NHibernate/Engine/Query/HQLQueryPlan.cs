@@ -20,8 +20,8 @@ namespace NHibernate.Engine.Query
         ReturnMetadata ReturnMetadata { get; }
         Task PerformList(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, IList results, bool async);
         Task<int> PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, bool async);
-        IEnumerable<T> PerformIterate<T>(QueryParameters queryParameters, IEventSource session);
-        IEnumerable PerformIterate(QueryParameters queryParameters, IEventSource session);
+        Task<IEnumerable<T>> PerformIterate<T>(QueryParameters queryParameters, IEventSource session, bool async);
+        Task<IEnumerable> PerformIterate(QueryParameters queryParameters, IEventSource session, bool async);
     }
 
     public interface IQueryExpressionPlan : IQueryPlan
@@ -152,20 +152,15 @@ namespace NHibernate.Engine.Query
 			}
 		}
 
-		public IEnumerable PerformIterate(QueryParameters queryParameters, IEventSource session)
+		public async Task<IEnumerable> PerformIterate(QueryParameters queryParameters, IEventSource session, bool async)
 		{
-			bool? many;
-			IEnumerable[] results;
-			IEnumerable result;
-
-			DoIterate(queryParameters, session, out many, out results, out result);
-
-			return (many.HasValue && many.Value) ? new JoinedEnumerable(results) : result;
+			var data = await DoIterate(queryParameters, session, async).ConfigureAwait(false);
+			return (data.Many.HasValue && data.Many.Value) ? new JoinedEnumerable(data.Results) : data.Result;
 		}
 
-		public IEnumerable<T> PerformIterate<T>(QueryParameters queryParameters, IEventSource session)
+		public async Task<IEnumerable<T>> PerformIterate<T>(QueryParameters queryParameters, IEventSource session, bool async)
 		{
-			return new SafetyEnumerable<T>(PerformIterate(queryParameters, session));
+			return new SafetyEnumerable<T>(await PerformIterate(queryParameters, session, async).ConfigureAwait(false));
 		}
 
         public async Task<int> PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session, bool async)
@@ -187,10 +182,11 @@ namespace NHibernate.Engine.Query
             return result;
         }
 
-		void DoIterate(QueryParameters queryParameters, IEventSource session, out bool? isMany, out IEnumerable[] results, out IEnumerable result)
+		async Task<IterateResult> DoIterate(QueryParameters queryParameters, IEventSource session, bool async)
 		{
-			isMany = null;
-			results = null;
+			bool? isMany = null;
+			IEnumerable[] results = null;
+			IEnumerable result = null;
 			if (Log.IsDebugEnabled)
 			{
 				Log.Debug("enumerable: " + _sourceQuery);
@@ -212,12 +208,13 @@ namespace NHibernate.Engine.Query
 				result = null;
 				for (int i = 0; i < Translators.Length; i++)
 				{
-					result = Translators[i].GetEnumerable(queryParameters, session);
+					result = await Translators[i].GetEnumerable(queryParameters, session, async).ConfigureAwait(false);
 					if (many)
 						results[i] = result;
 				}
 				isMany = many;
 			}
+			return new IterateResult(isMany, results, result);
 		}
 
         void FinaliseQueryPlan()
@@ -274,5 +271,19 @@ namespace NHibernate.Engine.Query
             SqlStrings = sqlStringList.ToArray();
             QuerySpaces = combinedQuerySpaces;
         }
-    }
+
+		private class IterateResult
+		{
+			public IterateResult(bool? many, IEnumerable[] results, IEnumerable result)
+			{
+				Many = many;
+				Results = results;
+				Result = result;
+			}
+
+			public bool? Many { get; private set; }
+			public IEnumerable[] Results { get; private set; }
+			public IEnumerable Result { get; private set; }
+		}
+	}
 }

@@ -137,7 +137,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				return await Session.List(spec, qp, async).ConfigureAwait(false);
+				return await Session.ListAsync(spec, qp, async).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -163,7 +163,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				await Session.List(spec, qp, results, async).ConfigureAwait(false);
+				await Session.ListAsync(spec, qp, results, async).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -185,7 +185,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				return await Session.List<T>(spec, qp, async).ConfigureAwait(false);
+				return await Session.ListAsync<T>(spec, qp, async).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -214,9 +214,29 @@ namespace NHibernate.Impl
 			throw new NotSupportedException("SQL queries do not currently support enumeration");
 		}
 
+		public override Task<IEnumerable> EnumerableAsync()
+		{
+			return TaskHelper.FromException<IEnumerable>(new NotSupportedException("SQL queries do not currently support enumeration"));
+		}
+
+		public override Task<IEnumerable> EnumerableAsync(bool async)
+		{
+			return TaskHelper.FromException<IEnumerable>(new NotSupportedException("SQL queries do not currently support enumeration"));
+		}
+
 		public override IEnumerable<T> Enumerable<T>()
 		{
 			throw new NotSupportedException("SQL queries do not currently support enumeration");
+		}
+
+		public override Task<IEnumerable<T>> EnumerableAsync<T>()
+		{
+			return TaskHelper.FromException<IEnumerable<T>>(new NotSupportedException("SQL queries do not currently support enumeration"));
+		}
+
+		public override Task<IEnumerable<T>> EnumerableAsync<T>(bool async)
+		{
+			return TaskHelper.FromException<IEnumerable<T>>(new NotSupportedException("SQL queries do not currently support enumeration"));
 		}
 
 		public ISQLQuery AddScalar(string columnAlias, IType type)
@@ -324,19 +344,19 @@ namespace NHibernate.Impl
 		}
 		public override int ExecuteUpdate()
 		{
-			return this.ExecuteUpdate(false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return this.ExecuteUpdateAsync(false).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 		public override Task<int> ExecuteUpdateAsync()
 		{
-			return this.ExecuteUpdate(true);
+			return this.ExecuteUpdateAsync(true);
 		}
-		public override async Task<int> ExecuteUpdate(bool async)
+		public override async Task<int> ExecuteUpdateAsync(bool async)
 		{
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			Before();
 			try
 			{
-				return await Session.ExecuteNativeUpdate(GenerateQuerySpecification(namedParams), GetQueryParameters(namedParams), async).ConfigureAwait(false);
+				return await Session.ExecuteNativeUpdateAsync(GenerateQuerySpecification(namedParams), GetQueryParameters(namedParams), async).ConfigureAwait(false);
 			}
 			finally
 			{

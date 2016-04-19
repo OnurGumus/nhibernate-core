@@ -391,11 +391,29 @@ namespace NHibernate
 		object Save(object obj);
 
 		/// <summary>
+		/// Persist the given transient instance, first assigning a generated identifier.
+		/// </summary>
+		/// <remarks>
+		/// Save will use the current value of the identifier property if the <c>Assigned</c>
+		/// generator is used.
+		/// </remarks>
+		/// <param name="obj">A transient instance of a persistent class</param>
+		/// <returns>The generated identifier</returns>
+		Task<object> SaveAsync(object obj);
+
+		/// <summary>
 		/// Persist the given transient instance, using the given identifier.
 		/// </summary>
 		/// <param name="obj">A transient instance of a persistent class</param>
 		/// <param name="id">An unused valid identifier</param>
 		void Save(object obj, object id);
+
+		/// <summary>
+		/// Persist the given transient instance, using the given identifier.
+		/// </summary>
+		/// <param name="obj">A transient instance of a persistent class</param>
+		/// <param name="id">An unused valid identifier</param>
+		Task SaveAsync(object obj, object id);
 
 		/// <summary>
 		/// Persist the given transient instance, first assigning a generated identifier. (Or
@@ -412,6 +430,20 @@ namespace NHibernate
 		object Save(string entityName, object obj);
 
 		/// <summary>
+		/// Persist the given transient instance, first assigning a generated identifier. (Or
+		/// using the current value of the identifier property if the <tt>assigned</tt>
+		/// generator is used.)
+		/// </summary>
+		/// <param name="entityName">The Entity name.</param>
+		/// <param name="obj">a transient instance of a persistent class </param>
+		/// <returns> the generated identifier </returns>
+		/// <remarks>
+		/// This operation cascades to associated instances if the
+		/// association is mapped with <tt>cascade="save-update"</tt>.
+		/// </remarks>
+		Task<object> SaveAsync(string entityName, object obj);
+
+		/// <summary>
 		/// Persist the given transient instance, using the given identifier.
 		/// </summary>
 		/// <param name="entityName">The Entity name.</param>
@@ -424,6 +456,18 @@ namespace NHibernate
 		void Save(string entityName, object obj, object id);
 
 		/// <summary>
+		/// Persist the given transient instance, using the given identifier.
+		/// </summary>
+		/// <param name="entityName">The Entity name.</param>
+		/// <param name="obj">a transient instance of a persistent class </param>
+		/// <param name="id">An unused valid identifier</param>
+		/// <remarks>
+		/// This operation cascades to associated instances if the
+		/// association is mapped with <tt>cascade="save-update"</tt>.
+		/// </remarks>
+		Task SaveAsync(string entityName, object obj, object id);
+
+		/// <summary>
 		/// Either <c>Save()</c> or <c>Update()</c> the given instance, depending upon the value of
 		/// its identifier property.
 		/// </summary>
@@ -433,6 +477,17 @@ namespace NHibernate
 		/// </remarks>
 		/// <param name="obj">A transient instance containing new or updated state</param>
 		void SaveOrUpdate(object obj);
+
+		/// <summary>
+		/// Either <c>Save()</c> or <c>Update()</c> the given instance, depending upon the value of
+		/// its identifier property.
+		/// </summary>
+		/// <remarks>
+		/// By default the instance is always saved. This behaviour may be adjusted by specifying
+		/// an <c>unsaved-value</c> attribute of the identifier property mapping
+		/// </remarks>
+		/// <param name="obj">A transient instance containing new or updated state</param>
+		Task SaveOrUpdateAsync(object obj);
 
 		/// <summary>
 		/// Either <see cref="Save(String,Object)"/> or <see cref="Update(String,Object)"/>
@@ -450,6 +505,21 @@ namespace NHibernate
 		void SaveOrUpdate(string entityName, object obj);
 
 		/// <summary>
+		/// Either <see cref="Save(String,Object)"/> or <see cref="Update(String,Object)"/>
+		/// the given instance, depending upon resolution of the unsaved-value checks
+		/// (see the manual for discussion of unsaved-value checking).
+		/// </summary>
+		/// <param name="entityName">The name of the entity </param>
+		/// <param name="obj">a transient or detached instance containing new or updated state </param>
+		/// <seealso cref="ISession.Save(String,Object)"/>
+		/// <seealso cref="ISession.Update(String,Object)"/>
+		/// <remarks>
+		/// This operation cascades to associated instances if the association is mapped
+		/// with <tt>cascade="save-update"</tt>.
+		/// </remarks>
+		Task SaveOrUpdateAsync(string entityName, object obj);
+
+		/// <summary>
 		/// Either <c>Save()</c> or <c>Update()</c> the given instance, depending upon the value of
 		/// its identifier property.
 		/// </summary>
@@ -463,6 +533,19 @@ namespace NHibernate
 		void SaveOrUpdate(string entityName, object obj, object id);
 
 		/// <summary>
+		/// Either <c>Save()</c> or <c>Update()</c> the given instance, depending upon the value of
+		/// its identifier property.
+		/// </summary>
+		/// <remarks>
+		/// By default the instance is always saved. This behaviour may be adjusted by specifying
+		/// an <c>unsaved-value</c> attribute of the identifier property mapping
+		/// </remarks>
+		/// <param name="entityName">The name of the entity</param>      
+		/// <param name="obj">A transient instance containing new or updated state</param>
+		/// <param name="id">Identifier of persistent instance</param>
+		Task SaveOrUpdateAsync(string entityName, object obj, object id);
+
+		/// <summary>
 		/// Update the persistent instance with the identifier of the given transient instance.
 		/// </summary>
 		/// <remarks>
@@ -471,6 +554,16 @@ namespace NHibernate
 		/// </remarks>
 		/// <param name="obj">A transient instance containing updated state</param>
 		void Update(object obj);
+
+		/// <summary>
+		/// Update the persistent instance with the identifier of the given transient instance.
+		/// </summary>
+		/// <remarks>
+		/// If there is a persistent instance with the same identifier, an exception is thrown. If
+		/// the given transient instance has a <see langword="null" /> identifier, an exception will be thrown.
+		/// </remarks>
+		/// <param name="obj">A transient instance containing updated state</param>
+		Task UpdateAsync(object obj);
 
 		/// <summary>
 		/// Update the persistent state associated with the given identifier.
@@ -482,6 +575,17 @@ namespace NHibernate
 		/// <param name="obj">A transient instance containing updated state</param>
 		/// <param name="id">Identifier of persistent instance</param>
 		void Update(object obj, object id);
+
+		/// <summary>
+		/// Update the persistent state associated with the given identifier.
+		/// </summary>
+		/// <remarks>
+		/// An exception is thrown if there is a persistent instance with the same identifier
+		/// in the current session.
+		/// </remarks>
+		/// <param name="obj">A transient instance containing updated state</param>
+		/// <param name="id">Identifier of persistent instance</param>
+		Task UpdateAsync(object obj, object id);
 
 		/// <summary>
 		/// Update the persistent instance with the identifier of the given detached
@@ -497,6 +601,19 @@ namespace NHibernate
 		void Update(string entityName, object obj);
 
 		/// <summary>
+		/// Update the persistent instance with the identifier of the given detached
+		/// instance.
+		/// </summary>
+		/// <param name="entityName">The Entity name.</param>
+		/// <param name="obj">a detached instance containing updated state </param>
+		/// <remarks>
+		/// If there is a persistent instance with the same identifier,
+		/// an exception is thrown. This operation cascades to associated instances
+		/// if the association is mapped with <tt>cascade="save-update"</tt>.
+		/// </remarks>
+		Task UpdateAsync(string entityName, object obj);
+
+		/// <summary>
 		/// Update the persistent instance associated with the given identifier.
 		/// </summary>
 		/// <param name="entityName">The Entity name.</param>
@@ -508,6 +625,19 @@ namespace NHibernate
 		/// if the association is mapped with <tt>cascade="save-update"</tt>.
 		/// </remarks>
 		void Update(string entityName, object obj, object id);
+
+		/// <summary>
+		/// Update the persistent instance associated with the given identifier.
+		/// </summary>
+		/// <param name="entityName">The Entity name.</param>
+		/// <param name="obj">a detached instance containing updated state </param>
+		/// <param name="id">Identifier of persistent instance</param>
+		/// <remarks>
+		/// If there is a persistent instance with the same identifier,
+		/// an exception is thrown. This operation cascades to associated instances
+		/// if the association is mapped with <tt>cascade="save-update"</tt>.
+		/// </remarks>
+		Task UpdateAsync(string entityName, object obj, object id);
 
 		/// <summary>
 		/// Copy the state of the given object onto the persistent object with the same
@@ -618,6 +748,13 @@ namespace NHibernate
 		/// Delete all objects returned by the query.
 		/// </summary>
 		/// <param name="query">The query string</param>
+		/// <returns>Returns the number of objects deleted.</returns>
+		Task<int> DeleteAsync(string query);
+
+		/// <summary>
+		/// Delete all objects returned by the query.
+		/// </summary>
+		/// <param name="query">The query string</param>
 		/// <param name="value">A value to be written to a "?" placeholer in the query</param>
 		/// <param name="type">The hibernate type of value.</param>
 		/// <returns>The number of instances deleted</returns>
@@ -627,10 +764,28 @@ namespace NHibernate
 		/// Delete all objects returned by the query.
 		/// </summary>
 		/// <param name="query">The query string</param>
+		/// <param name="value">A value to be written to a "?" placeholer in the query</param>
+		/// <param name="type">The hibernate type of value.</param>
+		/// <returns>The number of instances deleted</returns>
+		Task<int> DeleteAsync(string query, object value, IType type);
+
+		/// <summary>
+		/// Delete all objects returned by the query.
+		/// </summary>
+		/// <param name="query">The query string</param>
 		/// <param name="values">A list of values to be written to "?" placeholders in the query</param>
 		/// <param name="types">A list of Hibernate types of the values</param>
 		/// <returns>The number of instances deleted</returns>
 		int Delete(string query, object[] values, IType[] types);
+
+		/// <summary>
+		/// Delete all objects returned by the query.
+		/// </summary>
+		/// <param name="query">The query string</param>
+		/// <param name="values">A list of values to be written to "?" placeholders in the query</param>
+		/// <param name="types">A list of Hibernate types of the values</param>
+		/// <returns>The number of instances deleted</returns>
+		Task<int> DeleteAsync(string query, object[] values, IType[] types);
 
 		/// <summary>
 		/// Obtain the specified lock level upon the given object.
