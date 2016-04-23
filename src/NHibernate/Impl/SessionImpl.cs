@@ -208,6 +208,7 @@ namespace NHibernate.Impl
 		/// <param name="autoCloseSessionEnabled">Should we auto close after completion of transaction</param>
 		/// <param name="ignoreExceptionBeforeTransactionCompletion">Should we ignore exceptions in IInterceptor.BeforeTransactionCompletion</param>
 		/// <param name="connectionReleaseMode">The mode by which we should release JDBC connections.</param>
+		/// <param name="defaultFlushMode">The default flush mode for this session</param>
 		internal SessionImpl(
 			DbConnection connection,
 			SessionFactoryImpl factory,

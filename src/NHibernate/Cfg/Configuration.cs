@@ -1228,7 +1228,7 @@ namespace NHibernate.Cfg
 		{
 			#region Way for the user to specify their own ProxyFactory
 
-			//http://jira.nhibernate.org/browse/NH-975
+			//http://nhibernate.jira.com/browse/NH-975
 
 			var ipff = Environment.BytecodeProvider as IInjectableProxyFactoryFactory;
 			string pffClassName;

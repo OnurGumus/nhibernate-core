@@ -99,9 +99,19 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(session.GetSessionImplementation());
 		}
 
+		public static IQueryable<T> Query<T>(this ISession session, string entityName)
+		{
+			return new NhQueryable<T>(session.GetSessionImplementation(), entityName);
+		}
+
 		public static IQueryable<T> Query<T>(this IStatelessSession session)
 		{
 			return new NhQueryable<T>(session.GetSessionImplementation());
+		}
+
+		public static IQueryable<T> Query<T>(this IStatelessSession session, string entityName)
+		{
+			return new NhQueryable<T>(session.GetSessionImplementation(), entityName);
 		}
 
 		#region AnyAsync

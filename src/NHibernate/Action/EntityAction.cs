@@ -107,7 +107,9 @@ namespace NHibernate.Action
 		{
 			get
 			{
-				return new BeforeTransactionCompletionProcessDelegate(BeforeTransactionCompletionProcessImpl);
+				return NeedsBeforeTransactionCompletion()
+					? new BeforeTransactionCompletionProcessDelegate(BeforeTransactionCompletionProcessImpl)
+					: null;
 			}
 		}
 		
@@ -121,11 +123,18 @@ namespace NHibernate.Action
 			}
 		}
 		
-		private bool NeedsAfterTransactionCompletion()
+		protected virtual bool NeedsAfterTransactionCompletion()
 		{
 			return persister.HasCache || HasPostCommitEventListeners;
 		}
-		
+
+		protected virtual bool NeedsBeforeTransactionCompletion()
+		{
+			// At the moment, there is no need to add the delegate, 
+			// Subclasses can override this method and add the delegate if needed.
+			return false;
+		}
+
 		protected virtual Task BeforeTransactionCompletionProcessImpl()
 		{
 			return TaskHelper.CompletedTask;

@@ -127,10 +127,11 @@ namespace NHibernate.Action
 		{
 			get
 			{
-				return new AfterTransactionCompletionProcessDelegate(async (success) =>
+				// Only make sense to add the delegate if there is a cache.
+				if (Persister.HasCache)
 				{
 					// NH Different behavior: to support unlocking collections from the cache.(r3260)
-					if (Persister.HasCache)
+					return new AfterTransactionCompletionProcessDelegate(async (success) =>
 					{
 						CacheKey ck = Session.GenerateCacheKey(Key, Persister.KeyType, Persister.Role);
 
@@ -142,7 +143,7 @@ namespace NHibernate.Action
 							{
 								CollectionCacheEntry entry = new CollectionCacheEntry(await Collection.Disassemble(Persister).ConfigureAwait(false));
 								bool put = Persister.Cache.AfterUpdate(ck, entry, null, Lock);
-		
+
 								if (put && Session.Factory.Statistics.IsStatisticsEnabled)
 								{
 									Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
@@ -153,8 +154,9 @@ namespace NHibernate.Action
 						{
 							Persister.Cache.Release(ck, Lock);
 						}
-					}
-				});
+					});
+				}
+				return null;
 			}
 		}
 	}
