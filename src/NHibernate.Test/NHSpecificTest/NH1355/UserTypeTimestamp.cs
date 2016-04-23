@@ -1,7 +1,9 @@
 using System.Data;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1355
 {
@@ -48,14 +50,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1355
 			get { return false; }
 		}
 
-		public object NullSafeGet(IDataReader rs, string[] names, object owner)
+		public Task<object> NullSafeGet(IDataReader rs, string[] names, object owner)
 		{
-			return rs.GetValue(rs.GetOrdinal(names[0]));
+			return Task.FromResult(rs.GetValue(rs.GetOrdinal(names[0])));
 		}
 
-		public void NullSafeSet(IDbCommand cmd, object value, int index)
+		public Task NullSafeSet(IDbCommand cmd, object value, int index)
 		{
 			NHibernateUtil.Binary.NullSafeSet(cmd, value, index);
+			return TaskHelper.CompletedTask;
 		}
 
 		public object Replace(object original, object target, object owner)

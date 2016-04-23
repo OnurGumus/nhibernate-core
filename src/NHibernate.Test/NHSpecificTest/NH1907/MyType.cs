@@ -1,7 +1,9 @@
 using System;
 using System.Data;
+using System.Threading.Tasks;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1907
 {
@@ -61,7 +63,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1907
 			return value;
 		}
 
-		public void NullSafeSet(IDbCommand cmd, object value, int index)
+		public Task NullSafeSet(IDbCommand cmd, object value, int index)
 		{
 			if (value == null)
 			{
@@ -71,6 +73,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1907
 			{
 				((IDbDataParameter)cmd.Parameters[index]).Value = ((MyType)value).ToPersist;
 			}
+			return TaskHelper.CompletedTask;
 		}
 
 		public System.Type ReturnedType
@@ -78,7 +81,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1907
 			get { return typeof(Int32); }
 		}
 
-		public object NullSafeGet(IDataReader rs, string[] names, object owner)
+		public Task<object> NullSafeGet(IDataReader rs, string[] names, object owner)
 		{
 			int index0 = rs.GetOrdinal(names[0]);
 			if (rs.IsDBNull(index0))
@@ -86,7 +89,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1907
 				return null;
 			}
 			int value = rs.GetInt32(index0);
-			return new MyType { ToPersist = value};
+			return Task.FromResult<object>(new MyType { ToPersist = value});
 		}
 
 		public bool IsMutable

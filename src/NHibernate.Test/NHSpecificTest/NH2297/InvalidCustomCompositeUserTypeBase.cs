@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Data;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.UserTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2297
 {
@@ -57,9 +59,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2297
 			return DeepCopy(cached);
 		}
 
-		public object Disassemble(Object value, ISessionImplementor session)
+		public Task<object> Disassemble(Object value, ISessionImplementor session)
 		{
-			return DeepCopy(value);
+			return Task.FromResult(DeepCopy(value));
 		}
 
 		public Object DeepCopy(Object a)
@@ -72,16 +74,16 @@ namespace NHibernate.Test.NHSpecificTest.NH2297
 			return (x == y) || (x != null && y != null && (x.Equals(y)));
 		}
 
-		public object NullSafeGet(System.Data.IDataReader rs, String[] names, NHibernate.Engine.ISessionImplementor session,
+		public Task<object> NullSafeGet(System.Data.IDataReader rs, String[] names, NHibernate.Engine.ISessionImplementor session,
 		                          Object owner)
 		{
 			return NHibernateUtil.String.NullSafeGet(rs, names[0], session, owner);
 		}
 
-		public void NullSafeSet(System.Data.IDbCommand st, Object value, int index,
+		public Task NullSafeSet(System.Data.IDbCommand st, Object value, int index,
 								 bool[] settable, NHibernate.Engine.ISessionImplementor session)
 		{
-			throw new NotImplementedException();
+			return TaskHelper.FromException<object>(new NotImplementedException());
 		}
 
 		public Object GetPropertyValue(Object component, int property)
@@ -99,9 +101,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2297
 			return x == null ? typeof (string).GetHashCode() : x.GetHashCode();
 		}
 
-		public object Replace(object original, object target, ISessionImplementor session, object owner)
+		public Task<object> Replace(object original, object target, ISessionImplementor session, object owner)
 		{
-			return DeepCopy(original);
+			return Task.FromResult(DeepCopy(original));
 		}
 	}
 }

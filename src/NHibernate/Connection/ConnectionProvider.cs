@@ -7,6 +7,8 @@ using NHibernate.Driver;
 using NHibernate.Util;
 using Environment=NHibernate.Cfg.Environment;
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace NHibernate.Connection
 {
@@ -143,7 +145,13 @@ namespace NHibernate.Connection
 		/// Get an open <see cref="IDbConnection"/>.
 		/// </summary>
 		/// <returns>An open <see cref="IDbConnection"/>.</returns>
-		public abstract IDbConnection GetConnection();
+		public abstract DbConnection GetConnection();
+
+		/// <summary>
+		/// Get an open <see cref="IDbConnection"/>.
+		/// </summary>
+		/// <returns>An open <see cref="IDbConnection"/>.</returns>
+		public abstract Task<DbConnection> GetConnectionAsync();
 
 		#region IDisposable Members
 

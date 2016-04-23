@@ -7,6 +7,7 @@ using NHibernate.Impl;
 using NHibernate.Exceptions;
 using System.Data.Common;
 using System.Threading.Tasks;
+using NHibernate.Driver;
 
 namespace NHibernate.Dialect.Lock
 {
@@ -53,25 +54,25 @@ namespace NHibernate.Dialect.Lock
 
 		#region ILockingStrategy Members
 
-		public async Task Lock(object id, object version, object obj, ISessionImplementor session, bool async)
+		public async Task Lock(object id, object version, object obj, ISessionImplementor session)
 		{
 			ISessionFactoryImplementor factory = session.Factory;
 			try
 			{
-				DbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes);
-				IDataReader rs = null;
+				DbCommand st = await session.Batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes).ConfigureAwait(false);
+				IDataReaderEx rs = null;
 				try
 				{
-					lockable.IdentifierType.NullSafeSet(st, id, 0, session);
+					await lockable.IdentifierType.NullSafeSet(st, id, 0, session).ConfigureAwait(false);
 					if (lockable.IsVersioned)
 					{
-						lockable.VersionType.NullSafeSet(st, version, lockable.IdentifierType.GetColumnSpan(factory), session);
+						await lockable.VersionType.NullSafeSet(st, version, lockable.IdentifierType.GetColumnSpan(factory), session).ConfigureAwait(false);
 					}
 
-					rs = await session.Batcher.ExecuteReader(st, async).ConfigureAwait(false);
+					rs = await session.Batcher.ExecuteReader(st).ConfigureAwait(false);
 					try
 					{
-						if (!rs.Read())
+						if (!await rs.ReadAsync().ConfigureAwait(false))
 						{
 							if (factory.Statistics.IsStatisticsEnabled)
 							{

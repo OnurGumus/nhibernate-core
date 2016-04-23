@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Loader;
@@ -66,13 +67,13 @@ namespace NHibernate.Collection.Generic
 			return clonedList;
 		}
 
-		public override ICollection GetOrphans(object snapshot, string entityName)
+		public override Task<ICollection> GetOrphans(object snapshot, string entityName)
 		{
 			var sn = (IList<T>)snapshot;
 			return GetOrphans((ICollection)sn, (ICollection)WrappedList, entityName, Session);
 		}
 
-		public override bool EqualsSnapshot(ICollectionPersister persister)
+		public override async Task<bool> EqualsSnapshot(ICollectionPersister persister)
 		{
 			IType elementType = persister.ElementType;
 			var sn = (IList<T>)GetSnapshot();
@@ -82,7 +83,7 @@ namespace NHibernate.Collection.Generic
 			}
 			for (int i = 0; i < WrappedList.Count; i++)
 			{
-				if (elementType.IsDirty(WrappedList[i], sn[i], Session))
+				if (await elementType.IsDirty(WrappedList[i], sn[i], Session).ConfigureAwait(false))
 				{
 					return false;
 				}
@@ -116,10 +117,10 @@ namespace NHibernate.Collection.Generic
 			return StringHelper.CollectionToString(WrappedList);
 		}
 
-		public override object ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
+		public override async Task<object> ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
-			var element = (T)role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
-			int index = (int)role.ReadIndex(rs, descriptor.SuffixedIndexAliases, Session);
+			var element = (T)await role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session).ConfigureAwait(false);
+			int index = (int)await role.ReadIndex(rs, descriptor.SuffixedIndexAliases, Session).ConfigureAwait(false);
 
 			//pad with nulls from the current last element up to the new index
 			for (int i = WrappedList.Count; i <= index; i++)
@@ -142,30 +143,30 @@ namespace NHibernate.Collection.Generic
 		/// <param name="persister">The CollectionPersister to use to reassemble the PersistentGenericList.</param>
 		/// <param name="disassembled">The disassembled PersistentList.</param>
 		/// <param name="owner">The owner object.</param>
-		public override void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
+		public override async Task InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
 		{
 			object[] array = (object[])disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
 			for (int i = 0; i < size; i++)
 			{
-				var element = persister.ElementType.Assemble(array[i], Session, owner);
+				var element = await persister.ElementType.Assemble(array[i], Session, owner).ConfigureAwait(false);
 				WrappedList.Add((T)(element ?? DefaultForType));
 			}
 		}
 
-		public override object Disassemble(ICollectionPersister persister)
+		public override async Task<object> Disassemble(ICollectionPersister persister)
 		{
 			int length = WrappedList.Count;
 			object[] result = new object[length];
 			for (int i = 0; i < length; i++)
 			{
-				result[i] = persister.ElementType.Disassemble(WrappedList[i], Session, null);
+				result[i] = await persister.ElementType.Disassemble(WrappedList[i], Session, null).ConfigureAwait(false);
 			}
 			return result;
 		}
 
-		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
+		public override Task<IEnumerable> GetDeletes(ICollectionPersister persister, bool indexIsFormula)
 		{
 			IList deletes = new List<object>();
 			var sn = (IList<T>)GetSnapshot();
@@ -189,19 +190,19 @@ namespace NHibernate.Collection.Generic
 					deletes.Add(indexIsFormula ? (object)sn[i] : i);
 				}
 			}
-			return deletes;
+			return Task.FromResult<IEnumerable>(deletes);
 		}
 
-		public override bool NeedsInserting(object entry, int i, IType elemType)
+		public override Task<bool> NeedsInserting(object entry, int i, IType elemType)
 		{
 			var sn = (IList<T>)GetSnapshot();
-			return WrappedList[i] != null && (i >= sn.Count || sn[i] == null);
+			return Task.FromResult(WrappedList[i] != null && (i >= sn.Count || sn[i] == null));
 		}
 
-		public override bool NeedsUpdating(object entry, int i, IType elemType)
+		public override async Task<bool> NeedsUpdating(object entry, int i, IType elemType)
 		{
 			var sn = (IList<T>)GetSnapshot();
-			return i < sn.Count && sn[i] != null && WrappedList[i] != null && elemType.IsDirty(WrappedList[i], sn[i], Session);
+			return i < sn.Count && sn[i] != null && WrappedList[i] != null && await elemType.IsDirty(WrappedList[i], sn[i], Session).ConfigureAwait(false);
 		}
 
 		public override object GetIndex(object entry, int i, ICollectionPersister persister)
@@ -273,7 +274,7 @@ namespace NHibernate.Collection.Generic
 			}
 			else
 			{
-				Initialize(true);
+				Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
 				if (WrappedList.Count != 0)
 				{
 					WrappedList.Clear();
@@ -303,7 +304,7 @@ namespace NHibernate.Collection.Generic
 			{
 				throw new IndexOutOfRangeException("negative index");
 			}
-			object old = PutQueueEnabled ? ReadElementByIndex(index, false).ConfigureAwait(false).GetAwaiter().GetResult() : Unknown;
+			object old = PutQueueEnabled ? ReadElementByIndex(index).ConfigureAwait(false).GetAwaiter().GetResult() : Unknown;
 			if (old == Unknown)
 			{
 				Write();
@@ -367,7 +368,7 @@ namespace NHibernate.Collection.Generic
 				{
 					throw new IndexOutOfRangeException("negative index");
 				}
-				object result = ReadElementByIndex(index, false).ConfigureAwait(false).GetAwaiter().GetResult();
+				object result = ReadElementByIndex(index).ConfigureAwait(false).GetAwaiter().GetResult();
 				if (result == Unknown)
 				{
 					return WrappedList[index];
@@ -389,7 +390,7 @@ namespace NHibernate.Collection.Generic
 				{
 					throw new IndexOutOfRangeException("negative index");
 				}
-				object old = PutQueueEnabled ? ReadElementByIndex(index, false).ConfigureAwait(false).GetAwaiter().GetResult() : Unknown;
+				object old = PutQueueEnabled ? ReadElementByIndex(index).ConfigureAwait(false).GetAwaiter().GetResult() : Unknown;
 				if (old == Unknown)
 				{
 					Write();
@@ -419,7 +420,7 @@ namespace NHibernate.Collection.Generic
 		{
 			get
 			{
-				return ReadSize(false).ConfigureAwait(false).GetAwaiter().GetResult() ? CachedSize : WrappedList.Count;
+				return ReadSize().ConfigureAwait(false).GetAwaiter().GetResult() ? CachedSize : WrappedList.Count;
 			}
 		}
 
@@ -453,7 +454,7 @@ namespace NHibernate.Collection.Generic
 
 		public bool Contains(T item)
 		{
-			bool? exists = ReadElementExistence(item, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			bool? exists = ReadElementExistence(item).ConfigureAwait(false).GetAwaiter().GetResult();
 			return !exists.HasValue ? WrappedList.Contains(item) : exists.Value;
 		}
 
@@ -472,10 +473,10 @@ namespace NHibernate.Collection.Generic
 
 		public bool Remove(T item)
 		{
-			bool? exists = PutQueueEnabled ? ReadElementExistence(item, false).ConfigureAwait(false).GetAwaiter().GetResult() : null;
+			bool? exists = PutQueueEnabled ? ReadElementExistence(item).ConfigureAwait(false).GetAwaiter().GetResult() : null;
 			if (!exists.HasValue)
 			{
-				Initialize(true);
+				Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
 				bool contained = WrappedList.Remove(item);
 				if (contained)
 				{

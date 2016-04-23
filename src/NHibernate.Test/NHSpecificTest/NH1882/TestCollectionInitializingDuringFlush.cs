@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Event;
@@ -59,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1882
 
 			public bool FoundAny { get; set; }
 
-			public bool OnPreUpdate(PreUpdateEvent @event)
+			public Task<bool> OnPreUpdate(PreUpdateEvent @event)
 			{
 				Executed = true;
 				Object[] oldValues = @event.OldState;
@@ -78,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1882
 						}
 					}
 				}
-				return true;
+				return Task.FromResult(true);
 			}
 		}
 

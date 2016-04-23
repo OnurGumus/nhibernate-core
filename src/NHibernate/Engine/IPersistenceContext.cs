@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NHibernate.Collection;
 using NHibernate.Engine.Loading;
 using NHibernate.Persister.Collection;
@@ -96,7 +97,7 @@ namespace NHibernate.Engine
 		/// Get the current state of the entity as known to the underlying
 		/// database, or null if there is no corresponding row
 		/// </summary>
-		object[] GetDatabaseSnapshot(object id, IEntityPersister persister);
+		Task<object[]> GetDatabaseSnapshot(object id, IEntityPersister persister);
 
 		/// <summary>
 		/// Retrieve the cached database snapshot for the requested entity key.
@@ -110,14 +111,14 @@ namespace NHibernate.Engine
 		/// <item><description>an entry of NO_ROW here is interpreted as an exception</description></item>
 		/// </list>
 		/// </remarks>
-		object[] GetCachedDatabaseSnapshot(EntityKey key);
+		Task<object[]> GetCachedDatabaseSnapshot(EntityKey key);
 
 		/// <summary>
 		/// Get the values of the natural id fields as known to the underlying
 		/// database, or null if the entity has no natural id or there is no
 		/// corresponding row.
 		/// </summary>
-		object[] GetNaturalIdSnapshot(object id, IEntityPersister persister);
+		Task<object[]> GetNaturalIdSnapshot(object id, IEntityPersister persister);
 
 		/// <summary> Add a canonical mapping from entity key to entity instance</summary>
 		void AddEntity(EntityKey key, object entity);
@@ -292,7 +293,7 @@ namespace NHibernate.Engine
 		/// the current two-phase load (actually, this is a no-op, unless this
 		/// is the "outermost" load)
 		/// </summary>
-		void InitializeNonLazyCollections();
+		Task InitializeNonLazyCollections();
 
 		/// <summary> Get the <tt>PersistentCollection</tt> object for an array</summary>
 		IPersistentCollection GetCollectionHolder(object array);

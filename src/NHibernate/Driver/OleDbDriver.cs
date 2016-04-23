@@ -17,7 +17,7 @@ namespace NHibernate.Driver
 		{
 		}
 
-		public override IDbConnection CreateConnection()
+		public override DbConnection CreateConnection()
 		{
 			return new OleDbConnection();
 		}

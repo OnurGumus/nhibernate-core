@@ -3,6 +3,7 @@ using System.Data;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -152,14 +153,14 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Assemble(object cached, ISessionImplementor session, object owner)
+		public override Task<object> Assemble(object cached, ISessionImplementor session, object owner)
 		{
-			return (cached == null) ? null : FromBytes((byte[]) cached);
+			return Task.FromResult((cached == null) ? null : FromBytes((byte[]) cached));
 		}
 
-		public override object Disassemble(object value, ISessionImplementor session, object owner)
+		public override Task<object> Disassemble(object value, ISessionImplementor session, object owner)
 		{
-			return (value == null) ? null : ToBytes(value);
+			return Task.FromResult<object>((value == null) ? null : ToBytes(value));
 		}
 	}
 }

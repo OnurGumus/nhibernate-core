@@ -30,6 +30,7 @@ using NHibernate.Type;
 using NHibernate.Util;
 using Array = System.Array;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace NHibernate.Cfg
 {
@@ -1247,6 +1248,17 @@ namespace NHibernate.Cfg
 		/// <returns>An <see cref="ISessionFactory" /> instance.</returns>
 		public ISessionFactory BuildSessionFactory()
 		{
+			return BuildSessionFactoryAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary>
+		/// Instantiate a new <see cref="ISessionFactory" />, using the properties and mappings in this
+		/// configuration. The <see cref="ISessionFactory" /> will be immutable, so changes made to the
+		/// configuration after building the <see cref="ISessionFactory" /> will not affect it.
+		/// </summary>
+		/// <returns>An <see cref="ISessionFactory" /> instance.</returns>
+		public async Task<ISessionFactory> BuildSessionFactoryAsync()
+		{
 
 			ConfigureProxyFactoryFactory();
 			SecondPassCompile();
@@ -1257,7 +1269,7 @@ namespace NHibernate.Cfg
 			// Ok, don't need schemas anymore, so free them
 			Schemas = null;
 
-			return new SessionFactoryImpl(this, mapping, settings, GetInitializedEventListeners());
+			return await new SessionFactoryImpl(settings, GetInitializedEventListeners()).Initialize(this, mapping).ConfigureAwait(false);
 		}
 
 		/// <summary>

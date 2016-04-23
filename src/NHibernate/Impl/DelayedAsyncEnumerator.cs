@@ -12,8 +12,6 @@ namespace NHibernate.Impl
 
 		private readonly GetResult result;
 
-		private readonly Enumerator enumerator;
-
 		public Delegate ExecuteOnEval { get; set; }
 
 		public DelayedAsyncEnumerator(GetResult result)

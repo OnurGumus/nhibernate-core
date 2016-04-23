@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Type;
 
@@ -37,7 +38,7 @@ namespace NHibernate.Id
 		/// <see cref="IdentifierGeneratorFactory.ShortCircuitIndicator"/> if the <c>session</c>
 		/// already contains <c>obj</c>.
 		/// </returns>
-		public object Generate(ISessionImplementor sessionImplementor, object obj)
+		public async Task<object> Generate(ISessionImplementor sessionImplementor, object obj)
 		{
 			ISession session = (ISession) sessionImplementor;
 
@@ -64,14 +65,14 @@ namespace NHibernate.Id
 			object id;
 			try
 			{
-				id = ForeignKeys.GetEntityIdentifierIfNotUnsaved(
+				id = await ForeignKeys.GetEntityIdentifierIfNotUnsaved(
 					foreignValueSourceType.GetAssociatedEntityName(),
 					associatedObject,
-					sessionImplementor);
+					sessionImplementor).ConfigureAwait(false);
 			}
 			catch (TransientObjectException)
 			{
-				id = session.Save(foreignValueSourceType.GetAssociatedEntityName(), associatedObject);
+				id = await session.SaveAsync(foreignValueSourceType.GetAssociatedEntityName(), associatedObject).ConfigureAwait(false);
 			}
 
 			if (session.Contains(obj))

@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
+using System.Threading.Tasks;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Id.Insert;
 using NHibernate.Persister.Entity;
@@ -103,21 +106,21 @@ namespace NHibernate.Id
 				return new IdentifierGeneratingInsert(factory);
 			}
 
-			protected internal override void BindParameters(ISessionImplementor session, IDbCommand ps, object entity)
+			protected internal override Task BindParameters(ISessionImplementor session, IDbCommand ps, object entity)
 			{
 				object uniqueKeyValue = ((IEntityPersister) persister).GetPropertyValue(entity, uniqueKeyPropertyName,
 				                                                                        session.EntityMode);
-				uniqueKeyType.NullSafeSet(ps, uniqueKeyValue, 0, session);
+				return uniqueKeyType.NullSafeSet(ps, uniqueKeyValue, 0, session);
 			}
 
-			protected internal override object GetResult(ISessionImplementor session, IDataReader rs, object entity)
+			protected internal override async Task<object> GetResult(ISessionImplementor session, IDataReaderEx rs, object entity)
 			{
-				if (!rs.Read())
+				if (!await rs.ReadAsync().ConfigureAwait(false))
 				{
 					throw new IdentifierGenerationException("the inserted row could not be located by the unique key: "
 					                                        + uniqueKeyPropertyName);
 				}
-				return idType.NullSafeGet(rs, persister.RootTableKeyColumnNames, session, entity);
+				return await idType.NullSafeGet(rs, persister.RootTableKeyColumnNames, session, entity).ConfigureAwait(false);
 			}
 		}
 

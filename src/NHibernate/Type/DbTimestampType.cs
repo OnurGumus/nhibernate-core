@@ -1,7 +1,8 @@
 using System;
 using System.Data;
 using System.Data.Common;
-
+using System.Threading.Tasks;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Impl;
@@ -43,28 +44,28 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				return GetCurrentTimestamp(session);
+				return GetCurrentTimestamp(session).ConfigureAwait(false).GetAwaiter().GetResult();
 			}
 		}
 
-		private object GetCurrentTimestamp(ISessionImplementor session)
+		private Task<object> GetCurrentTimestamp(ISessionImplementor session)
 		{
 			Dialect.Dialect dialect = session.Factory.Dialect;
 			string timestampSelectString = dialect.CurrentTimestampSelectString;
 			return UsePreparedStatement(timestampSelectString, session);
 		}
 
-		protected virtual object UsePreparedStatement(string timestampSelectString, ISessionImplementor session)
+		protected virtual async Task<object> UsePreparedStatement(string timestampSelectString, ISessionImplementor session)
 		{
 			var tsSelect = new SqlString(timestampSelectString);
 			DbCommand ps = null;
-			IDataReader rs = null;
+			IDataReaderEx rs = null;
 			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
-				ps = session.Batcher.PrepareCommand(CommandType.Text, tsSelect, EmptyParams);
-				rs = session.Batcher.ExecuteReader(ps, false).ConfigureAwait(false).GetAwaiter().GetResult();
-				rs.Read();
+				ps = await session.Batcher.PrepareCommand(CommandType.Text, tsSelect, EmptyParams).ConfigureAwait(false);
+				rs = await session.Batcher.ExecuteReader(ps).ConfigureAwait(false);
+				await rs.ReadAsync().ConfigureAwait(false);
 				DateTime ts = rs.GetDateTime(0);
 				if (log.IsDebugEnabled)
 				{

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -21,18 +22,18 @@ namespace NHibernate.Param
 
 		#region IParameterSpecification Members
 
-		public void Bind(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public Task Bind(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
-			Bind(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
+			return Bind(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
 		}
 
-		public void Bind(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public async Task Bind(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			TypedValue typedValue = queryParameters.NamedParameters[name];
 			string backTrackId = GetIdsForBackTrack(session.Factory).First();
 			foreach (int position in sqlQueryParametersList.GetEffectiveParameterLocations(backTrackId))
 			{
-				ExpectedType.NullSafeSet(command, typedValue.Value, position + singleSqlParametersOffset, session);
+				await ExpectedType.NullSafeSet(command, typedValue.Value, position + singleSqlParametersOffset, session).ConfigureAwait(false);
 			}
 		}
 

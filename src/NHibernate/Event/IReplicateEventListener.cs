@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace NHibernate.Event
 {
 	/// <summary>
@@ -7,6 +9,6 @@ namespace NHibernate.Event
 	{
 		/// <summary>Handle the given replicate event. </summary>
 		/// <param name="event">The replicate event to be handled.</param>
-		void OnReplicate(ReplicateEvent @event);
+		Task OnReplicate(ReplicateEvent @event);
 	}
 }

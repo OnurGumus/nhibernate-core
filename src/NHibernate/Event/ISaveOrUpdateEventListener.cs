@@ -8,7 +8,6 @@ namespace NHibernate.Event
 	{
 		/// <summary> Handle the given update event. </summary>
 		/// <param name="event">The update event to be handled.</param>
-		/// <param name="async"></param>
-		Task OnSaveOrUpdate(SaveOrUpdateEvent @event, bool async);
+		Task OnSaveOrUpdate(SaveOrUpdateEvent @event);
 	}
 }

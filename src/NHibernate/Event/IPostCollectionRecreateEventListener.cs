@@ -1,8 +1,10 @@
+using System.Threading.Tasks;
+
 namespace NHibernate.Event
 {
 	/// <summary> Called after recreating a collection </summary>
 	public interface IPostCollectionRecreateEventListener
 	{
-		void OnPostRecreateCollection(PostCollectionRecreateEvent @event);
+		Task OnPostRecreateCollection(PostCollectionRecreateEvent @event);
 	}
 }

@@ -1,4 +1,5 @@
 
+using System.Threading.Tasks;
 using NHibernate.Collection;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
@@ -15,19 +16,19 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="coll">The collection to be updated by unreachability. </param>
 		/// <param name="session">The session.</param>
-		public static void ProcessUnreachableCollection(IPersistentCollection coll, ISessionImplementor session)
+		public static async Task ProcessUnreachableCollection(IPersistentCollection coll, ISessionImplementor session)
 		{
 			if (coll.Owner == null)
 			{
-				ProcessNeverReferencedCollection(coll, session);
+				await ProcessNeverReferencedCollection(coll, session).ConfigureAwait(false);
 			}
 			else
 			{
-				ProcessDereferencedCollection(coll, session);
+				await ProcessDereferencedCollection(coll, session).ConfigureAwait(false);
 			}
 		}
 
-		private static void ProcessDereferencedCollection(IPersistentCollection coll, ISessionImplementor session)
+		private static async Task ProcessDereferencedCollection(IPersistentCollection coll, ISessionImplementor session)
 		{
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 			CollectionEntry entry = persistenceContext.GetCollectionEntry(coll);
@@ -77,10 +78,10 @@ namespace NHibernate.Engine
 			// do the work
 			entry.CurrentPersister = null;
 			entry.CurrentKey = null;
-			PrepareCollectionForUpdate(coll, entry, session.EntityMode, session.Factory);
+			await PrepareCollectionForUpdate(coll, entry, session.EntityMode, session.Factory).ConfigureAwait(false);
 		}
 
-		private static void ProcessNeverReferencedCollection(IPersistentCollection coll, ISessionImplementor session)
+		private static Task ProcessNeverReferencedCollection(IPersistentCollection coll, ISessionImplementor session)
 		{
 			CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(coll);
 
@@ -89,7 +90,7 @@ namespace NHibernate.Engine
 			entry.CurrentPersister = entry.LoadedPersister;
 			entry.CurrentKey = entry.LoadedKey;
 
-			PrepareCollectionForUpdate(coll, entry, session.EntityMode, session.Factory);
+			return PrepareCollectionForUpdate(coll, entry, session.EntityMode, session.Factory);
 		}
 
 		/// <summary> 
@@ -99,7 +100,7 @@ namespace NHibernate.Engine
 		/// <param name="type">The type of the collection. </param>
 		/// <param name="entity">The owner of the collection. </param>
 		/// <param name="session">The session.</param>
-		public static void ProcessReachableCollection(IPersistentCollection collection, CollectionType type, object entity, ISessionImplementor session)
+		public static async Task ProcessReachableCollection(IPersistentCollection collection, CollectionType type, object entity, ISessionImplementor session)
 		{
 			collection.Owner = entity;
 			CollectionEntry ce = session.PersistenceContext.GetCollectionEntry(collection);
@@ -132,10 +133,10 @@ namespace NHibernate.Engine
 						  (collection.WasInitialized ? " (initialized)" : " (uninitialized)"));
 			}
 
-			PrepareCollectionForUpdate(collection, ce, session.EntityMode, factory);
+			await PrepareCollectionForUpdate(collection, ce, session.EntityMode, factory).ConfigureAwait(false);
 		}
 
-		private static void PrepareCollectionForUpdate(IPersistentCollection collection, CollectionEntry entry, EntityMode entityMode, ISessionFactoryImplementor factory)
+		private static async Task PrepareCollectionForUpdate(IPersistentCollection collection, CollectionEntry entry, EntityMode entityMode, ISessionFactoryImplementor factory)
 		{
 			//1. record the collection role that this collection is referenced by
 			//2. decide if the collection needs deleting/creating/updating (but don't actually schedule the action yet)
@@ -176,7 +177,7 @@ namespace NHibernate.Engine
 						if (entry.IsDorecreate)
 						{
 							log.Debug("Forcing collection initialization");
-							collection.ForceInitialization(); // force initialize!
+							await collection.ForceInitialization().ConfigureAwait(false); // force initialize!
 						}
 					}
 				}

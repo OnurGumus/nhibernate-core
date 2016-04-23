@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NHibernate.Event;
 using NHibernate.Event.Default;
 using NHibernate.Impl;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Events.Collections
 {
@@ -155,9 +157,9 @@ namespace NHibernate.Test.Events.Collections
 
 			#endregion
 
-			public override void OnInitializeCollection(InitializeCollectionEvent @event)
+			public override async Task OnInitializeCollection(InitializeCollectionEvent @event)
 			{
-				base.OnInitializeCollection(@event);
+				await base.OnInitializeCollection(@event).ConfigureAwait(false);
 				AddEvent(@event, this);
 			}
 		}
@@ -172,9 +174,10 @@ namespace NHibernate.Test.Events.Collections
 
 			#region IPostCollectionRecreateEventListener Members
 
-			public void OnPostRecreateCollection(PostCollectionRecreateEvent @event)
+			public Task OnPostRecreateCollection(PostCollectionRecreateEvent @event)
 			{
 				AddEvent(@event, this);
+				return TaskHelper.CompletedTask;
 			}
 
 			#endregion
@@ -190,9 +193,10 @@ namespace NHibernate.Test.Events.Collections
 
 			#region IPostCollectionRemoveEventListener Members
 
-			public void OnPostRemoveCollection(PostCollectionRemoveEvent @event)
+			public Task OnPostRemoveCollection(PostCollectionRemoveEvent @event)
 			{
 				AddEvent(@event, this);
+				return TaskHelper.CompletedTask;
 			}
 
 			#endregion
@@ -208,9 +212,10 @@ namespace NHibernate.Test.Events.Collections
 
 			#region IPostCollectionUpdateEventListener Members
 
-			public void OnPostUpdateCollection(PostCollectionUpdateEvent @event)
+			public Task OnPostUpdateCollection(PostCollectionUpdateEvent @event)
 			{
 				AddEvent(@event, this);
+				return TaskHelper.CompletedTask;
 			}
 
 			#endregion
@@ -226,9 +231,10 @@ namespace NHibernate.Test.Events.Collections
 
 			#region IPreCollectionRecreateEventListener Members
 
-			public void OnPreRecreateCollection(PreCollectionRecreateEvent @event)
+			public Task OnPreRecreateCollection(PreCollectionRecreateEvent @event)
 			{
 				AddEvent(@event, this);
+				return TaskHelper.CompletedTask;
 			}
 
 			#endregion
@@ -244,9 +250,10 @@ namespace NHibernate.Test.Events.Collections
 
 			#region IPreCollectionRemoveEventListener Members
 
-			public void OnPreRemoveCollection(PreCollectionRemoveEvent @event)
+			public Task OnPreRemoveCollection(PreCollectionRemoveEvent @event)
 			{
 				AddEvent(@event, this);
+				return TaskHelper.CompletedTask;
 			}
 
 			#endregion
@@ -262,9 +269,10 @@ namespace NHibernate.Test.Events.Collections
 
 			#region IPreCollectionUpdateEventListener Members
 
-			public void OnPreUpdateCollection(PreCollectionUpdateEvent @event)
+			public Task OnPreUpdateCollection(PreCollectionUpdateEvent @event)
 			{
 				AddEvent(@event, this);
+				return TaskHelper.CompletedTask;
 			}
 
 			#endregion

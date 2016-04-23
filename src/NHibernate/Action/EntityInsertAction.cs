@@ -6,6 +6,8 @@ using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Persister.Entity;
 using System.Threading.Tasks;
+using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Action
 {
@@ -36,7 +38,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		public override async Task Execute(bool async)
+		public override async Task Execute()
 		{
 			IEntityPersister persister = Persister;
 			ISessionImplementor session = Session;
@@ -50,14 +52,14 @@ namespace NHibernate.Action
 				stopwatch = Stopwatch.StartNew();
 			}
 
-			bool veto = PreInsert();
+			bool veto = await PreInsert().ConfigureAwait(false);
 
 			// Don't need to lock the cache here, since if someone
 			// else inserted the same pk first, the insert would fail
 			if (!veto)
 			{
 
-				await persister.Insert(id, state, instance, Session, async).ConfigureAwait(false);
+				await persister.Insert(id, state, instance, Session).ConfigureAwait(false);
 
 				EntityEntry entry = Session.PersistenceContext.GetEntry(instance);
 				if (entry == null)
@@ -69,7 +71,7 @@ namespace NHibernate.Action
 
 				if (persister.HasInsertGeneratedProperties)
 				{
-					persister.ProcessInsertGeneratedProperties(id, instance, state, Session);
+					await persister.ProcessInsertGeneratedProperties(id, instance, state, Session).ConfigureAwait(false);
 					if (persister.IsVersionPropertyGenerated)
 					{
 						version = Versioning.GetVersion(state, persister);
@@ -82,7 +84,9 @@ namespace NHibernate.Action
 
 			if (IsCachePutEnabled(persister))
 			{
-				CacheEntry ce = new CacheEntry(state, persister, persister.HasUninitializedLazyProperties(instance, session.EntityMode), version, session, instance);
+				
+				CacheEntry ce = new CacheEntry(persister, persister.HasUninitializedLazyProperties(instance, session.EntityMode), version,
+					await TypeHelper.Disassemble(state, persister.PropertyTypes, null, session, instance).ConfigureAwait(false));
 				cacheEntry = persister.CacheEntryStructure.Structure(ce);
 
 				CacheKey ck = Session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
@@ -94,7 +98,7 @@ namespace NHibernate.Action
 				}
 			}
 
-			PostInsert();
+			await PostInsert().ConfigureAwait(false);
 
 			if (statsEnabled && !veto)
 			{
@@ -103,7 +107,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		protected override void AfterTransactionCompletionProcessImpl(bool success)
+		protected override Task AfterTransactionCompletionProcessImpl(bool success)
 		{
 			//Make 100% certain that this is called before any subsequent ScheduledUpdate.afterTransactionCompletion()!!
 			IEntityPersister persister = Persister;
@@ -119,11 +123,12 @@ namespace NHibernate.Action
 			}
 			if (success)
 			{
-				PostCommitInsert();
+				return PostCommitInsert();
 			}
+			return TaskHelper.CompletedTask;
 		}
 
-		private void PostInsert()
+		private async Task PostInsert()
 		{
 			IPostInsertEventListener[] postListeners = Session.Listeners.PostInsertEventListeners;
 			if (postListeners.Length > 0)
@@ -131,12 +136,12 @@ namespace NHibernate.Action
 				PostInsertEvent postEvent = new PostInsertEvent(Instance, Id, state, Persister, (IEventSource)Session);
 				foreach (IPostInsertEventListener listener in postListeners)
 				{
-					listener.OnPostInsert(postEvent);
+					await listener.OnPostInsert(postEvent).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private void PostCommitInsert()
+		private async Task PostCommitInsert()
 		{
 			IPostInsertEventListener[] postListeners = Session.Listeners.PostCommitInsertEventListeners;
 			if (postListeners.Length > 0)
@@ -144,12 +149,12 @@ namespace NHibernate.Action
 				PostInsertEvent postEvent = new PostInsertEvent(Instance, Id, state, Persister, (IEventSource)Session);
 				foreach (IPostInsertEventListener listener in postListeners)
 				{
-					listener.OnPostInsert(postEvent);
+					await listener.OnPostInsert(postEvent).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private bool PreInsert()
+		private async Task<bool> PreInsert()
 		{
 			IPreInsertEventListener[] preListeners = Session.Listeners.PreInsertEventListeners;
 			bool veto = false;
@@ -158,7 +163,7 @@ namespace NHibernate.Action
 				var preEvent = new PreInsertEvent(Instance, Id, state, Persister, (IEventSource) Session);
 				foreach (IPreInsertEventListener listener in preListeners)
 				{
-					veto |= listener.OnPreInsert(preEvent);
+					veto |= await listener.OnPreInsert(preEvent).ConfigureAwait(false);
 				}
 			}
 			return veto;

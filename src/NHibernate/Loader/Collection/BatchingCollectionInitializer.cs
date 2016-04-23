@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Util;
@@ -24,7 +25,7 @@ namespace NHibernate.Loader.Collection
 			this.collectionPersister = collectionPersister;
 		}
 
-		public void Initialize(object id, ISessionImplementor session)
+		public Task Initialize(object id, ISessionImplementor session)
 		{
 			object[] batch =
 				session.PersistenceContext.BatchFetchQueue.GetCollectionBatch(collectionPersister, id, batchSizes[0]);
@@ -36,12 +37,11 @@ namespace NHibernate.Loader.Collection
 				{
 					object[] smallBatch = new object[smallBatchSize];
 					Array.Copy(batch, 0, smallBatch, 0, smallBatchSize);
-					loaders[i].LoadCollectionBatch(session, smallBatch, collectionPersister.KeyType);
-					return; //EARLY EXIT!
+					return loaders[i].LoadCollectionBatch(session, smallBatch, collectionPersister.KeyType); //EARLY EXIT!
 				}
 			}
 
-			loaders[batchSizes.Length - 1].LoadCollection(session, id, collectionPersister.KeyType);
+			return loaders[batchSizes.Length - 1].LoadCollection(session, id, collectionPersister.KeyType);
 		}
 
 		public static ICollectionInitializer CreateBatchingOneToManyInitializer(OneToManyPersister persister, int maxBatchSize,

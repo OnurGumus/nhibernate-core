@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
+using System.Threading.Tasks;
 using NHibernate.Driver;
 
 namespace NHibernate.Connection
@@ -40,6 +42,12 @@ namespace NHibernate.Connection
 		/// Get an open <see cref="IDbConnection"/>.
 		/// </summary>
 		/// <returns>An open <see cref="IDbConnection"/>.</returns>
-		IDbConnection GetConnection();
+		DbConnection GetConnection();
+
+		/// <summary>
+		/// Get an open <see cref="IDbConnection"/>.
+		/// </summary>
+		/// <returns>An open <see cref="IDbConnection"/>.</returns>
+		Task<DbConnection> GetConnectionAsync();
 	}
 }

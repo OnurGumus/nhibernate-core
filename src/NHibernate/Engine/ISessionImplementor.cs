@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -33,7 +34,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <param name="writing"></param>
-		void InitializeCollection(IPersistentCollection collection, bool writing);
+		Task InitializeCollection(IPersistentCollection collection, bool writing);
 
 		// NH-268
 		/// <summary>
@@ -51,12 +52,34 @@ namespace NHibernate.Engine
 		object InternalLoad(string entityName, object id, bool eager, bool isNullable);
 
 		/// <summary>
+		/// Load an instance without checking if it was deleted. If it does not exist and isn't nullable, throw an exception.
+		/// This method may create a new proxy or return an existing proxy.
+		/// </summary>
+		/// <param name="entityName">The entityName (or class full name) to load.</param>
+		/// <param name="id">The identifier of the object in the database.</param>
+		/// <param name="isNullable">Allow null instance</param>
+		/// <param name="eager">When enabled, the object is eagerly fetched.</param>
+		/// <returns>
+		/// A proxy of the object or an instance of the object if the <c>persistentClass</c> does not have a proxy.
+		/// </returns>
+		/// <exception cref="ObjectNotFoundException">No object could be found with that <c>id</c>.</exception>
+		Task<object> InternalLoadAsync(string entityName, object id, bool eager, bool isNullable);
+
+		/// <summary>
 		/// Load an instance immediately. Do not return a proxy.
 		/// </summary>
 		/// <param name="entityName"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
 		object ImmediateLoad(string entityName, object id);
+
+		/// <summary>
+		/// Load an instance immediately. Do not return a proxy.
+		/// </summary>
+		/// <param name="entityName"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		Task<object> ImmediateLoadAsync(string entityName, object id);
 
 		/// <summary>
 		/// System time before the start of the transaction
@@ -97,9 +120,8 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="queryExpression"></param>
 		/// <param name="parameters"></param>
-		/// <param name="async"></param>
 		/// <returns></returns>
-		Task<IList> ListAsync(IQueryExpression queryExpression, QueryParameters parameters, bool async = true);
+		Task<IList> ListAsync(IQueryExpression queryExpression, QueryParameters parameters);
 
 		/// <summary>
 		/// Create a new instance of <c>Query</c> for the given query expression
@@ -113,7 +135,7 @@ namespace NHibernate.Engine
 
 		void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results);
 
-		Task ListAsync(IQueryExpression queryExpression, QueryParameters queryParameters, IList results, bool async = true);
+		Task ListAsync(IQueryExpression queryExpression, QueryParameters queryParameters, IList results);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="List(string,QueryParameters)" />
@@ -129,7 +151,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Strongly-typed version of <see cref="List(IQueryExpression,QueryParameters)" />
 		/// </summary>
-		Task<IList<T>> ListAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters, bool async = true);
+		Task<IList<T>> ListAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="List(CriteriaImpl)" />
@@ -139,15 +161,15 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Strongly-typed version of <see cref="List(CriteriaImpl)" />
 		/// </summary>
-		Task<IList<T>> ListAsync<T>(CriteriaImpl criteria, bool async = true);
+		Task<IList<T>> ListAsync<T>(CriteriaImpl criteria);
 
 		void List(CriteriaImpl criteria, IList results);
 
-		Task ListAsync(CriteriaImpl criteria, IList results, bool async = true);
+		Task ListAsync(CriteriaImpl criteria, IList results);
 
 		IList List(CriteriaImpl criteria);
 
-		Task<IList> ListAsync(CriteriaImpl criteria, bool async = true);
+		Task<IList> ListAsync(CriteriaImpl criteria);
 
 		/// <summary>
 		/// Execute an <c>Iterate()</c> query
@@ -171,9 +193,8 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="query"></param>
 		/// <param name="parameters"></param>
-		/// <param name="async"></param>
 		/// <returns></returns>
-		Task<IEnumerable> EnumerableAsync(IQueryExpression query, QueryParameters parameters, bool async = true);
+		Task<IEnumerable> EnumerableAsync(IQueryExpression query, QueryParameters parameters);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="Enumerable(string, QueryParameters)" />
@@ -189,7 +210,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Strongly-typed version of <see cref="Enumerable(IQueryExpression, QueryParameters)" />
 		/// </summary>
-		Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression query, QueryParameters queryParameters, bool async = true);
+		Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression query, QueryParameters queryParameters);
 
 		/// <summary>
 		/// Execute a filter
@@ -199,7 +220,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Execute a filter
 		/// </summary>
-		Task<IList> ListFilterAsync(object collection, string filter, QueryParameters parameters, bool async = true);
+		Task<IList> ListFilterAsync(object collection, string filter, QueryParameters parameters);
 
 		/// <summary>
 		/// Execute a filter (strongly-typed version).
@@ -209,7 +230,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Execute a filter (strongly-typed version).
 		/// </summary>
-		Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters, bool async = true);
+		Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters);
 
 		/// <summary>
 		/// Collection from a filter
@@ -219,7 +240,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Collection from a filter
 		/// </summary>
-		Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters, bool async = true);
+		Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="EnumerableFilter(object, string, QueryParameters)" />
@@ -229,7 +250,7 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Strongly-typed version of <see cref="EnumerableFilter(object, string, QueryParameters)" />
 		/// </summary>
-		Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters, bool async = true);
+		Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters);
 
 		/// <summary> Get the <see cref="IEntityPersister"/> for any instance</summary>
 		/// <param name="entityName">optional entity name </param>
@@ -244,14 +265,14 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Notify the session that the transaction is about to complete
 		/// </summary>
-		void BeforeTransactionCompletion(ITransaction tx);
+		Task BeforeTransactionCompletion(ITransaction tx);
 
 		/// <summary>
 		/// Notify the session that the transaction completed, so we no longer own the old locks.
 		/// (Also we should release cache softlocks). May be called multiple times during the transaction
 		/// completion process.
 		/// </summary>
-		void AfterTransactionCompletion(bool successful, ITransaction tx);
+		Task AfterTransactionCompletion(bool successful, ITransaction tx);
 
 		/// <summary>
 		/// Return the identifier of the persistent object, or null if transient
@@ -271,11 +292,11 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Execute an SQL Query
 		/// </summary>
-		Task<IList> ListAsync(NativeSQLQuerySpecification spec, QueryParameters queryParameters, bool async = true);
+		Task<IList> ListAsync(NativeSQLQuerySpecification spec, QueryParameters queryParameters);
 
 		void List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results);
 
-		Task ListAsync(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results, bool async = true);
+		Task ListAsync(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="List(NativeSQLQuerySpecification, QueryParameters)" />
@@ -285,17 +306,17 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Strongly-typed version of <see cref="List(NativeSQLQuerySpecification, QueryParameters)" />
 		/// </summary>
-		Task<IList<T>> ListAsync<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters, bool async = true);
+		Task<IList<T>> ListAsync<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters);
 
 		/// <summary> Execute an SQL Query</summary>
 		void ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results);
 
 		/// <summary> Execute an SQL Query</summary>
-		Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results, bool async = true);
+		Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results);
 
 		IList<T> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters);
 
-		Task<IList<T>> ListCustomQueryAsync<T>(ICustomQuery customQuery, QueryParameters queryParameters, bool async = true);
+		Task<IList<T>> ListCustomQueryAsync<T>(ICustomQuery customQuery, QueryParameters queryParameters);
 
 		/// <summary>
 		/// Retrieve the currently set value for a filter parameter.
@@ -325,8 +346,8 @@ namespace NHibernate.Engine
 
 		[Obsolete("Use overload with IQueryExpression")]
 		IQueryTranslator[] GetQueries(string query, bool scalar); // NH specific for MultiQuery
-		
-		IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar); // NH specific for MultiQuery
+
+		Task<IQueryTranslator[]> GetQueries(IQueryExpression query, bool scalar); // NH specific for MultiQuery
 
 		IInterceptor Interceptor { get; }
 
@@ -372,6 +393,8 @@ namespace NHibernate.Engine
 
 		IDbConnection Connection { get; }
 
+		Task<DbConnection> GetConnection();
+
 		IQuery GetNamedQuery(string queryName);
 
 		/// <summary> Determine whether the session is closed.  Provided separately from
@@ -400,7 +423,7 @@ namespace NHibernate.Engine
 		int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
 
 		/// <summary> Execute a native SQL update or delete query</summary>
-		Task<int> ExecuteNativeUpdateAsync(NativeSQLQuerySpecification specification, QueryParameters queryParameters, bool async = true);
+		Task<int> ExecuteNativeUpdateAsync(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
 
 		/// <summary> Execute a HQL update or delete query</summary>
 		[Obsolete("Use overload with IQueryExpression")]
@@ -410,7 +433,7 @@ namespace NHibernate.Engine
 		int ExecuteUpdate(IQueryExpression query, QueryParameters queryParameters);
 
 		/// <summary> Execute a HQL update or delete query</summary>
-		Task<int> ExecuteUpdateAsync(IQueryExpression query, QueryParameters queryParameters, bool async = true);
+		Task<int> ExecuteUpdateAsync(IQueryExpression query, QueryParameters queryParameters);
 
 		FutureCriteriaBatch FutureCriteriaBatch { get; }
 

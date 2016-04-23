@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-
+using System.Threading.Tasks;
 using NHibernate.Cfg;
 using NHibernate.Util;
 
@@ -91,6 +91,11 @@ namespace NHibernate.Tool.hbm2ddl
 
 		public void Validate()
 		{
+			ValidateAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public async Task ValidateAsync()
+		{
 			log.Info("Running schema validator");
 			try
 			{
@@ -98,7 +103,7 @@ namespace NHibernate.Tool.hbm2ddl
 				try
 				{
 					log.Info("fetching database metadata");
-					connectionHelper.Prepare();
+					await connectionHelper.PrepareAsync().ConfigureAwait(false);
 					DbConnection connection = connectionHelper.Connection;
 					meta = new DatabaseMetadata(connection, dialect, false);
 				}

@@ -6,6 +6,7 @@ using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Event.Default
 {
@@ -22,7 +23,7 @@ namespace NHibernate.Event.Default
 			get { return CascadingAction.SaveUpdate; }
 		}
 
-		public virtual async Task OnSaveOrUpdate(SaveOrUpdateEvent @event, bool async)
+		public virtual async Task OnSaveOrUpdate(SaveOrUpdateEvent @event)
 		{
 			ISessionImplementor source = @event.Session;
 			object obj = @event.Entity;
@@ -51,7 +52,7 @@ namespace NHibernate.Event.Default
 				@event.Entity = entity;
 				@event.Entry = source.PersistenceContext.GetEntry(entity);
 				//return the id in the event object
-				@event.ResultId = await PerformSaveOrUpdate(@event, async).ConfigureAwait(false);
+				@event.ResultId = await PerformSaveOrUpdate(@event).ConfigureAwait(false);
 			}
 		}
 
@@ -60,21 +61,21 @@ namespace NHibernate.Event.Default
 			return source.PersistenceContext.ReassociateIfUninitializedProxy(obj);
 		}
 
-		protected virtual Task<object> PerformSaveOrUpdate(SaveOrUpdateEvent @event, bool async)
+		protected virtual async Task<object> PerformSaveOrUpdate(SaveOrUpdateEvent @event)
 		{
-			EntityState entityState = GetEntityState(@event.Entity, @event.EntityName, @event.Entry, @event.Session);
+			EntityState entityState = await GetEntityState(@event.Entity, @event.EntityName, @event.Entry, @event.Session).ConfigureAwait(false);
 
 			switch (entityState)
 			{
 				case EntityState.Detached:
-					EntityIsDetached(@event);
-					return Task.FromResult<object>(null);
+					await EntityIsDetached(@event).ConfigureAwait(false);
+					return null;
 
 				case EntityState.Persistent:
-					return Task.FromResult(EntityIsPersistent(@event));
+					return EntityIsPersistent(@event);
 
 				default:  //TRANSIENT or DELETED
-					return EntityIsTransient(@event, async);
+					return await EntityIsTransient(@event).ConfigureAwait(false);
 			}
 		}
 
@@ -127,9 +128,8 @@ namespace NHibernate.Event.Default
 		/// Here, we will perform the save processing. 
 		/// </summary>
 		/// <param name="event">The save event to be handled. </param>
-		/// <param name="async"></param>
 		/// <returns> The entity's identifier after saving. </returns>
-		protected virtual async Task<object> EntityIsTransient(SaveOrUpdateEvent @event, bool async)
+		protected virtual async Task<object> EntityIsTransient(SaveOrUpdateEvent @event)
 		{
 			log.Debug("saving transient instance");
 
@@ -139,7 +139,7 @@ namespace NHibernate.Event.Default
 			{
 				if (entityEntry.Status == Status.Deleted)
 				{
-					source.ForceFlush(entityEntry);
+					await source.ForceFlush(entityEntry).ConfigureAwait(false);
 				}
 				else
 				{
@@ -147,7 +147,7 @@ namespace NHibernate.Event.Default
 				}
 			}
 
-			object id = await SaveWithGeneratedOrRequestedId(@event, async).ConfigureAwait(false);
+			object id = await SaveWithGeneratedOrRequestedId(@event).ConfigureAwait(false);
 
 			source.PersistenceContext.ReassociateProxy(@event.Entity, id);
 
@@ -158,17 +158,16 @@ namespace NHibernate.Event.Default
 		/// Save the transient instance, assigning the right identifier 
 		/// </summary>
 		/// <param name="event">The initiating event. </param>
-		/// <param name="async"></param>
 		/// <returns> The entity's identifier value after saving.</returns>
-		protected virtual Task<object> SaveWithGeneratedOrRequestedId(SaveOrUpdateEvent @event, bool async)
+		protected virtual Task<object> SaveWithGeneratedOrRequestedId(SaveOrUpdateEvent @event)
 		{
 			if (@event.RequestedId == null)
 			{
-				 return SaveWithGeneratedId(@event.Entity, @event.EntityName, null, @event.Session, true, async);
+				 return SaveWithGeneratedId(@event.Entity, @event.EntityName, null, @event.Session, true);
 			}
 			else
 			{
-				return SaveWithRequestedId(@event.Entity, @event.RequestedId, @event.EntityName, null, @event.Session, async);
+				return SaveWithRequestedId(@event.Entity, @event.RequestedId, @event.EntityName, null, @event.Session);
 			}
 		}
 
@@ -177,14 +176,14 @@ namespace NHibernate.Event.Default
 		/// Here, we will perform the update processing. 
 		/// </summary>
 		/// <param name="event">The update event to be handled. </param>
-		protected virtual void EntityIsDetached(SaveOrUpdateEvent @event)
+		protected virtual Task EntityIsDetached(SaveOrUpdateEvent @event)
 		{
 			log.Debug("updating detached instance");
 
 			if (@event.Session.PersistenceContext.IsEntryFor(@event.Entity))
 			{
 				//TODO: assertion only, could be optimized away
-				throw new AssertionFailure("entity was persistent");
+				return TaskHelper.FromException<bool>(new AssertionFailure("entity was persistent"));
 			}
 
 			object entity = @event.Entity;
@@ -193,7 +192,7 @@ namespace NHibernate.Event.Default
 
 			@event.RequestedId = GetUpdateId(entity, persister, @event.RequestedId, @event.Session.EntityMode);
 
-			PerformUpdate(@event, entity, persister);
+			return PerformUpdate(@event, entity, persister);
 		}
 
 		/// <summary> Determine the id to use for updating. </summary>
@@ -218,7 +217,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected virtual void PerformUpdate(SaveOrUpdateEvent @event, object entity, IEntityPersister persister)
+		protected virtual async Task PerformUpdate(SaveOrUpdateEvent @event, object entity, IEntityPersister persister)
 		{
 			if (!persister.IsMutable)
 			{
@@ -238,12 +237,12 @@ namespace NHibernate.Event.Default
 
 			if (InvokeUpdateLifecycle(entity, persister, source))
 			{
-				Reassociate(@event, @event.Entity, @event.RequestedId, persister);
+				await Reassociate(@event, @event.Entity, @event.RequestedId, persister).ConfigureAwait(false);
 				return;
 			}
 
 			// this is a transient object with existing persistent state not loaded by the session
-			new OnUpdateVisitor(source, @event.RequestedId, entity).Process(entity, persister);
+			await new OnUpdateVisitor(source, @event.RequestedId, entity).Process(entity, persister).ConfigureAwait(false);
 
 			//TODO: put this stuff back in to read snapshot from
 			//      the second-level cache (needs some extra work)
@@ -276,7 +275,7 @@ namespace NHibernate.Event.Default
 				log.Debug("updating " + MessageHelper.InfoString(persister, @event.RequestedId, source.Factory));
 			}
 
-			CascadeOnUpdate(@event, persister, entity);
+			await CascadeOnUpdate(@event, persister, entity).ConfigureAwait(false);
 		}
 
 		protected virtual bool InvokeUpdateLifecycle(object entity, IEntityPersister persister, IEventSource source)
@@ -300,13 +299,13 @@ namespace NHibernate.Event.Default
 		/// <param name="event">The event currently being processed. </param>
 		/// <param name="persister">The defined persister for the entity being updated. </param>
 		/// <param name="entity">The entity being updated. </param>
-		private void CascadeOnUpdate(SaveOrUpdateEvent @event, IEntityPersister persister, object entity)
+		private async Task CascadeOnUpdate(SaveOrUpdateEvent @event, IEntityPersister persister, object entity)
 		{
 			IEventSource source = @event.Session;
 			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
-				new Cascade(CascadingAction.SaveUpdate, CascadePoint.AfterUpdate, source).CascadeOn(persister, entity);
+				await new Cascade(CascadingAction.SaveUpdate, CascadePoint.AfterUpdate, source).CascadeOn(persister, entity).ConfigureAwait(false);
 			}
 			finally
 			{

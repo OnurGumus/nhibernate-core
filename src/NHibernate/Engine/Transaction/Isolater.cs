@@ -1,7 +1,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
-
+using System.Threading.Tasks;
 using NHibernate.Dialect;
 using NHibernate.Exceptions;
 
@@ -36,9 +36,9 @@ namespace NHibernate.Engine.Transaction
 		/// </summary>
 		/// <param name="work">The work to be performed. </param>
 		/// <param name="session">The session from which this request is originating. </param>
-		public static void DoIsolatedWork(IIsolatedWork work, ISessionImplementor session)
+		public static Task DoIsolatedWork(IIsolatedWork work, ISessionImplementor session)
 		{
-			session.Factory.TransactionFactory.ExecuteWorkInIsolation(session, work, true);
+			return session.Factory.TransactionFactory.ExecuteWorkInIsolation(session, work, true);
 		}
 
 		/// <summary> 
@@ -47,9 +47,9 @@ namespace NHibernate.Engine.Transaction
 		/// </summary>
 		/// <param name="work">The work to be performed. </param>
 		/// <param name="session">The session from which this request is originating. </param>
-		public static void DoNonTransactedWork(IIsolatedWork work, ISessionImplementor session)
+		public static Task DoNonTransactedWork(IIsolatedWork work, ISessionImplementor session)
 		{
-			session.Factory.TransactionFactory.ExecuteWorkInIsolation(session, work, false);
+			return session.Factory.TransactionFactory.ExecuteWorkInIsolation(session, work, false);
 		}
 	}
 }

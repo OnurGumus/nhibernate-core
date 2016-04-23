@@ -28,6 +28,6 @@ namespace NHibernate.Id.Insert
 		/// <param name="session"> </param>
 		/// <param name="binder"> </param>
 		/// <returns> The generated identifier value. </returns>
-		Task<object> PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder, bool async);
+		Task<object> PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder);
 	}
 }

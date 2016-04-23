@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Id.Insert;
 
@@ -12,9 +13,9 @@ namespace NHibernate.Id
 	{
 		#region IPostInsertIdentifierGenerator Members
 
-		public override object Generate(ISessionImplementor session, object obj)
+		public override Task<object> Generate(ISessionImplementor session, object obj)
 		{
-			return IdentifierGeneratorFactory.PostInsertIndicator;
+			return Task.FromResult(IdentifierGeneratorFactory.PostInsertIndicator);
 		}
 
 		#endregion

@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.Engine.Transaction;
 using NHibernate.Transaction;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1054
 {
@@ -28,9 +30,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1054
 			return false;
 		}
 
-		public void ExecuteWorkInIsolation(ISessionImplementor session, IIsolatedWork work, bool transacted)
+		public Task ExecuteWorkInIsolation(ISessionImplementor session, IIsolatedWork work, bool transacted)
 		{
-			throw new NotImplementedException();
+			return TaskHelper.FromException<bool>(new NotImplementedException());
 		}
 	}
 }

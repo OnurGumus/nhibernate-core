@@ -1,6 +1,6 @@
 using System;
 using System.Data;
-
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.UserTypes;
@@ -49,21 +49,21 @@ namespace NHibernate.DomainModel
 			get { return true; }
 		}
 
-		public Object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, Object owner)
+		public async Task<object> NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, Object owner)
 		{
-			string first = (string) NHibernateUtil.String.NullSafeGet(rs, names[0], session, owner);
-			string second = (string) NHibernateUtil.String.NullSafeGet(rs, names[1], session, owner);
+			string first = (string) await NHibernateUtil.String.NullSafeGet(rs, names[0], session, owner).ConfigureAwait(false);
+			string second = (string)await NHibernateUtil.String.NullSafeGet(rs, names[1], session, owner).ConfigureAwait(false);
 
 			return (first == null && second == null) ? null : new string[] {first, second};
 		}
 
 
-		public void NullSafeSet(IDbCommand st, Object value, int index, bool[] settable, ISessionImplementor session)
+		public async Task NullSafeSet(IDbCommand st, Object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			string[] strings = (value == null) ? new string[2] : (string[]) value;
 
-			if (settable[0]) NHibernateUtil.String.NullSafeSet(st, strings[0], index++, session);
-			if (settable[1]) NHibernateUtil.String.NullSafeSet(st, strings[1], index, session);
+			if (settable[0]) await NHibernateUtil.String.NullSafeSet(st, strings[0], index++, session).ConfigureAwait(false);
+			if (settable[1]) await NHibernateUtil.String.NullSafeSet(st, strings[1], index, session).ConfigureAwait(false);
 		}
 
 		public string[] PropertyNames
@@ -97,14 +97,14 @@ namespace NHibernate.DomainModel
 			return DeepCopy(cached);
 		}
 
-		public object Disassemble(Object value, ISessionImplementor session)
+		public Task<object> Disassemble(Object value, ISessionImplementor session)
 		{
-			return DeepCopy(value);
+			return Task.FromResult(DeepCopy(value));
 		}
 
-		public object Replace(object original, object target, ISessionImplementor session, object owner)
+		public Task<object> Replace(object original, object target, ISessionImplementor session, object owner)
 		{
-			return DeepCopy(original);
+			return Task.FromResult(DeepCopy(original));
 		}
 	}
 }

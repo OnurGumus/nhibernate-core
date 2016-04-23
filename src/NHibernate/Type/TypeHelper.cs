@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Intercept;
 using NHibernate.Properties;
@@ -42,17 +43,17 @@ namespace NHibernate.Type
 		/// <param name="row">The values</param>
 		/// <param name="types">The value types</param>
 		/// <param name="session">The originating session</param>
-		public static void BeforeAssemble(object[] row, ICacheAssembler[] types, ISessionImplementor session)
+		public static async Task BeforeAssemble(object[] row, ICacheAssembler[] types, ISessionImplementor session)
 		{
 			for (int i = 0; i < types.Length; i++)
 			{
 				if (!Equals(LazyPropertyInitializer.UnfetchedProperty, row[i]) && !Equals(BackrefPropertyAccessor.Unknown, row[i]))
 				{
-					types[i].BeforeAssemble(row[i], session);
+					await types[i].BeforeAssemble(row[i], session).ConfigureAwait(false);
 				}
 			}
 		}
-		
+
 		/// <summary>
 		/// Apply the <see cref="ICacheAssembler.Assemble" /> operation across a series of values.
 		/// </summary>
@@ -61,7 +62,7 @@ namespace NHibernate.Type
 		/// <param name="session">The originating session</param>
 		/// <param name="owner">The entity "owning" the values</param>
 		/// <returns></returns>
-		public static object[] Assemble(object[] row, ICacheAssembler[] types, ISessionImplementor session, object owner)
+		public static async Task<object[]> Assemble(object[] row, ICacheAssembler[] types, ISessionImplementor session, object owner)
 		{
 			var assembled = new object[row.Length];
 			for (int i = 0; i < row.Length; i++)
@@ -72,7 +73,7 @@ namespace NHibernate.Type
 				}
 				else
 				{
-					assembled[i] = types[i].Assemble(row[i], session, owner);
+					assembled[i] = await types[i].Assemble(row[i], session, owner).ConfigureAwait(false);
 				}
 			}
 			return assembled;
@@ -85,7 +86,7 @@ namespace NHibernate.Type
 		/// <param name="session">The originating session</param>
 		/// <param name="owner">The entity "owning" the values</param>
 		/// <returns> The disassembled state</returns>
-		public static object[] Disassemble(object[] row, ICacheAssembler[] types, bool[] nonCacheable, ISessionImplementor session, object owner)
+		public static async Task<object[]> Disassemble(object[] row, ICacheAssembler[] types, bool[] nonCacheable, ISessionImplementor session, object owner)
 		{
 			object[] disassembled = new object[row.Length];
 			for (int i = 0; i < row.Length; i++)
@@ -100,7 +101,7 @@ namespace NHibernate.Type
 				}
 				else
 				{
-					disassembled[i] = types[i].Disassemble(row[i], session, owner);
+					disassembled[i] = await types[i].Disassemble(row[i], session, owner).ConfigureAwait(false);
 				}
 			}
 			return disassembled;
@@ -116,7 +117,7 @@ namespace NHibernate.Type
 		/// <param name="owner">The entity "owning" the values</param>
 		/// <param name="copiedAlready">Represent a cache of already replaced state</param>
 		/// <returns> The replaced state</returns>
-		public static object[] Replace(object[] original, object[] target, IType[] types, ISessionImplementor session,
+		public static async Task<object[]> Replace(object[] original, object[] target, IType[] types, ISessionImplementor session,
 																	 object owner, IDictionary copiedAlready)
 		{
 			var copied = new object[original.Length];
@@ -128,7 +129,7 @@ namespace NHibernate.Type
 				}
 				else
 				{
-					copied[i] = types[i].Replace(original[i], target[i], session, owner, copiedAlready);
+					copied[i] = await types[i].Replace(original[i], target[i], session, owner, copiedAlready).ConfigureAwait(false);
 				}
 			}
 			return copied;
@@ -146,7 +147,7 @@ namespace NHibernate.Type
 		/// <param name="copyCache">A map representing a cache of already replaced state</param>
 		/// <param name="foreignKeyDirection">FK directionality to be applied to the replacement</param>
 		/// <returns> The replaced state</returns>
-		public static object[] Replace(object[] original, object[] target, IType[] types,
+		public static async Task<object[]> Replace(object[] original, object[] target, IType[] types,
 			ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
 		{
 			object[] copied = new object[original.Length];
@@ -157,7 +158,7 @@ namespace NHibernate.Type
 					copied[i] = target[i];
 				}
 				else
-					copied[i] = types[i].Replace(original[i], target[i], session, owner, copyCache, foreignKeyDirection);
+					copied[i] = await types[i].Replace(original[i], target[i], session, owner, copyCache, foreignKeyDirection).ConfigureAwait(false);
 			}
 			return copied;
 		}
@@ -178,7 +179,7 @@ namespace NHibernate.Type
 		/// If the corresponding type is a component type, then apply <see cref="ReplaceAssociations" />
 		/// across the component subtypes but do not replace the component value itself.
 		/// </remarks>
-		public static object[] ReplaceAssociations(object[] original, object[] target, IType[] types,
+		public static async Task<object[]> ReplaceAssociations(object[] original, object[] target, IType[] types,
 			ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
 		{
 			object[] copied = new object[original.Length];
@@ -193,10 +194,10 @@ namespace NHibernate.Type
 					// need to extract the component values and check for subtype replacements...
 					IAbstractComponentType componentType = (IAbstractComponentType)types[i];
 					IType[] subtypes = componentType.Subtypes;
-					object[] origComponentValues = original[i] == null ? new object[subtypes.Length] : componentType.GetPropertyValues(original[i], session);
-					object[] targetComponentValues = target[i] == null ? new object[subtypes.Length] : componentType.GetPropertyValues(target[i], session);
+					object[] origComponentValues = original[i] == null ? new object[subtypes.Length] : await componentType.GetPropertyValues(original[i], session).ConfigureAwait(false);
+					object[] targetComponentValues = target[i] == null ? new object[subtypes.Length] : await componentType.GetPropertyValues(target[i], session).ConfigureAwait(false);
 
-					object[] componentCopy = ReplaceAssociations(origComponentValues, targetComponentValues, subtypes, session, null, copyCache, foreignKeyDirection);
+					object[] componentCopy = await ReplaceAssociations(origComponentValues, targetComponentValues, subtypes, session, null, copyCache, foreignKeyDirection).ConfigureAwait(false);
 					
 					if (!componentType.IsAnyType && target[i] != null)
 						componentType.SetPropertyValues(target[i], componentCopy, session.EntityMode);
@@ -209,7 +210,7 @@ namespace NHibernate.Type
 				}
 				else
 				{
-					copied[i] = types[i].Replace(original[i], target[i], session, owner, copyCache, foreignKeyDirection);
+					copied[i] = await types[i].Replace(original[i], target[i], session, owner, copyCache, foreignKeyDirection).ConfigureAwait(false);
 				}
 			}
 			return copied;
@@ -227,7 +228,7 @@ namespace NHibernate.Type
 		/// <param name="anyUninitializedProperties">Does the entity currently hold any uninitialized property values?</param>
 		/// <param name="session">The session from which the dirty check request originated.</param>
 		/// <returns>Array containing indices of the dirty properties, or null if no properties considered dirty.</returns>
-		public static int[] FindDirty(StandardProperty[] properties,
+		public static async Task<int[]> FindDirty(StandardProperty[] properties,
 										object[] currentState,
 										object[] previousState,
 										bool[][] includeColumns,
@@ -240,7 +241,7 @@ namespace NHibernate.Type
 
 			for (int i = 0; i < span; i++)
 			{
-				var dirty = Dirty(properties, currentState, previousState, includeColumns, anyUninitializedProperties, session, i);
+				var dirty = await Dirty(properties, currentState, previousState, includeColumns, anyUninitializedProperties, session, i).ConfigureAwait(false);
 				if (dirty)
 				{
 					if (results == null)
@@ -262,14 +263,14 @@ namespace NHibernate.Type
 			}
 		}
 
-		private static bool Dirty(StandardProperty[] properties, object[] currentState, object[] previousState, bool[][] includeColumns, bool anyUninitializedProperties, ISessionImplementor session, int i)
+		private static async Task<bool> Dirty(StandardProperty[] properties, object[] currentState, object[] previousState, bool[][] includeColumns, bool anyUninitializedProperties, ISessionImplementor session, int i)
 		{
 			if (Equals(LazyPropertyInitializer.UnfetchedProperty, currentState[i]))
 				return false;
 			if (Equals(LazyPropertyInitializer.UnfetchedProperty, previousState[i]))
 				return true;
 			return properties[i].IsDirtyCheckable(anyUninitializedProperties) &&
-				   properties[i].Type.IsDirty(previousState[i], currentState[i], includeColumns[i], session);
+				   await properties[i].Type.IsDirty(previousState[i], currentState[i], includeColumns[i], session).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -284,7 +285,7 @@ namespace NHibernate.Type
 		/// <param name="anyUninitializedProperties">Does the entity currently hold any uninitialized property values?</param>
 		/// <param name="session">The session from which the dirty check request originated.</param>
 		/// <returns>Array containing indices of the modified properties, or null if no properties considered modified.</returns>
-		public static int[] FindModified(StandardProperty[] properties,
+		public static async Task<int[]> FindModified(StandardProperty[] properties,
 											object[] currentState,
 											object[] previousState,
 											bool[][] includeColumns,
@@ -300,7 +301,7 @@ namespace NHibernate.Type
 				bool dirty =
 					!Equals(LazyPropertyInitializer.UnfetchedProperty, currentState[i]) &&
 					properties[i].IsDirtyCheckable(anyUninitializedProperties)
-					&& properties[i].Type.IsModified(previousState[i], currentState[i], includeColumns[i], session);
+					&& await properties[i].Type.IsModified(previousState[i], currentState[i], includeColumns[i], session).ConfigureAwait(false);
 
 				if (dirty)
 				{

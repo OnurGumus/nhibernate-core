@@ -10,13 +10,11 @@ namespace NHibernate.Event
 	{
 		/// <summary> Handle the given create event.</summary>
 		/// <param name="event">The create event to be handled.</param>
-		/// <param name="async"></param>
-		Task OnPersist(PersistEvent @event, bool async);
+		Task OnPersist(PersistEvent @event);
 
 		/// <summary> Handle the given create event. </summary>
 		/// <param name="event">The create event to be handled.</param>
 		/// <param name="createdAlready"></param>
-		/// <param name="async"></param>
-		Task OnPersist(PersistEvent @event, IDictionary createdAlready, bool async);
+		Task OnPersist(PersistEvent @event, IDictionary createdAlready);
 	}
 }

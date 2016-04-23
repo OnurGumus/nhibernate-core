@@ -1,10 +1,11 @@
 using System.Data;
+using System.Threading.Tasks;
 
 namespace NHibernate.Id.Insert
 {
 	public interface IBinder
 	{
 		object Entity { get;}
-		void BindValues(IDbCommand cm);
+		Task BindValues(IDbCommand cm);
 	}
 }

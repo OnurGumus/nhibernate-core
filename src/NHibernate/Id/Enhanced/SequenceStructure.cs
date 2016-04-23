@@ -1,7 +1,8 @@
 using System;
 using System.Data;
 using System.Data.Common;
-
+using System.Threading.Tasks;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
@@ -93,19 +94,19 @@ namespace NHibernate.Id.Enhanced
 
 			#region IAccessCallback Members
 
-			public virtual long GetNextValue()
+			public virtual async Task<long> GetNextValue()
 			{
 				_owner._accessCounter++;
 				try
 				{
-					DbCommand st = _session.Batcher.PrepareCommand(CommandType.Text, _owner._sql, SqlTypeFactory.NoTypes);
-					IDataReader rs = null;
+					DbCommand st = await _session.Batcher.PrepareCommand(CommandType.Text, _owner._sql, SqlTypeFactory.NoTypes).ConfigureAwait(false);
+					IDataReaderEx rs = null;
 					try
 					{
-						rs = _session.Batcher.ExecuteReader(st, false).ConfigureAwait(false).GetAwaiter().GetResult();
+						rs = await _session.Batcher.ExecuteReader(st).ConfigureAwait(false);
 						try
 						{
-							rs.Read();
+							await rs.ReadAsync().ConfigureAwait(false);
 							long result = Convert.ToInt64(rs.GetValue(0));
 							if (Log.IsDebugEnabled)
 							{

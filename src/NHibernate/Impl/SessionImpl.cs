@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using System.Security;
@@ -208,7 +209,7 @@ namespace NHibernate.Impl
 		/// <param name="ignoreExceptionBeforeTransactionCompletion">Should we ignore exceptions in IInterceptor.BeforeTransactionCompletion</param>
 		/// <param name="connectionReleaseMode">The mode by which we should release JDBC connections.</param>
 		internal SessionImpl(
-			IDbConnection connection,
+			DbConnection connection,
 			SessionFactoryImpl factory,
 			bool autoclose,
 			long timestamp,
@@ -402,7 +403,7 @@ namespace NHibernate.Impl
 		/// and that all of the softlocks in the <see cref="Cache"/> have
 		/// been released.
 		/// </summary>
-		public override void AfterTransactionCompletion(bool success, ITransaction tx)
+		public override async Task AfterTransactionCompletion(bool success, ITransaction tx)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -414,7 +415,7 @@ namespace NHibernate.Impl
 
 				connectionManager.AfterTransaction();
 				persistenceContext.AfterTransactionCompletion();
-				actionQueue.AfterTransactionCompletion(success);
+				await actionQueue.AfterTransactionCompletion(success).ConfigureAwait(false);
 				if (rootSession == null)
 				{
 					try
@@ -488,55 +489,40 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object Save(object obj)
 		{
-			return SaveAsync(obj, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return SaveAsync(obj).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public Task<object> SaveAsync(object obj)
-		{
-			return SaveAsync(obj, true);
-		}
-
-		public async Task<object> SaveAsync(object obj, bool async)
+		public async Task<object> SaveAsync(object obj)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				return await FireSave(new SaveOrUpdateEvent(null, obj, this), async).ConfigureAwait(false);
+				return await FireSave(new SaveOrUpdateEvent(null, obj, this)).ConfigureAwait(false);
 			}
 		}
 
 		public object Save(string entityName, object obj)
 		{
-			return SaveAsync(entityName, obj, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return SaveAsync(entityName, obj).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public Task<object> SaveAsync(string entityName, object obj)
-		{
-			return SaveAsync(entityName, obj, true);
-		}
-
-		public async Task<object> SaveAsync(string entityName, object obj, bool async)
+		public async Task<object> SaveAsync(string entityName, object obj)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				return await FireSave(new SaveOrUpdateEvent(entityName, obj, this), async).ConfigureAwait(false);
+				return await FireSave(new SaveOrUpdateEvent(entityName, obj, this)).ConfigureAwait(false);
 			}
 		}
 
 		public void Save(string entityName, object obj, object id)
 		{
-			SaveAsync(entityName, obj, id, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			SaveAsync(entityName, obj, id).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public Task SaveAsync(string entityName, object obj, object id)
-		{
-			return SaveAsync(entityName, obj, id, true);
-		}
-
-		public async Task SaveAsync(string entityName, object obj, object id, bool async)
+		public async Task SaveAsync(string entityName, object obj, object id)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				await FireSave(new SaveOrUpdateEvent(entityName, obj, id, this), async).ConfigureAwait(false);
+				await FireSave(new SaveOrUpdateEvent(entityName, obj, id, this)).ConfigureAwait(false);
 			}
 		}
 
@@ -547,7 +533,7 @@ namespace NHibernate.Impl
 		/// <param name="id"></param>
 		public void Save(object obj, object id)
 		{
-			SaveAsync(obj, id, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			SaveAsync(obj, id).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		/// <summary>
@@ -555,16 +541,11 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <param name="id"></param>
-		public Task SaveAsync(object obj, object id)
-		{
-			return SaveAsync(obj, id, true);
-		}
-
-		public async Task SaveAsync(object obj, object id, bool async)
+		public async Task SaveAsync(object obj, object id)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				await FireSave(new SaveOrUpdateEvent(null, obj, id, this), async).ConfigureAwait(false);
+				await FireSave(new SaveOrUpdateEvent(null, obj, id, this)).ConfigureAwait(false);
 			}
 		}
 
@@ -574,144 +555,124 @@ namespace NHibernate.Impl
 		/// <param name="obj"></param>
 		public void Delete(object obj)
 		{
+			DeleteAsync(obj).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary>
+		/// Delete a persistent object
+		/// </summary>
+		/// <param name="obj"></param>
+		public async Task DeleteAsync(object obj)
+		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireDelete(new DeleteEvent(obj, this));
+				await FireDelete(new DeleteEvent(obj, this)).ConfigureAwait(false);
 			}
 		}
 
 		/// <summary> Delete a persistent object (by explicit entity name)</summary>
 		public void Delete(string entityName, object obj)
 		{
+			DeleteAsync(entityName, obj).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary> Delete a persistent object (by explicit entity name)</summary>
+		public async Task DeleteAsync(string entityName, object obj)
+		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireDelete(new DeleteEvent(entityName, obj, this));
+				await FireDelete(new DeleteEvent(entityName, obj, this)).ConfigureAwait(false);
 			}
 		}
 
 		public void Update(object obj)
 		{
-			UpdateAsync(obj, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			UpdateAsync(obj).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public Task UpdateAsync(object obj)
-		{
-			return UpdateAsync(obj, true);
-		}
-
-		public async Task UpdateAsync(object obj, bool async)
+		public async Task UpdateAsync(object obj)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				await FireUpdate(new SaveOrUpdateEvent(null, obj, this), async).ConfigureAwait(false);
+				await FireUpdate(new SaveOrUpdateEvent(null, obj, this)).ConfigureAwait(false);
 			}
 		}
 
 		public void Update(string entityName, object obj)
 		{
-			UpdateAsync(entityName, obj, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			UpdateAsync(entityName, obj).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public Task UpdateAsync(string entityName, object obj)
-		{
-			return UpdateAsync(entityName, obj, true);
-		}
-
-		public async Task UpdateAsync(string entityName, object obj, bool async)
+		public async Task UpdateAsync(string entityName, object obj)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				await FireUpdate(new SaveOrUpdateEvent(entityName, obj, this), async).ConfigureAwait(false);
+				await FireUpdate(new SaveOrUpdateEvent(entityName, obj, this)).ConfigureAwait(false);
 			}
 		}
 
 		public void Update(string entityName, object obj, object id)
 		{
-			UpdateAsync(entityName, obj, id, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			UpdateAsync(entityName, obj, id).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public Task UpdateAsync(string entityName, object obj, object id)
-		{
-			return UpdateAsync(entityName, obj, id, true);
-		}
-
-		public async Task UpdateAsync(string entityName, object obj, object id, bool async)
+		public async Task UpdateAsync(string entityName, object obj, object id)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				await FireUpdate(new SaveOrUpdateEvent(entityName, obj, id, this), async).ConfigureAwait(false);
+				await FireUpdate(new SaveOrUpdateEvent(entityName, obj, id, this)).ConfigureAwait(false);
 			}
 		}
 
 		public void SaveOrUpdate(object obj)
 		{
-			SaveOrUpdateAsync(obj, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			SaveOrUpdateAsync(obj).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public Task SaveOrUpdateAsync(object obj)
-		{
-			return SaveOrUpdateAsync(obj, true);
-		}
-
-		private async Task SaveOrUpdateAsync(object obj, bool async)
+		public async Task SaveOrUpdateAsync(object obj)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				await FireSaveOrUpdate(new SaveOrUpdateEvent(null, obj, this), async).ConfigureAwait(false);
+				await FireSaveOrUpdate(new SaveOrUpdateEvent(null, obj, this)).ConfigureAwait(false);
 			}
 		}
 
 		public void SaveOrUpdate(string entityName, object obj)
 		{
-			SaveOrUpdateAsync(entityName, obj, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			SaveOrUpdateAsync(entityName, obj).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public Task SaveOrUpdateAsync(string entityName, object obj)
-		{
-			return SaveOrUpdateAsync(entityName, obj, true);
-		}
-
-		public async Task SaveOrUpdateAsync(string entityName, object obj, bool async)
+		public async Task SaveOrUpdateAsync(string entityName, object obj)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				await FireSaveOrUpdate(new SaveOrUpdateEvent(entityName, obj, this), async).ConfigureAwait(false);
+				await FireSaveOrUpdate(new SaveOrUpdateEvent(entityName, obj, this)).ConfigureAwait(false);
 			}
 		}
 
 		public void SaveOrUpdate(string entityName, object obj, object id)
 		{
-			SaveOrUpdateAsync(entityName, obj, id, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			SaveOrUpdateAsync(entityName, obj, id).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public Task SaveOrUpdateAsync(string entityName, object obj, object id)
-		{
-			return SaveOrUpdateAsync(entityName, obj, id, true);
-		}
-
-		public async Task SaveOrUpdateAsync(string entityName, object obj, object id, bool async)
+		public async Task SaveOrUpdateAsync(string entityName, object obj, object id)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				await FireSaveOrUpdate(new SaveOrUpdateEvent(entityName, obj, id, this), async).ConfigureAwait(false);
+				await FireSaveOrUpdate(new SaveOrUpdateEvent(entityName, obj, id, this)).ConfigureAwait(false);
 			}
 		}
 
 		public void Update(object obj, object id)
 		{
-			UpdateAsync(obj, id, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			UpdateAsync(obj, id).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public Task UpdateAsync(object obj, object id)
-		{
-			return UpdateAsync(obj, id, true);
-		}
-
-		public async Task UpdateAsync(object obj, object id, bool async)
+		public async Task UpdateAsync(object obj, object id)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				await FireUpdate(new SaveOrUpdateEvent(null, obj, id, this), false).ConfigureAwait(false);
+				await FireUpdate(new SaveOrUpdateEvent(null, obj, id, this)).ConfigureAwait(false);
 			}
 		}
 
@@ -722,7 +683,7 @@ namespace NHibernate.Impl
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				return await ListAsync(query.ToQueryExpression(), new QueryParameters(types, values), false).ConfigureAwait(false);
+				return await ListAsync(query.ToQueryExpression(), new QueryParameters(types, values)).ConfigureAwait(false);
 			}
 		}
 
@@ -731,20 +692,20 @@ namespace NHibernate.Impl
 			Dispose(true);
 		}
 
-		public override async Task ListAsync(IQueryExpression queryExpression, QueryParameters queryParameters, IList results, bool async)
+		public override async Task ListAsync(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(queryExpression, false);
-				await AutoFlushIfRequired(plan.QuerySpaces, async).ConfigureAwait(false);
+				await AutoFlushIfRequired(plan.QuerySpaces).ConfigureAwait(false);
 
 				bool success = false;
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 				try
 				{
-					await plan.PerformList(queryParameters, this, results, async).ConfigureAwait(false);
+					await plan.PerformList(queryParameters, this, results).ConfigureAwait(false);
 					success = true;
 				}
 				catch (HibernateException)
@@ -759,39 +720,39 @@ namespace NHibernate.Impl
 				finally
 				{
 					dontFlushFromFind--;
-					AfterOperation(success);
+					await AfterOperation(success).ConfigureAwait(false);
 				}
 			}
 		}
 
-		public override IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar)
+		public override async Task<IQueryTranslator[]> GetQueries(IQueryExpression query, bool scalar)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				var plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, enabledFilters);
-				AutoFlushIfRequired(plan.QuerySpaces, false).ConfigureAwait(false).GetAwaiter().GetResult();
+				await AutoFlushIfRequired(plan.QuerySpaces).ConfigureAwait(false);
 				return plan.Translators;
 			}
 		}
 
 		public override IEnumerable<T> Enumerable<T>(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
-			return EnumerableAsync<T>(queryExpression, queryParameters, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return EnumerableAsync<T>(queryExpression, queryParameters).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public override async Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters, bool async = true)
+		public override async Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(queryExpression, true);
-				await AutoFlushIfRequired(plan.QuerySpaces, async).ConfigureAwait(false);
+				await AutoFlushIfRequired(plan.QuerySpaces).ConfigureAwait(false);
 
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 				try
 				{
-					return await plan.PerformIterate<T>(queryParameters, this, async).ConfigureAwait(false);
+					return await plan.PerformIterate<T>(queryParameters, this).ConfigureAwait(false);
 				}
 				finally
 				{
@@ -802,22 +763,22 @@ namespace NHibernate.Impl
 
 		public override IEnumerable Enumerable(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
-			return EnumerableAsync(queryExpression, queryParameters, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return EnumerableAsync(queryExpression, queryParameters).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public override async Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters, bool async = true)
+		public override async Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(queryExpression, true);
-				await AutoFlushIfRequired(plan.QuerySpaces, async).ConfigureAwait(false);
+				await AutoFlushIfRequired(plan.QuerySpaces).ConfigureAwait(false);
 
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 				try
 				{
-					return await plan.PerformIterate(queryParameters, this, async).ConfigureAwait(false);
+					return await plan.PerformIterate(queryParameters, this).ConfigureAwait(false);
 				}
 				finally
 				{
@@ -862,15 +823,10 @@ namespace NHibernate.Impl
 
 		public int Delete(string query, object[] values, IType[] types)
 		{
-			return DeleteAsync(query, values, types, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return DeleteAsync(query, values, types).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public Task<int> DeleteAsync(string query, object[] values, IType[] types)
-		{
-			return DeleteAsync(query, values, types, true);
-		}
-
-		public async Task<int> DeleteAsync(string query, object[] values, IType[] types, bool async)
+		public async Task<int> DeleteAsync(string query, object[] values, IType[] types)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -894,7 +850,7 @@ namespace NHibernate.Impl
 				int count = list.Count;
 				for (int i = 0; i < count; i++)
 				{
-					Delete(list[i]);
+					await DeleteAsync(list[i]).ConfigureAwait(false);
 				}
 				return count;
 			}
@@ -902,17 +858,27 @@ namespace NHibernate.Impl
 
 		public void Lock(object obj, LockMode lockMode)
 		{
+			LockAsync(obj, lockMode).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public async Task LockAsync(object obj, LockMode lockMode)
+		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireLock(new LockEvent(obj, lockMode, this));
+				await FireLock(new LockEvent(obj, lockMode, this)).ConfigureAwait(false);
 			}
 		}
 
 		public void Lock(string entityName, object obj, LockMode lockMode)
 		{
+			LockAsync(entityName, obj, lockMode).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public async Task LockAsync(string entityName, object obj, LockMode lockMode)
+		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireLock(new LockEvent(entityName, obj, lockMode, this));
+				await FireLock(new LockEvent(entityName, obj, lockMode, this)).ConfigureAwait(false);
 			}
 		}
 
@@ -924,7 +890,7 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery CreateFilter(object collection, string queryString)
 		{
-			return CreateFilterAsync(collection, queryString, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return CreateFilterAsync(collection, queryString).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		/// <summary>
@@ -932,9 +898,8 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <param name="queryString"></param>
-		/// <param name="async"></param>
 		/// <returns></returns>
-		public async Task<IQuery> CreateFilterAsync(object collection, string queryString, bool async = true)
+		public async Task<IQuery> CreateFilterAsync(object collection, string queryString)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -943,13 +908,13 @@ namespace NHibernate.Impl
 				CheckAndUpdateSessionStatus();
 				CollectionFilterImpl filter =
 					new CollectionFilterImpl(queryString, collection, this,
-											 (await GetFilterQueryPlanAsync(collection, queryString, null, false, async).ConfigureAwait(false)).ParameterMetadata);
+											 (await GetFilterQueryPlanAsync(collection, queryString, null, false).ConfigureAwait(false)).ParameterMetadata);
 				//filter.SetComment(queryString);
 				return filter;
 			}
 		}
 
-		private async Task<FilterQueryPlan> GetFilterQueryPlanAsync(object collection, string filter, QueryParameters parameters, bool shallow, bool async)
+		private async Task<FilterQueryPlan> GetFilterQueryPlanAsync(object collection, string filter, QueryParameters parameters, bool shallow)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -966,7 +931,7 @@ namespace NHibernate.Impl
 				{
 					// if it was previously unreferenced, we need to flush in order to
 					// get its state into the database in order to execute query
-					Flush();
+					await FlushAsync().ConfigureAwait(false);
 					entry = persistenceContext.GetCollectionEntryOrNull(collection);
 					ICollectionPersister roleAfterFlush = (entry == null) ? null : entry.LoadedPersister;
 					if (roleAfterFlush == null)
@@ -981,7 +946,7 @@ namespace NHibernate.Impl
 					// to the queried tables
 					plan = Factory.QueryPlanCache.GetFilterQueryPlan(filter, roleBeforeFlush.Role, shallow, EnabledFilters);
 
-					var res = await AutoFlushIfRequired(plan.QuerySpaces, async).ConfigureAwait(false);
+					var res = await AutoFlushIfRequired(plan.QuerySpaces).ConfigureAwait(false);
 					if (res)
 					{
 						// might need to run a different filter entirely after the flush
@@ -1049,7 +1014,7 @@ namespace NHibernate.Impl
 
 		#region IEventSource Members
 		/// <summary> Force an immediate flush</summary>
-		public void ForceFlush(EntityEntry entityEntry)
+		public async Task ForceFlush(EntityEntry entityEntry)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -1068,52 +1033,51 @@ namespace NHibernate.Impl
 						entityEntry.EntityName);
 				}
 
-				Flush();
+				await FlushAsync().ConfigureAwait(false);
 			}
 		}
 
 		/// <summary> Cascade merge an entity instance</summary>
-		public void Merge(string entityName, object obj, IDictionary copiedAlready)
+		public async Task Merge(string entityName, object obj, IDictionary copiedAlready)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireMerge(copiedAlready, new MergeEvent(entityName, obj, this));
+				await FireMerge(copiedAlready, new MergeEvent(entityName, obj, this)).ConfigureAwait(false);
 			}
 		}
 
 		/// <summary> Cascade persist an entity instance</summary>
-		public void Persist(string entityName, object obj, IDictionary createdAlready)
+		public async Task Persist(string entityName, object obj, IDictionary createdAlready)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FirePersist(createdAlready, new PersistEvent(entityName, obj, this));
+				await FirePersist(createdAlready, new PersistEvent(entityName, obj, this)).ConfigureAwait(false);
 			}
 		}
 
 		/// <summary> Cascade persist an entity instance during the flush process</summary>
-		public async Task PersistOnFlush(string entityName, object obj, IDictionary copiedAlready, bool async)
+		public async Task PersistOnFlush(string entityName, object obj, IDictionary copiedAlready)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				await FirePersistOnFlush(copiedAlready, new PersistEvent(entityName, obj, this), async).ConfigureAwait(false);
+				await FirePersistOnFlush(copiedAlready, new PersistEvent(entityName, obj, this)).ConfigureAwait(false);
 			}
 		}
 
-		/// <summary> Cascade refresh an entity instance</summary>
-		public void Refresh(object obj, IDictionary refreshedAlready)
+		public async Task Refresh(object obj, IDictionary refreshedAlready)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireRefresh(refreshedAlready, new RefreshEvent(obj, this));
+				await FireRefresh(refreshedAlready, new RefreshEvent(obj, this)).ConfigureAwait(false);
 			}
 		}
 
 		/// <summary> Cascade delete an entity instance</summary>
-		public void Delete(string entityName, object child, bool isCascadeDeleteEnabled, ISet<object> transientEntities)
+		public async Task Delete(string entityName, object child, bool isCascadeDeleteEnabled, ISet<object> transientEntities)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireDelete(new DeleteEvent(entityName, child, isCascadeDeleteEnabled, this), transientEntities);
+				await FireDelete(new DeleteEvent(entityName, child, isCascadeDeleteEnabled, this), transientEntities).ConfigureAwait(false);
 			}
 		}
 
@@ -1121,9 +1085,14 @@ namespace NHibernate.Impl
 
 		public object Merge(string entityName, object obj)
 		{
+			return MergeAsync(entityName, obj).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public async Task<object> MergeAsync(string entityName, object obj)
+		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				return FireMerge(new MergeEvent(entityName, obj, this));
+				return await FireMerge(new MergeEvent(entityName, obj, this)).ConfigureAwait(false);
 			}
 		}
 
@@ -1132,9 +1101,19 @@ namespace NHibernate.Impl
 			return (T)Merge((object)entity);
 		}
 
+		public async Task<T> MergeAsync<T>(T entity) where T : class
+		{
+			return (T)await MergeAsync((object)entity).ConfigureAwait(false);
+		}
+
 		public T Merge<T>(string entityName, T entity) where T : class
 		{
 			return (T)Merge(entityName, (object)entity);
+		}
+
+		public async Task<T> MergeAsync<T>(string entityName, T entity) where T : class
+		{
+			return (T)await MergeAsync(entityName, (object)entity).ConfigureAwait(false);
 		}
 
 		public object Merge(object obj)
@@ -1145,11 +1124,24 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public void Persist(string entityName, object obj)
+		public async Task<object> MergeAsync(object obj)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FirePersist(new PersistEvent(entityName, obj, this));
+				return await MergeAsync(null, obj).ConfigureAwait(false);
+			}
+		}
+
+		public void Persist(string entityName, object obj)
+		{
+			PersistAsync(entityName, obj).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public async Task PersistAsync(string entityName, object obj)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				await FirePersist(new PersistEvent(entityName, obj, this)).ConfigureAwait(false);
 			}
 		}
 
@@ -1161,11 +1153,19 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public async Task PersistOnFlush(string entityName, object obj, bool async)
+		public async Task PersistAsync(object obj)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				await FirePersistOnFlush(new PersistEvent(entityName, obj, this), async).ConfigureAwait(false);
+				await PersistAsync(null, obj).ConfigureAwait(false);
+			}
+		}
+
+		public async Task PersistOnFlush(string entityName, object obj)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				await FirePersistOnFlush(new PersistEvent(entityName, obj, this)).ConfigureAwait(false);
 			}
 		}
 
@@ -1285,9 +1285,8 @@ namespace NHibernate.Impl
 		/// named in the query and, if so, complete execution the flush
 		/// </summary>
 		/// <param name="querySpaces"></param>
-		/// <param name="async"></param>
 		/// <returns></returns>
-		private async Task<bool> AutoFlushIfRequired(ISet<string> querySpaces, bool async)
+		private async Task<bool> AutoFlushIfRequired(ISet<string> querySpaces)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -1301,7 +1300,7 @@ namespace NHibernate.Impl
 				IAutoFlushEventListener[] autoFlushEventListener = listeners.AutoFlushEventListeners;
 				for (int i = 0; i < autoFlushEventListener.Length; i++)
 				{
-					await autoFlushEventListener[i].OnAutoFlush(autoFlushEvent, async).ConfigureAwait(false);
+					await autoFlushEventListener[i].OnAutoFlush(autoFlushEvent).ConfigureAwait(false);
 				}
 				return autoFlushEvent.FlushRequired;
 			}
@@ -1311,10 +1310,15 @@ namespace NHibernate.Impl
 
 		public void Load(object obj, object id)
 		{
+			LoadAsync(obj, id).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public async Task LoadAsync(object obj, object id)
+		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				LoadEvent loadEvent = new LoadEvent(id, obj, this);
-				FireLoad(loadEvent, LoadEventListener.Reload, false).ConfigureAwait(false).GetAwaiter().GetResult();
+				await FireLoad(loadEvent, LoadEventListener.Reload).ConfigureAwait(false);
 			}
 		}
 
@@ -1326,11 +1330,27 @@ namespace NHibernate.Impl
 			}
 		}
 
+		public async Task<T> LoadAsync<T>(object id)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return (T)await LoadAsync(typeof(T), id).ConfigureAwait(false);
+			}
+		}
+
 		public T Load<T>(object id, LockMode lockMode)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				return (T)Load(typeof(T), id, lockMode);
+			}
+		}
+
+		public async Task<T> LoadAsync<T>(object id, LockMode lockMode)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return (T)await LoadAsync(typeof(T), id, lockMode).ConfigureAwait(false);
 			}
 		}
 
@@ -1356,7 +1376,20 @@ namespace NHibernate.Impl
 			}
 		}
 
+		public async Task<object> LoadAsync(System.Type entityClass, object id, LockMode lockMode)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return await LoadAsync(entityClass.FullName, id, lockMode).ConfigureAwait(false);
+			}
+		}
+
 		public object Load(string entityName, object id)
+		{
+			return LoadAsync(entityName, id).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public async Task<object> LoadAsync(string entityName, object id)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -1369,7 +1402,7 @@ namespace NHibernate.Impl
 				bool success = false;
 				try
 				{
-					FireLoad(@event, LoadEventListener.Load, false).ConfigureAwait(false).GetAwaiter().GetResult();
+					await FireLoad(@event, LoadEventListener.Load).ConfigureAwait(false);
 					if (@event.Result == null)
 					{
 						Factory.EntityNotFoundDelegate.HandleEntityNotFound(entityName, id);
@@ -1379,17 +1412,22 @@ namespace NHibernate.Impl
 				}
 				finally
 				{
-					AfterOperation(success);
+					await AfterOperation(success).ConfigureAwait(false);
 				}
 			}
 		}
 
 		public object Load(string entityName, object id, LockMode lockMode)
 		{
+			return LoadAsync(entityName, id, lockMode).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public async Task<object> LoadAsync(string entityName, object id, LockMode lockMode)
+		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				var @event = new LoadEvent(id, entityName, lockMode, this);
-				FireLoad(@event, LoadEventListener.Load, false).ConfigureAwait(false).GetAwaiter().GetResult();
+				await FireLoad(@event, LoadEventListener.Load).ConfigureAwait(false);
 				return @event.Result;
 			}
 		}
@@ -1402,11 +1440,27 @@ namespace NHibernate.Impl
 			}
 		}
 
+		public async Task<object> LoadAsync(System.Type entityClass, object id)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return await LoadAsync(entityClass.FullName, id).ConfigureAwait(false);
+			}
+		}
+
 		public T Get<T>(object id)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				return (T)Get(typeof(T), id);
+			}
+		}
+
+		public async Task<T> GetAsync<T>(object id)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return (T)await GetAsync(typeof(T), id).ConfigureAwait(false);
 			}
 		}
 
@@ -1418,43 +1472,19 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public object Get(System.Type entityClass, object id)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				return Get(entityClass.FullName, id);
-			}
-		}
-
-		/// <summary>
-		/// Load the data for the object with the specified id into a newly created object
-		/// using "for update", if supported. A new key will be assigned to the object.
-		/// This should return an existing proxy where appropriate.
-		///
-		/// If the object does not exist in the database, null is returned.
-		/// </summary>
-		/// <param name="clazz"></param>
-		/// <param name="id"></param>
-		/// <param name="lockMode"></param>
-		/// <returns></returns>
-		public object Get(System.Type clazz, object id, LockMode lockMode)
-		{
-			return this.GetAsync(clazz, id, lockMode, false).ConfigureAwait(false).GetAwaiter().GetResult();
-		}
-
-		public async Task<T> GetAsync<T>(object id)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				return (T)await GetAsync(typeof(T), id).ConfigureAwait(false);
-			}
-		}
-
 		public async Task<T> GetAsync<T>(object id, LockMode lockMode)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				return (T)await GetAsync(typeof(T), id, lockMode).ConfigureAwait(false);
+			}
+		}
+
+		public object Get(System.Type entityClass, object id)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return Get(entityClass.FullName, id);
 			}
 		}
 
@@ -1477,18 +1507,28 @@ namespace NHibernate.Impl
 		/// <param name="id"></param>
 		/// <param name="lockMode"></param>
 		/// <returns></returns>
-		public Task<object> GetAsync(System.Type clazz, object id, LockMode lockMode)
+		public object Get(System.Type clazz, object id, LockMode lockMode)
 		{
-			return this.GetAsync(clazz, id, lockMode, true);
+			return this.GetAsync(clazz, id, lockMode).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-
-		public async Task<object> GetAsync(System.Type clazz, object id, LockMode lockMode, bool async)
+		/// <summary>
+		/// Load the data for the object with the specified id into a newly created object
+		/// using "for update", if supported. A new key will be assigned to the object.
+		/// This should return an existing proxy where appropriate.
+		///
+		/// If the object does not exist in the database, null is returned.
+		/// </summary>
+		/// <param name="clazz"></param>
+		/// <param name="id"></param>
+		/// <param name="lockMode"></param>
+		/// <returns></returns>
+		public async Task<object> GetAsync(System.Type clazz, object id, LockMode lockMode)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				LoadEvent loadEvent = new LoadEvent(id, clazz.FullName, lockMode, this);
-				await FireLoad(loadEvent, LoadEventListener.Get, async).ConfigureAwait(false);
+				await FireLoad(loadEvent, LoadEventListener.Get).ConfigureAwait(false);
 				return loadEvent.Result;
 			}
 		}
@@ -1524,15 +1564,10 @@ namespace NHibernate.Impl
 
 		public object Get(string entityName, object id)
 		{
-			return this.GetAsync(entityName, id, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return this.GetAsync(entityName, id).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public Task<object> GetAsync(string entityName, object id)
-		{
-			return this.GetAsync(entityName, id, true);
-		}
-
-		public async Task<object> GetAsync(string entityName, object id, bool async)
+		public async Task<object> GetAsync(string entityName, object id)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -1540,13 +1575,13 @@ namespace NHibernate.Impl
 				bool success = false;
 				try
 				{
-					await FireLoad(loadEvent, LoadEventListener.Get, async).ConfigureAwait(false);
+					await FireLoad(loadEvent, LoadEventListener.Get).ConfigureAwait(false);
 					success = true;
 					return loadEvent.Result;
 				}
 				finally
 				{
-					AfterOperation(success);
+					await AfterOperation(success).ConfigureAwait(false);
 				}
 			}
 		}
@@ -1557,6 +1592,15 @@ namespace NHibernate.Impl
 		/// </summary>
 		public override object ImmediateLoad(string entityName, object id)
 		{
+			return ImmediateLoadAsync(entityName, id).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+		/// <summary>
+		/// Load the data for the object with the specified id into a newly created object.
+		/// This is only called when lazily initializing a proxy.
+		/// Do NOT return a proxy.
+		/// </summary>
+		public override async Task<object> ImmediateLoadAsync(string entityName, object id)
+		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				if (log.IsDebugEnabled)
@@ -1566,17 +1610,25 @@ namespace NHibernate.Impl
 				}
 
 				LoadEvent loadEvent = new LoadEvent(id, entityName, true, this);
-				FireLoad(loadEvent, LoadEventListener.ImmediateLoad, false).ConfigureAwait(false).GetAwaiter().GetResult();
+				await FireLoad(loadEvent, LoadEventListener.ImmediateLoad).ConfigureAwait(false);
 				return loadEvent.Result;
 			}
 		}
-
 
 		/// <summary>
 		/// Return the object with the specified id or throw exception if no row with that id exists. Defer the load,
 		/// return a new proxy or return an existing proxy if possible. Do not check if the object was deleted.
 		/// </summary>
 		public override object InternalLoad(string entityName, object id, bool eager, bool isNullable)
+		{
+			return InternalLoadAsync(entityName, id, eager, isNullable).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary>
+		/// Return the object with the specified id or throw exception if no row with that id exists. Defer the load,
+		/// return a new proxy or return an existing proxy if possible. Do not check if the object was deleted.
+		/// </summary>
+		public override async Task<object> InternalLoadAsync(string entityName, object id, bool eager, bool isNullable)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -1585,7 +1637,7 @@ namespace NHibernate.Impl
 									? LoadEventListener.InternalLoadNullable
 									: (eager ? LoadEventListener.InternalLoadEager : LoadEventListener.InternalLoadLazy);
 				LoadEvent loadEvent = new LoadEvent(id, entityName, true, this);
-				FireLoad(loadEvent, type, false).ConfigureAwait(false).GetAwaiter().GetResult();
+				await FireLoad(loadEvent, type).ConfigureAwait(false);
 				if (!isNullable)
 				{
 					UnresolvableObjectException.ThrowIfNull(loadEvent.Result, id, entityName);
@@ -1598,21 +1650,36 @@ namespace NHibernate.Impl
 
 		public void Refresh(object obj)
 		{
+			RefreshAsync(obj).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public async Task RefreshAsync(object obj)
+		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireRefresh(new RefreshEvent(obj, this));
+				await FireRefresh(new RefreshEvent(obj, this)).ConfigureAwait(false);
 			}
 		}
 
 		public void Refresh(object obj, LockMode lockMode)
 		{
+			RefreshAsync(obj, lockMode).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public async Task RefreshAsync(object obj, LockMode lockMode)
+		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireRefresh(new RefreshEvent(obj, lockMode, this));
+				await FireRefresh(new RefreshEvent(obj, lockMode, this)).ConfigureAwait(false);
 			}
 		}
 
 		public ITransaction BeginTransaction(IsolationLevel isolationLevel)
+		{
+			return BeginTransactionAsync(isolationLevel).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public async Task<ITransaction> BeginTransactionAsync(IsolationLevel isolationLevel)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -1624,11 +1691,16 @@ namespace NHibernate.Impl
 				}
 
 				CheckAndUpdateSessionStatus();
-				return connectionManager.BeginTransaction(isolationLevel);
+				return await connectionManager.BeginTransaction(isolationLevel).ConfigureAwait(false);
 			}
 		}
 
 		public ITransaction BeginTransaction()
+		{
+			return BeginTransactionAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public Task<ITransaction> BeginTransactionAsync()
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -1672,15 +1744,10 @@ namespace NHibernate.Impl
 		/// </remarks>
 		public override void Flush()
 		{
-			FlushAsync(true).ConfigureAwait(false).GetAwaiter().GetResult();
+			FlushAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public override Task FlushAsync()
-		{
-			return FlushAsync(true);
-		}
-
-		public async Task FlushAsync(bool async)
+		public override async Task FlushAsync()
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -1692,7 +1759,7 @@ namespace NHibernate.Impl
 				IFlushEventListener[] flushEventListener = listeners.FlushEventListeners;
 				for (int i = 0; i < flushEventListener.Length; i++)
 				{
-					await flushEventListener[i].OnFlush(new FlushEvent(this), true).ConfigureAwait(false);
+					await flushEventListener[i].OnFlush(new FlushEvent(this)).ConfigureAwait(false);
 				}
 			}
 		}
@@ -1703,6 +1770,11 @@ namespace NHibernate.Impl
 		}
 
 		public bool IsDirty()
+		{
+			return IsDirtyAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public async Task<bool> IsDirtyAsync()
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -1720,7 +1792,7 @@ namespace NHibernate.Impl
 					IDirtyCheckEventListener[] dirtyCheckEventListener = listeners.DirtyCheckEventListeners;
 					for (int i = 0; i < dirtyCheckEventListener.Length; i++)
 					{
-						dirtyCheckEventListener[i].OnDirtyCheck(dcEvent);
+						await dirtyCheckEventListener[i].OnDirtyCheck(dcEvent).ConfigureAwait(false);
 					}
 					return dcEvent.Dirty;
 				}
@@ -1799,7 +1871,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <param name="writing"></param>
-		public override void InitializeCollection(IPersistentCollection collection, bool writing)
+		public override async Task InitializeCollection(IPersistentCollection collection, bool writing)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -1807,14 +1879,19 @@ namespace NHibernate.Impl
 				IInitializeCollectionEventListener[] listener = listeners.InitializeCollectionEventListeners;
 				for (int i = 0; i < listener.Length; i++)
 				{
-					listener[i].OnInitializeCollection(new InitializeCollectionEvent(collection, this));
+					await listener[i].OnInitializeCollection(new InitializeCollectionEvent(collection, this)).ConfigureAwait(false);
 				}
 			}
 		}
 
 		public override IDbConnection Connection
 		{
-			get { return connectionManager.GetConnection(); }
+			get { return connectionManager.GetConnection().ConfigureAwait(false).GetAwaiter().GetResult(); }
+		}
+
+		public override Task<DbConnection> GetConnection()
+		{
+			return connectionManager.GetConnection();
 		}
 
 		/// <summary>
@@ -1860,7 +1937,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				log.Debug("reconnecting session");
-				connectionManager.Reconnect(conn);
+				connectionManager.Reconnect((DbConnection)conn);
 			}
 		}
 
@@ -1931,18 +2008,18 @@ namespace NHibernate.Impl
 
 		#endregion
 
-		private async Task FilterAsync(object collection, string filter, QueryParameters queryParameters, IList results, bool async)
+		private async Task FilterAsync(object collection, string filter, QueryParameters queryParameters, IList results)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				FilterQueryPlan plan = await GetFilterQueryPlanAsync(collection, filter, queryParameters, false, async).ConfigureAwait(false);
+				FilterQueryPlan plan = await GetFilterQueryPlanAsync(collection, filter, queryParameters, false).ConfigureAwait(false);
 
 				bool success = false;
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 				try
 				{
-					await plan.PerformList(queryParameters, this, results, async).ConfigureAwait(false);
+					await plan.PerformList(queryParameters, this, results).ConfigureAwait(false);
 					success = true;
 				}
 				catch (HibernateException)
@@ -1957,68 +2034,68 @@ namespace NHibernate.Impl
 				finally
 				{
 					dontFlushFromFind--;
-					AfterOperation(success);
+					await AfterOperation(success).ConfigureAwait(false);
 				}
 			}
 		}
 
 		public override IList ListFilter(object collection, string filter, QueryParameters queryParameters)
 		{
-			return ListFilterAsync(collection, filter, queryParameters, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return ListFilterAsync(collection, filter, queryParameters).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public override async Task<IList> ListFilterAsync(object collection, string filter, QueryParameters queryParameters, bool async = true)
+		public override async Task<IList> ListFilterAsync(object collection, string filter, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				var results = new List<object>();
-				await FilterAsync(collection, filter, queryParameters, results, async).ConfigureAwait(false);
+				await FilterAsync(collection, filter, queryParameters, results).ConfigureAwait(false);
 				return results;
 			}
 		}
 
 		public override IList<T> ListFilter<T>(object collection, string filter, QueryParameters queryParameters)
 		{
-			return ListFilterAsync<T>(collection, filter, queryParameters, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return ListFilterAsync<T>(collection, filter, queryParameters).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public override async Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters queryParameters, bool async = true)
+		public override async Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				List<T> results = new List<T>();
-				await FilterAsync(collection, filter, queryParameters, results, async);
+				await FilterAsync(collection, filter, queryParameters, results).ConfigureAwait(false);
 				return results;
 			}
 		}
 
 		public override IEnumerable EnumerableFilter(object collection, string filter, QueryParameters queryParameters)
 		{
-			return EnumerableFilterAsync(collection, filter, queryParameters, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return EnumerableFilterAsync(collection, filter, queryParameters).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public override async Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters queryParameters, bool async = true)
+		public override async Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				FilterQueryPlan plan = await GetFilterQueryPlanAsync(collection, filter, queryParameters, true, async).ConfigureAwait(false);
-				return await plan.PerformIterate(queryParameters, this, async).ConfigureAwait(false);
+				FilterQueryPlan plan = await GetFilterQueryPlanAsync(collection, filter, queryParameters, true).ConfigureAwait(false);
+				return await plan.PerformIterate(queryParameters, this).ConfigureAwait(false);
 			}
 		}
 
 		public override IEnumerable<T> EnumerableFilter<T>(object collection, string filter, QueryParameters queryParameters)
 		{
-			return EnumerableFilterAsync<T>(collection, filter, queryParameters, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return EnumerableFilterAsync<T>(collection, filter, queryParameters).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public override async Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters queryParameters, bool async = true)
+		public override async Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				FilterQueryPlan plan = await GetFilterQueryPlanAsync(collection, filter, queryParameters, true, async).ConfigureAwait(false);
-				return await plan.PerformIterate<T>(queryParameters, this, async);
+				FilterQueryPlan plan = await GetFilterQueryPlanAsync(collection, filter, queryParameters, true).ConfigureAwait(false);
+				return await plan.PerformIterate<T>(queryParameters, this).ConfigureAwait(false);
 			}
 		}
 
@@ -2114,7 +2191,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task ListAsync(CriteriaImpl criteria, IList results, bool async)
+		public override async Task ListAsync(CriteriaImpl criteria, IList results)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2139,7 +2216,7 @@ namespace NHibernate.Impl
 					spaces.UnionWith(loaders[i].QuerySpaces);
 				}
 
-				await AutoFlushIfRequired(spaces, async).ConfigureAwait(false);
+				await AutoFlushIfRequired(spaces).ConfigureAwait(false);
 
 				dontFlushFromFind++;
 
@@ -2148,7 +2225,7 @@ namespace NHibernate.Impl
 				{
 					for (int i = size - 1; i >= 0; i--)
 					{
-						ArrayHelper.AddAll(results, await loaders[i].List(this, async).ConfigureAwait(false));
+						ArrayHelper.AddAll(results, await loaders[i].List(this).ConfigureAwait(false));
 					}
 					success = true;
 				}
@@ -2164,7 +2241,7 @@ namespace NHibernate.Impl
 				finally
 				{
 					dontFlushFromFind--;
-					AfterOperation(success);
+					await AfterOperation(success).ConfigureAwait(false);
 				}
 			}
 		}
@@ -2214,9 +2291,19 @@ namespace NHibernate.Impl
 		/// <param name="obj"></param>
 		public void Evict(object obj)
 		{
+			EvictAsync(obj).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary>
+		/// remove any hard references to the entity that are held by the infrastructure
+		/// (references held by application or other persistant instances are okay)
+		/// </summary>
+		/// <param name="obj"></param>
+		public async Task EvictAsync(object obj)
+		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireEvict(new EvictEvent(obj, this));
+				await FireEvict(new EvictEvent(obj, this)).ConfigureAwait(false);
 			}
 		}
 
@@ -2229,26 +2316,26 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results, bool async = true)
+		public override async Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 
 				CustomLoader loader = new CustomLoader(customQuery, Factory);
-				await AutoFlushIfRequired(loader.QuerySpaces, async).ConfigureAwait(false);
+				await AutoFlushIfRequired(loader.QuerySpaces).ConfigureAwait(false);
 
 				bool success = false;
 				dontFlushFromFind++;
 				try
 				{
-					ArrayHelper.AddAll(results, await loader.List(this, queryParameters, async).ConfigureAwait(false));
+					ArrayHelper.AddAll(results, await loader.List(this, queryParameters).ConfigureAwait(false));
 					success = true;
 				}
 				finally
 				{
 					dontFlushFromFind--;
-					AfterOperation(success);
+					await AfterOperation(success).ConfigureAwait(false);
 				}
 			}
 		}
@@ -2266,17 +2353,27 @@ namespace NHibernate.Impl
 
 		public void Replicate(object obj, ReplicationMode replicationMode)
 		{
+			ReplicateAsync(obj, replicationMode).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public async Task ReplicateAsync(object obj, ReplicationMode replicationMode)
+		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireReplicate(new ReplicateEvent(obj, replicationMode, this));
+				await FireReplicate(new ReplicateEvent(obj, replicationMode, this)).ConfigureAwait(false);
 			}
 		}
 
 		public void Replicate(string entityName, object obj, ReplicationMode replicationMode)
 		{
+			ReplicateAsync(entityName, obj, replicationMode).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public async Task ReplicateAsync(string entityName, object obj, ReplicationMode replicationMode)
+		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				FireReplicate(new ReplicateEvent(entityName, obj, replicationMode, this));
+				await FireReplicate(new ReplicateEvent(entityName, obj, replicationMode, this)).ConfigureAwait(false);
 			}
 		}
 
@@ -2438,12 +2535,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override void BeforeTransactionCompletion(ITransaction tx)
+		public override async Task BeforeTransactionCompletion(ITransaction tx)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				log.Debug("before transaction completion");
-				actionQueue.BeforeTransactionCompletion();
+				await actionQueue.BeforeTransactionCompletion().ConfigureAwait(false);
 				if (rootSession == null)
 				{
 					try
@@ -2590,7 +2687,7 @@ namespace NHibernate.Impl
 			return persistenceContext.IsReadOnly(entityOrProxy);
 		}
 
-		private void FireDelete(DeleteEvent @event)
+		private async Task FireDelete(DeleteEvent @event)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2598,12 +2695,12 @@ namespace NHibernate.Impl
 				IDeleteEventListener[] deleteEventListener = listeners.DeleteEventListeners;
 				for (int i = 0; i < deleteEventListener.Length; i++)
 				{
-					deleteEventListener[i].OnDelete(@event);
+					await deleteEventListener[i].OnDelete(@event).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private void FireDelete(DeleteEvent @event, ISet<object> transientEntities)
+		private async Task FireDelete(DeleteEvent @event, ISet<object> transientEntities)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2611,12 +2708,12 @@ namespace NHibernate.Impl
 				IDeleteEventListener[] deleteEventListener = listeners.DeleteEventListeners;
 				for (int i = 0; i < deleteEventListener.Length; i++)
 				{
-					deleteEventListener[i].OnDelete(@event, transientEntities);
+					await deleteEventListener[i].OnDelete(@event, transientEntities).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private void FireEvict(EvictEvent evictEvent)
+		private async Task FireEvict(EvictEvent evictEvent)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2624,12 +2721,12 @@ namespace NHibernate.Impl
 				IEvictEventListener[] evictEventListener = listeners.EvictEventListeners;
 				for (int i = 0; i < evictEventListener.Length; i++)
 				{
-					evictEventListener[i].OnEvict(evictEvent);
+					await evictEventListener[i].OnEvict(evictEvent).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private async Task FireLoad(LoadEvent @event, LoadType loadType, bool async)
+		private async Task FireLoad(LoadEvent @event, LoadType loadType)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2637,12 +2734,12 @@ namespace NHibernate.Impl
 				ILoadEventListener[] loadEventListener = listeners.LoadEventListeners;
 				for (int i = 0; i < loadEventListener.Length; i++)
 				{
-					await loadEventListener[i].OnLoad(@event, loadType, async).ConfigureAwait(false);
+					await loadEventListener[i].OnLoad(@event, loadType).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private void FireLock(LockEvent lockEvent)
+		private async Task FireLock(LockEvent lockEvent)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2650,12 +2747,12 @@ namespace NHibernate.Impl
 				ILockEventListener[] lockEventListener = listeners.LockEventListeners;
 				for (int i = 0; i < lockEventListener.Length; i++)
 				{
-					lockEventListener[i].OnLock(lockEvent);
+					await lockEventListener[i].OnLock(lockEvent).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private object FireMerge(MergeEvent @event)
+		private async Task<object> FireMerge(MergeEvent @event)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2663,13 +2760,13 @@ namespace NHibernate.Impl
 				IMergeEventListener[] mergeEventListener = listeners.MergeEventListeners;
 				for (int i = 0; i < mergeEventListener.Length; i++)
 				{
-					mergeEventListener[i].OnMerge(@event);
+					await mergeEventListener[i].OnMerge(@event).ConfigureAwait(false);
 				}
 				return @event.Result;
 			}
 		}
 
-		private void FireMerge(IDictionary copiedAlready, MergeEvent @event)
+		private async Task FireMerge(IDictionary copiedAlready, MergeEvent @event)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2677,12 +2774,12 @@ namespace NHibernate.Impl
 				IMergeEventListener[] mergeEventListener = listeners.MergeEventListeners;
 				for (int i = 0; i < mergeEventListener.Length; i++)
 				{
-					mergeEventListener[i].OnMerge(@event, copiedAlready);
+					await mergeEventListener[i].OnMerge(@event, copiedAlready).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private void FirePersist(IDictionary copiedAlready, PersistEvent @event)
+		private async Task FirePersist(IDictionary copiedAlready, PersistEvent @event)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2690,12 +2787,12 @@ namespace NHibernate.Impl
 				IPersistEventListener[] persistEventListener = listeners.PersistEventListeners;
 				for (int i = 0; i < persistEventListener.Length; i++)
 				{
-					persistEventListener[i].OnPersist(@event, copiedAlready, false).ConfigureAwait(false).GetAwaiter().GetResult();
+					await persistEventListener[i].OnPersist(@event, copiedAlready).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private void FirePersist(PersistEvent @event)
+		private async Task FirePersist(PersistEvent @event)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2703,12 +2800,12 @@ namespace NHibernate.Impl
 				IPersistEventListener[] createEventListener = listeners.PersistEventListeners;
 				for (int i = 0; i < createEventListener.Length; i++)
 				{
-					createEventListener[i].OnPersist(@event, false).ConfigureAwait(false).GetAwaiter().GetResult();
+					await createEventListener[i].OnPersist(@event).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private async Task FirePersistOnFlush(IDictionary copiedAlready, PersistEvent @event, bool async)
+		private async Task FirePersistOnFlush(IDictionary copiedAlready, PersistEvent @event)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2716,12 +2813,12 @@ namespace NHibernate.Impl
 				IPersistEventListener[] persistEventListener = listeners.PersistOnFlushEventListeners;
 				for (int i = 0; i < persistEventListener.Length; i++)
 				{
-					await persistEventListener[i].OnPersist(@event, copiedAlready, async).ConfigureAwait(false);
+					await persistEventListener[i].OnPersist(@event, copiedAlready).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private async Task FirePersistOnFlush(PersistEvent @event, bool async)
+		private async Task FirePersistOnFlush(PersistEvent @event)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2729,12 +2826,12 @@ namespace NHibernate.Impl
 				IPersistEventListener[] createEventListener = listeners.PersistOnFlushEventListeners;
 				for (int i = 0; i < createEventListener.Length; i++)
 				{
-					await createEventListener[i].OnPersist(@event, async).ConfigureAwait(false);
+					await createEventListener[i].OnPersist(@event).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private void FireRefresh(RefreshEvent refreshEvent)
+		private async Task FireRefresh(RefreshEvent refreshEvent)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2742,12 +2839,12 @@ namespace NHibernate.Impl
 				IRefreshEventListener[] refreshEventListener = listeners.RefreshEventListeners;
 				for (int i = 0; i < refreshEventListener.Length; i++)
 				{
-					refreshEventListener[i].OnRefresh(refreshEvent);
+					await refreshEventListener[i].OnRefresh(refreshEvent).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private void FireRefresh(IDictionary refreshedAlready, RefreshEvent refreshEvent)
+		private async Task FireRefresh(IDictionary refreshedAlready, RefreshEvent refreshEvent)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2755,12 +2852,12 @@ namespace NHibernate.Impl
 				IRefreshEventListener[] refreshEventListener = listeners.RefreshEventListeners;
 				for (int i = 0; i < refreshEventListener.Length; i++)
 				{
-					refreshEventListener[i].OnRefresh(refreshEvent, refreshedAlready);
+					await refreshEventListener[i].OnRefresh(refreshEvent, refreshedAlready).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private void FireReplicate(ReplicateEvent @event)
+		private async Task FireReplicate(ReplicateEvent @event)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2768,12 +2865,12 @@ namespace NHibernate.Impl
 				IReplicateEventListener[] replicateEventListener = listeners.ReplicateEventListeners;
 				for (int i = 0; i < replicateEventListener.Length; i++)
 				{
-					replicateEventListener[i].OnReplicate(@event);
+					await replicateEventListener[i].OnReplicate(@event).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private async Task<object> FireSave(SaveOrUpdateEvent @event, bool async)
+		private async Task<object> FireSave(SaveOrUpdateEvent @event)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2781,13 +2878,13 @@ namespace NHibernate.Impl
 				ISaveOrUpdateEventListener[] saveEventListener = listeners.SaveEventListeners;
 				for (int i = 0; i < saveEventListener.Length; i++)
 				{
-					await saveEventListener[i].OnSaveOrUpdate(@event, async).ConfigureAwait(false);
+					await saveEventListener[i].OnSaveOrUpdate(@event).ConfigureAwait(false);
 				}
 				return @event.ResultId;
 			}
 		}
 
-		private async Task FireSaveOrUpdate(SaveOrUpdateEvent @event, bool async)
+		private async Task FireSaveOrUpdate(SaveOrUpdateEvent @event)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2795,12 +2892,12 @@ namespace NHibernate.Impl
 				ISaveOrUpdateEventListener[] saveOrUpdateEventListener = listeners.SaveOrUpdateEventListeners;
 				for (int i = 0; i < saveOrUpdateEventListener.Length; i++)
 				{
-					await saveOrUpdateEventListener[i].OnSaveOrUpdate(@event, async).ConfigureAwait(false);
+					await saveOrUpdateEventListener[i].OnSaveOrUpdate(@event).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private async Task FireUpdate(SaveOrUpdateEvent @event, bool async)
+		private async Task FireUpdate(SaveOrUpdateEvent @event)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2808,12 +2905,12 @@ namespace NHibernate.Impl
 				ISaveOrUpdateEventListener[] updateEventListener = listeners.UpdateEventListeners;
 				for (int i = 0; i < updateEventListener.Length; i++)
 				{
-					await updateEventListener[i].OnSaveOrUpdate(@event, async).ConfigureAwait(false);
+					await updateEventListener[i].OnSaveOrUpdate(@event).ConfigureAwait(false);
 				}
 			}
 		}
 
-		public override async Task<int> ExecuteNativeUpdateAsync(NativeSQLQuerySpecification nativeQuerySpecification, QueryParameters queryParameters, bool async)
+		public override async Task<int> ExecuteNativeUpdateAsync(NativeSQLQuerySpecification nativeQuerySpecification, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -2821,42 +2918,42 @@ namespace NHibernate.Impl
 				queryParameters.ValidateParameters();
 				NativeSQLQueryPlan plan = GetNativeSQLQueryPlan(nativeQuerySpecification);
 
-				await AutoFlushIfRequired(plan.CustomQuery.QuerySpaces, async).ConfigureAwait(false);
+				await AutoFlushIfRequired(plan.CustomQuery.QuerySpaces).ConfigureAwait(false);
 
 				bool success = false;
 				int result;
 				try
 				{
-					result = await plan.PerformExecuteUpdate(queryParameters, this, async).ConfigureAwait(false);
+					result = await plan.PerformExecuteUpdate(queryParameters, this).ConfigureAwait(false);
 					success = true;
 				}
 				finally
 				{
-					AfterOperation(success);
+					await AfterOperation(success).ConfigureAwait(false);
 				}
 				return result;
 			}
 		}
 
-		public override async Task<int> ExecuteUpdateAsync(IQueryExpression queryExpression, QueryParameters queryParameters, bool async = true)
+		public override async Task<int> ExecuteUpdateAsync(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(queryExpression, false);
-				await AutoFlushIfRequired(plan.QuerySpaces, async).ConfigureAwait(false);
+				await AutoFlushIfRequired(plan.QuerySpaces).ConfigureAwait(false);
 
 				bool success = false;
 				int result;
 				try
 				{
-					result = await plan.PerformExecuteUpdate(queryParameters, this, async).ConfigureAwait(false);
+					result = await plan.PerformExecuteUpdate(queryParameters, this).ConfigureAwait(false);
 					success = true;
 				}
 				finally
 				{
-					AfterOperation(success);
+					await AfterOperation(success).ConfigureAwait(false);
 				}
 				return result;
 			}

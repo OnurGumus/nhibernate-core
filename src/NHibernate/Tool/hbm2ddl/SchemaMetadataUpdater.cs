@@ -2,6 +2,7 @@ using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace NHibernate.Tool.hbm2ddl
 {
@@ -10,15 +11,25 @@ namespace NHibernate.Tool.hbm2ddl
 	{
 		public static void Update(ISessionFactory sessionFactory)
 		{
+			UpdateAsync(sessionFactory).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public static async Task UpdateAsync(ISessionFactory sessionFactory)
+		{
 			var factory = (ISessionFactoryImplementor) sessionFactory;
 			var dialect = factory.Dialect;
 			var connectionHelper = new SuppliedConnectionProviderConnectionHelper(factory.ConnectionProvider);
-			factory.Dialect.Keywords.UnionWith(GetReservedWords(dialect, connectionHelper));
+			factory.Dialect.Keywords.UnionWith(await GetReservedWords(dialect, connectionHelper).ConfigureAwait(false));
 		}
 
 		public static void QuoteTableAndColumns(Configuration configuration)
 		{
-			ISet<string> reservedDb = GetReservedWords(configuration.GetDerivedProperties());
+			QuoteTableAndColumnsAsync(configuration).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public static async Task QuoteTableAndColumnsAsync(Configuration configuration)
+		{
+			ISet<string> reservedDb = await GetReservedWords(configuration.GetDerivedProperties()).ConfigureAwait(false);
 			foreach (var cm in configuration.ClassMappings)
 			{
 				QuoteTable(cm.Table, reservedDb);
@@ -29,17 +40,17 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 		}
 
-		private static ISet<string> GetReservedWords(IDictionary<string, string> cfgProperties)
+		private static Task<ISet<string>> GetReservedWords(IDictionary<string, string> cfgProperties)
 		{
 			var dialect = Dialect.Dialect.GetDialect(cfgProperties);
 			var connectionHelper = new ManagedProviderConnectionHelper(cfgProperties);
 			return GetReservedWords(dialect, connectionHelper);
 		}
 
-		private static ISet<string> GetReservedWords(Dialect.Dialect dialect, IConnectionHelper connectionHelper)
+		private static async Task<ISet<string>> GetReservedWords(Dialect.Dialect dialect, IConnectionHelper connectionHelper)
 		{
 			ISet<string> reservedDb = new HashSet<string>();
-			connectionHelper.Prepare();
+			await connectionHelper.PrepareAsync().ConfigureAwait(false);
 			try
 			{
 				var metaData = dialect.GetDataBaseSchema(connectionHelper.Connection);

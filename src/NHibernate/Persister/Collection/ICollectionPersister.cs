@@ -145,7 +145,7 @@ namespace NHibernate.Persister.Collection
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
-		void Initialize(object key, ISessionImplementor session);
+		Task Initialize(object key, ISessionImplementor session);
 
 		/// <summary>
 		/// Is this collection role cacheable
@@ -155,25 +155,25 @@ namespace NHibernate.Persister.Collection
 		/// <summary>
 		/// Read the key from a row of the <see cref="IDataReader" />
 		/// </summary>
-		object ReadKey(IDataReader rs, string[] keyAliases, ISessionImplementor session);
+		Task<object> ReadKey(IDataReader rs, string[] keyAliases, ISessionImplementor session);
 
 		/// <summary>
 		/// Read the element from a row of the <see cref="IDataReader" />
 		/// </summary>
 		//TODO: the ReadElement should really be a parameterized TElement
-		object ReadElement(IDataReader rs, object owner, string[] columnAliases, ISessionImplementor session);
+		Task<object> ReadElement(IDataReader rs, object owner, string[] columnAliases, ISessionImplementor session);
 
 		/// <summary>
 		/// Read the index from a row of the <see cref="IDataReader" />
 		/// </summary>
 		//TODO: the ReadIndex should really be a parameterized TIndex
-		object ReadIndex(IDataReader rs, string[] columnAliases, ISessionImplementor session);
+		Task<object> ReadIndex(IDataReader rs, string[] columnAliases, ISessionImplementor session);
 
 		/// <summary>
 		/// Read the identifier from a row of the <see cref="IDataReader" />
 		/// </summary>
 		//TODO: the ReadIdentifier should really be a parameterized TIdentifier
-		object ReadIdentifier(IDataReader rs, string columnAlias, ISessionImplementor session);
+		Task<object> ReadIdentifier(IDataReader rs, string columnAlias, ISessionImplementor session);
 
 		string GetManyToManyFilterFragment(string alias, IDictionary<string, IFilter> enabledFilters);
 
@@ -187,8 +187,7 @@ namespace NHibernate.Persister.Collection
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="session"></param>
-		/// <param name="async"></param>
-		Task Remove(object id, ISessionImplementor session, bool async);
+		Task Remove(object id, ISessionImplementor session);
 
 		/// <summary>
 		/// (Re)create the collection's persistent state
@@ -196,8 +195,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="collection"></param>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
-		/// <param name="async"></param>
-		Task Recreate(IPersistentCollection collection, object key, ISessionImplementor session, bool async);
+		Task Recreate(IPersistentCollection collection, object key, ISessionImplementor session);
 
 		/// <summary>
 		/// Delete the persistent state of any elements that were removed from the collection
@@ -205,8 +203,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="collection"></param>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
-		/// <param name="async"></param>
-		Task DeleteRows(IPersistentCollection collection, object key, ISessionImplementor session, bool async);
+		Task DeleteRows(IPersistentCollection collection, object key, ISessionImplementor session);
 
 		/// <summary>
 		/// Update the persistent state of any elements that were modified
@@ -214,8 +211,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="collection"></param>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
-		/// <param name="async"></param>
-		Task UpdateRows(IPersistentCollection collection, object key, ISessionImplementor session, bool async);
+		Task UpdateRows(IPersistentCollection collection, object key, ISessionImplementor session);
 
 		/// <summary>
 		/// Insert the persistent state of any new collection elements
@@ -223,8 +219,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="collection"></param>
 		/// <param name="key"></param>
 		/// <param name="session"></param>
-		/// <param name="async"></param>
-		Task InsertRows(IPersistentCollection collection, object key, ISessionImplementor session, bool async);
+		Task InsertRows(IPersistentCollection collection, object key, ISessionImplementor session);
 
 		/// <summary>
 		/// Does this collection implement "orphan delete"?
@@ -276,9 +271,9 @@ namespace NHibernate.Persister.Collection
 		/// <returns>The identifier column aliases.</returns>
 		string GetIdentifierColumnAlias(string suffix);
 
-		Task<int> GetSize(object key, ISessionImplementor session, bool async);
-		Task<bool> IndexExists(object key, object index, ISessionImplementor session, bool async);
-		Task<bool> ElementExists(object key, object element, ISessionImplementor session, bool async);
+		Task<int> GetSize(object key, ISessionImplementor session);
+		Task<bool> IndexExists(object key, object index, ISessionImplementor session);
+		Task<bool> ElementExists(object key, object element, ISessionImplementor session);
 		
 		/// <summary>
 		/// Try to find an element by a given index.
@@ -287,9 +282,8 @@ namespace NHibernate.Persister.Collection
 		/// <param name="index">The given index.</param>
 		/// <param name="session">The active <see cref="ISession"/>.</param>
 		/// <param name="owner">The owner of the collection.</param>
-		/// <param name="async"></param>
 		/// <returns>The value of the element where available; otherwise <see cref="NotFoundObject"/>.</returns>
-		Task<object> GetElementByIndex(object key, object index, ISessionImplementor session, object owner, bool async);
+		Task<object> GetElementByIndex(object key, object index, ISessionImplementor session, object owner);
 		
 		/// <summary>
 		/// A place-holder to inform that the data-reader was empty.

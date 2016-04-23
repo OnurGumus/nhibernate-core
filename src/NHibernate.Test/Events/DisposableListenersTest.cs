@@ -1,14 +1,17 @@
 using System;
+using System.Threading.Tasks;
 using NHibernate.Cfg;
 using NHibernate.Event;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Events
 {
 	public class MyDisposableListener : IPostUpdateEventListener, IDisposable
 	{
-		public void OnPostUpdate(PostUpdateEvent @event)
+		public Task OnPostUpdate(PostUpdateEvent @event)
 		{
+			return TaskHelper.CompletedTask;
 		}
 
 		public bool DisposeCalled { get; private set; }

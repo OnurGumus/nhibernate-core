@@ -481,7 +481,7 @@ namespace NHibernate.Impl
 		{
 			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
 			{
-				return new DelayedAsyncEnumerator<T>(async () => await ListAsync<T>());
+				return new DelayedAsyncEnumerator<T>(async () => await ListAsync<T>().ConfigureAwait(false));
 			}
 
 			session.FutureCriteriaBatch.Add<T>(this);

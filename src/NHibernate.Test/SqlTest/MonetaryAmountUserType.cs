@@ -1,7 +1,9 @@
 using System;
 using System.Data;
+using System.Threading.Tasks;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Test.SqlTest
 {
@@ -35,7 +37,7 @@ namespace NHibernate.Test.SqlTest
 			return object.Equals(x, y);
 		}
 
-		public object NullSafeGet(IDataReader resultSet,
+		public Task<object> NullSafeGet(IDataReader resultSet,
 		                          string[] names,
 		                          object owner)
 		{
@@ -43,14 +45,14 @@ namespace NHibernate.Test.SqlTest
 			int index1 = resultSet.GetOrdinal(names[1]);
 			if (resultSet.IsDBNull(index0))
 			{
-				return null;
+				return Task.FromResult<object>(null);
 			}
 			decimal value = resultSet.GetDecimal(index0);
 			string cur = resultSet.GetString(index1);
-			return new MonetaryAmount(value, cur);
+			return Task.FromResult<object>(new MonetaryAmount(value, cur));
 		}
 
-		public void NullSafeSet(IDbCommand statement,
+		public Task NullSafeSet(IDbCommand statement,
 		                        object value,
 		                        int index)
 		{
@@ -65,6 +67,7 @@ namespace NHibernate.Test.SqlTest
 				((IDbDataParameter) statement.Parameters[index]).Value = currency.Value;
 				((IDbDataParameter) statement.Parameters[index + 1]).Value = currency.Currency;
 			}
+			return TaskHelper.CompletedTask;
 		}
 
 		public object Disassemble(object value)

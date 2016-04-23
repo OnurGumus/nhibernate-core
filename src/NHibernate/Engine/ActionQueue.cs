@@ -119,21 +119,21 @@ namespace NHibernate.Engine
 			beforeTransactionProcesses.Register(process);
 		}
 	
-		private async Task ExecuteActions(IList list, bool async)
+		private async Task ExecuteActions(IList list)
 		{
 			int size = list.Count;
 			for (int i = 0; i < size; i++)
-				await Execute((IExecutable)list[i], async).ConfigureAwait(false);
+				await Execute((IExecutable)list[i]).ConfigureAwait(false);
 
 			list.Clear();
-			session.Batcher.ExecuteBatch();
+			await session.Batcher.ExecuteBatch().ConfigureAwait(false);
 		}
 
-		public async Task Execute(IExecutable executable, bool async)
+		public async Task Execute(IExecutable executable)
 		{
 			try
 			{
-				await executable.Execute(async).ConfigureAwait(false);
+				await executable.Execute().ConfigureAwait(false);
 			}
 			finally
 			{
@@ -156,22 +156,22 @@ namespace NHibernate.Engine
 		/// <summary> 
 		/// Perform all currently queued entity-insertion actions.
 		/// </summary>
-		public Task ExecuteInserts(bool async)
+		public Task ExecuteInserts()
 		{
-			return ExecuteActions(insertions, async);
+			return ExecuteActions(insertions);
 		}
 
 		/// <summary> 
 		/// Perform all currently queued actions. 
 		/// </summary>
-		public async Task ExecuteActions(bool async)
+		public async Task ExecuteActions()
 		{
-			await ExecuteActions(insertions, async).ConfigureAwait(false);
-			await ExecuteActions(updates, async).ConfigureAwait(false);
-			await ExecuteActions(collectionRemovals, async).ConfigureAwait(false);
-			await ExecuteActions(collectionUpdates, async).ConfigureAwait(false);
-			await ExecuteActions(collectionCreations,async).ConfigureAwait(false);
-			await ExecuteActions(deletions, async).ConfigureAwait(false);
+			await ExecuteActions(insertions).ConfigureAwait(false);
+			await ExecuteActions(updates).ConfigureAwait(false);
+			await ExecuteActions(collectionRemovals).ConfigureAwait(false);
+			await ExecuteActions(collectionUpdates).ConfigureAwait(false);
+			await ExecuteActions(collectionCreations).ConfigureAwait(false);
+			await ExecuteActions(deletions).ConfigureAwait(false);
 		}
 
 		private void PrepareActions(IList queue)
@@ -193,18 +193,18 @@ namespace NHibernate.Engine
 		/// <summary>
 		/// Execute any registered <see cref="BeforeTransactionCompletionProcessDelegate" />
 		/// </summary>
-		public void BeforeTransactionCompletion() 
+		public Task BeforeTransactionCompletion() 
 		{
-			beforeTransactionProcesses.BeforeTransactionCompletion();
+			return beforeTransactionProcesses.BeforeTransactionCompletion();
 		}
 		
 		/// <summary> 
 		/// Performs cleanup of any held cache softlocks.
 		/// </summary>
 		/// <param name="success">Was the transaction successful.</param>
-		public void AfterTransactionCompletion(bool success)
+		public Task AfterTransactionCompletion(bool success)
 		{
-			afterTransactionProcesses.AfterTransactionCompletion(success);
+			return afterTransactionProcesses.AfterTransactionCompletion(success);
 		}
 		
 		/// <summary> 
@@ -404,7 +404,7 @@ namespace NHibernate.Engine
 				processes.Add(process);
 			}
 	
-			public void BeforeTransactionCompletion() 
+			public async Task BeforeTransactionCompletion() 
 			{
 				int size = processes.Count;
 				for (int i = 0; i < size; i++)
@@ -412,7 +412,7 @@ namespace NHibernate.Engine
 					try 
 					{
 						BeforeTransactionCompletionProcessDelegate process = processes[i];
-						process();
+						await process().ConfigureAwait(false);
 					}
 					catch (HibernateException e)
 					{
@@ -470,7 +470,7 @@ namespace NHibernate.Engine
 				processes.Add(process);
 			}
 	
-			public void AfterTransactionCompletion(bool success) 
+			public async Task AfterTransactionCompletion(bool success) 
 			{
 				int size = processes.Count;
 				
@@ -479,7 +479,7 @@ namespace NHibernate.Engine
 					try
 					{
 						AfterTransactionCompletionProcessDelegate process = processes[i];
-						process(success);
+						await process(success).ConfigureAwait(false);
 					}
 					catch (CacheException e)
 					{

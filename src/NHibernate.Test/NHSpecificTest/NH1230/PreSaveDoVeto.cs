@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using log4net;
 using NHibernate.Event;
 
@@ -11,11 +12,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1230
 
 		/// <summary> Return true if the operation should be vetoed</summary>
 		/// <param name="event"></param>
-		public bool OnPreInsert(PreInsertEvent @event)
+		public Task<bool> OnPreInsert(PreInsertEvent @event)
 		{
 			log.Debug("OnPreInsert: The entity will be vetoed.");
 			
-			return true;
+			return Task.FromResult(true);
 		}
 
 		#endregion

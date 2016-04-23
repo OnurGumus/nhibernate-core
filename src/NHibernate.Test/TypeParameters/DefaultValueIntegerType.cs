@@ -4,6 +4,8 @@ using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.UserTypes;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.TypeParameters
 {
@@ -44,7 +46,7 @@ namespace NHibernate.Test.TypeParameters
 			return value;
 		}
 
-		public void NullSafeSet(IDbCommand cmd, object value, int index)
+		public Task NullSafeSet(IDbCommand cmd, object value, int index)
 		{
 			if (value.Equals(defaultValue))
 			{
@@ -54,6 +56,7 @@ namespace NHibernate.Test.TypeParameters
 			{
 				_int32Type.Set(cmd, value, index);
 			}
+			return TaskHelper.CompletedTask;
 		}
 
 		public System.Type ReturnedType
@@ -61,12 +64,12 @@ namespace NHibernate.Test.TypeParameters
 			get { return typeof(Int32); }
 		}
 
-		public object NullSafeGet(IDataReader rs, string[] names, object owner)
+		public Task<object> NullSafeGet(IDataReader rs, string[] names, object owner)
 		{
 			object value = _int32Type.NullSafeGet(rs, names);
 			if (value == null)
-				return defaultValue;
-			return value;
+				return Task.FromResult<object>(defaultValue);
+			return Task.FromResult(value);
 		}
 
 		public bool IsMutable

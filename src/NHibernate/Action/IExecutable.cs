@@ -11,7 +11,7 @@ namespace NHibernate.Action
 	/// place of the Hibernate interface (see Action/BeforeTransactionCompletionProcess). The
 	/// delegate omits the <see cref="ISessionImplementor" /> parameter as it is not used.
 	/// </remarks>
-	public delegate void BeforeTransactionCompletionProcessDelegate();
+	public delegate Task BeforeTransactionCompletionProcessDelegate();
 	
 	/// <summary>
 	/// Delegate representing some process that needs to occur after transaction completion.
@@ -22,7 +22,7 @@ namespace NHibernate.Action
 	/// place of the Hibernate interface (see Action/AfterTransactionCompletionProcess). The
 	/// delegate omits the <see cref="ISessionImplementor" /> parameter as it is not used.
 	/// </remarks>
-	public delegate void AfterTransactionCompletionProcessDelegate(bool success);
+	public delegate Task AfterTransactionCompletionProcessDelegate(bool success);
 	
 	/// <summary>
 	/// An operation which may be scheduled for later execution.
@@ -40,7 +40,7 @@ namespace NHibernate.Action
 		void BeforeExecutions();
 
 		/// <summary> Execute this action</summary>
-		Task Execute(bool async);
+		Task Execute();
 
 		/// <summary>
 		/// Get the before-transaction-completion process, if any, for this action.

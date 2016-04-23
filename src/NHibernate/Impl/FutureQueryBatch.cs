@@ -20,9 +20,9 @@ namespace NHibernate.Impl
 			multiApproach.Add(resultType, query);
 		}
 
-		protected override Task<IList> GetResultsFrom(IMultiQuery multiApproach, bool async)
+		protected override Task<IList> GetResultsFrom(IMultiQuery multiApproach)
 		{
-			return multiApproach.ListAsync(async);
+			return multiApproach.ListAsync();
 		}
 
 		protected override void ClearCurrentFutureBatch()

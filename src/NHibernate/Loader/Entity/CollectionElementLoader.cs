@@ -11,6 +11,7 @@ using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Threading.Tasks;
+using NHibernate.Driver;
 
 namespace NHibernate.Loader.Entity
 {
@@ -70,9 +71,9 @@ namespace NHibernate.Loader.Entity
 			get { return true; }
 		}
 
-		public virtual async Task<object> LoadElement(ISessionImplementor session, object key, object index, bool async)
+		public virtual async Task<object> LoadElement(ISessionImplementor session, object key, object index)
 		{
-			IList list = await LoadEntity(session, key, index, keyType, indexType, persister, async).ConfigureAwait(false);
+			IList list = await LoadEntity(session, key, index, keyType, indexType, persister).ConfigureAwait(false);
 
 			if (list.Count == 1)
 			{
@@ -95,10 +96,10 @@ namespace NHibernate.Loader.Entity
 			}
 		}
 
-		protected override object GetResultColumnOrRow(object[] row, IResultTransformer transformer, IDataReader rs,
+		protected override Task<object> GetResultColumnOrRow(object[] row, IResultTransformer transformer, IDataReaderEx rs,
 		                                               ISessionImplementor session)
 		{
-			return row[row.Length - 1];
+			return Task.FromResult(row[row.Length - 1]);
 		}
 	}
 }

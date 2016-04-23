@@ -39,7 +39,7 @@ namespace NHibernate.Driver
 		/// <summary>
 		/// Creates an uninitialized IDbConnection object for the specific Driver
 		/// </summary>
-		IDbConnection CreateConnection();
+		DbConnection CreateConnection();
 
 		/// <summary>
 		/// Does this Driver support having more than 1 open IDataReader with

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using NHibernate.Connection;
 using NHibernate.Engine;
 using NHibernate.Metadata;
@@ -107,6 +108,14 @@ namespace NHibernate
 		/// <c>close()</c>. 
 		/// </summary>
 		void Close();
+
+		/// <summary>
+		/// Destroy this <c>SessionFactory</c> and release all resources 
+		/// connection pools, etc). It is the responsibility of the application
+		/// to ensure that there are no open <c>Session</c>s before calling
+		/// <c>close()</c>. 
+		/// </summary>
+		Task CloseAsync();
 
 		/// <summary>
 		/// Evict all entries from the process-level cache.  This method occurs outside

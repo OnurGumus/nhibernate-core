@@ -8,6 +8,7 @@ using NHibernate.Event;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Action
 {
@@ -23,7 +24,7 @@ namespace NHibernate.Action
 			this.emptySnapshot = emptySnapshot;
 		}
 
-		public override async Task Execute(bool async)
+		public override async Task Execute()
 		{
 			object id = Key;
 			ISessionImplementor session = Session;
@@ -38,7 +39,7 @@ namespace NHibernate.Action
 				stopwatch = Stopwatch.StartNew();
 			}
 
-			PreUpdate();
+			await PreUpdate().ConfigureAwait(false);
 
 			if (!collection.WasInitialized)
 			{
@@ -52,7 +53,7 @@ namespace NHibernate.Action
 			{
 				if (!emptySnapshot)
 				{
-					await persister.Remove(id, session, async).ConfigureAwait(false);
+					await persister.Remove(id, session).ConfigureAwait(false);
 				}
 			}
 			else if (collection.NeedsRecreate(persister))
@@ -64,22 +65,22 @@ namespace NHibernate.Action
 				}
 				if (!emptySnapshot)
 				{
-					await persister.Remove(id, session, async).ConfigureAwait(false);
+					await persister.Remove(id, session).ConfigureAwait(false);
 				}
-				await persister.Recreate(collection, id, session, async).ConfigureAwait(false);
+				await persister.Recreate(collection, id, session).ConfigureAwait(false);
 			}
 			else
 			{
-				await persister.DeleteRows(collection, id, session, async).ConfigureAwait(false);
-				await persister.UpdateRows(collection, id, session, async).ConfigureAwait(false);
-				await persister.InsertRows(collection, id, session, async).ConfigureAwait(false);
+				await persister.DeleteRows(collection, id, session).ConfigureAwait(false);
+				await persister.UpdateRows(collection, id, session).ConfigureAwait(false);
+				await persister.InsertRows(collection, id, session).ConfigureAwait(false);
 			}
 
 			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
 
 			Evict();
 
-			PostUpdate();
+			await PostUpdate().ConfigureAwait(false);
 
 			if (statsEnabled)
 			{
@@ -88,7 +89,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		private void PreUpdate()
+		private async Task PreUpdate()
 		{
 			IPreCollectionUpdateEventListener[] preListeners = Session.Listeners.PreCollectionUpdateEventListeners;
 			if (preListeners.Length > 0)
@@ -96,12 +97,12 @@ namespace NHibernate.Action
 				PreCollectionUpdateEvent preEvent = new PreCollectionUpdateEvent(Persister, Collection, (IEventSource)Session);
 				for (int i = 0; i < preListeners.Length; i++)
 				{
-					preListeners[i].OnPreUpdateCollection(preEvent);
+					await preListeners[i].OnPreUpdateCollection(preEvent).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private void PostUpdate()
+		private async Task PostUpdate()
 		{
 			IPostCollectionUpdateEventListener[] postListeners = Session.Listeners.PostCollectionUpdateEventListeners;
 			if (postListeners.Length > 0)
@@ -109,7 +110,7 @@ namespace NHibernate.Action
 				PostCollectionUpdateEvent postEvent = new PostCollectionUpdateEvent(Persister, Collection, (IEventSource)Session);
 				for (int i = 0; i < postListeners.Length; i++)
 				{
-					postListeners[i].OnPostUpdateCollection(postEvent);
+					await postListeners[i].OnPostUpdateCollection(postEvent).ConfigureAwait(false);
 				}
 			}
 		}
@@ -126,7 +127,7 @@ namespace NHibernate.Action
 		{
 			get
 			{
-				return new AfterTransactionCompletionProcessDelegate((success) =>
+				return new AfterTransactionCompletionProcessDelegate(async (success) =>
 				{
 					// NH Different behavior: to support unlocking collections from the cache.(r3260)
 					if (Persister.HasCache)
@@ -139,7 +140,7 @@ namespace NHibernate.Action
 							// or detached from the session
 							if (Collection.WasInitialized && Session.PersistenceContext.ContainsCollection(Collection))
 							{
-								CollectionCacheEntry entry = new CollectionCacheEntry(Collection, Persister);
+								CollectionCacheEntry entry = new CollectionCacheEntry(await Collection.Disassemble(Persister).ConfigureAwait(false));
 								bool put = Persister.Cache.AfterUpdate(ck, entry, null, Lock);
 		
 								if (put && Session.Factory.Statistics.IsStatisticsEnabled)

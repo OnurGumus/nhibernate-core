@@ -7,6 +7,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
@@ -25,7 +26,7 @@ namespace NHibernate.Engine
 		/// <param name="entityName">The child's entity name </param>
 		/// <param name="anything">Typically some form of cascade-local cache which is specific to each CascadingAction type </param>
 		/// <param name="isCascadeDeleteEnabled">Are cascading deletes enabled. </param>
-		public abstract void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled);
+		public abstract Task Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled);
 
 		/// <summary> 
 		/// Given a collection, get an iterator of the children upon which the
@@ -58,8 +59,9 @@ namespace NHibernate.Engine
 		/// <param name="parent">The property value owner </param>
 		/// <param name="persister">The entity persister for the owner </param>
 		/// <param name="propertyIndex">The index of the property within the owner. </param>
-		public virtual void NoCascade(IEventSource session, object child, object parent, IEntityPersister persister, int propertyIndex)
+		public virtual Task NoCascade(IEventSource session, object child, object parent, IEntityPersister persister, int propertyIndex)
 		{
+			return TaskHelper.CompletedTask;
 		}
 
 		/// <summary> Should this action be performed (or noCascade consulted) in the case of lazy properties.</summary>
@@ -146,13 +148,13 @@ namespace NHibernate.Engine
 
 		private class DeleteCascadingAction : CascadingAction
 		{
-			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
+			public override Task Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("cascading to delete: " + entityName);
 				}
-				session.Delete(entityName, child, isCascadeDeleteEnabled, (ISet<object>)anything);
+				return session.Delete(entityName, child, isCascadeDeleteEnabled, (ISet<object>)anything);
 			}
 
 			public override IEnumerable GetCascadableChildrenIterator(IEventSource session, CollectionType collectionType, object collection)
@@ -169,13 +171,13 @@ namespace NHibernate.Engine
 
 		private class LockCascadingAction : CascadingAction
 		{
-			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
+			public override Task Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("cascading to lock: " + entityName);
 				}
-				session.Lock(entityName, child, LockMode.None);
+				return session.LockAsync(entityName, child, LockMode.None);
 			}
 			public override IEnumerable GetCascadableChildrenIterator(IEventSource session, CollectionType collectionType, object collection)
 			{
@@ -191,13 +193,13 @@ namespace NHibernate.Engine
 
 		private class RefreshCascadingAction : CascadingAction
 		{
-			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
+			public override Task Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("cascading to refresh: " + entityName);
 				}
-				session.Refresh(child, (IDictionary)anything);
+				return session.Refresh(child, (IDictionary)anything);
 			}
 			public override IEnumerable GetCascadableChildrenIterator(IEventSource session, CollectionType collectionType, object collection)
 			{
@@ -212,13 +214,13 @@ namespace NHibernate.Engine
 
 		private class EvictCascadingAction : CascadingAction
 		{
-			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
+			public override Task Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("cascading to evict: " + entityName);
 				}
-				session.Evict(child);
+				return session.EvictAsync(child);
 			}
 			public override IEnumerable GetCascadableChildrenIterator(IEventSource session, CollectionType collectionType, object collection)
 			{
@@ -237,13 +239,13 @@ namespace NHibernate.Engine
 
 		private class SaveUpdateCascadingAction : CascadingAction
 		{
-			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
+			public override Task Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("cascading to saveOrUpdate: " + entityName);
 				}
-				session.SaveOrUpdate(entityName, child);
+				return session.SaveOrUpdateAsync(entityName, child);
 			}
 			public override IEnumerable GetCascadableChildrenIterator(IEventSource session, CollectionType collectionType, object collection)
 			{
@@ -263,13 +265,13 @@ namespace NHibernate.Engine
 
 		private class MergeCascadingAction : CascadingAction
 		{
-			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
+			public override async Task Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("cascading to merge: " + entityName);
 				}
-				session.Merge(entityName, child, (IDictionary)anything);
+				await session.Merge(entityName, child, (IDictionary)anything).ConfigureAwait(false);
 			}
 			public override IEnumerable GetCascadableChildrenIterator(IEventSource session, CollectionType collectionType, object collection)
 			{
@@ -286,13 +288,13 @@ namespace NHibernate.Engine
         
 		private class PersistCascadingAction : CascadingAction
 		{
-			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
+			public override Task Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("cascading to persist: " + entityName);
 				}
-				session.Persist(entityName, child, (IDictionary)anything);
+				return session.Persist(entityName, child, (IDictionary)anything);
 			}
 			public override IEnumerable GetCascadableChildrenIterator(IEventSource session, CollectionType collectionType, object collection)
 			{
@@ -311,13 +313,13 @@ namespace NHibernate.Engine
 
 		private class PersistOnFlushCascadingAction : CascadingAction
 		{
-			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
+			public override async Task Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("cascading to persistOnFlush: " + entityName);
 				}
-				session.PersistOnFlush(entityName, child, (IDictionary)anything, false).ConfigureAwait(false).GetAwaiter().GetResult();
+				await session.PersistOnFlush(entityName, child, (IDictionary)anything).ConfigureAwait(false);
 			}
 			public override IEnumerable GetCascadableChildrenIterator(IEventSource session, CollectionType collectionType, object collection)
 			{
@@ -333,7 +335,7 @@ namespace NHibernate.Engine
 				get { return true; }
 			}
 
-			public override void NoCascade(IEventSource session, object child, object parent, IEntityPersister persister, int propertyIndex)
+			public override async Task NoCascade(IEventSource session, object child, object parent, IEntityPersister persister, int propertyIndex)
 			{
 				if (child == null)
 				{
@@ -344,7 +346,7 @@ namespace NHibernate.Engine
 				{
 					string childEntityName = ((EntityType)type).GetAssociatedEntityName(session.Factory);
 
-					if (!IsInManagedState(child, session) && !(child.IsProxy()) && ForeignKeys.IsTransient(childEntityName, child, null, session))
+					if (!IsInManagedState(child, session) && !(child.IsProxy()) && await ForeignKeys.IsTransient(childEntityName, child, null, session).ConfigureAwait(false))
 					{
 						string parentEntiytName = persister.EntityName;
 						string propertyName = persister.PropertyNames[propertyIndex];
@@ -369,13 +371,13 @@ namespace NHibernate.Engine
 
 		private class ReplicateCascadingAction : CascadingAction
 		{
-			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
+			public override Task Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("cascading to replicate: " + entityName);
 				}
-				session.Replicate(entityName, child, (ReplicationMode)anything);
+				return session.ReplicateAsync(entityName, child, (ReplicationMode)anything);
 			}
 			public override IEnumerable GetCascadableChildrenIterator(IEventSource session, CollectionType collectionType, object collection)
 			{

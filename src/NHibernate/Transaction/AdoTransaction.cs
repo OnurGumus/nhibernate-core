@@ -95,7 +95,12 @@ namespace NHibernate.Transaction
 
 		public void Begin()
 		{
-			Begin(IsolationLevel.Unspecified);
+			BeginAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public Task BeginAsync()
+		{
+			return BeginAsync(IsolationLevel.Unspecified);
 		}
 
 		/// <summary>
@@ -107,6 +112,19 @@ namespace NHibernate.Transaction
 		/// the <see cref="IDbTransaction"/>.
 		/// </exception>
 		public void Begin(IsolationLevel isolationLevel)
+		{
+			BeginAsync(isolationLevel).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary>
+		/// Begins the <see cref="IDbTransaction"/> on the <see cref="IDbConnection"/>
+		/// used by the <see cref="ISession"/>.
+		/// </summary>
+		/// <exception cref="TransactionException">
+		/// Thrown if there is any problems encountered while trying to create
+		/// the <see cref="IDbTransaction"/>.
+		/// </exception>
+		public async Task BeginAsync(IsolationLevel isolationLevel)
 		{
 			using (new SessionIdLoggingContext(sessionId))
 			{
@@ -131,11 +149,11 @@ namespace NHibernate.Transaction
 				{
 					if (isolationLevel == IsolationLevel.Unspecified)
 					{
-						trans = session.Connection.BeginTransaction();
+						trans = (await session.GetConnection().ConfigureAwait(false)).BeginTransaction();
 					}
 					else
 					{
-						trans = session.Connection.BeginTransaction(isolationLevel);
+						trans = (await session.GetConnection().ConfigureAwait(false)).BeginTransaction(isolationLevel);
 					}
 				}
 				catch (HibernateException)
@@ -157,12 +175,12 @@ namespace NHibernate.Transaction
 			}
 		}
 
-		private void AfterTransactionCompletion(bool successful)
+		private async Task AfterTransactionCompletion(bool successful)
 		{
 			using (new SessionIdLoggingContext(sessionId))
 			{
-				session.AfterTransactionCompletion(successful, this);
-				NotifyLocalSynchsAfterTransactionCompletion(successful);
+				await session.AfterTransactionCompletion(successful, this).ConfigureAwait(false);
+				await NotifyLocalSynchsAfterTransactionCompletion(successful).ConfigureAwait(false);
 				session = null;
 				begun = false;
 			}
@@ -178,7 +196,7 @@ namespace NHibernate.Transaction
 		/// </exception>
 		public void Commit()
 		{
-			this.CommitAsync(false).ConfigureAwait(false).GetAwaiter().GetResult();
+			this.CommitAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		/// <summary>
@@ -189,20 +207,7 @@ namespace NHibernate.Transaction
 		/// Thrown if there is any exception while trying to call <c>Commit()</c> on 
 		/// the underlying <see cref="IDbTransaction"/>.
 		/// </exception>
-		public Task CommitAsync()
-		{
-			return this.CommitAsync(true);
-		}
-
-		/// <summary>
-		/// Commits the <see cref="ITransaction"/> by flushing the <see cref="ISession"/>
-		/// and committing the <see cref="IDbTransaction"/>.
-		/// </summary>
-		/// <exception cref="TransactionException">
-		/// Thrown if there is any exception while trying to call <c>Commit()</c> on 
-		/// the underlying <see cref="IDbTransaction"/>.
-		/// </exception>
-		public async Task CommitAsync(bool async)
+		public async Task CommitAsync()
 		{
 			using (new SessionIdLoggingContext(sessionId))
 			{
@@ -214,14 +219,11 @@ namespace NHibernate.Transaction
 
 				if (session.FlushMode != FlushMode.Never)
 				{
-					if (async)
-						await session.FlushAsync().ConfigureAwait(false);
-					else
-						session.Flush();
+					await session.FlushAsync().ConfigureAwait(false);
 				}
 
-				NotifyLocalSynchsBeforeTransactionCompletion();
-				session.BeforeTransactionCompletion(this);
+				await NotifyLocalSynchsBeforeTransactionCompletion().ConfigureAwait(false);
+				await session.BeforeTransactionCompletion(this).ConfigureAwait(false);
 
 				try
 				{
@@ -229,13 +231,13 @@ namespace NHibernate.Transaction
 					log.Debug("IDbTransaction Committed");
 
 					committed = true;
-					AfterTransactionCompletion(true);
+					await AfterTransactionCompletion(true).ConfigureAwait(false);
 					Dispose();
 				}
 				catch (HibernateException e)
 				{
 					log.Error("Commit failed", e);
-					AfterTransactionCompletion(false);
+					await AfterTransactionCompletion(false).ConfigureAwait(false);
 					commitFailed = true;
 					// Don't wrap HibernateExceptions
 					throw;
@@ -243,7 +245,7 @@ namespace NHibernate.Transaction
 				catch (Exception e)
 				{
 					log.Error("Commit failed", e);
-					AfterTransactionCompletion(false);
+					await AfterTransactionCompletion(false).ConfigureAwait(false);
 					commitFailed = true;
 					throw new TransactionException("Commit failed with SQL exception", e);
 				}
@@ -254,7 +256,6 @@ namespace NHibernate.Transaction
 			}
 		}
 
-
 		/// <summary>
 		/// Rolls back the <see cref="ITransaction"/> by calling the method <c>Rollback</c> 
 		/// on the underlying <see cref="IDbTransaction"/>.
@@ -264,6 +265,19 @@ namespace NHibernate.Transaction
 		/// the underlying <see cref="IDbTransaction"/>.
 		/// </exception>
 		public void Rollback()
+		{
+			RollbackAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary>
+		/// Rolls back the <see cref="ITransaction"/> by calling the method <c>Rollback</c> 
+		/// on the underlying <see cref="IDbTransaction"/>.
+		/// </summary>
+		/// <exception cref="TransactionException">
+		/// Thrown if there is any exception while trying to call <c>Rollback()</c> on 
+		/// the underlying <see cref="IDbTransaction"/>.
+		/// </exception>
+		public async Task RollbackAsync()
 		{
 			using (new SessionIdLoggingContext(sessionId))
 			{
@@ -295,7 +309,7 @@ namespace NHibernate.Transaction
 					}
 					finally
 					{
-						AfterTransactionCompletion(false);
+						await AfterTransactionCompletion(false).ConfigureAwait(false);
 						CloseIfRequired();
 					}
 				}
@@ -404,7 +418,7 @@ namespace NHibernate.Transaction
 					if (IsActive && session != null)
 					{
 						// Assume we are rolled back
-						AfterTransactionCompletion(false);
+						AfterTransactionCompletion(false).ConfigureAwait(false).GetAwaiter().GetResult();
 					}
 				}
 
@@ -442,7 +456,7 @@ namespace NHibernate.Transaction
 			}
 		}
 
-		private void NotifyLocalSynchsBeforeTransactionCompletion()
+		private async Task NotifyLocalSynchsBeforeTransactionCompletion()
 		{
 			if (synchronizations != null)
 			{
@@ -451,7 +465,7 @@ namespace NHibernate.Transaction
 					ISynchronization sync = synchronizations[i];
 					try
 					{
-						sync.BeforeCompletion();
+						await sync.BeforeCompletion().ConfigureAwait(false);
 					}
 					catch (Exception e)
 					{
@@ -465,7 +479,7 @@ namespace NHibernate.Transaction
 			}
 		}
 
-		private void NotifyLocalSynchsAfterTransactionCompletion(bool success)
+		private async Task NotifyLocalSynchsAfterTransactionCompletion(bool success)
 		{
 			begun = false;
 			if (synchronizations != null)
@@ -475,7 +489,7 @@ namespace NHibernate.Transaction
 					ISynchronization sync = synchronizations[i];
 					try
 					{
-						sync.AfterCompletion(success);
+						await sync.AfterCompletion(success).ConfigureAwait(false);
 					}
 					catch (Exception e)
 					{

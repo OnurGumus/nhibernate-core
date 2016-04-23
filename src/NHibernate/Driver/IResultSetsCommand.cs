@@ -9,6 +9,6 @@ namespace NHibernate.Driver
 		void Append(ISqlCommand command);
 		bool HasQueries { get; }
 		SqlString Sql { get; }
-		Task<IDataReader> GetReader(int? commandTimeout, bool async);
+		Task<IDataReaderEx> GetReader(int? commandTimeout);
 	}
 }

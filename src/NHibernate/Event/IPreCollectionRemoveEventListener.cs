@@ -1,8 +1,10 @@
+using System.Threading.Tasks;
+
 namespace NHibernate.Event
 {
 	/// <summary> Called before removing a collection </summary>
 	public interface IPreCollectionRemoveEventListener
 	{
-		void OnPreRemoveCollection(PreCollectionRemoveEvent @event);
+		Task OnPreRemoveCollection(PreCollectionRemoveEvent @event);
 	}
 }

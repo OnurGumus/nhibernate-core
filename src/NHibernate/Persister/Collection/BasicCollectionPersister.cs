@@ -157,7 +157,7 @@ namespace NHibernate.Persister.Collection
 			return true;
 		}
 
-		protected override async Task<int> DoUpdateRows(object id, IPersistentCollection collection, ISessionImplementor session, bool async)
+		protected override async Task<int> DoUpdateRows(object id, IPersistentCollection collection, ISessionImplementor session)
 		{
 			if (ArrayHelper.IsAllFalse(elementColumnIsSettable)) return 0;
 
@@ -172,7 +172,7 @@ namespace NHibernate.Persister.Collection
 				int count = 0;
 				foreach (object entry in entries)
 				{
-					if (collection.NeedsUpdating(entry, i, ElementType))
+					if (await collection.NeedsUpdating(entry, i, ElementType).ConfigureAwait(false))
 					{
 						int offset = 0;
 						if (useBatch)
@@ -180,46 +180,46 @@ namespace NHibernate.Persister.Collection
 							if (st == null)
 							{
 								st =
-									session.Batcher.PrepareBatchCommand(SqlUpdateRowString.CommandType, SqlUpdateRowString.Text,
-																		SqlUpdateRowString.ParameterTypes);
+									await session.Batcher.PrepareBatchCommand(SqlUpdateRowString.CommandType, SqlUpdateRowString.Text,
+																		SqlUpdateRowString.ParameterTypes).ConfigureAwait(false);
 							}
 						}
 						else
 						{
 							st =
-								session.Batcher.PrepareCommand(SqlUpdateRowString.CommandType, SqlUpdateRowString.Text,
-															   SqlUpdateRowString.ParameterTypes);
+								await session.Batcher.PrepareCommand(SqlUpdateRowString.CommandType, SqlUpdateRowString.Text,
+															   SqlUpdateRowString.ParameterTypes).ConfigureAwait(false);
 						}
 
 						try
 						{
 							//offset += expectation.Prepare(st, Factory.ConnectionProvider.Driver);
 
-							int loc = WriteElement(st, collection.GetElement(entry), offset, session);
+							int loc = await WriteElement(st, collection.GetElement(entry), offset, session).ConfigureAwait(false);
 							if (hasIdentifier)
 							{
-								WriteIdentifier(st, collection.GetIdentifier(entry, i), loc, session);
+								await WriteIdentifier(st, collection.GetIdentifier(entry, i), loc, session).ConfigureAwait(false);
 							}
 							else
 							{
-								loc = WriteKey(st, id, loc, session);
+								loc = await WriteKey(st, id, loc, session).ConfigureAwait(false);
 								if (HasIndex && !indexContainsFormula)
 								{
-									WriteIndexToWhere(st, collection.GetIndex(entry, i, this), loc, session);
+									await WriteIndexToWhere(st, collection.GetIndex(entry, i, this), loc, session).ConfigureAwait(false);
 								}
 								else
 								{
-									WriteElementToWhere(st, collection.GetSnapshotElement(entry, i), loc, session);
+									await WriteElementToWhere(st, collection.GetSnapshotElement(entry, i), loc, session).ConfigureAwait(false);
 								}
 							}
 
 							if (useBatch)
 							{
-								session.Batcher.AddToBatch(expectation);
+								await session.Batcher.AddToBatch(expectation).ConfigureAwait(false);
 							}
 							else
 							{
-								expectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(st, async).ConfigureAwait(false), st);
+								expectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(st).ConfigureAwait(false), st);
 							}
 						}
 						catch (Exception e)

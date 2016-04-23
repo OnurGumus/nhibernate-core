@@ -105,7 +105,7 @@ namespace NHibernate.Type
 			return ReferenceEquals(x, y);
 		}
 
-		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
+		public override Task<object> NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			return NullSafeGet(rs, new string[] {name}, session, owner);
 		}
@@ -155,17 +155,17 @@ namespace NHibernate.Type
 			}
 		}
 
-		protected internal object GetIdentifier(object value, ISessionImplementor session)
+		protected internal async Task<object> GetIdentifier(object value, ISessionImplementor session)
 		{
 			if (IsNotEmbedded(session))
 			{
 				return value;
 			}
 
-			return ForeignKeys.GetEntityIdentifierIfNotUnsaved(GetAssociatedEntityName(), value, session); //tolerates nulls
+			return await ForeignKeys.GetEntityIdentifierIfNotUnsaved(GetAssociatedEntityName(), value, session).ConfigureAwait(false); //tolerates nulls
 		}
 
-		protected internal object GetReferenceValue(object value, ISessionImplementor session)
+		protected internal async Task<object> GetReferenceValue(object value, ISessionImplementor session)
 		{
 			if (IsNotEmbedded(session))
 			{
@@ -178,7 +178,7 @@ namespace NHibernate.Type
 			}
 			else if (IsReferenceToPrimaryKey)
 			{
-				return ForeignKeys.GetEntityIdentifierIfNotUnsaved(GetAssociatedEntityName(), value, session); //tolerates nulls
+				return await ForeignKeys.GetEntityIdentifierIfNotUnsaved(GetAssociatedEntityName(), value, session).ConfigureAwait(false); //tolerates nulls
 			}
 			else
 			{
@@ -191,7 +191,7 @@ namespace NHibernate.Type
 				IType type = entityPersister.GetPropertyType(uniqueKeyPropertyName);
 				if (type.IsEntityType)
 				{
-					propertyValue = ((EntityType)type).GetReferenceValue(propertyValue, session);
+					propertyValue = await ((EntityType)type).GetReferenceValue(propertyValue, session).ConfigureAwait(false);
 				}
 
 				return propertyValue;
@@ -269,7 +269,7 @@ namespace NHibernate.Type
 			return IsOneToOne;
 		}
 
-		public override object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache)
+		public override async Task<object> Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache)
 		{
 			if (original == null)
 			{
@@ -286,7 +286,7 @@ namespace NHibernate.Type
 				{
 					return target;
 				}
-				if (session.GetContextEntityIdentifier(original) == null && ForeignKeys.IsTransient(associatedEntityName, original, false, session))
+				if (session.GetContextEntityIdentifier(original) == null && await ForeignKeys.IsTransient(associatedEntityName, original, false, session).ConfigureAwait(false))
 				{
 					object copy = session.Factory.GetEntityPersister(associatedEntityName).Instantiate(null, session.EntityMode);
 					//TODO: should this be Session.instantiate(Persister, ...)?
@@ -295,13 +295,13 @@ namespace NHibernate.Type
 				}
 				else
 				{
-					object id = GetReferenceValue(original, session);
+					object id = await GetReferenceValue(original, session).ConfigureAwait(false);
 					if (id == null)
 					{
 						throw new AssertionFailure("non-transient entity has a null id");
 					}
-					id = GetIdentifierOrUniqueKeyType(session.Factory).Replace(id, null, session, owner, copyCache);
-					return ResolveIdentifier(id, session, owner);
+					id = await GetIdentifierOrUniqueKeyType(session.Factory).Replace(id, null, session, owner, copyCache).ConfigureAwait(false);
+					return await ResolveIdentifier(id, session, owner).ConfigureAwait(false);
 				}
 			}
 		}
@@ -321,12 +321,12 @@ namespace NHibernate.Type
 		/// <returns>
 		/// An instance of the object or <see langword="null" /> if the identifer was null.
 		/// </returns>
-		public override sealed object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override sealed async Task<object> NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			return ResolveIdentifier(Hydrate(rs, names, session, owner), session, owner);
+			return await ResolveIdentifier(await Hydrate(rs, names, session, owner).ConfigureAwait(false), session, owner).ConfigureAwait(false);
 		}
 
-		public abstract override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner);
+		public abstract override Task<object> Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner);
 
 		public bool IsUniqueKeyReference
 		{
@@ -403,14 +403,14 @@ namespace NHibernate.Type
 		/// <summary>
 		/// Resolves the identifier to the actual object.
 		/// </summary>
-		protected object ResolveIdentifier(object id, ISessionImplementor session)
+		protected async Task<object> ResolveIdentifier(object id, ISessionImplementor session)
 		{
 			string entityName = GetAssociatedEntityName();
 			bool isProxyUnwrapEnabled = unwrapProxy && session.Factory
 				.GetEntityPersister(entityName)
 				.IsInstrumented(session.EntityMode);
 
-			object proxyOrEntity = session.InternalLoad(entityName, id, eager, IsNullable && !isProxyUnwrapEnabled);
+			object proxyOrEntity = await session.InternalLoadAsync(entityName, id, eager, IsNullable && !isProxyUnwrapEnabled).ConfigureAwait(false);
 
 			if (proxyOrEntity.IsProxy())
 			{
@@ -428,22 +428,22 @@ namespace NHibernate.Type
 		/// <param name="session"></param>
 		/// <param name="owner"></param>
 		/// <returns></returns>
-		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner)
+		public override Task<object> ResolveIdentifier(object value, ISessionImplementor session, object owner)
 		{
 			if (IsNotEmbedded(session))
 			{
-				return value;
+				return Task.FromResult(value);
 			}
 
 			if (value == null)
 			{
-				return null;
+				return Task.FromResult<object>(null);
 			}
 			else
 			{
 				if (IsNull(owner, session))
 				{
-					return null; //EARLY EXIT!
+					return Task.FromResult<object>(null); //EARLY EXIT!
 				}
 
 				if (IsReferenceToPrimaryKey)
@@ -452,8 +452,7 @@ namespace NHibernate.Type
 				}
 				else
 				{
-					return LoadByUniqueKey(GetAssociatedEntityName(), uniqueKeyPropertyName, value, session,false)
-						.ConfigureAwait(false).GetAwaiter().GetResult();
+					return LoadByUniqueKey(GetAssociatedEntityName(), uniqueKeyPropertyName, value, session);
 				}
 			}
 		}
@@ -559,9 +558,8 @@ namespace NHibernate.Type
 		/// <param name="uniqueKeyPropertyName">The name of the property defining the unique key. </param>
 		/// <param name="key">The unique key property value. </param>
 		/// <param name="session">The originating session. </param>
-		/// <param name="async"></param>
 		/// <returns> The loaded entity </returns>
-		public async Task<object> LoadByUniqueKey(string entityName, string uniqueKeyPropertyName, object key, ISessionImplementor session, bool async)
+		public async Task<object> LoadByUniqueKey(string entityName, string uniqueKeyPropertyName, object key, ISessionImplementor session)
 		{
 
 			ISessionFactoryImplementor factory = session.Factory;
@@ -579,7 +577,7 @@ namespace NHibernate.Type
 				object result = persistenceContext.GetEntity(euk);
 				if (result == null)
 				{
-					result = await persister.LoadByUniqueKey(uniqueKeyPropertyName, key, session, async).ConfigureAwait(false);
+					result = await persister.LoadByUniqueKey(uniqueKeyPropertyName, key, session).ConfigureAwait(false);
 				}
 				return result == null ? null : persistenceContext.ProxyFor(result);
 			}

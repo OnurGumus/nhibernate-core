@@ -1,8 +1,10 @@
 using System;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Cache.Entry
 {
@@ -17,11 +19,10 @@ namespace NHibernate.Cache.Entry
 		private readonly bool lazyPropertiesAreUnfetched;
 		private readonly object version;
 
-
-		public CacheEntry(object[] state, IEntityPersister persister, bool unfetched, object version, ISessionImplementor session, object owner)
+		public CacheEntry(IEntityPersister persister, bool unfetched, object version, object[] disassembledState)
 		{
 			//disassembled state gets put in a new array (we write to cache by value!)
-			disassembledState = TypeHelper.Disassemble(state, persister.PropertyTypes, null, session, owner);
+			this.disassembledState = disassembledState;
 			subclass = persister.EntityName;
 			lazyPropertiesAreUnfetched = unfetched || !persister.IsLazyPropertiesCacheable;
 			this.version = version;
@@ -61,22 +62,22 @@ namespace NHibernate.Cache.Entry
 			}
 		}
 
-		public object[] Assemble(object instance, object id, IEntityPersister persister, IInterceptor interceptor,
+		public Task<object[]> Assemble(object instance, object id, IEntityPersister persister, IInterceptor interceptor,
 		                         ISessionImplementor session)
 		{
 			if (!persister.EntityName.Equals(subclass))
 			{
-				throw new AssertionFailure("Tried to assemble a different subclass instance");
+				return TaskHelper.FromException<object[]>(new AssertionFailure("Tried to assemble a different subclass instance"));
 			}
 
 			return Assemble(disassembledState, instance, id, persister, interceptor, session);
 		}
 
-		private static object[] Assemble(object[] values, object result, object id, IEntityPersister persister,
+		private static async Task<object[]> Assemble(object[] values, object result, object id, IEntityPersister persister,
 		                                 IInterceptor interceptor, ISessionImplementor session)
 		{
 			//assembled state gets put in a new array (we read from cache by value!)
-			object[] assembledProps = TypeHelper.Assemble(values, persister.PropertyTypes, session, result);
+			object[] assembledProps = await TypeHelper.Assemble(values, persister.PropertyTypes, session, result).ConfigureAwait(false);
 	
 			//from h3.2 TODO: reuse the PreLoadEvent
 			PreLoadEvent preLoadEvent = new PreLoadEvent((IEventSource) session);

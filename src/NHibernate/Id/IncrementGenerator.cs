@@ -4,11 +4,14 @@ using System.Data;
 using System.Data.Common;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading.Tasks;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Id
 {
@@ -32,6 +35,7 @@ namespace NHibernate.Id
 		private long _next;
 		private SqlString _sql;
 		private System.Type _returnClass;
+		private readonly AsyncLock _lock = new AsyncLock();
 
 		/// <summary>
 		///
@@ -85,30 +89,32 @@ namespace NHibernate.Id
 		/// <param name="session"></param>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		[MethodImpl(MethodImplOptions.Synchronized)]
-		public object Generate(ISessionImplementor session, object obj)
+		public async Task<object> Generate(ISessionImplementor session, object obj)
 		{
-			if (_sql != null)
+			using (var releaser = await _lock.LockAsync().ConfigureAwait(false))
 			{
-				GetNext(session);
+				if (_sql != null)
+				{
+					await GetNext(session).ConfigureAwait(false);
+				}
+				return IdentifierGeneratorFactory.CreateNumber(_next++, _returnClass);
 			}
-			return IdentifierGeneratorFactory.CreateNumber(_next++, _returnClass);
 		}
 
-		private void GetNext(ISessionImplementor session)
+		private async Task GetNext(ISessionImplementor session)
 		{
 			Logger.Debug("fetching initial value: " + _sql);
 
 			try
 			{
-				var cmd = session.Batcher.PrepareCommand(CommandType.Text, _sql, SqlTypeFactory.NoTypes);
-				IDataReader reader = null;
+				var cmd = await session.Batcher.PrepareCommand(CommandType.Text, _sql, SqlTypeFactory.NoTypes).ConfigureAwait(false);
+				IDataReaderEx reader = null;
 				try
 				{
-					reader = session.Batcher.ExecuteReader(cmd, false).ConfigureAwait(false).GetAwaiter().GetResult();
+					reader = await session.Batcher.ExecuteReader(cmd).ConfigureAwait(false);
 					try
 					{
-						if (reader.Read())
+						if (await reader.ReadAsync().ConfigureAwait(false))
 						{
 							_next = !reader.IsDBNull(0) ? Convert.ToInt64(reader.GetValue(0)) + 1 : 1L;
 						}

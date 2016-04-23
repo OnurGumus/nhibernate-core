@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -227,7 +227,7 @@ namespace NHibernate.Id.Enhanced
 
 		#region Implementation of IIdentifierGenerator
 
-		public virtual object Generate(ISessionImplementor session, object obj)
+		public virtual Task<object> Generate(ISessionImplementor session, object obj)
 		{
 			return Optimizer.Generate(DatabaseStructure.BuildCallback(session));
 		}

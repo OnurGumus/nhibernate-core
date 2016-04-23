@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
+using System.Threading.Tasks;
+using NHibernate.Util;
 
 
 namespace NHibernate.Connection
@@ -39,11 +42,29 @@ namespace NHibernate.Connection
 		/// </returns>
 		/// <exception cref="InvalidOperationException">
 		/// Thrown when this method is called.  User is responsible for creating
-		/// <see cref="IDbConnection"/>s.
+		/// <see cref="DbConnection"/>s.
 		/// </exception>
-		public override IDbConnection GetConnection()
+		public override DbConnection GetConnection()
 		{
 			throw new InvalidOperationException("The user must provide an ADO.NET connection - NHibernate is not creating it.");
+		}
+
+		/// <summary>
+		/// Throws an <see cref="InvalidOperationException"/> if this method is called
+		/// because the user is responsible for creating <see cref="IDbConnection"/>s.
+		/// </summary>
+		/// <returns>
+		/// No value is returned because an <see cref="InvalidOperationException"/> is thrown.
+		/// </returns>
+		/// <exception cref="InvalidOperationException">
+		/// Thrown when this method is called.  User is responsible for creating
+		/// <see cref="DbConnection"/>s.
+		/// </exception>
+		public override Task<DbConnection> GetConnectionAsync()
+		{
+			return
+				TaskHelper.FromException<DbConnection>(
+					new InvalidOperationException("The user must provide an ADO.NET connection - NHibernate is not creating it."));
 		}
 
 		/// <summary>

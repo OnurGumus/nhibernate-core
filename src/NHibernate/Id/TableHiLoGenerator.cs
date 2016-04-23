@@ -6,6 +6,7 @@ using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace NHibernate.Id
 {
@@ -50,6 +51,7 @@ namespace NHibernate.Id
 		private long lo;
 		private long maxLo;
 		private System.Type returnClass;
+		private readonly AsyncLock asyncLock = new AsyncLock();
 
 		#region IConfigurable Members
 
@@ -78,26 +80,28 @@ namespace NHibernate.Id
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
 		/// <returns>The new identifier as a <see cref="Int64"/>.</returns>
-		[MethodImpl(MethodImplOptions.Synchronized)]
-		public override object Generate(ISessionImplementor session, object obj)
+		public override async Task<object> Generate(ISessionImplementor session, object obj)
 		{
-			if (maxLo < 1)
+			using (var releaser = await asyncLock.LockAsync().ConfigureAwait(false))
 			{
-				//keep the behavior consistent even for boundary usages
-				long val = Convert.ToInt64(base.Generate(session, obj));
-				if (val == 0)
-					val = Convert.ToInt64(base.Generate(session, obj));
-				return IdentifierGeneratorFactory.CreateNumber(val, returnClass);
-			}
-			if (lo > maxLo)
-			{
-				long hival = Convert.ToInt64(base.Generate(session, obj));
-				lo = (hival == 0) ? 1 : 0;
-				hi = hival * (maxLo + 1);
-				log.Debug("New high value: " + hival);
-			}
+				if (maxLo < 1)
+				{
+					//keep the behavior consistent even for boundary usages
+					long val = Convert.ToInt64(await base.Generate(session, obj).ConfigureAwait(false));
+					if (val == 0)
+						val = Convert.ToInt64(await base.Generate(session, obj).ConfigureAwait(false));
+					return IdentifierGeneratorFactory.CreateNumber(val, returnClass);
+				}
+				if (lo > maxLo)
+				{
+					long hival = Convert.ToInt64(await base.Generate(session, obj).ConfigureAwait(false));
+					lo = (hival == 0) ? 1 : 0;
+					hi = hival * (maxLo + 1);
+					log.Debug("New high value: " + hival);
+				}
 
-			return IdentifierGeneratorFactory.CreateNumber(hi + lo++, returnClass);
+				return IdentifierGeneratorFactory.CreateNumber(hi + lo++, returnClass);
+			}
 		}
 
 		#endregion

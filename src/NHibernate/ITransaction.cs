@@ -25,10 +25,21 @@ namespace NHibernate
 		void Begin();
 
 		/// <summary>
+		/// Begin the transaction with the default isolation level.
+		/// </summary>
+		Task BeginAsync();
+
+		/// <summary>
 		/// Begin the transaction with the specified isolation level.
 		/// </summary>
 		/// <param name="isolationLevel">Isolation level of the transaction</param>
 		void Begin(IsolationLevel isolationLevel);
+
+		/// <summary>
+		/// Begin the transaction with the specified isolation level.
+		/// </summary>
+		/// <param name="isolationLevel">Isolation level of the transaction</param>
+		Task BeginAsync(IsolationLevel isolationLevel);
 
 		/// <summary>
 		/// Flush the associated <c>ISession</c> and end the unit of work.
@@ -52,6 +63,11 @@ namespace NHibernate
 		/// Force the underlying transaction to roll back.
 		/// </summary>
 		void Rollback();
+
+		/// <summary>
+		/// Force the underlying transaction to roll back.
+		/// </summary>
+		Task RollbackAsync();
 
 		/// <summary>
 		/// Is the transaction in progress

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Loader;
@@ -57,13 +58,13 @@ namespace NHibernate.Collection.Generic
 			return clonedMap;
 		}
 
-		public override ICollection GetOrphans(object snapshot, string entityName)
+		public override Task<ICollection> GetOrphans(object snapshot, string entityName)
 		{
 			var sn = (IDictionary<TKey, TValue>)snapshot;
 			return GetOrphans((ICollection)sn.Values, (ICollection)WrappedMap.Values, entityName, Session);
 		}
 
-		public override bool EqualsSnapshot(ICollectionPersister persister)
+		public override async Task<bool> EqualsSnapshot(ICollectionPersister persister)
 		{
 			IType elementType = persister.ElementType;
 			var xmap = (IDictionary<TKey, TValue>)GetSnapshot();
@@ -73,7 +74,7 @@ namespace NHibernate.Collection.Generic
 			}
 			foreach (KeyValuePair<TKey, TValue> entry in WrappedMap)
 			{
-				if (elementType.IsDirty(entry.Value, xmap[entry.Key], Session))
+				if (await elementType.IsDirty(entry.Value, xmap[entry.Key], Session).ConfigureAwait(false))
 				{
 					return false;
 				}
@@ -107,10 +108,10 @@ namespace NHibernate.Collection.Generic
 			return StringHelper.CollectionToString(WrappedMap);
 		}
 
-		public override object ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
+		public override async Task<object> ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
-			object element = role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
-			object index = role.ReadIndex(rs, descriptor.SuffixedIndexAliases, Session);
+			object element = await role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session).ConfigureAwait(false);
+			object index = await role.ReadIndex(rs, descriptor.SuffixedIndexAliases, Session).ConfigureAwait(false);
 
 			AddDuringInitialize(index, element);
 			return element;
@@ -132,31 +133,31 @@ namespace NHibernate.Collection.Generic
 		/// <param name="persister">The CollectionPersister to use to reassemble the PersistentGenericMap.</param>
 		/// <param name="disassembled">The disassembled PersistentGenericMap.</param>
 		/// <param name="owner">The owner object.</param>
-		public override void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
+		public override async Task InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
 		{
 			object[] array = (object[])disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
 			for (int i = 0; i < size; i += 2)
 			{
-				WrappedMap[(TKey)persister.IndexType.Assemble(array[i], Session, owner)] =
-					(TValue)persister.ElementType.Assemble(array[i + 1], Session, owner);
+				WrappedMap[(TKey)await persister.IndexType.Assemble(array[i], Session, owner).ConfigureAwait(false)] =
+					(TValue)await persister.ElementType.Assemble(array[i + 1], Session, owner).ConfigureAwait(false);
 			}
 		}
 
-		public override object Disassemble(ICollectionPersister persister)
+		public override async Task<object> Disassemble(ICollectionPersister persister)
 		{
 			object[] result = new object[WrappedMap.Count * 2];
 			int i = 0;
 			foreach (KeyValuePair<TKey, TValue> e in WrappedMap)
 			{
-				result[i++] = persister.IndexType.Disassemble(e.Key, Session, null);
-				result[i++] = persister.ElementType.Disassemble(e.Value, Session, null);
+				result[i++] = await persister.IndexType.Disassemble(e.Key, Session, null).ConfigureAwait(false);
+				result[i++] = await persister.ElementType.Disassemble(e.Value, Session, null).ConfigureAwait(false);
 			}
 			return result;
 		}
 
-		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
+		public override Task<IEnumerable> GetDeletes(ICollectionPersister persister, bool indexIsFormula)
 		{
 			IList deletes = new List<object>();
 			var sn = (IDictionary<TKey, TValue>)GetSnapshot();
@@ -168,23 +169,23 @@ namespace NHibernate.Collection.Generic
 					deletes.Add(indexIsFormula ? e.Value : key);
 				}
 			}
-			return deletes;
+			return Task.FromResult<IEnumerable>(deletes);
 		}
 
-		public override bool NeedsInserting(object entry, int i, IType elemType)
+		public override Task<bool> NeedsInserting(object entry, int i, IType elemType)
 		{
 			var sn = (IDictionary)GetSnapshot();
 			var e = (KeyValuePair<TKey, TValue>)entry;
-			return !sn.Contains(e.Key);
+			return Task.FromResult(!sn.Contains(e.Key));
 		}
 
-		public override bool NeedsUpdating(object entry, int i, IType elemType)
+		public override async Task<bool> NeedsUpdating(object entry, int i, IType elemType)
 		{
 			var sn = (IDictionary)GetSnapshot();
 			var e = (KeyValuePair<TKey, TValue>)entry;
 			var snValue = sn[e.Key];
 			var isNew = !sn.Contains(e.Key);
-			return e.Value != null && snValue != null && elemType.IsDirty(snValue, e.Value, Session)
+			return e.Value != null && snValue != null && await elemType.IsDirty(snValue, e.Value, Session).ConfigureAwait(false)
 				|| (!isNew && ((e.Value == null) != (snValue == null)));
 		}
 
@@ -231,7 +232,7 @@ namespace NHibernate.Collection.Generic
 
 		public bool ContainsKey(TKey key)
 		{
-			bool? exists = ReadIndexExistence(key, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			bool? exists = ReadIndexExistence(key).ConfigureAwait(false).GetAwaiter().GetResult();
 			return !exists.HasValue ? WrappedMap.ContainsKey(key) : exists.Value;
 		}
 
@@ -243,24 +244,24 @@ namespace NHibernate.Collection.Generic
 			}
 			if (PutQueueEnabled)
 			{
-				object old = ReadElementByIndex(key, false).ConfigureAwait(false).GetAwaiter().GetResult();
+				object old = ReadElementByIndex(key).ConfigureAwait(false).GetAwaiter().GetResult();
 				if (old != Unknown)
 				{
 					QueueOperation(new PutDelayedOperation(this, key, value, old == NotFound ? null : old));
 					return;
 				}
 			}
-			Initialize(true);
+			Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
 			WrappedMap.Add(key, value);
 			Dirty();
 		}
 
 		public bool Remove(TKey key)
 		{
-			object old = PutQueueEnabled ? ReadElementByIndex(key, false).ConfigureAwait(false).GetAwaiter().GetResult() : Unknown;
+			object old = PutQueueEnabled ? ReadElementByIndex(key).ConfigureAwait(false).GetAwaiter().GetResult() : Unknown;
 			if (old == Unknown) // queue is not enabled for 'puts', or element not found
 			{
-				Initialize(true);
+				Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
 				bool contained = WrappedMap.Remove(key);
 				if (contained)
 				{
@@ -276,7 +277,7 @@ namespace NHibernate.Collection.Generic
 
 		public bool TryGetValue(TKey key, out TValue value)
 		{
-			object result = ReadElementByIndex(key, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			object result = ReadElementByIndex(key).ConfigureAwait(false).GetAwaiter().GetResult();
 			if (result == Unknown)
 			{
 				return WrappedMap.TryGetValue(key, out value);
@@ -294,7 +295,7 @@ namespace NHibernate.Collection.Generic
 		{
 			get
 			{
-				object result = ReadElementByIndex(key, false).ConfigureAwait(false).GetAwaiter().GetResult();
+				object result = ReadElementByIndex(key).ConfigureAwait(false).GetAwaiter().GetResult();
 				if (result == Unknown)
 				{
 					return WrappedMap[key];
@@ -310,14 +311,14 @@ namespace NHibernate.Collection.Generic
 				// NH Note: the assignment in NET work like the put method in JAVA (mean assign or add)
 				if (PutQueueEnabled)
 				{
-					object old = ReadElementByIndex(key, false).ConfigureAwait(false).GetAwaiter().GetResult();
+					object old = ReadElementByIndex(key).ConfigureAwait(false).GetAwaiter().GetResult();
 					if (old != Unknown)
 					{
 						QueueOperation(new PutDelayedOperation(this, key, value, old == NotFound ? null : old));
 						return;
 					}
 				}
-				Initialize(true);
+				Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
 				TValue tempObject;
 				WrappedMap.TryGetValue(key, out tempObject);
 				WrappedMap[key] = value;
@@ -368,7 +369,7 @@ namespace NHibernate.Collection.Generic
 			}
 			else
 			{
-				Initialize(true);
+				Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
 				if (WrappedMap.Count != 0)
 				{
 					Dirty();
@@ -379,7 +380,7 @@ namespace NHibernate.Collection.Generic
 
 		public bool Contains(KeyValuePair<TKey, TValue> item)
 		{
-			bool? exists = ReadIndexExistence(item.Key, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			bool? exists = ReadIndexExistence(item.Key).ConfigureAwait(false).GetAwaiter().GetResult();
 			if (!exists.HasValue)
 			{
 				return WrappedMap.Contains(item);
@@ -432,7 +433,7 @@ namespace NHibernate.Collection.Generic
 		{
 			get
 			{
-				return ReadSize(false).ConfigureAwait(false).GetAwaiter().GetResult() ? CachedSize : WrappedMap.Count;
+				return ReadSize().ConfigureAwait(false).GetAwaiter().GetResult() ? CachedSize : WrappedMap.Count;
 			}
 		}
 

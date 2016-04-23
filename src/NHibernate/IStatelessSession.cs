@@ -1,6 +1,8 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 
 namespace NHibernate
@@ -67,11 +69,22 @@ namespace NHibernate
 		/// <returns>The identifier of the instance</returns>
 		object Insert(object entity);
 
+		/// <summary>Insert an entity.</summary>
+		/// <param name="entity">A new transient instance</param>
+		/// <returns>The identifier of the instance</returns>
+		Task<object> InsertAsync(object entity);
+
 		/// <summary>Insert a row.</summary>
 		/// <param name="entityName">The name of the entity to be inserted</param>
 		/// <param name="entity">A new transient instance</param>
 		/// <returns>The identifier of the instance</returns>
 		object Insert(string entityName, object entity);
+
+		/// <summary>Insert a row.</summary>
+		/// <param name="entityName">The name of the entity to be inserted</param>
+		/// <param name="entity">A new transient instance</param>
+		/// <returns>The identifier of the instance</returns>
+		Task<object> InsertAsync(string entityName, object entity);
 
 		/// <summary>Update an entity.</summary>
 		/// <param name="entity">A detached entity instance</param>
@@ -82,14 +95,28 @@ namespace NHibernate
 		/// <param name="entity">A detached entity instance</param>
 		void Update(string entityName, object entity);
 
+		/// <summary>Update an entity.</summary>
+		/// <param name="entityName">The name of the entity to be updated</param>
+		/// <param name="entity">A detached entity instance</param>
+		Task UpdateAsync(string entityName, object entity);
+
 		/// <summary>Delete an entity.</summary>
 		/// <param name="entity">A detached entity instance</param>
 		void Delete(object entity);
 
 		/// <summary>Delete an entity.</summary>
+		/// <param name="entity">A detached entity instance</param>
+		Task DeleteAsync(object entity);
+
+		/// <summary>Delete an entity.</summary>
 		/// <param name="entityName">The name of the entity to be deleted</param>
 		/// <param name="entity">A detached entity instance</param>
 		void Delete(string entityName, object entity);
+
+		/// <summary>Delete an entity.</summary>
+		/// <param name="entityName">The name of the entity to be deleted</param>
+		/// <param name="entity">A detached entity instance</param>
+		Task DeleteAsync(string entityName, object entity);
 
 		/// <summary>Retrieve a entity.</summary>
 		/// <returns>A detached entity instance</returns>
@@ -102,6 +129,12 @@ namespace NHibernate
 		T Get<T>(object id);
 
 		/// <summary>
+		/// Retrieve an entity.
+		/// </summary>
+		/// <returns>A detached entity instance</returns>
+		Task<T> GetAsync<T>(object id);
+
+		/// <summary>
 		/// Retrieve an entity, obtaining the specified lock mode.
 		/// </summary>
 		/// <returns>A detached entity instance</returns>
@@ -111,13 +144,31 @@ namespace NHibernate
 		/// Retrieve an entity, obtaining the specified lock mode.
 		/// </summary>
 		/// <returns>A detached entity instance</returns>
+		Task<object> GetAsync(string entityName, object id, LockMode lockMode);
+
+		/// <summary>
+		/// Retrieve an entity, obtaining the specified lock mode.
+		/// </summary>
+		/// <returns>A detached entity instance</returns>
 		T Get<T>(object id, LockMode lockMode);
+
+		/// <summary>
+		/// Retrieve an entity, obtaining the specified lock mode.
+		/// </summary>
+		/// <returns>A detached entity instance</returns>
+		Task<T> GetAsync<T>(object id, LockMode lockMode);
 
 		/// <summary>
 		/// Refresh the entity instance state from the database.
 		/// </summary>
 		/// <param name="entity">The entity to be refreshed.</param>
 		void Refresh(object entity);
+
+		/// <summary>
+		/// Refresh the entity instance state from the database.
+		/// </summary>
+		/// <param name="entity">The entity to be refreshed.</param>
+		Task RefreshAsync(object entity);
 
 		/// <summary>
 		/// Refresh the entity instance state from the database.
@@ -129,9 +180,23 @@ namespace NHibernate
 		/// <summary>
 		/// Refresh the entity instance state from the database.
 		/// </summary>
+		/// <param name="entityName">The name of the entity to be refreshed.</param>
+		/// <param name="entity">The entity to be refreshed.</param>
+		Task RefreshAsync(string entityName, object entity);
+
+		/// <summary>
+		/// Refresh the entity instance state from the database.
+		/// </summary>
 		/// <param name="entity">The entity to be refreshed.</param>
 		/// <param name="lockMode">The LockMode to be applied.</param>
 		void Refresh(object entity, LockMode lockMode);
+
+		/// <summary>
+		/// Refresh the entity instance state from the database.
+		/// </summary>
+		/// <param name="entity">The entity to be refreshed.</param>
+		/// <param name="lockMode">The LockMode to be applied.</param>
+		Task RefreshAsync(object entity, LockMode lockMode);
 
 		/// <summary>
 		/// Refresh the entity instance state from the database.
@@ -140,6 +205,14 @@ namespace NHibernate
 		/// <param name="entity">The entity to be refreshed.</param>
 		/// <param name="lockMode">The LockMode to be applied.</param>
 		void Refresh(string entityName, object entity, LockMode lockMode);
+
+		/// <summary>
+		/// Refresh the entity instance state from the database.
+		/// </summary>
+		/// <param name="entityName">The name of the entity to be refreshed.</param>
+		/// <param name="entity">The entity to be refreshed.</param>
+		/// <param name="lockMode">The LockMode to be applied.</param>
+		Task RefreshAsync(string entityName, object entity, LockMode lockMode);
 
 		/// <summary>
 		/// Create a new instance of <tt>Query</tt> for the given HQL query string.
@@ -242,11 +315,24 @@ namespace NHibernate
 		ITransaction BeginTransaction();
 
 		/// <summary>
+		/// Begin a NHibernate transaction
+		/// </summary>
+		/// <returns>A NHibernate transaction</returns>
+		Task<ITransaction> BeginTransactionAsync();
+
+		/// <summary>
 		/// Begin a NHibernate transaction with the specified isolation level
 		/// </summary>
 		/// <param name="isolationLevel">The isolation level</param>
 		/// <returns>A NHibernate transaction</returns>
 		ITransaction BeginTransaction(IsolationLevel isolationLevel);
+
+		/// <summary>
+		/// Begin a NHibernate transaction with the specified isolation level
+		/// </summary>
+		/// <param name="isolationLevel">The isolation level</param>
+		/// <returns>A NHibernate transaction</returns>
+		Task<ITransaction> BeginTransactionAsync(IsolationLevel isolationLevel);
 
 		/// <summary>
 		/// Sets the batch size of the session

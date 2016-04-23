@@ -90,11 +90,11 @@ namespace NHibernate.AdoNet
 		/// and <see cref="IDbTransaction"/> if one exists.  It will call <c>Prepare</c> if the Driver
 		/// supports preparing commands.
 		/// </remarks>
-		protected void Prepare(IDbCommand cmd)
+		protected async Task Prepare(IDbCommand cmd)
 		{
 			try
 			{
-				IDbConnection sessionConnection = _connectionManager.GetConnection();
+				DbConnection sessionConnection = await _connectionManager.GetConnection().ConfigureAwait(false);
 
 				if (cmd.Connection != null)
 				{
@@ -119,7 +119,7 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		public virtual DbCommand PrepareBatchCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
+		public virtual async Task<DbCommand> PrepareBatchCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
 		{
 			if (sql.Equals(_batchCommandSql) && ArrayHelper.ArrayEquals(parameterTypes, _batchCommandParameterTypes))
 			{
@@ -130,7 +130,7 @@ namespace NHibernate.AdoNet
 			}
 			else
 			{
-				_batchCommand = PrepareCommand(type, sql, parameterTypes); // calls ExecuteBatch()
+				_batchCommand = await PrepareCommand(type, sql, parameterTypes).ConfigureAwait(false); // calls ExecuteBatch()
 				_batchCommandSql = sql;
 				_batchCommandParameterTypes = parameterTypes;
 			}
@@ -138,9 +138,9 @@ namespace NHibernate.AdoNet
 			return _batchCommand;
 		}
 
-		public DbCommand PrepareCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
+		public async Task<DbCommand> PrepareCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
 		{
-			OnPreparedCommand();
+			await OnPreparedCommand().ConfigureAwait(false);
 
 			// do not actually prepare the Command here - instead just generate it because
 			// if the command is associated with an ADO.NET Transaction/Connection while
@@ -149,11 +149,11 @@ namespace NHibernate.AdoNet
 			return Generate(type, sql, parameterTypes);
 		}
 
-		protected virtual void OnPreparedCommand()
+		protected virtual Task OnPreparedCommand()
 		{
 			// a new IDbCommand is being prepared and a new (potential) batch
 			// started - so execute the current batch of commands.
-			ExecuteBatch();
+			return ExecuteBatch();
 		}
 
 		public DbCommand PrepareQueryCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
@@ -185,20 +185,17 @@ namespace NHibernate.AdoNet
 			_batchCommandParameterTypes = null;
 		}
 
-		public async Task<int> ExecuteNonQuery(DbCommand cmd, bool async)
+		public async Task<int> ExecuteNonQuery(DbCommand cmd)
 		{
-			CheckReaders();
+			await CheckReaders().ConfigureAwait(false);
 			LogCommand(cmd);
-			Prepare(cmd);
+			await Prepare(cmd).ConfigureAwait(false);
 			Stopwatch duration = null;
 			if (Log.IsDebugEnabled)
 				duration = Stopwatch.StartNew();
 			try
 			{
-				if (async)
-					return await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-				else
-					return cmd.ExecuteNonQuery();
+				return await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -213,23 +210,18 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		public virtual async Task<IDataReader> ExecuteReader(DbCommand cmd, bool async)
+		public virtual async Task<IDataReaderEx> ExecuteReader(DbCommand cmd)
 		{
-			CheckReaders();
+			await CheckReaders().ConfigureAwait(false);
 			LogCommand(cmd);
-			Prepare(cmd);
+			await Prepare(cmd).ConfigureAwait(false);
 			Stopwatch duration = null;
 			if (Log.IsDebugEnabled)
 				duration = Stopwatch.StartNew();
-			IDataReader reader = null;
+			IDataReaderEx reader = null;
 			try
 			{
-				if (async)
-				{
-					reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false);
-				}
-				else
-					reader = cmd.ExecuteReader();
+				reader = new DataReaderExWrapper(await cmd.ExecuteReaderAsync().ConfigureAwait(false));
 			}
 			catch (Exception e)
 			{
@@ -248,7 +240,7 @@ namespace NHibernate.AdoNet
 
 			if (!_factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders)
 			{
-				reader = new NHybridDataReader(reader);
+				reader = await new NHybridDataReader(reader).Initialize().ConfigureAwait(false);
 			}
 
 			_readersToClose.Add(reader);
@@ -259,7 +251,7 @@ namespace NHibernate.AdoNet
 		/// <summary>
 		/// Ensures that the Driver's rules for Multiple Open DataReaders are being followed.
 		/// </summary>
-		protected void CheckReaders()
+		protected async Task CheckReaders()
 		{
 			// early exit because we don't need to move an open IDataReader into memory
 			// since the Driver supports mult open readers.
@@ -270,7 +262,7 @@ namespace NHibernate.AdoNet
 
 			foreach (NHybridDataReader reader in _readersToClose)
 			{
-				reader.ReadIntoMemory();
+				await reader.ReadIntoMemory().ConfigureAwait(false);
 			}
 		}
 
@@ -393,7 +385,7 @@ namespace NHibernate.AdoNet
 			Log.DebugFormat("DataReader was closed after {0} ms", duration.ElapsedMilliseconds);
 		}
 
-		public void ExecuteBatch()
+		public async Task ExecuteBatch()
 		{
 			// if there is currently a command that a batch is
 			// being built for then execute it
@@ -403,7 +395,7 @@ namespace NHibernate.AdoNet
 				InvalidateBatchCommand();
 				try
 				{
-					ExecuteBatchWithTiming(ps);
+					await ExecuteBatchWithTiming(ps).ConfigureAwait(false);
 				}
 				finally
 				{
@@ -412,20 +404,20 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		protected void ExecuteBatchWithTiming(IDbCommand ps)
+		protected async Task ExecuteBatchWithTiming(IDbCommand ps)
 		{
 			Stopwatch duration = null;
 			if (Log.IsDebugEnabled)
 				duration = Stopwatch.StartNew();
 			var countBeforeExecutingBatch = CountOfStatementsInCurrentBatch;
-			DoExecuteBatch(ps);
+			await DoExecuteBatch(ps).ConfigureAwait(false);
 			if (Log.IsDebugEnabled && duration != null)
 				Log.DebugFormat("ExecuteBatch for {0} statements took {1} ms",
 					countBeforeExecutingBatch,
 					duration.ElapsedMilliseconds);
 		}
 
-		protected abstract void DoExecuteBatch(IDbCommand ps);
+		protected abstract Task DoExecuteBatch(IDbCommand ps);
 
 		protected abstract int CountOfStatementsInCurrentBatch { get; }
 
@@ -448,7 +440,7 @@ namespace NHibernate.AdoNet
 		/// If Batching is not supported, then this is when the Command should be executed.  If Batching
 		/// is supported then it should hold of on executing the batch until explicitly told to.
 		/// </remarks>
-		public abstract void AddToBatch(IExpectation expectation);
+		public abstract Task AddToBatch(IExpectation expectation);
 
 		/// <summary>
 		/// Gets the <see cref="ISessionFactoryImplementor"/> the Batcher was

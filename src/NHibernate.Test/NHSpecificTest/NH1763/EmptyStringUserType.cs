@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.UserTypes;
 
@@ -43,9 +44,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1763
 			return DeepCopy(cached);
 		}
 
-		public object Disassemble(Object value, NHibernate.Engine.ISessionImplementor session)
+		public Task<object> Disassemble(Object value, NHibernate.Engine.ISessionImplementor session)
 		{
-			return DeepCopy(value);
+			return Task.FromResult(DeepCopy(value));
 		}
 		public Object DeepCopy(Object a)
 		{
@@ -58,12 +59,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1763
 			return (x == y) || (x != null && y != null && (x.Equals(y)));
 		}
 
-		public object NullSafeGet(System.Data.IDataReader rs, String[] names, NHibernate.Engine.ISessionImplementor session, Object owner)
+		public Task<object> NullSafeGet(System.Data.IDataReader rs, String[] names, NHibernate.Engine.ISessionImplementor session, Object owner)
 		{
 			return NHibernateUtil.String.NullSafeGet(rs, names[0], session, owner);
 		}
 
-		public void NullSafeSet(System.Data.IDbCommand st, Object value, int index, bool[] settable, NHibernate.Engine.ISessionImplementor session)
+		public async Task NullSafeSet(System.Data.IDbCommand st, Object value, int index, bool[] settable, NHibernate.Engine.ISessionImplementor session)
 		{
 			if (settable[0])
 			{
@@ -72,10 +73,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1763
 				if (str == String.Empty)
 				{
 					str = null;
-					NHibernateUtil.String.NullSafeSet(st, str, index, session);
+					await NHibernateUtil.String.NullSafeSet(st, str, index, session).ConfigureAwait(false);
 				}
 				else
-					NHibernateUtil.String.NullSafeSet(st, value, index, session);
+					await NHibernateUtil.String.NullSafeSet(st, value, index, session).ConfigureAwait(false);
 			}
 		}
 
@@ -95,9 +96,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1763
 			return x == null ? typeof(string).GetHashCode() : x.GetHashCode();
 		}
 
-		public object Replace(object original, object target, ISessionImplementor session, object owner)
+		public Task<object> Replace(object original, object target, ISessionImplementor session, object owner)
 		{
-			return DeepCopy(original);
+			return Task.FromResult(DeepCopy(original));
 		}
 
 		#endregion

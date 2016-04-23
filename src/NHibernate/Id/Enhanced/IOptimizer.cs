@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace NHibernate.Id.Enhanced
 {
 	/// <summary>
@@ -36,7 +38,7 @@ namespace NHibernate.Id.Enhanced
 		/// </summary>
 		/// <param name="callback">Callback to access the underlying value source. </param>
 		/// <returns>The generated identifier value.</returns>
-		object Generate(IAccessCallback callback);
+		Task<object> Generate(IAccessCallback callback);
 
 		/// <summary> 
 		/// Are increments to be applied to the values stored in the underlying

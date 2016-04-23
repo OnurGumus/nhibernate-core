@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading.Tasks;
 
 namespace NHibernate.Event
 {
@@ -9,11 +10,11 @@ namespace NHibernate.Event
 	{
 		/// <summary> Handle the given merge event. </summary>
 		/// <param name="event">The merge event to be handled. </param>
-		void OnMerge(MergeEvent @event);
+		Task OnMerge(MergeEvent @event);
 
 		/// <summary> Handle the given merge event. </summary>
 		/// <param name="event">The merge event to be handled. </param>
 		/// <param name="copiedAlready"></param>
-		void OnMerge(MergeEvent @event, IDictionary copiedAlready);
+		Task OnMerge(MergeEvent @event, IDictionary copiedAlready);
 	}
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -59,9 +60,9 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="index"></param>
 		/// <param name="session"></param>
-		public override void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session)
+		public override Task NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session)
 		{
-			base.NullSafeSet(st, session.PersistenceContext.GetCollectionHolder(value), index, session);
+			return base.NullSafeSet(st, session.PersistenceContext.GetCollectionHolder(value), index, session);
 		}
 
 		public override IEnumerable GetElementsIterator(object collection)
@@ -124,7 +125,7 @@ namespace NHibernate.Type
 			return true;
 		}
 
-		public override object ReplaceElements(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session)
+		public override async Task<object> ReplaceElements(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session)
 		{
 			Array org = (Array) original;
 			Array result = (Array)target;
@@ -139,7 +140,7 @@ namespace NHibernate.Type
 			IType elemType = GetElementType(session.Factory);
 			for (int i = 0; i < length; i++)
 			{
-				result.SetValue(elemType.Replace(org.GetValue(i), null, session, owner, copyCache), i);
+				result.SetValue(await elemType.Replace(org.GetValue(i), null, session, owner, copyCache).ConfigureAwait(false), i);
 			}
 
 			return result;

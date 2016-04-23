@@ -1,5 +1,7 @@
+using System.Threading.Tasks;
 using log4net;
 using NHibernate.Event;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Events.PostEvents
 {
@@ -18,10 +20,11 @@ namespace NHibernate.Test.Events.PostEvents
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(AssertOldStatePostListener));
 
-		public void OnPostUpdate(PostUpdateEvent @event)
+		public Task OnPostUpdate(PostUpdateEvent @event)
 		{
 			log.Debug(LogMessage);
 			assertionDelegate(@event);
+			return TaskHelper.CompletedTask;
 		}
 	}
 }

@@ -34,13 +34,11 @@ namespace NHibernate.Hql
 		/// </summary>
 		/// <param name="session">The session owning this query.</param>
 		/// <param name="queryParameters">The query bind parameters.</param>
-		/// <param name="async"></param>
-		/// <param name="async"></param>
 		/// <returns>The query list results.</returns>
 		/// <exception cref="NHibernate.HibernateException"></exception>
-		Task<IList> List(ISessionImplementor session, QueryParameters queryParameters, bool async);
+		Task<IList> List(ISessionImplementor session, QueryParameters queryParameters);
 
-		Task<IEnumerable> GetEnumerable(QueryParameters queryParameters, IEventSource session, bool async);
+		Task<IEnumerable> GetEnumerable(QueryParameters queryParameters, IEventSource session);
 
 		// Not ported:
 		//IScrollableResults scroll(QueryParameters queryParameters, ISessionImplementor session);
@@ -50,10 +48,9 @@ namespace NHibernate.Hql
 		/// </summary>
 		/// <param name="queryParameters">The query bind parameters.</param>
 		/// <param name="session">The session owning this query.</param>
-		/// <param name="async"></param>
 		/// <returns>The number of entities updated or deleted.</returns>
 		/// <exception cref="NHibernate.HibernateException"></exception>
-		Task<int> ExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session, bool async);
+		Task<int> ExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session);
 
 		/// <summary>
 		/// The set of query spaces (table names) that the query refers to.

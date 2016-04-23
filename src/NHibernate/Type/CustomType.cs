@@ -9,6 +9,7 @@ using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 using NHibernate.Util;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace NHibernate.Type
 {
@@ -96,25 +97,26 @@ namespace NHibernate.Type
 			get { return userType.ReturnedType; }
 		}
 
-		public override object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override Task<object> NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			return userType.NullSafeGet(rs, names, owner);
 		}
 
-		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
+		public override Task<object> NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			return NullSafeGet(rs, new string[] {name}, session, owner);
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override Task NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
-			if (settable[0]) 
-				userType.NullSafeSet(st, value, index);
+			if (settable[0])
+				return userType.NullSafeSet(st, value, index);
+			return TaskHelper.CompletedTask;
 		}
 
-		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
+		public override Task NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			userType.NullSafeSet(cmd, value, index);
+			return userType.NullSafeSet(cmd, value, index);
 		}
 
 		/// <summary>
@@ -172,9 +174,9 @@ namespace NHibernate.Type
 			return userType.GetHashCode(x);
 		}
 
-		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override async Task<bool> IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			return checkable[0] && IsDirty(old, current, session);
+			return checkable[0] && await IsDirty(old, current, session).ConfigureAwait(false);
 		}
 
 		public object StringToObject(string xml)
@@ -207,20 +209,20 @@ namespace NHibernate.Type
 			get { return (IComparer) userType; }
 		}
 
-		public override object Replace(object original, object current, ISessionImplementor session, object owner,
+		public override Task<object> Replace(object original, object current, ISessionImplementor session, object owner,
 									   IDictionary copiedAlready)
 		{
-			return userType.Replace(original, current, owner);
+			return Task.FromResult(userType.Replace(original, current, owner));
 		}
 
-		public override object Assemble(object cached, ISessionImplementor session, object owner)
+		public override Task<object> Assemble(object cached, ISessionImplementor session, object owner)
 		{
-			return userType.Assemble(cached, owner);
+			return Task.FromResult(userType.Assemble(cached, owner));
 		}
 
-		public override object Disassemble(object value, ISessionImplementor session, object owner)
+		public override Task<object> Disassemble(object value, ISessionImplementor session, object owner)
 		{
-			return userType.Disassemble(value);
+			return Task.FromResult(userType.Disassemble(value));
 		}
 
 		public override object FromXMLNode(XmlNode xml, IMapping factory)

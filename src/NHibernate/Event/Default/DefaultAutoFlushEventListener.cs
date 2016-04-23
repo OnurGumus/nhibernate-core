@@ -20,8 +20,7 @@ namespace NHibernate.Event.Default
 		/// Handle the given auto-flush event.
 		/// </summary>
 		/// <param name="event">The auto-flush event to be handled.</param>
-		/// <param name="async"></param>
-		public virtual async Task OnAutoFlush(AutoFlushEvent @event, bool async)
+		public virtual async Task OnAutoFlush(AutoFlushEvent @event)
 		{
 			IEventSource source = @event.Session;
 
@@ -29,14 +28,14 @@ namespace NHibernate.Event.Default
 			{
 				int oldSize = source.ActionQueue.CollectionRemovalsCount;
 
-				FlushEverythingToExecutions(@event);
+				await FlushEverythingToExecutions(@event).ConfigureAwait(false);
 
 				if (FlushIsReallyNeeded(@event, source))
 				{
 					if (log.IsDebugEnabled)
 						log.Debug("Need to execute flush");
 
-					await PerformExecutions(source, async).ConfigureAwait(false);
+					await PerformExecutions(source).ConfigureAwait(false);
 					PostFlush(source);
 					// note: performExecutions() clears all collectionXxxxtion
 					// collections (the collection actions) in the session

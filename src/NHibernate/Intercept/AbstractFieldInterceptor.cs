@@ -158,7 +158,7 @@ namespace NHibernate.Intercept
 			try
 			{
 				var lazyPropertyInitializer = ((ILazyPropertyInitializer) session.Factory.GetEntityPersister(entityName));
-				result = lazyPropertyInitializer.InitializeLazyProperty(fieldName, target, session);
+				result = lazyPropertyInitializer.InitializeLazyProperty(fieldName, target, session).ConfigureAwait(false).GetAwaiter().GetResult();
 			}
 			finally
 			{

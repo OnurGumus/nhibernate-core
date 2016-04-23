@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlTypes;
@@ -37,14 +38,16 @@ namespace NHibernate.Type
 			this.entityName = entityName;
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override Task NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			//nothing to do
+			return TaskHelper.CompletedTask;
 		}
 
-		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
+		public override Task NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			//nothing to do
+			return TaskHelper.CompletedTask;
 		}
 
 		public override bool IsOneToOne
@@ -52,19 +55,19 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-		public override bool IsDirty(object old, object current, ISessionImplementor session)
+		public override Task<bool> IsDirty(object old, object current, ISessionImplementor session)
 		{
-			return false;
+			return Task.FromResult(false);
 		}
 
-		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override Task<bool> IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			return false;
+			return Task.FromResult(false);
 		}
 
-		public override bool IsModified(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override Task<bool> IsModified(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			return false;
+			return Task.FromResult(false);
 		}
 
 		public override bool IsNull(object owner, ISessionImplementor session)
@@ -89,7 +92,7 @@ namespace NHibernate.Type
 			get { return foreignKeyDirection; }
 		}
 
-		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override async Task<object> Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			IType type = GetIdentifierOrUniqueKeyType(session.Factory);
 			object identifier = session.GetContextEntityIdentifier(owner);
@@ -101,8 +104,8 @@ namespace NHibernate.Type
 				EmbeddedComponentType ownerIdType = session.GetEntityPersister(null, owner).IdentifierType as EmbeddedComponentType;
 				if (ownerIdType != null)
 				{
-					object[] values = ownerIdType.GetPropertyValues(identifier, session);
-					object id = componentType.ResolveIdentifier(values, session, null);
+					object[] values = await ownerIdType.GetPropertyValues(identifier, session).ConfigureAwait(false);
+					object id = await componentType.ResolveIdentifier(values, session, null).ConfigureAwait(false);
 					IEntityPersister persister = session.Factory.GetEntityPersister(type.ReturnedClass.FullName);
 					var key = session.GenerateEntityKey(id, persister);
 					return session.PersistenceContext.GetEntity(key);
@@ -121,12 +124,12 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-		public override object Disassemble(object value, ISessionImplementor session, object owner)
+		public override Task<object> Disassemble(object value, ISessionImplementor session, object owner)
 		{
-			return null;
+			return Task.FromResult<object>(null);
 		}
 
-		public override object Assemble(object cached, ISessionImplementor session, object owner)
+		public override Task<object> Assemble(object cached, ISessionImplementor session, object owner)
 		{
 			//this should be a call to resolve(), not resolveIdentifier(), 
 			//'cos it might be a property-ref, and we did not cache the

@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
+using System.Threading.Tasks;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Connection;
@@ -97,71 +99,71 @@ namespace NHibernate.Impl
 			new ThreadSafeDictionary<string, ICache>(new Dictionary<string, ICache>());
 
 		[NonSerialized]
-		private readonly IDictionary<string, IClassMetadata> classMetadata;
+		private IDictionary<string, IClassMetadata> classMetadata;
 
 		[NonSerialized]
-		private readonly IDictionary<string, ICollectionMetadata> collectionMetadata;
+		private IDictionary<string, ICollectionMetadata> collectionMetadata;
 		[NonSerialized]
-		private readonly Dictionary<string, ICollectionPersister> collectionPersisters;
+		private Dictionary<string, ICollectionPersister> collectionPersisters;
 
 		[NonSerialized]
-		private readonly IDictionary<string, ISet<string>> collectionRolesByEntityParticipant;
+		private IDictionary<string, ISet<string>> collectionRolesByEntityParticipant;
 		[NonSerialized]
-		private readonly ICurrentSessionContext currentSessionContext;
+		private ICurrentSessionContext currentSessionContext;
 		[NonSerialized]
-		private readonly IEntityNotFoundDelegate entityNotFoundDelegate;
+		private IEntityNotFoundDelegate entityNotFoundDelegate;
 		[NonSerialized]
-		private readonly IDictionary<string, IEntityPersister> entityPersisters;
+		private IDictionary<string, IEntityPersister> entityPersisters;
 
 		/// <summary>
 		/// NH specific : to avoid the use of entityName for generic implementation
 		/// </summary>
 		/// <remarks>this is a shortcut.</remarks>
 		[NonSerialized]
-		private readonly IDictionary<System.Type, string> implementorToEntityName;
+		private IDictionary<System.Type, string> implementorToEntityName;
 
 		[NonSerialized]
 		private readonly EventListeners eventListeners;
 
 		[NonSerialized]
-		private readonly Dictionary<string, FilterDefinition> filters;
+		private Dictionary<string, FilterDefinition> filters;
 		[NonSerialized]
-		private readonly Dictionary<string, IIdentifierGenerator> identifierGenerators;
+		private Dictionary<string, IIdentifierGenerator> identifierGenerators;
 
 		[NonSerialized]
-		private readonly Dictionary<string, string> imports;
+		private Dictionary<string, string> imports;
 
 		[NonSerialized]
-		private readonly IInterceptor interceptor;
-		private readonly string name;
+		private IInterceptor interceptor;
+		private string name;
 		[NonSerialized]
-		private readonly Dictionary<string, NamedQueryDefinition> namedQueries;
+		private Dictionary<string, NamedQueryDefinition> namedQueries;
 
 		[NonSerialized]
-		private readonly Dictionary<string, NamedSQLQueryDefinition> namedSqlQueries;
+		private Dictionary<string, NamedSQLQueryDefinition> namedSqlQueries;
 
 		[NonSerialized]
-		private readonly IDictionary<string, string> properties;
+		private IDictionary<string, string> properties;
 
 		[NonSerialized]
-		private readonly IQueryCache queryCache;
+		private IQueryCache queryCache;
 
 		[NonSerialized]
-		private readonly IDictionary<string, IQueryCache> queryCaches;
+		private IDictionary<string, IQueryCache> queryCaches;
 		[NonSerialized]
-		private readonly SchemaExport schemaExport;
+		private SchemaExport schemaExport;
 		[NonSerialized]
 		private readonly Settings settings;
 
 		[NonSerialized]
-		private readonly SQLFunctionRegistry sqlFunctionRegistry;
+		private SQLFunctionRegistry sqlFunctionRegistry;
 		[NonSerialized]
-		private readonly Dictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
+		private Dictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
 		[NonSerialized]
-		private readonly UpdateTimestampsCache updateTimestampsCache;
+		private UpdateTimestampsCache updateTimestampsCache;
 		[NonSerialized]
 		private readonly IDictionary<string, string[]> entityNameImplementorsMap = new ThreadSafeDictionary<string, string[]>(new Dictionary<string, string[]>(100));
-		private readonly string uuid;
+		private string uuid;
 		private bool disposed;
 
 		[NonSerialized]
@@ -171,16 +173,22 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private StatisticsImpl statistics;
 
-		public SessionFactoryImpl(Configuration cfg, IMapping mapping, Settings settings, EventListeners listeners)
+		public SessionFactoryImpl(Settings settings, EventListeners listeners)
 		{
 			Init();
+			this.settings = settings;
+			eventListeners = listeners;
+		}
+
+		internal async Task<SessionFactoryImpl> Initialize(Configuration cfg, IMapping mapping)
+		{
 			log.Info("building session factory");
 
 			properties = new Dictionary<string, string>(cfg.Properties);
 			interceptor = cfg.Interceptor;
-			this.settings = settings;
+			
 			sqlFunctionRegistry = new SQLFunctionRegistry(settings.Dialect, cfg.SqlFunctions);
-			eventListeners = listeners;
+			
 			filters = new Dictionary<string, FilterDefinition>(cfg.FilterDefinitions);
 			if (log.IsDebugEnabled)
 			{
@@ -196,11 +204,11 @@ namespace NHibernate.Impl
 			{
 				if (settings.IsKeywordsImportEnabled)
 				{
-					SchemaMetadataUpdater.Update(this);
+					await SchemaMetadataUpdater.UpdateAsync(this).ConfigureAwait(false);
 				}
 				if (settings.IsAutoQuoteEnabled)
 				{
-					SchemaMetadataUpdater.QuoteTableAndColumns(cfg);
+					await SchemaMetadataUpdater.QuoteTableAndColumnsAsync(cfg).ConfigureAwait(false);
 				}
 			}
 			catch (NotSupportedException)
@@ -332,7 +340,7 @@ namespace NHibernate.Impl
 			name = settings.SessionFactoryName;
 			try
 			{
-				uuid = (string)UuidGenerator.Generate(null, null);
+				uuid = (string)UuidGenerator.Generate(null, null).ConfigureAwait(false).GetAwaiter().GetResult();
 			}
 			catch (Exception)
 			{
@@ -348,16 +356,16 @@ namespace NHibernate.Impl
 			#region Schema management
 			if (settings.IsAutoCreateSchema)
 			{
-				new SchemaExport(cfg).Create(false, true);
+				await new SchemaExport(cfg).CreateAsync(false, true).ConfigureAwait(false);
 			}
 
 			if (settings.IsAutoUpdateSchema)
 			{
-				new SchemaUpdate(cfg).Execute(false, true);
+				await new SchemaUpdate(cfg).ExecuteAsync(false, true).ConfigureAwait(false);
 			}
 			if (settings.IsAutoValidateSchema)
 			{
-				new SchemaValidator(cfg, settings).Validate();
+				await new SchemaValidator(cfg, settings).ValidateAsync().ConfigureAwait(false);
 			}
 			if (settings.IsAutoDropSchema)
 			{
@@ -410,6 +418,7 @@ namespace NHibernate.Impl
 				enfd = new DefaultEntityNotFoundDelegate();
 			}
 			entityNotFoundDelegate = enfd;
+			return this;
 		}
 
 		public EventListeners EventListeners
@@ -495,7 +504,7 @@ namespace NHibernate.Impl
 #pragma warning restore 618
 
 			return
-				new SessionImpl(connection, this, true, settings.CacheProvider.NextTimestamp(), interceptor,
+				new SessionImpl(connection as DbConnection, this, true, settings.CacheProvider.NextTimestamp(), interceptor,
 								settings.DefaultEntityMode, flushBeforeCompletionEnabled, autoCloseSessionEnabled,
 								isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled, connectionReleaseMode, settings.DefaultFlushMode);
 		}
@@ -794,6 +803,18 @@ namespace NHibernate.Impl
 		/// </summary>
 		public void Close()
 		{
+			CloseAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary>
+		/// Closes the session factory, releasing all held resources.
+		/// <list>
+		/// <item>cleans up used cache regions and "stops" the cache provider.</item>
+		/// <item>close the ADO.NET connection</item>
+		/// </list>
+		/// </summary>
+		public async Task CloseAsync()
+		{
 			log.Info("Closing");
 
 			isClosed = true;
@@ -839,7 +860,7 @@ namespace NHibernate.Impl
 
 			if (settings.IsAutoDropSchema)
 			{
-				schemaExport.Drop(false, true);
+				await schemaExport.DropAsync(false, true).ConfigureAwait(false);
 			}
 
 			eventListeners.DestroyListeners();
@@ -1099,7 +1120,7 @@ namespace NHibernate.Impl
 		/// <summary> Get a new stateless session for the given ADO.NET connection.</summary>
 		public IStatelessSession OpenStatelessSession(IDbConnection connection)
 		{
-			return new StatelessSessionImpl(connection, this);
+			return new StatelessSessionImpl(connection as DbConnection, this);
 		}
 
 		/// <summary> Get the statistics for this session factory</summary>
@@ -1212,7 +1233,7 @@ namespace NHibernate.Impl
 			var isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled = settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled;
 #pragma warning restore 618
 
-			SessionImpl session = new SessionImpl(connection, this, autoClose, timestamp, sessionLocalInterceptor ?? interceptor,
+			SessionImpl session = new SessionImpl(connection as DbConnection, this, autoClose, timestamp, sessionLocalInterceptor ?? interceptor,
 												  settings.DefaultEntityMode, settings.IsFlushBeforeCompletionEnabled,
 												  settings.IsAutoCloseSessionEnabled, isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled,
 												  settings.ConnectionReleaseMode, settings.DefaultFlushMode);

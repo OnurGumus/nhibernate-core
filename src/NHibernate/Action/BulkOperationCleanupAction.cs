@@ -108,7 +108,7 @@ namespace NHibernate.Action
 			// nothing to do
 		}
 
-		public Task Execute(bool async)
+		public Task Execute()
 		{
 			return TaskHelper.CompletedTask;
 		}
@@ -129,6 +129,7 @@ namespace NHibernate.Action
 				{
 					this.EvictEntityRegions();
 					this.EvictCollectionRegions();
+					return TaskHelper.CompletedTask;
 				});
 			}
 		}

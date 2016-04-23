@@ -61,10 +61,10 @@ namespace NHibernate.Impl
 
 		public IList List()
 		{
-			return ListAsync(false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return ListAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public async Task<IList> ListAsync(bool async = true)
+		public async Task<IList> ListAsync()
 		{
 			using (new SessionIdLoggingContext(session.SessionId))
 			{
@@ -84,18 +84,18 @@ namespace NHibernate.Impl
 
 				if (cacheable)
 				{
-					criteriaResults = await ListUsingQueryCache(async).ConfigureAwait(false);
+					criteriaResults = await ListUsingQueryCache().ConfigureAwait(false);
 				}
 				else
 				{
-					criteriaResults = await ListIgnoreQueryCache(async).ConfigureAwait(false);
+					criteriaResults = await ListIgnoreQueryCache().ConfigureAwait(false);
 				}
 
 				return criteriaResults;
 			}
 		}
 
-		private async Task<IList> ListUsingQueryCache(bool async)
+		private async Task<IList> ListUsingQueryCache()
 		{
 			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);
 
@@ -120,11 +120,11 @@ namespace NHibernate.Impl
 				.SetMaxRows(maxRows);
 
 			IList result =
-				assembler.GetResultFromQueryCache(session,
+				await assembler.GetResultFromQueryCache(session,
 												  combinedParameters,
 												  querySpaces,
 												  queryCache,
-												  key);
+												  key).ConfigureAwait(false);
 
 			if (factory.Statistics.IsStatisticsEnabled)
 			{
@@ -141,11 +141,11 @@ namespace NHibernate.Impl
 			if (result == null)
 			{
 				log.Debug("Cache miss for multi criteria query");
-				IList list = await DoList(async).ConfigureAwait(false);
+				IList list = await DoList().ConfigureAwait(false);
 				result = list;
 				if ((session.CacheMode & CacheMode.Put) == CacheMode.Put)
 				{
-					bool put = queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, combinedParameters.NaturalKeyLookup, session);
+					bool put = await queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, combinedParameters.NaturalKeyLookup, session).ConfigureAwait(false);
 					if (put && factory.Statistics.IsStatisticsEnabled)
 					{
 						factory.StatisticsImplementor.QueryCachePut(key.ToString(), queryCache.RegionName);
@@ -156,9 +156,9 @@ namespace NHibernate.Impl
 			return GetResultList(result);
 		}
 
-		private async Task<IList> ListIgnoreQueryCache(bool async)
+		private async Task<IList> ListIgnoreQueryCache()
 		{
-			return GetResultList(await DoList(async).ConfigureAwait(false));
+			return GetResultList(await DoList().ConfigureAwait(false));
 		}
 
 		protected virtual IList GetResultList(IList results)
@@ -195,10 +195,10 @@ namespace NHibernate.Impl
 			return resultCollections;
 		}
 
-		private Task<IList> DoList(bool async)
+		private Task<IList> DoList()
 		{
 			List<IList> results = new List<IList>();
-			return GetResultsFromDatabase(results, async);
+			return GetResultsFromDatabase(results);
 		}
 
 		private void CombineCriteriaQueries()
@@ -214,7 +214,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private async Task<IList> GetResultsFromDatabase(IList results, bool async)
+		private async Task<IList> GetResultsFromDatabase(IList results)
 		{
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
 			var stopWatch = new Stopwatch();
@@ -226,7 +226,7 @@ namespace NHibernate.Impl
 
 			try
 			{
-				using (var reader = await resultSetsCommand.GetReader(null, async).ConfigureAwait(false))
+				using (var reader = await resultSetsCommand.GetReader(null).ConfigureAwait(false))
 				{
 					var hydratedObjects = new List<object>[loaders.Count];
 					List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[loaders.Count];
@@ -246,16 +246,16 @@ namespace NHibernate.Impl
 						int maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
 						if (!dialect.SupportsLimitOffset || !loader.UseLimit(selection, dialect))
 						{
-							Loader.Loader.Advance(reader, selection);
+							await Loader.Loader.Advance(reader, selection).ConfigureAwait(false);
 						}
 						int count;
-						for (count = 0; count < maxRows && reader.Read(); count++)
+						for (count = 0; count < maxRows && await reader.ReadAsync().ConfigureAwait(false); count++)
 						{
 							rowCount++;
 
 							object o =
-								loader.GetRowFromResultSet(reader, session, queryParameters, loader.GetLockModes(queryParameters.LockModes),
-																					 null, hydratedObjects[i], keys, true);
+								await loader.GetRowFromResultSet(reader, session, queryParameters, loader.GetLockModes(queryParameters.LockModes),
+																					 null, hydratedObjects[i], keys, true).ConfigureAwait(false);
 							if (createSubselects[i])
 							{
 								subselectResultKeys[i].Add(keys);
@@ -265,13 +265,13 @@ namespace NHibernate.Impl
 						}
 
 						results.Add(tmpResults);
-						reader.NextResult();
+						await reader.NextResultAsync().ConfigureAwait(false);
 					}
 
 					for (int i = 0; i < loaders.Count; i++)
 					{
 						CriteriaLoader loader = loaders[i];
-						loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, session.DefaultReadOnly);
+						await loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, session.DefaultReadOnly).ConfigureAwait(false);
 
 						if (createSubselects[i])
 						{

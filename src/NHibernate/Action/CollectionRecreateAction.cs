@@ -19,7 +19,7 @@ namespace NHibernate.Action
 		/// This method is called when a new non-null collection is persisted
 		/// or when an existing (non-null) collection is moved to a new owner
 		/// </remarks>
-		public override async Task Execute(bool async)
+		public override async Task Execute()
 		{
 			bool statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
 			Stopwatch stopwatch = null;
@@ -29,15 +29,15 @@ namespace NHibernate.Action
 			}
 			IPersistentCollection collection = Collection;
 
-			PreRecreate();
+			await PreRecreate().ConfigureAwait(false);
 
-			await Persister.Recreate(collection, Key, Session, async).ConfigureAwait(false);
+			await Persister.Recreate(collection, Key, Session).ConfigureAwait(false);
 
 			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
 
 			Evict();
 
-			PostRecreate();
+			await PostRecreate().ConfigureAwait(false);
 			if (statsEnabled)
 			{
 				stopwatch.Stop();
@@ -46,7 +46,7 @@ namespace NHibernate.Action
 			
 		}
 
-		private void PreRecreate()
+		private async Task PreRecreate()
 		{
 			IPreCollectionRecreateEventListener[] preListeners = Session.Listeners.PreCollectionRecreateEventListeners;
 			if (preListeners.Length > 0)
@@ -54,12 +54,12 @@ namespace NHibernate.Action
 				PreCollectionRecreateEvent preEvent = new PreCollectionRecreateEvent(Persister, Collection, (IEventSource)Session);
 				for (int i = 0; i < preListeners.Length; i++)
 				{
-					preListeners[i].OnPreRecreateCollection(preEvent);
+					await preListeners[i].OnPreRecreateCollection(preEvent).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private void PostRecreate()
+		private async Task PostRecreate()
 		{
 			IPostCollectionRecreateEventListener[] postListeners = Session.Listeners.PostCollectionRecreateEventListeners;
 			if (postListeners.Length > 0)
@@ -67,7 +67,7 @@ namespace NHibernate.Action
 				PostCollectionRecreateEvent postEvent = new PostCollectionRecreateEvent(Persister, Collection, (IEventSource)Session);
 				for (int i = 0; i < postListeners.Length; i++)
 				{
-					postListeners[i].OnPostRecreateCollection(postEvent);
+					await postListeners[i].OnPostRecreateCollection(postEvent).ConfigureAwait(false);
 				}
 			}
 		}

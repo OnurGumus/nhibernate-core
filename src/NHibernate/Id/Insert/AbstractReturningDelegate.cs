@@ -31,16 +31,16 @@ namespace NHibernate.Id.Insert
 
 		public abstract IdentifierGeneratingInsert PrepareIdentifierGeneratingInsert();
 
-		public async Task<object> PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder, bool async)
+		public async Task<object> PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder)
 		{
 			try
 			{
 				// prepare and execute the insert
-				DbCommand insert = Prepare(insertSQL, session);
+				DbCommand insert = await Prepare(insertSQL, session).ConfigureAwait(false);
 				try
 				{
-					binder.BindValues(insert);
-					return await ExecuteAndExtract(insert, session, async).ConfigureAwait(false);
+					await binder.BindValues(insert).ConfigureAwait(false);
+					return await ExecuteAndExtract(insert, session).ConfigureAwait(false);
 				}
 				finally
 				{
@@ -61,8 +61,8 @@ namespace NHibernate.Id.Insert
 			session.Batcher.CloseCommand(insert, null);
 		}
 
-		protected internal abstract DbCommand Prepare(SqlCommandInfo insertSQL, ISessionImplementor session);
+		protected internal abstract Task<DbCommand> Prepare(SqlCommandInfo insertSQL, ISessionImplementor session);
 
-		public abstract Task<object> ExecuteAndExtract(DbCommand insert, ISessionImplementor session, bool async);
+		public abstract Task<object> ExecuteAndExtract(DbCommand insert, ISessionImplementor session);
 	}
 }

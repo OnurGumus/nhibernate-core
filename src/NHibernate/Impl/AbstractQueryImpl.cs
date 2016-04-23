@@ -956,26 +956,17 @@ namespace NHibernate.Impl
 
 		public abstract int ExecuteUpdate();
 		public abstract Task<int> ExecuteUpdateAsync();
-		public abstract Task<int> ExecuteUpdateAsync(bool async);
 		public abstract IEnumerable Enumerable();
 		public abstract Task<IEnumerable> EnumerableAsync();
-		public abstract Task<IEnumerable> EnumerableAsync(bool async);
 		public abstract IEnumerable<T> Enumerable<T>();
 		public abstract Task<IEnumerable<T>> EnumerableAsync<T>();
-		public abstract Task<IEnumerable<T>> EnumerableAsync<T>(bool async);
 		public abstract Task<IList> ListAsync();
-		public abstract Task<IList> ListAsync(bool async);
 		public abstract Task ListAsync(IList results);
-		public abstract Task ListAsync(IList results, bool async);
 		public abstract Task<IList<T>> ListAsync<T>();
-		public abstract Task<IList<T>> ListAsync<T>(bool async);
-		public Task<T> UniqueResultAsync<T>()
+
+		public async Task<T> UniqueResultAsync<T>()
 		{
-			return this.UniqueResultAsync<T>(true);
-		}
-		public async Task<T> UniqueResultAsync<T>(bool async)
-		{
-			object result = await UniqueResultAsync(async).ConfigureAwait(false);
+			object result = await UniqueResultAsync().ConfigureAwait(false);
 			if (result == null && typeof(T).IsValueType)
 			{
 				return default(T);
@@ -985,13 +976,10 @@ namespace NHibernate.Impl
 				return (T)result;
 			}
 		}
-		public Task<object> UniqueResultAsync()
+
+		public async Task<object> UniqueResultAsync()
 		{
-			return this.UniqueResultAsync(true);
-		}
-		public async Task<object> UniqueResultAsync(bool async)
-		{
-			return UniqueElement(await ListAsync(async).ConfigureAwait(false));
+			return UniqueElement(await ListAsync().ConfigureAwait(false));
 		}
 
 		internal static object UniqueElement(IList list)
@@ -1082,7 +1070,7 @@ namespace NHibernate.Impl
 			return queryString;
 		}
 
-		protected internal abstract IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters);
+		protected internal abstract Task<IEnumerable<ITranslator>> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters);
 
 		public abstract IList List();
 
@@ -1092,12 +1080,12 @@ namespace NHibernate.Impl
 
 		public T UniqueResult<T>()
 		{
-			return this.UniqueResultAsync<T>(false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return this.UniqueResultAsync<T>().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		public object UniqueResult()
 		{
-			return this.UniqueResultAsync(false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return this.UniqueResultAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 	}
 }

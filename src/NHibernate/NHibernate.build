@@ -76,7 +76,7 @@
       
       <!-- Merge everything that should be accessible -->
       <copy file="${bin.dir}/merged/NHibernate.dll" tofile="${bin.dir}/NHibernate.dll" />
-      <copy file="${bin.dir}/merged/NHibernate.pdb" tofile="${bin.dir}/NHibernate.pdb" />
+      <!--<copy file="${bin.dir}/merged/NHibernate.pdb" tofile="${bin.dir}/NHibernate.pdb" />-->
 
       <exec program="../../Tools/ilrepack/ilrepack.exe">
         <arg value="/t:library" />

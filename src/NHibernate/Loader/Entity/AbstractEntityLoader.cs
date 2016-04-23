@@ -9,6 +9,7 @@ using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
 using System.Threading.Tasks;
+using NHibernate.Driver;
 
 namespace NHibernate.Loader.Entity
 {
@@ -35,14 +36,14 @@ namespace NHibernate.Loader.Entity
 			get { return true; }
 		}
 
-		public Task<object> Load(object id, object optionalObject, ISessionImplementor session, bool async)
+		public Task<object> Load(object id, object optionalObject, ISessionImplementor session)
 		{
-			return Load(session, id, optionalObject, id, async);
+			return Load(session, id, optionalObject, id);
 		}
 
-		protected virtual async Task<object> Load(ISessionImplementor session, object id, object optionalObject, object optionalId, bool async)
+		protected virtual async Task<object> Load(ISessionImplementor session, object id, object optionalObject, object optionalId)
 		{
-			IList list = await LoadEntity(session, id, UniqueKeyType, optionalObject, entityName, optionalId, persister, async).ConfigureAwait(false);
+			IList list = await LoadEntity(session, id, UniqueKeyType, optionalObject, entityName, optionalId, persister).ConfigureAwait(false);
 
 			if (list.Count == 1)
 			{
@@ -67,10 +68,10 @@ namespace NHibernate.Loader.Entity
 			}
 		}
 
-		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReader rs,
+		protected override Task<object> GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReaderEx rs,
 													   ISessionImplementor session)
 		{
-			return row[row.Length - 1];
+			return Task.FromResult(row[row.Length - 1]);
 		}
 
 		protected IType UniqueKeyType { get; private set; }

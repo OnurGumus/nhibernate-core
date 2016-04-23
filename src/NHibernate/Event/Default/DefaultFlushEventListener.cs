@@ -10,14 +10,14 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public class DefaultFlushEventListener : AbstractFlushingEventListener, IFlushEventListener
 	{
-		public virtual async Task OnFlush(FlushEvent @event, bool async)
+		public virtual async Task OnFlush(FlushEvent @event)
 		{
 			IEventSource source = @event.Session;
 
 			if ((source.PersistenceContext.EntityEntries.Count > 0) || (source.PersistenceContext.CollectionEntries.Count > 0))
 			{
-				FlushEverythingToExecutions(@event);
-				await PerformExecutions(source, async).ConfigureAwait(false);
+				await FlushEverythingToExecutions(@event).ConfigureAwait(false);
+				await PerformExecutions(source).ConfigureAwait(false);
 				PostFlush(source);
 
 				if (source.Factory.Statistics.IsStatisticsEnabled)

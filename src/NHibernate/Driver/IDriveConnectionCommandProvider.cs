@@ -5,7 +5,7 @@ namespace NHibernate.Driver
 {
 	public interface IDriveConnectionCommandProvider
 	{
-		IDbConnection CreateConnection();
+		DbConnection CreateConnection();
 		DbCommand CreateCommand();
 	}
 }

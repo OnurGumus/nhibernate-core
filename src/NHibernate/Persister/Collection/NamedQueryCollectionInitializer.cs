@@ -3,6 +3,7 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader.Collection;
 using System;
+using System.Threading.Tasks;
 
 namespace NHibernate.Persister.Collection
 {
@@ -19,7 +20,7 @@ namespace NHibernate.Persister.Collection
 			this.persister = persister;
 		}
 
-		public void Initialize(object key, ISessionImplementor session)
+		public async Task Initialize(object key, ISessionImplementor session)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -36,7 +37,7 @@ namespace NHibernate.Persister.Collection
 			{
 				query.SetParameter(0, key, persister.KeyType);
 			}
-			query.SetCollectionKey(key).SetFlushMode(FlushMode.Never).ListAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+			await query.SetCollectionKey(key).SetFlushMode(FlushMode.Never).ListAsync().ConfigureAwait(false);
 		}
 	}
 }

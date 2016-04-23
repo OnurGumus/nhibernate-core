@@ -10,6 +10,8 @@ using NHibernate.Type;
 using NHibernate.Util;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Threading.Tasks;
+using NHibernate.Driver;
 
 namespace NHibernate.Id
 {
@@ -109,19 +111,19 @@ namespace NHibernate.Id
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
 		/// <returns>The new identifier as a <see cref="Int16"/>, <see cref="Int32"/>, or <see cref="Int64"/>.</returns>
-		public virtual object Generate(ISessionImplementor session, object obj)
+		public virtual async Task<object> Generate(ISessionImplementor session, object obj)
 		{
 			try
 			{
-				DbCommand cmd = session.Batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
-				IDataReader reader = null;
+				DbCommand cmd = await session.Batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes).ConfigureAwait(false);
+				IDataReaderEx reader = null;
 				try
 				{
-					reader = session.Batcher.ExecuteReader(cmd, false).ConfigureAwait(false).GetAwaiter().GetResult();
+					reader = await session.Batcher.ExecuteReader(cmd).ConfigureAwait(false);
 					try
 					{
-						reader.Read();
-						object result = IdentifierGeneratorFactory.Get(reader, identifierType, session);
+						await reader.ReadAsync().ConfigureAwait(false);
+						object result = await IdentifierGeneratorFactory.Get(reader, identifierType, session).ConfigureAwait(false);
 						if (log.IsDebugEnabled)
 						{
 							log.Debug("Sequence identifier generated: " + result);

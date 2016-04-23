@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Threading.Tasks;
 using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -66,12 +67,12 @@ namespace NHibernate.Type
 		/// <remarks>
 		/// This method calls DeepCopy if the value is not null.
 		/// </remarks>
-		public virtual object Disassemble(object value, ISessionImplementor session, object owner)
+		public virtual Task<object> Disassemble(object value, ISessionImplementor session, object owner)
 		{
 			if (value == null) 
-				return null;
+				return Task.FromResult<object>(null);
 
-			return DeepCopy(value, session.EntityMode, session.Factory);
+			return Task.FromResult(DeepCopy(value, session.EntityMode, session.Factory));
 		}
 
 		/// <summary>
@@ -84,16 +85,17 @@ namespace NHibernate.Type
 		/// <remarks>
 		/// This method calls DeepCopy if the value is not null.
 		/// </remarks>
-		public virtual object Assemble(object cached, ISessionImplementor session, object owner)
+		public virtual Task<object> Assemble(object cached, ISessionImplementor session, object owner)
 		{
 			if (cached == null)
-				return null;
+				return Task.FromResult<object>(null);
 
-			return DeepCopy(cached, session.EntityMode, session.Factory);
+			return Task.FromResult(DeepCopy(cached, session.EntityMode, session.Factory));
 		}
 
-		public virtual void BeforeAssemble(object cached, ISessionImplementor session)
+		public virtual Task BeforeAssemble(object cached, ISessionImplementor session)
 		{
+			return TaskHelper.CompletedTask;
 		}
 
 		/// <summary>
@@ -105,9 +107,9 @@ namespace NHibernate.Type
 		/// <param name="session">The <see cref="ISessionImplementor"/> is not used by this method.</param>
 		/// <returns>true if the field is dirty</returns>
 		/// <remarks>This method uses <c>IType.Equals(object, object)</c> to determine the value of IsDirty.</remarks>
-		public virtual bool IsDirty(object old, object current, ISessionImplementor session)
+		public virtual Task<bool> IsDirty(object old, object current, ISessionImplementor session)
 		{
-			return !IsSame(old, current, session.EntityMode);
+			return Task.FromResult(!IsSame(old, current, session.EntityMode));
 		}
 
 		/// <summary>
@@ -126,7 +128,7 @@ namespace NHibernate.Type
 		/// This method uses the <c>IType.NullSafeGet(IDataReader, string[], ISessionImplementor, object)</c> method
 		/// to Hydrate this <see cref="AbstractType"/>.
 		/// </remarks>
-		public virtual object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public virtual Task<object> Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			return NullSafeGet(rs, names, session, owner);
 		}
@@ -141,9 +143,9 @@ namespace NHibernate.Type
 		/// <remarks>
 		/// There is nothing done in this method other than return the value parameter passed in.
 		/// </remarks>
-		public virtual object ResolveIdentifier(object value, ISessionImplementor session, object owner)
+		public virtual Task<object> ResolveIdentifier(object value, ISessionImplementor session, object owner)
 		{
-			return value;
+			return Task.FromResult(value);
 		}
 
 		public virtual object SemiResolve(object value, ISessionImplementor session, object owner)
@@ -163,7 +165,7 @@ namespace NHibernate.Type
 		/// <summary>
 		/// Says whether the value has been modified
 		/// </summary>
-		public virtual bool IsModified(
+		public virtual Task<bool> IsModified(
 			object old,
 			object current,
 			bool[] checkable,
@@ -197,7 +199,7 @@ namespace NHibernate.Type
 		/// /> 
 		public abstract int GetColumnSpan(IMapping mapping);
 
-		public virtual object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache,
+		public virtual Task<object> Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache,
 							  ForeignKeyDirection foreignKeyDirection)
 		{
 			bool include;
@@ -210,7 +212,7 @@ namespace NHibernate.Type
 			{
 				include = ForeignKeyDirection.ForeignKeyFromParent.Equals(foreignKeyDirection);
 			}
-			return include ? Replace(original, target, session, owner, copyCache) : target;
+			return include ? Replace(original, target, session, owner, copyCache) : Task.FromResult(target);
 		}
 
 		public virtual bool IsSame(object x, object y, EntityMode entityMode)
@@ -266,7 +268,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public abstract object Replace(object original, object current, ISessionImplementor session, object owner,
+		public abstract Task<object> Replace(object original, object current, ISessionImplementor session, object owner,
 									   IDictionary copiedAlready);
 
 		public abstract void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory);
@@ -286,22 +288,22 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, string[], ISessionImplementor, object)"]/*'
 		/// /> 
-		public abstract object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner);
+		public abstract Task<object> NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, string, ISessionImplementor, object)"]/*'
 		/// /> 
-		public abstract object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, Object owner);
+		public abstract Task<object> NullSafeGet(IDataReader rs, string name, ISessionImplementor session, Object owner);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet(settable)"]/*'
 		/// /> 
-		public abstract void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session);
+		public abstract Task NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
 		/// /> 
-		public abstract void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session);
+		public abstract Task NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="P:IType.ReturnedClass"]/*'
@@ -313,6 +315,6 @@ namespace NHibernate.Type
 		/// /> 
 		public abstract string ToLoggableString(object value, ISessionFactoryImplementor factory);
 
-		public abstract bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session);
+		public abstract Task<bool> IsDirty(object old, object current, bool[] checkable, ISessionImplementor session);
 	}
 }

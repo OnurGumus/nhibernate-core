@@ -40,9 +40,9 @@ namespace NHibernate.Loader.Entity
 			log.Debug("Static select for entity " + entityName + ": " + SqlString);
 		}
 
-		public Task<object> LoadByUniqueKey(ISessionImplementor session, object key, bool async)
+		public Task<object> LoadByUniqueKey(ISessionImplementor session, object key)
 		{
-			return Load(session, key, null, null, async);
+			return Load(session, key, null, null);
 		}
 
 		protected override bool IsSingleRowLoader

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 
 namespace NHibernate.Intercept
@@ -18,6 +19,6 @@ namespace NHibernate.Intercept
 	public interface ILazyPropertyInitializer
 	{
 		/// <summary> Initialize the property, and return its new value</summary>
-		object InitializeLazyProperty(string fieldName, object entity, ISessionImplementor session);
+		Task<object> InitializeLazyProperty(string fieldName, object entity, ISessionImplementor session);
 	}
 }

@@ -103,7 +103,7 @@ namespace NHibernate.Action
 		}
 
 		/// <summary>Execute this action</summary>
-		public abstract Task Execute(bool async);
+		public abstract Task Execute();
 
 		public virtual BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess
 		{
@@ -124,6 +124,7 @@ namespace NHibernate.Action
 						CacheKey ck = Session.GenerateCacheKey(key, persister.KeyType, persister.Role);
 						persister.Cache.Release(ck, softLock);
 					}
+					return TaskHelper.CompletedTask;
 				});
 			}
 		}

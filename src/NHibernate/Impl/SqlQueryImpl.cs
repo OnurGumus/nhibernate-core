@@ -117,17 +117,14 @@ namespace NHibernate.Impl
 
 		public override IList<T> List<T>()
 		{
-			return this.ListAsync<T>(false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return this.ListAsync<T>().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 		public override IList List()
 		{
-			return this.ListAsync(false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return this.ListAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
-		public override Task<IList> ListAsync()
-		{
-			return this.ListAsync(true);
-		}
-		public override async Task<IList> ListAsync(bool async)
+			
+		public override async Task<IList> ListAsync()
 		{
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
@@ -137,7 +134,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				return await Session.ListAsync(spec, qp, async).ConfigureAwait(false);
+				return await Session.ListAsync(spec, qp).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -147,13 +144,10 @@ namespace NHibernate.Impl
 
 		public override void List(IList results)
 		{
-			this.ListAsync(results, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			this.ListAsync(results).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
-		public override Task ListAsync(IList results)
-		{
-			return this.ListAsync(results, true);
-		}
-		public async override Task ListAsync(IList results, bool async)
+
+		public async override Task ListAsync(IList results)
 		{
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
@@ -163,7 +157,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				await Session.ListAsync(spec, qp, results, async).ConfigureAwait(false);
+				await Session.ListAsync(spec, qp, results).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -171,11 +165,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override Task<IList<T>> ListAsync<T>()
-		{
-			return this.ListAsync<T>(true);
-		}
-		public override async Task<IList<T>> ListAsync<T>(bool async)
+		public override async Task<IList<T>> ListAsync<T>()
 		{
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
@@ -185,7 +175,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				return await Session.ListAsync<T>(spec, qp, async).ConfigureAwait(false);
+				return await Session.ListAsync<T>(spec, qp).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -219,22 +209,12 @@ namespace NHibernate.Impl
 			return TaskHelper.FromException<IEnumerable>(new NotSupportedException("SQL queries do not currently support enumeration"));
 		}
 
-		public override Task<IEnumerable> EnumerableAsync(bool async)
-		{
-			return TaskHelper.FromException<IEnumerable>(new NotSupportedException("SQL queries do not currently support enumeration"));
-		}
-
 		public override IEnumerable<T> Enumerable<T>()
 		{
 			throw new NotSupportedException("SQL queries do not currently support enumeration");
 		}
 
 		public override Task<IEnumerable<T>> EnumerableAsync<T>()
-		{
-			return TaskHelper.FromException<IEnumerable<T>>(new NotSupportedException("SQL queries do not currently support enumeration"));
-		}
-
-		public override Task<IEnumerable<T>> EnumerableAsync<T>(bool async)
 		{
 			return TaskHelper.FromException<IEnumerable<T>>(new NotSupportedException("SQL queries do not currently support enumeration"));
 		}
@@ -344,19 +324,16 @@ namespace NHibernate.Impl
 		}
 		public override int ExecuteUpdate()
 		{
-			return this.ExecuteUpdateAsync(false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return this.ExecuteUpdateAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
-		public override Task<int> ExecuteUpdateAsync()
-		{
-			return this.ExecuteUpdateAsync(true);
-		}
-		public override async Task<int> ExecuteUpdateAsync(bool async)
+
+		public override async Task<int> ExecuteUpdateAsync()
 		{
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			Before();
 			try
 			{
-				return await Session.ExecuteNativeUpdateAsync(GenerateQuerySpecification(namedParams), GetQueryParameters(namedParams), async).ConfigureAwait(false);
+				return await Session.ExecuteNativeUpdateAsync(GenerateQuerySpecification(namedParams), GetQueryParameters(namedParams)).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -364,13 +341,13 @@ namespace NHibernate.Impl
 			}
 		}
 
-		protected internal override IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters)
+		protected internal override Task<IEnumerable<ITranslator>> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters)
 		{
 			// NOTE: updates queryParameters.NamedParameters as (desired) side effect
 			ExpandParameterLists(queryParameters.NamedParameters);
 
 			var sqlQuery = this as ISQLQuery;
-			yield return new SqlTranslator(sqlQuery, sessionImplementor.Factory);
+			return Task.FromResult<IEnumerable<ITranslator>>(new[] {new SqlTranslator(sqlQuery, sessionImplementor.Factory)});
 		}
 	}
 }

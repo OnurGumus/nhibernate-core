@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
-
+using System.Threading.Tasks;
 using NHibernate.Collection;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
+using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
@@ -251,14 +252,14 @@ namespace NHibernate.Engine
 		/// Determine if the collection is "really" dirty, by checking dirtiness
 		/// of the collection elements, if necessary
 		/// </summary>
-		private void Dirty(IPersistentCollection collection)
+		private async Task Dirty(IPersistentCollection collection)
 		{
 			// if the collection is initialized and it was previously persistent
 			// initialize the dirty flag
 			bool forceDirty = collection.WasInitialized && !collection.IsDirty && LoadedPersister != null
 							  && LoadedPersister.IsMutable
 							  && (collection.IsDirectlyAccessible || LoadedPersister.ElementType.IsMutable)
-							  && !collection.EqualsSnapshot(LoadedPersister);
+							  && !(await collection.EqualsSnapshot(LoadedPersister).ConfigureAwait(false));
 
 			if (forceDirty)
 			{
@@ -270,14 +271,14 @@ namespace NHibernate.Engine
 		/// Prepares this CollectionEntry for the Flush process.
 		/// </summary>
 		/// <param name="collection">The <see cref="IPersistentCollection"/> that this CollectionEntry will be responsible for flushing.</param>
-		public void PreFlush(IPersistentCollection collection)
+		public async Task PreFlush(IPersistentCollection collection)
 		{
 			bool nonMutableChange = collection.IsDirty && LoadedPersister != null && !LoadedPersister.IsMutable;
 			if (nonMutableChange)
 			{
 				throw new HibernateException("changed an immutable collection instance: " + MessageHelper.InfoString(LoadedPersister.Role, LoadedKey));
 			}
-			Dirty(collection);
+			await Dirty(collection).ConfigureAwait(false);
 
 			if (log.IsDebugEnabled && collection.IsDirty && loadedPersister != null)
 			{
@@ -360,11 +361,11 @@ namespace NHibernate.Engine
 			loadedPersister = factory.GetCollectionPersister(role);
 		}
 
-		public ICollection GetOrphans(string entityName, IPersistentCollection collection)
+		public Task<ICollection> GetOrphans(string entityName, IPersistentCollection collection)
 		{
 			if (snapshot == null)
 			{
-				throw new AssertionFailure("no collection snapshot for orphan delete");
+				return TaskHelper.FromException<ICollection>(new AssertionFailure("no collection snapshot for orphan delete"));
 			}
 			return collection.GetOrphans(snapshot, entityName);
 		}

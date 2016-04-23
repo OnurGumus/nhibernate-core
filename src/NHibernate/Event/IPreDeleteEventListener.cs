@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace NHibernate.Event
 {
 	/// <summary>
@@ -7,6 +9,6 @@ namespace NHibernate.Event
 	{
 		/// <summary> Return true if the operation should be vetoed</summary>
 		/// <param name="event"></param>
-		bool OnPreDelete(PreDeleteEvent @event);
+		Task<bool> OnPreDelete(PreDeleteEvent @event);
 	}
 }

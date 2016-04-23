@@ -8,6 +8,7 @@ using NHibernate.Event;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Action
 {
@@ -42,7 +43,7 @@ namespace NHibernate.Action
 			get { return Session.Listeners.PostCommitUpdateEventListeners.Length > 0; }
 		}
 
-		public override async Task Execute(bool async)
+		public override async Task Execute()
 		{
 			ISessionImplementor session = Session;
 			object id = Id;
@@ -56,7 +57,7 @@ namespace NHibernate.Action
 				stopwatch = Stopwatch.StartNew();
 			}
 
-			bool veto = PreUpdate();
+			bool veto = await PreUpdate().ConfigureAwait(false);
 
 			ISessionFactoryImplementor factory = Session.Factory;
 
@@ -77,7 +78,7 @@ namespace NHibernate.Action
 
 			if (!veto)
 			{
-				await persister.Update(id, state, dirtyFields, hasDirtyCollection, previousState, previousVersion, instance, null, session, async).ConfigureAwait(false);
+				await persister.Update(id, state, dirtyFields, hasDirtyCollection, previousState, previousVersion, instance, null, session).ConfigureAwait(false);
 			}
 
 			EntityEntry entry = Session.PersistenceContext.GetEntry(instance);
@@ -96,7 +97,7 @@ namespace NHibernate.Action
 				{
 					// this entity defines property generation, so process those generated
 					// values...
-					persister.ProcessUpdateGeneratedProperties(id, instance, state, Session);
+					await persister.ProcessUpdateGeneratedProperties(id, instance, state, Session).ConfigureAwait(false);
 					if (persister.IsVersionPropertyGenerated)
 					{
 						nextVersion = Versioning.GetVersion(state, persister);
@@ -115,7 +116,8 @@ namespace NHibernate.Action
 				}
 				else
 				{
-					CacheEntry ce = new CacheEntry(state, persister, persister.HasUninitializedLazyProperties(instance, session.EntityMode), nextVersion, Session, instance);
+					CacheEntry ce = new CacheEntry(persister, persister.HasUninitializedLazyProperties(instance, session.EntityMode), nextVersion,
+						await TypeHelper.Disassemble(state, persister.PropertyTypes, null, session, instance).ConfigureAwait(false));
 					cacheEntry = persister.CacheEntryStructure.Structure(ce);
 
 					bool put = persister.Cache.Update(ck, cacheEntry, nextVersion, previousVersion);
@@ -127,7 +129,7 @@ namespace NHibernate.Action
 				}
 			}
 
-			PostUpdate();
+			await PostUpdate().ConfigureAwait(false);
 
 			if (statsEnabled && !veto)
 			{
@@ -136,7 +138,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		protected override void AfterTransactionCompletionProcessImpl(bool success)
+		protected override Task AfterTransactionCompletionProcessImpl(bool success)
 		{
 			IEntityPersister persister = Persister;
 			if (persister.HasCache)
@@ -159,11 +161,12 @@ namespace NHibernate.Action
 			}
 			if (success)
 			{
-				PostCommitUpdate();
+				return PostCommitUpdate();
 			}
+			return TaskHelper.CompletedTask;
 		}
 		
-		private void PostUpdate()
+		private async Task PostUpdate()
 		{
 			IPostUpdateEventListener[] postListeners = Session.Listeners.PostUpdateEventListeners;
 			if (postListeners.Length > 0)
@@ -171,12 +174,12 @@ namespace NHibernate.Action
 				PostUpdateEvent postEvent = new PostUpdateEvent(Instance, Id, state, previousState, Persister, (IEventSource)Session);
 				foreach (IPostUpdateEventListener listener in postListeners)
 				{
-					listener.OnPostUpdate(postEvent);
+					await listener.OnPostUpdate(postEvent).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private void PostCommitUpdate()
+		private async Task PostCommitUpdate()
 		{
 			IPostUpdateEventListener[] postListeners = Session.Listeners.PostCommitUpdateEventListeners;
 			if (postListeners.Length > 0)
@@ -184,12 +187,12 @@ namespace NHibernate.Action
 				PostUpdateEvent postEvent = new PostUpdateEvent(Instance, Id, state, previousState, Persister, (IEventSource)Session);
 				foreach (IPostUpdateEventListener listener in postListeners)
 				{
-					listener.OnPostUpdate(postEvent);
+					await listener.OnPostUpdate(postEvent).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private bool PreUpdate()
+		private async Task<bool> PreUpdate()
 		{
 			IPreUpdateEventListener[] preListeners = Session.Listeners.PreUpdateEventListeners;
 			bool veto = false;
@@ -198,7 +201,7 @@ namespace NHibernate.Action
 				var preEvent = new PreUpdateEvent(Instance, Id, state, previousState, Persister, (IEventSource) Session);
 				foreach (IPreUpdateEventListener listener in preListeners)
 				{
-					veto |= listener.OnPreUpdate(preEvent);
+					veto |= await listener.OnPreUpdate(preEvent).ConfigureAwait(false);
 				}
 			}
 			return veto;

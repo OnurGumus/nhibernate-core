@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlTypes;
@@ -46,16 +47,16 @@ namespace NHibernate.Type
 			return GetIdentifierOrUniqueKeyType(mapping).SqlTypes(mapping);
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override async Task NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
-			GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeSet(st, GetReferenceValue(value, session), index, settable, session);
+			await GetIdentifierOrUniqueKeyType(session.Factory)
+				.NullSafeSet(st, await GetReferenceValue(value, session).ConfigureAwait(false), index, settable, session).ConfigureAwait(false);
 		}
 
-		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
+		public override async Task NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeSet(cmd, GetReferenceValue(value, session), index, session);
+			await GetIdentifierOrUniqueKeyType(session.Factory)
+				.NullSafeSet(cmd, await GetReferenceValue(value, session).ConfigureAwait(false), index, session).ConfigureAwait(false);
 		}
 
 		public override bool IsOneToOne
@@ -83,13 +84,13 @@ namespace NHibernate.Type
 		/// <returns>
 		/// An instantiated object that used as the identifier of the type.
 		/// </returns>
-		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override async Task<object> Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			// return the (fully resolved) identifier value, but do not resolve
 			// to the actual referenced entity instance
 			// NOTE: the owner of the association is not really the owner of the id!
-			object id = GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeGet(rs, names, session, owner);
+			object id = await GetIdentifierOrUniqueKeyType(session.Factory)
+				.NullSafeGet(rs, names, session, owner).ConfigureAwait(false);
 			ScheduleBatchLoadIfNeeded(id, session);
 			return id;
 		}
@@ -113,7 +114,7 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public override bool IsModified(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override async Task<bool> IsModified(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
 			if (current == null)
 			{
@@ -124,14 +125,14 @@ namespace NHibernate.Type
 				return true;
 			}
 			// the ids are fully resolved, so compare them with isDirty(), not isModified()
-			return GetIdentifierOrUniqueKeyType(session.Factory).IsDirty(old, GetIdentifier(current, session), session);
+			return await GetIdentifierOrUniqueKeyType(session.Factory).IsDirty(old, await GetIdentifier(current, session).ConfigureAwait(false), session).ConfigureAwait(false);
 		}
 
-		public override object Disassemble(object value, ISessionImplementor session, object owner)
+		public override async Task<object> Disassemble(object value, ISessionImplementor session, object owner)
 		{
 			if (IsNotEmbedded(session))
 			{
-				return GetIdentifierType(session).Disassemble(value, session, owner);
+				return await GetIdentifierType(session).Disassemble(value, session, owner).ConfigureAwait(false);
 			}
 
 			if (value == null)
@@ -142,21 +143,21 @@ namespace NHibernate.Type
 			{
 				// cache the actual id of the object, not the value of the
 				// property-ref, which might not be initialized
-				object id = ForeignKeys.GetEntityIdentifierIfNotUnsaved(GetAssociatedEntityName(), value, session);
+				object id = await ForeignKeys.GetEntityIdentifierIfNotUnsaved(GetAssociatedEntityName(), value, session).ConfigureAwait(false);
 				if (id == null)
 				{
 					throw new AssertionFailure("cannot cache a reference to an object with a null id: " + GetAssociatedEntityName());
 				}
-				return GetIdentifierType(session).Disassemble(id, session, owner);
+				return await GetIdentifierType(session).Disassemble(id, session, owner).ConfigureAwait(false);
 			}
 		}
 
-		public override object Assemble(object oid, ISessionImplementor session, object owner)
+		public override async Task<object> Assemble(object oid, ISessionImplementor session, object owner)
 		{
 			//TODO: currently broken for unique-key references (does not detect
 			//      change to unique key property of the associated object)
 
-			object id = AssembleId(oid, session);
+			object id = await AssembleId(oid, session).ConfigureAwait(false);
 
 			if (IsNotEmbedded(session))
 			{
@@ -169,16 +170,16 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				return ResolveIdentifier(id, session);
+				return await ResolveIdentifier(id, session).ConfigureAwait(false);
 			}
 		}
 
-		public override void BeforeAssemble(object oid, ISessionImplementor session)
+		public override async Task BeforeAssemble(object oid, ISessionImplementor session)
 		{
-			ScheduleBatchLoadIfNeeded(AssembleId(oid, session), session);
+			ScheduleBatchLoadIfNeeded(await AssembleId(oid, session).ConfigureAwait(false), session);
 		}
 
-		private object AssembleId(object oid, ISessionImplementor session)
+		private Task<object> AssembleId(object oid, ISessionImplementor session)
 		{
 			//the owner of the association is not the owner of the id
 			return GetIdentifierType(session).Assemble(oid, session, null);
@@ -189,23 +190,23 @@ namespace NHibernate.Type
 			get { return ignoreNotFound; }
 		}
 
-		public override bool IsDirty(object old, object current, ISessionImplementor session)
+		public override async Task<bool> IsDirty(object old, object current, ISessionImplementor session)
 		{
 			if (IsSame(old, current, session.EntityMode))
 			{
 				return false;
 			}
 
-			object oldid = GetIdentifier(old, session);
-			object newid = GetIdentifier(current, session);
-			return GetIdentifierType(session).IsDirty(oldid, newid, session);
+			object oldid = await GetIdentifier(old, session).ConfigureAwait(false);
+			object newid = await GetIdentifier(current, session).ConfigureAwait(false);
+			return await GetIdentifierType(session).IsDirty(oldid, newid, session).ConfigureAwait(false);
 		}
 
-		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override async Task<bool> IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
 			if (IsAlwaysDirtyChecked)
 			{
-				return IsDirty(old, current, session);
+				return await IsDirty(old, current, session).ConfigureAwait(false);
 			}
 			else
 			{
@@ -214,9 +215,9 @@ namespace NHibernate.Type
 					return false;
 				}
 
-				object oldid = GetIdentifier(old, session);
-				object newid = GetIdentifier(current, session);
-				return GetIdentifierType(session).IsDirty(oldid, newid, checkable, session);
+				object oldid = await GetIdentifier(old, session).ConfigureAwait(false);
+				object newid = await GetIdentifier(current, session).ConfigureAwait(false);
+				return await GetIdentifierType(session).IsDirty(oldid, newid, checkable, session).ConfigureAwait(false);
 			}
 		}
 

@@ -1,5 +1,5 @@
 using System.Collections;
-
+using System.Threading.Tasks;
 using NHibernate.Collection;
 using NHibernate.Event;
 using NHibernate.Persister.Collection;
@@ -89,9 +89,9 @@ namespace NHibernate.Engine
 		/// <summary> Cascade an action from the parent entity instance to all its children. </summary>
 		/// <param name="persister">The parent's entity persister </param>
 		/// <param name="parent">The parent reference. </param>
-		public void CascadeOn(IEntityPersister persister, object parent)
+		public Task CascadeOn(IEntityPersister persister, object parent)
 		{
-			CascadeOn(persister, parent, null);
+			return CascadeOn(persister, parent, null);
 		}
 
 		/// <summary> 
@@ -104,7 +104,7 @@ namespace NHibernate.Engine
 		/// Typically some form of cascade-local cache
 		/// which is specific to each CascadingAction type
 		/// </param>
-		public void CascadeOn(IEntityPersister persister, object parent, object anything)
+		public async Task CascadeOn(IEntityPersister persister, object parent, object anything)
 		{
 			if (persister.HasCascades || action.RequiresNoCascadeChecking)
 			{
@@ -126,11 +126,11 @@ namespace NHibernate.Engine
 
 					if (style.DoCascade(action))
 					{
-						CascadeProperty(parent, persister.GetPropertyValue(parent, i, entityMode), types[i], style, propertyName, anything, false);
+						await CascadeProperty(parent, persister.GetPropertyValue(parent, i, entityMode), types[i], style, propertyName, anything, false).ConfigureAwait(false);
 					}
 					else if (action.RequiresNoCascadeChecking)
 					{
-						action.NoCascade(eventSource, persister.GetPropertyValue(parent, i, entityMode), parent, persister, i);
+						await action.NoCascade(eventSource, persister.GetPropertyValue(parent, i, entityMode), parent, persister, i).ConfigureAwait(false);
 					}
 				}
 
@@ -139,7 +139,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Cascade an action to the child or children</summary>
-		private void CascadeProperty(object parent, object child, IType type, CascadeStyle style, string propertyName, object anything, bool isCascadeDeleteEnabled)
+		private async Task CascadeProperty(object parent, object child, IType type, CascadeStyle style, string propertyName, object anything, bool isCascadeDeleteEnabled)
 		{
 			if (child != null)
 			{
@@ -148,12 +148,12 @@ namespace NHibernate.Engine
 					IAssociationType associationType = (IAssociationType)type;
 					if (CascadeAssociationNow(associationType))
 					{
-						CascadeAssociation(parent, child, type, style, anything, isCascadeDeleteEnabled);
+						await CascadeAssociation(parent, child, type, style, anything, isCascadeDeleteEnabled).ConfigureAwait(false);
 					}
 				}
 				else if (type.IsComponentType)
 				{
-					CascadeComponent(parent, child, (IAbstractComponentType)type, propertyName, anything);
+					await CascadeComponent(parent, child, (IAbstractComponentType)type, propertyName, anything).ConfigureAwait(false);
 				}
 			}
 			else
@@ -197,7 +197,7 @@ namespace NHibernate.Engine
 
 							if (loadedValue != null)
 							{
-								eventSource.Delete(entry.Persister.EntityName, loadedValue, false, null);
+								await eventSource.Delete(entry.Persister.EntityName, loadedValue, false, null).ConfigureAwait(false);
 							}
 						}
 					}
@@ -210,10 +210,10 @@ namespace NHibernate.Engine
 			return associationType.ForeignKeyDirection.CascadeNow(point) && (eventSource.EntityMode != EntityMode.Xml || associationType.IsEmbeddedInXML);
 		}
 
-		private void CascadeComponent(object parent, object child, IAbstractComponentType componentType, string componentPropertyName, object anything)
+		private async Task CascadeComponent(object parent, object child, IAbstractComponentType componentType, string componentPropertyName, object anything)
 		{
 			componentPathStack.Push(componentPropertyName);
-			object[] children = componentType.GetPropertyValues(child, eventSource);
+			object[] children = await componentType.GetPropertyValues(child, eventSource).ConfigureAwait(false);
 			IType[] types = componentType.Subtypes;
 			for (int i = 0; i < types.Length; i++)
 			{
@@ -221,26 +221,26 @@ namespace NHibernate.Engine
 				string subPropertyName = componentType.PropertyNames[i];
 				if (componentPropertyStyle.DoCascade(action))
 				{
-					CascadeProperty(parent, children[i], types[i], componentPropertyStyle, subPropertyName, anything, false);
+					await CascadeProperty(parent, children[i], types[i], componentPropertyStyle, subPropertyName, anything, false).ConfigureAwait(false);
 				}
 			}
 			componentPathStack.Pop();
 		}
 
-		private void CascadeAssociation(object parent, object child, IType type, CascadeStyle style, object anything, bool isCascadeDeleteEnabled)
+		private async Task CascadeAssociation(object parent, object child, IType type, CascadeStyle style, object anything, bool isCascadeDeleteEnabled)
 		{
 			if (type.IsEntityType || type.IsAnyType)
 			{
-				CascadeToOne(parent, child, type, style, anything, isCascadeDeleteEnabled);
+				await CascadeToOne(parent, child, type, style, anything, isCascadeDeleteEnabled).ConfigureAwait(false);
 			}
 			else if (type.IsCollectionType)
 			{
-				CascadeCollection(parent, child, style, anything, (CollectionType)type);
+				await CascadeCollection(parent, child, style, anything, (CollectionType)type).ConfigureAwait(false);
 			}
 		}
 
 		/// <summary> Cascade an action to a collection</summary>
-		private void CascadeCollection(object parent, object child, CascadeStyle style, object anything, CollectionType type)
+		private async Task CascadeCollection(object parent, object child, CascadeStyle style, object anything, CollectionType type)
 		{
 			ICollectionPersister persister = eventSource.Factory.GetCollectionPersister(type.Role);
 			IType elemType = persister.ElementType;
@@ -251,13 +251,13 @@ namespace NHibernate.Engine
 
 			//cascade to current collection elements
 			if (elemType.IsEntityType || elemType.IsAnyType || elemType.IsComponentType)
-				CascadeCollectionElements(parent, child, type, style, elemType, anything, persister.CascadeDeleteEnabled);
+				await CascadeCollectionElements(parent, child, type, style, elemType, anything, persister.CascadeDeleteEnabled).ConfigureAwait(false);
 
 			point = oldCascadeTo;
 		}
 
 		/// <summary> Cascade an action to a to-one association or any type</summary>
-		private void CascadeToOne(object parent, object child, IType type, CascadeStyle style, object anything, bool isCascadeDeleteEnabled)
+		private async Task CascadeToOne(object parent, object child, IType type, CascadeStyle style, object anything, bool isCascadeDeleteEnabled)
 		{
 			string entityName = type.IsEntityType ? ((EntityType)type).GetAssociatedEntityName() : null;
 			if (style.ReallyDoCascade(action))
@@ -266,7 +266,7 @@ namespace NHibernate.Engine
 				eventSource.PersistenceContext.AddChildParent(child, parent);
 				try
 				{
-					action.Cascade(eventSource, child, entityName, anything, isCascadeDeleteEnabled);
+					await action.Cascade(eventSource, child, entityName, anything, isCascadeDeleteEnabled).ConfigureAwait(false);
 				}
 				finally
 				{
@@ -276,7 +276,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Cascade to the collection elements</summary>
-		private void CascadeCollectionElements(object parent, object child, CollectionType collectionType, CascadeStyle style, IType elemType, object anything, bool isCascadeDeleteEnabled)
+		private async Task CascadeCollectionElements(object parent, object child, CollectionType collectionType, CascadeStyle style, IType elemType, object anything, bool isCascadeDeleteEnabled)
 		{
 			// we can't cascade to non-embedded elements
 			bool embeddedElements = eventSource.EntityMode != EntityMode.Xml
@@ -290,7 +290,7 @@ namespace NHibernate.Engine
 				log.Info("cascade " + action + " for collection: " + collectionType.Role);
 
 				foreach (object o in action.GetCascadableChildrenIterator(eventSource, collectionType, child))
-					CascadeProperty(parent, o, elemType, style, null, anything, isCascadeDeleteEnabled);
+					await CascadeProperty(parent, o, elemType, style, null, anything, isCascadeDeleteEnabled).ConfigureAwait(false);
 
 				log.Info("done cascade " + action + " for collection: " + collectionType.Role);
 			}
@@ -308,25 +308,25 @@ namespace NHibernate.Engine
 				// 1. newly instantiated collections
 				// 2. arrays (we can't track orphans for detached arrays)
 				string entityName = collectionType.GetAssociatedEntityName(eventSource.Factory);
-				DeleteOrphans(entityName, childAsPersColl);
+				await DeleteOrphans(entityName, childAsPersColl).ConfigureAwait(false);
 
 				log.Info("done deleting orphans for collection: " + collectionType.Role);
 			}
 		}
 
 		/// <summary> Delete any entities that were removed from the collection</summary>
-		private void DeleteOrphans(string entityName, IPersistentCollection pc)
+		private async Task DeleteOrphans(string entityName, IPersistentCollection pc)
 		{
 			//TODO: suck this logic into the collection!
 			ICollection orphans;
 			if (pc.WasInitialized)
 			{
 				CollectionEntry ce = eventSource.PersistenceContext.GetCollectionEntry(pc);
-				orphans = ce == null ? CollectionHelper.EmptyCollection : ce.GetOrphans(entityName, pc);
+				orphans = ce == null ? CollectionHelper.EmptyCollection : await ce.GetOrphans(entityName, pc).ConfigureAwait(false);
 			}
 			else
 			{
-				orphans = pc.GetQueuedOrphans(entityName);
+				orphans = await pc.GetQueuedOrphans(entityName).ConfigureAwait(false);
 			}
 
 			foreach (object orphan in orphans)
@@ -335,7 +335,7 @@ namespace NHibernate.Engine
 				{
 					log.Info("deleting orphaned entity instance: " + entityName);
 
-					eventSource.Delete(entityName, orphan, false, null);
+					await eventSource.Delete(entityName, orphan, false, null).ConfigureAwait(false);
 				}
 			}
 		}

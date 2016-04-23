@@ -3,6 +3,8 @@ using System.Data;
 using NHibernate.AdoNet;
 using NHibernate.Engine;
 using System.Data.Common;
+using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.AdoNet
 {
@@ -34,11 +36,11 @@ namespace NHibernate.AdoNet
 		/// Thrown when there is an expected number of rows to be affected and the
 		/// actual number of rows is different.
 		/// </exception>
-		public override void AddToBatch(IExpectation expectation)
+		public override async Task AddToBatch(IExpectation expectation)
 		{
 			DbCommand cmd = CurrentCommand;
 			Driver.AdjustCommand(cmd);
-			int rowCount = ExecuteNonQuery(cmd, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			int rowCount = await ExecuteNonQuery(cmd).ConfigureAwait(false);
 			expectation.VerifyOutcomeNonBatched(rowCount, cmd);
 		}
 
@@ -48,8 +50,9 @@ namespace NHibernate.AdoNet
 		/// method.
 		/// </summary>
 		/// <param name="ps"></param>
-		protected override void DoExecuteBatch(IDbCommand ps)
+		protected override Task DoExecuteBatch(IDbCommand ps)
 		{
+			return TaskHelper.CompletedTask;
 		}
 
 		protected override int CountOfStatementsInCurrentBatch

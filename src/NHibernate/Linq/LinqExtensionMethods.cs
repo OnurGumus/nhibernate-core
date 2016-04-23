@@ -431,7 +431,7 @@ namespace NHibernate.Linq
 		/// <returns>
 		/// The sum of the projected values.
 		/// </returns>
-		/// <param name="source">A sequence of values of type <paramref name="TSource"/>.</param>
+		/// <param name="source">A sequence of values of type <paramref name="source"/>.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
@@ -459,7 +459,7 @@ namespace NHibernate.Linq
 		/// <returns>
 		/// The sum of the projected values.
 		/// </returns>
-		/// <param name="source">A sequence of values of type <paramref name="TSource"/>.</param>
+		/// <param name="source">A sequence of values of type <paramref name="source"/>.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
@@ -487,7 +487,7 @@ namespace NHibernate.Linq
 		/// <returns>
 		/// The sum of the projected values.
 		/// </returns>
-		/// <param name="source">A sequence of values of type <paramref name="TSource"/>.</param>
+		/// <param name="source">A sequence of values of type <paramref name="source"/>.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
@@ -515,7 +515,7 @@ namespace NHibernate.Linq
 		/// <returns>
 		/// The sum of the projected values.
 		/// </returns>
-		/// <param name="source">A sequence of values of type <paramref name="TSource"/>.</param>
+		/// <param name="source">A sequence of values of type <paramref name="source"/>.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
@@ -543,7 +543,7 @@ namespace NHibernate.Linq
 		/// <returns>
 		/// The sum of the projected values.
 		/// </returns>
-		/// <param name="source">A sequence of values of type <paramref name="TSource"/>.</param>
+		/// <param name="source">A sequence of values of type <paramref name="source"/>.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
@@ -571,7 +571,7 @@ namespace NHibernate.Linq
 		/// <returns>
 		/// The sum of the projected values.
 		/// </returns>
-		/// <param name="source">A sequence of values of type <paramref name="TSource"/>.</param>
+		/// <param name="source">A sequence of values of type <paramref name="source"/>.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
@@ -599,7 +599,7 @@ namespace NHibernate.Linq
 		/// <returns>
 		/// The sum of the projected values.
 		/// </returns>
-		/// <param name="source">A sequence of values of type <paramref name="TSource"/>.</param>
+		/// <param name="source">A sequence of values of type <paramref name="source"/>.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
@@ -627,7 +627,7 @@ namespace NHibernate.Linq
 		/// <returns>
 		/// The sum of the projected values.
 		/// </returns>
-		/// <param name="source">A sequence of values of type <paramref name="TSource"/>.</param>
+		/// <param name="source">A sequence of values of type <paramref name="source"/>.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
@@ -655,7 +655,7 @@ namespace NHibernate.Linq
 		/// <returns>
 		/// The sum of the projected values.
 		/// </returns>
-		/// <param name="source">A sequence of values of type <paramref name="TSource"/>.</param>
+		/// <param name="source">A sequence of values of type <paramref name="source"/>.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
@@ -683,7 +683,7 @@ namespace NHibernate.Linq
 		/// <returns>
 		/// The sum of the projected values.
 		/// </returns>
-		/// <param name="source">A sequence of values of type <paramref name="TSource"/>.</param>
+		/// <param name="source">A sequence of values of type <paramref name="source"/>.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
@@ -1446,7 +1446,7 @@ namespace NHibernate.Linq
 		#region SingleOrDefaultAsync
 
 		/// <summary>Returns the only element of a sequence, or a default value if the sequence is empty; this method throws an exception if there is more than one element in the sequence.</summary>
-		/// <returns>default(<paramref name="TSource" />) if <paramref name="source" /> is empty; otherwise, the single element in <paramref name="source" />.</returns>
+		/// <returns>default(<paramref name="source" />) if <paramref name="source" /> is empty; otherwise, the single element in <paramref name="source" />.</returns>
 		/// <param name="source">The <see cref="T:System.Linq.IQueryable`1" /> to return the single element of.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
@@ -1463,7 +1463,7 @@ namespace NHibernate.Linq
 		}
 
 		/// <summary>Returns the only element of a sequence, or a default value if the sequence is empty; this method throws an exception if there is more than one element in the sequence.</summary>
-		/// <returns>default(<paramref name="TSource" />) if <paramref name="source" /> is empty or if no element passes the test specified by <paramref name="predicate" />; otherwise, the single element in <paramref name="source" /> that passes the test specified by <paramref name="predicate" />.</returns>
+		/// <returns>default(<paramref name="source" />) if <paramref name="source" /> is empty or if no element passes the test specified by <paramref name="predicate" />; otherwise, the single element in <paramref name="source" /> that passes the test specified by <paramref name="predicate" />.</returns>
 		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to return an element from.</param>
 		/// <param name="predicate">A function to test each element for a condition.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
@@ -1489,7 +1489,7 @@ namespace NHibernate.Linq
 		#region FirstOrDefaultAsync
 
 		/// <summary>Returns the first element of a sequence, or a default value if the sequence contains no elements.</summary>
-		/// <returns>default(<paramref name="TSource" />) if <paramref name="source" /> is empty; otherwise, the first element in <paramref name="source" />.</returns>
+		/// <returns>default(<paramref name="source" />) if <paramref name="source" /> is empty; otherwise, the first element in <paramref name="source" />.</returns>
 		/// <param name="source">The <see cref="T:System.Linq.IQueryable`1" /> to return the first element of.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
@@ -1506,7 +1506,7 @@ namespace NHibernate.Linq
 		}
 
 		/// <summary>Returns the first element of a sequence that satisfies a specified condition or a default value if no such element is found.</summary>
-		/// <returns>default(<paramref name="TSource" />) if <paramref name="source" /> is empty or if no element passes the test specified by <paramref name="predicate" />; otherwise, the first element in <paramref name="source" /> that passes the test specified by <paramref name="predicate" />.</returns>
+		/// <returns>default(<paramref name="source" />) if <paramref name="source" /> is empty or if no element passes the test specified by <paramref name="predicate" />; otherwise, the first element in <paramref name="source" /> that passes the test specified by <paramref name="predicate" />.</returns>
 		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to return an element from.</param>
 		/// <param name="predicate">A function to test each element for a condition.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>

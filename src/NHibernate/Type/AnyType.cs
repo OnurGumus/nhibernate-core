@@ -9,6 +9,7 @@ using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace NHibernate.Type
 {
@@ -83,25 +84,25 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
+		public override Task<object> NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
 		{
-			throw new NotSupportedException("object is a multicolumn type");
+			return TaskHelper.FromException<object>(new NotSupportedException("object is a multicolumn type"));
 		}
 
-		public override object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override async Task<object> NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			return ResolveAny((string)metaType.NullSafeGet(rs, names[0], session, owner), 
-				identifierType.NullSafeGet(rs, names[1], session, owner), session);
+			return await ResolveAny((string)await metaType.NullSafeGet(rs, names[0], session, owner).ConfigureAwait(false), 
+				await identifierType.NullSafeGet(rs, names[1], session, owner).ConfigureAwait(false), session).ConfigureAwait(false);
 		}
 
-		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override async Task<object> Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			string entityName = (string)metaType.NullSafeGet(rs, names[0], session, owner);
-			object id = identifierType.NullSafeGet(rs, names[1], session, owner);
+			string entityName = (string)await metaType.NullSafeGet(rs, names[0], session, owner).ConfigureAwait(false);
+			object id = await identifierType.NullSafeGet(rs, names[1], session, owner).ConfigureAwait(false);
 			return new ObjectTypeCacheEntry(entityName, id);
 		}
 
-		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner)
+		public override Task<object> ResolveIdentifier(object value, ISessionImplementor session, object owner)
 		{
 			ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry) value;
 			return ResolveAny(holder.entityName, holder.id, session);
@@ -112,7 +113,7 @@ namespace NHibernate.Type
 			throw new NotSupportedException("any mappings may not form part of a property-ref");
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override async Task NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			object id;
 			string entityName;
@@ -124,29 +125,29 @@ namespace NHibernate.Type
 			else
 			{
 				entityName = session.BestGuessEntityName(value);
-				id = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, value, session);
+				id = await ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, value, session).ConfigureAwait(false);
 			}
 
 			// metaType is assumed to be single-column type
 			if (settable == null || settable[0])
 			{
-				metaType.NullSafeSet(st, entityName, index, session);
+				await metaType.NullSafeSet(st, entityName, index, session).ConfigureAwait(false);
 			}
 			if (settable == null)
 			{
-				identifierType.NullSafeSet(st, id, index + 1, session);
+				await identifierType.NullSafeSet(st, id, index + 1, session).ConfigureAwait(false);
 			}
 			else
 			{
 				bool[] idsettable = new bool[settable.Length - 1];
 				Array.Copy(settable, 1, idsettable, 0, idsettable.Length);
-				identifierType.NullSafeSet(st, id, index + 1, idsettable, session);
+				await identifierType.NullSafeSet(st, id, index + 1, idsettable, session).ConfigureAwait(false);
 			}
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session)
+		public override Task NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session)
 		{
-			NullSafeSet(st, value, index, null, session);
+			return NullSafeSet(st, value, index, null, session);
 		}
 
 		public override System.Type ReturnedClass
@@ -183,20 +184,20 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Assemble(object cached, ISessionImplementor session, object owner)
+		public override async Task<object> Assemble(object cached, ISessionImplementor session, object owner)
 		{
 			ObjectTypeCacheEntry e = cached as ObjectTypeCacheEntry;
-			return (e == null) ? null : session.InternalLoad(e.entityName, e.id, false, false);
+			return (e == null) ? null : await session.InternalLoadAsync(e.entityName, e.id, false, false).ConfigureAwait(false);
 		}
 
-		public override object Disassemble(object value, ISessionImplementor session, object owner)
+		public override async Task<object> Disassemble(object value, ISessionImplementor session, object owner)
 		{
 			return value == null ? null : 
 				new ObjectTypeCacheEntry(session.BestGuessEntityName(value), 
-				ForeignKeys.GetEntityIdentifierIfNotUnsaved(session.BestGuessEntityName(value), value, session));
+				await ForeignKeys.GetEntityIdentifierIfNotUnsaved(session.BestGuessEntityName(value), value, session).ConfigureAwait(false));
 		}
 
-		public override object Replace(object original, object current, ISessionImplementor session, object owner,
+		public override async Task<object> Replace(object original, object current, ISessionImplementor session, object owner,
 									   IDictionary copiedAlready)
 		{
 			if (original == null)
@@ -206,8 +207,8 @@ namespace NHibernate.Type
 			else
 			{
 				string entityName = session.BestGuessEntityName(original);
-				object id = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, original, session);
-				return session.InternalLoad(entityName, id, false, false);
+				object id = await ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, original, session).ConfigureAwait(false);
+				return await session.InternalLoadAsync(entityName, id, false, false).ConfigureAwait(false);
 			}
 		}
 
@@ -243,9 +244,9 @@ namespace NHibernate.Type
 			get { return PROPERTY_NAMES; }
 		}
 
-		public object GetPropertyValue(Object component, int i, ISessionImplementor session)
+		public async Task<object> GetPropertyValue(Object component, int i, ISessionImplementor session)
 		{
-			return i == 0 ? session.BestGuessEntityName(component) : Id(component, session);
+			return i == 0 ? session.BestGuessEntityName(component) : await Id(component, session).ConfigureAwait(false);
 		}
 
 		public object[] GetPropertyValues(Object component, EntityMode entityMode)
@@ -253,16 +254,16 @@ namespace NHibernate.Type
 			throw new NotSupportedException();
 		}
 
-		public object[] GetPropertyValues(object component, ISessionImplementor session)
+		public async Task<object[]> GetPropertyValues(object component, ISessionImplementor session)
 		{
-			return new object[] { session.BestGuessEntityName(component), Id(component, session) };
+			return new object[] { session.BestGuessEntityName(component), await Id(component, session).ConfigureAwait(false) };
 		}
 
-		private static object Id(object component, ISessionImplementor session)
+		private static async Task<object> Id(object component, ISessionImplementor session)
 		{
 			try
 			{
-				return ForeignKeys.GetEntityIdentifierIfNotUnsaved(session.BestGuessEntityName(component), component, session);
+				return await ForeignKeys.GetEntityIdentifierIfNotUnsaved(session.BestGuessEntityName(component), component, session).ConfigureAwait(false);
 			}
 			catch (TransientObjectException)
 			{
@@ -342,13 +343,13 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override Task<bool> IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
 			//TODO!!!
 			return IsDirty(old, current, session);
 		}
 
-		public override bool IsModified(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override async Task<bool> IsModified(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
 			if (current == null)
 				return old != null;
@@ -358,7 +359,7 @@ namespace NHibernate.Type
 			bool[] idcheckable = new bool[checkable.Length - 1];
 			Array.Copy(checkable, 1, idcheckable, 0, idcheckable.Length);
 			return (checkable[0] && !holder.entityName.Equals(session.BestGuessEntityName(current))) || 
-				identifierType.IsModified(holder.id, Id(current, session), idcheckable, session);
+				await identifierType.IsModified(holder.id, Id(current, session), idcheckable, session).ConfigureAwait(false);
 		}
 
 		public bool[] PropertyNullability
@@ -391,9 +392,9 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-		private object ResolveAny(string entityName, object id, ISessionImplementor session)
+		private async Task<object> ResolveAny(string entityName, object id, ISessionImplementor session)
 		{
-			return entityName == null || id == null ? null : session.InternalLoad(entityName, id, false, false);
+			return entityName == null || id == null ? null : await session.InternalLoadAsync(entityName, id, false, false).ConfigureAwait(false);
 		}
 
 		public override void SetToXMLNode(XmlNode xml, object value, ISessionFactoryImplementor factory)

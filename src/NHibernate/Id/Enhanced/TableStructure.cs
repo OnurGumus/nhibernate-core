@@ -1,6 +1,7 @@
 using System;
 using System.Data;
-
+using System.Data.Common;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -96,7 +97,7 @@ namespace NHibernate.Id.Enhanced
 
 		#region Overrides of TransactionHelper
 
-		public override object DoWorkInCurrentTransaction(ISessionImplementor session, IDbConnection conn, IDbTransaction transaction)
+		public override async Task<object> DoWorkInCurrentTransaction(ISessionImplementor session, DbConnection conn, DbTransaction transaction)
 		{
 			long result;
 			int updatedRows;
@@ -107,14 +108,14 @@ namespace NHibernate.Id.Enhanced
 				{
 					object selectedValue;
 
-					IDbCommand selectCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, _selectQuery, SqlTypeFactory.NoTypes);
+					DbCommand selectCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, _selectQuery, SqlTypeFactory.NoTypes);
 					using (selectCmd)
 					{
 						selectCmd.Connection = conn;
 						selectCmd.Transaction = transaction;
 						PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(selectCmd, FormatStyle.Basic);
 
-						selectedValue = selectCmd.ExecuteScalar();
+						selectedValue = await selectCmd.ExecuteScalarAsync().ConfigureAwait(false);
 					}
 
 					if (selectedValue ==null)
@@ -133,7 +134,7 @@ namespace NHibernate.Id.Enhanced
 
 				try
 				{
-					IDbCommand updateCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, _updateQuery, _updateParameterTypes);
+					DbCommand updateCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, _updateQuery, _updateParameterTypes);
 					using (updateCmd)
 					{
 						updateCmd.Connection = conn;
@@ -143,7 +144,7 @@ namespace NHibernate.Id.Enhanced
 						int increment = _applyIncrementSizeToSourceValues ? _incrementSize : 1;
 						((IDataParameter)updateCmd.Parameters[0]).Value = result + increment;
 						((IDataParameter)updateCmd.Parameters[1]).Value = result;
-						updatedRows = updateCmd.ExecuteNonQuery();
+						updatedRows = await updateCmd.ExecuteNonQueryAsync().ConfigureAwait(false);
 					}
 				}
 				catch (Exception sqle)
@@ -176,9 +177,9 @@ namespace NHibernate.Id.Enhanced
 
 			#region IAccessCallback Members
 
-			public virtual long GetNextValue()
+			public virtual async Task<long> GetNextValue()
 			{
-				return Convert.ToInt64(_owner.DoWorkInNewTransaction(_session));
+				return Convert.ToInt64(await _owner.DoWorkInNewTransaction(_session).ConfigureAwait(false));
 			}
 
 			#endregion

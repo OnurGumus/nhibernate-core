@@ -19,21 +19,20 @@ namespace NHibernate.Event
 		object Instantiate(IEntityPersister persister, object id);
 
 		/// <summary> Force an immediate flush</summary>
-		void ForceFlush(EntityEntry e);
+		Task ForceFlush(EntityEntry e);
 
 		/// <summary> Cascade merge an entity instance</summary>
-		void Merge(string entityName, object obj, IDictionary copiedAlready);
+		Task Merge(string entityName, object obj, IDictionary copiedAlready);
 
 		/// <summary> Cascade persist an entity instance</summary>
-		void Persist(string entityName, object obj, IDictionary createdAlready);
+		Task Persist(string entityName, object obj, IDictionary createdAlready);
 
 		/// <summary> Cascade persist an entity instance during the flush process</summary>
-		Task PersistOnFlush(string entityName, object obj, IDictionary copiedAlready, bool async);
+		Task PersistOnFlush(string entityName, object obj, IDictionary copiedAlready);
 
 		/// <summary> Cascade refresh an entity instance</summary>
-		void Refresh(object obj, IDictionary refreshedAlready);
-        
-		/// <summary> Cascade delete an entity instance</summary>
-		void Delete(string entityName, object child, bool isCascadeDeleteEnabled, ISet<object> transientEntities);
+		Task Refresh(object obj, IDictionary refreshedAlready);
+
+		Task Delete(string entityName, object child, bool isCascadeDeleteEnabled, ISet<object> transientEntities);
 	}
 }

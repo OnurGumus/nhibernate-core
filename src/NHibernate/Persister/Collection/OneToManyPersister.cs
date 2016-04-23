@@ -165,7 +165,7 @@ namespace NHibernate.Persister.Collection
 			return CollectionType.UseLHSPrimaryKey ? alias : alias + "owner_";
 		}
 
-		protected override async Task<int> DoUpdateRows(object id, IPersistentCollection collection, ISessionImplementor session, bool async)
+		protected override async Task<int> DoUpdateRows(object id, IPersistentCollection collection, ISessionImplementor session)
 		{
 			// we finish all the "removes" first to take care of possible unique 
 			// constraints and so that we can take better advantage of batching
@@ -186,31 +186,31 @@ namespace NHibernate.Persister.Collection
 
 					foreach (object entry in entries)
 					{
-						if (collection.NeedsUpdating(entry, i, ElementType))
+						if (await collection.NeedsUpdating(entry, i, ElementType).ConfigureAwait(false))
 						{
 							// will still be issued when it used to be null
 							if (useBatch)
 							{
-								st = session.Batcher.PrepareBatchCommand(SqlDeleteRowString.CommandType, sql.Text,
-																		 SqlDeleteRowString.ParameterTypes);
+								st = await session.Batcher.PrepareBatchCommand(SqlDeleteRowString.CommandType, sql.Text,
+																		 SqlDeleteRowString.ParameterTypes).ConfigureAwait(false);
 							}
 							else
 							{
-								st = session.Batcher.PrepareCommand(SqlDeleteRowString.CommandType, sql.Text,
-																	SqlDeleteRowString.ParameterTypes);
+								st = await session.Batcher.PrepareCommand(SqlDeleteRowString.CommandType, sql.Text,
+																	SqlDeleteRowString.ParameterTypes).ConfigureAwait(false);
 							}
 
 							try
 							{
-								int loc = WriteKey(st, id, offset, session);
-								WriteElementToWhere(st, collection.GetSnapshotElement(entry, i), loc, session);
+								int loc = await WriteKey(st, id, offset, session).ConfigureAwait(false);
+								await WriteElementToWhere(st, collection.GetSnapshotElement(entry, i), loc, session).ConfigureAwait(false);
 								if (useBatch)
 								{
-									session.Batcher.AddToBatch(deleteExpectation);
+									await session.Batcher.AddToBatch(deleteExpectation).ConfigureAwait(false);
 								}
 								else
 								{
-									deleteExpectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(st, async).ConfigureAwait(false), st);
+									deleteExpectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(st).ConfigureAwait(false), st);
 								}
 							}
 							catch (Exception e)
@@ -247,36 +247,36 @@ namespace NHibernate.Persister.Collection
 					IEnumerable entries = collection.Entries(this);
 					foreach (object entry in entries)
 					{
-						if (collection.NeedsUpdating(entry, i, ElementType))
+						if (await collection.NeedsUpdating(entry, i, ElementType).ConfigureAwait(false))
 						{
 							if (useBatch)
 							{
-								st = session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, sql.Text,
-																		 SqlInsertRowString.ParameterTypes);
+								st = await session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, sql.Text,
+																		 SqlInsertRowString.ParameterTypes).ConfigureAwait(false);
 							}
 							else
 							{
-								st = session.Batcher.PrepareCommand(SqlInsertRowString.CommandType, sql.Text,
-																	SqlInsertRowString.ParameterTypes);
+								st = await session.Batcher.PrepareCommand(SqlInsertRowString.CommandType, sql.Text,
+																	SqlInsertRowString.ParameterTypes).ConfigureAwait(false);
 							}
 
 							try
 							{
 								//offset += insertExpectation.Prepare(st, Factory.ConnectionProvider.Driver);
-								int loc = WriteKey(st, id, offset, session);
+								int loc = await WriteKey(st, id, offset, session).ConfigureAwait(false);
 								if (HasIndex && !indexContainsFormula)
 								{
-									loc = WriteIndexToWhere(st, collection.GetIndex(entry, i, this), loc, session);
+									loc = await WriteIndexToWhere(st, collection.GetIndex(entry, i, this), loc, session).ConfigureAwait(false);
 								}
-								WriteElementToWhere(st, collection.GetElement(entry), loc, session);
+								await WriteElementToWhere(st, collection.GetElement(entry), loc, session).ConfigureAwait(false);
 								if (useBatch)
 								{
-									session.Batcher.AddToBatch(insertExpectation);
+									await session.Batcher.AddToBatch(insertExpectation).ConfigureAwait(false);
 								}
 								else
 								{
-									insertExpectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st, false)
-										.ConfigureAwait(false).GetAwaiter().GetResult(), st);
+									insertExpectation.VerifyOutcomeNonBatched(await session.Batcher.ExecuteNonQuery(st)
+										.ConfigureAwait(false), st);
 								}
 							}
 							catch (Exception e)
@@ -403,9 +403,9 @@ namespace NHibernate.Persister.Collection
 				session.EnabledFilters);
 		}
 
-		public override async Task<object> GetElementByIndex(object key, object index, ISessionImplementor session, object owner, bool async)
+		public override async Task<object> GetElementByIndex(object key, object index, ISessionImplementor session, object owner)
 		{
-			return await new CollectionElementLoader(this, Factory, session.EnabledFilters).LoadElement(session, key, IncrementIndexByBase(index), async).ConfigureAwait(false) ?? NotFoundObject;
+			return await new CollectionElementLoader(this, Factory, session.EnabledFilters).LoadElement(session, key, IncrementIndexByBase(index)).ConfigureAwait(false) ?? NotFoundObject;
 		}
 
 		#region NH Specific

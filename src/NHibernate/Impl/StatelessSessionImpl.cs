@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq.Expressions;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
@@ -33,7 +34,7 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly StatefulPersistenceContext temporaryPersistenceContext;
 
-		internal StatelessSessionImpl(IDbConnection connection, SessionFactoryImpl factory)
+		internal StatelessSessionImpl(DbConnection connection, SessionFactoryImpl factory)
 			: base(factory)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -52,7 +53,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override void InitializeCollection(IPersistentCollection collection, bool writing)
+		public override async Task InitializeCollection(IPersistentCollection collection, bool writing)
 		{
 			if (temporaryPersistenceContext.IsLoadFinished)
 			{
@@ -61,11 +62,16 @@ namespace NHibernate.Impl
 			CollectionEntry ce = temporaryPersistenceContext.GetCollectionEntry(collection);
 			if (!collection.WasInitialized)
 			{
-				ce.LoadedPersister.Initialize(ce.LoadedKey, this);
+				await ce.LoadedPersister.Initialize(ce.LoadedKey, this).ConfigureAwait(false);
 			}
 		}
 
 		public override object InternalLoad(string entityName, object id, bool eager, bool isNullable)
+		{
+			return InternalLoadAsync(entityName, id, eager, isNullable).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public override async Task<object> InternalLoadAsync(string entityName, object id, bool eager, bool isNullable)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -81,13 +87,18 @@ namespace NHibernate.Impl
 					return persister.CreateProxy(id, this);
 				}
 				//TODO: if not loaded, throw an exception
-				return Get(entityName, id);
+				return await GetAsync(entityName, id).ConfigureAwait(false);
 			}
 		}
 
 		public override object ImmediateLoad(string entityName, object id)
 		{
 			throw new SessionException("proxies cannot be fetched by a stateless session");
+		}
+
+		public override Task<object> ImmediateLoadAsync(string entityName, object id)
+		{
+			return TaskHelper.FromException<object>(new SessionException("proxies cannot be fetched by a stateless session"));
 		}
 
 		public override long Timestamp
@@ -109,7 +120,7 @@ namespace NHibernate.Impl
 			Dispose(true);
 		}
 
-		public override async Task ListAsync(IQueryExpression queryExpression, QueryParameters queryParameters, IList results, bool async)
+		public override async Task ListAsync(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -120,7 +131,7 @@ namespace NHibernate.Impl
 				bool success = false;
 				try
 				{
-					await plan.PerformList(queryParameters, this, results, async).ConfigureAwait(false);
+					await plan.PerformList(queryParameters, this, results).ConfigureAwait(false);
 					success = true;
 				}
 				catch (HibernateException)
@@ -134,13 +145,13 @@ namespace NHibernate.Impl
 				}
 				finally
 				{
-					AfterOperation(success);
+					await AfterOperation(success).ConfigureAwait(false);
 				}
 				temporaryPersistenceContext.Clear();
 			}
 		}
 
-		public override async Task ListAsync(CriteriaImpl criteria, IList results, bool async)
+		public override async Task ListAsync(CriteriaImpl criteria, IList results)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -160,7 +171,7 @@ namespace NHibernate.Impl
 				{
 					for (int i = size - 1; i >= 0; i--)
 					{
-						ArrayHelper.AddAll(results, await loaders[i].List(this, async).ConfigureAwait(false));
+						ArrayHelper.AddAll(results, await loaders[i].List(this).ConfigureAwait(false));
 					}
 					success = true;
 				}
@@ -175,7 +186,7 @@ namespace NHibernate.Impl
 				}
 				finally
 				{
-					AfterOperation(success);
+					await AfterOperation(success).ConfigureAwait(false);
 				}
 				temporaryPersistenceContext.Clear();
 			}
@@ -186,7 +197,7 @@ namespace NHibernate.Impl
 			throw new NotImplementedException();
 		}
 
-		public override Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters, bool async = true)
+		public override Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
 			throw new NotImplementedException();
 		}
@@ -196,7 +207,7 @@ namespace NHibernate.Impl
 			throw new NotImplementedException();
 		}
 
-		public override Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters, bool async = true)
+		public override Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
 			throw new NotImplementedException();
 		}
@@ -206,7 +217,7 @@ namespace NHibernate.Impl
 			throw new NotSupportedException();
 		}
 
-		public override Task<IList> ListFilterAsync(object collection, string filter, QueryParameters parameters, bool async = true)
+		public override Task<IList> ListFilterAsync(object collection, string filter, QueryParameters parameters)
 		{
 			throw new NotSupportedException();
 		}
@@ -216,7 +227,7 @@ namespace NHibernate.Impl
 			throw new NotSupportedException();
 		}
 
-		public override Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters, bool async = true)
+		public override Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters)
 		{
 			throw new NotSupportedException();
 		}
@@ -226,7 +237,7 @@ namespace NHibernate.Impl
 			throw new NotSupportedException();
 		}
 
-		public override Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters, bool async = true)
+		public override Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters)
 		{
 			throw new NotSupportedException();
 		}
@@ -236,7 +247,7 @@ namespace NHibernate.Impl
 			throw new NotSupportedException();
 		}
 
-		public override Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters, bool async = true)
+		public override Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters)
 		{
 			throw new NotSupportedException();
 		}
@@ -245,16 +256,18 @@ namespace NHibernate.Impl
 		{
 		}
 
-		public override void BeforeTransactionCompletion(ITransaction tx)
+		public override Task BeforeTransactionCompletion(ITransaction tx)
 		{
+			return TaskHelper.CompletedTask;
 		}
 
-		public override void AfterTransactionCompletion(bool successful, ITransaction tx)
+		public override Task AfterTransactionCompletion(bool successful, ITransaction tx)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				connectionManager.AfterTransaction();
 			}
+			return TaskHelper.CompletedTask;
 		}
 
 		public override object GetContextEntityIdentifier(object obj)
@@ -272,7 +285,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results, bool async = true)
+		public override async Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -283,12 +296,12 @@ namespace NHibernate.Impl
 				var success = false;
 				try
 				{
-					ArrayHelper.AddAll(results, await loader.List(this, queryParameters, async).ConfigureAwait(false));
+					ArrayHelper.AddAll(results, await loader.List(this, queryParameters).ConfigureAwait(false));
 					success = true;
 				}
 				finally
 				{
-					AfterOperation(success);
+					await AfterOperation(success).ConfigureAwait(false);
 				}
 				temporaryPersistenceContext.Clear();
 			}
@@ -309,13 +322,13 @@ namespace NHibernate.Impl
 			get { return new CollectionHelper.EmptyMapClass<string, IFilter>(); }
 		}
 
-		public override IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar)
+		public override Task<IQueryTranslator[]> GetQueries(IQueryExpression query, bool scalar)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				// take the union of the query spaces (ie the queried tables)
 				var plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, EnabledFilters);
-				return plan.Translators;
+				return Task.FromResult(plan.Translators);
 			}
 		}
 
@@ -398,7 +411,12 @@ namespace NHibernate.Impl
 
 		public override IDbConnection Connection
 		{
-			get { return connectionManager.GetConnection(); }
+			get { return connectionManager.GetConnection().ConfigureAwait(false).GetAwaiter().GetResult(); }
+		}
+
+		public override Task<DbConnection> GetConnection()
+		{
+			return connectionManager.GetConnection();
 		}
 
 		public IStatelessSession SetBatchSize(int batchSize)
@@ -409,24 +427,23 @@ namespace NHibernate.Impl
 
 		public override void Flush()
 		{
+			FlushAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public override async Task FlushAsync()
+		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				ManagedFlush(); // NH Different behavior since ADOContext.Context is not implemented
+				await ManagedFlush().ConfigureAwait(false); // NH Different behavior since ADOContext.Context is not implemented
 			}
 		}
 
-		public override Task FlushAsync()
-		{
-			this.Flush();
-			return TaskHelper.CompletedTask;
-		}
-
-		public void ManagedFlush()
+		public async Task ManagedFlush()
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				Batcher.ExecuteBatch();
+				await Batcher.ExecuteBatch().ConfigureAwait(false);
 			}
 		}
 
@@ -509,17 +526,38 @@ namespace NHibernate.Impl
 			}
 		}
 
+		/// <summary> Insert a entity.</summary>
+		/// <param name="entity">A new transient instance </param>
+		/// <returns> the identifier of the instance </returns>
+		public async Task<object> InsertAsync(object entity)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				return await InsertAsync(null, entity).ConfigureAwait(false);
+			}
+		}
+
 		/// <summary> Insert a row. </summary>
 		/// <param name="entityName">The entityName for the entity to be inserted </param>
 		/// <param name="entity">a new transient instance </param>
 		/// <returns> the identifier of the instance </returns>
 		public object Insert(string entityName, object entity)
 		{
+			return InsertAsync(entityName, entity).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary> Insert a row. </summary>
+		/// <param name="entityName">The entityName for the entity to be inserted </param>
+		/// <param name="entity">a new transient instance </param>
+		/// <returns> the identifier of the instance </returns>
+		public async Task<object> InsertAsync(string entityName, object entity)
+		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				IEntityPersister persister = GetEntityPersister(entityName, entity);
-				object id = persister.IdentifierGenerator.Generate(this, entity);
+				object id = await persister.IdentifierGenerator.Generate(this, entity).ConfigureAwait(false);
 				object[] state = persister.GetPropertyValues(entity, EntityMode.Poco);
 				if (persister.IsVersioned)
 				{
@@ -533,11 +571,11 @@ namespace NHibernate.Impl
 				}
 				if (id == IdentifierGeneratorFactory.PostInsertIndicator)
 				{
-					id = persister.Insert(state, entity, this, false).ConfigureAwait(false).GetAwaiter().GetResult();
+					id = await persister.Insert(state, entity, this).ConfigureAwait(false);
 				}
 				else
 				{
-					persister.Insert(id, state, entity, this, false).ConfigureAwait(false).GetAwaiter().GetResult();
+					await persister.Insert(id, state, entity, this).ConfigureAwait(false);
 				}
 				persister.SetIdentifier(entity, id, EntityMode.Poco);
 				return id;
@@ -560,6 +598,14 @@ namespace NHibernate.Impl
 		/// <param name="entity">a detached entity instance </param>
 		public void Update(string entityName, object entity)
 		{
+			UpdateAsync(entityName, entity).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary>Update a entity.</summary>
+		/// <param name="entityName">The entityName for the entity to be updated </param>
+		/// <param name="entity">a detached entity instance </param>
+		public async Task UpdateAsync(string entityName, object entity)
+		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
@@ -578,7 +624,7 @@ namespace NHibernate.Impl
 				{
 					oldVersion = null;
 				}
-				persister.Update(id, state, null, false, null, oldVersion, entity, null, this, false).ConfigureAwait(false).GetAwaiter().GetResult();
+				await persister.Update(id, state, null, false, null, oldVersion, entity, null, this).ConfigureAwait(false);
 			}
 		}
 
@@ -594,9 +640,28 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary> Delete a entity. </summary>
+		/// <param name="entity">a detached entity instance </param>
+		public async Task DeleteAsync(object entity)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				await DeleteAsync(null, entity).ConfigureAwait(false);
+			}
+		}
+
+		/// <summary> Delete a entity. </summary>
 		/// <param name="entityName">The entityName for the entity to be deleted </param>
 		/// <param name="entity">a detached entity instance </param>
 		public void Delete(string entityName, object entity)
+		{
+			DeleteAsync(entityName, entity).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary> Delete a entity. </summary>
+		/// <param name="entityName">The entityName for the entity to be deleted </param>
+		/// <param name="entity">a detached entity instance </param>
+		public async Task DeleteAsync(string entityName, object entity)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -604,7 +669,7 @@ namespace NHibernate.Impl
 				IEntityPersister persister = GetEntityPersister(entityName, entity);
 				object id = persister.GetIdentifier(entity, EntityMode.Poco);
 				object version = persister.GetVersion(entity, EntityMode.Poco);
-				persister.Delete(id, version, entity, this, false).ConfigureAwait(false).GetAwaiter().GetResult();
+				await persister.Delete(id, version, entity, this).ConfigureAwait(false);
 			}
 		}
 
@@ -615,6 +680,16 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				return Get(entityName, id, LockMode.None);
+			}
+		}
+
+		/// <summary> Retrieve a entity. </summary>
+		/// <returns> a detached entity instance </returns>
+		public async Task<object> GetAsync(string entityName, object id)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return await GetAsync(entityName, id, LockMode.None).ConfigureAwait(false);
 			}
 		}
 
@@ -631,11 +706,32 @@ namespace NHibernate.Impl
 			}
 		}
 
+		/// <summary> Retrieve a entity.
+		///
+		/// </summary>
+		/// <returns> a detached entity instance
+		/// </returns>
+		public async Task<T> GetAsync<T>(object id)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return (T)await GetAsync(typeof(T), id).ConfigureAwait(false);
+			}
+		}
+
 		private object Get(System.Type persistentClass, object id)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				return Get(persistentClass.FullName, id);
+			}
+		}
+
+		private async Task<object> GetAsync(System.Type persistentClass, object id)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return await GetAsync(persistentClass.FullName, id).ConfigureAwait(false);
 			}
 		}
 
@@ -645,10 +741,19 @@ namespace NHibernate.Impl
 		/// <returns> a detached entity instance </returns>
 		public object Get(string entityName, object id, LockMode lockMode)
 		{
+			return GetAsync(entityName, id, lockMode).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary>
+		/// Retrieve a entity, obtaining the specified lock mode.
+		/// </summary>
+		/// <returns> a detached entity instance </returns>
+		public async Task<object> GetAsync(string entityName, object id, LockMode lockMode)
+		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				object result = Factory.GetEntityPersister(entityName).Load(id, null, lockMode, this, false).ConfigureAwait(false).GetAwaiter().GetResult();
+				object result = await Factory.GetEntityPersister(entityName).Load(id, null, lockMode, this).ConfigureAwait(false);
 
 				if (temporaryPersistenceContext.IsLoadFinished)
 				{
@@ -671,6 +776,18 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
+		/// Retrieve a entity, obtaining the specified lock mode.
+		/// </summary>
+		/// <returns> a detached entity instance </returns>
+		public async Task<T> GetAsync<T>(object id, LockMode lockMode)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return (T)await GetAsync(typeof(T).FullName, id, lockMode).ConfigureAwait(false);
+			}
+		}
+
+		/// <summary>
 		/// Refresh the entity instance state from the database.
 		/// </summary>
 		/// <param name="entity">The entity to be refreshed. </param>
@@ -679,6 +796,18 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				Refresh(BestGuessEntityName(entity), entity, LockMode.None);
+			}
+		}
+
+		/// <summary>
+		/// Refresh the entity instance state from the database.
+		/// </summary>
+		/// <param name="entity">The entity to be refreshed. </param>
+		public async Task RefreshAsync(object entity)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				await RefreshAsync(BestGuessEntityName(entity), entity, LockMode.None).ConfigureAwait(false);
 			}
 		}
 
@@ -698,6 +827,19 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Refresh the entity instance state from the database.
 		/// </summary>
+		/// <param name="entityName">The entityName for the entity to be refreshed. </param>
+		/// <param name="entity">The entity to be refreshed.</param>
+		public async Task RefreshAsync(string entityName, object entity)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				await RefreshAsync(entityName, entity, LockMode.None).ConfigureAwait(false);
+			}
+		}
+
+		/// <summary>
+		/// Refresh the entity instance state from the database.
+		/// </summary>
 		/// <param name="entity">The entity to be refreshed. </param>
 		/// <param name="lockMode">The LockMode to be applied.</param>
 		public void Refresh(object entity, LockMode lockMode)
@@ -711,10 +853,34 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Refresh the entity instance state from the database.
 		/// </summary>
+		/// <param name="entity">The entity to be refreshed. </param>
+		/// <param name="lockMode">The LockMode to be applied.</param>
+		public async Task RefreshAsync(object entity, LockMode lockMode)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				await RefreshAsync(BestGuessEntityName(entity), entity, lockMode).ConfigureAwait(false);
+			}
+		}
+
+		/// <summary>
+		/// Refresh the entity instance state from the database.
+		/// </summary>
 		/// <param name="entityName">The entityName for the entity to be refreshed. </param>
 		/// <param name="entity">The entity to be refreshed. </param>
 		/// <param name="lockMode">The LockMode to be applied. </param>
 		public void Refresh(string entityName, object entity, LockMode lockMode)
+		{
+			RefreshAsync(entityName, entity, lockMode).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary>
+		/// Refresh the entity instance state from the database.
+		/// </summary>
+		/// <param name="entityName">The entityName for the entity to be refreshed. </param>
+		/// <param name="entity">The entity to be refreshed. </param>
+		/// <param name="lockMode">The LockMode to be applied. </param>
+		public async Task RefreshAsync(string entityName, object entity, LockMode lockMode)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -745,7 +911,7 @@ namespace NHibernate.Impl
 				try
 				{
 					FetchProfile = "refresh";
-					result = persister.Load(id, entity, lockMode, this, false).ConfigureAwait(false).GetAwaiter().GetResult();
+					result = await persister.Load(id, entity, lockMode, this).ConfigureAwait(false);
 				}
 				finally
 				{
@@ -865,16 +1031,35 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
+		/// Begin a NHibernate transaction
+		/// </summary>
+		/// <returns>A NHibernate transaction</returns>
+		public Task<ITransaction> BeginTransactionAsync()
+		{
+			return BeginTransactionAsync(IsolationLevel.Unspecified);
+		}
+
+		/// <summary>
 		/// Begin a NHibernate transaction with the specified isolation level
 		/// </summary>
 		/// <param name="isolationLevel">The isolation level</param>
 		/// <returns>A NHibernate transaction</returns>
 		public ITransaction BeginTransaction(IsolationLevel isolationLevel)
 		{
+			return BeginTransactionAsync(isolationLevel).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary>
+		/// Begin a NHibernate transaction with the specified isolation level
+		/// </summary>
+		/// <param name="isolationLevel">The isolation level</param>
+		/// <returns>A NHibernate transaction</returns>
+		public async Task<ITransaction> BeginTransactionAsync(IsolationLevel isolationLevel)
+		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				return connectionManager.BeginTransaction(isolationLevel);
+				return await connectionManager.BeginTransaction(isolationLevel).ConfigureAwait(false);
 			}
 		}
 
@@ -936,7 +1121,7 @@ namespace NHibernate.Impl
 
 		#endregion
 
-		public override async Task<int> ExecuteNativeUpdateAsync(NativeSQLQuerySpecification nativeSQLQuerySpecification, QueryParameters queryParameters, bool async)
+		public override async Task<int> ExecuteNativeUpdateAsync(NativeSQLQuerySpecification nativeSQLQuerySpecification, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -948,19 +1133,19 @@ namespace NHibernate.Impl
 				int result;
 				try
 				{
-					result = await plan.PerformExecuteUpdate(queryParameters, this, async).ConfigureAwait(false);
+					result = await plan.PerformExecuteUpdate(queryParameters, this).ConfigureAwait(false);
 					success = true;
 				}
 				finally
 				{
-					AfterOperation(success);
+					await AfterOperation(success).ConfigureAwait(false);
 				}
 				temporaryPersistenceContext.Clear();
 				return result;
 			}
 		}
 
-		public override async Task<int> ExecuteUpdateAsync(IQueryExpression queryExpression, QueryParameters queryParameters, bool async)
+		public override async Task<int> ExecuteUpdateAsync(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
@@ -971,12 +1156,12 @@ namespace NHibernate.Impl
 				int result;
 				try
 				{
-					result = await plan.PerformExecuteUpdate(queryParameters, this, async).ConfigureAwait(false);
+					result = await plan.PerformExecuteUpdate(queryParameters, this).ConfigureAwait(false);
 					success = true;
 				}
 				finally
 				{
-					AfterOperation(success);
+					await AfterOperation(success).ConfigureAwait(false);
 				}
 				temporaryPersistenceContext.Clear();
 				return result;

@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using NHibernate.Util;
 
 namespace NHibernate.Id.Enhanced
@@ -101,6 +102,7 @@ namespace NHibernate.Id.Enhanced
 			private long _upperLimit;
 			private long _lastSourceValue = -1;
 			private long _value;
+			private readonly AsyncLock _lock = new AsyncLock();
 
 			public HiLoOptimizer(System.Type returnClass, int incrementSize) : base(returnClass, incrementSize)
 			{
@@ -140,29 +142,31 @@ namespace NHibernate.Id.Enhanced
 				get { return false; }
 			}
 
-			[MethodImpl(MethodImplOptions.Synchronized)]
-			public override object Generate(IAccessCallback callback)
+			public override async Task<object> Generate(IAccessCallback callback)
 			{
-				if (_lastSourceValue < 0)
+				using (var releaser = await _lock.LockAsync().ConfigureAwait(false))
 				{
-					_lastSourceValue = callback.GetNextValue();
-					while (_lastSourceValue <= 0)
+					if (_lastSourceValue < 0)
 					{
-						_lastSourceValue = callback.GetNextValue();
+						_lastSourceValue = await callback.GetNextValue().ConfigureAwait(false);
+						while (_lastSourceValue <= 0)
+						{
+							_lastSourceValue = await callback.GetNextValue().ConfigureAwait(false);
+						}
+
+						// upperLimit defines the upper end of the bucket values
+						_upperLimit = (_lastSourceValue*IncrementSize) + 1;
+
+						// initialize value to the low end of the bucket
+						_value = _upperLimit - IncrementSize;
 					}
-
-					// upperLimit defines the upper end of the bucket values
-					_upperLimit = (_lastSourceValue * IncrementSize) + 1;
-
-					// initialize value to the low end of the bucket
-					_value = _upperLimit - IncrementSize;
+					else if (_upperLimit <= _value)
+					{
+						_lastSourceValue = await callback.GetNextValue().ConfigureAwait(false);
+						_upperLimit = (_lastSourceValue*IncrementSize) + 1;
+					}
+					return Make(_value++);
 				}
-				else if (_upperLimit <= _value)
-				{
-					_lastSourceValue = callback.GetNextValue();
-					_upperLimit = (_lastSourceValue * IncrementSize) + 1;
-				}
-				return Make(_value++);
 			}
 		}
 
@@ -186,14 +190,14 @@ namespace NHibernate.Id.Enhanced
 				get { return false; }
 			}
 
-			public override object Generate(IAccessCallback callback)
+			public override async Task<object> Generate(IAccessCallback callback)
 			{
 				// We must use a local variable here to avoid concurrency issues.
 				// With the local value we can avoid synchronizing the whole method.
 
 				long val = -1;
 				while (val <= 0)
-					val = callback.GetNextValue();
+					val = await callback.GetNextValue().ConfigureAwait(false);
 
 				// This value is only stored for easy access in test. Should be no
 				// threading concerns there.
@@ -237,7 +241,7 @@ namespace NHibernate.Id.Enhanced
 
 			public abstract bool ApplyIncrementSizeToSourceValues { get; }
 
-			public abstract object Generate(IAccessCallback param);
+			public abstract Task<object> Generate(IAccessCallback param);
 
 			#endregion
 
@@ -267,6 +271,7 @@ namespace NHibernate.Id.Enhanced
 			private long _hiValue = -1;
 			private long _value;
 			private long _initialValue;
+			private readonly AsyncLock _lock = new AsyncLock();
 
 			public PooledOptimizer(System.Type returnClass, int incrementSize) : base(returnClass, incrementSize)
 			{
@@ -303,35 +308,37 @@ namespace NHibernate.Id.Enhanced
 				_initialValue = initialValue;
 			}
 
-			[MethodImpl(MethodImplOptions.Synchronized)]
-			public override object Generate(IAccessCallback callback)
+			public override async Task<object> Generate(IAccessCallback callback)
 			{
-				if (_hiValue < 0)
+				using (var releaser = await _lock.LockAsync().ConfigureAwait(false))
 				{
-					_value = callback.GetNextValue();
-					if (_value < 1)
+					if (_hiValue < 0)
 					{
-						// unfortunately not really safe to normalize this
-						// to 1 as an initial value like we do the others
-						// because we would not be able to control this if
-						// we are using a sequence...
-						Log.Info("pooled optimizer source reported [" + _value + "] as the initial value; use of 1 or greater highly recommended");
-					}
+						_value = await callback.GetNextValue().ConfigureAwait(false);
+						if (_value < 1)
+						{
+							// unfortunately not really safe to normalize this
+							// to 1 as an initial value like we do the others
+							// because we would not be able to control this if
+							// we are using a sequence...
+							Log.Info("pooled optimizer source reported [" + _value + "] as the initial value; use of 1 or greater highly recommended");
+						}
 
-					if ((_initialValue == -1 && _value < IncrementSize) || _value == _initialValue)
-						_hiValue = callback.GetNextValue();
-					else
+						if ((_initialValue == -1 && _value < IncrementSize) || _value == _initialValue)
+							_hiValue = await callback.GetNextValue().ConfigureAwait(false);
+						else
+						{
+							_hiValue = _value;
+							_value = _hiValue - IncrementSize;
+						}
+					}
+					else if (_value >= _hiValue)
 					{
-						_hiValue = _value;
+						_hiValue = await callback.GetNextValue().ConfigureAwait(false);
 						_value = _hiValue - IncrementSize;
 					}
+					return Make(_value++);
 				}
-				else if (_value >= _hiValue)
-				{
-					_hiValue = callback.GetNextValue();
-					_value = _hiValue - IncrementSize;
-				}
-				return Make(_value++);
 			}
 		}
 
@@ -343,6 +350,7 @@ namespace NHibernate.Id.Enhanced
 		{
 			private long _lastSourceValue = -1; // last value read from db source
 			private long _value; // the current generator value
+			private readonly AsyncLock _lock = new AsyncLock();
 
 			public PooledLoOptimizer(System.Type returnClass, int incrementSize) : base(returnClass, incrementSize)
 			{
@@ -356,18 +364,20 @@ namespace NHibernate.Id.Enhanced
 				}
 			}
 
-			[MethodImpl(MethodImplOptions.Synchronized)]
-			public override object Generate(IAccessCallback callback)
+			public override async Task<object> Generate(IAccessCallback callback)
 			{
-				if (_lastSourceValue < 0 || _value >= (_lastSourceValue + IncrementSize))
+				using (var releaser = await _lock.LockAsync().ConfigureAwait(false))
 				{
-					_lastSourceValue = callback.GetNextValue();
-					_value = _lastSourceValue;
-					// handle cases where initial-value is less than one (hsqldb for instance).
-					while (_value < 1)
-						_value++;
+					if (_lastSourceValue < 0 || _value >= (_lastSourceValue + IncrementSize))
+					{
+						_lastSourceValue = await callback.GetNextValue().ConfigureAwait(false);
+						_value = _lastSourceValue;
+						// handle cases where initial-value is less than one (hsqldb for instance).
+						while (_value < 1)
+							_value++;
+					}
+					return Make(_value++);
 				}
-				return Make(_value++);
 			}
 
 			public override long LastSourceValue

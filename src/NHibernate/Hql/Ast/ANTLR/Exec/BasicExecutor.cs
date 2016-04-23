@@ -49,7 +49,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			get { return new[] {sql}; }
 		}
 
-		public override async Task<int> Execute(QueryParameters parameters, ISessionImplementor session, bool async)
+		public override async Task<int> Execute(QueryParameters parameters, ISessionImplementor session)
 		{
 			CoordinateSharedCacheCleanup(session);
 
@@ -65,10 +65,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					var sqlQueryParametersList = sql.GetParameters().ToList();
 					SqlType[] parameterTypes = Parameters.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
 
-					st = session.Batcher.PrepareCommand(CommandType.Text, sql, parameterTypes);
+					st = await session.Batcher.PrepareCommand(CommandType.Text, sql, parameterTypes).ConfigureAwait(false);
 					foreach (var parameterSpecification in Parameters)
 					{
-						parameterSpecification.Bind(st, sqlQueryParametersList, parameters, session);
+						await parameterSpecification.Bind(st, sqlQueryParametersList, parameters, session).ConfigureAwait(false);
 					}
 
 					if (selection != null)
@@ -78,7 +78,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 							st.CommandTimeout = selection.Timeout;
 						}
 					}
-					return await session.Batcher.ExecuteNonQuery(st, async).ConfigureAwait(false);
+					return await session.Batcher.ExecuteNonQuery(st).ConfigureAwait(false);
 				}
 				finally
 				{

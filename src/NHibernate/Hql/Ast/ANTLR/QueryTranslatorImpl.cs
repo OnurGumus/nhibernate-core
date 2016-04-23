@@ -83,7 +83,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			DoCompile(replacements, shallow, collectionRole);
 		}
 
-		public async Task<IList> List(ISessionImplementor session, QueryParameters queryParameters,bool async)
+		public async Task<IList> List(ISessionImplementor session, QueryParameters queryParameters)
 		{
 			// Delegate to the QueryLoader...
 			ErrorIfDML();
@@ -108,7 +108,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				queryParametersToUse = queryParameters;
 			}
 
-			IList results = await _queryLoader.List(session, queryParametersToUse, async).ConfigureAwait(false);
+			IList results = await _queryLoader.List(session, queryParametersToUse).ConfigureAwait(false);
 
 			if ( needsDistincting ) 
 			{
@@ -151,16 +151,16 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return results;
 		}
 
-		public Task<IEnumerable> GetEnumerable(QueryParameters queryParameters, IEventSource session, bool async)
+		public async Task<IEnumerable> GetEnumerable(QueryParameters queryParameters, IEventSource session)
 		{
 			ErrorIfDML();
-			return _queryLoader.GetEnumerableAsync(queryParameters, session, async);
+			return await _queryLoader.GetEnumerable(queryParameters, session).ConfigureAwait(false);
 		}
 
-		public Task<int> ExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session, bool async)
+		public async Task<int> ExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session)
 		{
 			ErrorIfSelect();
-			return _statementExecutor.Execute(queryParameters, session, async);
+			return await _statementExecutor.Execute(queryParameters, session).ConfigureAwait(false);
 		}
 
 		private void ErrorIfSelect()

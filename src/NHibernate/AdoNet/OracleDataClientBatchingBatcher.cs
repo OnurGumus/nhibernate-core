@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
+using System.Threading.Tasks;
 using NHibernate.AdoNet.Util;
 using NHibernate.Exceptions;
+using NHibernate.Util;
 
 namespace NHibernate.AdoNet
 {
@@ -33,7 +35,7 @@ namespace NHibernate.AdoNet
 			_currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
 		}
 
-		public override void AddToBatch(IExpectation expectation)
+		public override Task AddToBatch(IExpectation expectation)
 		{
 			bool firstOnBatch = true;
 			_totalExpectedRowsAffected += expectation.ExpectedRowCount;
@@ -93,11 +95,12 @@ namespace NHibernate.AdoNet
 
 			if (_countOfCommands >= _batchSize)
 			{
-				ExecuteBatchWithTiming(_currentBatch);
+				return ExecuteBatchWithTiming(_currentBatch);
 			}
+			return TaskHelper.CompletedTask;
 		}
 
-		protected override void DoExecuteBatch(IDbCommand ps)
+		protected override async Task DoExecuteBatch(IDbCommand ps)
 		{
 			if (_currentBatch != null)
 			{
@@ -105,8 +108,8 @@ namespace NHibernate.AdoNet
 				_countOfCommands = 0;
 
 				Log.Info("Executing batch");
-				CheckReaders();
-				Prepare(_currentBatch);
+				await CheckReaders().ConfigureAwait(false);
+				await Prepare(_currentBatch).ConfigureAwait(false);
 
 				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
 				{

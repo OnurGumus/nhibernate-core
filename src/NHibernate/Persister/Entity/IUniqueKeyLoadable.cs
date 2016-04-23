@@ -11,7 +11,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Load an instance of the persistent class, by a unique key other than the primary key.
 		/// </summary>
-		Task<object> LoadByUniqueKey(string propertyName, object uniqueKey, ISessionImplementor session, bool async);
+		Task<object> LoadByUniqueKey(string propertyName, object uniqueKey, ISessionImplementor session);
 
 		/// <summary>
 		/// Get the property number of the unique key property

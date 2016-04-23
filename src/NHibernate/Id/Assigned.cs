@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Id
 {
@@ -32,20 +34,20 @@ namespace NHibernate.Id
 		/// Thrown when a <see cref="IPersistentCollection"/> is passed in as the <c>obj</c> or
 		/// if the identifier of <c>obj</c> is null.
 		/// </exception>
-		public object Generate(ISessionImplementor session, object obj)
+		public Task<object> Generate(ISessionImplementor session, object obj)
 		{
 			if (obj is IPersistentCollection)
 			{
-				throw new IdentifierGenerationException("Illegal use of assigned id generation for a toplevel collection");
+				return TaskHelper.FromException<object>(new IdentifierGenerationException("Illegal use of assigned id generation for a toplevel collection"));
 			}
 
 			object id = session.GetEntityPersister(entityName, obj).GetIdentifier(obj, session.EntityMode);
 			if (id == null)
 			{
-				throw new IdentifierGenerationException("ids for this class must be manually assigned before calling save(): "
-																								+ obj.GetType().FullName);
+				return TaskHelper.FromException<object>(new IdentifierGenerationException("ids for this class must be manually assigned before calling save(): "
+																								+ obj.GetType().FullName));
 			}
-			return id;
+			return Task.FromResult(id);
 		}
 
 		#endregion

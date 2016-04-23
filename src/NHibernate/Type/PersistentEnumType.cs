@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -250,14 +251,14 @@ namespace NHibernate.Type
 			return GetInstance(long.Parse(xml));
 		}
 
-		public override object Assemble(object cached, ISessionImplementor session, object owner)
+		public override Task<object> Assemble(object cached, ISessionImplementor session, object owner)
 		{
-			return cached == null ? null : GetInstance(cached);
+			return Task.FromResult(cached == null ? null : GetInstance(cached));
 		}
 
-		public override object Disassemble(object value, ISessionImplementor session, object owner)
+		public override Task<object> Disassemble(object value, ISessionImplementor session, object owner)
 		{
-			return (value == null) ? null : GetValue(value);
+			return Task.FromResult((value == null) ? null : GetValue(value));
 		}
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)

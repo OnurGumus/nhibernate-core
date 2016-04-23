@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.IO;
-
+using System.Threading.Tasks;
 using NHibernate.AdoNet.Util;
 using NHibernate.Cfg;
 using NHibernate.Connection;
@@ -49,7 +50,7 @@ namespace NHibernate.Tool.hbm2ddl
 			this.configProperties = configProperties;
 		}
 
-		private void Initialize()
+		private async Task Initialize()
 		{
 			if(wasInitialized)
 			{
@@ -59,7 +60,7 @@ namespace NHibernate.Tool.hbm2ddl
 			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
 			if (autoKeyWordsImport == Hbm2DDLKeyWords.AutoQuote)
 			{
-				SchemaMetadataUpdater.QuoteTableAndColumns(cfg);
+				await SchemaMetadataUpdater.QuoteTableAndColumnsAsync(cfg).ConfigureAwait(false);
 			}
 
 			dialect = Dialect.Dialect.GetDialect(configProperties);
@@ -108,6 +109,20 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <summary>
 		/// Run the schema creation script
 		/// </summary>
+		/// <param name="useStdOut"><see langword="true" /> if the ddl should be outputted in the Console.</param>
+		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
+		/// <remarks>
+		/// This is a convenience method that calls <see cref="Execute(bool, bool, bool)"/> and sets
+		/// the justDrop parameter to false.
+		/// </remarks>
+		public Task CreateAsync(bool useStdOut, bool execute)
+		{
+			return ExecuteAsync(useStdOut, execute, false);
+		}
+
+		/// <summary>
+		/// Run the schema creation script
+		/// </summary>
 		/// <param name="scriptAction"> an action that will be called for each line of the generated ddl.</param>
 		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
 		/// <remarks>
@@ -122,6 +137,20 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <summary>
 		/// Run the schema creation script
 		/// </summary>
+		/// <param name="scriptAction"> an action that will be called for each line of the generated ddl.</param>
+		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
+		/// <remarks>
+		/// This is a convenience method that calls <see cref="Execute(bool, bool, bool)"/> and sets
+		/// the justDrop parameter to false.
+		/// </remarks>
+		public Task CreateAsync(Action<string> scriptAction, bool execute)
+		{
+			return ExecuteAsync(scriptAction, execute, false);
+		}
+
+		/// <summary>
+		/// Run the schema creation script
+		/// </summary>
 		/// <param name="exportOutput"> if non-null, the ddl will be written to this TextWriter.</param>
 		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
 		/// <remarks>
@@ -131,6 +160,20 @@ namespace NHibernate.Tool.hbm2ddl
 		public void Create(TextWriter exportOutput, bool execute)
 		{
 			Execute(null, execute, false, exportOutput);
+		}
+
+		/// <summary>
+		/// Run the schema creation script
+		/// </summary>
+		/// <param name="exportOutput"> if non-null, the ddl will be written to this TextWriter.</param>
+		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
+		/// <remarks>
+		/// This is a convenience method that calls <see cref="Execute(bool, bool, bool)"/> and sets
+		/// the justDrop parameter to false.
+		/// </remarks>
+		public Task CreateAsync(TextWriter exportOutput, bool execute)
+		{
+			return ExecuteAsync(null, execute, false, exportOutput);
 		}
 
 		/// <summary>
@@ -150,6 +193,20 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <summary>
 		/// Run the drop schema script
 		/// </summary>
+		/// <param name="useStdOut"><see langword="true" /> if the ddl should be outputted in the Console.</param>
+		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
+		/// <remarks>
+		/// This is a convenience method that calls <see cref="Execute(bool, bool, bool)"/> and sets
+		/// the justDrop parameter to true.
+		/// </remarks>
+		public Task DropAsync(bool useStdOut, bool execute)
+		{
+			return ExecuteAsync(useStdOut, execute, true);
+		}
+
+		/// <summary>
+		/// Run the drop schema script
+		/// </summary>
 		/// <param name="exportOutput"> if non-null, the ddl will be written to this TextWriter.</param>
 		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
 		/// <remarks>
@@ -161,10 +218,24 @@ namespace NHibernate.Tool.hbm2ddl
 			Execute(null, execute, true, exportOutput);
 		}
 
-		private void Execute(Action<string> scriptAction, bool execute, bool throwOnError, TextWriter exportOutput,
-							 IDbCommand statement, string sql)
+		/// <summary>
+		/// Run the drop schema script
+		/// </summary>
+		/// <param name="exportOutput"> if non-null, the ddl will be written to this TextWriter.</param>
+		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
+		/// <remarks>
+		/// This is a convenience method that calls <see cref="Execute(Action&lt;string&gt;, bool, bool, TextWriter)"/> and sets
+		/// the justDrop parameter to true.
+		/// </remarks>
+		public Task DropAsync(TextWriter exportOutput, bool execute)
 		{
-			Initialize();
+			return ExecuteAsync(null, execute, true, exportOutput);
+		}
+
+		private async Task Execute(Action<string> scriptAction, bool execute, bool throwOnError, TextWriter exportOutput,
+							 DbCommand statement, string sql)
+		{
+			await Initialize().ConfigureAwait(false);
 			try
 			{
 				string formatted = formatter.Format(sql);
@@ -184,7 +255,7 @@ namespace NHibernate.Tool.hbm2ddl
 				}
 				if (execute)
 				{
-					ExecuteSql(statement, sql);
+					await ExecuteSql(statement, sql).ConfigureAwait(false);
 				}
 			}
 			catch (Exception e)
@@ -198,7 +269,7 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 		}
 
-		private void ExecuteSql(IDbCommand cmd, string sql)
+		private async Task ExecuteSql(DbCommand cmd, string sql)
 		{
 			if (dialect.SupportsSqlBatches)
 			{
@@ -210,14 +281,14 @@ namespace NHibernate.Tool.hbm2ddl
 					log.DebugFormat("SQL Batch: {0}", stmt);
 					cmd.CommandText = stmt;
 					cmd.CommandType = CommandType.Text;
-					cmd.ExecuteNonQuery();
+					await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
 				}
 			}
 			else
 			{
 				cmd.CommandText = sql;
 				cmd.CommandType = CommandType.Text;
-				cmd.ExecuteNonQuery();
+				await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
 			}
 		}
 
@@ -240,21 +311,49 @@ namespace NHibernate.Tool.hbm2ddl
 		public void Execute(bool useStdOut, bool execute, bool justDrop, IDbConnection connection,
 							TextWriter exportOutput)
 		{
+			ExecuteAsync(useStdOut, execute, justDrop, connection, exportOutput).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary>
+		/// Executes the Export of the Schema in the given connection
+		/// </summary>
+		/// <param name="useStdOut"><see langword="true" /> if the ddl should be outputted in the Console.</param>
+		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
+		/// <param name="justDrop"><see langword="true" /> if only the ddl to drop the Database objects should be executed.</param>
+		/// <param name="connection">
+		/// The connection to use when executing the commands when export is <see langword="true" />.
+		/// Must be an opened connection. The method doesn't close the connection.
+		/// </param>
+		/// <param name="exportOutput">The writer used to output the generated schema</param>
+		/// <remarks>
+		/// This method allows for both the drop and create ddl script to be executed.
+		/// This overload is provided mainly to enable use of in memory databases. 
+		/// It does NOT close the given connection!
+		/// </remarks>
+		public Task ExecuteAsync(bool useStdOut, bool execute, bool justDrop, IDbConnection connection,
+							TextWriter exportOutput)
+		{
 			if (useStdOut)
 			{
-				Execute(Console.WriteLine, execute, justDrop, connection, exportOutput);
+				return ExecuteAsync(Console.WriteLine, execute, justDrop, connection, exportOutput);
 			}
 			else
 			{
-				Execute(null, execute, justDrop, connection, exportOutput);
+				return ExecuteAsync(null, execute, justDrop, connection, exportOutput);
 			}
 		}
 
 		public void Execute(Action<string> scriptAction, bool execute, bool justDrop, IDbConnection connection,
 							TextWriter exportOutput)
 		{
-			Initialize();
-			IDbCommand statement = null;
+			ExecuteAsync(scriptAction, execute, justDrop, connection, exportOutput).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public async Task ExecuteAsync(Action<string> scriptAction, bool execute, bool justDrop, IDbConnection connection,
+							TextWriter exportOutput)
+		{
+			await Initialize().ConfigureAwait(false);
+			DbCommand statement = null;
 
 			if (execute && connection == null)
 			{
@@ -262,21 +361,21 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 			if (execute)
 			{
-				statement = connection.CreateCommand();
+				statement = (DbCommand)connection.CreateCommand();
 			}
 
 			try
 			{
 				for (int i = 0; i < dropSQL.Length; i++)
 				{
-					Execute(scriptAction, execute, false, exportOutput, statement, dropSQL[i]);
+					await Execute(scriptAction, execute, false, exportOutput, statement, dropSQL[i]).ConfigureAwait(false);
 				}
 
 				if (!justDrop)
 				{
 					for (int j = 0; j < createSQL.Length; j++)
 					{
-						Execute(scriptAction, execute, true, exportOutput, statement, createSQL[j]);
+						await Execute(scriptAction, execute, true, exportOutput, statement, createSQL[j]).ConfigureAwait(false);
 					}
 				}
 			}
@@ -318,13 +417,27 @@ namespace NHibernate.Tool.hbm2ddl
 		/// </remarks>
 		public void Execute(bool useStdOut, bool execute, bool justDrop)
 		{
+			ExecuteAsync(useStdOut, execute, justDrop).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary>
+		/// Executes the Export of the Schema.
+		/// </summary>
+		/// <param name="useStdOut"><see langword="true" /> if the ddl should be outputted in the Console.</param>
+		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
+		/// <param name="justDrop"><see langword="true" /> if only the ddl to drop the Database objects should be executed.</param>
+		/// <remarks>
+		/// This method allows for both the drop and create ddl script to be executed.
+		/// </remarks>
+		public Task ExecuteAsync(bool useStdOut, bool execute, bool justDrop)
+		{
 			if (useStdOut)
 			{
-				Execute(Console.WriteLine, execute, justDrop);
+				return ExecuteAsync(Console.WriteLine, execute, justDrop);
 			}
 			else
 			{
-				Execute(null, execute, justDrop);
+				return ExecuteAsync(null, execute, justDrop);
 			}
 		}
 
@@ -334,11 +447,20 @@ namespace NHibernate.Tool.hbm2ddl
 			Execute(scriptAction, execute, justDrop, null);
 		}
 
+		public Task ExecuteAsync(Action<string> scriptAction, bool execute, bool justDrop)
+		{
+			return ExecuteAsync(scriptAction, execute, justDrop, null);
+		}
 
 		public void Execute(Action<string> scriptAction, bool execute, bool justDrop, TextWriter exportOutput)
 		{
-			Initialize();
-			IDbConnection connection = null;
+			ExecuteAsync(scriptAction, execute, justDrop, exportOutput).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public async Task ExecuteAsync(Action<string> scriptAction, bool execute, bool justDrop, TextWriter exportOutput)
+		{
+			await Initialize().ConfigureAwait(false);
+			DbConnection connection = null;
 			TextWriter fileOutput = exportOutput;
 			IConnectionProvider connectionProvider = null;
 
@@ -369,7 +491,7 @@ namespace NHibernate.Tool.hbm2ddl
 					connection = connectionProvider.GetConnection();
 				}
 
-				Execute(scriptAction, execute, justDrop, connection, fileOutput);
+				await ExecuteAsync(scriptAction, execute, justDrop, connection, fileOutput).ConfigureAwait(false);
 			}
 			catch (HibernateException)
 			{

@@ -5,6 +5,7 @@ using NHibernate.Id.Insert;
 using NHibernate.SqlCommand;
 using System.Data.Common;
 using System.Threading.Tasks;
+using NHibernate.Driver;
 
 namespace NHibernate.Id
 {
@@ -66,17 +67,17 @@ namespace NHibernate.Id
 				return insert;
 			}
 
-			protected internal override DbCommand Prepare(SqlCommandInfo insertSQL, ISessionImplementor session)
+			protected internal override Task<DbCommand> Prepare(SqlCommandInfo insertSQL, ISessionImplementor session)
 			{
 				return session.Batcher.PrepareCommand(CommandType.Text, insertSQL.Text, insertSQL.ParameterTypes);
 			}
 
-			public override async Task<object> ExecuteAndExtract(DbCommand insert, ISessionImplementor session, bool async)
+			public override async Task<object> ExecuteAndExtract(DbCommand insert, ISessionImplementor session)
 			{
-				IDataReader rs = await session.Batcher.ExecuteReader(insert, async).ConfigureAwait(false);
+				IDataReaderEx rs = await session.Batcher.ExecuteReader(insert).ConfigureAwait(false);
 				try
 				{
-					return IdentifierGeneratorFactory.GetGeneratedIdentity(rs, persister.IdentifierType, session);
+					return await IdentifierGeneratorFactory.GetGeneratedIdentity(rs, persister.IdentifierType, session).ConfigureAwait(false);
 				}
 				finally
 				{
@@ -119,7 +120,7 @@ namespace NHibernate.Id
 				return insert;
 			}
 
-			protected internal override object GetResult(ISessionImplementor session, IDataReader rs, object obj)
+			protected internal override Task<object> GetResult(ISessionImplementor session, IDataReaderEx rs, object obj)
 			{
 				return IdentifierGeneratorFactory.GetGeneratedIdentity(rs, persister.IdentifierType, session);
 			}

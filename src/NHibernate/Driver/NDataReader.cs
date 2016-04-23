@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using NHibernate.Util;
 
 namespace NHibernate.Driver
@@ -15,9 +16,11 @@ namespace NHibernate.Driver
 	/// This is a completely off-line DataReader - the underlying IDataReader that was used to create
 	/// this has been closed and no connections to the Db exists.
 	/// </remarks>
-	public class NDataReader : IDataReader
+	public class NDataReader : IDataReaderEx
 	{
 		private NResult[] results;
+		private IDataReaderEx reader;
+		private readonly bool isMidstream;
 
 		private bool isClosed = false;
 
@@ -42,10 +45,15 @@ namespace NHibernate.Driver
 		/// pick up the <see cref="IDataReader"/> midstream so that the underlying <see cref="IDataReader"/> can be closed 
 		/// so a new one can be opened.
 		/// </remarks>
-		public NDataReader(IDataReader reader, bool isMidstream)
+		public NDataReader(IDataReaderEx reader, bool isMidstream)
+		{
+			this.reader = reader;
+			this.isMidstream = isMidstream;
+		}
+
+		public async Task<NDataReader> Initialize()
 		{
 			var resultList = new List<NResult>(2);
-
 			try
 			{
 				// if we are in midstream of processing a DataReader then we are already
@@ -56,12 +64,14 @@ namespace NHibernate.Driver
 				}
 
 				// there will be atleast one result 
-				resultList.Add(new NResult(reader, isMidstream));
+				var result = await new NResult().Initialize(reader, isMidstream).ConfigureAwait(false);
+				resultList.Add(result);
 
-				while (reader.NextResult())
+				while (await reader.NextResultAsync().ConfigureAwait(false))
 				{
 					// the second, third, nth result is not processed midstream
-					resultList.Add(new NResult(reader, false));
+					result = await new NResult().Initialize(reader, false).ConfigureAwait(false);
+					resultList.Add(result);
 				}
 
 				results = resultList.ToArray();
@@ -74,6 +84,7 @@ namespace NHibernate.Driver
 			{
 				reader.Close();
 			}
+			return this;
 		}
 
 		/// <summary>
@@ -183,6 +194,7 @@ namespace NHibernate.Driver
 			isClosed = true;
 			ClearCache();
 			results = null;
+			reader = null;
 		}
 
 		#endregion
@@ -478,10 +490,10 @@ namespace NHibernate.Driver
 		private class NResult
 		{
 			// [row][column]
-			private readonly object[][] records;
+			private object[][] records;
 			private int colCount = 0;
 
-			private readonly DataTable schemaTable;
+			private DataTable schemaTable;
 
 			// key = field name
 			// index = field index
@@ -495,10 +507,10 @@ namespace NHibernate.Driver
 			/// </summary>
 			/// <param name="reader">The IDataReader to populate the Result with.</param>
 			/// <param name="isMidstream">
-			/// <see langword="true" /> if the <see cref="IDataReader"/> is already positioned on the record
+			/// <see langword="true" /> if the <see cref="IDataReaderEx"/> is already positioned on the record
 			/// to start reading from.
 			/// </param>
-			internal NResult(IDataReader reader, bool isMidstream)
+			public async Task<NResult> Initialize(IDataReaderEx reader, bool isMidstream)
 			{
 				schemaTable = reader.GetSchemaTable();
 
@@ -507,7 +519,7 @@ namespace NHibernate.Driver
 
 				// if we are in the middle of processing the reader then don't bother
 				// to move to the next record - just use the current one.
-				while (isMidstream || reader.Read())
+				while (isMidstream || await reader.ReadAsync().ConfigureAwait(false))
 				{
 					if (rowIndex == 0)
 					{
@@ -535,6 +547,7 @@ namespace NHibernate.Driver
 				}
 
 				records = recordsList.ToArray();
+				return this;
 			}
 
 			/// <summary>
@@ -648,6 +661,16 @@ namespace NHibernate.Driver
 			{
 				get { return records.Length; }
 			}
+		}
+
+		public Task<bool> ReadAsync()
+		{
+			return Task.FromResult(Read());
+		}
+
+		public Task<bool> NextResultAsync()
+		{
+			return Task.FromResult(NextResult());
 		}
 	}
 }

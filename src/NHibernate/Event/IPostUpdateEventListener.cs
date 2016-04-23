@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace NHibernate.Event
 {
 	/// <summary>
@@ -9,6 +11,6 @@ namespace NHibernate.Event
 		/// 
 		/// </summary>
 		/// <param name="event"></param>
-		void OnPostUpdate(PostUpdateEvent @event);
+		Task OnPostUpdate(PostUpdateEvent @event);
 	}
 }

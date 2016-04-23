@@ -1,4 +1,5 @@
-﻿using NHibernate.Id.Enhanced;
+﻿using System.Threading.Tasks;
+using NHibernate.Id.Enhanced;
 
 namespace NHibernate.Test.IdGen.Enhanced
 {
@@ -30,20 +31,20 @@ namespace NHibernate.Test.IdGen.Enhanced
 			}
 		}
 
-		public long GetNextValue()
+		public Task<long> GetNextValue()
 		{
 			try
 			{
 				if (_timesCalled == 0)
 				{
 					InitValue();
-					return _val;
+					return Task.FromResult(_val);
 				}
 				else
 				{
 					//return value.add( increment ).copy();
 					_val += _increment;
-					return _val;
+					return Task.FromResult(_val);
 				}
 			}
 			finally

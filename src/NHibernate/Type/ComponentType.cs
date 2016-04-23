@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -128,7 +129,7 @@ namespace NHibernate.Type
 			return result;
 		}
 
-		public override bool IsDirty(object x, object y, ISessionImplementor session)
+		public override async Task<bool> IsDirty(object x, object y, ISessionImplementor session)
 		{
 			if (x == y)
 			{
@@ -147,7 +148,7 @@ namespace NHibernate.Type
 			object[] yvalues = GetPropertyValues(y, entityMode);
 			for (int i = 0; i < xvalues.Length; i++)
 			{
-				if (propertyTypes[i].IsDirty(xvalues[i], yvalues[i], session))
+				if (await propertyTypes[i].IsDirty(xvalues[i], yvalues[i], session).ConfigureAwait(false))
 				{
 					return true;
 				}
@@ -155,7 +156,7 @@ namespace NHibernate.Type
 			return false;
 		}
 
-		public override bool IsDirty(object x, object y, bool[] checkable, ISessionImplementor session)
+		public override async Task<bool> IsDirty(object x, object y, bool[] checkable, ISessionImplementor session)
 		{
 			if (x == y)
 			{
@@ -179,7 +180,7 @@ namespace NHibernate.Type
 				if (len <= 1)
 				{
 					bool dirty = (len == 0 || checkable[loc]) &&
-								 propertyTypes[i].IsDirty(xvalues[i], yvalues[i], session);
+								 await propertyTypes[i].IsDirty(xvalues[i], yvalues[i], session).ConfigureAwait(false);
 					if (dirty)
 					{
 						return true;
@@ -189,7 +190,7 @@ namespace NHibernate.Type
 				{
 					bool[] subcheckable = new bool[len];
 					Array.Copy(checkable, loc, subcheckable, 0, len);
-					bool dirty = propertyTypes[i].IsDirty(xvalues[i], yvalues[i], subcheckable, session);
+					bool dirty = await propertyTypes[i].IsDirty(xvalues[i], yvalues[i], subcheckable, session).ConfigureAwait(false);
 					if (dirty)
 					{
 						return true;
@@ -200,9 +201,9 @@ namespace NHibernate.Type
 			return false;
 		}
 
-		public override object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override async Task<object> NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			return ResolveIdentifier(Hydrate(rs, names, session, owner), session, owner);
+			return await ResolveIdentifier(await Hydrate(rs, names, session, owner).ConfigureAwait(false), session, owner).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -212,18 +213,18 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="begin"></param>
 		/// <param name="session"></param>
-		public override void NullSafeSet(IDbCommand st, object value, int begin, ISessionImplementor session)
+		public override async Task NullSafeSet(IDbCommand st, object value, int begin, ISessionImplementor session)
 		{
 			object[] subvalues = NullSafeGetValues(value, session.EntityMode);
 
 			for (int i = 0; i < propertySpan; i++)
 			{
-				propertyTypes[i].NullSafeSet(st, subvalues[i], begin, session);
+				await propertyTypes[i].NullSafeSet(st, subvalues[i], begin, session).ConfigureAwait(false);
 				begin += propertyTypes[i].GetColumnSpan(session.Factory);
 			}
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int begin, bool[] settable, ISessionImplementor session)
+		public override async Task NullSafeSet(IDbCommand st, object value, int begin, bool[] settable, ISessionImplementor session)
 		{
 			object[] subvalues = NullSafeGetValues(value, session.EntityMode);
 
@@ -239,7 +240,7 @@ namespace NHibernate.Type
 				{
 					if (settable[loc])
 					{
-						propertyTypes[i].NullSafeSet(st, subvalues[i], begin, session);
+						await propertyTypes[i].NullSafeSet(st, subvalues[i], begin, session).ConfigureAwait(false);
 						begin++;
 					}
 				}
@@ -247,7 +248,7 @@ namespace NHibernate.Type
 				{
 					bool[] subsettable = new bool[len];
 					Array.Copy(settable, loc, subsettable, 0, len);
-					propertyTypes[i].NullSafeSet(st, subvalues[i], begin, subsettable, session);
+					await propertyTypes[i].NullSafeSet(st, subvalues[i], begin, subsettable, session).ConfigureAwait(false);
 					begin += ArrayHelper.CountTrue(subsettable);
 				}
 				loc += len;
@@ -266,7 +267,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
+		public override Task<object> NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			return NullSafeGet(rs, new string[] {name}, session, owner);
 		}
@@ -276,9 +277,9 @@ namespace NHibernate.Type
 			return tuplizerMapping.GetTuplizer(entityMode).GetPropertyValue(component, i);
 		}
 
-		public object GetPropertyValue(object component, int i, ISessionImplementor session)
+		public Task<object> GetPropertyValue(object component, int i, ISessionImplementor session)
 		{
-			return GetPropertyValue(component, i, session.EntityMode);
+			return Task.FromResult(GetPropertyValue(component, i, session.EntityMode));
 		}
 
 		public object[] GetPropertyValues(object component, EntityMode entityMode)
@@ -286,9 +287,9 @@ namespace NHibernate.Type
 			return tuplizerMapping.GetTuplizer(entityMode).GetPropertyValues(component);
 		}
 
-		public object[] GetPropertyValues(object component, ISessionImplementor session)
+		public Task<object[]> GetPropertyValues(object component, ISessionImplementor session)
 		{
-			return GetPropertyValues(component, session.EntityMode);
+			return Task.FromResult(GetPropertyValues(component, session.EntityMode));
 		}
 
 		public virtual void SetPropertyValues(object component, object[] values, EntityMode entityMode)
@@ -367,7 +368,7 @@ namespace NHibernate.Type
 			return result;
 		}
 
-		public override object Replace(object original, object target, ISessionImplementor session, object owner,
+		public override async Task<object> Replace(object original, object target, ISessionImplementor session, object owner,
 									   IDictionary copiedAlready)
 		{
 			if (original == null)
@@ -376,13 +377,13 @@ namespace NHibernate.Type
 			object result = target ?? Instantiate(owner, session);
 
 			EntityMode entityMode = session.EntityMode;
-			object[] values = TypeHelper.Replace(GetPropertyValues(original, entityMode), GetPropertyValues(result, entityMode), propertyTypes, session, owner, copiedAlready);
+			object[] values = await TypeHelper.Replace(GetPropertyValues(original, entityMode), GetPropertyValues(result, entityMode), propertyTypes, session, owner, copiedAlready).ConfigureAwait(false);
 
 			SetPropertyValues(result, values, entityMode);
 			return result;
 		}
 
-		public override object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
+		public override async Task<object> Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
 		{
 			if (original == null)
 				return null;
@@ -390,7 +391,7 @@ namespace NHibernate.Type
 			object result = target ?? Instantiate(owner, session);
 
 			EntityMode entityMode = session.EntityMode;
-			object[] values = TypeHelper.Replace(GetPropertyValues(original, entityMode), GetPropertyValues(result, entityMode), propertyTypes, session, owner, copyCache, foreignKeyDirection);
+			object[] values = await TypeHelper.Replace(GetPropertyValues(original, entityMode), GetPropertyValues(result, entityMode), propertyTypes, session, owner, copyCache, foreignKeyDirection).ConfigureAwait(false);
 
 			SetPropertyValues(result, values, entityMode);
 			return result;
@@ -431,7 +432,7 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-		public override object Disassemble(object value, ISessionImplementor session, object owner)
+		public override async Task<object> Disassemble(object value, ISessionImplementor session, object owner)
 		{
 			if (value == null)
 			{
@@ -442,13 +443,13 @@ namespace NHibernate.Type
 				object[] values = GetPropertyValues(value, session.EntityMode);
 				for (int i = 0; i < propertyTypes.Length; i++)
 				{
-					values[i] = propertyTypes[i].Disassemble(values[i], session, owner);
+					values[i] = await propertyTypes[i].Disassemble(values[i], session, owner).ConfigureAwait(false);
 				}
 				return values;
 			}
 		}
 
-		public override object Assemble(object obj, ISessionImplementor session, object owner)
+		public override async Task<object> Assemble(object obj, ISessionImplementor session, object owner)
 		{
 			if (obj == null)
 			{
@@ -460,7 +461,7 @@ namespace NHibernate.Type
 				object[] assembled = new object[values.Length];
 				for (int i = 0; i < propertyTypes.Length; i++)
 				{
-					assembled[i] = propertyTypes[i].Assemble(values[i], session, owner);
+					assembled[i] = await propertyTypes[i].Assemble(values[i], session, owner).ConfigureAwait(false);
 				}
 				object result = Instantiate(owner, session);
 				SetPropertyValues(result, assembled, session.EntityMode);
@@ -478,7 +479,7 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public override object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override async Task<object> Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			int begin = 0;
 			bool notNull = false;
@@ -487,7 +488,7 @@ namespace NHibernate.Type
 			{
 				int length = propertyTypes[i].GetColumnSpan(session.Factory);
 				string[] range = ArrayHelper.Slice(names, begin, length); //cache this
-				object val = propertyTypes[i].Hydrate(rs, range, session, owner);
+				object val = await propertyTypes[i].Hydrate(rs, range, session, owner).ConfigureAwait(false);
 				if (val == null)
 				{
 					if (isKey)
@@ -509,7 +510,7 @@ namespace NHibernate.Type
 				return notNull ? values : null;
 		}
 
-		public override object ResolveIdentifier(object value, ISessionImplementor session, object owner)
+		public override async Task<object> ResolveIdentifier(object value, ISessionImplementor session, object owner)
 		{
 			if (value != null)
 			{
@@ -518,7 +519,7 @@ namespace NHibernate.Type
 				object[] resolvedValues = new object[values.Length]; //only really need new array during semiresolve!
 				for (int i = 0; i < values.Length; i++)
 				{
-					resolvedValues[i] = propertyTypes[i].ResolveIdentifier(values[i], session, owner);
+					resolvedValues[i] = await propertyTypes[i].ResolveIdentifier(values[i], session, owner).ConfigureAwait(false);
 				}
 				SetPropertyValues(result, resolvedValues, session.EntityMode);
 				return result;
@@ -536,7 +537,7 @@ namespace NHibernate.Type
 			return ResolveIdentifier(value, session, owner);
 		}
 
-		public override bool IsModified(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override async Task<bool> IsModified(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
 			if (current == null)
 			{
@@ -546,7 +547,7 @@ namespace NHibernate.Type
 			{
 				return current != null;
 			}
-			object[] currentValues = GetPropertyValues(current, session);
+			object[] currentValues = await GetPropertyValues(current, session).ConfigureAwait(false);
 			object[] oldValues = (Object[]) old;
 			int loc = 0;
 			for (int i = 0; i < currentValues.Length; i++)
@@ -554,7 +555,7 @@ namespace NHibernate.Type
 				int len = propertyTypes[i].GetColumnSpan(session.Factory);
 				bool[] subcheckable = new bool[len];
 				Array.Copy(checkable, loc, subcheckable, 0, len);
-				if (propertyTypes[i].IsModified(oldValues[i], currentValues[i], subcheckable, session))
+				if (await propertyTypes[i].IsModified(oldValues[i], currentValues[i], subcheckable, session).ConfigureAwait(false))
 				{
 					return true;
 				}

@@ -1,16 +1,19 @@
+using System.Threading.Tasks;
 using NHibernate.Transaction;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1082
 {
 	public class SynchronizationThatThrowsExceptionAtBeforeTransactionCompletion : ISynchronization
 	{
-		public void BeforeCompletion()
+		public Task BeforeCompletion()
 		{
-			throw new BadException();
+			return TaskHelper.FromException<bool>(new BadException());
 		}
 
-		public void AfterCompletion(bool success)
+		public Task AfterCompletion(bool success)
 		{
+			return TaskHelper.CompletedTask;
 		}
 	}
 }

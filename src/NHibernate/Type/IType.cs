@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Data;
+using System.Threading.Tasks;
 using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -69,31 +70,31 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.IsDirty"]/*'
 		/// /> 
-		bool IsDirty(object old, object current, ISessionImplementor session);
+		Task<bool> IsDirty(object old, object current, ISessionImplementor session);
 
-		bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session);
+		Task<bool> IsDirty(object old, object current, bool[] checkable, ISessionImplementor session);
 
-		bool IsModified(object oldHydratedState, object currentState, bool[] checkable, ISessionImplementor session);
+		Task<bool> IsModified(object oldHydratedState, object currentState, bool[] checkable, ISessionImplementor session);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, String[], ISessionImplementor, Object)"]/*'
 		/// /> 
-		object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner);
+		Task<object> NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, String, ISessionImplementor, Object)"]/*'
 		/// /> 
-		object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner);
+		Task<object> NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet(settable)"]/*'
 		/// /> 
-		void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session);
+		Task NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
 		/// /> 
-		void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session);
+		Task NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.ToString"]/*'
@@ -108,12 +109,12 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.Hydrate"]/*'
 		/// /> 
-		object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner);
+		Task<object> Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner);
 
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.ResolveIdentifier"]/*'
 		/// /> 
-		object ResolveIdentifier(object value, ISessionImplementor session, object owner);
+		Task<object> ResolveIdentifier(object value, ISessionImplementor session, object owner);
 
 		/// <summary>
 		/// Given a hydrated, but unresolved value, return a value that may be used to
@@ -124,7 +125,7 @@ namespace NHibernate.Type
 		/// <include file='IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.Copy"]/*'
 		/// /> 
-		object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready);
+		Task<object> Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready);
 
 		/// <summary> 
 		/// During merge, replace the existing (target) value in the entity we are merging to
@@ -140,7 +141,7 @@ namespace NHibernate.Type
 		/// <param name="copyCache"></param>
 		/// <param name="foreignKeyDirection"></param>
 		/// <returns> the value to be merged </returns>
-		object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection);
+		Task<object> Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection);
 
 		/// <summary> 
 		/// Compare two instances of the class mapped by this type for persistence

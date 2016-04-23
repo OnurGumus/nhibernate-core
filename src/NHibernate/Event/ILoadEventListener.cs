@@ -11,8 +11,7 @@ namespace NHibernate.Event
 		/// </summary>
 		/// <param name="event">The load event to be handled. </param>
 		/// <param name="loadType"></param>
-		/// <param name="async"></param>
 		/// <returns> The result (i.e., the loaded entity). </returns>
-		Task OnLoad(LoadEvent @event, LoadType loadType, bool async);
+		Task OnLoad(LoadEvent @event, LoadType loadType);
 	}
 }

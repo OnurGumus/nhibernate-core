@@ -66,7 +66,7 @@ namespace NHibernate.Dialect.Lock
 
 		#region ILockingStrategy Members
 
-		public async Task Lock(object id, object version, object obj, ISessionImplementor session, bool async)
+		public async Task Lock(object id, object version, object obj, ISessionImplementor session)
 		{
 			if (!lockable.IsVersioned)
 			{
@@ -76,21 +76,21 @@ namespace NHibernate.Dialect.Lock
 			ISessionFactoryImplementor factory = session.Factory;
 			try
 			{
-				DbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes);
+				DbCommand st = await session.Batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes).ConfigureAwait(false);
 				try
 				{
-					lockable.VersionType.NullSafeSet(st, version, 1, session);
+					await lockable.VersionType.NullSafeSet(st, version, 1, session).ConfigureAwait(false);
 					int offset = 2;
 
-					lockable.IdentifierType.NullSafeSet(st, id, offset, session);
+					await lockable.IdentifierType.NullSafeSet(st, id, offset, session).ConfigureAwait(false);
 					offset += lockable.IdentifierType.GetColumnSpan(factory);
 
 					if (lockable.IsVersioned)
 					{
-						lockable.VersionType.NullSafeSet(st, version, offset, session);
+						await lockable.VersionType.NullSafeSet(st, version, offset, session).ConfigureAwait(false);
 					}
 
-					int affected = await session.Batcher.ExecuteNonQuery(st, async).ConfigureAwait(false);
+					int affected = await session.Batcher.ExecuteNonQuery(st).ConfigureAwait(false);
 					if (affected < 0)
 					{
 						factory.StatisticsImplementor.OptimisticFailure(lockable.EntityName);

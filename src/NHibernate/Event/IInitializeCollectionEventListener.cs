@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace NHibernate.Event
 {
 	/// <summary> 
@@ -6,6 +8,6 @@ namespace NHibernate.Event
 	/// </summary>
 	public interface IInitializeCollectionEventListener
 	{
-		void OnInitializeCollection(InitializeCollectionEvent @event);
+		Task OnInitializeCollection(InitializeCollectionEvent @event);
 	}
 }

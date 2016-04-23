@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Param
 {
@@ -35,12 +37,12 @@ namespace NHibernate.Param
 
 		#region IParameterSpecification Members
 
-		public void Bind(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public Task Bind(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
-			Bind(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
+			return Bind(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
 		}
 
-		public void Bind(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public async Task Bind(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			string backTrackId = GetIdsForBackTrack(session.Factory).First(); // just the first because IType suppose the oders in certain sequence
 
@@ -48,7 +50,7 @@ namespace NHibernate.Param
 			object value = session.GetFilterParameterValue(filterParameterFullName);
 			foreach (int position in multiSqlQueryParametersList.GetEffectiveParameterLocations(backTrackId))
 			{
-				ExpectedType.NullSafeSet(command, value, position, session);
+				await ExpectedType.NullSafeSet(command, value, position, session).ConfigureAwait(false);
 			}
 		}
 
@@ -105,18 +107,19 @@ namespace NHibernate.Param
 				this.valueSpan = valueSpan;
 			}
 
-			public object Disassemble(object value, ISessionImplementor session, object owner)
+			public Task<object> Disassemble(object value, ISessionImplementor session, object owner)
 			{
-				throw new InvalidOperationException();
+				return TaskHelper.FromException<object>(new InvalidOperationException());
 			}
 
-			public object Assemble(object cached, ISessionImplementor session, object owner)
+			public Task<object> Assemble(object cached, ISessionImplementor session, object owner)
 			{
-				throw new InvalidOperationException();
+				return TaskHelper.FromException<object>(new InvalidOperationException());
 			}
 
-			public void BeforeAssemble(object cached, ISessionImplementor session)
+			public Task BeforeAssemble(object cached, ISessionImplementor session)
 			{
+				return TaskHelper.CompletedTask;
 			}
 
 			public string Name
@@ -179,37 +182,37 @@ namespace NHibernate.Param
 				return elementType.GetColumnSpan(mapping) * valueSpan;
 			}
 
-			public bool IsDirty(object old, object current, ISessionImplementor session)
+			public Task<bool> IsDirty(object old, object current, ISessionImplementor session)
 			{
-				return false;
+				return Task.FromResult(false);
 			}
 
-			public bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
+			public Task<bool> IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 			{
-				return false;
+				return Task.FromResult(false);
 			}
 
-			public bool IsModified(object oldHydratedState, object currentState, bool[] checkable, ISessionImplementor session)
+			public Task<bool> IsModified(object oldHydratedState, object currentState, bool[] checkable, ISessionImplementor session)
 			{
-				return false;
+				return Task.FromResult(false);
 			}
 
-			public object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+			public Task<object> NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 			{
-				throw new InvalidOperationException();
+				return TaskHelper.FromException<object>(new InvalidOperationException());
 			}
 
-			public object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
+			public Task<object> NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
 			{
-				throw new InvalidOperationException();
+				return TaskHelper.FromException<object>(new InvalidOperationException());
 			}
 
-			public void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+			public Task NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 			{
-				throw new InvalidOperationException();
+				return TaskHelper.FromException<object>(new InvalidOperationException());
 			}
 
-			public void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session)
+			public async Task NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session)
 			{
 				var start = index;
 				var positions = 0;
@@ -218,7 +221,7 @@ namespace NHibernate.Param
 				var collection = (IEnumerable) value;
 				foreach (var element in collection)
 				{
-					elementType.NullSafeSet(st, element, start + positions, session);
+					await elementType.NullSafeSet(st, element, start + positions, session).ConfigureAwait(false);
 					positions += singleParameterColumnSpan;
 				}
 			}
@@ -233,14 +236,14 @@ namespace NHibernate.Param
 				throw new InvalidOperationException();
 			}
 
-			public object Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+			public Task<object> Hydrate(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 			{
-				throw new InvalidOperationException();
+				return TaskHelper.FromException<object>(new InvalidOperationException());
 			}
 
-			public object ResolveIdentifier(object value, ISessionImplementor session, object owner)
+			public Task<object> ResolveIdentifier(object value, ISessionImplementor session, object owner)
 			{
-				throw new InvalidOperationException();
+				return TaskHelper.FromException<object>(new InvalidOperationException());
 			}
 
 			public object SemiResolve(object value, ISessionImplementor session, object owner)
@@ -248,14 +251,14 @@ namespace NHibernate.Param
 				throw new InvalidOperationException();
 			}
 
-			public object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready)
+			public Task<object> Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready)
 			{
-				throw new InvalidOperationException();
+				return TaskHelper.FromException<object>(new InvalidOperationException());
 			}
 
-			public object Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
+			public Task<object> Replace(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
 			{
-				throw new InvalidOperationException();
+				return TaskHelper.FromException<object>(new InvalidOperationException());
 			}
 
 			public bool IsSame(object x, object y, EntityMode entityMode)

@@ -22,7 +22,7 @@ namespace NHibernate.Persister.Entity
 			this.persister = persister;
 		}
 
-		public async Task<object> Load(object id, object optionalObject, ISessionImplementor session, bool async)
+		public async Task<object> Load(object id, object optionalObject, ISessionImplementor session)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -42,7 +42,7 @@ namespace NHibernate.Persister.Entity
 			query.SetOptionalEntityName(persister.EntityName);
 			query.SetOptionalObject(optionalObject);
 			query.SetFlushMode(FlushMode.Never);
-			await query.ListAsync(async).ConfigureAwait(false);
+			await query.ListAsync().ConfigureAwait(false);
 
 			// now look up the object we are really interested in!
 			// (this lets us correctly handle proxies and multi-row

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Param;
 using NHibernate.Persister.Collection;
@@ -47,9 +48,9 @@ namespace NHibernate.Loader.Collection
 			values = queryParameters.PositionalParameterValues;
 		}
 
-		public override void Initialize(object id, ISessionImplementor session)
+		public override Task Initialize(object id, ISessionImplementor session)
 		{
-			LoadCollectionSubselect(session, keys, values, types, namedParameters, KeyType);
+			return LoadCollectionSubselect(session, keys, values, types, namedParameters, KeyType);
 		}
 
 		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications()

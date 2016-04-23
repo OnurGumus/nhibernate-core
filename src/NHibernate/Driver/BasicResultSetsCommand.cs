@@ -7,6 +7,7 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using System.Data.Common;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Driver
 {
@@ -41,38 +42,43 @@ namespace NHibernate.Driver
 			get { return sqlString; }
 		}
 
-		public virtual Task<IDataReader> GetReader(int? commandTimeout, bool async)
+		public virtual async Task<IDataReaderEx> GetReader(int? commandTimeout)
 		{
 			var batcher = Session.Batcher;
 			SqlType[] sqlTypes = Commands.SelectMany(c => c.ParameterTypes).ToArray();
-			ForEachSqlCommand((sqlLoaderCommand, offset) => sqlLoaderCommand.ResetParametersIndexesForTheCommand(offset));
+			await ForEachSqlCommand(
+				(sqlLoaderCommand, offset) =>
+				{
+					sqlLoaderCommand.ResetParametersIndexesForTheCommand(offset);
+					return TaskHelper.CompletedTask;
+				}).ConfigureAwait(false);
 			var command = batcher.PrepareQueryCommand(CommandType.Text, sqlString, sqlTypes);
 			if (commandTimeout.HasValue)
 			{
 				command.CommandTimeout = commandTimeout.Value;
 			}
 			log.Info(command.CommandText);
-			BindParameters(command);
+			await BindParameters(command).ConfigureAwait(false);
 			var wrapper = new BatcherDataReaderWrapper(batcher);
-			return wrapper.ExecuteReader(command, async);
+			return await wrapper.ExecuteReader(command).ConfigureAwait(false);
 		}
 
-		protected virtual void BindParameters(IDbCommand command)
+		protected virtual Task BindParameters(IDbCommand command)
 		{
 			var wholeQueryParametersList = Sql.GetParameters().ToList();
-			ForEachSqlCommand((sqlLoaderCommand, offset) => sqlLoaderCommand.Bind(command, wholeQueryParametersList, offset, Session));
+			return ForEachSqlCommand((sqlLoaderCommand, offset) => sqlLoaderCommand.Bind(command, wholeQueryParametersList, offset, Session));
 		}
 
 		/// <summary>
 		/// Execute the given <paramref name="actionToDo"/> for each command of the resultset.
 		/// </summary>
 		/// <param name="actionToDo">The action to perform where the first parameter is the <see cref="ISqlCommand"/> and the second parameter is the parameters offset of the <see cref="ISqlCommand"/>.</param>
-		protected void ForEachSqlCommand(Action<ISqlCommand, int> actionToDo)
+		protected async Task ForEachSqlCommand(Func<ISqlCommand, int, Task> actionToDo)
 		{
 			var singleQueryParameterOffset = 0;
 			foreach (var sqlLoaderCommand in Commands)
 			{
-				actionToDo(sqlLoaderCommand, singleQueryParameterOffset);
+				await actionToDo(sqlLoaderCommand, singleQueryParameterOffset).ConfigureAwait(false);
 				singleQueryParameterOffset += sqlLoaderCommand.ParameterTypes.Length;
 			}
 		}
@@ -81,7 +87,7 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// Datareader wrapper with the same life cycle of its command (through the batcher)
 	/// </summary>
-	public class BatcherDataReaderWrapper : IDataReader
+	public class BatcherDataReaderWrapper : IDataReaderEx
 	{
 		private readonly IBatcher batcher;
 		private IDbCommand command;
@@ -96,14 +102,14 @@ namespace NHibernate.Driver
 			this.batcher = batcher;
 		}
 
-		public Task<IDataReader> ExecuteReader(DbCommand command, bool async)
+		public Task<IDataReaderEx> ExecuteReader(DbCommand command)
 		{
 			if (command == null)
 			{
 				throw new ArgumentNullException("command");
 			}
 			this.command = command;
-			return batcher.ExecuteReader(command, async);
+			return batcher.ExecuteReader(command);
 		}
 
 		public void Dispose()
@@ -283,6 +289,16 @@ namespace NHibernate.Driver
 		public int RecordsAffected
 		{
 			get { return reader.RecordsAffected; }
+		}
+
+		public Task<bool> ReadAsync()
+		{
+			return Task.FromResult(reader.Read());
+		}
+
+		public Task<bool> NextResultAsync()
+		{
+			return Task.FromResult(reader.NextResult());
 		}
 	}
 }

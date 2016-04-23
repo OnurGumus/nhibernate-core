@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using System.Transactions;
 using NHibernate.Engine;
 using NHibernate.Engine.Transaction;
@@ -55,7 +56,7 @@ namespace NHibernate.Transaction
 						{
 							logger.Warn("Completed transaction was disposed, assuming transaction rollback", ode);
 						}
-						session.AfterTransactionCompletion(wasSuccessful, null);
+						session.AfterTransactionCompletion(wasSuccessful, null).ConfigureAwait(false).GetAwaiter().GetResult();
 						if (transactionContext.ShouldCloseSessionOnDistributedTransactionCompleted)
 						{
 							session.CloseSessionFromDistributedTransaction();
@@ -79,13 +80,13 @@ namespace NHibernate.Transaction
 				   distributedTransactionContext.IsInActiveTransaction;
 		}
 
-		public void ExecuteWorkInIsolation(ISessionImplementor session, IIsolatedWork work, bool transacted)
+		public async Task ExecuteWorkInIsolation(ISessionImplementor session, IIsolatedWork work, bool transacted)
 		{
-			using (var tx = new TransactionScope(TransactionScopeOption.Suppress))
+			using (var tx = new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
 			{
 				// instead of duplicating the logic, we suppress the DTC transaction and create
 				// our own transaction instead
-				adoNetTransactionFactory.ExecuteWorkInIsolation(session, work, transacted);
+				await adoNetTransactionFactory.ExecuteWorkInIsolation(session, work, transacted).ConfigureAwait(false);
 				tx.Complete();
 			}
 		}
@@ -114,7 +115,7 @@ namespace NHibernate.Transaction
 					{
 						using (var tx = new TransactionScope(AmbientTransation))
 						{
-							sessionImplementor.BeforeTransactionCompletion(null);
+							sessionImplementor.BeforeTransactionCompletion(null).ConfigureAwait(true).GetAwaiter().GetResult();
 							if (sessionImplementor.FlushMode != FlushMode.Never && sessionImplementor.ConnectionManager.IsConnected)
 							{
 								using (sessionImplementor.ConnectionManager.FlushingFromDtcTransaction)
@@ -165,7 +166,7 @@ namespace NHibernate.Transaction
 			{
 				using (new SessionIdLoggingContext(sessionImplementor.SessionId))
 				{
-					sessionImplementor.AfterTransactionCompletion(false, null);
+					sessionImplementor.AfterTransactionCompletion(false, null).ConfigureAwait(false).GetAwaiter().GetResult();
 					logger.Debug("DTC transaction is in doubt");
 					enlistment.Done();
 					IsInActiveTransaction = false;

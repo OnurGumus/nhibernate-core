@@ -391,13 +391,13 @@ namespace NHibernate.Impl
 
 		public IList List()
 		{
-			return ListAsync(false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return ListAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		/// <summary>
 		/// Return the query results of all the queries
 		/// </summary>
-		public async Task<IList> ListAsync(bool async = true)
+		public async Task<IList> ListAsync()
 		{
 			using (new SessionIdLoggingContext(session.SessionId))
 			{
@@ -416,7 +416,7 @@ namespace NHibernate.Impl
 				try
 				{
 					Before();
-					return cacheable ? await ListUsingQueryCache(async).ConfigureAwait(false) : await ListIgnoreQueryCache(async).ConfigureAwait(false);
+					return cacheable ? await ListUsingQueryCache().ConfigureAwait(false) : await ListIgnoreQueryCache().ConfigureAwait(false);
 				}
 				finally
 				{
@@ -449,7 +449,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		protected virtual IList GetResultList(IList results)
+		protected virtual async Task<IList> GetResultList(IList results)
 		{
 			var resultCollections = new List<object>(resultCollectionGenericType.Count);
 			for (int i = 0; i < queries.Count; i++)
@@ -467,9 +467,10 @@ namespace NHibernate.Impl
 			var multiqueryHolderInstatiator = GetMultiQueryHolderInstatiator();
 			for (int i = 0; i < results.Count; i++)
 			{
+				await UpdateParameters().ConfigureAwait(false);
 				// First use the transformer of each query transforming each row and then the list
 				// DONE: The behavior when the query has a 'new' instead a transformer is delegated to the Loader
-				var resultList = translators[i].Loader.GetResultList((IList)results[i], Parameters[i].ResultTransformer);
+				var resultList = translators[i].Loader.GetResultList((IList)results[i], parameters[i].ResultTransformer);
 				// then use the MultiQueryTransformer (if it has some sense...) using, as source, the transformed result.
 				resultList = GetTransformedResults(resultList, multiqueryHolderInstatiator);
 
@@ -505,7 +506,7 @@ namespace NHibernate.Impl
 			return resultTransformer != null;
 		}
 
-		protected async Task<List<object>> DoList(bool async)
+		protected async Task<List<object>> DoList()
 		{
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
 			var stopWatch = new Stopwatch();
@@ -516,23 +517,25 @@ namespace NHibernate.Impl
 			int rowCount = 0;
 
 			var results = new List<object>();
-
-			var hydratedObjects = new List<object>[Translators.Count];
-			List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[Translators.Count];
-			bool[] createSubselects = new bool[Translators.Count];
+			await UpdateTranslators().ConfigureAwait(false);
+			var hydratedObjects = new List<object>[translators.Count];
+			List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[translators.Count];
+			bool[] createSubselects = new bool[translators.Count];
 
 			try
 			{
-				using (var reader = await resultSetsCommand.GetReader(commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null, async).ConfigureAwait(false))
+				using (var reader = await resultSetsCommand.GetReader(commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null).ConfigureAwait(false))
 				{
 					if (log.IsDebugEnabled)
 					{
 						log.DebugFormat("Executing {0} queries", translators.Count);
 					}
+					
 					for (int i = 0; i < translators.Count; i++)
 					{
-						ITranslator translator = Translators[i];
-						QueryParameters parameter = Parameters[i];
+						ITranslator translator = translators[i];
+						await UpdateParameters().ConfigureAwait(false);
+						QueryParameters parameter = parameters[i];
 
 						int entitySpan = translator.Loader.EntityPersisters.Length;
 						hydratedObjects[i] = entitySpan > 0 ? new List<object>() : null;
@@ -540,7 +543,7 @@ namespace NHibernate.Impl
 						int maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
 						if (!dialect.SupportsLimitOffset || !translator.Loader.UseLimit(selection, dialect))
 						{
-							Loader.Loader.Advance(reader, selection);
+							await Loader.Loader.Advance(reader, selection).ConfigureAwait(false);
 						}
 
 						if (parameter.HasAutoDiscoverScalarTypes)
@@ -564,7 +567,7 @@ namespace NHibernate.Impl
 
 						IList tempResults = new List<object>();
 						int count;
-						for (count = 0; count < maxRows && reader.Read(); count++)
+						for (count = 0; count < maxRows && await reader.ReadAsync().ConfigureAwait(false); count++)
 						{
 							if (log.IsDebugEnabled)
 							{
@@ -572,8 +575,8 @@ namespace NHibernate.Impl
 							}
 
 							rowCount++;
-							object result = translator.Loader.GetRowFromResultSet(
-								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true);
+							object result = await translator.Loader.GetRowFromResultSet(
+								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true).ConfigureAwait(false);
 							tempResults.Add(result);
 
 							if (createSubselects[i])
@@ -595,7 +598,7 @@ namespace NHibernate.Impl
 							log.DebugFormat("Query {0} returned {1} results", i, tempResults.Count);
 						}
 
-						reader.NextResult();
+						await reader.NextResultAsync().ConfigureAwait(false);
 					}
 
 					for (int i = 0; i < translators.Count; i++)
@@ -603,7 +606,7 @@ namespace NHibernate.Impl
 						ITranslator translator = translators[i];
 						QueryParameters parameter = parameters[i];
 
-						translator.Loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false);
+						await translator.Loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false).ConfigureAwait(false);
 
 						if (createSubselects[i])
 						{
@@ -627,17 +630,14 @@ namespace NHibernate.Impl
 			return results;
 		}
 
-		protected SqlString SqlString
+		protected async Task<SqlString> GetSqlString()
 		{
-			get
-			{
-				if (!resultSetsCommand.HasQueries)
-					AggregateQueriesInformation();
-				return resultSetsCommand.Sql;
-			}
+			if (!resultSetsCommand.HasQueries)
+				await AggregateQueriesInformation().ConfigureAwait(false);
+			return resultSetsCommand.Sql;
 		}
 
-		private void AggregateQueriesInformation()
+		private async Task AggregateQueriesInformation()
 		{
 			int queryIndex = 0;
 			foreach (AbstractQueryImpl query in queries)
@@ -645,7 +645,7 @@ namespace NHibernate.Impl
 				query.VerifyParameters();
 				QueryParameters queryParameters = query.GetQueryParameters();
 				queryParameters.ValidateParameters();
-				foreach (var translator in query.GetTranslators(session, queryParameters))
+				foreach (var translator in await query.GetTranslators(session, queryParameters).ConfigureAwait(false))
 				{
 					translators.Add(translator);
 					translatorQueryMap.Add(queryIndex);
@@ -673,67 +673,65 @@ namespace NHibernate.Impl
 
 		public override string ToString()
 		{
-			return "Multi Query: [" + SqlString + "]";
+			return "Multi Query: [" + GetSqlString().ConfigureAwait(false).GetAwaiter().GetResult() + "]";
 		}
 
 		#region Implementation
 
-		private async Task<IList> ListIgnoreQueryCache(bool async)
+		private async Task<IList> ListIgnoreQueryCache()
 		{
-			return GetResultList(await DoList(async).ConfigureAwait(false));
+			return await GetResultList(await DoList().ConfigureAwait(false));
 		}
 
-		private async Task<IList> ListUsingQueryCache(bool async)
+		private async Task<IList> ListUsingQueryCache()
 		{
 			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);
 
 			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
 
 			ISet<string> querySpaces = new HashSet<string>();
-			List<IType[]> resultTypesList = new List<IType[]>(Translators.Count);
-			for (int i = 0; i < Translators.Count; i++)
+			await UpdateTranslators().ConfigureAwait(false);
+			List<IType[]> resultTypesList = new List<IType[]>(translators.Count);
+			for (int i = 0; i < translators.Count; i++)
 			{
-				ITranslator queryTranslator = Translators[i];
+				ITranslator queryTranslator = translators[i];
 				querySpaces.UnionWith(queryTranslator.QuerySpaces);
 				resultTypesList.Add(queryTranslator.ReturnTypes);
 			}
-			int[] firstRows = new int[Parameters.Count];
-			int[] maxRows = new int[Parameters.Count];
-			for (int i = 0; i < Parameters.Count; i++)
+			await UpdateParameters().ConfigureAwait(false);
+			int[] firstRows = new int[parameters.Count];
+			int[] maxRows = new int[parameters.Count];
+			for (int i = 0; i < parameters.Count; i++)
 			{
-				RowSelection rowSelection = Parameters[i].RowSelection;
+				RowSelection rowSelection = parameters[i].RowSelection;
 				firstRows[i] = rowSelection.FirstRow;
 				maxRows[i] = rowSelection.MaxRows;
 			}
 
 			MultipleQueriesCacheAssembler assembler = new MultipleQueriesCacheAssembler(resultTypesList);
 
-			QueryKey key = new QueryKey(session.Factory, SqlString, combinedParameters, filterKeys, null)
+			QueryKey key = new QueryKey(session.Factory, await GetSqlString().ConfigureAwait(false), combinedParameters, filterKeys, null)
 				.SetFirstRows(firstRows)
 				.SetMaxRows(maxRows);
 
-			IList result = assembler.GetResultFromQueryCache(session, combinedParameters, querySpaces, queryCache, key);
+			IList result = await assembler.GetResultFromQueryCache(session, combinedParameters, querySpaces, queryCache, key).ConfigureAwait(false);
 
 			if (result == null)
 			{
 				log.Debug("Cache miss for multi query");
-				var list = await DoList(async).ConfigureAwait(false);
-				queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, false, session);
+				var list = await DoList().ConfigureAwait(false);
+				await queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, false, session).ConfigureAwait(false);
 				result = list;
 			}
 
-			return GetResultList(result);
+			return await GetResultList(result).ConfigureAwait(false);
 		}
 
-		private IList<ITranslator> Translators
+		private async Task UpdateTranslators()
 		{
-			get
+			if (!resultSetsCommand.HasQueries)
 			{
-				if (!resultSetsCommand.HasQueries)
-				{
-					AggregateQueriesInformation();
-				}
-				return translators;
+				await AggregateQueriesInformation().ConfigureAwait(false);
 			}
 		}
 
@@ -745,7 +743,7 @@ namespace NHibernate.Impl
 			var positionalParameterTypes = new List<IType>();
 			var positionalParameterValues = new List<object>();
 			int index = 0;
-			foreach (QueryParameters queryParameters in Parameters)
+			foreach (QueryParameters queryParameters in parameters)
 			{
 				foreach (KeyValuePair<string, TypedValue> dictionaryEntry in queryParameters.NamedParameters)
 				{
@@ -760,14 +758,10 @@ namespace NHibernate.Impl
 			return combinedQueryParameters;
 		}
 
-		private IList<QueryParameters> Parameters
+		private async Task UpdateParameters()
 		{
-			get
-			{
-				if (!resultSetsCommand.HasQueries)
-					AggregateQueriesInformation();
-				return parameters;
-			}
+			if (!resultSetsCommand.HasQueries)
+				await AggregateQueriesInformation().ConfigureAwait(false);
 		}
 
 		private void ThrowIfKeyAlreadyExists(string key)

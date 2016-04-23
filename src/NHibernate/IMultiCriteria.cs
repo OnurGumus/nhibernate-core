@@ -15,7 +15,7 @@ namespace NHibernate
 		/// </summary>
 		IList List();
 
-		Task<IList> ListAsync(bool async = true);
+		Task<IList> ListAsync();
 
 		/// <summary>
 		/// Adds the specified criteria to the query. The result will be contained in a <see cref="System.Collections.Generic.List{T}"/>

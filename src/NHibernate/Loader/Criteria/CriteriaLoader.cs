@@ -11,6 +11,7 @@ using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Threading.Tasks;
+using NHibernate.Driver;
 
 namespace NHibernate.Loader.Criteria
 {
@@ -85,9 +86,9 @@ namespace NHibernate.Loader.Criteria
 			get { return includeInResultRow; }
 		}
 
-		public Task<IList> List(ISessionImplementor session, bool async)
+		public Task<IList> List(ISessionImplementor session)
 		{
-			return List(session, translator.GetQueryParameters(), querySpaces, resultTypes, async);
+			return List(session, translator.GetQueryParameters(), querySpaces, resultTypes);
 		}
 
 		protected override IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)
@@ -100,15 +101,15 @@ namespace NHibernate.Loader.Criteria
 			return true;
 		}
 
-		protected override object GetResultColumnOrRow(object[] row, IResultTransformer customResultTransformer, IDataReader rs,
+		protected override async Task<object> GetResultColumnOrRow(object[] row, IResultTransformer customResultTransformer, IDataReaderEx rs,
 													   ISessionImplementor session)
 		{
 			return ResolveResultTransformer(customResultTransformer)
-				.TransformTuple(GetResultRow(row, rs, session), ResultRowAliases);
+				.TransformTuple(await GetResultRow(row, rs, session).ConfigureAwait(false), ResultRowAliases);
 		}
 
 
-		protected override object[] GetResultRow(object[] row, IDataReader rs, ISessionImplementor session)
+		protected override async Task<object[]> GetResultRow(object[] row, IDataReaderEx rs, ISessionImplementor session)
 		{
 			object[] result;
 
@@ -125,11 +126,11 @@ namespace NHibernate.Loader.Criteria
 					if ( numColumns > 1 ) 
 					{
 						string[] typeColumnAliases = ArrayHelper.Slice(columnAliases, position, numColumns);
-						result[i] = types[i].NullSafeGet(rs, typeColumnAliases, session, null);
+						result[i] = await types[i].NullSafeGet(rs, typeColumnAliases, session, null).ConfigureAwait(false);
 					}
 					else
 					{
-						result[i] = types[i].NullSafeGet(rs, columnAliases[position], session, null);
+						result[i] = await types[i].NullSafeGet(rs, columnAliases[position], session, null).ConfigureAwait(false);
 					}
 					position += numColumns;
 				}

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NHibernate.Classic;
 using NHibernate.Engine;
 using NHibernate.Intercept;
@@ -34,11 +35,11 @@ namespace NHibernate.Event.Default
 			return ((EventCache)anything).InvertMap();
 		}
 
-		public virtual void OnMerge(MergeEvent @event)
+		public virtual async Task OnMerge(MergeEvent @event)
 		{
 			EventCache copyCache = new EventCache();
 
-			OnMerge(@event, copyCache);
+			await OnMerge(@event, copyCache).ConfigureAwait(false);
 
 			// TODO: iteratively get transient entities and retry merge until one of the following conditions:
 			//   1) transientCopyCache.size() == 0
@@ -51,7 +52,7 @@ namespace NHibernate.Event.Default
 
 			if (transientCopyCache.Count > 0)
 			{
-				RetryMergeTransientEntities(@event, transientCopyCache, copyCache);
+				await RetryMergeTransientEntities(@event, transientCopyCache, copyCache).ConfigureAwait(false);
 
 				// find any entities that are still transient after retry
 				transientCopyCache = this.GetTransientCopyCache(@event, copyCache);
@@ -80,7 +81,7 @@ namespace NHibernate.Event.Default
 			copyCache = null;
 		}
 
-		public virtual void OnMerge(MergeEvent @event, IDictionary copiedAlready)
+		public virtual async Task OnMerge(MergeEvent @event, IDictionary copiedAlready)
 		{
 			EventCache copyCache = (EventCache)copiedAlready;
 			IEventSource source = @event.Session;
@@ -95,7 +96,7 @@ namespace NHibernate.Event.Default
 					if (li.IsUninitialized)
 					{
 						log.Debug("ignoring uninitialized proxy");
-						@event.Result = source.Load(li.EntityName, li.Identifier);
+						@event.Result = await source.LoadAsync(li.EntityName, li.Identifier).ConfigureAwait(false);
 						return; //EARLY EXIT!
 					}
 					else
@@ -154,19 +155,19 @@ namespace NHibernate.Event.Default
 
 					if (entityState == EntityState.Undefined)
 					{
-						entityState = GetEntityState(entity, @event.EntityName, entry, source);
+						entityState = await GetEntityState(entity, @event.EntityName, entry, source).ConfigureAwait(false);
 					}
 
 					switch (entityState)
 					{
 						case EntityState.Persistent:
-							EntityIsPersistent(@event, copyCache);
+							await EntityIsPersistent(@event, copyCache).ConfigureAwait(false);
 							break;
 						case EntityState.Transient:
-							EntityIsTransient(@event, copyCache);
+							await EntityIsTransient(@event, copyCache).ConfigureAwait(false);
 							break;
 						case EntityState.Detached:
-							EntityIsDetached(@event, copyCache);
+							await EntityIsDetached(@event, copyCache).ConfigureAwait(false);
 							break;
 						default:
 							throw new ObjectDeletedException("deleted instance passed to merge", null, GetLoggableName(@event.EntityName, entity));
@@ -175,7 +176,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected virtual void EntityIsPersistent(MergeEvent @event, IDictionary copyCache)
+		protected virtual async Task EntityIsPersistent(MergeEvent @event, IDictionary copyCache)
 		{
 			log.Debug("ignoring persistent instance");
 
@@ -187,13 +188,13 @@ namespace NHibernate.Event.Default
 
 			((EventCache)copyCache).Add(entity, entity, true); //before cascade!
 
-			CascadeOnMerge(source, persister, entity, copyCache);
-			CopyValues(persister, entity, entity, source, copyCache);
+			await CascadeOnMerge(source, persister, entity, copyCache).ConfigureAwait(false);
+			await CopyValues(persister, entity, entity, source, copyCache).ConfigureAwait(false);
 
 			@event.Result = entity;
 		}
 
-		protected virtual void EntityIsTransient(MergeEvent @event, IDictionary copyCache)
+		protected virtual async Task EntityIsTransient(MergeEvent @event, IDictionary copyCache)
 		{
 			log.Info("merging transient instance");
 
@@ -203,10 +204,10 @@ namespace NHibernate.Event.Default
 			IEntityPersister persister = source.GetEntityPersister(@event.EntityName, entity);
 			string entityName = persister.EntityName;
 
-			@event.Result = this.MergeTransientEntity(entity, entityName, @event.RequestedId, source, copyCache);
+			@event.Result = await this.MergeTransientEntity(entity, entityName, @event.RequestedId, source, copyCache).ConfigureAwait(false);
 		}
 
-		private object MergeTransientEntity(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache)
+		private async Task<object> MergeTransientEntity(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache)
 		{
 			IEntityPersister persister = source.GetEntityPersister(entityName, entity);
 
@@ -227,13 +228,13 @@ namespace NHibernate.Event.Default
 			// cascade first, so that all unsaved objects get their
 			// copy created before we actually copy
 			//cascadeOnMerge(event, persister, entity, copyCache, Cascades.CASCADE_BEFORE_MERGE);
-			base.CascadeBeforeSave(source, persister, entity, copyCache);
-			CopyValues(persister, entity, copy, source, copyCache, ForeignKeyDirection.ForeignKeyFromParent);
+			await base.CascadeBeforeSave(source, persister, entity, copyCache).ConfigureAwait(false);
+			await CopyValues(persister, entity, copy, source, copyCache, ForeignKeyDirection.ForeignKeyFromParent).ConfigureAwait(false);
 
 			try
 			{
 				// try saving; check for non-nullable properties that are null or transient entities before saving
-				this.SaveTransientEntity(copy, entityName, requestedId, source, copyCache);
+				await this.SaveTransientEntity(copy, entityName, requestedId, source, copyCache).ConfigureAwait(false);
 			}
 			catch (PropertyValueException ex)
 			{
@@ -270,28 +271,28 @@ namespace NHibernate.Event.Default
 
 			// cascade first, so that all unsaved objects get their
 			// copy created before we actually copy
-			base.CascadeAfterSave(source, persister, entity, copyCache);
-			CopyValues(persister, entity, copy, source, copyCache, ForeignKeyDirection.ForeignKeyToParent);
+			await base.CascadeAfterSave(source, persister, entity, copyCache).ConfigureAwait(false);
+			await CopyValues(persister, entity, copy, source, copyCache, ForeignKeyDirection.ForeignKeyToParent).ConfigureAwait(false);
 
 			return copy;
 		}
 
-		private void SaveTransientEntity(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache)
+		private Task SaveTransientEntity(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache)
 		{
 			// this bit is only *really* absolutely necessary for handling
 			// requestedId, but is also good if we merge multiple object
 			// graphs, since it helps ensure uniqueness
 			if (requestedId == null)
 			{
-				SaveWithGeneratedId(entity, entityName, copyCache, source, false, false).ConfigureAwait(false).GetAwaiter().GetResult();
+				return SaveWithGeneratedId(entity, entityName, copyCache, source, false);
 			}
 			else
 			{
-				SaveWithRequestedId(entity, requestedId, entityName, copyCache, source, false).ConfigureAwait(false).GetAwaiter().GetResult();
+				return SaveWithRequestedId(entity, requestedId, entityName, copyCache, source);
 			}
 		}
 
-		protected virtual void EntityIsDetached(MergeEvent @event, IDictionary copyCache)
+		protected virtual async Task EntityIsDetached(MergeEvent @event, IDictionary copyCache)
 		{
 			log.Debug("merging detached instance");
 
@@ -322,7 +323,7 @@ namespace NHibernate.Event.Default
 			//we must clone embedded composite identifiers, or
 			//we will get back the same instance that we pass in
 			object clonedIdentifier = persister.IdentifierType.DeepCopy(id, source.EntityMode, source.Factory);
-			object result = source.Get(persister.EntityName, clonedIdentifier);
+			object result = await source.GetAsync(persister.EntityName, clonedIdentifier).ConfigureAwait(false);
 
 			source.FetchProfile = previousFetchProfile;
 
@@ -335,7 +336,7 @@ namespace NHibernate.Event.Default
 				// we got here because we assumed that an instance
 				// with an assigned id was detached, when it was
 				// really persistent
-				EntityIsTransient(@event, copyCache);
+				await EntityIsTransient(@event, copyCache).ConfigureAwait(false);
 			}
 			else
 			{
@@ -368,8 +369,8 @@ namespace NHibernate.Event.Default
 
 				// cascade first, so that all unsaved objects get their
 				// copy created before we actually copy
-				CascadeOnMerge(source, persister, entity, copyCache);
-				CopyValues(persister, entity, target, source, copyCache);
+				await CascadeOnMerge(source, persister, entity, copyCache).ConfigureAwait(false);
+				await CopyValues(persister, entity, target, source, copyCache).ConfigureAwait(false);
 
 				//copyValues works by reflection, so explicitly mark the entity instance dirty
 				MarkInterceptorDirty(entity, target);
@@ -455,17 +456,17 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected virtual void CopyValues(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache)
+		protected virtual async Task CopyValues(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache)
 		{
 			object[] copiedValues =
-				TypeHelper.Replace(persister.GetPropertyValues(entity, source.EntityMode),
+				await TypeHelper.Replace(persister.GetPropertyValues(entity, source.EntityMode),
 									persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes, source, target,
-									copyCache);
+									copyCache).ConfigureAwait(false);
 
 			persister.SetPropertyValues(target, copiedValues, source.EntityMode);
 		}
 
-		protected virtual void CopyValues(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
+		protected virtual async Task CopyValues(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
 		{
 			object[] copiedValues;
 
@@ -475,16 +476,16 @@ namespace NHibernate.Event.Default
 				// replacement to associations types (value types were already replaced
 				// during the first pass)
 				copiedValues =
-					TypeHelper.ReplaceAssociations(persister.GetPropertyValues(entity, source.EntityMode),
+					await TypeHelper.ReplaceAssociations(persister.GetPropertyValues(entity, source.EntityMode),
 													persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes,
-													source, target, copyCache, foreignKeyDirection);
+													source, target, copyCache, foreignKeyDirection).ConfigureAwait(false);
 			}
 			else
 			{
 				copiedValues =
-					TypeHelper.Replace(persister.GetPropertyValues(entity, source.EntityMode),
+					await TypeHelper.Replace(persister.GetPropertyValues(entity, source.EntityMode),
 										persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes, source, target,
-										copyCache, foreignKeyDirection);
+										copyCache, foreignKeyDirection).ConfigureAwait(false);
 			}
 
 			persister.SetPropertyValues(target, copiedValues, source.EntityMode);
@@ -497,12 +498,12 @@ namespace NHibernate.Event.Default
 		/// <param name="persister">The persister of the entity being copied. </param>
 		/// <param name="entity">The entity being copied. </param>
 		/// <param name="copyCache">A cache of already copied instance. </param>
-		protected virtual void CascadeOnMerge(IEventSource source, IEntityPersister persister, object entity, IDictionary copyCache)
+		protected virtual async Task CascadeOnMerge(IEventSource source, IEntityPersister persister, object entity, IDictionary copyCache)
 		{
 			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
-				new Cascade(CascadeAction, CascadePoint.BeforeMerge, source).CascadeOn(persister, entity, copyCache);
+				await new Cascade(CascadeAction, CascadePoint.BeforeMerge, source).CascadeOn(persister, entity, copyCache).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -574,7 +575,7 @@ namespace NHibernate.Event.Default
 		/// <param name="event"></param>
 		/// <param name="transientCopyCache"></param>
 		/// <param name="copyCache"></param>
-		protected void RetryMergeTransientEntities(MergeEvent @event, IDictionary transientCopyCache, EventCache copyCache)
+		protected async Task RetryMergeTransientEntities(MergeEvent @event, IDictionary transientCopyCache, EventCache copyCache)
 		{
 			// TODO: The order in which entities are saved may matter (e.g., a particular
 			// transient entity may need to be saved before other transient entities can
@@ -590,20 +591,22 @@ namespace NHibernate.Event.Default
 				EntityEntry copyEntry = @event.Session.PersistenceContext.GetEntry(copy);
 
 				if (entity == @event.Entity)
-					MergeTransientEntity(entity, copyEntry.EntityName, @event.RequestedId, @event.Session, copyCache);
+					await MergeTransientEntity(entity, copyEntry.EntityName, @event.RequestedId, @event.Session, copyCache).ConfigureAwait(false);
 				else
-					MergeTransientEntity(entity, copyEntry.EntityName, copyEntry.Id, @event.Session, copyCache);
+					await MergeTransientEntity(entity, copyEntry.EntityName, copyEntry.Id, @event.Session, copyCache).ConfigureAwait(false);
 			}
 		}
 
 		/// <summary> Cascade behavior is redefined by this subclass, disable superclass behavior</summary>
-		protected override void CascadeAfterSave(IEventSource source, IEntityPersister persister, object entity, object anything)
+		protected override Task CascadeAfterSave(IEventSource source, IEntityPersister persister, object entity, object anything)
 		{
+			return TaskHelper.CompletedTask;
 		}
 
 		/// <summary> Cascade behavior is redefined by this subclass, disable superclass behavior</summary>
-		protected override void CascadeBeforeSave(IEventSource source, IEntityPersister persister, object entity, object anything)
+		protected override Task CascadeBeforeSave(IEventSource source, IEntityPersister persister, object entity, object anything)
 		{
+			return TaskHelper.CompletedTask;
 		}
 	}
 }

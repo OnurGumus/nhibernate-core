@@ -1,7 +1,9 @@
 using System;
 using System.Data;
+using System.Threading.Tasks;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Test
 {
@@ -28,14 +30,14 @@ namespace NHibernate.Test
 			get { return new[] { new SqlType(DbType.DateTime) }; }
 		}
 
-		public object NullSafeGet(IDataReader dr, string[] names, object owner)
+		public Task<object> NullSafeGet(IDataReader dr, string[] names, object owner)
 		{
 			var name = names[0];
 			int index = dr.GetOrdinal(name);
 
 			if (dr.IsDBNull(index))
 			{
-				return null;
+				return Task.FromResult<object>(null);
 			}
 			try
 			{                
@@ -47,21 +49,21 @@ namespace NHibernate.Test
 				}
 				catch (Exception ex)
 				{
-					throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", dr[index]), ex);
+					return TaskHelper.FromException<object>(new FormatException(string.Format("Input string '{0}' was not in the correct format.", dr[index]), ex));
 				}
 
-				return new DateTimeOffset(storedTime, Offset);
+				return Task.FromResult<object>(new DateTimeOffset(storedTime, Offset));
 			}
 			catch (InvalidCastException ice)
 			{
-				throw new ADOException(
+				return TaskHelper.FromException<object>(new ADOException(
 					string.Format(
 						"Could not cast the value in field {0} of type {1} to the Type {2}.  Please check to make sure that the mapping is correct and that your DataProvider supports this Data Type.",
-						names[0], dr[index].GetType().Name, GetType().Name), ice);
+						names[0], dr[index].GetType().Name, GetType().Name), ice));
 			}		
 		}
 
-		public void NullSafeSet(IDbCommand cmd, object value, int index)
+		public Task NullSafeSet(IDbCommand cmd, object value, int index)
 		{
 			if (value == null)
 			{
@@ -75,6 +77,7 @@ namespace NHibernate.Test
 				IDataParameter parameter = (IDataParameter)cmd.Parameters[index];
 				parameter.Value = paramVal;
 			}
+			return TaskHelper.CompletedTask;
 		}
 
 		public object Assemble(object cached, object owner)

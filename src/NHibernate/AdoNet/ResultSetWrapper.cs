@@ -1,5 +1,7 @@
 using System;
 using System.Data;
+using System.Threading.Tasks;
+using NHibernate.Driver;
 
 namespace NHibernate.AdoNet
 {
@@ -9,12 +11,12 @@ namespace NHibernate.AdoNet
 	/// and Postgres). 
 	/// </summary>
 	/// <seealso cref="IDataRecord.GetOrdinal"/>
-	public class ResultSetWrapper : IDataReader
+	public class ResultSetWrapper : IDataReaderEx
 	{
-		private readonly IDataReader rs;
+		private readonly IDataReaderEx rs;
 		private readonly ColumnNameCache columnNameCache;
 
-		public ResultSetWrapper(IDataReader resultSet, ColumnNameCache columnNameCache)
+		public ResultSetWrapper(IDataReaderEx resultSet, ColumnNameCache columnNameCache)
 		{
 			rs = resultSet;
 			this.columnNameCache = columnNameCache;
@@ -233,6 +235,16 @@ namespace NHibernate.AdoNet
 		public override int GetHashCode()
 		{
 			return rs.GetHashCode();
+		}
+
+		public Task<bool> ReadAsync()
+		{
+			return rs.ReadAsync();
+		}
+
+		public Task<bool> NextResultAsync()
+		{
+			return rs.NextResultAsync();
 		}
 	}
 }

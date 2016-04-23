@@ -14,6 +14,7 @@ using NHibernate.Type;
 using NHibernate.Util;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
 using System.Threading.Tasks;
+using NHibernate.Driver;
 
 namespace NHibernate.Loader.Custom
 {
@@ -281,14 +282,14 @@ namespace NHibernate.Loader.Custom
 			get { return collectionPersisters; }
 		}
 
-		public Task<IList> List(ISessionImplementor session, QueryParameters queryParameters,bool async)
+		public Task<IList> List(ISessionImplementor session, QueryParameters queryParameters)
 		{
-			return List(session, queryParameters, querySpaces, resultTypes, async);
+			return List(session, queryParameters, querySpaces, resultTypes);
 		}
 
 		// Not ported: scroll
 
-		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReader rs,
+		protected override Task<object> GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, IDataReaderEx rs,
 		                                               ISessionImplementor session)
 		{
 			return rowProcessor.BuildResultRow(row, rs, resultTransformer != null, session);
@@ -397,7 +398,7 @@ namespace NHibernate.Loader.Custom
 			/// At this point, Loader has already processed all non-scalar result data.  We
 			/// just need to account for scalar result data here...
 			/// </remarks>
-			public object BuildResultRow(object[] data, IDataReader resultSet, bool hasTransformer, ISessionImplementor session)
+			public async Task<object> BuildResultRow(object[] data, IDataReaderEx resultSet, bool hasTransformer, ISessionImplementor session)
 			{
 				object[] resultRow;
 				// NH Different behavior (patched in NH-1612 to solve Hibernate issue HHH-2831).
@@ -413,7 +414,7 @@ namespace NHibernate.Loader.Custom
 					resultRow = new object[columnProcessors.Length];
 					for (int i = 0; i < columnProcessors.Length; i++)
 					{
-						resultRow[i] = columnProcessors[i].Extract(data, resultSet, session);
+						resultRow[i] = await columnProcessors[i].Extract(data, resultSet, session).ConfigureAwait(false);
 					}
 				}
 
@@ -436,7 +437,7 @@ namespace NHibernate.Loader.Custom
 
 		public interface IResultColumnProcessor
 		{
-			object Extract(object[] data, IDataReader resultSet, ISessionImplementor session);
+			Task<object> Extract(object[] data, IDataReader resultSet, ISessionImplementor session);
 			void PerformDiscovery(MetaData metadata, IList<IType> types, IList<string> aliases);
 		}
 
@@ -449,9 +450,9 @@ namespace NHibernate.Loader.Custom
 				this.position = position;
 			}
 
-			public object Extract(object[] data, IDataReader resultSet, ISessionImplementor session)
+			public Task<object> Extract(object[] data, IDataReader resultSet, ISessionImplementor session)
 			{
-				return data[position];
+				return Task.FromResult(data[position]);
 			}
 
 			public void PerformDiscovery(MetaData metadata, IList<IType> types, IList<string> aliases) {}
@@ -474,7 +475,7 @@ namespace NHibernate.Loader.Custom
 				this.type = type;
 			}
 
-			public object Extract(object[] data, IDataReader resultSet, ISessionImplementor session)
+			public Task<object> Extract(object[] data, IDataReader resultSet, ISessionImplementor session)
 			{
 				return type.NullSafeGet(resultSet, alias, session, null);
 			}

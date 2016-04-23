@@ -1,6 +1,8 @@
 using System;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
+using NHibernate.Util;
 
 namespace NHibernate.Event.Default
 {
@@ -13,7 +15,7 @@ namespace NHibernate.Event.Default
 	{
 		/// <summary>Handle the given lock event. </summary>
 		/// <param name="event">The lock event to be handled.</param>
-		public virtual void OnLock(LockEvent @event)
+		public virtual async Task OnLock(LockEvent @event)
 		{
 			if (@event.Entity == null)
 			{
@@ -42,26 +44,26 @@ namespace NHibernate.Event.Default
 			{
 				IEntityPersister persister = source.GetEntityPersister(@event.EntityName, entity);
 				object id = persister.GetIdentifier(entity, source.EntityMode);
-				if (!ForeignKeys.IsNotTransient(@event.EntityName, entity, false, source))
+				if (!await ForeignKeys.IsNotTransient(@event.EntityName, entity, false, source).ConfigureAwait(false))
 				{
 					throw new TransientObjectException("cannot lock an unsaved transient instance: " + persister.EntityName);
 				}
 
-				entry = Reassociate(@event, entity, id, persister);
+				entry = await Reassociate(@event, entity, id, persister);
 
-				CascadeOnLock(@event, persister, entity);
+				await CascadeOnLock(@event, persister, entity).ConfigureAwait(false);
 			}
 
-			UpgradeLock(entity, entry, @event.LockMode, source);
+			await UpgradeLock(entity, entry, @event.LockMode, source).ConfigureAwait(false);
 		}
 
-		private void CascadeOnLock(LockEvent @event, IEntityPersister persister, object entity)
+		private async Task CascadeOnLock(LockEvent @event, IEntityPersister persister, object entity)
 		{
 			IEventSource source = @event.Session;
 			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
-				new Cascade(CascadingAction.Lock, CascadePoint.AfterLock, source).CascadeOn(persister, entity, @event.LockMode);
+				await new Cascade(CascadingAction.Lock, CascadePoint.AfterLock, source).CascadeOn(persister, entity, @event.LockMode).ConfigureAwait(false);
 			}
 			finally
 			{

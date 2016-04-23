@@ -47,14 +47,14 @@ namespace NHibernate.Impl
 			return new FutureValue<TResult>(
 				() =>
 				{
-					return GetCurrentResult<TResult>(currentIndex, false).ConfigureAwait(false).GetAwaiter().GetResult();
+					return GetCurrentResult<TResult>(currentIndex).ConfigureAwait(false).GetAwaiter().GetResult();
 				});
 		}
 
 		public IFutureValueAsync<TResult> GetFutureValueAsync<TResult>()
 		{
 			int currentIndex = index;
-			return new FutureValueAsync<TResult>(() => GetCurrentResult<TResult>(currentIndex, true));
+			return new FutureValueAsync<TResult>(() => GetCurrentResult<TResult>(currentIndex));
 		}
 
 		public IEnumerable<TResult> GetEnumerator<TResult>()
@@ -63,17 +63,17 @@ namespace NHibernate.Impl
 			return new DelayedEnumerator<TResult>(
 				() =>
 				{
-					return GetCurrentResult<TResult>(currentIndex, false).ConfigureAwait(false).GetAwaiter().GetResult();
+					return GetCurrentResult<TResult>(currentIndex).ConfigureAwait(false).GetAwaiter().GetResult();
 				});
 		}
 
 		public IAsyncEnumerable<TResult> GetAsyncEnumerator<TResult>()
 		{
 			int currentIndex = index;
-			return new DelayedAsyncEnumerator<TResult>(() => GetCurrentResult<TResult>(currentIndex, true));
+			return new DelayedAsyncEnumerator<TResult>(() => GetCurrentResult<TResult>(currentIndex));
 		}
 
-		private async Task<IList> GetResults(bool async)
+		private async Task<IList> GetResults()
 		{
 			if (results != null)
 			{
@@ -84,20 +84,20 @@ namespace NHibernate.Impl
 			{
 				AddTo(multiApproach, queries[i], resultTypes[i]);
 			}
-			results = await GetResultsFrom(multiApproach, async).ConfigureAwait(false);
+			results = await GetResultsFrom(multiApproach).ConfigureAwait(false);
 			ClearCurrentFutureBatch();
 			return results;
 		}
 
-		private async Task<IEnumerable<TResult>> GetCurrentResult<TResult>(int currentIndex, bool async)
+		private async Task<IEnumerable<TResult>> GetCurrentResult<TResult>(int currentIndex)
 		{
-			var result = await GetResults(async).ConfigureAwait(false);
+			var result = await GetResults().ConfigureAwait(false);
 			return ((IList) (result)[currentIndex]).Cast<TResult>();
 		}
 
 		protected abstract TMultiApproach CreateMultiApproach(bool isCacheable, string cacheRegion);
 		protected abstract void AddTo(TMultiApproach multiApproach, TQueryApproach query, System.Type resultType);
-		protected abstract Task<IList> GetResultsFrom(TMultiApproach multiApproach, bool async);
+		protected abstract Task<IList> GetResultsFrom(TMultiApproach multiApproach);
 		protected abstract void ClearCurrentFutureBatch();
 		protected abstract bool IsQueryCacheable(TQueryApproach query);
 		protected abstract string CacheRegion(TQueryApproach query);

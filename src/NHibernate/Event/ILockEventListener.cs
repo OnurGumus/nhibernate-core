@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace NHibernate.Event
 {
 	/// <summary>
@@ -7,6 +9,6 @@ namespace NHibernate.Event
 	{
 		/// <summary>Handle the given lock event. </summary>
 		/// <param name="event">The lock event to be handled. </param>
-		void OnLock(LockEvent @event);
+		Task OnLock(LockEvent @event);
 	}
 }

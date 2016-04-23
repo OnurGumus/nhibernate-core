@@ -1,4 +1,5 @@
 using System.Data.Common;
+using System.Threading.Tasks;
 using NHibernate.Connection;
 
 namespace NHibernate.Tool.hbm2ddl
@@ -22,7 +23,12 @@ namespace NHibernate.Tool.hbm2ddl
 
 		public void Prepare()
 		{
-			connection = (DbConnection)provider.GetConnection();
+			PrepareAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public async Task PrepareAsync()
+		{
+			connection = (DbConnection)await provider.GetConnectionAsync().ConfigureAwait(false);
 		}
 
 		public DbConnection Connection

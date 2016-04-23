@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Data;
+using System.Threading.Tasks;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
 using NHibernate.Loader;
@@ -162,7 +163,7 @@ namespace NHibernate.Collection
 		/// <param name="persister"></param>
 		/// <param name="disassembled"></param>
 		/// <param name="owner"></param>
-		void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner);
+		Task InitializeFromCache(ICollectionPersister persister, object disassembled, object owner);
 
 		/// <summary>
 		/// Iterate all collection entries, during update of the database
@@ -184,7 +185,7 @@ namespace NHibernate.Collection
 		/// <param name="descriptor">The descriptor providing result set column names</param>
 		/// <param name="owner">The owner of this Collection.</param>
 		/// <returns>The object that was contained in the row.</returns>
-		object ReadFrom(IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner);
+		Task<object> ReadFrom(IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner);
 
 		/// <summary>
 		/// Get the identifier of the given collection entry
@@ -223,7 +224,7 @@ namespace NHibernate.Collection
 		/// of the collection or if one of the elements in the collection is
 		/// dirty.
 		/// </returns>
-		bool EqualsSnapshot(ICollectionPersister persister);
+		Task<bool> EqualsSnapshot(ICollectionPersister persister);
 
 		/// <summary> Is the snapshot empty?</summary>
 		bool IsSnapshotEmpty(object snapshot);
@@ -233,7 +234,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister">The <see cref="ICollectionPersister"/> for this Collection.</param>
 		/// <returns>The contents of the persistent collection in a cacheable form.</returns>
-		object Disassemble(ICollectionPersister persister);
+		Task<object> Disassemble(ICollectionPersister persister);
 
 		/// <summary>
 		/// Gets a <see cref="bool"/> indicating if the rows for this collection
@@ -259,7 +260,7 @@ namespace NHibernate.Collection
 		/// <remarks>
 		/// This method is similar to <see cref="AbstractPersistentCollection.Initialize" />, except that different exceptions are thrown.
 		/// </remarks>
-		void ForceInitialization();
+		Task ForceInitialization();
 
 		/// <summary>
 		/// Does an element exist at this entry in the collection?
@@ -269,17 +270,17 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Do we need to insert this element?
 		/// </summary>
-		bool NeedsInserting(object entry, int i, IType elemType);
+		Task<bool> NeedsInserting(object entry, int i, IType elemType);
 
 		/// <summary>
 		/// Do we need to update this element?
 		/// </summary>
-		bool NeedsUpdating(object entry, int i, IType elemType);
+		Task<bool> NeedsUpdating(object entry, int i, IType elemType);
 
 		/// <summary>
 		/// Get all the elements that need deleting
 		/// </summary>
-		IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula);
+		Task<IEnumerable> GetDeletes(ICollectionPersister persister, bool indexIsFormula);
 
 		/// <summary>
 		/// Is this the wrapper for the given underlying collection instance?
@@ -301,7 +302,7 @@ namespace NHibernate.Collection
 		IEnumerable QueuedAdditionIterator { get; }
 
 		/// <summary> Get the "queued" orphans</summary>
-		ICollection GetQueuedOrphans(string entityName);
+		Task<ICollection> GetQueuedOrphans(string entityName);
 
 		/// <summary>
 		/// Clear the dirty flag, after flushing changes
@@ -318,7 +319,7 @@ namespace NHibernate.Collection
 		/// Called before inserting rows, to ensure that any surrogate keys are fully generated
 		/// </summary>
 		/// <param name="persister"></param>
-		void PreInsert(ICollectionPersister persister);
+		Task PreInsert(ICollectionPersister persister);
 
 		/// <summary>
 		/// Called after inserting a row, to fetch the natively generated id
@@ -335,6 +336,6 @@ namespace NHibernate.Collection
 		/// An <see cref="ICollection"/> that contains all of the elements
 		/// that have been orphaned.
 		/// </returns>
-		ICollection GetOrphans(object snapshot, string entityName);
+		Task<ICollection> GetOrphans(object snapshot, string entityName);
 	}
 }

@@ -89,11 +89,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			get { return updates; }
 		}
 
-		public override async Task<int> Execute(QueryParameters parameters, ISessionImplementor session, bool async)
+		public override async Task<int> Execute(QueryParameters parameters, ISessionImplementor session)
 		{
 			CoordinateSharedCacheCleanup(session);
 
-			CreateTemporaryTableIfNecessary(persister, session);
+			await CreateTemporaryTableIfNecessary(persister, session).ConfigureAwait(false);
 
 			try
 			{
@@ -114,13 +114,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 						var sqlQueryParametersList = idInsertSelect.GetParameters().ToList();
 						SqlType[] parameterTypes = whereParams.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
 
-						ps = session.Batcher.PrepareCommand(CommandType.Text, idInsertSelect, parameterTypes);
+						ps = await session.Batcher.PrepareCommand(CommandType.Text, idInsertSelect, parameterTypes).ConfigureAwait(false);
 						foreach (var parameterSpecification in whereParams)
 						{
-							parameterSpecification.Bind(ps, sqlQueryParametersList, parameters, session);
+							await parameterSpecification.Bind(ps, sqlQueryParametersList, parameters, session).ConfigureAwait(false);
 						}
 
-						resultCount = await session.Batcher.ExecuteNonQuery(ps, async).ConfigureAwait(false);
+						resultCount = await session.Batcher.ExecuteNonQuery(ps).ConfigureAwait(false);
 					}
 					finally
 					{
@@ -151,12 +151,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 							var paramsSpec = hqlParameters[i];
 							SqlType[] parameterTypes = paramsSpec.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
 
-							ps = session.Batcher.PrepareCommand(CommandType.Text, updates[i], parameterTypes);
+							ps = await session.Batcher.PrepareCommand(CommandType.Text, updates[i], parameterTypes).ConfigureAwait(false);
 							foreach (var parameterSpecification in paramsSpec)
 							{
-								parameterSpecification.Bind(ps, sqlQueryParametersList, parameters, session);
+								await parameterSpecification.Bind(ps, sqlQueryParametersList, parameters, session).ConfigureAwait(false);
 							}
-							await session.Batcher.ExecuteNonQuery(ps, async).ConfigureAwait(false);
+							await session.Batcher.ExecuteNonQuery(ps).ConfigureAwait(false);
 						}
 						finally
 						{
@@ -176,7 +176,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 			finally
 			{
-				DropTemporaryTableIfNecessary(persister, session);
+				await DropTemporaryTableIfNecessary(persister, session).ConfigureAwait(false);
 			}
 		}
 

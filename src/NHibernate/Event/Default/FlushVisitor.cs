@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -18,7 +19,7 @@ namespace NHibernate.Event.Default
 			this.owner = owner;
 		}
 
-		internal override object ProcessCollection(object collection, CollectionType type)
+		internal override async Task<object> ProcessCollection(object collection, CollectionType type)
 		{
 			if (collection == CollectionType.UnfetchedCollection)
 			{
@@ -37,7 +38,7 @@ namespace NHibernate.Event.Default
 					coll = (IPersistentCollection)collection;
 				}
 
-				Collections.ProcessReachableCollection(coll, type, owner, Session);
+				await Collections.ProcessReachableCollection(coll, type, owner, Session).ConfigureAwait(false);
 			}
 			return null;
 		}

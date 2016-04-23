@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Transaction
 {
@@ -6,7 +8,7 @@ namespace NHibernate.Transaction
 	{
 		#region Fields
 
-		private readonly Action<bool> _whenCompleted;
+		private readonly Func<bool, Task> _whenCompleted;
 
 		#endregion
 
@@ -18,7 +20,7 @@ namespace NHibernate.Transaction
 		/// the value 'true' if the transaction was completed successfully.
 		/// </summary>
 		/// <param name="whenCompleted"></param>
-		public AfterTransactionCompletes(Action<bool> whenCompleted)
+		public AfterTransactionCompletes(Func<bool, Task> whenCompleted)
 		{
 			_whenCompleted = whenCompleted;
 		}
@@ -27,13 +29,14 @@ namespace NHibernate.Transaction
 
 		#region ISynchronization Members
 
-		public void BeforeCompletion()
+		public Task BeforeCompletion()
 		{
+			return TaskHelper.CompletedTask;
 		}
 
-		public void AfterCompletion(bool success)
+		public Task AfterCompletion(bool success)
 		{
-			_whenCompleted(success);
+			return _whenCompleted(success);
 		}
 
 		#endregion

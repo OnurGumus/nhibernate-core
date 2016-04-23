@@ -1,5 +1,5 @@
 using System;
-
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;
@@ -15,7 +15,7 @@ namespace NHibernate.Event.Default
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultReplicateEventListener));
 
-		public virtual void OnReplicate(ReplicateEvent @event)
+		public virtual async Task OnReplicate(ReplicateEvent @event)
 		{
 			IEventSource source = @event.Session;
 			if (source.PersistenceContext.ReassociateIfUninitializedProxy(@event.Entity))
@@ -55,7 +55,7 @@ namespace NHibernate.Event.Default
 			else
 			{
 				//what is the version on the database?
-				oldVersion = persister.GetCurrentVersion(id, source);
+				oldVersion = await persister.GetCurrentVersion(id, source).ConfigureAwait(false);
 			}
 
 			if (oldVersion != null)
@@ -76,7 +76,7 @@ namespace NHibernate.Event.Default
 				if (canReplicate)
 				{
 					//will result in a SQL UPDATE:
-					PerformReplication(entity, id, realOldVersion, persister, replicationMode, source);
+					await PerformReplication(entity, id, realOldVersion, persister, replicationMode, source).ConfigureAwait(false);
 				}
 				else
 				{
@@ -97,18 +97,18 @@ namespace NHibernate.Event.Default
 				bool regenerate = persister.IsIdentifierAssignedByInsert; // prefer re-generation of identity!
 				EntityKey key = regenerate ? null : source.GenerateEntityKey(id, persister);
 
-				PerformSaveOrReplicate(entity, key, persister, regenerate, replicationMode, source, true, false).ConfigureAwait(false).GetAwaiter().GetResult();
+				await PerformSaveOrReplicate(entity, key, persister, regenerate, replicationMode, source, true).ConfigureAwait(false);
 			}
 		}
 
-		private void PerformReplication(object entity, object id, object version, IEntityPersister persister, ReplicationMode replicationMode, IEventSource source)
+		private async Task PerformReplication(object entity, object id, object version, IEntityPersister persister, ReplicationMode replicationMode, IEventSource source)
 		{
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("replicating changes to " + MessageHelper.InfoString(persister, id, source.Factory));
 			}
 
-			new OnReplicateVisitor(source, id, entity, true).Process(entity, persister);
+			await new OnReplicateVisitor(source, id, entity, true).Process(entity, persister).ConfigureAwait(false);
 
 			source.PersistenceContext.AddEntity(
 				entity,
@@ -122,15 +122,15 @@ namespace NHibernate.Event.Default
 				true,
 				false);
 
-			CascadeAfterReplicate(entity, persister, replicationMode, source);
+			await CascadeAfterReplicate(entity, persister, replicationMode, source).ConfigureAwait(false);
 		}
 
-		private void CascadeAfterReplicate(object entity, IEntityPersister persister, ReplicationMode replicationMode, IEventSource source)
+		private async Task CascadeAfterReplicate(object entity, IEntityPersister persister, ReplicationMode replicationMode, IEventSource source)
 		{
 			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
-				new Cascade(CascadingAction.Replicate, CascadePoint.AfterUpdate, source).CascadeOn(persister, entity, replicationMode);
+				await new Cascade(CascadingAction.Replicate, CascadePoint.AfterUpdate, source).CascadeOn(persister, entity, replicationMode).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -153,12 +153,12 @@ namespace NHibernate.Event.Default
 			return false;
 		}
 
-		protected override bool VisitCollectionsBeforeSave(object entity, object id, object[] values, Type.IType[] types, IEventSource source)
+		protected override async Task<bool> VisitCollectionsBeforeSave(object entity, object id, object[] values, Type.IType[] types, IEventSource source)
 		{
 			//TODO: we use two visitors here, inefficient!
 			OnReplicateVisitor visitor = new OnReplicateVisitor(source, id, entity, false);
-			visitor.ProcessEntityPropertyValues(values, types);
-			return base.VisitCollectionsBeforeSave(entity, id, values, types, source);
+			await visitor.ProcessEntityPropertyValues(values, types).ConfigureAwait(false);
+			return await base.VisitCollectionsBeforeSave(entity, id, values, types, source).ConfigureAwait(false);
 		}
 	}
 }

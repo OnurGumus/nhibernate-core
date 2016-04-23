@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -49,7 +50,7 @@ namespace NHibernate.Event.Default
 			get { return dirty; }
 		}
 
-		internal override object ProcessCollection(object collection, CollectionType type)
+		internal override Task<object> ProcessCollection(object collection, CollectionType type)
 		{
 
 			if (collection != null)
@@ -77,10 +78,10 @@ namespace NHibernate.Event.Default
 				{
 					//we need to check even if it was not initialized, because of delayed adds!
 					dirty = true;
-					return null; //NOTE: EARLY EXIT!
+					return Task.FromResult<object>(null); //NOTE: EARLY EXIT!
 				}
 			}
-			return null;
+			return Task.FromResult<object>(null);
 		}
 
 		internal override bool IncludeEntityProperty(object[] values, int i)

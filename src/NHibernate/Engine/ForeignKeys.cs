@@ -1,4 +1,5 @@
 
+using System.Threading.Tasks;
 using NHibernate.Id;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -31,11 +32,11 @@ namespace NHibernate.Engine
 			/// been inserted in the database, where the foreign key
 			/// points toward that entity
 			/// </summary>
-			public void NullifyTransientReferences(object[] values, IType[] types)
+			public async Task NullifyTransientReferences(object[] values, IType[] types)
 			{
 				for (int i = 0; i < types.Length; i++)
 				{
-					values[i] = NullifyTransientReferences(values[i], types[i]);
+					values[i] = await NullifyTransientReferences(values[i], types[i]).ConfigureAwait(false);
 				}
 			}
 
@@ -45,7 +46,7 @@ namespace NHibernate.Engine
 			/// otherwise. This is how Hibernate avoids foreign key constraint
 			/// violations.
 			/// </summary>
-			private object NullifyTransientReferences(object value, IType type)
+			private async Task<object> NullifyTransientReferences(object value, IType type)
 			{
 				if (value == null)
 				{
@@ -61,22 +62,22 @@ namespace NHibernate.Engine
 					else
 					{
 						string entityName = entityType.GetAssociatedEntityName();
-						return IsNullifiable(entityName, value) ? null : value;
+						return await IsNullifiable(entityName, value).ConfigureAwait(false) ? null : value;
 					}
 				}
 				else if (type.IsAnyType)
 				{
-					return IsNullifiable(null, value) ? null : value;
+					return await IsNullifiable(null, value).ConfigureAwait(false) ? null : value;
 				}
 				else if (type.IsComponentType)
 				{
 					IAbstractComponentType actype = (IAbstractComponentType)type;
-					object[] subvalues = actype.GetPropertyValues(value, session);
+					object[] subvalues = await actype.GetPropertyValues(value, session).ConfigureAwait(false);
 					IType[] subtypes = actype.Subtypes;
 					bool substitute = false;
 					for (int i = 0; i < subvalues.Length; i++)
 					{
-						object replacement = NullifyTransientReferences(subvalues[i], subtypes[i]);
+						object replacement = await NullifyTransientReferences(subvalues[i], subtypes[i]).ConfigureAwait(false);
 						if (replacement != subvalues[i])
 						{
 							substitute = true;
@@ -96,7 +97,7 @@ namespace NHibernate.Engine
 			/// <summary> 
 			/// Determine if the object already exists in the database, using a "best guess"
 			/// </summary>
-			private bool IsNullifiable(string entityName, object obj)
+			private Task<bool> IsNullifiable(string entityName, object obj)
 			{
 
 				//if (obj == org.hibernate.intercept.LazyPropertyInitializer_Fields.UNFETCHED_PROPERTY)
@@ -110,7 +111,7 @@ namespace NHibernate.Engine
 					ILazyInitializer li = proxy.HibernateLazyInitializer;
 					if (li.GetImplementation(session) == null)
 					{
-						return false;
+						return Task.FromResult(false);
 						// ie. we never have to null out a reference to
 						// an uninitialized proxy
 					}
@@ -128,7 +129,7 @@ namespace NHibernate.Engine
 				{
 					// TODO H3.2: Different behaviour
 					//return isEarlyInsert || (isDelete && session.Factory.Dialect.HasSelfReferentialForeignKeyBug);
-					return isEarlyInsert || isDelete;
+					return Task.FromResult(isEarlyInsert || isDelete);
 				}
 
 				// See if the entity is already bound to this session, if not look at the
@@ -142,7 +143,7 @@ namespace NHibernate.Engine
 				}
 				else
 				{
-					return entityEntry.IsNullifiable(isEarlyInsert, session);
+					return Task.FromResult(entityEntry.IsNullifiable(isEarlyInsert, session));
 				}
 			}
 		}
@@ -155,13 +156,13 @@ namespace NHibernate.Engine
 		/// determination, instead assume that value; the client code must be 
 		/// prepared to "recover" in the case that this assumed result is incorrect.
 		/// </remarks>
-		public static bool IsNotTransient(string entityName, System.Object entity, bool? assumed, ISessionImplementor session)
+		public static async Task<bool> IsNotTransient(string entityName, System.Object entity, bool? assumed, ISessionImplementor session)
 		{
 			if (entity.IsProxy())
 				return true;
 			if (session.PersistenceContext.IsEntryFor(entity))
 				return true;
-			return !IsTransient(entityName, entity, assumed, session);
+			return !await IsTransient(entityName, entity, assumed, session).ConfigureAwait(false);
 		}
 
 		/// <summary> 
@@ -175,7 +176,7 @@ namespace NHibernate.Engine
 		/// determination, instead assume that value; the client code must be 
 		/// prepared to "recover" in the case that this assumed result is incorrect.
 		/// </remarks>
-		public static bool IsTransient(string entityName, object entity, bool? assumed, ISessionImplementor session)
+		public static async Task<bool> IsTransient(string entityName, object entity, bool? assumed, ISessionImplementor session)
 		{
 			if (Equals(Intercept.LazyPropertyInitializer.UnfetchedProperty, entity))
 			{
@@ -213,7 +214,7 @@ namespace NHibernate.Engine
 
 			// hit the database, after checking the session cache for a snapshot
 			System.Object[] snapshot =
-				session.PersistenceContext.GetDatabaseSnapshot(persister.GetIdentifier(entity, session.EntityMode), persister);
+				await session.PersistenceContext.GetDatabaseSnapshot(persister.GetIdentifier(entity, session.EntityMode), persister).ConfigureAwait(false);
 			return snapshot == null;
 		}
 
@@ -227,7 +228,7 @@ namespace NHibernate.Engine
 		/// This does a "best guess" using any/all info available to use (not just the 
 		/// EntityEntry).
 		/// </remarks>
-		public static object GetEntityIdentifierIfNotUnsaved(string entityName, object entity, ISessionImplementor session)
+		public static async Task<object> GetEntityIdentifierIfNotUnsaved(string entityName, object entity, ISessionImplementor session)
 		{
 			if (entity == null)
 			{
@@ -247,7 +248,7 @@ namespace NHibernate.Engine
 						return entity;
 					/**********************************************/
 
-					if (IsTransient(entityName, entity, false, session))
+					if (await IsTransient(entityName, entity, false, session).ConfigureAwait(false))
 					{
 						/***********************************************/
 						// TODO NH verify the behavior of NH607 test

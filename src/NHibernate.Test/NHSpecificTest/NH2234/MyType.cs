@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 
@@ -87,12 +88,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2234
 			return value;
 		}
 
-		public void NullSafeSet(IDbCommand cmd, object value, int index)
+		public Task NullSafeSet(IDbCommand cmd, object value, int index)
 		{
 			if (value == null)
-			  NHibernateUtil.Int32.NullSafeSet(cmd, null, index, null);
+			  return NHibernateUtil.Int32.NullSafeSet(cmd, null, index, null);
 			else
-        NHibernateUtil.Int32.NullSafeSet(cmd, ((MyUsertype)value).Id, index, null);
+				return NHibernateUtil.Int32.NullSafeSet(cmd, ((MyUsertype)value).Id, index, null);
 		}
 
 		public System.Type ReturnedType
@@ -100,10 +101,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2234
 			get { return typeof(MyUsertype); }
 		}
 
-		public object NullSafeGet(IDataReader rs, string[] names, object owner)
+		public async Task<object> NullSafeGet(IDataReader rs, string[] names, object owner)
 		{
-			int value = (int)NHibernateUtil.Int32.NullSafeGet(rs, names[0], null, owner);
-		  return MyUserTypes.Find(value);
+			int value = (int)await NHibernateUtil.Int32.NullSafeGet(rs, names[0], null, owner).ConfigureAwait(false);
+			return MyUserTypes.Find(value);
 		}
 
 		public bool IsMutable

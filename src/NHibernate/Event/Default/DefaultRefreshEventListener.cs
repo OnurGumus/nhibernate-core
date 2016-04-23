@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-
+using System.Threading.Tasks;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -19,12 +19,12 @@ namespace NHibernate.Event.Default
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultRefreshEventListener));
 
-		public virtual void OnRefresh(RefreshEvent @event)
+		public virtual Task OnRefresh(RefreshEvent @event)
 		{
-			OnRefresh(@event, IdentityMap.Instantiate(10));
+			return OnRefresh(@event, IdentityMap.Instantiate(10));
 		}
 
-		public virtual void OnRefresh(RefreshEvent @event, IDictionary refreshedAlready)
+		public async virtual Task OnRefresh(RefreshEvent @event, IDictionary refreshedAlready)
 		{
 			IEventSource source = @event.Session;
 
@@ -80,14 +80,14 @@ namespace NHibernate.Event.Default
 
 			// cascade the refresh prior to refreshing this entity
 			refreshedAlready[obj] = obj;
-			new Cascade(CascadingAction.Refresh, CascadePoint.BeforeRefresh, source).CascadeOn(persister, obj, refreshedAlready);
+			await new Cascade(CascadingAction.Refresh, CascadePoint.BeforeRefresh, source).CascadeOn(persister, obj, refreshedAlready).ConfigureAwait(false);
 
 			if (e != null)
 			{
 				EntityKey key = source.GenerateEntityKey(id, persister);
 				source.PersistenceContext.RemoveEntity(key);
 				if (persister.HasCollections)
-					new EvictVisitor(source).Process(obj, persister);
+					await new EvictVisitor(source).Process(obj, persister).ConfigureAwait(false);
 			}
 
 			if (persister.HasCache)
@@ -102,11 +102,11 @@ namespace NHibernate.Event.Default
 			// At this point the entity need the real refresh, all elementes of collections are Refreshed,
 			// the collection state was evicted, but the PersistentCollection (in the entity state)
 			// is associated with a possible previous session.
-			new WrapVisitor(source).Process(obj, persister);
+			await new WrapVisitor(source).Process(obj, persister).ConfigureAwait(false);
 
 			string previousFetchProfile = source.FetchProfile;
 			source.FetchProfile = "refresh";
-			object result = persister.Load(id, obj, @event.LockMode, source, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			object result = await persister.Load(id, obj, @event.LockMode, source).ConfigureAwait(false);
 
 			if (result != null)
 				if (!persister.IsMutable)
@@ -118,7 +118,7 @@ namespace NHibernate.Event.Default
 
 			// NH Different behavior : we are ignoring transient entities without throw any kind of exception
 			// because a transient entity is "self refreshed"
-			if (!ForeignKeys.IsTransient(persister.EntityName, obj, result == null, @event.Session))
+			if (!await ForeignKeys.IsTransient(persister.EntityName, obj, result == null, @event.Session).ConfigureAwait(false))
 				UnresolvableObjectException.ThrowIfNull(result, id, persister.EntityName);
 		}
 

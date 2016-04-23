@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Type;
 
@@ -78,7 +79,7 @@ namespace NHibernate.UserTypes
 		/// <param name="session"></param>
 		/// <param name="owner">the containing entity</param>
 		/// <returns></returns>
-		object NullSafeGet(IDataReader dr, string[] names, ISessionImplementor session, object owner);
+		Task<object> NullSafeGet(IDataReader dr, string[] names, ISessionImplementor session, object owner);
 
 		/// <summary>
 		/// Write an instance of the mapped class to a prepared statement.
@@ -91,7 +92,7 @@ namespace NHibernate.UserTypes
 		/// <param name="index"></param>
 		/// <param name="settable"></param>
 		/// <param name="session"></param>
-		void NullSafeSet(IDbCommand cmd, object value, int index, bool[] settable, ISessionImplementor session);
+		Task NullSafeSet(IDbCommand cmd, object value, int index, bool[] settable, ISessionImplementor session);
 
 		/// <summary>
 		/// Return a deep copy of the persistent state, stopping at entities and at collections.
@@ -113,7 +114,7 @@ namespace NHibernate.UserTypes
 		/// <param name="value">the object to be cached</param>
 		/// <param name="session"></param>
 		/// <returns></returns>
-		object Disassemble(object value, ISessionImplementor session);
+		Task<object> Disassemble(object value, ISessionImplementor session);
 
 		/// <summary>
 		/// Reconstruct an object from the cacheable representation.
@@ -133,6 +134,6 @@ namespace NHibernate.UserTypes
 		/// composite user types often define component values, it might make sense to recursively
 		/// replace component values in the target object.
 		/// </summary>
-		object Replace(object original, object target, ISessionImplementor session, object owner);
+		Task<object> Replace(object original, object target, ISessionImplementor session, object owner);
 	}
 }

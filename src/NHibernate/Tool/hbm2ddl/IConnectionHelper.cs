@@ -1,5 +1,6 @@
 using System.Data;
 using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace NHibernate.Tool.hbm2ddl
 {
@@ -12,6 +13,11 @@ namespace NHibernate.Tool.hbm2ddl
 		///  Prepare the helper for use.
 		/// </summary>
 		void Prepare();
+
+		/// <summary>
+		///  Prepare the helper for use.
+		/// </summary>
+		Task PrepareAsync();
 
 		/// <summary>
 		/// Get a reference to the connection we are using.

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 
 
 namespace NHibernate.Event.Default
@@ -12,13 +13,13 @@ namespace NHibernate.Event.Default
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultDirtyCheckEventListener));
 
-		public virtual void OnDirtyCheck(DirtyCheckEvent @event)
+		public virtual async Task OnDirtyCheck(DirtyCheckEvent @event)
 		{
 			int oldSize = @event.Session.ActionQueue.CollectionRemovalsCount;
 
 			try
 			{
-				FlushEverythingToExecutions(@event);
+				await FlushEverythingToExecutions(@event).ConfigureAwait(false);
 				bool wasNeeded = @event.Session.ActionQueue.HasAnyQueuedActions;
 				log.Debug(wasNeeded ? "session dirty" : "session not dirty");
 				@event.Dirty = wasNeeded;

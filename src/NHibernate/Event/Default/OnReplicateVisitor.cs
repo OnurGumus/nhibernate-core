@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using NHibernate.Collection;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
@@ -21,11 +22,11 @@ namespace NHibernate.Event.Default
 			this.isUpdate = isUpdate;
 		}
 
-		internal override object ProcessCollection(object collection, CollectionType type)
+		internal override Task<object> ProcessCollection(object collection, CollectionType type)
 		{
 			if (collection == CollectionType.UnfetchedCollection)
 			{
-				return null;
+				return Task.FromResult<object>(null);
 			}
 
 			IEventSource session = Session;
@@ -56,7 +57,7 @@ namespace NHibernate.Event.Default
 				//processArrayOrNewCollection(collection, type);
 			}
 
-			return null;
+			return Task.FromResult<object>(null);
 		}
 	}
 }

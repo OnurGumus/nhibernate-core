@@ -190,6 +190,13 @@ namespace NHibernate
 		bool IsDirty();
 
 		/// <summary>
+		/// Does this <c>ISession</c> contain any changes which must be
+		/// synchronized with the database? Would any SQL be executed if
+		/// we flushed this session?
+		/// </summary>
+		Task<bool> IsDirtyAsync();
+
+		/// <summary>
 		/// Is the specified entity (or proxy) read-only?
 		/// </summary>
 		/// <remarks>
@@ -282,6 +289,17 @@ namespace NHibernate
 		void Evict(Object obj);
 
 		/// <summary>
+		/// Remove this instance from the session cache.
+		/// </summary>
+		/// <remarks>
+		/// Changes to the instance will not be synchronized with the database.
+		/// This operation cascades to associated instances if the association is mapped
+		/// with <c>cascade="all"</c> or <c>cascade="all-delete-orphan"</c>.
+		/// </remarks>
+		/// <param name="obj">a persistent instance</param>
+		Task EvictAsync(object obj);
+
+		/// <summary>
 		/// Return the persistent instance of the given entity class with the given identifier,
 		/// obtaining the specified lock mode.
 		/// </summary>
@@ -293,6 +311,16 @@ namespace NHibernate
 
 		/// <summary>
 		/// Return the persistent instance of the given entity class with the given identifier,
+		/// obtaining the specified lock mode.
+		/// </summary>
+		/// <param name="theType">A persistent class</param>
+		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
+		/// <param name="lockMode">The lock level</param>
+		/// <returns>the persistent instance</returns>
+		Task<object> LoadAsync(System.Type theType, object id, LockMode lockMode);
+
+		/// <summary>
+		/// Return the persistent instance of the given entity class with the given identifier,
 		/// obtaining the specified lock mode, assuming the instance exists.
 		/// </summary>
 		/// <param name="entityName">The entity-name of a persistent class</param>
@@ -300,6 +328,16 @@ namespace NHibernate
 		/// <param name="lockMode">the lock level </param>
 		/// <returns> the persistent instance or proxy </returns>
 		object Load(string entityName, object id, LockMode lockMode);
+
+		/// <summary>
+		/// Return the persistent instance of the given entity class with the given identifier,
+		/// obtaining the specified lock mode, assuming the instance exists.
+		/// </summary>
+		/// <param name="entityName">The entity-name of a persistent class</param>
+		/// <param name="id">a valid identifier of an existing persistent instance of the class </param>
+		/// <param name="lockMode">the lock level </param>
+		/// <returns> the persistent instance or proxy </returns>
+		Task<object> LoadAsync(string entityName, object id, LockMode lockMode);
 
 		/// <summary>
 		/// Return the persistent instance of the given entity class with the given identifier,
@@ -317,6 +355,20 @@ namespace NHibernate
 
 		/// <summary>
 		/// Return the persistent instance of the given entity class with the given identifier,
+		/// assuming that the instance exists.
+		/// </summary>
+		/// <remarks>
+		/// You should not use this method to determine if an instance exists (use a query or
+		/// <see cref="Get(System.Type, object)" /> instead). Use this only to retrieve an instance
+		/// that you assume exists, where non-existence would be an actual error.
+		/// </remarks>
+		/// <param name="theType">A persistent class</param>
+		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
+		/// <returns>The persistent instance or proxy</returns>
+		Task<object> LoadAsync(System.Type theType, object id);
+
+		/// <summary>
+		/// Return the persistent instance of the given entity class with the given identifier,
 		/// obtaining the specified lock mode.
 		/// </summary>
 		/// <typeparam name="T">A persistent class</typeparam>
@@ -324,6 +376,16 @@ namespace NHibernate
 		/// <param name="lockMode">The lock level</param>
 		/// <returns>the persistent instance</returns>
 		T Load<T>(object id, LockMode lockMode);
+
+		/// <summary>
+		/// Return the persistent instance of the given entity class with the given identifier,
+		/// obtaining the specified lock mode.
+		/// </summary>
+		/// <typeparam name="T">A persistent class</typeparam>
+		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
+		/// <param name="lockMode">The lock level</param>
+		/// <returns>the persistent instance</returns>
+		Task<T> LoadAsync<T>(object id, LockMode lockMode);
 
 		/// <summary>
 		/// Return the persistent instance of the given entity class with the given identifier,
@@ -340,6 +402,20 @@ namespace NHibernate
 		T Load<T>(object id);
 
 		/// <summary>
+		/// Return the persistent instance of the given entity class with the given identifier,
+		/// assuming that the instance exists.
+		/// </summary>
+		/// <remarks>
+		/// You should not use this method to determine if an instance exists (use a query or
+		/// <see cref="Get{T}(object)" /> instead). Use this only to retrieve an instance that you
+		/// assume exists, where non-existence would be an actual error.
+		/// </remarks>
+		/// <typeparam name="T">A persistent class</typeparam>
+		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
+		/// <returns>The persistent instance or proxy</returns>
+		Task<T> LoadAsync<T>(object id);
+
+		/// <summary>
 		/// Return the persistent instance of the given <paramref name="entityName"/> with the given identifier,
 		/// assuming that the instance exists.
 		/// </summary>
@@ -354,12 +430,34 @@ namespace NHibernate
 		object Load(string entityName, object id);
 
 		/// <summary>
+		/// Return the persistent instance of the given <paramref name="entityName"/> with the given identifier,
+		/// assuming that the instance exists.
+		/// </summary>
+		/// <param name="entityName">The entity-name of a persistent class</param>
+		/// <param name="id">a valid identifier of an existing persistent instance of the class </param>
+		/// <returns> The persistent instance or proxy </returns>
+		/// <remarks>
+		/// You should not use this method to determine if an instance exists (use <see cref="Get(string,object)"/>
+		/// instead). Use this only to retrieve an instance that you assume exists, where non-existence
+		/// would be an actual error.
+		/// </remarks>
+		Task<object> LoadAsync(string entityName, object id);
+
+		/// <summary>
 		/// Read the persistent state associated with the given identifier into the given transient
 		/// instance.
 		/// </summary>
 		/// <param name="obj">An "empty" instance of the persistent class</param>
 		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
 		void Load(object obj, object id);
+
+		/// <summary>
+		/// Read the persistent state associated with the given identifier into the given transient
+		/// instance.
+		/// </summary>
+		/// <param name="obj">An "empty" instance of the persistent class</param>
+		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
+		Task LoadAsync(object obj, object id);
 
 		/// <summary>
 		/// Persist all reachable transient objects, reusing the current identifier
@@ -370,6 +468,14 @@ namespace NHibernate
 		void Replicate(object obj, ReplicationMode replicationMode);
 
 		/// <summary>
+		/// Persist all reachable transient objects, reusing the current identifier
+		/// values. Note that this will not trigger the Interceptor of the Session.
+		/// </summary>
+		/// <param name="obj">a detached instance of a persistent class</param>
+		/// <param name="replicationMode"></param>
+		Task ReplicateAsync(object obj, ReplicationMode replicationMode);
+
+		/// <summary>
 		/// Persist the state of the given detached instance, reusing the current
 		/// identifier value.  This operation cascades to associated instances if
 		/// the association is mapped with <tt>cascade="replicate"</tt>.
@@ -378,6 +484,16 @@ namespace NHibernate
 		/// <param name="obj">a detached instance of a persistent class </param>
 		/// <param name="replicationMode"></param>
 		void Replicate(string entityName, object obj, ReplicationMode replicationMode);
+
+		/// <summary>
+		/// Persist the state of the given detached instance, reusing the current
+		/// identifier value.  This operation cascades to associated instances if
+		/// the association is mapped with <tt>cascade="replicate"</tt>.
+		/// </summary>
+		/// <param name="entityName"></param>
+		/// <param name="obj">a detached instance of a persistent class </param>
+		/// <param name="replicationMode"></param>
+		Task ReplicateAsync(string entityName, object obj, ReplicationMode replicationMode);
 
 		/// <summary>
 		/// Persist the given transient instance, first assigning a generated identifier.
@@ -662,12 +778,42 @@ namespace NHibernate
 		/// This operation cascades to associated instances if the association is mapped
 		/// with <tt>cascade="merge"</tt>.<br/>
 		/// The semantics of this method are defined by JSR-220.
+		/// </summary>
+		/// <param name="obj">a detached instance with state to be copied </param>
+		/// <returns> an updated persistent instance </returns>
+		Task<object> MergeAsync(object obj);
+
+		/// <summary>
+		/// Copy the state of the given object onto the persistent object with the same
+		/// identifier. If there is no persistent instance currently associated with
+		/// the session, it will be loaded. Return the persistent instance. If the
+		/// given instance is unsaved, save a copy of and return it as a newly persistent
+		/// instance. The given instance does not become associated with the session.
+		/// This operation cascades to associated instances if the association is mapped
+		/// with <tt>cascade="merge"</tt>.<br/>
+		/// The semantics of this method are defined by JSR-220.
 		/// <param name="entityName">Name of the entity.</param>
 		/// <param name="obj">a detached instance with state to be copied </param>
 		/// <returns> an updated persistent instance </returns>
 		/// </summary>
 		/// <returns></returns>
 		object Merge(string entityName, object obj);
+
+		/// <summary>
+		/// Copy the state of the given object onto the persistent object with the same
+		/// identifier. If there is no persistent instance currently associated with
+		/// the session, it will be loaded. Return the persistent instance. If the
+		/// given instance is unsaved, save a copy of and return it as a newly persistent
+		/// instance. The given instance does not become associated with the session.
+		/// This operation cascades to associated instances if the association is mapped
+		/// with <tt>cascade="merge"</tt>.<br/>
+		/// The semantics of this method are defined by JSR-220.
+		/// <param name="entityName">Name of the entity.</param>
+		/// <param name="obj">a detached instance with state to be copied </param>
+		/// <returns> an updated persistent instance </returns>
+		/// </summary>
+		/// <returns></returns>
+		Task<object> MergeAsync(string entityName, object obj);
 
 		/// <summary>
 		/// Copy the state of the given object onto the persistent object with the same
@@ -692,12 +838,42 @@ namespace NHibernate
 		/// This operation cascades to associated instances if the association is mapped
 		/// with <tt>cascade="merge"</tt>.<br/>
 		/// The semantics of this method are defined by JSR-220.
+		/// </summary>
+		/// <param name="entity">a detached instance with state to be copied </param>
+		/// <returns> an updated persistent instance </returns>
+		Task<T> MergeAsync<T>(T entity) where T : class;
+
+		/// <summary>
+		/// Copy the state of the given object onto the persistent object with the same
+		/// identifier. If there is no persistent instance currently associated with
+		/// the session, it will be loaded. Return the persistent instance. If the
+		/// given instance is unsaved, save a copy of and return it as a newly persistent
+		/// instance. The given instance does not become associated with the session.
+		/// This operation cascades to associated instances if the association is mapped
+		/// with <tt>cascade="merge"</tt>.<br/>
+		/// The semantics of this method are defined by JSR-220.
 		/// <param name="entityName">Name of the entity.</param>
 		/// <param name="entity">a detached instance with state to be copied </param>
 		/// <returns> an updated persistent instance </returns>
 		/// </summary>
 		/// <returns></returns>
 		T Merge<T>(string entityName, T entity) where T : class;
+
+		/// <summary>
+		/// Copy the state of the given object onto the persistent object with the same
+		/// identifier. If there is no persistent instance currently associated with
+		/// the session, it will be loaded. Return the persistent instance. If the
+		/// given instance is unsaved, save a copy of and return it as a newly persistent
+		/// instance. The given instance does not become associated with the session.
+		/// This operation cascades to associated instances if the association is mapped
+		/// with <tt>cascade="merge"</tt>.<br/>
+		/// The semantics of this method are defined by JSR-220.
+		/// <param name="entityName">Name of the entity.</param>
+		/// <param name="entity">a detached instance with state to be copied </param>
+		/// <returns> an updated persistent instance </returns>
+		/// </summary>
+		/// <returns></returns>
+		Task<T> MergeAsync<T>(string entityName, T entity) where T : class;
 
 		/// <summary>
 		/// Make a transient instance persistent. This operation cascades to associated
@@ -712,9 +888,26 @@ namespace NHibernate
 		/// instances if the association is mapped with <tt>cascade="persist"</tt>.<br/>
 		/// The semantics of this method are defined by JSR-220.
 		/// </summary>
+		/// <param name="obj">a transient instance to be made persistent </param>
+		Task PersistAsync(object obj);
+
+		/// <summary>
+		/// Make a transient instance persistent. This operation cascades to associated
+		/// instances if the association is mapped with <tt>cascade="persist"</tt>.<br/>
+		/// The semantics of this method are defined by JSR-220.
+		/// </summary>
 		/// <param name="entityName">Name of the entity.</param>
 		/// <param name="obj">a transient instance to be made persistent</param>
 		void Persist(string entityName, object obj);
+
+		/// <summary>
+		/// Make a transient instance persistent. This operation cascades to associated
+		/// instances if the association is mapped with <tt>cascade="persist"</tt>.<br/>
+		/// The semantics of this method are defined by JSR-220.
+		/// </summary>
+		/// <param name="entityName">Name of the entity.</param>
+		/// <param name="obj">a transient instance to be made persistent</param>
+		Task PersistAsync(string entityName, object obj);
 
 		/// <summary>
 		/// Remove a persistent instance from the datastore.
@@ -727,6 +920,16 @@ namespace NHibernate
 		void Delete(object obj);
 
 		/// <summary>
+		/// Remove a persistent instance from the datastore.
+		/// </summary>
+		/// <remarks>
+		/// The argument may be an instance associated with the receiving <c>ISession</c> or a
+		/// transient instance with an identifier associated with existing persistent state.
+		/// </remarks>
+		/// <param name="obj">The instance to be removed</param>
+		Task DeleteAsync(object obj);
+
+		/// <summary>
 		/// Remove a persistent instance from the datastore. The <b>object</b> argument may be
 		/// an instance associated with the receiving <see cref="ISession"/> or a transient
 		/// instance with an identifier associated with existing persistent state.
@@ -736,6 +939,17 @@ namespace NHibernate
 		/// <param name="entityName">The entity name for the instance to be removed. </param>
 		/// <param name="obj">the instance to be removed </param>
 		void Delete(string entityName, object obj);
+
+		/// <summary>
+		/// Remove a persistent instance from the datastore. The <b>object</b> argument may be
+		/// an instance associated with the receiving <see cref="ISession"/> or a transient
+		/// instance with an identifier associated with existing persistent state.
+		/// This operation cascades to associated instances if the association is mapped
+		/// with <tt>cascade="delete"</tt>.
+		/// </summary>
+		/// <param name="entityName">The entity name for the instance to be removed. </param>
+		/// <param name="obj">the instance to be removed </param>
+		Task DeleteAsync(string entityName, object obj);
 
 		/// <summary>
 		/// Delete all objects returned by the query.
@@ -797,6 +1011,13 @@ namespace NHibernate
 		/// <summary>
 		/// Obtain the specified lock level upon the given object.
 		/// </summary>
+		/// <param name="obj">A persistent instance</param>
+		/// <param name="lockMode">The lock level</param>
+		Task LockAsync(object obj, LockMode lockMode);
+
+		/// <summary>
+		/// Obtain the specified lock level upon the given object.
+		/// </summary>
 		/// <param name="entityName">The Entity name.</param>
 		/// <param name="obj">a persistent or transient instance </param>
 		/// <param name="lockMode">the lock level </param>
@@ -807,6 +1028,20 @@ namespace NHibernate
 		/// instances if the association is mapped with <tt>cascade="lock"</tt>.
 		/// </remarks>
 		void Lock(string entityName, object obj, LockMode lockMode);
+
+		/// <summary>
+		/// Obtain the specified lock level upon the given object.
+		/// </summary>
+		/// <param name="entityName">The Entity name.</param>
+		/// <param name="obj">a persistent or transient instance </param>
+		/// <param name="lockMode">the lock level </param>
+		/// <remarks>
+		/// This may be used to perform a version check (<see cref="LockMode.Read"/>), to upgrade to a pessimistic
+		/// lock (<see cref="LockMode.Upgrade"/>), or to simply reassociate a transient instance
+		/// with a session (<see cref="LockMode.None"/>). This operation cascades to associated
+		/// instances if the association is mapped with <tt>cascade="lock"</tt>.
+		/// </remarks>
+		Task LockAsync(string entityName, object obj, LockMode lockMode);
 
 		/// <summary>
 		/// Re-read the state of the given instance from the underlying database.
@@ -829,6 +1064,26 @@ namespace NHibernate
 		void Refresh(object obj);
 
 		/// <summary>
+		/// Re-read the state of the given instance from the underlying database.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// It is inadvisable to use this to implement long-running sessions that span many
+		/// business tasks. This method is, however, useful in certain special circumstances.
+		/// </para>
+		/// <para>
+		/// For example,
+		/// <list>
+		///		<item>Where a database trigger alters the object state upon insert or update</item>
+		///		<item>After executing direct SQL (eg. a mass update) in the same session</item>
+		///		<item>After inserting a <c>Blob</c> or <c>Clob</c></item>
+		/// </list>
+		/// </para>
+		/// </remarks>
+		/// <param name="obj">A persistent instance</param>
+		Task RefreshAsync(object obj);
+
+		/// <summary>
 		/// Re-read the state of the given instance from the underlying database, with
 		/// the given <c>LockMode</c>.
 		/// </summary>
@@ -839,6 +1094,18 @@ namespace NHibernate
 		/// <param name="obj">a persistent or transient instance</param>
 		/// <param name="lockMode">the lock mode to use</param>
 		void Refresh(object obj, LockMode lockMode);
+
+		/// <summary>
+		/// Re-read the state of the given instance from the underlying database, with
+		/// the given <c>LockMode</c>.
+		/// </summary>
+		/// <remarks>
+		/// It is inadvisable to use this to implement long-running sessions that span many
+		/// business tasks. This method is, however, useful in certain special circumstances.
+		/// </remarks>
+		/// <param name="obj">a persistent or transient instance</param>
+		/// <param name="lockMode">the lock mode to use</param>
+		Task RefreshAsync(object obj, LockMode lockMode);
 
 		/// <summary>
 		/// Determine the current lock mode of the given object
@@ -860,11 +1127,30 @@ namespace NHibernate
 		ITransaction BeginTransaction();
 
 		/// <summary>
+		/// Begin a unit of work and return the associated <c>ITransaction</c> object.
+		/// </summary>
+		/// <remarks>
+		/// If a new underlying transaction is required, begin the transaction. Otherwise
+		/// continue the new work in the context of the existing underlying transaction.
+		/// The class of the returned <see cref="ITransaction" /> object is determined by
+		/// the property <c>transaction_factory</c>
+		/// </remarks>
+		/// <returns>A transaction instance</returns>
+		Task<ITransaction> BeginTransactionAsync();
+
+		/// <summary>
 		/// Begin a transaction with the specified <c>isolationLevel</c>
 		/// </summary>
 		/// <param name="isolationLevel">Isolation level for the new transaction</param>
 		/// <returns>A transaction instance having the specified isolation level</returns>
 		ITransaction BeginTransaction(IsolationLevel isolationLevel);
+
+		/// <summary>
+		/// Begin a transaction with the specified <c>isolationLevel</c>
+		/// </summary>
+		/// <param name="isolationLevel">Isolation level for the new transaction</param>
+		/// <returns>A transaction instance having the specified isolation level</returns>
+		Task<ITransaction> BeginTransactionAsync(IsolationLevel isolationLevel);
 
 		/// <summary>
 		/// Get the current Unit of Work and return the associated <c>ITransaction</c> object.
@@ -965,6 +1251,14 @@ namespace NHibernate
 		IQuery CreateFilter(object collection, string queryString);
 
 		/// <summary>
+		/// Create a new instance of <c>Query</c> for the given collection and filter string
+		/// </summary>
+		/// <param name="collection">A persistent collection</param>
+		/// <param name="queryString">A hibernate query</param>
+		/// <returns>A query</returns>
+		Task<IQuery> CreateFilterAsync(object collection, string queryString);
+
+		/// <summary>
 		/// Obtain an instance of <see cref="IQuery" /> for a named query string defined in the
 		/// mapping file.
 		/// </summary>
@@ -1001,6 +1295,16 @@ namespace NHibernate
 
 		/// <summary>
 		/// Return the persistent instance of the given entity class with the given identifier, or null
+		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
+		/// already associated with the session, return that instance or proxy.)
+		/// </summary>
+		/// <param name="clazz">a persistent class</param>
+		/// <param name="id">an identifier</param>
+		/// <returns>a persistent instance or null</returns>
+		Task<object> GetAsync(System.Type clazz, object id);
+
+		/// <summary>
+		/// Return the persistent instance of the given entity class with the given identifier, or null
 		/// if there is no such persistent instance. Obtain the specified lock mode if the instance
 		/// exists.
 		/// </summary>
@@ -1009,36 +1313,6 @@ namespace NHibernate
 		/// <param name="lockMode">the lock mode</param>
 		/// <returns>a persistent instance or null</returns>
 		object Get(System.Type clazz, object id, LockMode lockMode);
-
-		/// <summary>
-		/// Return the persistent instance of the given named entity with the given identifier,
-		/// or null if there is no such persistent instance. (If the instance, or a proxy for the
-		/// instance, is already associated with the session, return that instance or proxy.)
-		/// </summary>
-		/// <param name="entityName">the entity name </param>
-		/// <param name="id">an identifier </param>
-		/// <returns> a persistent instance or null </returns>
-		object Get(string entityName, object id);
-
-		/// <summary>
-		/// Strongly-typed version of <see cref="Get(System.Type, object)" />
-		/// </summary>
-		T Get<T>(object id);
-
-		/// <summary>
-		/// Strongly-typed version of <see cref="Get(System.Type, object, LockMode)" />
-		/// </summary>
-		T Get<T>(object id, LockMode lockMode);
-
-		/// <summary>
-		/// Return the persistent instance of the given entity class with the given identifier, or null
-		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
-		/// already associated with the session, return that instance or proxy.)
-		/// </summary>
-		/// <param name="clazz">a persistent class</param>
-		/// <param name="id">an identifier</param>
-		/// <returns>a persistent instance or null</returns>
-		Task<object> GetAsync(System.Type clazz, object id);
 
 		/// <summary>
 		/// Return the persistent instance of the given entity class with the given identifier, or null
@@ -1059,7 +1333,22 @@ namespace NHibernate
 		/// <param name="entityName">the entity name </param>
 		/// <param name="id">an identifier </param>
 		/// <returns> a persistent instance or null </returns>
+		object Get(string entityName, object id);
+
+		/// <summary>
+		/// Return the persistent instance of the given named entity with the given identifier,
+		/// or null if there is no such persistent instance. (If the instance, or a proxy for the
+		/// instance, is already associated with the session, return that instance or proxy.)
+		/// </summary>
+		/// <param name="entityName">the entity name </param>
+		/// <param name="id">an identifier </param>
+		/// <returns> a persistent instance or null </returns>
 		Task<object> GetAsync(string entityName, object id);
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="Get(System.Type, object)" />
+		/// </summary>
+		T Get<T>(object id);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="Get(System.Type, object)" />
@@ -1069,7 +1358,13 @@ namespace NHibernate
 		/// <summary>
 		/// Strongly-typed version of <see cref="Get(System.Type, object, LockMode)" />
 		/// </summary>
+		T Get<T>(object id, LockMode lockMode);
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="Get(System.Type, object, LockMode)" />
+		/// </summary>
 		Task<T> GetAsync<T>(object id, LockMode lockMode);
+
 		/// <summary>
 		/// Return the entity name for a persistent entity
 		/// </summary>

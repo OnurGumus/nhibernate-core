@@ -1,8 +1,10 @@
 using System;
 using System.Data;
+using System.Threading.Tasks;
 using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -30,32 +32,34 @@ namespace NHibernate.Type
 			get { return typeof (string); }
 		}
 
-		public override object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override Task<object> NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			return NullSafeGet(rs, names[0], session, owner);
 		}
 
-		public override object NullSafeGet(IDataReader rs,string name,ISessionImplementor session,object owner)
+		public override Task<object> NullSafeGet(IDataReader rs,string name,ISessionImplementor session,object owner)
 		{
 			int index = rs.GetOrdinal(name);
 
 			if (rs.IsDBNull(index))
 			{
-				return null;
+				return Task.FromResult<object>(null);
 			}
 			else
 			{
 				string str = (string) NHibernateUtil.String.Get(rs, index);
-				return string.IsNullOrEmpty(str) ? null : str;
+				return Task.FromResult<object>(string.IsNullOrEmpty(str) ? null : str);
 			}
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override Task NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
-			if (settable[0]) NullSafeSet(st, value, index, session);
+			if (settable[0])
+				return NullSafeSet(st, value, index, session);
+			return TaskHelper.CompletedTask;
 		}
 
-		public override void NullSafeSet(IDbCommand st,object value,int index,ISessionImplementor session)
+		public override Task NullSafeSet(IDbCommand st,object value,int index,ISessionImplementor session)
 		{
 			if (value == null)
 			{
@@ -65,6 +69,7 @@ namespace NHibernate.Type
 			{
 				NHibernateUtil.String.Set(st, value, index);
 			}
+			return TaskHelper.CompletedTask;
 		}
 
 		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
@@ -87,9 +92,9 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override async Task<bool> IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			return checkable[0] && IsDirty(old, current, session);
+			return checkable[0] && await IsDirty(old, current, session).ConfigureAwait(false);
 		}
 
 		public override object FromXMLNode(XmlNode xml, IMapping factory)
@@ -102,9 +107,9 @@ namespace NHibernate.Type
 			return xml; //xml is the entity name
 		}
 
-		public override object Replace(object original, object current, ISessionImplementor session, object owner, System.Collections.IDictionary copiedAlready)
+		public override Task<object> Replace(object original, object current, ISessionImplementor session, object owner, System.Collections.IDictionary copiedAlready)
 		{
-			return original;
+			return Task.FromResult(original);
 		}
 
 		public override void SetToXMLNode(XmlNode node, object value, ISessionFactoryImplementor factory)

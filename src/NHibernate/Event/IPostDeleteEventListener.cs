@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace NHibernate.Event
 {
 	/// <summary> Called after deleting an item from the datastore </summary>
@@ -7,6 +9,6 @@ namespace NHibernate.Event
 		/// 
 		/// </summary>
 		/// <param name="event"></param>
-		void OnPostDelete(PostDeleteEvent @event);
+		Task OnPostDelete(PostDeleteEvent @event);
 	}
 }

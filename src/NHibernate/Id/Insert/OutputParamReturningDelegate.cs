@@ -42,9 +42,9 @@ namespace NHibernate.Id.Insert
 			return new ReturningIdentifierInsert(factory, idColumnName, ReturnParameterName);
 		}
 
-		protected internal override DbCommand Prepare(SqlCommandInfo insertSQL, ISessionImplementor session)
+		protected internal override async Task<DbCommand> Prepare(SqlCommandInfo insertSQL, ISessionImplementor session)
 		{
-			DbCommand command = session.Batcher.PrepareCommand(CommandType.Text, insertSQL.Text, insertSQL.ParameterTypes);
+			DbCommand command = await session.Batcher.PrepareCommand(CommandType.Text, insertSQL.Text, insertSQL.ParameterTypes).ConfigureAwait(false);
 			//Add the output parameter
 			IDbDataParameter idParameter = factory.ConnectionProvider.Driver.GenerateParameter(command, ReturnParameterName,
 			                                                                                         paramType);
@@ -61,9 +61,9 @@ namespace NHibernate.Id.Insert
 			return command;
 		}
 
-		public override async Task<object> ExecuteAndExtract(DbCommand insert, ISessionImplementor session, bool async)
+		public override async Task<object> ExecuteAndExtract(DbCommand insert, ISessionImplementor session)
 		{
-			await session.Batcher.ExecuteNonQuery(insert, async).ConfigureAwait(false);
+			await session.Batcher.ExecuteNonQuery(insert).ConfigureAwait(false);
 			return Convert.ChangeType(((IDbDataParameter) insert.Parameters[driveGeneratedParamName]).Value, Persister.IdentifierType.ReturnedClass);
 		}
 

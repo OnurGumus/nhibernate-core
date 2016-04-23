@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
 using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -55,7 +55,7 @@ namespace NHibernate.Cache
 			_queryCache.Clear();
 		}
 
-		public bool Put(QueryKey key, ICacheAssembler[] returnTypes, IList result, bool isNaturalKeyLookup, ISessionImplementor session)
+		public async Task<bool> Put(QueryKey key, ICacheAssembler[] returnTypes, IList result, bool isNaturalKeyLookup, ISessionImplementor session)
 		{
 			if (isNaturalKeyLookup && result.Count == 0)
 				return false;
@@ -70,11 +70,11 @@ namespace NHibernate.Cache
 			{
 				if (returnTypes.Length == 1)
 				{
-					cacheable.Add(returnTypes[0].Disassemble(result[i], session, null));
+					cacheable.Add(await returnTypes[0].Disassemble(result[i], session, null).ConfigureAwait(false));
 				}
 				else
 				{
-					cacheable.Add(TypeHelper.Disassemble((object[]) result[i], returnTypes, null, session, null));
+					cacheable.Add(await TypeHelper.Disassemble((object[]) result[i], returnTypes, null, session, null).ConfigureAwait(false));
 				}
 			}
 
@@ -83,7 +83,7 @@ namespace NHibernate.Cache
 			return true;
 		}
 
-		public IList Get(QueryKey key, ICacheAssembler[] returnTypes, bool isNaturalKeyLookup, ISet<string> spaces, ISessionImplementor session)
+		public async Task<IList> Get(QueryKey key, ICacheAssembler[] returnTypes, bool isNaturalKeyLookup, ISet<string> spaces, ISessionImplementor session)
 		{
 			if (Log.IsDebugEnabled)
 				Log.DebugFormat("checking cached query results in region: '{0}'; {1}", _regionName, key);
@@ -111,11 +111,11 @@ namespace NHibernate.Cache
 			{
 				if (returnTypes.Length == 1)
 				{
-					returnTypes[0].BeforeAssemble(cacheable[i], session);
+					await returnTypes[0].BeforeAssemble(cacheable[i], session).ConfigureAwait(false);
 				}
 				else
 				{
-					TypeHelper.BeforeAssemble((object[])cacheable[i], returnTypes, session);
+					await TypeHelper.BeforeAssemble((object[])cacheable[i], returnTypes, session).ConfigureAwait(false);
 				}
 			}
 
@@ -126,11 +126,11 @@ namespace NHibernate.Cache
 				{
 					if (returnTypes.Length == 1)
 					{
-						result.Add(returnTypes[0].Assemble(cacheable[i], session, null));
+						result.Add(await returnTypes[0].Assemble(cacheable[i], session, null).ConfigureAwait(false));
 					}
 					else
 					{
-						result.Add(TypeHelper.Assemble((object[])cacheable[i], returnTypes, session, null));
+						result.Add(await TypeHelper.Assemble((object[])cacheable[i], returnTypes, session, null).ConfigureAwait(false));
 					}
 				}
 				catch (UnresolvableObjectException)

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading.Tasks;
 
 namespace NHibernate.Event
 {
@@ -9,13 +10,13 @@ namespace NHibernate.Event
 	{
 		/// <summary> Handle the given refresh event. </summary>
 		/// <param name="event">The refresh event to be handled.</param>
-		void OnRefresh(RefreshEvent @event);
+		Task OnRefresh(RefreshEvent @event);
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="event"></param>
 		/// <param name="refreshedAlready"></param>
-		void OnRefresh(RefreshEvent @event, IDictionary refreshedAlready);
+		Task OnRefresh(RefreshEvent @event, IDictionary refreshedAlready);
 	}
 }

@@ -180,9 +180,11 @@
     <Compile Include="Dialect\SybaseSQLAnywhere11Dialect.cs" />
     <Compile Include="Dialect\SybaseSQLAnywhere12Dialect.cs" />
     <Compile Include="Dialect\TypeNames.cs" />
+    <Compile Include="Driver\DataReaderExWrapper.cs" />
     <Compile Include="Driver\DB2Driver.cs" />
     <Compile Include="Driver\DotConnectMySqlDriver.cs" />
     <Compile Include="Driver\DriverBase.cs" />
+    <Compile Include="Driver\IDataReaderEx.cs" />
     <Compile Include="Driver\IDriver.cs" />
     <Compile Include="Driver\IResultSetsCommand.cs" />
     <Compile Include="Driver\MySqlDataDriver.cs" />
@@ -743,6 +745,8 @@
     <Compile Include="UnresolvableObjectException.cs" />
     <Compile Include="Util\ADOExceptionReporter.cs" />
     <Compile Include="Util\ArrayHelper.cs" />
+    <Compile Include="Util\AsyncLock.cs" />
+    <Compile Include="Util\AsyncSemaphore.cs" />
     <Compile Include="Util\CollectionPrinter.cs" />
     <Compile Include="Util\EnumerableExtensions.cs" />
     <Compile Include="Util\EnumeratorAdapter.cs" />

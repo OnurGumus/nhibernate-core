@@ -1,5 +1,8 @@
 using System;
 using System.Data;
+using System.Data.Common;
+using System.Threading.Tasks;
+using NHibernate.Util;
 
 
 namespace NHibernate.Connection
@@ -31,21 +34,36 @@ namespace NHibernate.Connection
 		/// <exception cref="Exception">
 		/// If there is any problem creating or opening the <see cref="IDbConnection"/>.
 		/// </exception>
-		public override IDbConnection GetConnection()
+		public override DbConnection GetConnection()
+		{
+			return GetConnectionAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary>
+		/// Gets a new open <see cref="IDbConnection"/> through 
+		/// the <see cref="NHibernate.Driver.IDriver"/>.
+		/// </summary>
+		/// <returns>
+		/// An Open <see cref="IDbConnection"/>.
+		/// </returns>
+		/// <exception cref="Exception">
+		/// If there is any problem creating or opening the <see cref="IDbConnection"/>.
+		/// </exception>
+		public override async Task<DbConnection> GetConnectionAsync()
 		{
 			log.Debug("Obtaining IDbConnection from Driver");
-			IDbConnection conn = Driver.CreateConnection();
+			DbConnection conn = Driver.CreateConnection();
 			try
 			{
 				conn.ConnectionString = ConnectionString;
-				conn.Open();
+				await conn.OpenAsync().ConfigureAwait(false);
 			}
 			catch (Exception)
 			{
 				conn.Dispose();
 				throw;
 			}
-			
+
 			return conn;
 		}
 	}

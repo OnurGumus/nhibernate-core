@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Threading.Tasks;
 
 
 namespace NHibernate.Driver
@@ -20,12 +21,13 @@ namespace NHibernate.Driver
 	/// <see cref="IDataReader"/> to <see cref="NDataReader"/> in the middle of its use.
 	/// </para>
 	/// </remarks>
-	public class NHybridDataReader : IDataReader
+	public class NHybridDataReader : IDataReaderEx
 	{
 		private IInternalLogger log = LoggerProvider.LoggerFor(typeof(NHybridDataReader));
 
-		private IDataReader _reader;
+		private IDataReaderEx _reader;
 		private bool _isMidstream = false;
+		private bool _inMemory;
 
 		public IDataReader Target { get { return _reader; } }
 
@@ -33,7 +35,7 @@ namespace NHibernate.Driver
 		/// Initializes a new instance of the <see cref="NHybridDataReader"/> class.
 		/// </summary>
 		/// <param name="reader">The underlying IDataReader to use.</param>
-		public NHybridDataReader(IDataReader reader) : this(reader, false)
+		public NHybridDataReader(IDataReaderEx reader) : this(reader, false)
 		{
 		}
 
@@ -42,16 +44,19 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="reader">The underlying IDataReader to use.</param>
 		/// <param name="inMemory"><see langword="true" /> if the contents of the IDataReader should be read into memory right away.</param>
-		public NHybridDataReader(IDataReader reader, bool inMemory)
+		public NHybridDataReader(IDataReaderEx reader, bool inMemory)
 		{
-			if (inMemory)
+			_reader = reader;
+			_inMemory = inMemory;
+		}
+
+		public async Task<NHybridDataReader> Initialize()
+		{
+			if (_inMemory)
 			{
-				_reader = new NDataReader(reader, false);
+				_reader = await new NDataReader(_reader, false).Initialize().ConfigureAwait(false);
 			}
-			else
-			{
-				_reader = reader;
-			}
+			return this;
 		}
 
 		/// <summary>
@@ -61,7 +66,7 @@ namespace NHibernate.Driver
 		/// <remarks>
 		/// This will result in a no op if the reader is closed or is already in memory.
 		/// </remarks>
-		public void ReadIntoMemory()
+		public async Task ReadIntoMemory()
 		{
 			if (_reader.IsClosed == false && _reader.GetType() != typeof(NDataReader))
 			{
@@ -69,7 +74,7 @@ namespace NHibernate.Driver
 				{
 					log.Debug("Moving IDataReader into an NDataReader.  It was converted in midstream " + _isMidstream.ToString());
 				}
-				_reader = new NDataReader(_reader, _isMidstream);
+				_reader = await new NDataReader(_reader, _isMidstream).Initialize().ConfigureAwait(false);
 			}
 		}
 
@@ -438,5 +443,18 @@ namespace NHibernate.Driver
 		}
 
 		#endregion
+
+		public async Task<bool> ReadAsync()
+		{
+			_isMidstream = await _reader.ReadAsync().ConfigureAwait(false);
+			return _isMidstream;
+		}
+
+		public Task<bool> NextResultAsync()
+		{
+			// we are not in middle of a result
+			_isMidstream = false;
+			return _reader.NextResultAsync();
+		}
 	}
 }

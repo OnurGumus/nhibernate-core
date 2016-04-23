@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Connection;
 
 namespace NHibernate.Test
@@ -14,11 +15,11 @@ namespace NHibernate.Test
 	{
 		private ISet<IDbConnection> connections = new HashSet<IDbConnection>();
 
-		public override IDbConnection GetConnection()
+		public override DbConnection GetConnection()
 		{
 			try
 			{
-				IDbConnection connection = base.GetConnection();
+				DbConnection connection = base.GetConnection();
 				connections.Add(connection);
 				return connection;
 			}

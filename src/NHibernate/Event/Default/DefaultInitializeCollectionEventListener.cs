@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics;
-
+using System.Threading.Tasks;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Collection;
@@ -16,7 +16,7 @@ namespace NHibernate.Event.Default
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultInitializeCollectionEventListener));
 
 		/// <summary> called by a collection that wants to initialize itself</summary>
-		public virtual void OnInitializeCollection(InitializeCollectionEvent @event)
+		public virtual async Task OnInitializeCollection(InitializeCollectionEvent @event)
 		{
 			IPersistentCollection collection = @event.Collection;
 			ISessionImplementor source = @event.Session;
@@ -39,7 +39,7 @@ namespace NHibernate.Event.Default
 				}
 
 				log.Debug("checking second-level cache");
-				bool foundInCache = InitializeCollectionFromCache(ce.LoadedKey, ce.LoadedPersister, collection, source);
+				bool foundInCache = await InitializeCollectionFromCache(ce.LoadedKey, ce.LoadedPersister, collection, source).ConfigureAwait(false);
 
 				if (foundInCache)
 				{
@@ -48,7 +48,7 @@ namespace NHibernate.Event.Default
 				else
 				{
 					log.Debug("collection not cached");
-					ce.LoadedPersister.Initialize(ce.LoadedKey, source);
+					await ce.LoadedPersister.Initialize(ce.LoadedKey, source).ConfigureAwait(false);
 					log.Debug("collection initialized");
 
 					if (statsEnabled)
@@ -61,7 +61,7 @@ namespace NHibernate.Event.Default
 		}
 
 		/// <summary> Try to initialize a collection from the cache</summary>
-		private bool InitializeCollectionFromCache(object id, ICollectionPersister persister, IPersistentCollection collection, ISessionImplementor source)
+		private async Task<bool> InitializeCollectionFromCache(object id, ICollectionPersister persister, IPersistentCollection collection, ISessionImplementor source)
 		{
 
 			if (!(source.EnabledFilters.Count == 0) && persister.IsAffectedByEnabledFilters(source))
@@ -113,7 +113,7 @@ namespace NHibernate.Event.Default
 					IPersistenceContext persistenceContext = source.PersistenceContext;
 
 					CollectionCacheEntry cacheEntry = (CollectionCacheEntry)persister.CacheEntryStructure.Destructure(ce, factory);
-					cacheEntry.Assemble(collection, persister, persistenceContext.GetCollectionOwner(id, persister));
+					await cacheEntry.Assemble(collection, persister, persistenceContext.GetCollectionOwner(id, persister)).ConfigureAwait(false);
 
 					persistenceContext.GetCollectionEntry(collection).PostInitialize(collection);
 					return true;

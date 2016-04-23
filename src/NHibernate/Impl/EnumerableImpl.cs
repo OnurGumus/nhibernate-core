@@ -180,7 +180,7 @@ namespace NHibernate.Impl
 	
 					if (_single && !isHolder)
 					{
-						_currentResult = _types[0].NullSafeGet(_reader, _names[0], _session, null);
+						_currentResult = _types[0].NullSafeGet(_reader, _names[0], _session, null).ConfigureAwait(false).GetAwaiter().GetResult();
 					}
 					else
 					{
@@ -194,7 +194,7 @@ namespace NHibernate.Impl
 							// is a value type then the value will simply be pulled out of the IDataReader.  If
 							// the IType is an Entity type then the IType will extract the id from the IDataReader
 							// and use the ISession to load an instance of the object.
-							currentResults[i] = _types[i].NullSafeGet(_reader, _names[i], _session, null);
+							currentResults[i] = _types[i].NullSafeGet(_reader, _names[i], _session, null).ConfigureAwait(false).GetAwaiter().GetResult();
 						}
 	
 						if (isHolder)

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using NHibernate.Engine;
 
 namespace NHibernate.Loader.Collection
@@ -12,6 +13,6 @@ namespace NHibernate.Loader.Collection
 		/// <summary>
 		/// Initialize the given collection
 		/// </summary>
-		void Initialize(object id, ISessionImplementor session);
+		Task Initialize(object id, ISessionImplementor session);
 	}
 }

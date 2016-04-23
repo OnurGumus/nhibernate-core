@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace NHibernate.Event
 {
@@ -7,8 +8,8 @@ namespace NHibernate.Event
 	{
 		/// <summary>Handle the given delete event. </summary>
 		/// <param name="event">The delete event to be handled. </param>
-		void OnDelete(DeleteEvent @event);
+		Task OnDelete(DeleteEvent @event);
 
-		void OnDelete(DeleteEvent @event, ISet<object> transientEntities);
+		Task OnDelete(DeleteEvent @event, ISet<object> transientEntities);
 	}
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2192
@@ -102,6 +103,23 @@ namespace NHibernate.Test.NHSpecificTest.NH2192
 
 			if (exceptions.Count > 0)
 				throw exceptions[0];
+		}
+
+		[Test]
+		public async Task HqlIsThreadsafe_UsingAsync()
+		{
+			for (int i = 0; i < _threadCount; i++)
+			{
+				using (var s = Sfi.OpenSession())
+				{
+					var count =
+						(await s.CreateQuery("select ci from ContentItem ci where ci.Name = :v1")
+							.SetParameter("v1", "Test")
+							.ListAsync<ContentItem>())
+							.Count;
+					Assert.That(count, Is.EqualTo(2));
+				}
+			}
 		}
 
 		private int FetchRowResults()

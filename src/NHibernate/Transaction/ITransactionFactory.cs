@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading.Tasks;
 using System.Transactions;
 using NHibernate;
 using NHibernate.AdoNet;
@@ -32,6 +33,6 @@ namespace NHibernate.Transaction
 
 		bool IsInDistributedActiveTransaction(ISessionImplementor session);
 
-		void ExecuteWorkInIsolation(ISessionImplementor session, IIsolatedWork work, bool transacted);
+		Task ExecuteWorkInIsolation(ISessionImplementor session, IIsolatedWork work, bool transacted);
 	}
 }

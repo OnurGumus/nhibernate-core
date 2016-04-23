@@ -10,6 +10,7 @@ using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NHibernate.Impl;
 
 namespace NHibernate.Type
@@ -82,23 +83,25 @@ namespace NHibernate.Type
 		/// <returns> The instantiated collection. </returns>
 		public abstract IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister, object key);
 
-		public override object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
+		public override Task<object> NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			return NullSafeGet(rs, new string[] { name }, session, owner);
 		}
 
-		public override object NullSafeGet(IDataReader rs, string[] name, ISessionImplementor session, object owner)
+		public override Task<object> NullSafeGet(IDataReader rs, string[] name, ISessionImplementor session, object owner)
 		{
 			return ResolveIdentifier(null, session, owner);
 		}
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override Task NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			// NOOP
+			return TaskHelper.CompletedTask;
 		}
 
-		public override void NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
+		public override Task NullSafeSet(IDbCommand cmd, object value, int index, ISessionImplementor session)
 		{
+			return TaskHelper.CompletedTask;
 		}
 
 		public override SqlType[] SqlTypes(IMapping session)
@@ -142,7 +145,7 @@ namespace NHibernate.Type
 			get { return false; }
 		}
 
-		public override object Disassemble(object value, ISessionImplementor session, object owner)
+		public override Task<object> Disassemble(object value, ISessionImplementor session, object owner)
 		{
 			//remember the uk value
 
@@ -153,7 +156,7 @@ namespace NHibernate.Type
 			object key = GetKeyOfOwner(owner, session);
 			if (key == null)
 			{
-				return null;
+				return Task.FromResult<object>(null);
 			}
 			else
 			{
@@ -161,7 +164,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Assemble(object cached, ISessionImplementor session, object owner)
+		public override async Task<object> Assemble(object cached, ISessionImplementor session, object owner)
 		{
 			//we must use the "remembered" uk value, since it is 
 			//not available from the EntityEntry during assembly
@@ -171,8 +174,8 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				object key = GetPersister(session).KeyType.Assemble(cached, session, owner);
-				return ResolveKey(key, session, owner);
+				object key = await GetPersister(session).KeyType.Assemble(cached, session, owner).ConfigureAwait(false);
+				return await ResolveKey(key, session, owner).ConfigureAwait(false);
 			}
 		}
 
@@ -187,12 +190,12 @@ namespace NHibernate.Type
 			return session.Factory.GetCollectionPersister(role);
 		}
 
-		public override bool IsDirty(object old, object current, ISessionImplementor session)
+		public override async Task<bool> IsDirty(object old, object current, ISessionImplementor session)
 		{
 			// collections don't dirty an unversioned parent entity
 
 			// TODO: I don't like this implementation; it would be better if this was handled by SearchForDirtyCollections();
-			return IsOwnerVersioned(session) && base.IsDirty(old, current, session);
+			return IsOwnerVersioned(session) && await base.IsDirty(old, current, session).ConfigureAwait(false);
 		}
 
 		/// <summary> 
@@ -218,24 +221,24 @@ namespace NHibernate.Type
 			get { return ForeignKeyDirection.ForeignKeyToParent; }
 		}
 
-		public override object Hydrate(IDataReader rs, string[] name, ISessionImplementor session, object owner)
+		public override Task<object> Hydrate(IDataReader rs, string[] name, ISessionImplementor session, object owner)
 		{
 			// can't just return null here, since that would
 			// cause an owning component to become null
-			return NotNullCollection;
+			return Task.FromResult(NotNullCollection);
 		}
 
-		public override object ResolveIdentifier(object key, ISessionImplementor session, object owner)
+		public override Task<object> ResolveIdentifier(object key, ISessionImplementor session, object owner)
 		{
 			return ResolveKey(GetKeyOfOwner(owner, session), session, owner);
 		}
 
-		private object ResolveKey(object key, ISessionImplementor session, object owner)
+		private async Task<object> ResolveKey(object key, ISessionImplementor session, object owner)
 		{
-			return key == null ? null : GetCollection(key, session, owner);
+			return key == null ? null : await GetCollection(key, session, owner).ConfigureAwait(false);
 		}
 
-		public object GetCollection(object key, ISessionImplementor session, object owner)
+		public async Task<object> GetCollection(object key, ISessionImplementor session, object owner)
 		{
 			ICollectionPersister persister = GetPersister(session);
 			IPersistenceContext persistenceContext = session.PersistenceContext;
@@ -263,7 +266,7 @@ namespace NHibernate.Type
 					// some collections are not lazy:
 					if (InitializeImmediately(entityMode))
 					{
-						session.InitializeCollection(collection, false);
+						await session.InitializeCollection(collection, false).ConfigureAwait(false);
 					}
 					else if (!persister.IsLazy)
 					{
@@ -336,7 +339,7 @@ namespace NHibernate.Type
 			return Instantiate(-1);
 		}
 
-		public override object Replace(object original, object target, ISessionImplementor session, object owner,
+		public override async Task<object> Replace(object original, object target, ISessionImplementor session, object owner,
 									   IDictionary copyCache)
 		{
 			if (original == null)
@@ -355,21 +358,21 @@ namespace NHibernate.Type
 
 			//for arrays, replaceElements() may return a different reference, since
 			//the array length might not match
-			result = ReplaceElements(original, result, owner, copyCache, session);
+			result = await ReplaceElements(original, result, owner, copyCache, session).ConfigureAwait(false);
 
 			if (original == target)
 			{
 				//get the elements back into the target
 				//TODO: this is a little inefficient, don't need to do a whole
 				//	  deep replaceElements() call
-				ReplaceElements(result, target, owner, copyCache, session);
+				await ReplaceElements(result, target, owner, copyCache, session).ConfigureAwait(false);
 				result = target;
 			}
 
 			return result;
 		}
 
-		public virtual object ReplaceElements(object original, object target, object owner, IDictionary copyCache,
+		public virtual async Task<object> ReplaceElements(object original, object target, object owner, IDictionary copyCache,
 											  ISessionImplementor session)
 		{
 			// TODO: does not work for EntityMode.DOM4J yet!
@@ -381,7 +384,7 @@ namespace NHibernate.Type
 			IEnumerable iter = (IEnumerable)original;
 			foreach (object obj in iter)
 			{
-				Add(result, elemType.Replace(obj, null, session, owner, copyCache));
+				Add(result, await elemType.Replace(obj, null, session, owner, copyCache).ConfigureAwait(false));
 			}
 
 			// if the original is a PersistentCollection, and that original
@@ -455,15 +458,15 @@ namespace NHibernate.Type
 			get { return isEmbeddedInXML; }
 		}
 
-		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override Task<bool> IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
 			return IsDirty(old, current, session);
 		}
 
-		public override bool IsModified(object oldHydratedState, object currentState, bool[] checkable,
+		public override Task<bool> IsModified(object oldHydratedState, object currentState, bool[] checkable,
 										ISessionImplementor session)
 		{
-			return false;
+			return Task.FromResult(false);
 		}
 
 		/// <summary>

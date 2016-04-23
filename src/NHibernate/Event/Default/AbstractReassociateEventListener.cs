@@ -1,5 +1,5 @@
 using System;
-
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;
@@ -25,7 +25,7 @@ namespace NHibernate.Event.Default
 		/// <param name="id">The id of the entity. </param>
 		/// <param name="persister">The entity's persister instance. </param>
 		/// <returns> An EntityEntry representing the entity within this session. </returns>
-		protected EntityEntry Reassociate(AbstractEvent @event, object entity, object id, IEntityPersister persister)
+		protected async Task<EntityEntry> Reassociate(AbstractEvent @event, object entity, object id, IEntityPersister persister)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -54,7 +54,7 @@ namespace NHibernate.Event.Default
 				false,
 				true);
 
-			new OnLockVisitor(source, id, entity).Process(entity, persister);
+			await new OnLockVisitor(source, id, entity).Process(entity, persister).ConfigureAwait(false);
 
 			persister.AfterReassociate(entity, source);
 

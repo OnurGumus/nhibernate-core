@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Param;
 using NHibernate.SqlTypes;
@@ -40,7 +41,7 @@ namespace NHibernate.SqlCommand
 		/// If the first query in <paramref name="command"/> has 12 parameters (size of its SqlType array) the offset to bind all <see cref="IParameterSpecification"/>s, of the second query in the
 		/// <paramref name="command"/>, is 12 (for the first query we are using from 0 to 11).
 		/// </remarks>
-		void Bind(IDbCommand command, IList<Parameter> commandQueryParametersList, int singleSqlParametersOffset, ISessionImplementor session);
+		Task Bind(IDbCommand command, IList<Parameter> commandQueryParametersList, int singleSqlParametersOffset, ISessionImplementor session);
 
 		/// <summary>
 		/// Bind the appropriate value into the given command.
@@ -51,7 +52,7 @@ namespace NHibernate.SqlCommand
 		/// Use this method when the <paramref name="command"/> contains just 'this' instance of <see cref="ISqlCommand"/>.
 		/// Use the overload <see cref="Bind(IDbCommand, IList{Parameter}, int, ISessionImplementor)"/> when the <paramref name="command"/> contains more instances of <see cref="ISqlCommand"/>.
 		/// </remarks>
-		void Bind(IDbCommand command, ISessionImplementor session);
+		Task Bind(IDbCommand command, ISessionImplementor session);
 	}
 
 	public class SqlCommandImpl : ISqlCommand
@@ -133,11 +134,11 @@ namespace NHibernate.SqlCommand
 		/// <param name="commandQueryParametersList">The parameter-list of the whole query of the command.</param>
 		/// <param name="singleSqlParametersOffset">The offset from where start the list of <see cref="IDataParameter"/>, in the given <paramref name="command"/>, for the this <see cref="SqlCommandImpl"/>. </param>
 		/// <param name="session">The session against which the current execution is occuring.</param>
-		public void Bind(IDbCommand command, IList<Parameter> commandQueryParametersList, int singleSqlParametersOffset, ISessionImplementor session)
+		public async Task Bind(IDbCommand command, IList<Parameter> commandQueryParametersList, int singleSqlParametersOffset, ISessionImplementor session)
 		{
 			foreach (IParameterSpecification parameterSpecification in Specifications)
 			{
-				parameterSpecification.Bind(command, commandQueryParametersList, singleSqlParametersOffset, SqlQueryParametersList, QueryParameters, session);
+				await parameterSpecification.Bind(command, commandQueryParametersList, singleSqlParametersOffset, SqlQueryParametersList, QueryParameters, session).ConfigureAwait(false);
 			}
 		}
 
@@ -150,11 +151,11 @@ namespace NHibernate.SqlCommand
 		/// Use this method when the <paramref name="command"/> contains just 'this' instance of <see cref="ISqlCommand"/>.
 		/// Use the overload <see cref="Bind(IDbCommand, IList{Parameter}, int, ISessionImplementor)"/> when the <paramref name="command"/> contains more instances of <see cref="ISqlCommand"/>.
 		/// </remarks>
-		public void Bind(IDbCommand command, ISessionImplementor session)
+		public async Task Bind(IDbCommand command, ISessionImplementor session)
 		{
 			foreach (IParameterSpecification parameterSpecification in Specifications)
 			{
-				parameterSpecification.Bind(command, SqlQueryParametersList, QueryParameters, session);
+				await parameterSpecification.Bind(command, SqlQueryParametersList, QueryParameters, session).ConfigureAwait(false);
 			}
 		}
 	}

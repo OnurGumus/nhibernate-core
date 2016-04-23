@@ -4,6 +4,7 @@ using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Persister.Entity;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Action
 {
@@ -54,7 +55,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		public override async Task Execute(bool async)
+		public override async Task Execute()
 		{
 			IEntityPersister persister = Persister;
 			object instance = Instance;
@@ -66,17 +67,17 @@ namespace NHibernate.Action
 				stopwatch = Stopwatch.StartNew();
 			}
 
-			bool veto = PreInsert();
+			bool veto = await PreInsert().ConfigureAwait(false);
 
 			// Don't need to lock the cache here, since if someone
 			// else inserted the same pk first, the insert would fail
 
 			if (!veto)
 			{
-				generatedId = await persister.Insert(state, instance, Session, async).ConfigureAwait(false);
+				generatedId = await persister.Insert(state, instance, Session).ConfigureAwait(false);
 				if (persister.HasInsertGeneratedProperties)
 				{
-					persister.ProcessInsertGeneratedProperties(generatedId, instance, state, Session);
+					await persister.ProcessInsertGeneratedProperties(generatedId, instance, state, Session).ConfigureAwait(false);
 				}
 				//need to do that here rather than in the save event listener to let
 				//the post insert events to have a id-filled entity when IDENTITY is used (EJB3)
@@ -91,7 +92,7 @@ namespace NHibernate.Action
 			persister.getCache().insert(generatedId, cacheEntry);
 			}*/
 
-			PostInsert();
+			await PostInsert().ConfigureAwait(false);
 			if (statsEnabled && !veto)
 			{
 				stopwatch.Stop();
@@ -99,7 +100,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		private void PostInsert()
+		private async Task PostInsert()
 		{
 			if (isDelayed)
 			{
@@ -111,12 +112,12 @@ namespace NHibernate.Action
 				PostInsertEvent postEvent = new PostInsertEvent(Instance, generatedId, state, Persister, (IEventSource)Session);
 				foreach (IPostInsertEventListener listener in postListeners)
 				{
-					listener.OnPostInsert(postEvent);
+					await listener.OnPostInsert(postEvent).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private void PostCommitInsert()
+		private async Task PostCommitInsert()
 		{
 			IPostInsertEventListener[] postListeners = Session.Listeners.PostCommitInsertEventListeners;
 			if (postListeners.Length > 0)
@@ -124,12 +125,12 @@ namespace NHibernate.Action
 				var postEvent = new PostInsertEvent(Instance, generatedId, state, Persister, (IEventSource) Session);
 				foreach (IPostInsertEventListener listener in postListeners)
 				{
-					listener.OnPostInsert(postEvent);
+					await listener.OnPostInsert(postEvent).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private bool PreInsert()
+		private async Task<bool> PreInsert()
 		{
 			IPreInsertEventListener[] preListeners = Session.Listeners.PreInsertEventListeners;
 			bool veto = false;
@@ -138,13 +139,13 @@ namespace NHibernate.Action
 				var preEvent = new PreInsertEvent(Instance, null, state, Persister, (IEventSource) Session);
 				foreach (IPreInsertEventListener listener in preListeners)
 				{
-					veto |= listener.OnPreInsert(preEvent);
+					veto |= await listener.OnPreInsert(preEvent).ConfigureAwait(false);
 				}
 			}
 			return veto;
 		}
 
-		protected override void AfterTransactionCompletionProcessImpl(bool success)
+		protected override Task AfterTransactionCompletionProcessImpl(bool success)
 		{
 			//TODO Make 100% certain that this is called before any subsequent ScheduledUpdate.afterTransactionCompletion()!!
 			//TODO from H3.2: reenable if we also fix the above todo
@@ -154,8 +155,9 @@ namespace NHibernate.Action
 			}*/
 			if (success)
 			{
-				PostCommitInsert();
+				return PostCommitInsert();
 			}
+			return TaskHelper.CompletedTask;
 		}
 	}
 }

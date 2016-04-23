@@ -1,4 +1,5 @@
 
+using System.Threading.Tasks;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -22,19 +23,19 @@ namespace NHibernate.Event.Default
 			get { return substitute; }
 		}
 
-		internal override void Process(object obj, IEntityPersister persister)
+		internal override async Task Process(object obj, IEntityPersister persister)
 		{
 			EntityMode entityMode = Session.EntityMode;
 			object[] values = persister.GetPropertyValues(obj, entityMode);
 			IType[] types = persister.PropertyTypes;
-			ProcessEntityPropertyValues(values, types);
+			await ProcessEntityPropertyValues(values, types).ConfigureAwait(false);
 			if (SubstitutionRequired)
 			{
 				persister.SetPropertyValues(obj, values, entityMode);
 			}
 		}
 
-		internal override object ProcessCollection(object collection, CollectionType collectionType)
+		internal override Task<object> ProcessCollection(object collection, CollectionType collectionType)
 		{
 			IPersistentCollection coll = collection as IPersistentCollection;
 			if (coll != null)
@@ -44,11 +45,11 @@ namespace NHibernate.Event.Default
 				{
 					ReattachCollection(coll, collectionType);
 				}
-				return null;
+				return Task.FromResult<object>(null);
 			}
 			else
 			{
-				return ProcessArrayOrNewCollection(collection, collectionType);
+				return Task.FromResult(ProcessArrayOrNewCollection(collection, collectionType));
 			}
 		}
 
@@ -93,9 +94,9 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		internal override void ProcessValue(int i, object[] values, IType[] types)
+		internal override async Task ProcessValue(int i, object[] values, IType[] types)
 		{
-			object result = ProcessValue(values[i], types[i]);
+			object result = await ProcessValue(values[i], types[i]).ConfigureAwait(false);
 			if (result != null)
 			{
 				substitute = true;
@@ -103,16 +104,16 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		internal override object ProcessComponent(object component, IAbstractComponentType componentType)
+		internal override async Task<object> ProcessComponent(object component, IAbstractComponentType componentType)
 		{
 			if (component != null)
 			{
-				object[] values = componentType.GetPropertyValues(component, Session);
+				object[] values = await componentType.GetPropertyValues(component, Session).ConfigureAwait(false);
 				IType[] types = componentType.Subtypes;
 				bool substituteComponent = false;
 				for (int i = 0; i < types.Length; i++)
 				{
-					object result = ProcessValue(values[i], types[i]);
+					object result = await ProcessValue(values[i], types[i]).ConfigureAwait(false);
 					if (result != null)
 					{
 						values[i] = result;

@@ -37,7 +37,7 @@ namespace NHibernate.Test.IdGen.NativeGuid
 			var gen = new NativeGuidGenerator();
 			using (ISession s = sessions.OpenSession())
 			{
-				object result = gen.Generate((ISessionImplementor)s, null);
+				object result = gen.Generate((ISessionImplementor)s, null).Result;
 				Assert.That(result, Is.TypeOf(typeof (Guid)));
 				Assert.That(result, Is.Not.EqualTo(Guid.Empty));
 			}

@@ -1,9 +1,10 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Security.Permissions;
-
+using System.Threading.Tasks;
 using NHibernate.Engine;
 
 namespace NHibernate.AdoNet
@@ -28,7 +29,7 @@ namespace NHibernate.AdoNet
 		}
 
 		[NonSerialized]
-		private IDbConnection connection;
+		private DbConnection connection;
 		// Whether we own the connection, i.e. connect and disconnect automatically.
 		private bool ownConnection;
 
@@ -49,7 +50,7 @@ namespace NHibernate.AdoNet
 
 		public ConnectionManager(
 			ISessionImplementor session,
-			IDbConnection suppliedConnection,
+			DbConnection suppliedConnection,
 			ConnectionReleaseMode connectionReleaseMode,
 			IInterceptor interceptor)
 		{
@@ -88,7 +89,7 @@ namespace NHibernate.AdoNet
 			ownConnection = true;
 		}
 
-		public void Reconnect(IDbConnection suppliedConnection)
+		public void Reconnect(DbConnection suppliedConnection)
 		{
 			if (IsConnected)
 			{
@@ -177,13 +178,13 @@ namespace NHibernate.AdoNet
 			connection = null;
 		}
 
-		public IDbConnection GetConnection()
+		public async Task<DbConnection> GetConnection()
 		{
 			if (connection == null)
 			{
 				if (ownConnection)
 				{
-					connection = Factory.ConnectionProvider.GetConnection();
+					connection = await Factory.ConnectionProvider.GetConnectionAsync().ConfigureAwait(false);
 					if (Factory.Statistics.IsStatisticsEnabled)
 					{
 						Factory.StatisticsImplementor.Connect();
@@ -306,15 +307,15 @@ namespace NHibernate.AdoNet
 
 		#endregion
 
-		public ITransaction BeginTransaction(IsolationLevel isolationLevel)
+		public async Task<ITransaction> BeginTransaction(IsolationLevel isolationLevel)
 		{
-			Transaction.Begin(isolationLevel);
+			await Transaction.BeginAsync(isolationLevel).ConfigureAwait(false);
 			return transaction;
 		}
 
-		public ITransaction BeginTransaction()
+		public async Task<ITransaction> BeginTransaction()
 		{
-			Transaction.Begin();
+			await Transaction.BeginAsync().ConfigureAwait(false);
 			return transaction;
 		}
 
@@ -407,9 +408,9 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		public IDbCommand CreateCommand()
+		public async Task<DbCommand> CreateCommand()
 		{
-			var result = GetConnection().CreateCommand();
+			var result = (await GetConnection().ConfigureAwait(false)).CreateCommand();
 			Transaction.Enlist(result);
 			return result;
 		}

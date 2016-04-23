@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Data;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Type;
@@ -87,7 +89,7 @@ namespace NHibernate.Id.Enhanced
 	public class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SequenceStyleGenerator));
-
+		private readonly AsyncLock _lock = new AsyncLock();
 
 		public const string ConfigPreferSegmentPerEntity = "prefer_entity_table_as_segment_value";
 
@@ -400,13 +402,13 @@ namespace NHibernate.Id.Enhanced
 			};
 		}
 
-
-		[MethodImpl(MethodImplOptions.Synchronized)]
-		public virtual object Generate(ISessionImplementor session, object obj)
+		public virtual async Task<object> Generate(ISessionImplementor session, object obj)
 		{
-			return Optimizer.Generate(new TableAccessCallback(session, this));
+			using (var releaser = await _lock.LockAsync().ConfigureAwait(false))
+			{
+				return await Optimizer.Generate(new TableAccessCallback(session, this)).ConfigureAwait(false);
+			}
 		}
-
 
 		private class TableAccessCallback : IAccessCallback
 		{
@@ -421,16 +423,16 @@ namespace NHibernate.Id.Enhanced
 
 			#region IAccessCallback Members
 
-			public long GetNextValue()
+			public async Task<long> GetNextValue()
 			{
-				return Convert.ToInt64(owner.DoWorkInNewTransaction(session));
+				return Convert.ToInt64(await owner.DoWorkInNewTransaction(session).ConfigureAwait(false));
 			}
 
 			#endregion
 		}
 
 
-		public override object DoWorkInCurrentTransaction(ISessionImplementor session, System.Data.IDbConnection conn, System.Data.IDbTransaction transaction)
+		public override async Task<object> DoWorkInCurrentTransaction(ISessionImplementor session, DbConnection conn, DbTransaction transaction)
 		{
 			long result;
 			int updatedRows;
@@ -441,7 +443,7 @@ namespace NHibernate.Id.Enhanced
 
 				try
 				{
-					IDbCommand selectCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, selectQuery, selectParameterTypes);
+					DbCommand selectCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, selectQuery, selectParameterTypes);
 					using (selectCmd)
 					{
 						selectCmd.Connection = conn;
@@ -450,14 +452,14 @@ namespace NHibernate.Id.Enhanced
 						((IDataParameter)selectCmd.Parameters[0]).Value = SegmentValue;
 						PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(selectCmd, FormatStyle.Basic);
 
-						selectedValue = selectCmd.ExecuteScalar();
+						selectedValue = await selectCmd.ExecuteScalarAsync().ConfigureAwait(false);
 					}
 
 					if (selectedValue == null)
 					{
 						result = InitialValue;
 
-						IDbCommand insertCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, insertQuery, insertParameterTypes);
+						DbCommand insertCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, insertQuery, insertParameterTypes);
 						using (insertCmd)
 						{
 							insertCmd.Connection = conn;
@@ -467,7 +469,7 @@ namespace NHibernate.Id.Enhanced
 							((IDataParameter)insertCmd.Parameters[1]).Value = result;
 
 							PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(insertCmd, FormatStyle.Basic);
-							insertCmd.ExecuteNonQuery();
+							await insertCmd.ExecuteNonQueryAsync().ConfigureAwait(false);
 						}
 					}
 					else
@@ -484,7 +486,7 @@ namespace NHibernate.Id.Enhanced
 
 				try
 				{
-					IDbCommand updateCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, updateQuery, updateParameterTypes);
+					DbCommand updateCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, updateQuery, updateParameterTypes);
 					using (updateCmd)
 					{
 						updateCmd.Connection = conn;
@@ -495,7 +497,7 @@ namespace NHibernate.Id.Enhanced
 						((IDataParameter)updateCmd.Parameters[1]).Value = result;
 						((IDataParameter)updateCmd.Parameters[2]).Value = SegmentValue;
 						PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(updateCmd, FormatStyle.Basic);
-						updatedRows = updateCmd.ExecuteNonQuery();
+						updatedRows = await updateCmd.ExecuteNonQueryAsync().ConfigureAwait(false);
 					}
 				}
 				catch (Exception ex)

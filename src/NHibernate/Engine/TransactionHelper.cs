@@ -1,5 +1,6 @@
 using System.Data;
 using System.Data.Common;
+using System.Threading.Tasks;
 using NHibernate.Engine.Transaction;
 using NHibernate.Exceptions;
 
@@ -25,11 +26,11 @@ namespace NHibernate.Engine
 
 			#region Implementation of IIsolatedWork
 
-			public void DoWork(IDbConnection connection, IDbTransaction transaction)
+			public async Task DoWork(DbConnection connection, DbTransaction transaction)
 			{
 				try
 				{
-					generatedValue = owner.DoWorkInCurrentTransaction(session, connection, transaction);
+					generatedValue = await owner.DoWorkInCurrentTransaction(session, connection, transaction).ConfigureAwait(false);
 				}
 				catch (DbException sqle)
 				{
@@ -41,13 +42,13 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> The work to be done</summary>
-		public abstract object DoWorkInCurrentTransaction(ISessionImplementor session, IDbConnection conn, IDbTransaction transaction);
+		public abstract Task<object> DoWorkInCurrentTransaction(ISessionImplementor session, DbConnection conn, DbTransaction transaction);
 
 		/// <summary> Suspend the current transaction and perform work in a new transaction</summary>
-		public virtual object DoWorkInNewTransaction(ISessionImplementor session)
+		public virtual async Task<object> DoWorkInNewTransaction(ISessionImplementor session)
 		{
 			Work work = new Work(session, this);
-			Isolater.DoIsolatedWork(work, session);
+			await Isolater.DoIsolatedWork(work, session).ConfigureAwait(false);
 			return work.generatedValue;
 		}
 	}

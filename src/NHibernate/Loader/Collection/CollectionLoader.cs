@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Param;
 using NHibernate.Persister.Collection;
@@ -35,9 +36,9 @@ namespace NHibernate.Loader.Collection
 			get { return collectionPersister.KeyType; }
 		}
 
-		public virtual void Initialize(object id, ISessionImplementor session)
+		public virtual Task Initialize(object id, ISessionImplementor session)
 		{
-			LoadCollection(session, id, KeyType);
+			return LoadCollection(session, id, KeyType);
 		}
 
 		public override string ToString()

@@ -262,11 +262,11 @@ namespace NHibernate.Collection
 		/// </summary>
 		public virtual void Read()
 		{
-			Initialize(false);
+			Initialize(false).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		/// <summary> Called by the <tt>Count</tt> property</summary>
-		protected virtual async Task<bool> ReadSize(bool async)
+		protected virtual async Task<bool> ReadSize()
 		{
 			if (!initialized)
 			{
@@ -285,7 +285,7 @@ namespace NHibernate.Collection
 						{
 							await session.FlushAsync().ConfigureAwait(false);
 						}
-						cachedSize = await persister.GetSize(entry.LoadedKey, session, async).ConfigureAwait(false);
+						cachedSize = await persister.GetSize(entry.LoadedKey, session).ConfigureAwait(false);
 						return true;
 					}
 				}
@@ -294,7 +294,7 @@ namespace NHibernate.Collection
 			return false;
 		}
 
-		protected virtual async Task<bool?> ReadIndexExistence(object index, bool async)
+		protected virtual async Task<bool?> ReadIndexExistence(object index)
 		{
 			if (!initialized)
 			{
@@ -307,14 +307,14 @@ namespace NHibernate.Collection
 					{
 						await session.FlushAsync().ConfigureAwait(false);
 					}
-					return await persister.IndexExists(entry.LoadedKey, index, session, async).ConfigureAwait(false);
+					return await persister.IndexExists(entry.LoadedKey, index, session).ConfigureAwait(false);
 				}
 			}
 			Read();
 			return null;
 		}
 
-		protected virtual async Task<bool?> ReadElementExistence(object element, bool async)
+		protected virtual async Task<bool?> ReadElementExistence(object element)
 		{
 			if (!initialized)
 			{
@@ -327,14 +327,14 @@ namespace NHibernate.Collection
 					{
 						await session.FlushAsync().ConfigureAwait(false);
 					}
-					return await persister.ElementExists(entry.LoadedKey, element, session, async).ConfigureAwait(false);
+					return await persister.ElementExists(entry.LoadedKey, element, session).ConfigureAwait(false);
 				}
 			}
 			Read();
 			return null;
 		}
 
-		protected virtual async Task<object> ReadElementByIndex(object index, bool async)
+		protected virtual async Task<object> ReadElementByIndex(object index)
 		{
 			if (!initialized)
 			{
@@ -347,7 +347,7 @@ namespace NHibernate.Collection
 					{
 						await session.FlushAsync().ConfigureAwait(false);
 					}
-					var elementByIndex = await persister.GetElementByIndex(entry.LoadedKey, index, session, owner, async).ConfigureAwait(false);
+					var elementByIndex = await persister.GetElementByIndex(entry.LoadedKey, index, session, owner).ConfigureAwait(false);
 					return persister.NotFoundObject == elementByIndex ? NotFound : elementByIndex;
 				}
 			}
@@ -360,7 +360,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		protected virtual void Write()
 		{
-			Initialize(true);
+			Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
 			Dirty();
 		}
 
@@ -455,7 +455,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="writing">currently obsolete</param>
 		/// <exception cref="LazyInitializationException">if we cannot initialize</exception>
-		protected virtual void Initialize(bool writing)
+		protected virtual async Task Initialize(bool writing)
 		{
 			if (!initialized)
 			{
@@ -464,7 +464,7 @@ namespace NHibernate.Collection
 					throw new LazyInitializationException("illegal access to loading collection");
 				}
 				ThrowLazyInitializationExceptionIfNotConnected();
-				session.InitializeCollection(this, writing);
+				await session.InitializeCollection(this, writing).ConfigureAwait(false);
 			}
 		}
 
@@ -591,7 +591,7 @@ namespace NHibernate.Collection
 		/// <remarks>
 		/// This method is similar to <see cref="Initialize" />, except that different exceptions are thrown.
 		/// </remarks>
-		public virtual void ForceInitialization()
+		public virtual async Task ForceInitialization()
 		{
 			if (!initialized)
 			{
@@ -607,7 +607,7 @@ namespace NHibernate.Collection
 				{
 					throw new HibernateException("disconnected session");
 				}
-				session.InitializeCollection(this, false);
+				await session.InitializeCollection(this, false).ConfigureAwait(false);
 			}
 		}
 
@@ -647,7 +647,7 @@ namespace NHibernate.Collection
 			}
 		}
 
-		public ICollection GetQueuedOrphans(string entityName)
+		public Task<ICollection> GetQueuedOrphans(string entityName)
 		{
 			if (HasQueuedOperations)
 			{
@@ -668,14 +668,17 @@ namespace NHibernate.Collection
 				return GetOrphans(removals, additions, entityName, session);
 			}
 
-			return CollectionHelper.EmptyCollection;
+			return Task.FromResult(CollectionHelper.EmptyCollection);
 		}
 
 		/// <summary>
 		/// Called before inserting rows, to ensure that any surrogate keys are fully generated
 		/// </summary>
 		/// <param name="persister"></param>
-		public virtual void PreInsert(ICollectionPersister persister) {}
+		public virtual Task PreInsert(ICollectionPersister persister)
+		{
+			return TaskHelper.CompletedTask;
+		}
 
 		/// <summary>
 		/// Called after inserting a row, to fetch the natively generated id
@@ -685,14 +688,14 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Get all "orphaned" elements
 		/// </summary>
-		public abstract ICollection GetOrphans(object snapshot, string entityName);
+		public abstract Task<ICollection> GetOrphans(object snapshot, string entityName);
 
 		/// <summary> 
 		/// Given a collection of entity instances that used to
 		/// belong to the collection, and a collection of instances
 		/// that currently belong, return a collection of orphans
 		/// </summary>
-		protected virtual ICollection GetOrphans(ICollection oldElements, ICollection currentElements, string entityName, ISessionImplementor session)
+		protected virtual async Task<ICollection> GetOrphans(ICollection oldElements, ICollection currentElements, string entityName, ISessionImplementor session)
 		{
 			// short-circuit(s)
 			if (currentElements.Count == 0)
@@ -715,9 +718,9 @@ namespace NHibernate.Collection
 			var currentIds = new HashSet<TypedValue>();
 			foreach (object current in currentElements)
 			{
-				if (current != null && ForeignKeys.IsNotTransient(entityName, current, null, session))
+				if (current != null && await ForeignKeys.IsNotTransient(entityName, current, null, session).ConfigureAwait(false))
 				{
-					object currentId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, current, session);
+					object currentId = await ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, current, session).ConfigureAwait(false);
 					currentIds.Add(new TypedValue(idType, currentId, session.EntityMode));
 				}
 			}
@@ -725,7 +728,7 @@ namespace NHibernate.Collection
 			// iterate over the *old* list
 			foreach (object old in oldElements)
 			{
-				object oldId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, old, session);
+				object oldId = await ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, old, session).ConfigureAwait(false);
 				if (!currentIds.Contains(new TypedValue(idType, oldId, session.EntityMode)))
 				{
 					res.Add(old);
@@ -735,13 +738,13 @@ namespace NHibernate.Collection
 			return res;
 		}
 
-		public void IdentityRemove(IList list, object obj, string entityName, ISessionImplementor session)
+		public async Task IdentityRemove(IList list, object obj, string entityName, ISessionImplementor session)
 		{
-			if (obj != null && ForeignKeys.IsNotTransient(entityName, obj, null, session))
+			if (obj != null && await ForeignKeys.IsNotTransient(entityName, obj, null, session).ConfigureAwait(false))
 			{
 				IType idType = session.Factory.GetEntityPersister(entityName).IdentifierType;
 
-				object idOfCurrent = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, obj, session);
+				object idOfCurrent = await ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, obj, session).ConfigureAwait(false);
 				List<object> toRemove = new List<object>(list.Count);
 				foreach (object current in list)
 				{
@@ -749,7 +752,7 @@ namespace NHibernate.Collection
 					{
 						continue;
 					}
-					object idOfOld = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, current, session);
+					object idOfOld = await ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, current, session).ConfigureAwait(false);
 					if (idType.IsEqual(idOfCurrent, idOfOld, session.EntityMode, session.Factory))
 					{
 						toRemove.Add(current);
@@ -772,7 +775,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <returns></returns>
-		public abstract object Disassemble(ICollectionPersister persister);
+		public abstract Task<object> Disassemble(ICollectionPersister persister);
 
 		/// <summary>
 		/// Is this the wrapper for the given underlying collection instance?
@@ -792,7 +795,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Get all the elements that need deleting
 		/// </summary>
-		public abstract IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula);
+		public abstract Task<IEnumerable> GetDeletes(ICollectionPersister persister, bool indexIsFormula);
 
 		public abstract bool IsSnapshotEmpty(object snapshot);
 
@@ -800,7 +803,7 @@ namespace NHibernate.Collection
 
 		public abstract object GetSnapshot(ICollectionPersister persister);
 
-		public abstract bool EqualsSnapshot(ICollectionPersister persister);
+		public abstract Task<bool> EqualsSnapshot(ICollectionPersister persister);
 
 		public abstract object GetElement(object entry);
 
@@ -810,7 +813,7 @@ namespace NHibernate.Collection
 		/// <param name="persister"></param>
 		/// <param name="disassembled"></param>
 		/// <param name="owner"></param>
-		public abstract void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner);
+		public abstract Task InitializeFromCache(ICollectionPersister persister, object disassembled, object owner);
 
 		/// <summary>
 		/// Do we need to update this element?
@@ -819,7 +822,7 @@ namespace NHibernate.Collection
 		/// <param name="i"></param>
 		/// <param name="elemType"></param>
 		/// <returns></returns>
-		public abstract bool NeedsUpdating(object entry, int i, IType elemType);
+		public abstract Task<bool> NeedsUpdating(object entry, int i, IType elemType);
 
 		/// <summary>
 		/// Reads the row from the <see cref="IDataReader"/>.
@@ -829,7 +832,7 @@ namespace NHibernate.Collection
 		/// <param name="descriptor">The descriptor providing result set column names</param>
 		/// <param name="owner">The owner of this Collection.</param>
 		/// <returns>The object that was contained in the row.</returns>
-		public abstract object ReadFrom(IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor,
+		public abstract Task<object> ReadFrom(IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor,
 										object owner);
 
 		public abstract object GetSnapshotElement(object entry, int i);
@@ -841,7 +844,7 @@ namespace NHibernate.Collection
 		/// <param name="i"></param>
 		/// <param name="elemType"></param>
 		/// <returns></returns>
-		public abstract bool NeedsInserting(object entry, int i, IType elemType);
+		public abstract Task<bool> NeedsInserting(object entry, int i, IType elemType);
 
 		/// <summary>
 		/// Get the index of the given collection entry

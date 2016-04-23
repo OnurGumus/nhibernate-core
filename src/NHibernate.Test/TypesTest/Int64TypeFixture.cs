@@ -41,8 +41,8 @@ namespace NHibernate.Test.TypesTest
 			long? fiveAgain = 5;
 			using (ISession s = OpenSession())
 			{
-				Assert.IsTrue(type.IsDirty(nullLong, valueLong, (ISessionImplementor)s), "should be dirty - null to '5'");
-				Assert.IsFalse(type.IsDirty(valueLong, fiveAgain, (ISessionImplementor)s), "should not be dirty - 5 to 5");
+				Assert.IsTrue(type.IsDirty(nullLong, valueLong, (ISessionImplementor)s).Result, "should be dirty - null to '5'");
+				Assert.IsFalse(type.IsDirty(valueLong, fiveAgain, (ISessionImplementor)s).Result, "should not be dirty - 5 to 5");
 			}
 		}
 

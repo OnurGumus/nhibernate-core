@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 
 namespace NHibernate.Id
@@ -26,9 +27,9 @@ namespace NHibernate.Id
 			}
 		}
 
-		public object Generate(ISessionImplementor cache, object obj)
+		public Task<object> Generate(ISessionImplementor cache, object obj)
 		{
-			return unchecked ((DateTime.Now.Ticks << 16) + Count);
+			return Task.FromResult<object>(unchecked ((DateTime.Now.Ticks << 16) + Count));
 		}
 	}
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using NHibernate.Collection.Generic.SetHelpers;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
@@ -90,17 +91,17 @@ namespace NHibernate.Collection.Generic
 			return clonedSet;
 		}
 
-		public override ICollection GetOrphans(object snapshot, string entityName)
+		public override Task<ICollection> GetOrphans(object snapshot, string entityName)
 		{
 			var sn = new SetSnapShot<T>((IEnumerable<T>)snapshot);
 
 			// TODO: Avoid duplicating shortcuts and array copy, by making base class GetOrphans() more flexible
-			if (WrappedSet.Count == 0) return sn;
-			if (((ICollection)sn).Count == 0) return sn;
+			if (WrappedSet.Count == 0) return Task.FromResult<ICollection>(sn);
+			if (((ICollection)sn).Count == 0) return Task.FromResult<ICollection>(sn);
 			return GetOrphans(sn, WrappedSet.ToArray(), entityName, Session);
 		}
 
-		public override bool EqualsSnapshot(ICollectionPersister persister)
+		public override async Task<bool> EqualsSnapshot(ICollectionPersister persister)
 		{
 			var elementType = persister.ElementType;
 			var snapshot = (ISetSnapshot<T>)GetSnapshot();
@@ -113,7 +114,7 @@ namespace NHibernate.Collection.Generic
 			foreach (T obj in WrappedSet)
 			{
 				T oldValue;
-				if (!snapshot.TryGetValue(obj, out oldValue) || elementType.IsDirty(oldValue, obj, Session))
+				if (!snapshot.TryGetValue(obj, out oldValue) || await elementType.IsDirty(oldValue, obj, Session).ConfigureAwait(false))
 					return false;
 			}
 
@@ -136,14 +137,14 @@ namespace NHibernate.Collection.Generic
 		/// <param name="persister">The CollectionPersister to use to reassemble the PersistentSet.</param>
 		/// <param name="disassembled">The disassembled PersistentSet.</param>
 		/// <param name="owner">The owner object.</param>
-		public override void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
+		public override async Task InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
 		{
 			var array = (object[])disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
 			for (int i = 0; i < size; i++)
 			{
-				var element = persister.ElementType.Assemble(array[i], Session, owner);
+				var element = await persister.ElementType.Assemble(array[i], Session, owner).ConfigureAwait(false);
 				if (element != null)
 				{
 					WrappedSet.Add((T)element);
@@ -163,9 +164,9 @@ namespace NHibernate.Collection.Generic
 			return StringHelper.CollectionToString(WrappedSet);
 		}
 
-		public override object ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
+		public override async Task<object> ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
-			var element = role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
+			var element = await role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session).ConfigureAwait(false);
 			if (element != null)
 			{
 				_tempList.Add((T)element);
@@ -204,19 +205,19 @@ namespace NHibernate.Collection.Generic
 			return WrappedSet;
 		}
 
-		public override object Disassemble(ICollectionPersister persister)
+		public override async Task<object> Disassemble(ICollectionPersister persister)
 		{
 			var result = new object[WrappedSet.Count];
 			int i = 0;
 
 			foreach (object obj in WrappedSet)
 			{
-				result[i++] = persister.ElementType.Disassemble(obj, Session, null);
+				result[i++] = await persister.ElementType.Disassemble(obj, Session, null).ConfigureAwait(false);
 			}
 			return result;
 		}
 
-		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
+		public override async Task<IEnumerable> GetDeletes(ICollectionPersister persister, bool indexIsFormula)
 		{
 			IType elementType = persister.ElementType;
 			var sn = (ISetSnapshot<T>)GetSnapshot();
@@ -228,14 +229,14 @@ namespace NHibernate.Collection.Generic
 			foreach (var obj in WrappedSet)
 			{
 				T oldValue;
-				if (sn.TryGetValue(obj, out oldValue) && elementType.IsDirty(obj, oldValue, Session))
+				if (sn.TryGetValue(obj, out oldValue) && await elementType.IsDirty(obj, oldValue, Session).ConfigureAwait(false))
 					deletes.Add(oldValue);
 			}
 
 			return deletes;
 		}
 
-		public override bool NeedsInserting(object entry, int i, IType elemType)
+		public override async Task<bool> NeedsInserting(object entry, int i, IType elemType)
 		{
 			var sn = (ISetSnapshot<T>)GetSnapshot();
 			T oldKey;
@@ -243,12 +244,12 @@ namespace NHibernate.Collection.Generic
 			// note that it might be better to iterate the snapshot but this is safe,
 			// assuming the user implements equals() properly, as required by the PersistentSet
 			// contract!
-			return !sn.TryGetValue((T)entry, out oldKey) || elemType.IsDirty(oldKey, entry, Session);
+			return !sn.TryGetValue((T)entry, out oldKey) || await elemType.IsDirty(oldKey, entry, Session).ConfigureAwait(false);
 		}
 
-		public override bool NeedsUpdating(object entry, int i, IType elemType)
+		public override Task<bool> NeedsUpdating(object entry, int i, IType elemType)
 		{
-			return false;
+			return Task.FromResult(false);
 		}
 
 		public override object GetIndex(object entry, int i, ICollectionPersister persister)
@@ -298,17 +299,17 @@ namespace NHibernate.Collection.Generic
 
 		public bool Contains(T item)
 		{
-			bool? exists = ReadElementExistence(item, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			bool? exists = ReadElementExistence(item).ConfigureAwait(false).GetAwaiter().GetResult();
 			return exists == null ? WrappedSet.Contains(item) : exists.Value;
 		}
 
 
 		public bool Add(T o)
 		{
-			bool? exists = IsOperationQueueEnabled ? ReadElementExistence(o, false).ConfigureAwait(false).GetAwaiter().GetResult() : null;
+			bool? exists = IsOperationQueueEnabled ? ReadElementExistence(o).ConfigureAwait(false).GetAwaiter().GetResult() : null;
 			if (!exists.HasValue)
 			{
-				Initialize(true);
+				Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
 				if (WrappedSet.Add(o))
 				{
 					Dirty();
@@ -332,7 +333,7 @@ namespace NHibernate.Collection.Generic
 			if (collection.Count == 0)
 				return;
 
-			Initialize(true);
+			Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			var oldCount = WrappedSet.Count;
 			WrappedSet.UnionWith(collection);
@@ -345,7 +346,7 @@ namespace NHibernate.Collection.Generic
 
 		public void IntersectWith(IEnumerable<T> other)
 		{
-			Initialize(true);
+			Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			var oldCount = WrappedSet.Count;
 			WrappedSet.IntersectWith(other);
@@ -362,7 +363,7 @@ namespace NHibernate.Collection.Generic
 			if (collection.Count == 0)
 				return;
 
-			Initialize(true);
+			Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			var oldCount = WrappedSet.Count;
 			WrappedSet.ExceptWith(collection);
@@ -379,7 +380,7 @@ namespace NHibernate.Collection.Generic
 			if (collection.Count == 0)
 				return;
 
-			Initialize(true);
+			Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			WrappedSet.SymmetricExceptWith(collection);
 
@@ -426,10 +427,10 @@ namespace NHibernate.Collection.Generic
 
 		public bool Remove(T o)
 		{
-			bool? exists = PutQueueEnabled ? ReadElementExistence(o, false).ConfigureAwait(false).GetAwaiter().GetResult() : null;
+			bool? exists = PutQueueEnabled ? ReadElementExistence(o).ConfigureAwait(false).GetAwaiter().GetResult() : null;
 			if (!exists.HasValue)
 			{
-				Initialize(true);
+				Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
 				if (WrappedSet.Remove(o))
 				{
 					Dirty();
@@ -454,7 +455,7 @@ namespace NHibernate.Collection.Generic
 			}
 			else
 			{
-				Initialize(true);
+				Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
 				if (WrappedSet.Count != 0)
 				{
 					WrappedSet.Clear();
@@ -478,7 +479,7 @@ namespace NHibernate.Collection.Generic
 		{
 			get
 			{
-				return ReadSize(false).ConfigureAwait(false).GetAwaiter().GetResult() ? CachedSize : WrappedSet.Count;
+				return ReadSize().ConfigureAwait(false).GetAwaiter().GetResult() ? CachedSize : WrappedSet.Count;
 			}
 		}
 

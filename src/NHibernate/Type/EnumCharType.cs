@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -136,21 +137,21 @@ namespace NHibernate.Type
 			return (value == null) ? null : GetValue(value).ToString();
 		}
 
-		public override object Assemble(object cached, ISessionImplementor session, object owner)
+		public override Task<object> Assemble(object cached, ISessionImplementor session, object owner)
 		{
 			if (cached == null)
 			{
-				return null;
+				return Task.FromResult<object>(null);
 			}
 			else
 			{
-				return GetInstance(cached);
+				return Task.FromResult(GetInstance(cached));
 			}
 		}
 
-		public override object Disassemble(object value, ISessionImplementor session, object owner)
+		public override Task<object> Disassemble(object value, ISessionImplementor session, object owner)
 		{
-			return (value == null) ? null : GetValue(value);
+			return Task.FromResult((value == null) ? null : GetValue(value));
 		}
 
 

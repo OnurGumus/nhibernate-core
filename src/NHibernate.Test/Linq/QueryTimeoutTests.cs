@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Linq;
 using NUnit.Framework;
@@ -81,10 +82,10 @@ namespace NHibernate.Test.Linq
 				: base(connectionManager, interceptor)
 			{
 			}
-			public override async System.Threading.Tasks.Task<System.Data.IDataReader> ExecuteReader(System.Data.Common.DbCommand cmd, bool async)
+			public override async System.Threading.Tasks.Task<IDataReaderEx> ExecuteReader(System.Data.Common.DbCommand cmd)
 			{
 				LastCommandTimeout = cmd.CommandTimeout;
-				return await base.ExecuteReader(cmd, async);
+				return await base.ExecuteReader(cmd);
 			}
 			/*
 			public override System.Data.IDataReader ExecuteReader(System.Data.IDbCommand cmd)

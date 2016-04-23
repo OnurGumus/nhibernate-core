@@ -1,5 +1,5 @@
 using System;
-
+using System.Threading.Tasks;
 using NHibernate.Cache;
 using NHibernate.Cache.Access;
 using NHibernate.Engine;
@@ -25,7 +25,7 @@ namespace NHibernate.Event.Default
 		/// <param name="entry">The entity's EntityEntry instance.</param>
 		/// <param name="requestedLockMode">The lock mode being requested for locking. </param>
 		/// <param name="source">The session which is the source of the event being processed.</param>
-		protected virtual void UpgradeLock(object entity, EntityEntry entry, LockMode requestedLockMode, ISessionImplementor source)
+		protected virtual async Task UpgradeLock(object entity, EntityEntry entry, LockMode requestedLockMode, ISessionImplementor source)
 		{
 			if (requestedLockMode.GreaterThan(entry.LockMode))
 			{
@@ -61,12 +61,12 @@ namespace NHibernate.Event.Default
 					if (persister.IsVersioned && requestedLockMode == LockMode.Force)
 					{
 						// todo : should we check the current isolation mode explicitly?
-						object nextVersion = persister.ForceVersionIncrement(entry.Id, entry.Version, source);
+						object nextVersion = await persister.ForceVersionIncrement(entry.Id, entry.Version, source).ConfigureAwait(false);
 						entry.ForceLocked(entity, nextVersion);
 					}
 					else
 					{
-						persister.Lock(entry.Id, entry.Version, entity, requestedLockMode, source, false).ConfigureAwait(false).GetAwaiter().GetResult();
+						await persister.Lock(entry.Id, entry.Version, entity, requestedLockMode, source).ConfigureAwait(false);
 					}
 					entry.LockMode = requestedLockMode;
 				}

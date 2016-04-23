@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.UserTypes;
@@ -74,17 +75,17 @@ namespace NHibernate.DomainModel
 			}
 		}
 
-		public object NullSafeGet(IDataReader rs, String[] names, ISessionImplementor session, Object owner)
+		public async Task<object> NullSafeGet(IDataReader rs, String[] names, ISessionImplementor session, Object owner)
 		{
-			int c = (int) NHibernateUtil.Int32.NullSafeGet(rs, names[0], session, owner);
-			GlarchProxy g = (GlarchProxy) NHibernateUtil.Entity(typeof(Glarch)).NullSafeGet(rs, names[1], session, owner);
+			int c = (int)await NHibernateUtil.Int32.NullSafeGet(rs, names[0], session, owner).ConfigureAwait(false);
+			GlarchProxy g = (GlarchProxy) await NHibernateUtil.Entity(typeof(Glarch)).NullSafeGet(rs, names[1], session, owner).ConfigureAwait(false);
 			Multiplicity m = new Multiplicity();
 			m.count = (c == 0 ? 0 : c);
 			m.glarch = g;
 			return m;
 		}
 
-		public void NullSafeSet(IDbCommand st, Object value, int index, bool[] settable, ISessionImplementor session)
+		public async Task NullSafeSet(IDbCommand st, Object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			Multiplicity o = (Multiplicity) value;
 			GlarchProxy g;
@@ -99,8 +100,8 @@ namespace NHibernate.DomainModel
 				g = o.glarch;
 				c = o.count;
 			}
-			if (settable[0]) NHibernateUtil.Int32.NullSafeSet(st, c, index, session);
-			NHibernateUtil.Entity(typeof(Glarch)).NullSafeSet(st, g, index + 1, settable.Skip(1).ToArray(), session);
+			if (settable[0]) await NHibernateUtil.Int32.NullSafeSet(st, c, index, session).ConfigureAwait(false);
+			await NHibernateUtil.Entity(typeof(Glarch)).NullSafeSet(st, g, index + 1, settable.Skip(1).ToArray(), session).ConfigureAwait(false);
 		}
 
 		public object DeepCopy(object value)
@@ -134,7 +135,7 @@ namespace NHibernate.DomainModel
 			return m;
 		}
 
-		public object Disassemble(Object value, ISessionImplementor session)
+		public async Task<object> Disassemble(Object value, ISessionImplementor session)
 		{
 			if (value == null)
 			{
@@ -142,12 +143,12 @@ namespace NHibernate.DomainModel
 			}
 
 			Multiplicity m = (Multiplicity) value;
-			return new object[] {m.count, ForeignKeys.GetEntityIdentifierIfNotUnsaved(null, m.glarch, session)};
+			return new object[] {m.count, await ForeignKeys.GetEntityIdentifierIfNotUnsaved(null, m.glarch, session).ConfigureAwait(false)};
 		}
 
-		public object Replace(object original, object target, ISessionImplementor session, object owner)
+		public async Task<object> Replace(object original, object target, ISessionImplementor session, object owner)
 		{
-			return Assemble(Disassemble(original, session), session, owner);
+			return Assemble(await Disassemble(original, session).ConfigureAwait(false), session, owner);
 		}
 	}
 }

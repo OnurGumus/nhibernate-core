@@ -57,7 +57,7 @@ namespace NHibernate.Action
 			this.affectedOwner = affectedOwner;
 		}
 
-		public override async Task Execute(bool async)
+		public override async Task Execute()
 		{
 			bool statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
 			Stopwatch stopwatch = null;
@@ -66,11 +66,11 @@ namespace NHibernate.Action
 				stopwatch = Stopwatch.StartNew();
 			}
 
-			PreRemove();
+			await PreRemove().ConfigureAwait(false);
 
 			if (!emptySnapshot)
 			{
-				await Persister.Remove(Key, Session, async).ConfigureAwait(false);
+				await Persister.Remove(Key, Session).ConfigureAwait(false);
 			}
 
 			IPersistentCollection collection = Collection;
@@ -81,7 +81,7 @@ namespace NHibernate.Action
 
 			Evict();
 
-			PostRemove();
+			await PostRemove().ConfigureAwait(false);
 
 			if (statsEnabled)
 			{
@@ -91,7 +91,7 @@ namespace NHibernate.Action
 			
 		}
 
-		private void PreRemove()
+		private async Task PreRemove()
 		{
 			IPreCollectionRemoveEventListener[] preListeners = Session.Listeners.PreCollectionRemoveEventListeners;
 			if (preListeners.Length > 0)
@@ -100,12 +100,12 @@ namespace NHibernate.Action
 																				 affectedOwner);
 				for (int i = 0; i < preListeners.Length; i++)
 				{
-					preListeners[i].OnPreRemoveCollection(preEvent);
+					await preListeners[i].OnPreRemoveCollection(preEvent).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private void PostRemove()
+		private async Task PostRemove()
 		{
 			IPostCollectionRemoveEventListener[] postListeners = Session.Listeners.PostCollectionRemoveEventListeners;
 			if (postListeners.Length > 0)
@@ -114,7 +114,7 @@ namespace NHibernate.Action
 																					affectedOwner);
 				for (int i = 0; i < postListeners.Length; i++)
 				{
-					postListeners[i].OnPostRemoveCollection(postEvent);
+					await postListeners[i].OnPostRemoveCollection(postEvent).ConfigureAwait(false);
 				}
 			}
 		}

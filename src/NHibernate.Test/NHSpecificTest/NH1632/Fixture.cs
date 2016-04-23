@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 
 				using(var session = sessions.OpenSession())
 				{
-					var id = generator.Generate((ISessionImplementor) session, new Person());
+					var id = generator.Generate((ISessionImplementor) session, new Person()).Result;
 				}
 
 				// intentionally dispose without committing

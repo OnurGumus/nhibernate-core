@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 
 namespace NHibernate.Id
@@ -31,7 +32,7 @@ namespace NHibernate.Id
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
 		/// <returns>The new identifier as a <see cref="String"/>.</returns>
-		public object Generate(ISessionImplementor session, object obj)
+		public Task<object> Generate(ISessionImplementor session, object obj)
 		{
 			StringBuilder guidBuilder = new StringBuilder(16, 16);
 
@@ -43,7 +44,7 @@ namespace NHibernate.Id
 				guidBuilder.Append((char) guidInBytes[i]);
 			}
 
-			return guidBuilder.ToString();
+			return Task.FromResult<object>(guidBuilder.ToString());
 		}
 
 		#endregion

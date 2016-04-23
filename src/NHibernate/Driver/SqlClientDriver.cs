@@ -29,7 +29,7 @@ namespace NHibernate.Driver
 		/// the SqlClientDriver.
 		/// </summary>
 		/// <value>An unitialized <see cref="System.Data.SqlClient.SqlConnection"/> object.</value>
-		public override IDbConnection CreateConnection()
+		public override DbConnection CreateConnection()
 		{
 			return new SqlConnection();
 		}

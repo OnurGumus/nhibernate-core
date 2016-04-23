@@ -1,4 +1,5 @@
 using System.Data;
+using System.Threading.Tasks;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.UserTypes
@@ -61,7 +62,7 @@ namespace NHibernate.UserTypes
 		/// <returns></returns>
 		/// <exception cref="HibernateException">HibernateException</exception>
 //		/// <exception cref="SQLException">SQLException</exception>
-		object NullSafeGet(IDataReader rs, string[] names, object owner);
+		Task<object> NullSafeGet(IDataReader rs, string[] names, object owner);
 
 		/// <summary>
 		/// Write an instance of the mapped class to a prepared statement.
@@ -73,7 +74,7 @@ namespace NHibernate.UserTypes
 		/// <param name="index">command parameter index</param>
 		/// <exception cref="HibernateException">HibernateException</exception>
 //		/// <exception cref="SQLException">SQLException</exception>
-		void NullSafeSet(IDbCommand cmd, object value, int index);
+		Task NullSafeSet(IDbCommand cmd, object value, int index);
 
 		/// <summary>
 		/// Return a deep copy of the persistent state, stopping at entities and at collections.

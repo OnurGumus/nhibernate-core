@@ -1,7 +1,9 @@
 using System;
 using System.Data;
+using System.Threading.Tasks;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Test.SqlTest
 {
@@ -29,23 +31,24 @@ namespace NHibernate.Test.SqlTest
 			return x.GetHashCode();
 		}
 
-		public object NullSafeGet(IDataReader rs, string[] names, object owner)
+		public Task<object> NullSafeGet(IDataReader rs, string[] names, object owner)
 		{
 			int ordinal = rs.GetOrdinal(names[0]);
 			if (rs.IsDBNull(ordinal))
 			{
-				return DateTime.MinValue;
+				return Task.FromResult<object>(DateTime.MinValue);
 			}
 			else
 			{
-				return rs.GetDateTime(ordinal);
+				return Task.FromResult<object>(rs.GetDateTime(ordinal));
 			}
 		}
 
-		public void NullSafeSet(IDbCommand cmd, object value, int index)
+		public Task NullSafeSet(IDbCommand cmd, object value, int index)
 		{
 			object valueToSet = ((DateTime) value == DateTime.MinValue) ? DBNull.Value : value;
 			((IDbDataParameter) cmd.Parameters[index]).Value = valueToSet;
+			return TaskHelper.CompletedTask;
 		}
 
 		public object DeepCopy(object value)

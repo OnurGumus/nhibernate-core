@@ -25,7 +25,7 @@ namespace NHibernate.Event.Default
 		public static readonly object InconsistentRTNClassMarker= new object();
 		public static readonly LockMode DefaultLockMode = LockMode.None;
 
-		public virtual async Task OnLoad(LoadEvent @event, LoadType loadType, bool async)
+		public virtual async Task OnLoad(LoadEvent @event, LoadType loadType)
 		{
 			ISessionImplementor source = @event.Session;
 
@@ -73,18 +73,18 @@ namespace NHibernate.Event.Default
 				{
 					//do not return a proxy!
 					//(this option indicates we are initializing a proxy)
-					@event.Result = await Load(@event, persister, keyToLoad, loadType, async).ConfigureAwait(false);
+					@event.Result = await Load(@event, persister, keyToLoad, loadType).ConfigureAwait(false);
 				}
 				else
 				{
 					//return a proxy if appropriate
 					if (@event.LockMode == LockMode.None)
 					{
-						@event.Result = await ProxyOrLoad(@event, persister, keyToLoad, loadType, async).ConfigureAwait(false);
+						@event.Result = await ProxyOrLoad(@event, persister, keyToLoad, loadType).ConfigureAwait(false);
 					}
 					else
 					{
-						@event.Result = await LockAndLoad(@event, persister, keyToLoad, loadType, source, async).ConfigureAwait(false);
+						@event.Result = await LockAndLoad(@event, persister, keyToLoad, loadType, source).ConfigureAwait(false);
 					}
 				}
 			}
@@ -97,7 +97,7 @@ namespace NHibernate.Event.Default
 
 		/// <summary> Perfoms the load of an entity. </summary>
 		/// <returns> The loaded entity. </returns>
-		protected virtual async Task<object> Load(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, bool async)
+		protected virtual async Task<object> Load(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
 		{
 			if (@event.InstanceToLoad != null)
 			{
@@ -108,7 +108,7 @@ namespace NHibernate.Event.Default
 				persister.SetIdentifier(@event.InstanceToLoad, @event.EntityId, @event.Session.EntityMode);
 			}
 
-			object entity = await DoLoad(@event, persister, keyToLoad, options, async).ConfigureAwait(false);
+			object entity = await DoLoad(@event, persister, keyToLoad, options).ConfigureAwait(false);
 
 			bool isOptionalInstance = @event.InstanceToLoad != null;
 
@@ -133,7 +133,7 @@ namespace NHibernate.Event.Default
 		/// generate a new proxy, or perform an actual load.
 		/// </summary>
 		/// <returns> The result of the proxy/load operation.</returns>
-		protected virtual Task<object> ProxyOrLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, bool async)
+		protected virtual Task<object> ProxyOrLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -143,7 +143,7 @@ namespace NHibernate.Event.Default
 			if (!persister.HasProxy)
 			{
 				// this class has no proxies (so do a shortcut)
-				return Load(@event, persister, keyToLoad, options, async);
+				return Load(@event, persister, keyToLoad, options);
 			}
 			else
 			{
@@ -153,7 +153,7 @@ namespace NHibernate.Event.Default
 				object proxy = persistenceContext.GetProxy(keyToLoad);
 				if (proxy != null)
 				{
-					return ReturnNarrowedProxy(@event, persister, keyToLoad, options, persistenceContext, proxy, false);
+					return ReturnNarrowedProxy(@event, persister, keyToLoad, options, persistenceContext, proxy);
 				}
 				else
 				{
@@ -164,7 +164,7 @@ namespace NHibernate.Event.Default
 					else
 					{
 						// return a newly loaded object
-						return Load(@event, persister, keyToLoad, options, async);
+						return Load(@event, persister, keyToLoad, options);
 					}
 				}
 			}
@@ -174,7 +174,7 @@ namespace NHibernate.Event.Default
 		/// Given that there is a pre-existing proxy.
 		/// Initialize it if necessary; narrow if necessary.
 		/// </summary>
-		private async Task<object> ReturnNarrowedProxy(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, IPersistenceContext persistenceContext, object proxy, bool async)
+		private async Task<object> ReturnNarrowedProxy(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, IPersistenceContext persistenceContext, object proxy)
 		{
 			log.Debug("entity proxy found in session cache");
 			var castedProxy = (INHibernateProxy) proxy;
@@ -186,7 +186,7 @@ namespace NHibernate.Event.Default
 			object impl = null;
 			if (!options.IsAllowProxyCreation)
 			{
-				impl = await Load(@event, persister, keyToLoad, options, async).ConfigureAwait(false);
+				impl = await Load(@event, persister, keyToLoad, options).ConfigureAwait(false);
 				// NH Different behavior : NH-1252
 				if (impl == null && !options.IsAllowNulls)
 				{
@@ -243,7 +243,7 @@ namespace NHibernate.Event.Default
 		/// given id in that cache and then perform the load.
 		/// </summary>
 		/// <returns> The loaded entity </returns>
-		protected virtual async Task<object> LockAndLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, ISessionImplementor source, bool async)
+		protected virtual async Task<object> LockAndLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, ISessionImplementor source)
 		{
 			ISoftLock sLock = null;
 			CacheKey ck;
@@ -260,7 +260,7 @@ namespace NHibernate.Event.Default
 			object entity;
 			try
 			{
-				entity = await Load(@event, persister, keyToLoad, options, async).ConfigureAwait(false);
+				entity = await Load(@event, persister, keyToLoad, options).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -284,25 +284,24 @@ namespace NHibernate.Event.Default
 		/// <param name="persister">The persister for the entity being requested for load </param>
 		/// <param name="keyToLoad">The EntityKey representing the entity to be loaded. </param>
 		/// <param name="options">The load options. </param>
-		/// <param name="async"></param>
 		/// <returns> The loaded entity, or null. </returns>
-		protected virtual Task<object> DoLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, bool async)
+		protected virtual async Task<object> DoLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
 		{
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("attempting to resolve: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 			}
 
-			object entity = LoadFromSessionCache(@event, keyToLoad, options);
+			object entity = await LoadFromSessionCache(@event, keyToLoad, options).ConfigureAwait(false);
 			if (entity == RemovedEntityMarker)
 			{
 				log.Debug("load request found matching entity in context, but it is scheduled for removal; returning null");
-				return Task.FromResult<object>(null);
+				return null;
 			}
 			if (entity == InconsistentRTNClassMarker)
 			{
 				log.Debug("load request found matching entity in context, but the matched entity was of an inconsistent return type; returning null");
-				return Task.FromResult<object>(null);
+				return null;
 			}
 			if (entity != null)
 			{
@@ -310,17 +309,17 @@ namespace NHibernate.Event.Default
 				{
 					log.Debug("resolved object in session cache: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 				}
-				return Task.FromResult(entity);
+				return entity;
 			}
 
-			entity = LoadFromSecondLevelCache(@event, persister, options);
+			entity = await LoadFromSecondLevelCache(@event, persister, options).ConfigureAwait(false);
 			if (entity != null)
 			{
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("resolved object in second-level cache: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 				}
-				return Task.FromResult(entity);
+				return entity;
 			}
 
 			if (log.IsDebugEnabled)
@@ -328,7 +327,7 @@ namespace NHibernate.Event.Default
 				log.Debug("object not resolved in any cache: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 			}
 
-			return LoadFromDatasource(@event, persister, keyToLoad, options, async);
+			return await LoadFromDatasource(@event, persister, keyToLoad, options).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -338,9 +337,8 @@ namespace NHibernate.Event.Default
 		/// <param name="persister">The persister for the entity being requested for load </param>
 		/// <param name="keyToLoad">The EntityKey representing the entity to be loaded. </param>
 		/// <param name="options">The load options. </param>
-		/// <param name="async"></param>
 		/// <returns> The object loaded from the datasource, or null if not found. </returns>
-		protected virtual async Task<object> LoadFromDatasource(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, bool async)
+		protected virtual async Task<object> LoadFromDatasource(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
 		{
 			ISessionImplementor source = @event.Session;
 
@@ -351,7 +349,7 @@ namespace NHibernate.Event.Default
 				stopWath.Start();
 			}
 
-			object entity = await persister.Load(@event.EntityId, @event.InstanceToLoad, @event.LockMode, source, async).ConfigureAwait(false);
+			object entity = await persister.Load(@event.EntityId, @event.InstanceToLoad, @event.LockMode, source).ConfigureAwait(false);
 
 			if (@event.IsAssociationFetch && statsEnabled)
 			{
@@ -377,7 +375,7 @@ namespace NHibernate.Event.Default
 		/// session-level cache, it's current status within the session cache
 		/// is checked to see if it has previously been scheduled for deletion.
 		/// </remarks>
-		protected virtual object LoadFromSessionCache(LoadEvent @event, EntityKey keyToLoad, LoadType options)
+		protected virtual async Task<object> LoadFromSessionCache(LoadEvent @event, EntityKey keyToLoad, LoadType options)
 		{
 			ISessionImplementor session = @event.Session;
 			object old = session.GetEntityUsingInterceptor(keyToLoad);
@@ -402,7 +400,7 @@ namespace NHibernate.Event.Default
 						return InconsistentRTNClassMarker;
 					}
 				}
-				UpgradeLock(old, oldEntry, @event.LockMode, session);
+				await UpgradeLock(old, oldEntry, @event.LockMode, session).ConfigureAwait(false);
 			}
 			return old;
 		}
@@ -413,7 +411,7 @@ namespace NHibernate.Event.Default
 		/// <param name="persister">The persister for the entity being requested for load </param>
 		/// <param name="options">The load options. </param>
 		/// <returns> The entity from the second-level cache, or null. </returns>
-		protected virtual object LoadFromSecondLevelCache(LoadEvent @event, IEntityPersister persister, LoadType options)
+		protected virtual Task<object> LoadFromSecondLevelCache(LoadEvent @event, IEntityPersister persister, LoadType options)
 		{
 			ISessionImplementor source = @event.Session;
 			bool useCache = persister.HasCache && ((source.CacheMode & CacheMode.Get) == CacheMode.Get)
@@ -453,10 +451,10 @@ namespace NHibernate.Event.Default
 				}
 			}
 
-			return null;
+			return Task.FromResult<object>(null);
 		}
 
-		private object AssembleCacheEntry(CacheEntry entry, object id, IEntityPersister persister, LoadEvent @event)
+		private async Task<object> AssembleCacheEntry(CacheEntry entry, object id, IEntityPersister persister, LoadEvent @event)
 		{
 			object optionalObject = @event.InstanceToLoad;
 			IEventSource session = @event.Session;
@@ -475,7 +473,7 @@ namespace NHibernate.Event.Default
 			TwoPhaseLoad.AddUninitializedCachedEntity(entityKey, result, subclassPersister, LockMode.None, entry.AreLazyPropertiesUnfetched, entry.Version, session);
 
 			IType[] types = subclassPersister.PropertyTypes;
-			object[] values = entry.Assemble(result, id, subclassPersister, session.Interceptor, session); // intializes result by side-effect
+			object[] values = await entry.Assemble(result, id, subclassPersister, session.Interceptor, session).ConfigureAwait(false); // intializes result by side-effect
 			TypeHelper.DeepCopy(values, types, subclassPersister.PropertyUpdateability, values, session);
 
 			object version = Versioning.GetVersion(values, subclassPersister);
@@ -514,7 +512,7 @@ namespace NHibernate.Event.Default
 				entry.AreLazyPropertiesUnfetched);
 			
 			subclassPersister.AfterInitialize(result, entry.AreLazyPropertiesUnfetched, session);
-			persistenceContext.InitializeNonLazyCollections();
+			await persistenceContext.InitializeNonLazyCollections().ConfigureAwait(false);
 			// upgrade the lock if necessary:
 			//lock(result, lockMode);
 

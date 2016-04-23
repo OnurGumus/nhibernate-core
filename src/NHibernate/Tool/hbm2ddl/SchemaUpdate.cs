@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Threading.Tasks;
 using NHibernate.Cfg;
 using NHibernate.Util;
 using Environment=NHibernate.Cfg.Environment;
@@ -119,13 +120,21 @@ namespace NHibernate.Tool.hbm2ddl
 		/// </summary>
 		public void Execute(bool useStdOut, bool doUpdate)
 		{
+			ExecuteAsync(useStdOut, doUpdate).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary>
+		/// Execute the schema updates
+		/// </summary>
+		public Task ExecuteAsync(bool useStdOut, bool doUpdate)
+		{
 			if (useStdOut)
 			{
-				Execute(Console.WriteLine, doUpdate);
+				return ExecuteAsync(Console.WriteLine, doUpdate);
 			}
 			else
 			{
-				Execute(null, doUpdate);
+				return ExecuteAsync(null, doUpdate);
 			}
 		}
 
@@ -136,17 +145,27 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <param name="doUpdate">Commit the script to DB</param>
 		public void Execute(Action<string> scriptAction, bool doUpdate)
 		{
+			ExecuteAsync(scriptAction, doUpdate).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary>
+		/// Execute the schema updates
+		/// </summary>
+		/// <param name="scriptAction">The action to write the each schema line.</param>
+		/// <param name="doUpdate">Commit the script to DB</param>
+		public async Task ExecuteAsync(Action<string> scriptAction, bool doUpdate)
+		{
 			log.Info("Running hbm2ddl schema update");
 
 			string autoKeyWordsImport = PropertiesHelper.GetString(Environment.Hbm2ddlKeyWords, configuration.Properties, "not-defined");
 			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
 			if (autoKeyWordsImport == Hbm2DDLKeyWords.AutoQuote)
 			{
-				SchemaMetadataUpdater.QuoteTableAndColumns(configuration);
+				await SchemaMetadataUpdater.QuoteTableAndColumnsAsync(configuration).ConfigureAwait(false);
 			}
 
 			DbConnection connection;
-			IDbCommand stmt = null;
+			DbCommand stmt = null;
 
 			exceptions.Clear();
 
@@ -156,7 +175,7 @@ namespace NHibernate.Tool.hbm2ddl
 				try
 				{
 					log.Info("fetching database metadata");
-					connectionHelper.Prepare();
+					await connectionHelper.PrepareAsync().ConfigureAwait(false);
 					connection = connectionHelper.Connection;
 					meta = new DatabaseMetadata(connection, dialect);
 					stmt = connection.CreateCommand();
@@ -186,7 +205,7 @@ namespace NHibernate.Tool.hbm2ddl
 						{
 							log.Debug(sql);
 							stmt.CommandText = sql;
-							stmt.ExecuteNonQuery();
+							await stmt.ExecuteNonQueryAsync();
 						}
 					}
 					catch (Exception e)

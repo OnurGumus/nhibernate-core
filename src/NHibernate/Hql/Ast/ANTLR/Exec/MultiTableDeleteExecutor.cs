@@ -67,11 +67,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			get { return deletes; }
 		}
 
-		public override async Task<int> Execute(QueryParameters parameters, ISessionImplementor session, bool async)
+		public override async Task<int> Execute(QueryParameters parameters, ISessionImplementor session)
 		{
 			CoordinateSharedCacheCleanup(session);
 
-			CreateTemporaryTableIfNecessary(persister, session);
+			await CreateTemporaryTableIfNecessary(persister, session).ConfigureAwait(false);
 
 			try
 			{
@@ -86,13 +86,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 						var sqlQueryParametersList = idInsertSelect.GetParameters().ToList();
 						SqlType[] parameterTypes = paramsSpec.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
 
-						ps = session.Batcher.PrepareCommand(CommandType.Text, idInsertSelect, parameterTypes);
+						ps = await session.Batcher.PrepareCommand(CommandType.Text, idInsertSelect, parameterTypes).ConfigureAwait(false);
 						foreach (var parameterSpecification in paramsSpec)
 						{
-							parameterSpecification.Bind(ps, sqlQueryParametersList, parameters, session);
+							await parameterSpecification.Bind(ps, sqlQueryParametersList, parameters, session).ConfigureAwait(false);
 						}
 
-						resultCount = await session.Batcher.ExecuteNonQuery(ps, async).ConfigureAwait(false);
+						resultCount = await session.Batcher.ExecuteNonQuery(ps).ConfigureAwait(false);
 					}
 					finally
 					{
@@ -114,8 +114,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					{
 						try
 						{
-							ps = session.Batcher.PrepareCommand(CommandType.Text, deletes[i], new SqlType[0]);
-							await session.Batcher.ExecuteNonQuery(ps, async).ConfigureAwait(false);
+							ps = await session.Batcher.PrepareCommand(CommandType.Text, deletes[i], new SqlType[0]).ConfigureAwait(false);
+							await session.Batcher.ExecuteNonQuery(ps).ConfigureAwait(false);
 						}
 						finally
 						{
@@ -135,7 +135,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 			finally
 			{
-				DropTemporaryTableIfNecessary(persister, session);
+				await DropTemporaryTableIfNecessary(persister, session).ConfigureAwait(false);
 			}
 		}
 

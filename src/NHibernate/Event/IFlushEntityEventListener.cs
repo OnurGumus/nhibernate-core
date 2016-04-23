@@ -1,7 +1,9 @@
+using System.Threading.Tasks;
+
 namespace NHibernate.Event
 {
 	public interface IFlushEntityEventListener
 	{
-		void OnFlushEntity(FlushEntityEvent @event);
+		Task OnFlushEntity(FlushEntityEvent @event);
 	}
 }

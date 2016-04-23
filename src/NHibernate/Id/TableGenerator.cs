@@ -2,8 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Runtime.CompilerServices;
-
+using System.Threading.Tasks;
 using NHibernate.AdoNet.Util;
 using NHibernate.Dialect;
 using NHibernate.Engine;
@@ -69,6 +70,7 @@ namespace NHibernate.Id
 
 		private SqlString updateSql;
 		private SqlType[] parameterTypes;
+		private readonly AsyncLock syncLock = new AsyncLock();
 
 		#region IConfigurable Members
 
@@ -150,13 +152,15 @@ namespace NHibernate.Id
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
 		/// <returns>The new identifier as a <see cref="short"/>, <see cref="int"/>, or <see cref="long"/>.</returns>
-		[MethodImpl(MethodImplOptions.Synchronized)]
-		public virtual object Generate(ISessionImplementor session, object obj)
+		public virtual async Task<object> Generate(ISessionImplementor session, object obj)
 		{
-			// This has to be done using a different connection to the containing
-			// transaction becase the new hi value must remain valid even if the
-			// containing transaction rolls back.
-			return DoWorkInNewTransaction(session);
+			using (var releaser = await syncLock.LockAsync().ConfigureAwait(false))
+			{
+				// This has to be done using a different connection to the containing
+				// transaction becase the new hi value must remain valid even if the
+				// containing transaction rolls back.
+				return await DoWorkInNewTransaction(session).ConfigureAwait(false);
+			}
 		}
 
 		#endregion
@@ -209,8 +213,8 @@ namespace NHibernate.Id
 
 		#endregion
 
-		public override object DoWorkInCurrentTransaction(ISessionImplementor session, IDbConnection conn,
-														  IDbTransaction transaction)
+		public override async Task<object> DoWorkInCurrentTransaction(ISessionImplementor session, DbConnection conn,
+														  DbTransaction transaction)
 		{
 			long result;
 			int rows;
@@ -220,16 +224,16 @@ namespace NHibernate.Id
 				//select + uspdate even for no transaction
 				//or read committed isolation level (needed for .net?)
 
-				IDbCommand qps = conn.CreateCommand();
-				IDataReader rs = null;
+				DbCommand qps = conn.CreateCommand();
+				DbDataReader rs = null;
 				qps.CommandText = query;
 				qps.CommandType = CommandType.Text;
 				qps.Transaction = transaction;
 				PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand("Reading high value:", qps, FormatStyle.Basic);
 				try
 				{
-					rs = qps.ExecuteReader();
-					if (!rs.Read())
+					rs = await qps.ExecuteReaderAsync().ConfigureAwait(false);
+					if (!await rs.ReadAsync().ConfigureAwait(false))
 					{
 						string err;
 						if (string.IsNullOrEmpty(whereClause))
@@ -259,7 +263,7 @@ namespace NHibernate.Id
 					qps.Dispose();
 				}
 
-				IDbCommand ups = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, updateSql,
+				DbCommand ups = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, updateSql,
 																						   parameterTypes);
 				ups.Connection = conn;
 				ups.Transaction = transaction;
@@ -271,7 +275,7 @@ namespace NHibernate.Id
 
 					PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand("Updating high value:", ups, FormatStyle.Basic);
 
-					rows = ups.ExecuteNonQuery();
+					rows = await ups.ExecuteNonQueryAsync().ConfigureAwait(false);
 				}
 				catch (Exception e)
 				{

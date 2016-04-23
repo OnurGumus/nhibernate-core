@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Data;
+using System.Threading.Tasks;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
 using NHibernate.Mapping.ByCode;
@@ -9,6 +10,7 @@ using NHibernate.Properties;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.UserTypes;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
@@ -334,14 +336,14 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			throw new NotImplementedException();
 		}
 
-		public object NullSafeGet(IDataReader rs, string[] names, object owner)
+		public Task<object> NullSafeGet(IDataReader rs, string[] names, object owner)
 		{
-			throw new NotImplementedException();
+			return TaskHelper.FromException<object>(new NotImplementedException());
 		}
 
-		public void NullSafeSet(IDbCommand cmd, object value, int index)
+		public Task NullSafeSet(IDbCommand cmd, object value, int index)
 		{
-			throw new NotImplementedException();
+			return TaskHelper.FromException<object>(new NotImplementedException());
 		}
 
 		public object DeepCopy(object value)
@@ -404,14 +406,14 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			throw new NotImplementedException();
 		}
 
-		public object NullSafeGet(IDataReader dr, string[] names, ISessionImplementor session, object owner)
+		public Task<object> NullSafeGet(IDataReader dr, string[] names, ISessionImplementor session, object owner)
 		{
-			throw new NotImplementedException();
+			return TaskHelper.FromException<object>(new NotImplementedException());
 		}
 
-		public void NullSafeSet(IDbCommand cmd, object value, int index, bool[] settable, ISessionImplementor session)
+		public Task NullSafeSet(IDbCommand cmd, object value, int index, bool[] settable, ISessionImplementor session)
 		{
-			throw new NotImplementedException();
+			return TaskHelper.FromException<object>(new NotImplementedException());
 		}
 
 		public object DeepCopy(object value)
@@ -419,9 +421,9 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			throw new NotImplementedException();
 		}
 
-		public object Disassemble(object value, ISessionImplementor session)
+		public Task<object> Disassemble(object value, ISessionImplementor session)
 		{
-			throw new NotImplementedException();
+			return TaskHelper.FromException<object>(new NotImplementedException());
 		}
 
 		public object Assemble(object cached, ISessionImplementor session, object owner)
@@ -429,9 +431,9 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			throw new NotImplementedException();
 		}
 
-		public object Replace(object original, object target, ISessionImplementor session, object owner)
+		public Task<object> Replace(object original, object target, ISessionImplementor session, object owner)
 		{
-			throw new NotImplementedException();
+			return TaskHelper.FromException<object>(new NotImplementedException());
 		}
 
 		public string[] PropertyNames

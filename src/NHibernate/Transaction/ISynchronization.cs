@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using NHibernate;
 
 namespace NHibernate.Transaction
@@ -10,7 +11,7 @@ namespace NHibernate.Transaction
 	/// </summary>
 	public interface ISynchronization
 	{
-		void BeforeCompletion();
-		void AfterCompletion(bool success);
+		Task BeforeCompletion();
+		Task AfterCompletion(bool success);
 	}
 }

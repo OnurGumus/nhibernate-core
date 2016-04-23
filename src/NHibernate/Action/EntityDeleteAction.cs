@@ -6,6 +6,7 @@ using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Persister.Entity;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Action
 {
@@ -30,7 +31,7 @@ namespace NHibernate.Action
 			get { return Session.Listeners.PostCommitDeleteEventListeners.Length > 0; }
 		}
 
-		public override async Task Execute(bool async)
+		public override async Task Execute()
 		{
 			object id = Id;
 			IEntityPersister persister = Persister;
@@ -44,7 +45,7 @@ namespace NHibernate.Action
 				stopwatch = Stopwatch.StartNew();
 			}
 
-			bool veto = PreDelete();
+			bool veto = await PreDelete().ConfigureAwait(false);
 
 			object tmpVersion = version;
 			if (persister.IsVersionPropertyGenerated)
@@ -68,7 +69,7 @@ namespace NHibernate.Action
 
 			if (!isCascadeDeleteEnabled && !veto)
 			{
-				await persister.Delete(id, tmpVersion, instance, session, async).ConfigureAwait(false);
+				await persister.Delete(id, tmpVersion, instance, session).ConfigureAwait(false);
 			}
 
 			//postDelete:
@@ -91,7 +92,7 @@ namespace NHibernate.Action
 			if (persister.HasCache)
 				persister.Cache.Evict(ck);
 
-			PostDelete();
+			await PostDelete().ConfigureAwait(false);
 
 			if (statsEnabled && !veto)
 			{
@@ -100,7 +101,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		private void PostDelete()
+		private async Task PostDelete()
 		{
 			IPostDeleteEventListener[] postListeners = Session.Listeners.PostDeleteEventListeners;
 			if (postListeners.Length > 0)
@@ -108,12 +109,12 @@ namespace NHibernate.Action
 				PostDeleteEvent postEvent = new PostDeleteEvent(Instance, Id, state, Persister, (IEventSource)Session);
 				foreach (IPostDeleteEventListener listener in postListeners)
 				{
-					listener.OnPostDelete(postEvent);
+					await listener.OnPostDelete(postEvent).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private bool PreDelete()
+		private async Task<bool> PreDelete()
 		{
 			IPreDeleteEventListener[] preListeners = Session.Listeners.PreDeleteEventListeners;
 			bool veto = false;
@@ -122,13 +123,13 @@ namespace NHibernate.Action
 				var preEvent = new PreDeleteEvent(Instance, Id, state, Persister, (IEventSource)Session);
 				foreach (IPreDeleteEventListener listener in preListeners)
 				{
-					veto |= listener.OnPreDelete(preEvent);
+					veto |= await listener.OnPreDelete(preEvent).ConfigureAwait(false);
 				}
 			}
 			return veto;
 		}
 		
-		protected override void AfterTransactionCompletionProcessImpl(bool success)
+		protected override Task AfterTransactionCompletionProcessImpl(bool success)
 		{
 			if (Persister.HasCache)
 			{
@@ -137,11 +138,12 @@ namespace NHibernate.Action
 			}
 			if (success)
 			{
-				PostCommitDelete();
+				return PostCommitDelete();
 			}
+			return TaskHelper.CompletedTask;
 		}
 
-		private void PostCommitDelete()
+		private async Task PostCommitDelete()
 		{
 			IPostDeleteEventListener[] postListeners = Session.Listeners.PostCommitDeleteEventListeners;
 			if (postListeners.Length > 0)
@@ -149,7 +151,7 @@ namespace NHibernate.Action
 				PostDeleteEvent postEvent = new PostDeleteEvent(Instance, Id, state, Persister, (IEventSource)Session);
 				foreach (IPostDeleteEventListener listener in postListeners)
 				{
-					listener.OnPostDelete(postEvent);
+					await listener.OnPostDelete(postEvent).ConfigureAwait(false);
 				}
 			}
 		}

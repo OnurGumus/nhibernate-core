@@ -43,7 +43,7 @@ namespace NHibernate.Driver
 			get { return prepareSql; }
 		}
 
-		public abstract IDbConnection CreateConnection();
+		public abstract DbConnection CreateConnection();
 		public abstract DbCommand CreateCommand();
 
 		/// <summary>

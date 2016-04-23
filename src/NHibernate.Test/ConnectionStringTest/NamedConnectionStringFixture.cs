@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
+using System.Threading.Tasks;
 using NHibernate.Connection;
+using NHibernate.Util;
 using NUnit.Framework;
 using Environment=NHibernate.Cfg.Environment;
 
@@ -59,9 +62,14 @@ namespace NHibernate.Test.ConnectionStringTest
 		/// Get an open <see cref="IDbConnection"/>.
 		/// </summary>
 		/// <returns>An open <see cref="IDbConnection"/>.</returns>
-		public override IDbConnection GetConnection()
+		public override DbConnection GetConnection()
 		{
 			throw new NotImplementedException();
+		}
+
+		public override Task<DbConnection> GetConnectionAsync()
+		{
+			return TaskHelper.FromException<DbConnection>(new NotImplementedException());
 		}
 
 		protected override void ConfigureDriver(IDictionary<string, string> settings)

@@ -28,12 +28,12 @@ namespace NHibernate.Event.Default
 			get { return true; }
 		}
 
-		public virtual Task OnPersist(PersistEvent @event, bool async)
+		public virtual Task OnPersist(PersistEvent @event)
 		{
-			 return OnPersist(@event, IdentityMap.Instantiate(10), async);
+			 return OnPersist(@event, IdentityMap.Instantiate(10));
 		}
 
-		public virtual Task OnPersist(PersistEvent @event, IDictionary createdAlready, bool async)
+		public virtual async Task OnPersist(PersistEvent @event, IDictionary createdAlready)
 		{
 			ISessionImplementor source = @event.Session;
 			object obj = @event.Entity;
@@ -46,7 +46,7 @@ namespace NHibernate.Event.Default
 				{
 					if (li.Session == source)
 					{
-						return TaskHelper.CompletedTask; //NOTE EARLY EXIT!
+						return; //NOTE EARLY EXIT!
 					}
 					else
 					{
@@ -60,24 +60,24 @@ namespace NHibernate.Event.Default
 				entity = obj;
 			}
 
-			EntityState entityState = GetEntityState(entity, @event.EntityName, source.PersistenceContext.GetEntry(entity), source);
+			EntityState entityState = await GetEntityState(entity, @event.EntityName, source.PersistenceContext.GetEntry(entity), source).ConfigureAwait(false);
 
 			switch (entityState)
 			{
 				case EntityState.Persistent:
-					EntityIsPersistent(@event, createdAlready);
+					await EntityIsPersistent(@event, createdAlready).ConfigureAwait(false);
 					break;
 				case EntityState.Transient:
-					return EntityIsTransient(@event, createdAlready, async);
+					await EntityIsTransient(@event, createdAlready).ConfigureAwait(false);
+					break;
 				case EntityState.Detached:
 					throw new PersistentObjectException("detached entity passed to persist: " + GetLoggableName(@event.EntityName, entity));
 				default:
 					throw new ObjectDeletedException("deleted instance passed to merge", null, GetLoggableName(@event.EntityName, entity));
 			}
-			return TaskHelper.CompletedTask;
 		}
 
-		protected virtual void EntityIsPersistent(PersistEvent @event, IDictionary createCache)
+		protected virtual async Task EntityIsPersistent(PersistEvent @event, IDictionary createCache)
 		{
 			log.Debug("ignoring persistent instance");
 			IEventSource source = @event.Session;
@@ -101,16 +101,15 @@ namespace NHibernate.Event.Default
 			if (tempObject == null)
 			{
 				//TODO: merge into one method!
-				CascadeBeforeSave(source, persister, entity, createCache);
-				CascadeAfterSave(source, persister, entity, createCache);
+				await CascadeBeforeSave(source, persister, entity, createCache).ConfigureAwait(false);
+				await CascadeAfterSave(source, persister, entity, createCache).ConfigureAwait(false);
 			}
 		}
 
 		/// <summary> Handle the given create event. </summary>
 		/// <param name="event">The save event to be handled. </param>
 		/// <param name="createCache"></param>
-		/// <param name="async"></param>
-		protected virtual Task EntityIsTransient(PersistEvent @event, IDictionary createCache, bool async)
+		protected virtual Task EntityIsTransient(PersistEvent @event, IDictionary createCache)
 		{
 			log.Debug("saving transient instance");
 
@@ -122,7 +121,7 @@ namespace NHibernate.Event.Default
 			createCache[entity] = entity;
 			if (tempObject == null)
 			{
-				return SaveWithGeneratedId(entity, @event.EntityName, createCache, source, false, async);
+				return SaveWithGeneratedId(entity, @event.EntityName, createCache, source, false);
 			}
 			return TaskHelper.CompletedTask;
 		}

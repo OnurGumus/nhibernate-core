@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 
 namespace NHibernate.Type
@@ -24,7 +25,7 @@ namespace NHibernate.Type
 		/// Get the values of the component properties of 
 		/// a component instance
 		/// </summary>
-		object[] GetPropertyValues(object component, ISessionImplementor session);
+		Task<object[]> GetPropertyValues(object component, ISessionImplementor session);
 
 		/// <summary>
 		/// Optional Operation
@@ -36,7 +37,7 @@ namespace NHibernate.Type
 		/// </summary>
 		void SetPropertyValues(object component, object[] values, EntityMode entityMode);
 
-		object GetPropertyValue(object component, int i, ISessionImplementor session);
+		Task<object> GetPropertyValue(object component, int i, ISessionImplementor session);
 
 		CascadeStyle GetCascadeStyle(int i);
 

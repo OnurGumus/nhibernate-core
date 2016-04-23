@@ -26,9 +26,9 @@ namespace NHibernate.Driver
 
 		#region IDriveConnectionCommandProvider Members
 
-		public IDbConnection CreateConnection()
+		public DbConnection CreateConnection()
 		{
-			return (IDbConnection) Environment.BytecodeProvider.ObjectsFactory.CreateInstance(connectionType);
+			return (DbConnection) Environment.BytecodeProvider.ObjectsFactory.CreateInstance(connectionType);
 		}
 
 		public DbCommand CreateCommand()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.UserTypes;
@@ -59,23 +60,23 @@ namespace NHibernate.Test.NHSpecificTest.NH2392
 			return x.GetHashCode();
 		}
 
-		public object NullSafeGet(IDataReader dr, string[] names, ISessionImplementor session, object owner)
+		public async Task<object> NullSafeGet(IDataReader dr, string[] names, ISessionImplementor session, object owner)
 		{
 			if (dr.IsDBNull(dr.GetOrdinal(names[0])))
 				return null;
 
 			return new PhoneNumber(
-				(int)NHibernateUtil.Int32.NullSafeGet(dr, names[0], session, owner),
-				(string)NHibernateUtil.String.NullSafeGet(dr, names[1], session, owner));
+				(int)await NHibernateUtil.Int32.NullSafeGet(dr, names[0], session, owner),
+				(string)await NHibernateUtil.String.NullSafeGet(dr, names[1], session, owner));
 		}
 
-		public void NullSafeSet(IDbCommand cmd, object value, int index, bool[] settable, ISessionImplementor session)
+		public async Task NullSafeSet(IDbCommand cmd, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			object countryCode = value == null ? null : (int?)((PhoneNumber)value).CountryCode;
 			object number = value == null ? null : ((PhoneNumber)value).Number;
 
-			if (settable[0]) NHibernateUtil.Int32.NullSafeSet(cmd, countryCode, index++, session);
-			if (settable[1]) NHibernateUtil.String.NullSafeSet(cmd, number, index, session);
+			if (settable[0]) await NHibernateUtil.Int32.NullSafeSet(cmd, countryCode, index++, session);
+			if (settable[1]) await NHibernateUtil.String.NullSafeSet(cmd, number, index, session);
 		}
 
 		public object DeepCopy(object value)
@@ -88,9 +89,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2392
 			get { return false; }
 		}
 
-		public object Disassemble(object value, ISessionImplementor session)
+		public Task<object> Disassemble(object value, ISessionImplementor session)
 		{
-			return value;
+			return Task.FromResult(value);
 		}
 
 		public object Assemble(object cached, ISessionImplementor session, object owner)
@@ -98,9 +99,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2392
 			return cached;
 		}
 
-		public object Replace(object original, object target, ISessionImplementor session, object owner)
+		public Task<object> Replace(object original, object target, ISessionImplementor session, object owner)
 		{
-			return original;
+			return Task.FromResult(original);
 		}
 	}
 }

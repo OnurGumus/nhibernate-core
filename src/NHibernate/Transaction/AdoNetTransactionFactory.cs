@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Data.Common;
-
+using System.Threading.Tasks;
 using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.Engine.Transaction;
@@ -30,19 +30,19 @@ namespace NHibernate.Transaction
 			return false;
 		}
 
-		public void ExecuteWorkInIsolation(ISessionImplementor session, IIsolatedWork work, bool transacted)
+		public async Task ExecuteWorkInIsolation(ISessionImplementor session, IIsolatedWork work, bool transacted)
 		{
-			IDbConnection connection = null;
-			IDbTransaction trans = null;
+			DbConnection connection = null;
+			DbTransaction trans = null;
 			// bool wasAutoCommit = false;
 			try
 			{
 				// We make an exception for SQLite and use the session's connection,
 				// since SQLite only allows one connection to the database.
 				if (session.Factory.Dialect is SQLiteDialect)
-					connection = session.Connection;
+					connection = await session.GetConnection().ConfigureAwait(false);
 				else
-					connection = session.Factory.ConnectionProvider.GetConnection();
+					connection = await session.Factory.ConnectionProvider.GetConnectionAsync().ConfigureAwait(false);
 
 				if (transacted)
 				{
@@ -55,7 +55,7 @@ namespace NHibernate.Transaction
 					//}
 				}
 
-				work.DoWork(connection, trans);
+				await work.DoWork(connection, trans).ConfigureAwait(false);
 
 				if (transacted)
 				{

@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
@@ -17,7 +19,7 @@ namespace NHibernate.Impl
 
 		#region ICacheAssembler Members
 
-		public object Disassemble(object value, ISessionImplementor session, object owner)
+		public async Task<object> Disassemble(object value, ISessionImplementor session, object owner)
 		{
 			IList srcList = (IList) value;
 			var cacheable = new List<object>();
@@ -30,11 +32,11 @@ namespace NHibernate.Impl
 				{
 					if (assemblers.Length == 1)
 					{
-						singleQueryCached.Add(assemblers[0].Disassemble(objToCache, session, owner));
+						singleQueryCached.Add(await assemblers[0].Disassemble(objToCache, session, owner).ConfigureAwait(false));
 					}
 					else
 					{
-						singleQueryCached.Add(TypeHelper.Disassemble((object[]) objToCache, assemblers, null, session, null));
+						singleQueryCached.Add(await TypeHelper.Disassemble((object[]) objToCache, assemblers, null, session, null).ConfigureAwait(false));
 					}
 				}
 				cacheable.Add(singleQueryCached);
@@ -42,7 +44,7 @@ namespace NHibernate.Impl
 			return cacheable;
 		}
 
-		public object Assemble(object cached, ISessionImplementor session, object owner)
+		public async Task<object> Assemble(object cached, ISessionImplementor session, object owner)
 		{
 			IList srcList = (IList) cached;
 			var result = new List<object>();
@@ -55,11 +57,11 @@ namespace NHibernate.Impl
 				{
 					if (assemblers.Length == 1)
 					{
-						queryResults.Add(assemblers[0].Assemble(fromCache, session, owner));
+						queryResults.Add(await assemblers[0].Assemble(fromCache, session, owner).ConfigureAwait(false));
 					}
 					else
 					{
-						queryResults.Add(TypeHelper.Assemble((object[]) fromCache, assemblers, session, owner));
+						queryResults.Add(await TypeHelper.Assemble((object[]) fromCache, assemblers, session, owner).ConfigureAwait(false));
 					}
 				}
 				result.Add(queryResults);
@@ -67,17 +69,20 @@ namespace NHibernate.Impl
 			return result;
 		}
 
-		public void BeforeAssemble(object cached, ISessionImplementor session) {}
+		public Task BeforeAssemble(object cached, ISessionImplementor session)
+		{
+			return TaskHelper.CompletedTask;
+		}
 
 		#endregion
 
-		public IList GetResultFromQueryCache(ISessionImplementor session, QueryParameters queryParameters,
+		public async Task<IList> GetResultFromQueryCache(ISessionImplementor session, QueryParameters queryParameters,
 											 ISet<string> querySpaces, IQueryCache queryCache, QueryKey key)
 		{
 			if (!queryParameters.ForceCacheRefresh)
 			{
 				IList list =
-					queryCache.Get(key, new ICacheAssembler[] {this}, queryParameters.NaturalKeyLookup, querySpaces, session);
+					await queryCache.Get(key, new ICacheAssembler[] {this}, queryParameters.NaturalKeyLookup, querySpaces, session).ConfigureAwait(false);
 				//we had to wrap the query results in another list in order to save all
 				//the queries in the same bucket, now we need to do it the other way around.
 				if (list != null)

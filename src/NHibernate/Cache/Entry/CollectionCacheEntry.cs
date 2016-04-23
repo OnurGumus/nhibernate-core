@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using NHibernate.Collection;
 using NHibernate.Persister.Collection;
 using NHibernate.Util;
@@ -10,11 +11,6 @@ namespace NHibernate.Cache.Entry
 	{
 		private readonly object state;
 
-		public CollectionCacheEntry(IPersistentCollection collection, ICollectionPersister persister)
-		{
-			state = collection.Disassemble(persister);
-		}
-
 		internal CollectionCacheEntry(object state)
 		{
 			this.state = state;
@@ -25,9 +21,9 @@ namespace NHibernate.Cache.Entry
 			get { return (object[])state; }//TODO: assumes all collections disassemble to an array!
 		}
 
-		public virtual void Assemble(IPersistentCollection collection, ICollectionPersister persister, object owner)
+		public virtual async Task Assemble(IPersistentCollection collection, ICollectionPersister persister, object owner)
 		{
-			collection.InitializeFromCache(persister, state, owner);
+			await collection.InitializeFromCache(persister, state, owner).ConfigureAwait(false);
 			collection.AfterInitialize(persister);
 		}
 

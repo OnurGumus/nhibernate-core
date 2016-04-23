@@ -58,7 +58,7 @@ namespace NHibernate.Engine.Query
 		}
 
 		// DONE : H3.2 Executable query (now can be supported for named SQL query/ storedProcedure)
-		public async Task<int> PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session, bool async)
+		public async Task<int> PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session)
 		{
 			CoordinateSharedCacheCleanup(session);
 
@@ -80,7 +80,7 @@ namespace NHibernate.Engine.Query
 				var sqlParametersList = sql.GetParameters().ToList();
 				SqlType[] sqlTypes = parametersSpecifications.GetQueryParameterTypes(sqlParametersList, session.Factory);
 				
-				DbCommand ps = session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTypes);
+				DbCommand ps = await session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTypes).ConfigureAwait(false);
 
 				try
 				{
@@ -92,10 +92,10 @@ namespace NHibernate.Engine.Query
 
 					foreach (IParameterSpecification parameterSpecification in parametersSpecifications)
 					{
-						parameterSpecification.Bind(ps, sqlParametersList, queryParameters, session);
+						await parameterSpecification.Bind(ps, sqlParametersList, queryParameters, session).ConfigureAwait(false);
 					}
 
-					result = await session.Batcher.ExecuteNonQuery(ps, async).ConfigureAwait(false);
+					result = await session.Batcher.ExecuteNonQuery(ps).ConfigureAwait(false);
 				}
 				finally
 				{

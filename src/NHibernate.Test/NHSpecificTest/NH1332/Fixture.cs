@@ -1,6 +1,8 @@
+using System.Threading.Tasks;
 using log4net;
 using NHibernate.Cfg;
 using NHibernate.Event;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1332
@@ -50,9 +52,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1332
 
 		public class PostCommitDelete : IPostDeleteEventListener
 		{
-			public void OnPostDelete(PostDeleteEvent @event)
+			public Task OnPostDelete(PostDeleteEvent @event)
 			{
 				log.Debug("PostCommitDelete fired.");
+				return TaskHelper.CompletedTask;
 			}
 		}
 	}

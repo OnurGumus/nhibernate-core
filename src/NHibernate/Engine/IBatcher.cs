@@ -5,6 +5,7 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using System.Data.Common;
 using System.Threading.Tasks;
+using NHibernate.Driver;
 
 namespace NHibernate.Engine
 {
@@ -60,7 +61,7 @@ namespace NHibernate.Engine
 		/// An <see cref="IDbCommand"/> that is ready to have the parameter values set
 		/// and then executed.
 		/// </returns>
-		DbCommand PrepareCommand(CommandType commandType, SqlString sql, SqlType[] parameterTypes);
+		Task<DbCommand> PrepareCommand(CommandType commandType, SqlString sql, SqlType[] parameterTypes);
 
 		/// <summary>
 		/// Close a <see cref="IDbCommand"/> opened using <c>PrepareCommand()</c>
@@ -88,19 +89,19 @@ namespace NHibernate.Engine
 		/// <param name="parameterTypes">The <see cref="SqlType">SqlTypes</see> of parameters
 		/// in <paramref name="sql" />.</param>
 		/// <returns></returns>
-		DbCommand PrepareBatchCommand(CommandType commandType, SqlString sql, SqlType[] parameterTypes);
+		Task<DbCommand> PrepareBatchCommand(CommandType commandType, SqlString sql, SqlType[] parameterTypes);
 
 		/// <summary>
 		/// Add an insert / delete / update to the current batch (might be called multiple times
 		/// for a single <c>PrepareBatchStatement()</c>)
 		/// </summary>
 		/// <param name="expectation">Determines whether the number of rows affected by query is correct.</param>
-		void AddToBatch(IExpectation expectation);
+		Task AddToBatch(IExpectation expectation);
 
 		/// <summary>
 		/// Execute the batch
 		/// </summary>
-		void ExecuteBatch();
+		Task ExecuteBatch();
 
 		/// <summary>
 		/// Close any query statements that were left lying around
@@ -115,25 +116,23 @@ namespace NHibernate.Engine
 		/// Gets an <see cref="IDataReader"/> by calling ExecuteReader on the <see cref="IDbCommand"/>.
 		/// </summary>
 		/// <param name="cmd">The <see cref="IDbCommand"/> to execute to get the <see cref="IDataReader"/>.</param>
-		/// <param name="async"></param>
 		/// <returns>The <see cref="IDataReader"/> from the <see cref="IDbCommand"/>.</returns>
 		/// <remarks>
 		/// The Batcher is responsible for ensuring that all of the Drivers rules for how many open
 		/// <see cref="IDataReader"/>s it can have are followed.
 		/// </remarks>
-		Task<IDataReader> ExecuteReader(DbCommand cmd, bool async);
+		Task<IDataReaderEx> ExecuteReader(DbCommand cmd);
 
 		/// <summary>
 		/// Executes the <see cref="IDbCommand"/>. 
 		/// </summary>
 		/// <param name="cmd">The <see cref="IDbCommand"/> to execute.</param>
-		/// <param name="async"></param>
 		/// <returns>The number of rows affected.</returns>
 		/// <remarks>
 		/// The Batcher is responsible for ensuring that all of the Drivers rules for how many open
 		/// <see cref="IDataReader"/>s it can have are followed.
 		/// </remarks>
-		Task<int> ExecuteNonQuery(DbCommand cmd, bool async);
+		Task<int> ExecuteNonQuery(DbCommand cmd);
 
 		/// <summary>
 		/// Must be called when an exception occurs.

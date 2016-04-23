@@ -29,20 +29,17 @@ namespace NHibernate.Impl
 		}
 		public override int ExecuteUpdate()
 		{
-			return this.ExecuteUpdateAsync(false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return this.ExecuteUpdateAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
-		public override Task<int> ExecuteUpdateAsync()
-		{
-			return this.ExecuteUpdateAsync(true);
-		}
-		public override async Task<int> ExecuteUpdateAsync(bool async)
+
+		public override async Task<int> ExecuteUpdateAsync()
 		{
 			VerifyParameters();
 			var namedParams = NamedParams;
 			Before();
 			try
 			{
-				return await Session.ExecuteUpdateAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams), async).ConfigureAwait(false);
+				return await Session.ExecuteUpdateAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams)).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -52,22 +49,17 @@ namespace NHibernate.Impl
 
 		public override IEnumerable Enumerable()
 		{
-			return EnumerableAsync(false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return EnumerableAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public override Task<IEnumerable> EnumerableAsync()
-		{
-			return EnumerableAsync(true);
-		}
-
-		public override async Task<IEnumerable> EnumerableAsync(bool async)
+		public override async Task<IEnumerable> EnumerableAsync()
 		{
 			VerifyParameters();
 			var namedParams = NamedParams;
 			Before();
 			try
 			{
-				return await Session.EnumerableAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams), async).ConfigureAwait(false);
+				return await Session.EnumerableAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams)).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -77,22 +69,17 @@ namespace NHibernate.Impl
 
 		public override IEnumerable<T> Enumerable<T>()
 		{
-			return EnumerableAsync<T>(false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return EnumerableAsync<T>().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		public override Task<IEnumerable<T>> EnumerableAsync<T>()
-		{
-			return EnumerableAsync<T>(true);
-		}
-
-		public override async Task<IEnumerable<T>> EnumerableAsync<T>(bool async)
+		public override async Task<IEnumerable<T>> EnumerableAsync<T>()
 		{
 			VerifyParameters();
 			var namedParams = NamedParams;
 			Before();
 			try
 			{
-				return await Session.EnumerableAsync<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams), async).ConfigureAwait(false);
+				return await Session.EnumerableAsync<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams)).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -102,20 +89,17 @@ namespace NHibernate.Impl
 
 		public override IList List()
 		{
-			return this.ListAsync(false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return this.ListAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
-		public override Task<IList> ListAsync()
-		{
-			return this.ListAsync(true);
-		}
-		public override async Task<IList> ListAsync(bool async)
+
+		public override async Task<IList> ListAsync()
 		{
 			VerifyParameters();
 			var namedParams = NamedParams;
 			Before();
 			try
 			{
-				return await Session.ListAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams), async).ConfigureAwait(false);
+				return await Session.ListAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams)).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -124,20 +108,17 @@ namespace NHibernate.Impl
 		}
 		public override void List(IList results)
 		{
-			this.ListAsync(results, false).ConfigureAwait(false).GetAwaiter().GetResult();
+			this.ListAsync(results).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
-		public override Task ListAsync(IList results)
-		{
-			return this.ListAsync(results, true);
-		}
-		public override async Task ListAsync(IList results, bool async)
+
+		public override async Task ListAsync(IList results)
 		{
 			VerifyParameters();
 			var namedParams = NamedParams;
 			Before();
 			try
 			{
-				await Session.ListAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams), results, async).ConfigureAwait(false);
+				await Session.ListAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams), results).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -147,20 +128,17 @@ namespace NHibernate.Impl
 
 		public override IList<T> List<T>()
 		{
-			return this.ListAsync<T>(false).ConfigureAwait(false).GetAwaiter().GetResult();
+			return this.ListAsync<T>().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
-		public override Task<IList<T>> ListAsync<T>()
-		{
-			return this.ListAsync<T>(true);
-		}
-		public async override Task<IList<T>> ListAsync<T>(bool async)
+
+		public async override Task<IList<T>> ListAsync<T>()
 		{
 			VerifyParameters();
 			var namedParams = NamedParams;
 			Before();
 			try
 			{
-				return await Session.ListAsync<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams), async).ConfigureAwait(false);
+				return await Session.ListAsync<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams)).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -172,12 +150,12 @@ namespace NHibernate.Impl
 		/// </summary>
 		protected abstract IQueryExpression ExpandParameters(IDictionary<string, TypedValue> namedParamsCopy);
 
-		protected internal override IEnumerable<ITranslator> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters)
+		protected internal override async Task<IEnumerable<ITranslator>> GetTranslators(ISessionImplementor sessionImplementor, QueryParameters queryParameters)
 		{
 			// NOTE: updates queryParameters.NamedParameters as (desired) side effect
 			var queryExpression = ExpandParameters(queryParameters.NamedParameters);
 
-			return sessionImplementor.GetQueries(queryExpression, false)
+			return (await sessionImplementor.GetQueries(queryExpression, false).ConfigureAwait(false))
 									 .Select(queryTranslator => new HqlTranslatorWrapper(queryTranslator));
 		}
 	}

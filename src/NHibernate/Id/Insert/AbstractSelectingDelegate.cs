@@ -7,6 +7,8 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using System.Threading.Tasks;
 using System;
+using NHibernate.Driver;
+using NHibernate.Util;
 
 namespace NHibernate.Id.Insert
 {
@@ -28,16 +30,16 @@ namespace NHibernate.Id.Insert
 
 		public abstract IdentifierGeneratingInsert PrepareIdentifierGeneratingInsert();
 
-		public async Task<object> PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder, bool async)
+		public async Task<object> PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder)
 		{
 			try
 			{
 				// prepare and execute the insert
-				DbCommand insert = session.Batcher.PrepareCommand(insertSQL.CommandType, insertSQL.Text, insertSQL.ParameterTypes);
+				DbCommand insert = await session.Batcher.PrepareCommand(insertSQL.CommandType, insertSQL.Text, insertSQL.ParameterTypes).ConfigureAwait(false);
 				try
 				{
-					binder.BindValues(insert);
-					await session.Batcher.ExecuteNonQuery(insert, async).ConfigureAwait(false);
+					await binder.BindValues(insert).ConfigureAwait(false);
+					await session.Batcher.ExecuteNonQuery(insert).ConfigureAwait(false);
 				}
 				finally
 				{
@@ -55,14 +57,14 @@ namespace NHibernate.Id.Insert
 				try
 				{
 					//fetch the generated id in a separate query
-					DbCommand idSelect = session.Batcher.PrepareCommand(CommandType.Text, selectSQL, ParametersTypes);
+					DbCommand idSelect = await session.Batcher.PrepareCommand(CommandType.Text, selectSQL, ParametersTypes).ConfigureAwait(false);
 					try
 					{
-						BindParameters(session, idSelect, binder.Entity);
-						IDataReader rs = session.Batcher.ExecuteReader(idSelect, false).ConfigureAwait(false).GetAwaiter().GetResult();
+						await BindParameters(session, idSelect, binder.Entity).ConfigureAwait(false);
+						IDataReaderEx rs = await session.Batcher.ExecuteReader(idSelect).ConfigureAwait(false);
 						try
 						{
-							return GetResult(session, rs, binder.Entity);
+							return await GetResult(session, rs, binder.Entity).ConfigureAwait(false);
 						}
 						finally
 						{
@@ -93,13 +95,16 @@ namespace NHibernate.Id.Insert
 		/// <param name="rs">The result set containing the generated primary key values. </param>
 		/// <param name="entity">The entity being saved. </param>
 		/// <returns> The generated identifier </returns>
-		protected internal abstract object GetResult(ISessionImplementor session, IDataReader rs, object entity);
+		protected internal abstract Task<object> GetResult(ISessionImplementor session, IDataReaderEx rs, object entity);
 
 		/// <summary> Bind any required parameter values into the SQL command <see cref="SelectSQL"/>. </summary>
 		/// <param name="session">The session </param>
 		/// <param name="ps">The prepared <see cref="SelectSQL"/> command </param>
 		/// <param name="entity">The entity being saved. </param>
-		protected internal virtual void BindParameters(ISessionImplementor session, IDbCommand ps, object entity) { }
+		protected internal virtual Task BindParameters(ISessionImplementor session, IDbCommand ps, object entity)
+		{
+			return TaskHelper.CompletedTask;
+		}
 
 		#region NH Specific
 

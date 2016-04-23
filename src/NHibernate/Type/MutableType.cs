@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -33,12 +34,12 @@ namespace NHibernate.Type
 			get { return true; }
 		}
 
-		public override object Replace(object original, object target, ISessionImplementor session, object owner,
+		public override Task<object> Replace(object original, object target, ISessionImplementor session, object owner,
 									   IDictionary copiedAlready)
 		{
 			if (IsEqual(original, target, session.EntityMode))
-				return original;
-			return DeepCopy(original, session.EntityMode, session.Factory);
+				return Task.FromResult(original);
+			return Task.FromResult(DeepCopy(original, session.EntityMode, session.Factory));
 		}
 
 		public abstract object DeepCopyNotNull(object value);

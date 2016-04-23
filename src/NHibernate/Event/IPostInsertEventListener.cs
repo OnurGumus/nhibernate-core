@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace NHibernate.Event
 {
 	/// <summary> Called after inserting an item in the datastore </summary>
@@ -7,6 +9,6 @@ namespace NHibernate.Event
 		/// 
 		/// </summary>
 		/// <param name="event"></param>
-		void OnPostInsert(PostInsertEvent @event);
+		Task OnPostInsert(PostInsertEvent @event);
 	}
 }

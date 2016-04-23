@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Id.Insert;
 
@@ -14,9 +15,9 @@ namespace NHibernate.Id
 		/// <c>IdentityColumnIndicator</c> Indicates to the Session that identity (i.e. identity/autoincrement column)
 		/// key generation should be used.
 		/// </returns>
-		public object Generate(ISessionImplementor s, object obj)
+		public Task<object> Generate(ISessionImplementor s, object obj)
 		{
-			return IdentifierGeneratorFactory.PostInsertIndicator;
+			return Task.FromResult(IdentifierGeneratorFactory.PostInsertIndicator);
 		}
 
 		#region IPostInsertIdentifierGenerator Members

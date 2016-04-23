@@ -101,7 +101,7 @@ namespace NHibernate.Action
 			throw new AssertionFailure("BeforeExecutions() called for non-collection action");
 		}
 
-		public abstract Task Execute(bool async);
+		public abstract Task Execute();
 
 		public virtual BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess
 		{
@@ -126,12 +126,14 @@ namespace NHibernate.Action
 			return persister.HasCache || HasPostCommitEventListeners;
 		}
 		
-		protected virtual void BeforeTransactionCompletionProcessImpl()
+		protected virtual Task BeforeTransactionCompletionProcessImpl()
 		{
+			return TaskHelper.CompletedTask;
 		}
 		
-		protected virtual void AfterTransactionCompletionProcessImpl(bool success)
+		protected virtual Task AfterTransactionCompletionProcessImpl(bool success)
 		{
+			return TaskHelper.CompletedTask;
 		}
 
 		#endregion

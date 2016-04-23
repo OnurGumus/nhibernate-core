@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using NHibernate.Dialect;
 using NHibernate.Event;
 using NUnit.Framework;
@@ -54,10 +55,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1714
 
 	public class MyCustomEventListener : IPreInsertEventListener
 	{
-		public bool OnPreInsert(PreInsertEvent e)
+		public Task<bool> OnPreInsert(PreInsertEvent e)
 		{
 			if(e.Entity is DomainClass == false)
-				return false;
+				return Task.FromResult(false);
 
 			// this will join into the parent's transaction
 			using (var session = e.Session.GetSession(EntityMode.Poco))
@@ -67,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1714
 				session.Flush();
 			}
 
-			return false;
+			return Task.FromResult(false);
 		}
 	}
 }

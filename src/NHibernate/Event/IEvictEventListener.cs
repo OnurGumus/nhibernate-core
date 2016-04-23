@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace NHibernate.Event
 {
 	/// <summary> Defines the contract for handling of evict events generated from a session. </summary>
@@ -5,6 +7,6 @@ namespace NHibernate.Event
 	{
 		/// <summary> Handle the given evict event. </summary>
 		/// <param name="event">The evict event to be handled.</param>
-		void OnEvict(EvictEvent @event);
+		Task OnEvict(EvictEvent @event);
 	}
 }

@@ -2,7 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-
+using System.Threading.Tasks;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -91,13 +92,13 @@ namespace NHibernate.Id
 		/// <param name="type">The <see cref="IIdentifierType"/> the value should be converted to.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the value is retrieved in.</param>
 		/// <returns> The value for the identifier. </returns>
-		public static object GetGeneratedIdentity(IDataReader rs, IType type, ISessionImplementor session)
+		public static async Task<object> GetGeneratedIdentity(IDataReaderEx rs, IType type, ISessionImplementor session)
 		{
-			if (!rs.Read())
+			if (!await rs.ReadAsync().ConfigureAwait(false))
 			{
 				throw new HibernateException("The database returned no natively generated identity value");
 			}
-			object id = Get(rs, type, session);
+			object id = await Get(rs, type, session).ConfigureAwait(false);
 
 			if (log.IsDebugEnabled)
 			{
@@ -120,14 +121,14 @@ namespace NHibernate.Id
 		/// Thrown if there is any problem getting the value from the <see cref="IDataReader"/>
 		/// or with converting it to the <see cref="System.Type"/>.
 		/// </exception>
-		public static object Get(IDataReader rs, IType type, ISessionImplementor session)
+		public static async Task<object> Get(IDataReader rs, IType type, ISessionImplementor session)
 		{
 			// here is an interesting one: 
 			// - MsSql's @@identity returns a Decimal
 			// - MySql LAST_IDENITY() returns an Int64 			
 			try
 			{
-				return type.NullSafeGet(rs, rs.GetName(0), session, null);
+				return await type.NullSafeGet(rs, rs.GetName(0), session, null).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{

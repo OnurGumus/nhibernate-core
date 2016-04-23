@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-
+using System.Threading.Tasks;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Loader;
@@ -94,14 +94,14 @@ namespace NHibernate.Collection
 			return ((Array) snapshot).Length == 0;
 		}
 
-		public override ICollection GetOrphans(object snapshot, string entityName)
+		public override async Task<ICollection> GetOrphans(object snapshot, string entityName)
 		{
 			object[] sn = (object[]) snapshot;
 			object[] arr = (object[]) array;
 			List<object> result = new List<object>(sn);
 			for (int i = 0; i < sn.Length; i++)
 			{
-				IdentityRemove(result, arr[i], entityName, Session);
+				await IdentityRemove(result, arr[i], entityName, Session).ConfigureAwait(false);
 			}
 			return result;
 		}
@@ -111,7 +111,7 @@ namespace NHibernate.Collection
 			return array == collection;
 		}
 
-		public override bool EqualsSnapshot(ICollectionPersister persister)
+		public override async Task<bool> EqualsSnapshot(ICollectionPersister persister)
 		{
 			IType elementType = persister.ElementType;
 			Array snapshot = (Array) GetSnapshot();
@@ -123,7 +123,7 @@ namespace NHibernate.Collection
 			}
 			for (int i = 0; i < xlen; i++)
 			{
-				if (elementType.IsDirty(snapshot.GetValue(i), array.GetValue(i), Session))
+				if (await elementType.IsDirty(snapshot.GetValue(i), array.GetValue(i), Session).ConfigureAwait(false))
 				{
 					return false;
 				}
@@ -142,10 +142,10 @@ namespace NHibernate.Collection
 			get { return false; }
 		}
 
-		public override object ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
+		public override async Task<object> ReadFrom(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
-			object element = role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
-			int index = (int) role.ReadIndex(rs, descriptor.SuffixedIndexAliases, Session);
+			object element = await role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session).ConfigureAwait(false);
+			int index = (int) await role.ReadIndex(rs, descriptor.SuffixedIndexAliases, Session).ConfigureAwait(false);
 			for (int i = tempList.Count; i <= index; i++)
 			{
 				tempList.Add(null);
@@ -199,7 +199,7 @@ namespace NHibernate.Collection
 		/// <param name="persister">The CollectionPersister to use to reassemble the Array.</param>
 		/// <param name="disassembled">The disassembled Array.</param>
 		/// <param name="owner">The owner object.</param>
-		public override void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
+		public override async Task InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
 		{
 			object[] cached = (object[]) disassembled;
 
@@ -207,22 +207,22 @@ namespace NHibernate.Collection
 
 			for (int i = 0; i < cached.Length; i++)
 			{
-				array.SetValue(persister.ElementType.Assemble(cached[i], Session, owner), i);
+				array.SetValue(await persister.ElementType.Assemble(cached[i], Session, owner).ConfigureAwait(false), i);
 			}
 		}
 
-		public override object Disassemble(ICollectionPersister persister)
+		public override async Task<object> Disassemble(ICollectionPersister persister)
 		{
 			int length = array.Length;
 			object[] result = new object[length];
 			for (int i = 0; i < length; i++)
 			{
-				result[i] = persister.ElementType.Disassemble(array.GetValue(i), Session, null);
+				result[i] = await persister.ElementType.Disassemble(array.GetValue(i), Session, null).ConfigureAwait(false);
 			}
 			return result;
 		}
 
-		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
+		public override Task<IEnumerable> GetDeletes(ICollectionPersister persister, bool indexIsFormula)
 		{
 			IList deletes = new List<object>();
 			Array sn = (Array) GetSnapshot();
@@ -248,21 +248,21 @@ namespace NHibernate.Collection
 					deletes.Add(i);
 				}
 			}
-			return deletes;
+			return Task.FromResult<IEnumerable>(deletes);
 		}
 
-		public override bool NeedsInserting(object entry, int i, IType elemType)
+		public override Task<bool> NeedsInserting(object entry, int i, IType elemType)
 		{
 			Array sn = (Array) GetSnapshot();
-			return array.GetValue(i) != null && (i >= sn.Length || sn.GetValue(i) == null);
+			return Task.FromResult(array.GetValue(i) != null && (i >= sn.Length || sn.GetValue(i) == null));
 		}
 
-		public override bool NeedsUpdating(object entry, int i, IType elemType)
+		public override async Task<bool> NeedsUpdating(object entry, int i, IType elemType)
 		{
 			Array sn = (Array) GetSnapshot();
 			return
 				i < sn.Length && sn.GetValue(i) != null && array.GetValue(i) != null
-				&& elemType.IsDirty(array.GetValue(i), sn.GetValue(i), Session);
+				&& await elemType.IsDirty(array.GetValue(i), sn.GetValue(i), Session).ConfigureAwait(false);
 		}
 
 		public override object GetIndex(object entry, int i, ICollectionPersister persister)

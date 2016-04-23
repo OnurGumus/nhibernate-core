@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Threading.Tasks;
 using System.Xml;
 
 using NHibernate.Engine;
@@ -116,9 +117,10 @@ namespace NHibernate.Type
 		/// <returns></returns>
 		public abstract object FromStringValue(string xml);
 
-		public override void NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override Task NullSafeSet(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			if (settable[0]) NullSafeSet(st, value, index);
+			return TaskHelper.CompletedTask;
 		}
 
 		/// <include file='IType.cs.xmldoc' 
@@ -134,9 +136,10 @@ namespace NHibernate.Type
 		/// should be in <see cref="NullSafeSet(IDbCommand, object, int)" />.
 		/// </para>
 		/// </remarks>
-		public override sealed void NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session)
+		public override sealed Task NullSafeSet(IDbCommand st, object value, int index, ISessionImplementor session)
 		{
 			NullSafeSet(st, value, index);
+			return TaskHelper.CompletedTask;
 		}
 
 		/// <summary>
@@ -190,9 +193,9 @@ namespace NHibernate.Type
 		/// It only takes the first name from the string[] names parameter - that is a 
 		/// safe thing to do because a Nullable Type only has one field.
 		/// </remarks>
-		public override sealed object NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override sealed Task<object> NullSafeGet(IDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			return NullSafeGet(rs, names[0]);
+			return Task.FromResult(NullSafeGet(rs, names[0]));
 		}
 
 		/// <summary>
@@ -282,9 +285,9 @@ namespace NHibernate.Type
 		/// should be in <see cref="NullSafeGet(IDataReader, String)" />.
 		/// </para>
 		/// </remarks>
-		public override sealed object NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
+		public override sealed Task<object> NullSafeGet(IDataReader rs, string name, ISessionImplementor session, object owner)
 		{
-			return NullSafeGet(rs, name);
+			return Task.FromResult(NullSafeGet(rs, name));
 		}
 
 		/// <summary>
@@ -333,9 +336,9 @@ namespace NHibernate.Type
 			return 1;
 		}
 
-		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override async Task<bool> IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			return checkable[0] && IsDirty(old, current, session);
+			return checkable[0] && await IsDirty(old, current, session).ConfigureAwait(false);
 		}
 
 		public override bool[] ToColumnNullness(object value, IMapping mapping)
