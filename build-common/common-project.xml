@@ -46,7 +46,11 @@
 
 	<target name="common.compile-all" depends="common.generate-assemblyinfo">
 		<!--property name="msbuild.cmd" value="${cmd.sln} ${cmd.out} ${cmd.platform} ${cmd.debug} ${cmd.optimize} ${cmd.doc} /t:Rebuild /v:q /m" /-->
-
+		<exec program="${tools.dir}\NuGet.exe">
+          <arg value="restore" />
+          <arg value="${root.dir}/src/NHibernate.sln" />
+        </exec>
+		
 		<exec program="${framework::get-framework-directory(framework::get-target-framework())}\msbuild.exe" verbose="true">
 				<arg value="${root.dir}/src/NHibernate.sln" />
 				<arg value="/p:OutputPath=&quot;${path::get-full-path(bin.dir)}&quot;" />

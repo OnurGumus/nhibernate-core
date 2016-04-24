@@ -36,7 +36,6 @@
     <StartArguments>NHibernate.Test.dll</StartArguments>
     <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -129,6 +128,7 @@
     <Compile Include="Any\PropertySet.cs" />
     <Compile Include="Any\IPropertyValue.cs" />
     <Compile Include="Any\StringPropertyValue.cs" />
+    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BulkManipulation\BaseFixture.cs" />
     <Compile Include="BulkManipulation\HQLBulkOperations.cs" />
     <Compile Include="BulkManipulation\SimpleClass.cs" />
@@ -2697,7 +2697,6 @@
     <EmbeddedResource Include="ReadOnly\TextHolder.hbm.xml" />
     <EmbeddedResource Include="ReadOnly\VersionedNode.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2554\Mappings.hbm.xml" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.DomainModel\NHibernate.DomainModel.csproj">
@@ -3776,11 +3775,4 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-  </Target>
 </Project>

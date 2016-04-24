@@ -238,30 +238,40 @@ namespace NHibernate.Collection.Generic
 
 		public void Add(TKey key, TValue value)
 		{
+			AddAsync(key, value).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public async Task AddAsync(TKey key, TValue value)
+		{
 			if (key == null)
 			{
 				throw new ArgumentNullException("key");
 			}
 			if (PutQueueEnabled)
 			{
-				object old = ReadElementByIndex(key).ConfigureAwait(false).GetAwaiter().GetResult();
+				object old = await ReadElementByIndex(key).ConfigureAwait(false);
 				if (old != Unknown)
 				{
 					QueueOperation(new PutDelayedOperation(this, key, value, old == NotFound ? null : old));
 					return;
 				}
 			}
-			Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
+			await Initialize(true).ConfigureAwait(false);
 			WrappedMap.Add(key, value);
 			Dirty();
 		}
 
 		public bool Remove(TKey key)
 		{
-			object old = PutQueueEnabled ? ReadElementByIndex(key).ConfigureAwait(false).GetAwaiter().GetResult() : Unknown;
+			return RemoveAsync(key).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public async Task<bool> RemoveAsync(TKey key)
+		{
+			object old = PutQueueEnabled ? await ReadElementByIndex(key).ConfigureAwait(false) : Unknown;
 			if (old == Unknown) // queue is not enabled for 'puts', or element not found
 			{
-				Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
+				await Initialize(true).ConfigureAwait(false);
 				bool contained = WrappedMap.Remove(key);
 				if (contained)
 				{
@@ -361,7 +371,19 @@ namespace NHibernate.Collection.Generic
 			Add(item.Key, item.Value);
 		}
 
+		public override async Task<object> AddAsync(object obj)
+		{
+			var item = (KeyValuePair<TKey, TValue>) obj;
+			await AddAsync(item.Key, item.Value).ConfigureAwait(false);
+			return null;
+		}
+
 		public void Clear()
+		{
+			ClearAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public override async Task ClearAsync()
 		{
 			if (ClearQueueEnabled)
 			{
@@ -369,7 +391,7 @@ namespace NHibernate.Collection.Generic
 			}
 			else
 			{
-				Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
+				await Initialize(true).ConfigureAwait(false);
 				if (WrappedMap.Count != 0)
 				{
 					Dirty();
@@ -380,7 +402,13 @@ namespace NHibernate.Collection.Generic
 
 		public bool Contains(KeyValuePair<TKey, TValue> item)
 		{
-			bool? exists = ReadIndexExistence(item.Key).ConfigureAwait(false).GetAwaiter().GetResult();
+			return ContainsAsync(item).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public override async Task<bool> ContainsAsync(object obj)
+		{
+			var item = (KeyValuePair<TKey, TValue>) obj;
+			bool? exists = await ReadIndexExistence(item.Key).ConfigureAwait(false);
 			if (!exists.HasValue)
 			{
 				return WrappedMap.Contains(item);
@@ -420,9 +448,15 @@ namespace NHibernate.Collection.Generic
 
 		public bool Remove(KeyValuePair<TKey, TValue> item)
 		{
-			if (((ICollection<KeyValuePair<TKey, TValue>>)this).Contains(item))
+			return RemoveAsync(item).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public override async Task<bool> RemoveAsync(object obj)
+		{
+			var item = (KeyValuePair<TKey, TValue>) obj;
+			if(await ContainsAsync(item).ConfigureAwait(false))
 			{
-				Remove(item.Key);
+				await RemoveAsync(item.Key);
 				return true;
 			}
 
@@ -433,8 +467,13 @@ namespace NHibernate.Collection.Generic
 		{
 			get
 			{
-				return ReadSize().ConfigureAwait(false).GetAwaiter().GetResult() ? CachedSize : WrappedMap.Count;
+				return CountAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 			}
+		}
+
+		public override async Task<int> CountAsync()
+		{
+			return await ReadSize().ConfigureAwait(false) ? CachedSize : WrappedMap.Count;
 		}
 
 		public bool IsReadOnly

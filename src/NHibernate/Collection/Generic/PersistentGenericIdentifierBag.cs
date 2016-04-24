@@ -330,7 +330,12 @@ namespace NHibernate.Collection.Generic
 
 		public void Clear()
 		{
-			Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
+			ClearAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public override async Task ClearAsync()
+		{
+			await Initialize(true).ConfigureAwait(false);
 			if (_values.Count > 0 || _identifiers.Count > 0)
 			{
 				_values.Clear();
@@ -391,8 +396,13 @@ namespace NHibernate.Collection.Generic
 		{
 			get
 			{
-				return ReadSize().ConfigureAwait(false).GetAwaiter().GetResult() ? CachedSize : _values.Count;
+				return CountAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 			}
+		}
+
+		public override async Task<int> CountAsync()
+		{
+			return await ReadSize().ConfigureAwait(false) ? CachedSize : _values.Count;
 		}
 
 		void ICollection.CopyTo(Array array, int index)
@@ -442,14 +452,25 @@ namespace NHibernate.Collection.Generic
 
 		public void Add(T item)
 		{
-			Write();
-			_values.Add(item);
+			AddAsync(item).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public override async Task<object> AddAsync(object item)
+		{
+			await WriteAsync().ConfigureAwait(false);
+			_values.Add((T)item);
+			return null;
 		}
 
 		public bool Contains(T item)
 		{
-			Read();
-			return _values.Contains(item);
+			return ContainsAsync(item).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public override async Task<bool> ContainsAsync(object item)
+		{
+			await ReadAsync().ConfigureAwait(false);
+			return _values.Contains((T)item);
 		}
 
 		public void CopyTo(T[] array, int arrayIndex)
@@ -462,8 +483,13 @@ namespace NHibernate.Collection.Generic
 
 		public bool Remove(T item)
 		{
-			Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
-			int index = _values.IndexOf(item);
+			return RemoveAsync(item).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public override async Task<bool> RemoveAsync(object item)
+		{
+			await Initialize(true).ConfigureAwait(false);
+			int index = _values.IndexOf((T)item);
 			if (index >= 0)
 			{
 				BeforeRemove(index);

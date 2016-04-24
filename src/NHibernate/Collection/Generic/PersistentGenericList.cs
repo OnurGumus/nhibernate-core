@@ -248,9 +248,14 @@ namespace NHibernate.Collection.Generic
 
 		int IList.Add(object value)
 		{
+			return (int) AddAsync(value).GetAwaiter().GetResult();
+		}
+
+		public override async Task<object> AddAsync(object value)
+		{
 			if (!IsOperationQueueEnabled)
 			{
-				Write();
+				await WriteAsync();
 				return ((IList)WrappedList).Add(value);
 			}
 
@@ -268,13 +273,18 @@ namespace NHibernate.Collection.Generic
 
 		public void Clear()
 		{
+			ClearAsync().GetAwaiter().GetResult();
+		}
+
+		public override async Task ClearAsync()
+		{
 			if (ClearQueueEnabled)
 			{
 				QueueOperation(new ClearDelayedOperation(this));
 			}
 			else
 			{
-				Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
+				await Initialize(true).ConfigureAwait(false);
 				if (WrappedList.Count != 0)
 				{
 					WrappedList.Clear();
@@ -420,8 +430,13 @@ namespace NHibernate.Collection.Generic
 		{
 			get
 			{
-				return ReadSize().ConfigureAwait(false).GetAwaiter().GetResult() ? CachedSize : WrappedList.Count;
+				return CountAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 			}
+		}
+
+		public override async Task<int> CountAsync()
+		{
+			return await ReadSize().ConfigureAwait(false) ? CachedSize : WrappedList.Count;
 		}
 
 		object ICollection.SyncRoot
@@ -441,21 +456,18 @@ namespace NHibernate.Collection.Generic
 
 		public void Add(T item)
 		{
-			if (!IsOperationQueueEnabled)
-			{
-				Write();
-				WrappedList.Add(item);
-			}
-			else
-			{
-				QueueOperation(new SimpleAddDelayedOperation(this, item));
-			}
+			AddAsync(item).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		public bool Contains(T item)
 		{
-			bool? exists = ReadElementExistence(item).ConfigureAwait(false).GetAwaiter().GetResult();
-			return !exists.HasValue ? WrappedList.Contains(item) : exists.Value;
+			return ContainsAsync(item).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public override async Task<bool> ContainsAsync(object item)
+		{
+			bool? exists = await ReadElementExistence(item).ConfigureAwait(false);
+			return !exists.HasValue ? WrappedList.Contains((T)item) : exists.Value;
 		}
 
 		public void CopyTo(T[] array, int arrayIndex)
@@ -473,11 +485,16 @@ namespace NHibernate.Collection.Generic
 
 		public bool Remove(T item)
 		{
-			bool? exists = PutQueueEnabled ? ReadElementExistence(item).ConfigureAwait(false).GetAwaiter().GetResult() : null;
+			return RemoveAsync(item).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public override async Task<bool> RemoveAsync(object item)
+		{
+			bool? exists = PutQueueEnabled ? await ReadElementExistence(item).ConfigureAwait(false) : null;
 			if (!exists.HasValue)
 			{
-				Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
-				bool contained = WrappedList.Remove(item);
+				await Initialize(true).ConfigureAwait(false);
+				bool contained = WrappedList.Remove((T)item);
 				if (contained)
 				{
 					Dirty();
@@ -486,7 +503,7 @@ namespace NHibernate.Collection.Generic
 			}
 			else if (exists.Value)
 			{
-				QueueOperation(new SimpleRemoveDelayedOperation(this, item));
+				QueueOperation(new SimpleRemoveDelayedOperation(this, (T)item));
 				return true;
 			}
 			return false;

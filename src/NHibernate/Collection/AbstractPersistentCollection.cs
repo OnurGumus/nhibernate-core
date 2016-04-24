@@ -262,7 +262,15 @@ namespace NHibernate.Collection
 		/// </summary>
 		public virtual void Read()
 		{
-			Initialize(false).ConfigureAwait(false).GetAwaiter().GetResult();
+			ReadAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary>
+		/// Called by any read-only method of the collection interface
+		/// </summary>
+		public virtual Task ReadAsync()
+		{
+			return Initialize(false);
 		}
 
 		/// <summary> Called by the <tt>Count</tt> property</summary>
@@ -290,7 +298,7 @@ namespace NHibernate.Collection
 					}
 				}
 			}
-			Read();
+			await ReadAsync().ConfigureAwait(false);
 			return false;
 		}
 
@@ -310,7 +318,7 @@ namespace NHibernate.Collection
 					return await persister.IndexExists(entry.LoadedKey, index, session).ConfigureAwait(false);
 				}
 			}
-			Read();
+			await ReadAsync().ConfigureAwait(false);
 			return null;
 		}
 
@@ -330,7 +338,7 @@ namespace NHibernate.Collection
 					return await persister.ElementExists(entry.LoadedKey, element, session).ConfigureAwait(false);
 				}
 			}
-			Read();
+			await ReadAsync().ConfigureAwait(false);
 			return null;
 		}
 
@@ -351,7 +359,7 @@ namespace NHibernate.Collection
 					return persister.NotFoundObject == elementByIndex ? NotFound : elementByIndex;
 				}
 			}
-			Read();
+			await ReadAsync().ConfigureAwait(false);
 			return Unknown;
 		}
 
@@ -360,7 +368,15 @@ namespace NHibernate.Collection
 		/// </summary>
 		protected virtual void Write()
 		{
-			Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
+			WriteAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary>
+		/// Called by any writer method of the collection interface
+		/// </summary>
+		protected virtual async Task WriteAsync()
+		{
+			await Initialize(true).ConfigureAwait(false);
 			Dirty();
 		}
 
@@ -689,6 +705,16 @@ namespace NHibernate.Collection
 		/// Get all "orphaned" elements
 		/// </summary>
 		public abstract Task<ICollection> GetOrphans(object snapshot, string entityName);
+
+		public abstract Task<int> CountAsync();
+
+		public abstract Task ClearAsync();
+
+		public abstract Task<bool> ContainsAsync(object item);
+
+		public abstract Task<bool> RemoveAsync(object item);
+
+		public abstract Task<object> AddAsync(object item);
 
 		/// <summary> 
 		/// Given a collection of entity instances that used to

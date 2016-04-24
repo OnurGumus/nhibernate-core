@@ -35,15 +35,6 @@ namespace NHibernate.Test.DriverTest
 				Assert.IsNotNull(q);
 				q.List();
 			}
-			catch (AggregateException ex)
-			{
-				QueryException ae = ex.InnerException as QueryException;
-				if (ae != null)
-				{
-					Assert.IsTrue(ae.Message.StartsWith("Not all named parameters have been set"));
-				}
-				else throw ex;
-			}
 			catch (QueryException ae)
 			{
 				Assert.IsTrue(ae.Message.StartsWith("Not all named parameters have been set"));

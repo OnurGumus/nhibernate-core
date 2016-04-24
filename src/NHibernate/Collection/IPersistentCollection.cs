@@ -337,5 +337,15 @@ namespace NHibernate.Collection
 		/// that have been orphaned.
 		/// </returns>
 		Task<ICollection> GetOrphans(object snapshot, string entityName);
+
+		Task<int> CountAsync();
+
+		Task ClearAsync();
+
+		Task<bool> ContainsAsync(object item);
+
+		Task<bool> RemoveAsync(object item);
+
+		Task<object> AddAsync(object item);
 	}
 }

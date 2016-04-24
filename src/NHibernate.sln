@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{593DCEA7-C933-46F3-939F-D8172399AB05}"
 	ProjectSection(SolutionItems) = preProject
@@ -14,13 +14,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.DomainModel", "NHibernate.DomainModel\NHibernate.DomainModel.csproj", "{5C649B55-1B3F-4C38-9998-1B043E94A244}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.TestDatabaseSetup", "NHibernate.TestDatabaseSetup\NHibernate.TestDatabaseSetup.csproj", "{BEEC1564-6FB6-49F7-BBE5-8EBD2F0F6E8A}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{99AB6852-EFDD-4E9C-A9DA-7527F72C25D3}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Test", "NHibernate.Test\NHibernate.Test.csproj", "{5278DDEA-DFE0-4951-A938-2F1D8E337FAA}"
 EndProject

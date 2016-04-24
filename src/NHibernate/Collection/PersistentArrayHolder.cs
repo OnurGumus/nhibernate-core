@@ -9,6 +9,7 @@ using NHibernate.Engine;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Collection
 {
@@ -284,6 +285,31 @@ namespace NHibernate.Collection
 		public override bool EntryExists(object entry, int i)
 		{
 			return entry != null;
+		}
+
+		public override Task<object> AddAsync(object item)
+		{
+			return TaskHelper.FromException<object>(new NotSupportedException());
+		}
+
+		public override Task ClearAsync()
+		{
+			return TaskHelper.FromException<object>(new NotSupportedException());
+		}
+
+		public override Task<bool> ContainsAsync(object item)
+		{
+			return TaskHelper.FromException<bool>(new NotSupportedException());
+		}
+
+		public override Task<int> CountAsync()
+		{
+			return Task.FromResult(array.Length);
+		}
+
+		public override Task<bool> RemoveAsync(object item)
+		{
+			return TaskHelper.FromException<bool>(new NotSupportedException());
 		}
 
 		#region ICollection Members

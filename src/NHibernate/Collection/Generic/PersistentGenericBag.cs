@@ -157,8 +157,13 @@ namespace NHibernate.Collection.Generic
 		{
 			get
 			{
-				return ReadSize().ConfigureAwait(false).GetAwaiter().GetResult() ? CachedSize : _gbag.Count;
+				return CountAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 			}
+		}
+
+		public override async Task<int> CountAsync()
+		{
+			return await ReadSize().ConfigureAwait(false) ? CachedSize : _gbag.Count;
 		}
 
 		public bool IsReadOnly
@@ -168,18 +173,29 @@ namespace NHibernate.Collection.Generic
 
 		public void Add(T item)
 		{
+			AddAsync(item).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public override async Task<object> AddAsync(object item)
+		{
 			if (!IsOperationQueueEnabled)
 			{
-				Write();
-				_gbag.Add(item);
+				await WriteAsync().ConfigureAwait(false);
+				_gbag.Add((T)item);
 			}
 			else
 			{
-				QueueOperation(new SimpleAddDelayedOperation(this, item));
+				QueueOperation(new SimpleAddDelayedOperation(this, (T)item));
 			}
+			return null;
 		}
 
 		public void Clear()
+		{
+			ClearAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public override async Task ClearAsync()
 		{
 			if (ClearQueueEnabled)
 			{
@@ -187,7 +203,7 @@ namespace NHibernate.Collection.Generic
 			}
 			else
 			{
-				Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
+				await Initialize(true).ConfigureAwait(false);
 				if (_gbag.Count != 0)
 				{
 					_gbag.Clear();
@@ -198,8 +214,13 @@ namespace NHibernate.Collection.Generic
 
 		public bool Contains(T item)
 		{
-			var exists = ReadElementExistence(item).ConfigureAwait(false).GetAwaiter().GetResult();
-			return !exists.HasValue ? _gbag.Contains(item) : exists.Value;
+			return ContainsAsync(item).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public override async Task<bool> ContainsAsync(object item)
+		{
+			var exists = await ReadElementExistence(item).ConfigureAwait(false);
+			return !exists.HasValue ? _gbag.Contains((T)item) : exists.Value;
 		}
 
 		public void CopyTo(T[] array, int arrayIndex)
@@ -212,8 +233,13 @@ namespace NHibernate.Collection.Generic
 
 		public bool Remove(T item)
 		{
-			Initialize(true).ConfigureAwait(false).GetAwaiter().GetResult();
-			var result = _gbag.Remove(item);
+			return RemoveAsync(item).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public override async Task<bool> RemoveAsync(object item)
+		{
+			await Initialize(true).ConfigureAwait(false);
+			var result = _gbag.Remove((T)item);
 			if (result)
 			{
 				Dirty();

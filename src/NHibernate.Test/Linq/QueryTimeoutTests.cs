@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NHibernate.Driver;
@@ -82,17 +83,11 @@ namespace NHibernate.Test.Linq
 				: base(connectionManager, interceptor)
 			{
 			}
-			public override async System.Threading.Tasks.Task<IDataReaderEx> ExecuteReader(System.Data.Common.DbCommand cmd)
-			{
-				LastCommandTimeout = cmd.CommandTimeout;
-				return await base.ExecuteReader(cmd);
-			}
-			/*
-			public override System.Data.IDataReader ExecuteReader(System.Data.IDbCommand cmd)
+			public override Task<IDataReaderEx> ExecuteReader(System.Data.Common.DbCommand cmd)
 			{
 				LastCommandTimeout = cmd.CommandTimeout;
 				return base.ExecuteReader(cmd);
-			}*/
+			}
 		}
 
 
