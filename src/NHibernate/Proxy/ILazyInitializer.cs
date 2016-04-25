@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using NHibernate.Engine;
 
 namespace NHibernate.Proxy
@@ -11,6 +12,14 @@ namespace NHibernate.Proxy
 		/// Thrown when the Proxy has no Session or the Session is closed or disconnected.
 		/// </exception>
 		void Initialize();
+
+		/// <summary>
+		/// Perform an ImmediateLoad of the actual object for the Proxy.
+		/// </summary>
+		/// <exception cref="HibernateException">
+		/// Thrown when the Proxy has no Session or the Session is closed or disconnected.
+		/// </exception>
+		Task InitializeAsync();
 
 		/// <summary>
 		/// The identifier value for the entity our owning proxy represents.

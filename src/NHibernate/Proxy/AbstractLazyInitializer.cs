@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 
@@ -97,7 +98,7 @@ namespace NHibernate.Proxy
 		{
 			get { return GetProxyOrNull() != null; }
 		}
-		
+
 		/// <summary>
 		/// Perform an ImmediateLoad of the actual object for the Proxy.
 		/// </summary>
@@ -105,6 +106,17 @@ namespace NHibernate.Proxy
 		/// Thrown when the Proxy has no Session or the Session is closed or disconnected.
 		/// </exception>
 		public virtual void Initialize()
+		{
+			InitializeAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		/// <summary>
+		/// Perform an ImmediateLoad of the actual object for the Proxy.
+		/// </summary>
+		/// <exception cref="HibernateException">
+		/// Thrown when the Proxy has no Session or the Session is closed or disconnected.
+		/// </exception>
+		public virtual async Task InitializeAsync()
 		{
 			if (!initialized)
 			{
@@ -122,7 +134,7 @@ namespace NHibernate.Proxy
 				}
 				else
 				{
-					_target = _session.ImmediateLoad(_entityName, _id);
+					_target = await _session.ImmediateLoadAsync(_entityName, _id).ConfigureAwait(false);
 					initialized = true;
 					CheckTargetState();
 				}

@@ -377,7 +377,7 @@ namespace NHibernate
 			}
 			else if (proxy.IsProxy())
 			{
-				((INHibernateProxy)proxy).HibernateLazyInitializer.Initialize();
+				await ((INHibernateProxy)proxy).HibernateLazyInitializer.InitializeAsync().ConfigureAwait(false);
 			}
 			else if (proxy is IPersistentCollection)
 			{
