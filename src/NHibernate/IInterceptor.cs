@@ -194,8 +194,8 @@ namespace NHibernate
 		/// session-scoped-interceptor is an instance of the interceptor used only for one session.
 		/// The use of singleton-interceptor may cause problems in multi-thread scenario. 
 		/// </remarks>
-		/// <seealso cref="ISessionFactory.OpenSession(IInterceptor)"/>
-		/// <seealso cref="ISessionFactory.OpenSession(IDbConnection,IInterceptor)"/>
+		/// <seealso cref="ISessionFactory.OpenSession(IInterceptor,object)"/>
+		/// <seealso cref="ISessionFactory.OpenSession(IDbConnection,IInterceptor,object)"/>
 		void SetSession(ISession session);
 
 		#endregion

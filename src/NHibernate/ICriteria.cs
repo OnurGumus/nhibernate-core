@@ -289,6 +289,12 @@ namespace NHibernate
 		IList List();
 
 		/// <summary>
+		/// Get the results
+		/// </summary>
+		/// <returns></returns>
+		Task<IList> ListAsync();
+
+		/// <summary>
 		/// Convenience method to return a single instance that matches
 		/// the query, or null if the query returns no results.
 		/// </summary>
@@ -297,6 +303,16 @@ namespace NHibernate
 		/// If there is more than one matching result
 		/// </exception>
 		object UniqueResult();
+
+		/// <summary>
+		/// Convenience method to return a single instance that matches
+		/// the query, or null if the query returns no results.
+		/// </summary>
+		/// <returns>the single result or <see langword="null" /></returns>
+		/// <exception cref="HibernateException">
+		/// If there is more than one matching result
+		/// </exception>
+		Task<object> UniqueResultAsync();
 
 		/// <summary>
 		/// Get a enumerable that when enumerated will execute

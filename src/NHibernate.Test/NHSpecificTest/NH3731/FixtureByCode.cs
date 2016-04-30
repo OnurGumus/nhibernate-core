@@ -141,5 +141,30 @@ namespace NHibernate.Test.NHSpecificTest.NH3731
 				}
 			}
 		}
+
+		[Test]
+		public void Deserializing_Session_With_CustomContext_Should_Work()
+		{
+			var context = new Parent {Name = "Parent"};
+			using (ISession session = OpenSession(context))
+			{
+				ISession deserializedSession;
+				using (MemoryStream sessionMemoryStream = new MemoryStream())
+				{
+					BinaryFormatter formatter = new BinaryFormatter();
+					formatter.Serialize(sessionMemoryStream, session);
+
+					sessionMemoryStream.Seek(0, SeekOrigin.Begin);
+					deserializedSession = (ISession)formatter.Deserialize(sessionMemoryStream);
+				}
+				var deserializedContext = deserializedSession.GetSessionImplementation().CustomContext as Parent;
+				Assert.IsNotNull(deserializedContext);
+				Assert.AreEqual(context.Name, deserializedContext.Name);
+				Assert.AreNotSame(deserializedContext, context);
+
+				deserializedSession.Dispose();
+				
+			}
+		}
 	}
 }

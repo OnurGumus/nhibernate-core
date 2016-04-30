@@ -448,5 +448,8 @@ namespace NHibernate.Engine
 		EntityKey GenerateEntityKey(object id, IEntityPersister persister);
 
 		CacheKey GenerateCacheKey(object id, IType type, string entityOrRoleName);
+
+		/// <summary> User provided context</summary>
+		object CustomContext { get; }
 	}
 }

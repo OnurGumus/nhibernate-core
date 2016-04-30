@@ -319,6 +319,12 @@ namespace NHibernate.Test
 			return lastOpenedSession;
 		}
 
+		protected virtual ISession OpenSession(object customContext)
+		{
+			lastOpenedSession = sessions.OpenSession(customContext);
+			return lastOpenedSession;
+		}
+
 		protected virtual ISession OpenSession(IInterceptor sessionLocalInterceptor)
 		{
 			lastOpenedSession = sessions.OpenSession(sessionLocalInterceptor);

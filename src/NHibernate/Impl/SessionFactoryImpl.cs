@@ -467,37 +467,37 @@ namespace NHibernate.Impl
 
 		#region ISessionFactoryImplementor Members
 
-		public ISession OpenSession()
+		public ISession OpenSession(object customContext = null)
 		{
-			return OpenSession(interceptor);
+			return OpenSession(interceptor, customContext);
 		}
 
-		public ISession OpenSession(IDbConnection connection)
+		public ISession OpenSession(IDbConnection connection, object customContext = null)
 		{
-			return OpenSession(connection, interceptor);
+			return OpenSession(connection, interceptor, customContext);
 		}
 
-		public ISession OpenSession(IDbConnection connection, IInterceptor sessionLocalInterceptor)
+		public ISession OpenSession(IDbConnection connection, IInterceptor sessionLocalInterceptor, object customContext = null)
 		{
 			if (sessionLocalInterceptor == null)
 			{
 				throw new ArgumentNullException("sessionLocalInterceptor");
 			}
-			return OpenSession(connection, false, long.MinValue, sessionLocalInterceptor);
+			return OpenSession(connection, false, long.MinValue, sessionLocalInterceptor, customContext);
 		}
 
-		public ISession OpenSession(IInterceptor sessionLocalInterceptor)
+		public ISession OpenSession(IInterceptor sessionLocalInterceptor, object customContext = null)
 		{
 			if (sessionLocalInterceptor == null)
 			{
 				throw new ArgumentNullException("sessionLocalInterceptor");
 			}
 			long timestamp = settings.CacheProvider.NextTimestamp();
-			return OpenSession(null, true, timestamp, sessionLocalInterceptor);
+			return OpenSession(null, true, timestamp, sessionLocalInterceptor, customContext);
 		}
 
 		public ISession OpenSession(IDbConnection connection, bool flushBeforeCompletionEnabled, bool autoCloseSessionEnabled,
-									ConnectionReleaseMode connectionReleaseMode)
+									ConnectionReleaseMode connectionReleaseMode, object customContext = null)
 		{
 #pragma warning disable 618
 			var isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled = settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled;
@@ -506,7 +506,8 @@ namespace NHibernate.Impl
 			return
 				new SessionImpl(connection as DbConnection, this, true, settings.CacheProvider.NextTimestamp(), interceptor,
 								settings.DefaultEntityMode, flushBeforeCompletionEnabled, autoCloseSessionEnabled,
-								isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled, connectionReleaseMode, settings.DefaultFlushMode);
+								isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled, connectionReleaseMode, settings.DefaultFlushMode,
+								customContext);
 		}
 
 		public IEntityPersister GetEntityPersister(string entityName)
@@ -1227,7 +1228,7 @@ namespace NHibernate.Impl
 			return errors;
 		}
 
-		private SessionImpl OpenSession(IDbConnection connection, bool autoClose, long timestamp, IInterceptor sessionLocalInterceptor)
+		private SessionImpl OpenSession(IDbConnection connection, bool autoClose, long timestamp, IInterceptor sessionLocalInterceptor, object customContext = null)
 		{
 #pragma warning disable 618
 			var isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled = settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled;
@@ -1236,7 +1237,7 @@ namespace NHibernate.Impl
 			SessionImpl session = new SessionImpl(connection as DbConnection, this, autoClose, timestamp, sessionLocalInterceptor ?? interceptor,
 												  settings.DefaultEntityMode, settings.IsFlushBeforeCompletionEnabled,
 												  settings.IsAutoCloseSessionEnabled, isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled,
-												  settings.ConnectionReleaseMode, settings.DefaultFlushMode);
+												  settings.ConnectionReleaseMode, settings.DefaultFlushMode, customContext);
 
 			if (sessionLocalInterceptor != null)
 			{

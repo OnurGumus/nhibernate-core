@@ -143,7 +143,6 @@ namespace NHibernate
 		/// <returns></returns>
 		Task<IEnumerable<T>> EnumerableAsync<T>();
 
-
 		/// <summary>
 		/// Return the query results as an <see cref="IList"/>. If the query contains multiple results per row,
 		/// the results are returned in an instance of <c>object[]</c>.
@@ -155,31 +154,6 @@ namespace NHibernate
 		/// </remarks>
 		IList List();
 
-		/// <summary>
-		/// Return the query results an place them into the <see cref="IList"/>.
-		/// </summary>
-		/// <param name="results">The <see cref="IList"/> to place the results in.</param>		
-		void List(IList results);
-
-		/// <summary>
-		/// Strongly-typed version of <see cref="List()"/>.
-		/// </summary>
-		IList<T> List<T>();
-
-		/// <summary>
-		/// Convenience method to return a single instance that matches
-		/// the query, or null if the query returns no results.
-		/// </summary>
-		/// <returns>the single result or <see langword="null" /></returns>
-		/// <exception cref="HibernateException">
-		/// Thrown when there is more than one matching result.
-		/// </exception>
-		object UniqueResult();
-
-		/// <summary>
-		/// Strongly-typed version of <see cref="UniqueResult()"/>.
-		/// </summary>
-		T UniqueResult<T>();
 		/// <summary>
 		/// Return the query results as an <see cref="IList"/>. If the query contains multiple results per row,
 		/// the results are returned in an instance of <c>object[]</c>.
@@ -194,8 +168,19 @@ namespace NHibernate
 		/// <summary>
 		/// Return the query results an place them into the <see cref="IList"/>.
 		/// </summary>
+		/// <param name="results">The <see cref="IList"/> to place the results in.</param>		
+		void List(IList results);
+
+		/// <summary>
+		/// Return the query results an place them into the <see cref="IList"/>.
+		/// </summary>
 		/// <param name="results">The <see cref="IList"/> to place the results in.</param>	    
 		Task ListAsync(IList results);
+
+		/// <summary>
+		/// Strongly-typed version of <see cref="List()"/>.
+		/// </summary>
+		IList<T> List<T>();
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="ListAsync()"/>.
@@ -210,8 +195,23 @@ namespace NHibernate
 		/// <exception cref="HibernateException">
 		/// Thrown when there is more than one matching result.
 		/// </exception>
+		object UniqueResult();
+
+		/// <summary>
+		/// Convenience method to return a single instance that matches
+		/// the query, or null if the query returns no results.
+		/// </summary>
+		/// <returns>the single result or <see langword="null" /></returns>
+		/// <exception cref="HibernateException">
+		/// Thrown when there is more than one matching result.
+		/// </exception>
 		Task<object> UniqueResultAsync();
 
+		/// <summary>
+		/// Strongly-typed version of <see cref="UniqueResult()"/>.
+		/// </summary>
+		T UniqueResult<T>();
+		
 		/// <summary>
 		/// Strongly-typed version of <see cref="UniqueResultAsync()"/>.
 		/// </summary>

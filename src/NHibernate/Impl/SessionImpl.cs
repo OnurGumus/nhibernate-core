@@ -78,6 +78,9 @@ namespace NHibernate.Impl
 		private readonly StatefulPersistenceContext persistenceContext;
 
 		[NonSerialized]
+		private object customContext;
+
+		[NonSerialized]
 		private readonly ISession rootSession;
 
 		[NonSerialized]
@@ -112,7 +115,7 @@ namespace NHibernate.Impl
 			Factory = fact;
 			listeners = fact.EventListeners;
 			persistenceContext = (StatefulPersistenceContext)info.GetValue("persistenceContext", typeof(StatefulPersistenceContext));
-
+			customContext = info.GetValue("customContext", typeof(object));
 			actionQueue = (ActionQueue)info.GetValue("actionQueue", typeof(ActionQueue));
 
 			flushMode = (FlushMode)info.GetValue("flushMode", typeof(FlushMode));
@@ -152,6 +155,7 @@ namespace NHibernate.Impl
 
 			info.AddValue("factory", Factory, typeof(SessionFactoryImpl));
 			info.AddValue("persistenceContext", persistenceContext, typeof(StatefulPersistenceContext));
+			info.AddValue("customContext", customContext);
 			info.AddValue("actionQueue", actionQueue, typeof(ActionQueue));
 			info.AddValue("timestamp", timestamp);
 			info.AddValue("flushMode", flushMode);
@@ -209,6 +213,7 @@ namespace NHibernate.Impl
 		/// <param name="ignoreExceptionBeforeTransactionCompletion">Should we ignore exceptions in IInterceptor.BeforeTransactionCompletion</param>
 		/// <param name="connectionReleaseMode">The mode by which we should release JDBC connections.</param>
 		/// <param name="defaultFlushMode">The default flush mode for this session</param>
+		/// <param name="customContext">The user supplied context</param>
 		internal SessionImpl(
 			DbConnection connection,
 			SessionFactoryImpl factory,
@@ -220,7 +225,8 @@ namespace NHibernate.Impl
 			bool autoCloseSessionEnabled,
 			bool ignoreExceptionBeforeTransactionCompletion,
 			ConnectionReleaseMode connectionReleaseMode,
-			FlushMode defaultFlushMode)
+			FlushMode defaultFlushMode,
+			object customContext = null)
 			: base(factory)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -241,6 +247,7 @@ namespace NHibernate.Impl
 				this.ignoreExceptionBeforeTransactionCompletion = ignoreExceptionBeforeTransactionCompletion;
 				connectionManager = new ConnectionManager(this, connection, connectionReleaseMode, interceptor);
 				this.flushMode = defaultFlushMode;
+				this.customContext = customContext;
 
 				if (factory.Statistics.IsStatisticsEnabled)
 				{
@@ -345,6 +352,11 @@ namespace NHibernate.Impl
 		public bool ShouldAutoClose
 		{
 			get { return IsAutoCloseSessionEnabled && !IsClosed; }
+		}
+
+		public override object CustomContext
+		{
+			get { return customContext; }
 		}
 
 		/// <summary>
@@ -2000,6 +2012,15 @@ namespace NHibernate.Impl
 				}
 
 				// free unmanaged resources here
+				if(customContext != null)
+				{
+					var disposableContext = customContext as IDisposable;
+					if(disposableContext != null)
+					{
+						disposableContext.Dispose();
+					}
+					customContext = null;
+				}
 
 				IsAlreadyDisposed = true;
 				// nothing for Finalizer to do - so tell the GC to ignore it

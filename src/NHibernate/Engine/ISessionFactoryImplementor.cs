@@ -146,9 +146,10 @@ namespace NHibernate.Engine
 		/// transaction completion?
 		/// </param>
 		/// <param name="connectionReleaseMode">The release mode for managed jdbc connections.</param>
+		/// <param name="customContext">The user provided context</param>
 		/// <returns>An appropriate session.</returns>
 		ISession OpenSession(IDbConnection connection, bool flushBeforeCompletionEnabled, bool autoCloseSessionEnabled,
-		                     ConnectionReleaseMode connectionReleaseMode);
+		                     ConnectionReleaseMode connectionReleaseMode, object customContext = null);
 
 		/// <summary> 
 		/// Retrieves a set of all the collection roles in which the given entity

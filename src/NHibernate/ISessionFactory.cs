@@ -30,6 +30,7 @@ namespace NHibernate
 		/// Open a <c>ISession</c> on the given connection
 		/// </summary>
 		/// <param name="conn">A connection provided by the application</param>
+		/// <param name="customContext">The user provided context</param>
 		/// <returns>A session</returns>
 		/// <remarks>
 		/// Note that the second-level cache will be disabled if you
@@ -37,20 +38,22 @@ namespace NHibernate
 		/// any statements you might have executed in the same transaction.
 		/// Consider implementing your own <see cref="IConnectionProvider" />.
 		/// </remarks>
-		ISession OpenSession(IDbConnection conn);
+		ISession OpenSession(IDbConnection conn, object customContext = null);
 
 		/// <summary>
 		/// Create database connection and open a <c>ISession</c> on it, specifying an interceptor
 		/// </summary>
 		/// <param name="sessionLocalInterceptor">A session-scoped interceptor</param>
+		/// <param name="customContext">The user provided context</param>
 		/// <returns>A session</returns>
-		ISession OpenSession(IInterceptor sessionLocalInterceptor);
+		ISession OpenSession(IInterceptor sessionLocalInterceptor, object customContext = null);
 
 		/// <summary>
 		/// Open a <c>ISession</c> on the given connection, specifying an interceptor
 		/// </summary>
 		/// <param name="conn">A connection provided by the application</param>
 		/// <param name="sessionLocalInterceptor">A session-scoped interceptor</param>
+		/// <param name="customContext">The user provided context</param>
 		/// <returns>A session</returns>
 		/// <remarks>
 		/// Note that the second-level cache will be disabled if you
@@ -58,13 +61,14 @@ namespace NHibernate
 		/// any statements you might have executed in the same transaction.
 		/// Consider implementing your own <see cref="IConnectionProvider" />.
 		/// </remarks>
-		ISession OpenSession(IDbConnection conn, IInterceptor sessionLocalInterceptor);
+		ISession OpenSession(IDbConnection conn, IInterceptor sessionLocalInterceptor, object customContext = null);
 
 		/// <summary>
 		/// Create a database connection and open a <c>ISession</c> on it
 		/// </summary>
+		/// <param name="customContext">The user provided context</param>
 		/// <returns></returns>
-		ISession OpenSession();
+		ISession OpenSession(object customContext = null);
 
 		/// <summary>
 		/// Get the <see cref="IClassMetadata"/> associated with the given entity class

@@ -106,6 +106,11 @@ namespace NHibernate.Impl
 			get { throw new NotSupportedException(); }
 		}
 
+		public override object CustomContext
+		{
+			get { throw new NotSupportedException(); }
+		}
+
 		public override IBatcher Batcher
 		{
 			get

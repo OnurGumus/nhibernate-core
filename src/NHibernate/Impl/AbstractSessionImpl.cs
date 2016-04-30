@@ -76,6 +76,7 @@ namespace NHibernate.Impl
 		public abstract object ImmediateLoad(string entityName, object id);
 		public abstract Task<object> ImmediateLoadAsync(string entityName, object id);
 		public abstract long Timestamp { get; }
+		public abstract object CustomContext { get; }
 
 		public EntityKey GenerateEntityKey(object id, IEntityPersister persister)
 		{
