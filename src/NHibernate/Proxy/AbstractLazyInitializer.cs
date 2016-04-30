@@ -107,7 +107,32 @@ namespace NHibernate.Proxy
 		/// </exception>
 		public virtual void Initialize()
 		{
-			InitializeAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+			if (!initialized)
+			{
+				if (_session == null)
+				{
+					throw new LazyInitializationException(_entityName, _id, "Could not initialize proxy - no Session.");
+				}
+				else if (!_session.IsOpen)
+				{
+					throw new LazyInitializationException(_entityName, _id, "Could not initialize proxy - the owning Session was closed.");
+				}
+				else if (!_session.IsConnected)
+				{
+					throw new LazyInitializationException(_entityName, _id, "Could not initialize proxy - the owning Session is disconnected.");
+				}
+				else
+				{
+					// For some reason ImmediateLoadAsync wont work in some tests in envers, reason unknown.
+					_target = _session.ImmediateLoad(_entityName, _id);
+					initialized = true;
+					CheckTargetState();
+				}
+			}
+			else
+			{
+				CheckTargetState();
+			}
 		}
 
 		/// <summary>
