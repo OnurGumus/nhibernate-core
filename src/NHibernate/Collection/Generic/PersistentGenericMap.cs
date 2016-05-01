@@ -456,7 +456,7 @@ namespace NHibernate.Collection.Generic
 			var item = (KeyValuePair<TKey, TValue>) obj;
 			if(await ContainsAsync(item).ConfigureAwait(false))
 			{
-				await RemoveAsync(item.Key);
+				await RemoveAsync(item.Key).ConfigureAwait(false);
 				return true;
 			}
 

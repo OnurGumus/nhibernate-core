@@ -248,14 +248,14 @@ namespace NHibernate.Collection.Generic
 
 		int IList.Add(object value)
 		{
-			return (int) AddAsync(value).GetAwaiter().GetResult();
+			return (int) AddAsync(value).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		public override async Task<object> AddAsync(object value)
 		{
 			if (!IsOperationQueueEnabled)
 			{
-				await WriteAsync();
+				await WriteAsync().ConfigureAwait(false);
 				return ((IList)WrappedList).Add(value);
 			}
 
@@ -273,7 +273,7 @@ namespace NHibernate.Collection.Generic
 
 		public void Clear()
 		{
-			ClearAsync().GetAwaiter().GetResult();
+			ClearAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		public override async Task ClearAsync()

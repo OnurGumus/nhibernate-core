@@ -115,7 +115,7 @@ namespace NHibernate.Transaction
 					{
 						using (var tx = new TransactionScope(AmbientTransation))
 						{
-							sessionImplementor.BeforeTransactionCompletion(null).ConfigureAwait(true).GetAwaiter().GetResult();
+							sessionImplementor.BeforeTransactionCompletion(null).ConfigureAwait(false).GetAwaiter().GetResult();
 							if (sessionImplementor.FlushMode != FlushMode.Never && sessionImplementor.ConnectionManager.IsConnected)
 							{
 								using (sessionImplementor.ConnectionManager.FlushingFromDtcTransaction)

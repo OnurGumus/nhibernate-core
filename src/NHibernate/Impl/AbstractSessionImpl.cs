@@ -259,7 +259,7 @@ namespace NHibernate.Impl
 
 		public void ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results)
 		{
-			ListCustomQueryAsync(customQuery, queryParameters, results).GetAwaiter().GetResult();
+			ListCustomQueryAsync(customQuery, queryParameters, results).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		public abstract Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results);

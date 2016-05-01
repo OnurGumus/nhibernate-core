@@ -205,7 +205,7 @@ namespace NHibernate.Tool.hbm2ddl
 						{
 							log.Debug(sql);
 							stmt.CommandText = sql;
-							await stmt.ExecuteNonQueryAsync();
+							await stmt.ExecuteNonQueryAsync().ConfigureAwait(false);
 						}
 					}
 					catch (Exception e)

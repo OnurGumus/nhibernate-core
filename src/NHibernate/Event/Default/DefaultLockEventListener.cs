@@ -49,7 +49,7 @@ namespace NHibernate.Event.Default
 					throw new TransientObjectException("cannot lock an unsaved transient instance: " + persister.EntityName);
 				}
 
-				entry = await Reassociate(@event, entity, id, persister);
+				entry = await Reassociate(@event, entity, id, persister).ConfigureAwait(false);
 
 				await CascadeOnLock(@event, persister, entity).ConfigureAwait(false);
 			}
