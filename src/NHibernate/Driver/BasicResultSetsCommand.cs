@@ -8,7 +8,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Driver
 {
-	public class BasicResultSetsCommand: IResultSetsCommand
+	public partial class BasicResultSetsCommand: IResultSetsCommand
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(BasicResultSetsCommand));
 		private SqlString sqlString = SqlString.Empty;
@@ -78,7 +78,7 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// Datareader wrapper with the same life cycle of its command (through the batcher)
 	/// </summary>
-	public class BatcherDataReaderWrapper: IDataReader
+	public partial class BatcherDataReaderWrapper: IDataReader
 	{
 		private readonly IBatcher batcher;
 		private readonly IDbCommand command;

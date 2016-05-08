@@ -22,7 +22,7 @@ namespace NHibernate.Engine
 	/// error checking and making sure the correct number of rows were affected.
 	/// </p>
 	/// </remarks>
-	public interface IBatcher : IDisposable
+	public partial interface IBatcher : IDisposable
 	{
 		/// <summary>
 		/// Get an <see cref="IDbCommand"/> for using in loading / querying.
@@ -118,6 +118,7 @@ namespace NHibernate.Engine
 		/// The Batcher is responsible for ensuring that all of the Drivers rules for how many open
 		/// <see cref="IDataReader"/>s it can have are followed.
 		/// </remarks>
+		[Async]
 		IDataReader ExecuteReader(IDbCommand cmd);
 
 		/// <summary>

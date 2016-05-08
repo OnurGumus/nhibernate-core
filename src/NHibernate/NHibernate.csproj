@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -15,7 +15,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -47,6 +47,7 @@
     <NoWarn>1591%3b3001%3b3002%3b3003%3b3004%3b3005</NoWarn>
     <WarningsAsErrors>1717;1574</WarningsAsErrors>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -60,6 +61,7 @@
     <NoWarn>1591;3001;3002;3003;3004;3005</NoWarn>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\Release-2.0\NHibernate.XML</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -98,6 +100,48 @@
     <Compile Include="AdoNet\MySqlClientSqlCommandSet.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AssertionFailure.cs" />
+    <Compile Include="AsyncAttribute.cs" />
+    <Compile Include="Async\AdoNet\AbstractBatcher.cs" />
+    <Compile Include="Async\Collection\AbstractPersistentCollection.cs" />
+    <Compile Include="Async\Collection\Generic\PersistentGenericIdentifierBag.cs" />
+    <Compile Include="Async\Collection\IPersistentCollection.cs" />
+    <Compile Include="Async\Dialect\Lock\ILockingStrategy.cs" />
+    <Compile Include="Async\Dialect\Lock\SelectLockingStrategy.cs" />
+    <Compile Include="Async\Driver\BasicResultSetsCommand.cs" />
+    <Compile Include="Async\Driver\IResultSetsCommand.cs" />
+    <Compile Include="Async\Engine\IBatcher.cs" />
+    <Compile Include="Async\Engine\IPersistenceContext.cs" />
+    <Compile Include="Async\Engine\StatefulPersistenceContext.cs" />
+    <Compile Include="Async\Event\Default\AbstractSaveEventListener.cs" />
+    <Compile Include="Async\Event\Default\DefaultReplicateEventListener.cs" />
+    <Compile Include="Async\Event\IReplicateEventListener.cs" />
+    <Compile Include="Async\Id\Enhanced\IAccessCallback.cs" />
+    <Compile Include="Async\Id\Enhanced\OptimizerFactory.cs" />
+    <Compile Include="Async\Id\Enhanced\SequenceStructure.cs" />
+    <Compile Include="Async\Id\IdentityGenerator.cs" />
+    <Compile Include="Async\Id\IIdentifierGenerator.cs" />
+    <Compile Include="Async\Id\IncrementGenerator.cs" />
+    <Compile Include="Async\Id\Insert\AbstractReturningDelegate.cs" />
+    <Compile Include="Async\Id\Insert\AbstractSelectingDelegate.cs" />
+    <Compile Include="Async\Id\Insert\IInsertGeneratedIdentifierDelegate.cs" />
+    <Compile Include="Async\Id\Insert\OutputParamReturningDelegate.cs" />
+    <Compile Include="Async\Id\NativeGuidGenerator.cs" />
+    <Compile Include="Async\Id\SequenceGenerator.cs" />
+    <Compile Include="Async\Id\SequenceHiLoGenerator.cs" />
+    <Compile Include="Async\Id\SequenceIdentityGenerator.cs" />
+    <Compile Include="Async\Id\TableGenerator.cs" />
+    <Compile Include="Async\Id\TableHiLoGenerator.cs" />
+    <Compile Include="Async\Impl\SessionFactoryImpl.cs" />
+    <Compile Include="Async\Impl\StatelessSessionImpl.cs" />
+    <Compile Include="Async\IStatelessSession.cs" />
+    <Compile Include="Async\Loader\Hql\QueryLoader.cs" />
+    <Compile Include="Async\Loader\Loader.cs" />
+    <Compile Include="Async\Persister\Collection\AbstractCollectionPersister.cs" />
+    <Compile Include="Async\Persister\Collection\ICollectionPersister.cs" />
+    <Compile Include="Async\Persister\Entity\AbstractEntityPersister.cs" />
+    <Compile Include="Async\Persister\Entity\IEntityPersister.cs" />
+    <Compile Include="Async\Persister\Entity\ILoadable.cs" />
+    <Compile Include="Async\Type\DbTimestampType.cs" />
     <Compile Include="Bytecode\DefaultProxyFactoryFactory.cs" />
     <Compile Include="Cache\Access\ISoftLock.cs" />
     <Compile Include="Cache\CachedItem.cs" />
