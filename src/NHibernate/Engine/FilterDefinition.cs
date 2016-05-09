@@ -9,7 +9,7 @@ namespace NHibernate.Engine
 	/// information includes its name as well as its defined parameters (name and type).
 	/// </summary>
 	[Serializable]
-	public class FilterDefinition
+	public partial class FilterDefinition
 	{
 		private readonly string filterName;
 		private readonly string defaultFilterCondition;

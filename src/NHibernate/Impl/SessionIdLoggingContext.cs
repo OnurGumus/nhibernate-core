@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Impl
 {
-	public class SessionIdLoggingContext : IDisposable
+	public partial class SessionIdLoggingContext : IDisposable
 	{
 		[ThreadStatic]
 		private static Guid? CurrentSessionId;

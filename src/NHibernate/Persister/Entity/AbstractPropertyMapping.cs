@@ -10,7 +10,7 @@ namespace NHibernate.Persister.Entity
 	/// <summary>
 	/// Base implementation of a PropertyMapping.
 	/// </summary>
-	public abstract class AbstractPropertyMapping : IPropertyMapping
+	public abstract partial class AbstractPropertyMapping : IPropertyMapping
 	{
 		private readonly Dictionary<string, IType> typesByPropertyPath = new Dictionary<string, IType>();
 		private readonly Dictionary<string, string[]> columnsByPropertyPath = new Dictionary<string, string[]>();

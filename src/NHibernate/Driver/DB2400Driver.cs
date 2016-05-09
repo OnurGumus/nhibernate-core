@@ -5,7 +5,7 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// A NHibernate Driver for using the IBM.Data.DB2.iSeries DataProvider.
 	/// </summary>
-	public class DB2400Driver : ReflectionBasedDriver
+	public partial class DB2400Driver : ReflectionBasedDriver
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DB2Driver"/> class.

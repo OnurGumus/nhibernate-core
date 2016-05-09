@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace NHibernate.Engine
 {
 	[Serializable]
-	public class NamedSQLQueryDefinition : NamedQueryDefinition
+	public partial class NamedSQLQueryDefinition : NamedQueryDefinition
 	{
 		private readonly INativeSQLQueryReturn[] queryReturns;
 		private readonly IList<string> querySpaces;

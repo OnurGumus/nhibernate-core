@@ -7,7 +7,7 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// A NHibernate Driver for using the Oracle DataProvider.
 	/// </summary>
-	public class OracleClientDriver : ReflectionBasedDriver
+	public partial class OracleClientDriver : ReflectionBasedDriver
 	{
 		private static readonly SqlType GuidSqlType = new SqlType(DbType.Binary, 16);
 

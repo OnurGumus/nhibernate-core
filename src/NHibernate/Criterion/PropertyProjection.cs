@@ -10,7 +10,7 @@ namespace NHibernate.Criterion
 	/// A property value, or grouped property value
 	/// </summary>
 	[Serializable]
-	public class PropertyProjection : SimpleProjection, IPropertyProjection
+	public partial class PropertyProjection : SimpleProjection, IPropertyProjection
 	{
 		private string propertyName;
 		private bool grouped;

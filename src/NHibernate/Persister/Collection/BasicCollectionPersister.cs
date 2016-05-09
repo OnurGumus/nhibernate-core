@@ -22,7 +22,7 @@ namespace NHibernate.Persister.Collection
 	/// <summary>
 	/// Collection persister for collections of values and many-to-many associations.
 	/// </summary>
-	public class BasicCollectionPersister : AbstractCollectionPersister
+	public partial class BasicCollectionPersister : AbstractCollectionPersister
 	{
 		public BasicCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, Configuration cfg, ISessionFactoryImplementor factory) 
 			: base(collection, cache, cfg, factory) { }

@@ -10,7 +10,7 @@ namespace NHibernate.Event
 	/// A convenience holder for all defined session event listeners.
 	/// </summary>
 	[Serializable]
-	public class EventListeners
+	public partial class EventListeners
 	{
         private readonly List<object> initializedListeners = new List<object>();
 

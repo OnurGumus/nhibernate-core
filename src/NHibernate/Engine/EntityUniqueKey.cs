@@ -12,7 +12,7 @@ namespace NHibernate.Engine
 	/// </summary>
 	/// <seealso cref="EntityKey"/>
 	[Serializable]
-	public class EntityUniqueKey
+	public partial class EntityUniqueKey
 	{
 		private readonly string entityName;
 		private readonly string uniqueKeyName;

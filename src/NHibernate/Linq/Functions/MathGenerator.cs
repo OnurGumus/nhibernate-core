@@ -7,7 +7,7 @@ using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Linq.Functions
 {
-	public class MathGenerator : BaseHqlGeneratorForMethod
+	public partial class MathGenerator : BaseHqlGeneratorForMethod
 	{
 		public MathGenerator()
 		{

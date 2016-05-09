@@ -17,7 +17,7 @@ namespace NHibernate.Dialect
 	/// <summary>
 	/// A dialect for Oracle 8i. 
 	/// </summary>
-	public class Oracle8iDialect : Dialect
+	public partial class Oracle8iDialect : Dialect
 	{
 		public override string CurrentTimestampSelectString
 		{

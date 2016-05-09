@@ -5,7 +5,7 @@ using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
-	public class ProcessContains : IResultOperatorProcessor<ContainsResultOperator>
+	public partial class ProcessContains : IResultOperatorProcessor<ContainsResultOperator>
 	{
 		public void Process(ContainsResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
 		{

@@ -4,7 +4,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Engine
 {
 	[Serializable]
-	public class ExecuteUpdateResultCheckStyle
+	public partial class ExecuteUpdateResultCheckStyle
 	{
 		public static readonly ExecuteUpdateResultCheckStyle None = new ExecuteUpdateResultCheckStyle("none");
 		public static readonly ExecuteUpdateResultCheckStyle Count = new ExecuteUpdateResultCheckStyle("rowcount");

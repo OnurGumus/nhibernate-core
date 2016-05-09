@@ -3,7 +3,7 @@ using System;
 namespace NHibernate.Event
 {
 	/// <summary> An event class for persist() </summary>
-	public class PersistEvent : AbstractEvent
+	public partial class PersistEvent : AbstractEvent
 	{
 		private object entity;
 		private string entityName;

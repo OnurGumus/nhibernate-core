@@ -11,7 +11,7 @@ namespace NHibernate
 	/// loading an association.
 	/// </summary>
 	[Serializable]
-	public class UnresolvableObjectException : HibernateException
+	public partial class UnresolvableObjectException : HibernateException
 	{
 		private readonly object identifier;
 		private readonly System.Type clazz;

@@ -16,7 +16,7 @@ namespace NHibernate.Cfg.Loquacious
 		CacheMode? CacheMode { get; set; }
 	}
 
-	internal class NamedQueryDefinitionBuilder : INamedQueryDefinitionBuilder
+	internal partial class NamedQueryDefinitionBuilder : INamedQueryDefinitionBuilder
 	{
 		private int fetchSize = -1;
 		private int timeout = -1;

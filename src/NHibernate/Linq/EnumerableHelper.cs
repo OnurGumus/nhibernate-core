@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace NHibernate.Linq
 {
-	public static class ReflectionHelper
+	public static partial class ReflectionHelper
 	{
 		/// <summary>
 		/// Extract the <see cref="MethodInfo"/> from a given expression.
@@ -95,7 +95,7 @@ namespace NHibernate.Linq
 	}
 
 	// TODO rename / remove - reflection helper above is better
-	public static class EnumerableHelper
+	public static partial class EnumerableHelper
 	{
 		public static MethodInfo GetMethod(string name, System.Type[] parameterTypes)
 		{

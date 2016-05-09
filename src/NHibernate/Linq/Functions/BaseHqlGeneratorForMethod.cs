@@ -7,7 +7,7 @@ using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Linq.Functions
 {
-    public abstract class BaseHqlGeneratorForMethod : IHqlGeneratorForMethod
+    public abstract partial class BaseHqlGeneratorForMethod : IHqlGeneratorForMethod
     {
         public IEnumerable<MethodInfo> SupportedMethods { get; protected set; }
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Util
 {
-	public static class EnumerableExtensions
+	public static partial class EnumerableExtensions
 	{
 		public static bool Any(this IEnumerable source)
 		{
@@ -91,7 +91,7 @@ namespace NHibernate.Util
 
 		#region Nested type: DisposableEnumerator
 
-		internal class DisposableEnumerator : IDisposable, IEnumerator
+		internal partial class DisposableEnumerator : IDisposable, IEnumerator
 		{
 			private readonly IEnumerator wrapped;
 

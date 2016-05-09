@@ -9,7 +9,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Represents a case ... when .. then ... else ... end expression in a select.
 	/// </summary>
 	[CLSCompliant(false)]
-	public class Case2Node : AbstractSelectExpression, ISelectExpression 
+	public partial class Case2Node : AbstractSelectExpression, ISelectExpression 
 	{
 		public Case2Node(IToken token) : base(token)
 		{

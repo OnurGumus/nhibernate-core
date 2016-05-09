@@ -16,7 +16,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class IntoClause : HqlSqlWalkerNode, IDisplayableNode
+	public partial class IntoClause : HqlSqlWalkerNode, IDisplayableNode
 	{
 		private IQueryable _persister;
 		private String _columnSpec = string.Empty;
@@ -35,7 +35,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			if (persister.IsAbstract)
 			{
-				throw new QueryException("cannot insert into abstract class (no table)");
+				throw new QueryException("cannot insert into abstract partial class (no table)");
 			}
 
 			_persister = persister;

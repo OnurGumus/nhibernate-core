@@ -5,7 +5,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Engine
 {
-	public static class UnsavedValueFactory
+	public static partial class UnsavedValueFactory
 	{
 		private static readonly object[] NoParameters = new object[0];
 

@@ -9,7 +9,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Linq.Functions
 {
-	public class AnyHqlGenerator : BaseHqlGeneratorForMethod
+	public partial class AnyHqlGenerator : BaseHqlGeneratorForMethod
 	{
 		public AnyHqlGenerator()
 		{
@@ -48,7 +48,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class AllHqlGenerator : BaseHqlGeneratorForMethod
+	public partial class AllHqlGenerator : BaseHqlGeneratorForMethod
 	{
 		public AllHqlGenerator()
 		{
@@ -83,7 +83,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class MinHqlGenerator : BaseHqlGeneratorForMethod
+	public partial class MinHqlGenerator : BaseHqlGeneratorForMethod
 	{
 		public MinHqlGenerator()
 		{
@@ -100,7 +100,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class MaxHqlGenerator : BaseHqlGeneratorForMethod
+	public partial class MaxHqlGenerator : BaseHqlGeneratorForMethod
 	{
 		public MaxHqlGenerator()
 		{
@@ -117,7 +117,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class CollectionContainsRuntimeHqlGenerator : IRuntimeMethodHqlGenerator
+	public partial class CollectionContainsRuntimeHqlGenerator : IRuntimeMethodHqlGenerator
 	{
 		private readonly IHqlGeneratorForMethod containsGenerator = new CollectionContainsGenerator();
 
@@ -137,7 +137,7 @@ namespace NHibernate.Linq.Functions
 		#endregion
 	}
 
-	public class CollectionContainsGenerator : BaseHqlGeneratorForMethod
+	public partial class CollectionContainsGenerator : BaseHqlGeneratorForMethod
 	{
 		public CollectionContainsGenerator()
 		{

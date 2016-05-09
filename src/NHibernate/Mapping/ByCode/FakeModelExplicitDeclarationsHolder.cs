@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public class FakeModelExplicitDeclarationsHolder : IModelExplicitDeclarationsHolder
+	public partial class FakeModelExplicitDeclarationsHolder : IModelExplicitDeclarationsHolder
 	{
 		private readonly IEnumerable<MemberInfo> any = Enumerable.Empty<MemberInfo>();
 		private readonly IEnumerable<MemberInfo> arrays = Enumerable.Empty<MemberInfo>();

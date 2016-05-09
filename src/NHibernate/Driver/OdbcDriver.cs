@@ -11,7 +11,7 @@ namespace NHibernate.Driver
 	/// <remarks>
 	/// Always look for a native .NET DataProvider before using the Odbc DataProvider.
 	/// </remarks>
-	public class OdbcDriver : DriverBase
+	public partial class OdbcDriver : DriverBase
 	{
 		public override IDbConnection CreateConnection()
 		{

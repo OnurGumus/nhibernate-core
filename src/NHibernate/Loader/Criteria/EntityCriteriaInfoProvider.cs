@@ -4,7 +4,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Loader.Criteria
 {
-	public class EntityCriteriaInfoProvider : ICriteriaInfoProvider
+	public partial class EntityCriteriaInfoProvider : ICriteriaInfoProvider
 	{
 		readonly IQueryable persister;
 

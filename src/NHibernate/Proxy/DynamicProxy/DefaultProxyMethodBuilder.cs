@@ -15,7 +15,7 @@ using System.Reflection.Emit;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
-	internal class DefaultyProxyMethodBuilder : IProxyMethodBuilder
+	internal partial class DefaultyProxyMethodBuilder : IProxyMethodBuilder
 	{
 		public DefaultyProxyMethodBuilder() : this(new DefaultMethodEmitter()) { }
 

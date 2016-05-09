@@ -25,7 +25,7 @@ namespace NHibernate.Id.Insert
 				IDbCommand insert = session.Batcher.PrepareCommand(insertSQL.CommandType, insertSQL.Text, insertSQL.ParameterTypes);
 				try
 				{
-					binder.BindValues(insert);
+					await (binder.BindValuesAsync(insert));
 					session.Batcher.ExecuteNonQuery(insert);
 				}
 				finally
@@ -46,11 +46,11 @@ namespace NHibernate.Id.Insert
 					IDbCommand idSelect = session.Batcher.PrepareCommand(CommandType.Text, selectSQL, ParametersTypes);
 					try
 					{
-						BindParameters(session, idSelect, binder.Entity);
+						await (BindParametersAsync(session, idSelect, binder.Entity));
 						IDataReader rs = await (session.Batcher.ExecuteReaderAsync(idSelect));
 						try
 						{
-							return GetResult(session, rs, binder.Entity);
+							return await (GetResultAsync(session, rs, binder.Entity));
 						}
 						finally
 						{

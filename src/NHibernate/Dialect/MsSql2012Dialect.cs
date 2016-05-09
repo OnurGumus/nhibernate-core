@@ -4,7 +4,7 @@ using NHibernate.SqlCommand.Parser;
 
 namespace NHibernate.Dialect
 {
-	public class MsSql2012Dialect : MsSql2008Dialect
+	public partial class MsSql2012Dialect : MsSql2008Dialect
 	{
 		public override bool SupportsSequences
 		{

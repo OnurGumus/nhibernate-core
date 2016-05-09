@@ -6,7 +6,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	internal class AuxiliaryDatabaseObjectFactory
+	internal partial class AuxiliaryDatabaseObjectFactory
 	{
 		public static IAuxiliaryDatabaseObject Create(Mappings mappings, HbmDatabaseObject databaseObjectSchema)
 		{

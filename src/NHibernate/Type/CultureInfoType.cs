@@ -14,7 +14,7 @@ namespace NHibernate.Type
 	/// <see cref="System.Globalization.CultureInfo"/> in the DB.
 	/// </remarks>
 	[Serializable]
-	public class CultureInfoType : ImmutableType, ILiteralType
+	public partial class CultureInfoType : ImmutableType, ILiteralType
 	{
 		/// <summary></summary>
 		internal CultureInfoType() : base(new StringSqlType(5))

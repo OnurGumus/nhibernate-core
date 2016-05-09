@@ -15,7 +15,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// of the update statements when the updates occur against "multi-table" stuff. 
 	/// </summary>
 	[CLSCompliant(false)]
-	public class AssignmentSpecification
+	public partial class AssignmentSpecification
 	{
 		private readonly IASTNode _eq;
 		private readonly ISessionFactoryImplementor _factory;

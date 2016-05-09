@@ -2,7 +2,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.AdoNet
 {
-	public class OracleDataClientBatchingBatcherFactory : IBatcherFactory
+	public partial class OracleDataClientBatchingBatcherFactory : IBatcherFactory
 	{
 		public virtual IBatcher CreateBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
 		{

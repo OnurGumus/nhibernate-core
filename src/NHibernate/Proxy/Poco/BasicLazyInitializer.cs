@@ -10,7 +10,7 @@ namespace NHibernate.Proxy.Poco
 {
 	/// <summary> Lazy initializer for POCOs</summary>
 	[Serializable]
-	public abstract class BasicLazyInitializer : AbstractLazyInitializer
+	public abstract partial class BasicLazyInitializer : AbstractLazyInitializer
 	{
 		private static readonly IEqualityComparer IdentityEqualityComparer = new IdentityEqualityComparer();
 

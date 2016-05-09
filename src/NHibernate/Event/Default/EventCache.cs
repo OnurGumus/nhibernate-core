@@ -5,7 +5,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Event.Default
 {
-	public class EventCache : IDictionary
+	public partial class EventCache : IDictionary
 	{
 		private IDictionary entityToCopyMap = IdentityMap.Instantiate(10);
 		// key is an entity involved with the operation performed by the listener;

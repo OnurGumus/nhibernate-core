@@ -7,7 +7,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Bytecode.Lightweight
 {
-	public class ReflectionOptimizer : IReflectionOptimizer, IInstantiationOptimizer
+	public partial class ReflectionOptimizer : IReflectionOptimizer, IInstantiationOptimizer
 	{
 		private readonly IAccessOptimizer accessOptimizer;
 		private readonly CreateInstanceInvoker createInstanceMethod;

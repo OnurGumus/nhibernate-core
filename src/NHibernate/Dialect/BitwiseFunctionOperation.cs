@@ -11,7 +11,7 @@ namespace NHibernate.Dialect
 	/// Treats bitwise operations as SQL function calls.
 	/// </summary>
 	[Serializable]
-	public class BitwiseFunctionOperation : ISQLFunction
+	public partial class BitwiseFunctionOperation : ISQLFunction
 	{
 		private readonly string _functionName;
 		private SqlStringBuilder _sqlBuffer;

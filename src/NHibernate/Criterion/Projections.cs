@@ -14,7 +14,7 @@ namespace NHibernate.Criterion
 	/// The factory methods that take an alias allow the projected value to be referred to by 
 	/// criterion and order instances.
 	/// </summary>
-	public static class Projections
+	public static partial class Projections
 	{
 		/// <summary>
 		/// Create a distinct projection from a projection

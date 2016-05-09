@@ -8,7 +8,7 @@ namespace NHibernate.Type
 	/// to the database.
 	/// </summary>
 	[Serializable]
-	public class GenericSortedSetType<T> : GenericSetType<T>
+	public partial class GenericSortedSetType<T> : GenericSetType<T>
 	{
 		private readonly IComparer<T> comparer;
 

@@ -8,7 +8,7 @@ namespace NHibernate.Proxy
 	/// objects that might be instances of Classes or the Proxied version of 
 	/// the Class.
 	/// </summary>
-	public static class NHibernateProxyHelper
+	public static partial class NHibernateProxyHelper
 	{
 		/// <summary> 
 		/// Get the class of an instance or the underlying class of a proxy (without initializing the proxy!). 

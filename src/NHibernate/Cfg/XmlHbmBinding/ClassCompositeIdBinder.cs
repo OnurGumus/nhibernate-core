@@ -5,7 +5,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public class ClassCompositeIdBinder : ClassBinder
+	public partial class ClassCompositeIdBinder : ClassBinder
 	{
 		private Component compositeId;
 		public ClassCompositeIdBinder(ClassBinder parent) : base(parent) {}

@@ -21,7 +21,7 @@ namespace NHibernate.Cfg
 	/// Reads configuration properties and configures a <see cref="Settings"/> instance. 
 	/// </summary>
 	[Serializable]
-	public sealed class SettingsFactory
+	public sealed partial class SettingsFactory
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SettingsFactory));
 		private static readonly string DefaultCacheProvider = typeof(NoCacheProvider).AssemblyQualifiedName;

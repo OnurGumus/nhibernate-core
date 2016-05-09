@@ -30,7 +30,7 @@ namespace NHibernate.Cfg.Loquacious
 		object Properties { get; set; }
 	}
 
-	internal class TypeDefConfigurationProperties<T> : ITypeDefConfigurationProperties
+	internal partial class TypeDefConfigurationProperties<T> : ITypeDefConfigurationProperties
 		where T: class
 	{
 		public TypeDefConfigurationProperties()

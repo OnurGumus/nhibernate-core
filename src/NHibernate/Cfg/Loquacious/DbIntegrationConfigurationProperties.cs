@@ -8,7 +8,7 @@ using NHibernate.Transaction;
 
 namespace NHibernate.Cfg.Loquacious
 {
-	internal class DbIntegrationConfigurationProperties: IDbIntegrationConfigurationProperties
+	internal partial class DbIntegrationConfigurationProperties: IDbIntegrationConfigurationProperties
 	{
 		private readonly Configuration configuration;
 

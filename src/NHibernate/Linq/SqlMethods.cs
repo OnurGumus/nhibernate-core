@@ -2,7 +2,7 @@
 
 namespace NHibernate.Linq
 {
-	public static class SqlMethods
+	public static partial class SqlMethods
 	{
 		/// <summary>
 		/// Use the SqlMethods.Like() method in a Linq2NHibernate expression to generate

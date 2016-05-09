@@ -17,7 +17,7 @@ using NHibernate.Util;
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
 	[CLSCompliant(false)]
-	public abstract class AbstractStatementExecutor : IStatementExecutor
+	public abstract partial class AbstractStatementExecutor : IStatementExecutor
 	{
 		private readonly IInternalLogger log;
 

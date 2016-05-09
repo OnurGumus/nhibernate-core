@@ -8,7 +8,7 @@ namespace NHibernate.Mapping
 	/// (for example, a foreign key is typed by the referenced primary key). 
 	/// </summary>
 	[Serializable]
-	public class DependantValue : SimpleValue
+	public partial class DependantValue : SimpleValue
 	{
 		private readonly IKeyValue wrappedValue;
 		private bool isNullable = true;

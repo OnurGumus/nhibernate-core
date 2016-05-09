@@ -6,7 +6,7 @@ using NHibernate.Engine;
 namespace NHibernate.Properties
 {
 	[Serializable]
-	public class EmbeddedPropertyAccessor : IPropertyAccessor
+	public partial class EmbeddedPropertyAccessor : IPropertyAccessor
 	{
 		#region IPropertyAccessor Members
 
@@ -28,7 +28,7 @@ namespace NHibernate.Properties
 		#endregion
 
 		[Serializable]
-		public sealed class EmbeddedGetter : IGetter
+		public sealed partial class EmbeddedGetter : IGetter
 		{
 			private readonly System.Type clazz;
 
@@ -73,7 +73,7 @@ namespace NHibernate.Properties
 		}
 
 		[Serializable]
-		public sealed class EmbeddedSetter : ISetter
+		public sealed partial class EmbeddedSetter : ISetter
 		{
 			private readonly System.Type clazz;
 

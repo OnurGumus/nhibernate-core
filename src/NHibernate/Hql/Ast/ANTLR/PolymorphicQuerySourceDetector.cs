@@ -8,7 +8,7 @@ using NHibernate.Hql.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
-    internal class PolymorphicQuerySourceDetector
+    internal partial class PolymorphicQuerySourceDetector
     {
         private readonly ISessionFactoryImplementor _sfi;
         private readonly Dictionary<IASTNode, IASTNode[]> _map = new Dictionary<IASTNode, IASTNode[]>();

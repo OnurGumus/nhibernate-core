@@ -5,7 +5,7 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
-    public class AstPolymorphicProcessor
+    public partial class AstPolymorphicProcessor
     {
         private readonly IASTNode _ast;
         private readonly ISessionFactoryImplementor _factory;

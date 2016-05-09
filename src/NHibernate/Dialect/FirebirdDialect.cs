@@ -28,7 +28,7 @@ namespace NHibernate.Dialect
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public class FirebirdDialect : Dialect
+	public partial class FirebirdDialect : Dialect
 	{
 		#region Fields
 

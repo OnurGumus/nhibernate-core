@@ -3,7 +3,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class MapKeyRelation : IMapKeyRelation
+	public partial class MapKeyRelation : IMapKeyRelation
 	{
 		private readonly System.Type dictionaryKeyType;
 		private readonly HbmMapping mapDoc;

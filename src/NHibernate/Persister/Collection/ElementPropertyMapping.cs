@@ -8,7 +8,7 @@ namespace NHibernate.Persister.Collection
 	/// <summary>
 	/// Summary description for ElementPropertyMapping.
 	/// </summary>
-	public class ElementPropertyMapping : IPropertyMapping
+	public partial class ElementPropertyMapping : IPropertyMapping
 	{
 		private readonly string[] elementColumns;
 		private readonly IType type;

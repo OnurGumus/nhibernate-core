@@ -1,6 +1,6 @@
 namespace NHibernate.Event
 {
-	public static class LoadEventListener
+	public static partial class LoadEventListener
 	{
 		public static readonly LoadType Reload;
 		public static readonly LoadType Get;

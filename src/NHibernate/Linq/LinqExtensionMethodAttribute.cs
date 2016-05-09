@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Linq
 {
-	public class LinqExtensionMethodAttribute: Attribute
+	public partial class LinqExtensionMethodAttribute: Attribute
 	{
 		public LinqExtensionMethodAttribute()
 		{

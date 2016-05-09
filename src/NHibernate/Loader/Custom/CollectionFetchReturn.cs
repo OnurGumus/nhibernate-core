@@ -1,7 +1,7 @@
 namespace NHibernate.Loader.Custom
 {
 	/// <summary> Specifically a fetch return that refers to a collection association. </summary>
-	public class CollectionFetchReturn : FetchReturn
+	public partial class CollectionFetchReturn : FetchReturn
 	{
 		private readonly ICollectionAliases collectionAliases;
 		private readonly IEntityAliases elementEntityAliases;

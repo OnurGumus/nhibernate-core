@@ -11,7 +11,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Loader
 {
-	public class JoinWalker
+	public partial class JoinWalker
 	{
 		private readonly ISessionFactoryImplementor factory;
 		protected readonly IList<OuterJoinableAssociation> associations = new List<OuterJoinableAssociation>();
@@ -111,7 +111,7 @@ namespace NHibernate.Loader
 			get { return false; }
 		}
 
-		public class DependentAlias
+		public partial class DependentAlias
 		{
 			public string Alias { get; set; }
 			public string[] DependsOn { get; set; }
@@ -554,7 +554,7 @@ namespace NHibernate.Loader
 		/// Uniquely identifier a foreign key, so that we don't
 		/// join it more than once, and create circularities
 		/// </summary>
-		protected sealed class AssociationKey
+		protected sealed partial class AssociationKey
 		{
 			private readonly string[] columns;
 			private readonly string table;

@@ -5,7 +5,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 {
 	[CLSCompliant(false)]
 	[Serializable]
-	public class InvalidWithClauseException : QuerySyntaxException
+	public partial class InvalidWithClauseException : QuerySyntaxException
 	{
 		protected InvalidWithClauseException() {}
 		public InvalidWithClauseException(string message) : base(message) {}

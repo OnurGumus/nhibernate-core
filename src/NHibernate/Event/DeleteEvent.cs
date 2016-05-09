@@ -4,7 +4,7 @@ namespace NHibernate.Event
 {
 	/// <summary>Defines an event class for the deletion of an entity. </summary>
 	[Serializable]
-	public class DeleteEvent : AbstractEvent
+	public partial class DeleteEvent : AbstractEvent
 	{
 		private readonly string entityName;
 		private readonly object entity;

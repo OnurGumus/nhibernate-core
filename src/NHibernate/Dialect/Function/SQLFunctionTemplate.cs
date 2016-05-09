@@ -18,7 +18,7 @@ namespace NHibernate.Dialect.Function
 	/// parameters with '?' followed by parameter's index (first index is 1).
 	/// </summary>
 	[Serializable]
-	public class SQLFunctionTemplate : ISQLFunction
+	public partial class SQLFunctionTemplate : ISQLFunction
 	{
 		private const int InvalidArgumentIndex = -1;
 		private static readonly Regex SplitRegex = new Regex("(\\?[0-9]+)");

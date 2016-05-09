@@ -4,7 +4,7 @@ using NHibernate.Bytecode;
 
 namespace NHibernate.Type
 {
-	public class DefaultCollectionTypeFactory : ICollectionTypeFactory
+	public partial class DefaultCollectionTypeFactory : ICollectionTypeFactory
 	{
 		public virtual CollectionType Array(string role, string propertyRef, bool embedded, System.Type elementClass)
 		{

@@ -9,7 +9,7 @@ namespace NHibernate
 	/// was closed) or iterate query results.
 	/// </summary>
 	[Serializable]
-	public class LazyInitializationException : HibernateException
+	public partial class LazyInitializationException : HibernateException
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LazyInitializationException"/> class.

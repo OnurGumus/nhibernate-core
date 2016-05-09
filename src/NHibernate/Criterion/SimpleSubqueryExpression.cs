@@ -10,7 +10,7 @@ namespace NHibernate.Criterion
 	/// A comparison between a constant value and the the result of a subquery
 	/// </summary>
 	[Serializable]
-	public class SimpleSubqueryExpression : SubqueryExpression
+	public partial class SimpleSubqueryExpression : SubqueryExpression
 	{
 		private Object value;
 

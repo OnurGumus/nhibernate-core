@@ -5,7 +5,7 @@ namespace NHibernate.Util
 {
 	//Much of this code is taken from Maverick.NET
 	/// <summary></summary>
-	public static class PropertiesHelper
+	public static partial class PropertiesHelper
 	{
 		public static bool GetBoolean(string property, IDictionary<string, string> properties, bool defaultValue)
 		{

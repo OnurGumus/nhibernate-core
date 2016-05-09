@@ -18,7 +18,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class DotNode : FromReferenceNode 
+	public partial class DotNode : FromReferenceNode 
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(DotNode));
 

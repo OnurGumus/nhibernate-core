@@ -9,7 +9,7 @@ namespace NHibernate
 	/// A problem occurred accessing a property of an instance of a persistent class by reflection
 	/// </summary>
 	[Serializable]
-	public class PropertyAccessException : HibernateException, ISerializable
+	public partial class PropertyAccessException : HibernateException, ISerializable
 	{
 		private readonly System.Type persistentType;
 		private readonly string propertyName;

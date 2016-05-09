@@ -11,7 +11,7 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// A NHibernate Driver for using the Oracle.ManagedDataAccess DataProvider
 	/// </summary>
-	public class OracleManagedDataClientDriver : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
+	public partial class OracleManagedDataClientDriver : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
 	{
 		private const string driverAssemblyName = "Oracle.ManagedDataAccess";
 		private const string connectionTypeName = "Oracle.ManagedDataAccess.Client.OracleConnection";

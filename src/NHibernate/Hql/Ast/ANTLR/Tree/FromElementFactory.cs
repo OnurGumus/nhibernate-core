@@ -11,7 +11,7 @@ using NHibernate.Util;
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
-	public class FromElementFactory
+	public partial class FromElementFactory
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(FromElementFactory));
 

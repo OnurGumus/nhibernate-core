@@ -9,7 +9,7 @@ using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.Visitors
 {
-	public class LeftJoinRewriter : QueryModelVisitorBase
+	public partial class LeftJoinRewriter : QueryModelVisitorBase
 	{
 		public static void ReWrite(QueryModel queryModel)
 		{

@@ -11,7 +11,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Param
 {
-	public class DynamicFilterParameterSpecification : IParameterSpecification
+	public partial class DynamicFilterParameterSpecification : IParameterSpecification
 	{
 		private const string DynamicFilterParameterIdTemplate = "<dfnh-{0}_span{1}>";
 

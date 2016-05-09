@@ -7,7 +7,7 @@ namespace NHibernate.SqlCommand.Parser
 	/// <summary>
 	/// Splits a <see cref="SqlString"/> into <see cref="SqlToken"/>s.
 	/// </summary>
-	public class SqlTokenizer : IEnumerable<SqlToken>
+	public partial class SqlTokenizer : IEnumerable<SqlToken>
 	{
 		private readonly SqlString _sql;
 		private SqlTokenType _includeTokens = SqlTokenType.AllExceptWhitespaceOrComment;

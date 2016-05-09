@@ -1,0 +1,84 @@
+using System;
+using System.Collections;
+using System.Data;
+using System.Data.Common;
+using NHibernate.Engine;
+using NHibernate.Event;
+using NHibernate.Exceptions;
+using NHibernate.Hql;
+using NHibernate.SqlCommand;
+using NHibernate.Type;
+using System.Threading.Tasks;
+
+namespace NHibernate.Impl
+{
+	/// <summary>
+	/// Provides an <see cref = "IEnumerable"/> wrapper over the results of an <see cref = "IQuery"/>.
+	/// </summary>
+	/// <remarks>
+	/// This is the IteratorImpl in H2.0.3
+	/// </remarks>
+	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+	public partial class EnumerableImpl : IEnumerable, IEnumerator, IDisposable
+	{
+		private async Task PostMoveNextAsync(bool hasNext)
+		{
+			_startedReading = true;
+			_hasNext = hasNext;
+			_currentRow++;
+			if (_selection != null && _selection.MaxRows != RowSelection.NoValue)
+			{
+				_hasNext = _hasNext && (_currentRow < _selection.MaxRows);
+			}
+
+			bool sessionDefaultReadOnlyOrig = _session.DefaultReadOnly;
+			_session.DefaultReadOnly = _readOnly;
+			try
+			{
+				if (!_hasNext)
+				{
+					// there are no more records in the DataReader so clean up
+					log.Debug("exhausted results");
+					_currentResult = null;
+					_session.Batcher.CloseCommand(_cmd, _reader);
+				}
+				else
+				{
+					log.Debug("retrieving next results");
+					bool isHolder = _holderInstantiator.IsRequired;
+					if (_single && !isHolder)
+					{
+						_currentResult = await (_types[0].NullSafeGetAsync(_reader, _names[0], _session, null));
+					}
+					else
+					{
+						object[] currentResults = new object[_types.Length];
+						// move through each of the ITypes contained in the IDataReader and convert them
+						// to their objects.  
+						for (int i = 0; i < _types.Length; i++)
+						{
+							// The IType knows how to extract its value out of the IDataReader.  If the IType
+							// is a value type then the value will simply be pulled out of the IDataReader.  If
+							// the IType is an Entity type then the IType will extract the id from the IDataReader
+							// and use the ISession to load an instance of the object.
+							currentResults[i] = await (_types[i].NullSafeGetAsync(_reader, _names[i], _session, null));
+						}
+
+						if (isHolder)
+						{
+							_currentResult = _holderInstantiator.Instantiate(currentResults);
+						}
+						else
+						{
+							_currentResult = currentResults;
+						}
+					}
+				}
+			}
+			finally
+			{
+				_session.DefaultReadOnly = sessionDefaultReadOnlyOrig;
+			}
+		}
+	}
+}

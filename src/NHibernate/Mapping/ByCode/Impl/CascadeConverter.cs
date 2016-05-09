@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public static class CascadeConverter
+	public static partial class CascadeConverter
 	{
 		public static string ToCascadeString(this Cascade source)
 		{

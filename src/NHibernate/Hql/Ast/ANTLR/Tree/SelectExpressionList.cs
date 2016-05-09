@@ -11,7 +11,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public abstract class SelectExpressionList : HqlSqlWalkerNode 
+	public abstract partial class SelectExpressionList : HqlSqlWalkerNode 
 	{
 		protected SelectExpressionList(IToken token) : base(token)
 		{

@@ -38,12 +38,25 @@ namespace NHibernate.Id
 				IDataReader rs = await (session.Batcher.ExecuteReaderAsync(insert));
 				try
 				{
-					return IdentifierGeneratorFactory.GetGeneratedIdentity(rs, persister.IdentifierType, session);
+					return await (IdentifierGeneratorFactory.GetGeneratedIdentityAsync(rs, persister.IdentifierType, session));
 				}
 				finally
 				{
 					session.Batcher.CloseReader(rs);
 				}
+			}
+		}
+
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		/// <summary> 
+		/// Delegate for dealing with IDENTITY columns where the dialect requires an
+		/// additional command execution to retrieve the generated IDENTITY value
+		/// </summary>
+		public partial class BasicDelegate : AbstractSelectingDelegate, IInsertGeneratedIdentifierDelegate
+		{
+			protected internal override async Task<object> GetResultAsync(ISessionImplementor session, IDataReader rs, object obj)
+			{
+				return await (IdentifierGeneratorFactory.GetGeneratedIdentityAsync(rs, persister.IdentifierType, session));
 			}
 		}
 	}

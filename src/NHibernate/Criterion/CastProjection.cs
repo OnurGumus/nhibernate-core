@@ -13,7 +13,7 @@ namespace NHibernate.Criterion
 	/// level
 	/// </summary>
 	[Serializable]
-	public class CastProjection : SimpleProjection 
+	public partial class CastProjection : SimpleProjection 
 	{
 		private readonly IType type;
 		private readonly IProjection projection;

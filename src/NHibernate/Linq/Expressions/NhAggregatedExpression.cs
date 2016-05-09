@@ -4,7 +4,7 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Expressions
 {
-	public abstract class NhAggregatedExpression : ExtensionExpression
+	public abstract partial class NhAggregatedExpression : ExtensionExpression
 	{
 		public Expression Expression { get; set; }
 

@@ -10,7 +10,7 @@ namespace NHibernate.Mapping
 	/// A Foreign Key constraint in the database.
 	/// </summary>
 	[Serializable]
-	public class ForeignKey : Constraint
+	public partial class ForeignKey : Constraint
 	{
 		private Table referencedTable;
 		private string referencedEntityName;

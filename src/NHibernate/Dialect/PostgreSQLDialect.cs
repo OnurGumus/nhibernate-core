@@ -24,7 +24,7 @@ namespace NHibernate.Dialect
 	///	</item>
 	/// </list>
 	/// </remarks>
-	public class PostgreSQLDialect : Dialect
+	public partial class PostgreSQLDialect : Dialect
 	{
 		public PostgreSQLDialect()
 		{

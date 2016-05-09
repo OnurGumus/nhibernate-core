@@ -35,7 +35,7 @@ namespace NHibernate.Impl
 	/// hard stuff is... This class is NOT THREADSAFE.
 	/// </remarks>
 	[Serializable]
-	public sealed class SessionImpl : AbstractSessionImpl, IEventSource, ISerializable, IDeserializationCallback
+	public sealed partial class SessionImpl : AbstractSessionImpl, IEventSource, ISerializable, IDeserializationCallback
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SessionImpl));
 

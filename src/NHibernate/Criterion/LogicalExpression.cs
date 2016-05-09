@@ -10,7 +10,7 @@ namespace NHibernate.Criterion
 	/// with a operator (either "<c>and</c>" or "<c>or</c>") between them.
 	/// </summary>
 	[Serializable]
-	public abstract class LogicalExpression : AbstractCriterion
+	public abstract partial class LogicalExpression : AbstractCriterion
 	{
 		private ICriterion _lhs;
 		private ICriterion _rhs;

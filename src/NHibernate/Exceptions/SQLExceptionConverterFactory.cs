@@ -7,7 +7,7 @@ using NHibernate.Util;
 namespace NHibernate.Exceptions
 {
 	/// <summary> A factory for building SQLExceptionConverter instances. </summary>
-	public static class SQLExceptionConverterFactory
+	public static partial class SQLExceptionConverterFactory
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SQLExceptionConverterFactory));
 

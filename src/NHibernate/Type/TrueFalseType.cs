@@ -16,7 +16,7 @@ namespace NHibernate.Type
 	/// export to create a char(1) column.
 	/// </remarks>
 	[Serializable]
-	public class TrueFalseType : CharBooleanType
+	public partial class TrueFalseType : CharBooleanType
 	{
 		/// <summary></summary>
 		internal TrueFalseType() : base(new AnsiStringFixedLengthSqlType(1))

@@ -5,7 +5,7 @@
 	/// Author: josh
 	/// Ported by: Steve Strong
 	/// </summary>
-	public class InvalidPathException : SemanticException 
+	public partial class InvalidPathException : SemanticException 
 	{
 		public InvalidPathException(string s) : base(s) 
 		{

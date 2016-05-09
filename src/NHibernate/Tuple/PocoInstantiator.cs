@@ -11,7 +11,7 @@ namespace NHibernate.Tuple
 {
 	/// <summary> Defines a POCO-based instantiator for use from the tuplizers.</summary>
 	[Serializable]
-	public class PocoInstantiator : IInstantiator, IDeserializationCallback
+	public partial class PocoInstantiator : IInstantiator, IDeserializationCallback
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(PocoInstantiator));
 
@@ -86,7 +86,7 @@ namespace NHibernate.Tuple
 		{
 			if (ReflectHelper.IsAbstractClass(mappedClass))
 			{
-				throw new InstantiationException("Cannot instantiate abstract class or interface: ", mappedClass);
+				throw new InstantiationException("Cannot instantiate abstract partial class or interface: ", mappedClass);
 			}
 			if (generateFieldInterceptionProxy)
 			{

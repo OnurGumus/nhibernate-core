@@ -6,7 +6,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public class MappingRootBinder : Binder
+	public partial class MappingRootBinder : Binder
 	{
 		private readonly Dialect.Dialect dialect;
 

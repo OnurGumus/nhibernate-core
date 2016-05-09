@@ -9,7 +9,7 @@ namespace NHibernate.Engine.Loading
 	/// <summary> 
 	/// Represents a collection currently being loaded. 
 	/// </summary>
-	public class LoadingCollectionEntry
+	public partial class LoadingCollectionEntry
 	{
 		private readonly IDataReader resultSet;
 		private readonly ICollectionPersister persister;

@@ -3,7 +3,7 @@ using NHibernate.Id.Insert;
 
 namespace NHibernate.Id
 {
-	public class TriggerIdentityGenerator : AbstractPostInsertGenerator
+	public partial class TriggerIdentityGenerator : AbstractPostInsertGenerator
 	{
 		#region Overrides of AbstractPostInsertGenerator
 

@@ -4,7 +4,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
-	public static class JoinHelper
+	public static partial class JoinHelper
 	{
 		public static ILhsAssociationTypeSqlInfo GetLhsSqlInfo(string alias, int property,
 																										IOuterJoinLoadable lhsPersister, IMapping mapping)
@@ -53,7 +53,7 @@ namespace NHibernate.Engine
 		string GetTableName(IAssociationType type);
 	}
 
-	public abstract class AbstractLhsAssociationTypeSqlInfo : ILhsAssociationTypeSqlInfo
+	public abstract partial class AbstractLhsAssociationTypeSqlInfo : ILhsAssociationTypeSqlInfo
 	{
 		protected AbstractLhsAssociationTypeSqlInfo(string @alias, IOuterJoinLoadable persister, IMapping mapping)
 		{
@@ -122,7 +122,7 @@ namespace NHibernate.Engine
 		#endregion
 	}
 
-	public class PropertiesLhsAssociationTypeSqlInfo : AbstractLhsAssociationTypeSqlInfo
+	public partial class PropertiesLhsAssociationTypeSqlInfo : AbstractLhsAssociationTypeSqlInfo
 	{
 		private readonly int propertyIdx;
 
@@ -184,7 +184,7 @@ namespace NHibernate.Engine
 		#endregion
 	}
 
-	public class IdPropertiesLhsAssociationTypeSqlInfo : AbstractLhsAssociationTypeSqlInfo
+	public partial class IdPropertiesLhsAssociationTypeSqlInfo : AbstractLhsAssociationTypeSqlInfo
 	{
 		public IdPropertiesLhsAssociationTypeSqlInfo(string alias, IOuterJoinLoadable persister, IMapping mapping) : base(alias, persister, mapping) {}
 

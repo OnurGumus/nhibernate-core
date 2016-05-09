@@ -10,7 +10,7 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.AnsiStringFixedLength"/> column.
 	/// </summary>
 	[Serializable]
-	public abstract class CharBooleanType : BooleanType
+	public abstract partial class CharBooleanType : BooleanType
 	{
 		/// <summary></summary>
 		protected abstract string TrueString { get; }

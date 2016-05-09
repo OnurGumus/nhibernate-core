@@ -8,7 +8,7 @@ namespace NHibernate.Dialect.Function
 	/// Classic COUNT sqlfunction that return types as it was done in Hibernate 3.1
 	/// </summary>
 	[Serializable]
-	public class ClassicCountFunction : ClassicAggregateFunction
+	public partial class ClassicCountFunction : ClassicAggregateFunction
 	{
 		public ClassicCountFunction() : base("count", true)
 		{

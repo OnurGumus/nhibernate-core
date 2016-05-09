@@ -4,7 +4,7 @@ using System.Reflection.Emit;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
-	public class DefaultProxyAssemblyBuilder : IProxyAssemblyBuilder
+	public partial class DefaultProxyAssemblyBuilder : IProxyAssemblyBuilder
 	{
 		public AssemblyBuilder DefineDynamicAssembly(AppDomain appDomain, AssemblyName name)
 		{

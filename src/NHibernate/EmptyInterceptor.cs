@@ -6,7 +6,7 @@ using NHibernate.Type;
 namespace NHibernate
 {
 	[Serializable]
-	public class EmptyInterceptor : IInterceptor
+	public partial class EmptyInterceptor : IInterceptor
 	{
 		public virtual void OnDelete(object entity, object id, object[] state, string[] propertyNames, IType[] types)
 		{

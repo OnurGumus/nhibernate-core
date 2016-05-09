@@ -11,7 +11,7 @@ namespace NHibernate.Mapping
 	/// Polymorphic association to one of several tables.
 	/// </remarks>
 	[Serializable]
-	public class Any : SimpleValue
+	public partial class Any : SimpleValue
 	{
 		private string identifierTypeName;
 		private string metaTypeName = NHibernateUtil.String.Name;

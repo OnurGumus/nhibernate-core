@@ -2,7 +2,7 @@
 
 namespace NHibernate.Linq.Expressions
 {
-	public class NhSumExpression : NhAggregatedExpression
+	public partial class NhSumExpression : NhAggregatedExpression
 	{
 		public NhSumExpression(Expression expression)
 			: base(expression, NhExpressionType.Sum)

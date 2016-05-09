@@ -8,7 +8,7 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
-	public class SelectClauseVisitor : ExpressionTreeVisitor
+	public partial class SelectClauseVisitor : ExpressionTreeVisitor
 	{
 		private readonly HqlTreeBuilder _hqlTreeBuilder = new HqlTreeBuilder();
 		private HashSet<Expression> _hqlNodes;
@@ -91,7 +91,7 @@ namespace NHibernate.Linq.Visitors
 		}
 	}
 
-	public static class BooleanToCaseConvertor
+	public static partial class BooleanToCaseConvertor
 	{
 		public static IEnumerable<HqlExpression> Convert(IEnumerable<HqlExpression> hqlTreeNodes)
 		{

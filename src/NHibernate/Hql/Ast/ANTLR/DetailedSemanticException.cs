@@ -2,7 +2,7 @@
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
-	public class DetailedSemanticException : SemanticException
+	public partial class DetailedSemanticException : SemanticException
 	{
 		public DetailedSemanticException(string message) : base(message)
 		{

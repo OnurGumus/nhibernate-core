@@ -5,7 +5,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class ComponentAsIdMapper: IComponentAsIdMapper
+	public partial class ComponentAsIdMapper: IComponentAsIdMapper
 	{
 		private readonly IAccessorPropertyMapper accessorPropertyMapper;
 		private readonly HbmCompositeId id;

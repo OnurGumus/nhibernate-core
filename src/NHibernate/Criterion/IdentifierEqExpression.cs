@@ -12,7 +12,7 @@ namespace NHibernate.Criterion
 	/// An identifier constraint
 	/// </summary>
 	[Serializable]
-	public class IdentifierEqExpression : AbstractCriterion
+	public partial class IdentifierEqExpression : AbstractCriterion
 	{
 		private readonly object value;
 

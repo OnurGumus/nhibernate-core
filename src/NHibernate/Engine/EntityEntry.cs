@@ -10,7 +10,7 @@ namespace NHibernate.Engine
 	/// of an object with respect to its persistent state
 	/// </summary>
 	[Serializable]
-	public sealed class EntityEntry
+	public sealed partial class EntityEntry
 	{
 		private LockMode lockMode;
 		private Status status;

@@ -6,7 +6,7 @@ namespace NHibernate.Criterion
 	/// <summary>
 	/// Represents an strategy for matching strings using "like".
 	/// </summary>
-	public abstract class MatchMode
+	public abstract partial class MatchMode
 	{
 		private int _intCode;
 		private string _name;

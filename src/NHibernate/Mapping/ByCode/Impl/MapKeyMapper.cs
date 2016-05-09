@@ -8,7 +8,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class MapKeyMapper : IMapKeyMapper
+	public partial class MapKeyMapper : IMapKeyMapper
 	{
 		private readonly HbmMapKey hbmMapKey;
 

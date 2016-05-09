@@ -12,7 +12,7 @@ namespace NHibernate.Criterion
 	/// A SQL fragment. The string {alias} will be replaced by the alias of the root entity.
 	/// </summary>
 	[Serializable]
-	public sealed class SQLProjection : IProjection
+	public sealed partial class SQLProjection : IProjection
 	{
 		private readonly string sql;
 		private readonly string groupBy;

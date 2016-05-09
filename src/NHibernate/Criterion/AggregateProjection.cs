@@ -11,7 +11,7 @@ namespace NHibernate.Criterion
 	/// An Aggregation
 	/// </summary>
 	[Serializable]
-	public class AggregateProjection : SimpleProjection
+	public partial class AggregateProjection : SimpleProjection
 	{
 		protected readonly string aggregate;
 		protected readonly IProjection projection;

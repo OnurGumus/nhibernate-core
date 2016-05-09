@@ -4,7 +4,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Stat
 {
-	public class SessionStatisticsImpl : ISessionStatistics
+	public partial class SessionStatisticsImpl : ISessionStatistics
 	{
 		private readonly ISessionImplementor session;
 

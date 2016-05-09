@@ -6,7 +6,7 @@ using NHibernate.Mapping;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public class RootClassBinder : ClassBinder
+	public partial class RootClassBinder : ClassBinder
 	{
 		public RootClassBinder(Mappings mappings, Dialect.Dialect dialect)
 			: base(mappings, dialect)

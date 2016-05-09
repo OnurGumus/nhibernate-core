@@ -2,7 +2,7 @@
 
 namespace NHibernate.Linq.Expressions
 {
-	public class NhDistinctExpression : NhAggregatedExpression
+	public partial class NhDistinctExpression : NhAggregatedExpression
 	{
 		public NhDistinctExpression(Expression expression)
 			: base(expression, NhExpressionType.Distinct)

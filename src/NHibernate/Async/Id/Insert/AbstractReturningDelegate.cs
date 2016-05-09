@@ -16,7 +16,6 @@ namespace NHibernate.Id.Insert
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class AbstractReturningDelegate : IInsertGeneratedIdentifierDelegate
 	{
-		public abstract Task<object> ExecuteAndExtractAsync(IDbCommand insert, ISessionImplementor session);
 		public async Task<object> PerformInsertAsync(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder)
 		{
 			try
@@ -25,7 +24,7 @@ namespace NHibernate.Id.Insert
 				IDbCommand insert = Prepare(insertSQL, session);
 				try
 				{
-					binder.BindValues(insert);
+					await (binder.BindValuesAsync(insert));
 					return await (ExecuteAndExtractAsync(insert, session));
 				}
 				finally

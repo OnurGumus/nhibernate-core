@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace NHibernate.Collection.Generic.SetHelpers
 {
 	[Serializable]
-	internal class SetSnapShot<T> : ISetSnapshot<T>
+	internal partial class SetSnapShot<T> : ISetSnapshot<T>
 	{
 		private readonly List<T> _elements;
 		public SetSnapShot()

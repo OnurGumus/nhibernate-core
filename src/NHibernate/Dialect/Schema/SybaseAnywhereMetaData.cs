@@ -7,7 +7,7 @@ using System.Data.Common;
 namespace NHibernate.Dialect.Schema
 {
 	// Metadata for connections using the iAnywhere.Data.SQLAnywhere ADO.NET provider
-	public class SybaseAnywhereDataBaseMetaData : AbstractDataBaseSchema
+	public partial class SybaseAnywhereDataBaseMetaData : AbstractDataBaseSchema
 	{
 		public SybaseAnywhereDataBaseMetaData(DbConnection pObjConnection) : base(pObjConnection) {}
 
@@ -64,7 +64,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public class SybaseAnywhereTableMetaData : AbstractTableMetadata
+	public partial class SybaseAnywhereTableMetaData : AbstractTableMetadata
 	{
 		public SybaseAnywhereTableMetaData(DataRow rs, IDataBaseSchema meta, bool extras) : base(rs, meta, extras) {}
 
@@ -112,7 +112,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public class SybaseAnywhereColumnMetaData : AbstractColumnMetaData
+	public partial class SybaseAnywhereColumnMetaData : AbstractColumnMetaData
 	{
 		public SybaseAnywhereColumnMetaData(DataRow rs) : base(rs)
 		{
@@ -126,7 +126,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public class SybaseAnywhereIndexMetaData : AbstractIndexMetadata
+	public partial class SybaseAnywhereIndexMetaData : AbstractIndexMetadata
 	{
 		public SybaseAnywhereIndexMetaData(DataRow rs) : base(rs)
 		{
@@ -134,7 +134,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public class SybaseAnywhereForeignKeyMetaData : AbstractForeignKeyMetadata
+	public partial class SybaseAnywhereForeignKeyMetaData : AbstractForeignKeyMetadata
 	{
 		public SybaseAnywhereForeignKeyMetaData(DataRow rs) : base(rs)
 		{

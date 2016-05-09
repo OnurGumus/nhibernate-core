@@ -34,7 +34,7 @@ namespace NHibernate.Type
 	/// </para>
 	/// 
 	/// <code>
-	/// public class MyEnumStringType : NHibernate.Type.EnumStringType
+	/// public partial class MyEnumStringType : NHibernate.Type.EnumStringType
 	/// {
 	///		public MyEnumStringType()
 	///			: base( typeof( MyEnum ) )
@@ -61,7 +61,7 @@ namespace NHibernate.Type
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	public abstract class EnumStringType : AbstractEnumType
+	public abstract partial class EnumStringType : AbstractEnumType
 	{
 		/// <summary>
 		/// Hardcoding of <c>255</c> for the maximum length
@@ -219,7 +219,7 @@ namespace NHibernate.Type
 	}
 
 	[Serializable]
-	public class EnumStringType<T> : EnumStringType
+	public partial class EnumStringType<T> : EnumStringType
 	{
 		private readonly string typeName;
 

@@ -7,7 +7,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 	/// <summary>
 	/// Helper to parse hibernate-configuration XmlNode.
 	/// </summary>
-	public static class CfgXmlHelper
+	public static partial class CfgXmlHelper
 	{
 		/// <summary>
 		/// The XML node name for hibernate configuration section in the App.config/Web.config and

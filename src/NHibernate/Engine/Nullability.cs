@@ -9,7 +9,7 @@ namespace NHibernate.Engine
 	/// Implements the algorithm for validating property values
 	/// for illegal null values
 	/// </summary>
-	public sealed class Nullability
+	public sealed partial class Nullability
 	{
 		private ISessionImplementor session;
 

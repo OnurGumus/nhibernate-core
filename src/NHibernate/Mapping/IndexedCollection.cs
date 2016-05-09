@@ -9,7 +9,7 @@ namespace NHibernate.Mapping
 	/// and primitive Arrays.
 	/// </summary>
 	[Serializable]
-	public abstract class IndexedCollection : Collection
+	public abstract partial class IndexedCollection : Collection
 	{
 		public const string DefaultIndexColumnName = "idx";
 

@@ -1,0 +1,68 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using NHibernate.Engine;
+using NHibernate.Impl;
+using NHibernate.Loader.Criteria;
+using NHibernate.Persister.Entity;
+using NHibernate.SqlCommand;
+using NHibernate.Type;
+using System.Threading.Tasks;
+
+namespace NHibernate.Criterion
+{
+	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+	public abstract partial class SubqueryExpression : AbstractCriterion
+	{
+		public override async Task<SqlString> ToSqlStringAsync(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		{
+			ISessionFactoryImplementor factory = criteriaQuery.Factory;
+			var innerQuery = new CriteriaQueryTranslator(factory, criteriaImpl, //implicit polymorphism not supported (would need a union)
+ criteriaImpl.EntityOrClassName, criteriaQuery.GenerateSQLAlias(), criteriaQuery);
+			types = innerQuery.HasProjection ? innerQuery.ProjectedTypes : null;
+			if (innerQuery.HasProjection == false)
+			{
+				throw new QueryException("Cannot use subqueries on a criteria without a projection.");
+			}
+
+			IOuterJoinLoadable persister = (IOuterJoinLoadable)factory.GetEntityPersister(criteriaImpl.EntityOrClassName);
+			//patch to generate joins on subqueries
+			//stolen from CriteriaLoader
+			CriteriaJoinWalker walker = new CriteriaJoinWalker(persister, innerQuery, factory, criteriaImpl, criteriaImpl.EntityOrClassName, enabledFilters);
+			parameters = innerQuery.GetQueryParameters(); // parameters can be inferred only after initialize the walker
+			SqlString sql = walker.SqlString;
+			if (criteriaImpl.FirstResult != 0 || criteriaImpl.MaxResults != RowSelection.NoValue)
+			{
+				int ? offset = Loader.Loader.GetOffsetUsingDialect(parameters.RowSelection, factory.Dialect);
+				int ? limit = Loader.Loader.GetLimitUsingDialect(parameters.RowSelection, factory.Dialect);
+				Parameter offsetParameter = offset.HasValue ? innerQuery.CreateSkipParameter(offset.Value) : null;
+				Parameter limitParameter = limit.HasValue ? innerQuery.CreateTakeParameter(limit.Value) : null;
+				sql = factory.Dialect.GetLimitString(sql, offset, limit, offsetParameter, limitParameter);
+			}
+
+			SqlStringBuilder buf = new SqlStringBuilder().Add(ToLeftSqlString(criteria, criteriaQuery));
+			if (op != null)
+			{
+				buf.Add(" ").Add(op).Add(" ");
+			}
+
+			if (quantifier != null && prefixOp)
+			{
+				buf.Add(quantifier).Add(" ");
+			}
+
+			buf.Add("(").Add(sql).Add(")");
+			if (quantifier != null && prefixOp == false)
+			{
+				buf.Add(" ").Add(quantifier);
+			}
+
+			return buf.ToSqlString();
+		}
+
+		public override async Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			return parameters.NamedParameters.Values.ToArray();
+		}
+	}
+}

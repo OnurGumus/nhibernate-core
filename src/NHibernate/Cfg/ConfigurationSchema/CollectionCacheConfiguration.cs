@@ -6,7 +6,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 	/// <summary>
 	/// Configuration parsed values for a collection-cache XML node.
 	/// </summary>
-	public class CollectionCacheConfiguration
+	public partial class CollectionCacheConfiguration
 	{
 		internal CollectionCacheConfiguration(XPathNavigator collectionCacheElement)
 		{

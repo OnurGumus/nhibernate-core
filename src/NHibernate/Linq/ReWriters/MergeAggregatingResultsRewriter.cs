@@ -12,7 +12,7 @@ using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.ReWriters
 {
-	public class MergeAggregatingResultsRewriter : QueryModelVisitorBase
+	public partial class MergeAggregatingResultsRewriter : QueryModelVisitorBase
 	{
 		private MergeAggregatingResultsRewriter()
 		{
@@ -95,7 +95,7 @@ namespace NHibernate.Linq.ReWriters
 		}
 	}
 
-	internal class MergeAggregatingResultsInExpressionRewriter : ExpressionTreeVisitor
+	internal partial class MergeAggregatingResultsInExpressionRewriter : ExpressionTreeVisitor
 	{
 		private readonly NameGenerator _nameGenerator;
 

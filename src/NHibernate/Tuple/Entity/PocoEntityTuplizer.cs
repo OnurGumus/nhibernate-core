@@ -17,7 +17,7 @@ namespace NHibernate.Tuple.Entity
 {
 
 	/// <summary> An <see cref="IEntityTuplizer"/> specific to the POCO entity mode. </summary>
-	public class PocoEntityTuplizer : AbstractEntityTuplizer
+	public partial class PocoEntityTuplizer : AbstractEntityTuplizer
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(PocoEntityTuplizer));
 		private readonly System.Type mappedClass;

@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace NHibernate
 {
 	[Serializable]
-	public class QueryParameterException : QueryException
+	public partial class QueryParameterException : QueryException
 	{
 		// TODO : without default constructor can't be serialized
 		public QueryParameterException(string message) : base(message) { }

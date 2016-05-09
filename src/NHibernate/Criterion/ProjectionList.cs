@@ -10,7 +10,7 @@ using NHibernate.Type;
 namespace NHibernate.Criterion
 {
 	[Serializable]
-	public class ProjectionList : IProjection
+	public partial class ProjectionList : IProjection
 	{
 		private IList<IProjection> elements = new List<IProjection>();
 

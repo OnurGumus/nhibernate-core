@@ -31,7 +31,7 @@ namespace NHibernate.Dialect
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public class InformixDialect : Dialect
+	public partial class InformixDialect : Dialect
 	{
 		/// <summary></summary>
 		public InformixDialect()
@@ -456,7 +456,7 @@ namespace NHibernate.Dialect
 		}
 	}
 
-	public class IfxViolatedConstraintExtracter : TemplatedViolatedConstraintNameExtracter
+	public partial class IfxViolatedConstraintExtracter : TemplatedViolatedConstraintNameExtracter
 	{
 		/// <summary> 
 		/// Extract the name of the violated constraint from the given DbException.

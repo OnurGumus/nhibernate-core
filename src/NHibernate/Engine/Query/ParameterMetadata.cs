@@ -7,7 +7,7 @@ namespace NHibernate.Engine.Query
 {
 	/// <summary> Encapsulates metadata about parameters encountered within a query. </summary>
 	[Serializable]
-	public class ParameterMetadata
+	public partial class ParameterMetadata
 	{
 		private readonly Dictionary<string, NamedParameterDescriptor> namedDescriptorMap;
 		private readonly OrdinalParameterDescriptor[] ordinalDescriptors;

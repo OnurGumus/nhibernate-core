@@ -9,7 +9,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion.Lambda
 {
 
-	public class QueryOverOrderBuilder<TRoot,TSubType> : QueryOverOrderBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
+	public partial class QueryOverOrderBuilder<TRoot,TSubType> : QueryOverOrderBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
 
 		public QueryOverOrderBuilder(QueryOver<TRoot,TSubType> root, Expression<Func<TSubType, object>> path) : base(root, path)
@@ -23,7 +23,7 @@ namespace NHibernate.Criterion.Lambda
 
 	}
 
-	public class IQueryOverOrderBuilder<TRoot,TSubType> : QueryOverOrderBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
+	public partial class IQueryOverOrderBuilder<TRoot,TSubType> : QueryOverOrderBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
 
 		public IQueryOverOrderBuilder(IQueryOver<TRoot,TSubType> root, Expression<Func<TSubType, object>> path) : base(root, path)
@@ -37,7 +37,7 @@ namespace NHibernate.Criterion.Lambda
 
 	}
 
-	public class QueryOverOrderBuilderBase<TReturn, TRoot, TSubType> where TReturn : IQueryOver<TRoot, TSubType>
+	public partial class QueryOverOrderBuilderBase<TReturn, TRoot, TSubType> where TReturn : IQueryOver<TRoot, TSubType>
 	{
 
 		protected TReturn root;

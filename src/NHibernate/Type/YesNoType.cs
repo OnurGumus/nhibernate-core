@@ -16,7 +16,7 @@ namespace NHibernate.Type
 	/// export to create a char(1) column.
 	/// </remarks>
 	[Serializable]
-	public class YesNoType : CharBooleanType
+	public partial class YesNoType : CharBooleanType
 	{
 		/// <summary></summary>
 		public YesNoType() : base(new AnsiStringFixedLengthSqlType(1))

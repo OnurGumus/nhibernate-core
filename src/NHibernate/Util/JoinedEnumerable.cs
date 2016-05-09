@@ -8,7 +8,7 @@ namespace NHibernate.Util
 	/// <summary>
 	/// Concatenates multiple objects implementing <see cref="IEnumerable"/> into one.
 	/// </summary>
-	public class JoinedEnumerable : IEnumerable
+	public partial class JoinedEnumerable : IEnumerable
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(JoinedEnumerable));
 
@@ -177,7 +177,7 @@ namespace NHibernate.Util
 
 
 
-	public class JoinedEnumerable<T> : IEnumerable<T>
+	public partial class JoinedEnumerable<T> : IEnumerable<T>
 	{
 		private readonly IEnumerable<T>[] enumerables;
 

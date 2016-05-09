@@ -41,7 +41,7 @@ namespace NHibernate.Type
 	///	
 	///</remarks>
 	[Serializable]
-	public class AnyType : AbstractType, IAbstractComponentType, IAssociationType
+	public partial class AnyType : AbstractType, IAbstractComponentType, IAssociationType
 	{
 		private readonly IType identifierType;
 		private readonly IType metaType;
@@ -172,7 +172,7 @@ namespace NHibernate.Type
 		}
 
 		[Serializable]
-		public sealed class ObjectTypeCacheEntry
+		public sealed partial class ObjectTypeCacheEntry
 		{
 			internal string entityName;
 			internal object id;

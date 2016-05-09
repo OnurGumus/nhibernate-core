@@ -92,7 +92,7 @@ namespace NHibernate.Id
 		/// Delegate for dealing with IDENTITY columns where the dialect requires an
 		/// additional command execution to retrieve the generated IDENTITY value
 		/// </summary>
-		public class BasicDelegate : AbstractSelectingDelegate, IInsertGeneratedIdentifierDelegate
+		public partial class BasicDelegate : AbstractSelectingDelegate, IInsertGeneratedIdentifierDelegate
 		{
 
 			private readonly IPostInsertIdentityPersister persister;

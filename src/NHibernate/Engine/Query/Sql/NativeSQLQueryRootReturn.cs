@@ -9,7 +9,7 @@ namespace NHibernate.Engine.Query.Sql
 	/// "column" in the result, as opposed to a fetched relationship or role. 
 	/// </summary>
 	[Serializable]
-	public class NativeSQLQueryRootReturn : NativeSQLQueryNonScalarReturn
+	public partial class NativeSQLQueryRootReturn : NativeSQLQueryNonScalarReturn
 	{
 		private readonly string returnEntityName;
 

@@ -5,7 +5,7 @@ namespace NHibernate.SqlCommand
 	/// <summary>
 	/// An ANSI-style Join.
 	/// </summary>
-	public class ANSIJoinFragment : JoinFragment
+	public partial class ANSIJoinFragment : JoinFragment
 	{
 		private SqlStringBuilder _fromFragment = new SqlStringBuilder();
 		private readonly SqlStringBuilder _whereFragment = new SqlStringBuilder();

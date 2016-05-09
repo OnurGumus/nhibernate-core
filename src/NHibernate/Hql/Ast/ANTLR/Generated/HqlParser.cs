@@ -12300,7 +12300,7 @@ public partial class HqlParser : Antlr.Runtime.Parser
 
 
 	#region Follow sets
-	private static class Follow
+	private static partial class Follow
 	{
 		public static readonly BitSet _updateStatement_in_statement620 = new BitSet(new ulong[]{0x0UL});
 		public static readonly BitSet _deleteStatement_in_statement624 = new BitSet(new ulong[]{0x0UL});

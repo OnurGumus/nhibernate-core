@@ -9,7 +9,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class OrderByClause : HqlSqlWalkerNode 
+	public partial class OrderByClause : HqlSqlWalkerNode 
 	{
 		public OrderByClause(IToken token) : base(token)
 		{

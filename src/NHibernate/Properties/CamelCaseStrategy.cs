@@ -4,7 +4,7 @@ namespace NHibernate.Properties
 	/// Implementation of <see cref="IFieldNamingStrategy"/> for fields that are the 
 	/// camelCase version of the PropertyName
 	/// </summary>
-	public class CamelCaseStrategy : IFieldNamingStrategy
+	public partial class CamelCaseStrategy : IFieldNamingStrategy
 	{
 		#region IFieldNamingStrategy Members
 

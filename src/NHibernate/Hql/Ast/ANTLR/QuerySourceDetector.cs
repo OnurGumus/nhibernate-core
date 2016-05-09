@@ -5,7 +5,7 @@ using NHibernate.Hql.Ast.ANTLR.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
-    internal class QuerySourceDetector : IVisitationStrategy
+    internal partial class QuerySourceDetector : IVisitationStrategy
     {
         private readonly IASTNode _tree;
         private readonly List<IASTNode> _nodes;

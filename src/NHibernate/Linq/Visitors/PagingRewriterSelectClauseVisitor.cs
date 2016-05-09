@@ -6,7 +6,7 @@ using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.Visitors
 {
-	internal class PagingRewriterSelectClauseVisitor : ExpressionTreeVisitor
+	internal partial class PagingRewriterSelectClauseVisitor : ExpressionTreeVisitor
 	{
 		private readonly FromClauseBase querySource;
 

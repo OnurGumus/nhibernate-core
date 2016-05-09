@@ -4,7 +4,7 @@ using System;
 
 namespace NHibernate.Util
 {
-	public static class ExpressionsHelper
+	public static partial class ExpressionsHelper
 	{
 		public static MemberInfo DecodeMemberAccessExpression<TEntity, TResult>(Expression<Func<TEntity, TResult>> expression)
 		{

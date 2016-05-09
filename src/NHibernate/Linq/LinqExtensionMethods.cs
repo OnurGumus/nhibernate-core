@@ -9,7 +9,7 @@ using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq
 {
-	public static class LinqExtensionMethods
+	public static partial class LinqExtensionMethods
 	{
 		public static IQueryable<T> Query<T>(this ISession session)
 		{

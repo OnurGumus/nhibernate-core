@@ -8,7 +8,7 @@ namespace NHibernate.Mapping
 	/// A collection with a synthetic "identifier" column.
 	/// </summary>
 	[Serializable]
-	public abstract class IdentifierCollection : Collection
+	public abstract partial class IdentifierCollection : Collection
 	{
 		public const string DefaultIdentifierColumnName = "id";
 		private IKeyValue identifier;

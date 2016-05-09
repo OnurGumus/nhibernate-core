@@ -9,7 +9,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Nodes which represent binary arithmetic operators.
 	/// </summary>
 	[CLSCompliant(false)]
-	public class BinaryArithmeticOperatorNode : AbstractSelectExpression, IBinaryOperatorNode, IDisplayableNode
+	public partial class BinaryArithmeticOperatorNode : AbstractSelectExpression, IBinaryOperatorNode, IDisplayableNode
 	{
 		public BinaryArithmeticOperatorNode(IToken token)
 			: base(token)

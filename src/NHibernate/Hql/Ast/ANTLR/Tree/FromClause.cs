@@ -13,7 +13,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class FromClause : HqlSqlWalkerNode, IDisplayableNode
+	public partial class FromClause : HqlSqlWalkerNode, IDisplayableNode
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(FromClause));
 		private const int RootLevel = 1;

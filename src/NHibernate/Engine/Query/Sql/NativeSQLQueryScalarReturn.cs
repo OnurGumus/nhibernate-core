@@ -5,7 +5,7 @@ namespace NHibernate.Engine.Query.Sql
 {
 	/// <summary> Describes a scalar return in a native SQL query. </summary>
 	[Serializable]
-	public class NativeSQLQueryScalarReturn : INativeSQLQueryReturn
+	public partial class NativeSQLQueryScalarReturn : INativeSQLQueryReturn
 	{
 		private readonly string columnAlias;
 		private readonly IType type;

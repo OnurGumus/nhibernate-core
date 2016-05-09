@@ -12,7 +12,7 @@ using System.Reflection.Emit;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
-	internal class ProxyImplementor
+	internal partial class ProxyImplementor
 	{
 		private const MethodAttributes InterceptorMethodsAttributes = MethodAttributes.Public | MethodAttributes.HideBySig |
 		                                                  MethodAttributes.SpecialName | MethodAttributes.NewSlot |

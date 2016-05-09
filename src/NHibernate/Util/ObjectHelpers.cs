@@ -4,7 +4,7 @@ namespace NHibernate.Util
 	/// <summary>
 	/// Various small helper methods.
 	/// </summary>
-	public static class ObjectHelpers
+	public static partial class ObjectHelpers
 	{
 		/// <summary>
 		/// Return an identifying string representation for the object, taking

@@ -9,7 +9,7 @@ namespace NHibernate.Mapping
 	/// + index columns.
 	/// </summary>
 	[Serializable]
-	public class Map : IndexedCollection
+	public partial class Map : IndexedCollection
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Map" /> class.

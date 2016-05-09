@@ -7,7 +7,7 @@ using NHibernate.Util;
 namespace NHibernate
 {
 	[Serializable]
-	public class PropertyValueException : HibernateException
+	public partial class PropertyValueException : HibernateException
 	{
 		private readonly string entityName;
 		private readonly string propertyName;

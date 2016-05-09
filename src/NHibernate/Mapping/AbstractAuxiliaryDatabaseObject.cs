@@ -13,7 +13,7 @@ namespace NHibernate.Mapping
 	/// instanceof-type checks. 
 	/// </remarks>
 	[Serializable]
-	public abstract class AbstractAuxiliaryDatabaseObject : IAuxiliaryDatabaseObject
+	public abstract partial class AbstractAuxiliaryDatabaseObject : IAuxiliaryDatabaseObject
 	{
 		private readonly HashSet<string> dialectScopes;
 		private IDictionary<string, string> parameters = new Dictionary<string, string>();

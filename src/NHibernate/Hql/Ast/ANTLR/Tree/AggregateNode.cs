@@ -12,7 +12,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class AggregateNode : AbstractSelectExpression, ISelectExpression
+	public partial class AggregateNode : AbstractSelectExpression, ISelectExpression
 	{
 		public AggregateNode(IToken token)
 			: base(token)

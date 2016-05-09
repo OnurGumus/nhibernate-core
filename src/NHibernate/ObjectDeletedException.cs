@@ -7,7 +7,7 @@ namespace NHibernate
 	/// Thrown when the user tries to pass a deleted object to the <c>ISession</c>.
 	/// </summary>
 	[Serializable]
-	public class ObjectDeletedException : UnresolvableObjectException
+	public partial class ObjectDeletedException : UnresolvableObjectException
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ObjectDeletedException"/> class.

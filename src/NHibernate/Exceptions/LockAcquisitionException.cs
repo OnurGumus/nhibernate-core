@@ -8,7 +8,7 @@ namespace NHibernate.Exceptions
 	/// on the database. 
 	/// </summary>
 	[Serializable]
-	public class LockAcquisitionException : ADOException
+	public partial class LockAcquisitionException : ADOException
 	{
 		public LockAcquisitionException(SerializationInfo info, StreamingContext context) : base(info, context) {}
 		public LockAcquisitionException(string message, Exception innerException, string sql) : base(message, innerException, sql) {}

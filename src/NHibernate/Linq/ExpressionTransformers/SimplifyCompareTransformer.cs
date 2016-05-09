@@ -14,7 +14,7 @@ namespace NHibernate.Linq.ExpressionTransformers
 	/// Compare/CompareTo method call. The comparison operator is then applied
 	/// directly to the arguments for the Compare/CompareTo call.
 	/// </summary>
-	internal class SimplifyCompareTransformer : IExpressionTransformer<BinaryExpression>
+	internal partial class SimplifyCompareTransformer : IExpressionTransformer<BinaryExpression>
 	{
 		// Examples:
 		// string.Compare(a, b) = 0    =>    a = b

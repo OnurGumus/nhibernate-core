@@ -4,7 +4,7 @@ namespace NHibernate.Properties
 	/// Implementation of <see cref="IFieldNamingStrategy"/> for fields that are prefixed with
 	/// an underscore and the PropertyName is changed to camelCase.
 	/// </summary>
-	public class CamelCaseUnderscoreStrategy : IFieldNamingStrategy
+	public partial class CamelCaseUnderscoreStrategy : IFieldNamingStrategy
 	{
 		#region IFieldNamingStrategy Members
 

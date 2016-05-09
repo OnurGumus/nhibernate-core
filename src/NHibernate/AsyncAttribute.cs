@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NHibernate
 {
-	public class AsyncAttribute : Attribute
+	public partial class AsyncAttribute : Attribute
 	{
 	}
 }

@@ -1,6 +1,6 @@
 namespace NHibernate.Mapping.ByCode
 {
-	public static class CascadeExtensions
+	public static partial class CascadeExtensions
 	{
 		private const Cascade AnyButOrphans = Cascade.Persist | Cascade.Refresh | Cascade.Merge | Cascade.Remove | Cascade.Detach | Cascade.ReAttach;
 

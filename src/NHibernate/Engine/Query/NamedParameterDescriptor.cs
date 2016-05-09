@@ -5,7 +5,7 @@ namespace NHibernate.Engine.Query
 {
 	/// <summary> Descriptor regarding a named parameter. </summary>
 	[Serializable]
-	public class NamedParameterDescriptor
+	public partial class NamedParameterDescriptor
 	{
 		private readonly string name;
 		private readonly IType expectedType;

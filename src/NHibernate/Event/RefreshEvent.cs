@@ -8,7 +8,7 @@ namespace NHibernate.Event
 	/// Defines an event class for the refreshing of an object.
 	/// </summary>
 	[Serializable]
-	public class RefreshEvent : AbstractEvent
+	public partial class RefreshEvent : AbstractEvent
 	{
 		private readonly LockMode lockMode= LockMode.Read;
 		private readonly object entity;

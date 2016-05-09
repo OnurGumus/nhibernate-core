@@ -6,7 +6,7 @@ namespace NHibernate.Criterion
 	/// An <see cref="ICriterion"/> that represents non-empty association constraint.
 	/// </summary>
 	[Serializable]
-	public class IsNotEmptyExpression : AbstractEmptinessExpression
+	public partial class IsNotEmptyExpression : AbstractEmptinessExpression
 	{
 		public IsNotEmptyExpression(string propertyName)
 			: base(propertyName)

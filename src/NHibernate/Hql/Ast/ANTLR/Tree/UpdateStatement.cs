@@ -10,7 +10,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// </summary>
 	[Serializable]
 	[CLSCompliant(false)]
-	public class UpdateStatement : AbstractRestrictableStatement
+	public partial class UpdateStatement : AbstractRestrictableStatement
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof (UpdateStatement));
 

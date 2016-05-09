@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace NHibernate.Tuple.Component
 {
 	/// <summary> Centralizes metamodel information about a component. </summary>
-	public class ComponentMetamodel
+	public partial class ComponentMetamodel
 	{
 		private readonly string role;
 		private readonly bool isKey;

@@ -5,7 +5,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Cache.Entry
 {
-	public class StructuredCollectionCacheEntry : ICacheEntryStructure
+	public partial class StructuredCollectionCacheEntry : ICacheEntryStructure
 	{
 		public virtual object Structure(object item)
 		{

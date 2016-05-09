@@ -11,7 +11,7 @@ namespace NHibernate.Mapping
 	/// etc.
 	/// </summary>
 	[Serializable]
-	public class Component : SimpleValue, IMetaAttributable
+	public partial class Component : SimpleValue, IMetaAttributable
 	{
 		private readonly List<Property> properties = new List<Property>();
 		private System.Type componentClass;

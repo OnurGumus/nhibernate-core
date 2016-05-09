@@ -15,7 +15,7 @@ namespace NHibernate.Engine
 	/// Container for data that is used during the NHibernate query/load process.
 	/// </summary>
 	[Serializable]
-	public sealed class QueryParameters
+	public sealed partial class QueryParameters
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (QueryParameters));
 

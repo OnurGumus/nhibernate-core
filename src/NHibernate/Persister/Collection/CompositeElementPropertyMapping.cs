@@ -7,7 +7,7 @@ namespace NHibernate.Persister.Collection
 	/// <summary>
 	/// Summary description for CompositeElementPropertyMapping.
 	/// </summary>
-	public class CompositeElementPropertyMapping : AbstractPropertyMapping
+	public partial class CompositeElementPropertyMapping : AbstractPropertyMapping
 	{
 		private readonly IAbstractComponentType compositeType;
 

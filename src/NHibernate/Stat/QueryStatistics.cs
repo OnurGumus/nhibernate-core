@@ -6,7 +6,7 @@ namespace NHibernate.Stat
 	/// <summary> Query statistics (HQL and SQL) </summary>
 	/// <remarks>Note that for a cached query, the cache miss is equals to the db count</remarks>
 	[Serializable]
-	public class QueryStatistics : CategorizedStatistics
+	public partial class QueryStatistics : CategorizedStatistics
 	{
 		internal long cacheHitCount;
 		internal long cacheMissCount;

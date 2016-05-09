@@ -8,7 +8,7 @@ namespace NHibernate.Dialect
 	/// Transforms a T-SQL SELECT statement into a statement that will - when executed - return a 'page' of results. The page is defined
 	/// by a page size ('limit'), and/or a starting page number ('offset').
 	/// </summary>
-	internal class MsSql2005DialectQueryPager
+	internal partial class MsSql2005DialectQueryPager
 	{
 		private readonly SqlString _sourceQuery;
 

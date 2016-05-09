@@ -8,7 +8,7 @@ using NHibernate.Util;
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
-	public class ConstructorNode : SelectExpressionList, ISelectExpression 
+	public partial class ConstructorNode : SelectExpressionList, ISelectExpression 
 	{
 		private IType[] _constructorArgumentTypes;
 		private ConstructorInfo _constructor;

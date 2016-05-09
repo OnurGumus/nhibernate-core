@@ -6,7 +6,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Cfg
 {
-	public class NamedXmlDocument
+	public partial class NamedXmlDocument
 	{
 		private static readonly XmlSerializer mappingDocumentSerializer = new XmlSerializer(typeof (HbmMapping));
 		private readonly string name;

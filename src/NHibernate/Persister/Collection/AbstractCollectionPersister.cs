@@ -2111,7 +2111,7 @@ namespace NHibernate.Persister.Collection
 			return identityDelegate.PerformInsert(SqlInsertRowString, session, binder);
 		}
 
-		protected class GeneratedIdentifierBinder : IBinder
+		protected partial class GeneratedIdentifierBinder : IBinder
 		{
 			private readonly object ownerId;
 			private readonly IPersistentCollection collection;

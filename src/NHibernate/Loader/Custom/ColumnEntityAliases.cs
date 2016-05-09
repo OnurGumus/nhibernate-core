@@ -6,7 +6,7 @@ namespace NHibernate.Loader.Custom
 	/// <summary>
 	/// <see cref="IEntityAliases" /> that chooses the column names over the alias names.
 	/// </summary>
-	public class ColumnEntityAliases : DefaultEntityAliases
+	public partial class ColumnEntityAliases : DefaultEntityAliases
 	{
 		public ColumnEntityAliases(IDictionary<string, string[]> returnProperties, ILoadable persister, string suffix)
 			: base(returnProperties, persister, suffix) {}

@@ -7,7 +7,7 @@ using Remotion.Linq.EagerFetching;
 
 namespace NHibernate.Linq.ReWriters
 {
-	public class RemoveUnnecessaryBodyOperators : QueryModelVisitorBase
+	public partial class RemoveUnnecessaryBodyOperators : QueryModelVisitorBase
 	{
 		private RemoveUnnecessaryBodyOperators() {}
 

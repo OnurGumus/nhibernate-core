@@ -6,7 +6,7 @@ using System.Text;
 
 namespace NHibernate.Tool.hbm2ddl
 {
-    public class ScriptSplitter : IEnumerable<string>
+    public partial class ScriptSplitter : IEnumerable<string>
     {
         private readonly TextReader _reader;
         private StringBuilder _builder = new StringBuilder();
@@ -112,7 +112,7 @@ namespace NHibernate.Tool.hbm2ddl
         }
     }
 
-    abstract class ScriptReader
+    abstract partial class ScriptReader
     {
         protected readonly ScriptSplitter Splitter;
 

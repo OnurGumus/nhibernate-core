@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class ComponentAsIdLikeComponentAttributesMapper : IComponentAttributesMapper
+	public partial class ComponentAsIdLikeComponentAttributesMapper : IComponentAttributesMapper
 	{
 		private readonly IComponentAsIdMapper _realMapper;
 

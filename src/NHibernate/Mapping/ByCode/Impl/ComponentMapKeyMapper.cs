@@ -5,7 +5,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class ComponentMapKeyMapper : IComponentMapKeyMapper
+	public partial class ComponentMapKeyMapper : IComponentMapKeyMapper
 	{
 		private readonly HbmCompositeMapKey component;
 		private readonly HbmMapping mapDoc;

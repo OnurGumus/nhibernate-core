@@ -9,7 +9,7 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.AnsiString"/> column.
 	/// </summary>
 	[Serializable]
-	public class AnsiStringType : AbstractStringType
+	public partial class AnsiStringType : AbstractStringType
 	{
 		internal AnsiStringType() : base(new AnsiStringSqlType()) { }
 

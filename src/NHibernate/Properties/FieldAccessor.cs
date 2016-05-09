@@ -16,7 +16,7 @@ namespace NHibernate.Properties
 	/// is setting or getting the values for loads or saves.
 	/// </remarks>
 	[Serializable]
-	public class FieldAccessor : IPropertyAccessor
+	public partial class FieldAccessor : IPropertyAccessor
 	{
 		private readonly IFieldNamingStrategy namingStrategy;
 
@@ -158,7 +158,7 @@ namespace NHibernate.Properties
 		/// An <see cref="IGetter"/> that uses a Field instead of the Property <c>get</c>.
 		/// </summary>
 		[Serializable]
-		public sealed class FieldGetter : IGetter, IOptimizableGetter
+		public sealed partial class FieldGetter : IGetter, IOptimizableGetter
 		{
 			private readonly FieldInfo field;
 			private readonly System.Type clazz;
@@ -242,7 +242,7 @@ namespace NHibernate.Properties
 		/// An <see cref="IGetter"/> that uses a Field instead of the Property <c>set</c>.
 		/// </summary>
 		[Serializable]
-		public sealed class FieldSetter : ISetter, IOptimizableSetter
+		public sealed partial class FieldSetter : ISetter, IOptimizableSetter
 		{
 			private readonly FieldInfo field;
 			private readonly System.Type clazz;

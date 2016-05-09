@@ -6,7 +6,7 @@ namespace NHibernate.Cfg
 	/// <summary>
 	/// Summary description for ImprovedNamingStrategy.
 	/// </summary>
-	public class ImprovedNamingStrategy : INamingStrategy
+	public partial class ImprovedNamingStrategy : INamingStrategy
 	{
 		/// <summary>
 		/// The singleton instance

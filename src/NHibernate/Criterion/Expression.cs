@@ -8,7 +8,7 @@ namespace NHibernate.Criterion
 	/// This class is semi-deprecated. Use <see cref="Restrictions"/>. 
 	/// </summary>
 	/// <seealso cref="Restrictions"/>
-	public sealed class Expression : Restrictions
+	public sealed partial class Expression : Restrictions
 	{
 		private Expression()
 		{

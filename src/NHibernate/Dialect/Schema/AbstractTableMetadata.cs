@@ -5,7 +5,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Dialect.Schema
 {
-	public abstract class AbstractTableMetadata : ITableMetadata
+	public abstract partial class AbstractTableMetadata : ITableMetadata
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ITableMetadata));
 		private string catalog;

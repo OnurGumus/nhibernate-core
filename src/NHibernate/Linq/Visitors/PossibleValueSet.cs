@@ -15,7 +15,7 @@ namespace NHibernate.Linq.Visitors
     /// comparison operators and arithmetic operators.  They are currently handled by naive
     /// null checks.
     /// </summary>
-    public class PossibleValueSet
+    public partial class PossibleValueSet
     {
         private System.Type ExpressionType { get; set; }
         private bool ContainsNull { get; set; }

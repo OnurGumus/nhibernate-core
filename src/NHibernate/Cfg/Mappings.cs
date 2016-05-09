@@ -12,19 +12,19 @@ namespace NHibernate.Cfg
 	/// </summary>
 	/// <remarks>Represents a single <c>&lt;hibernate-mapping&gt;</c> element.</remarks>
 	[Serializable]
-	public class Mappings
+	public partial class Mappings
 	{
 		#region Utility classes
 
 		[Serializable]
-		public class ColumnNames
+		public partial class ColumnNames
 		{
 			public readonly IDictionary<string, string> logicalToPhysical = new Dictionary<string, string>();
 			public readonly IDictionary<string, string> physicalToLogical = new Dictionary<string, string>();
 		}
 
 		[Serializable]
-		public class TableDescription
+		public partial class TableDescription
 		{
 			public readonly string logicalName;
 			public readonly Table denormalizedSupertable;
@@ -37,7 +37,7 @@ namespace NHibernate.Cfg
 		}
 
 		[Serializable]
-		public sealed class PropertyReference
+		public sealed partial class PropertyReference
 		{
 			public string referencedClass;
 			public string propertyName;

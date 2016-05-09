@@ -8,7 +8,7 @@ namespace NHibernate.Mapping
 	/// the identifier column.
 	/// </summary>
 	[Serializable]
-	public class IdentifierBag : IdentifierCollection
+	public partial class IdentifierBag : IdentifierCollection
 	{
 		public IdentifierBag(PersistentClass owner)
 			: base(owner)

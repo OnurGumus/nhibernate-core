@@ -7,7 +7,7 @@ namespace NHibernate.Type
 	/// Represents directionality of the foreign key constraint
 	/// </summary>
 	[Serializable]
-	public abstract class ForeignKeyDirection
+	public abstract partial class ForeignKeyDirection
 	{
 		/// <summary>
 		/// A foreign key from parent to child

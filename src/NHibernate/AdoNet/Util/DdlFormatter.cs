@@ -4,7 +4,7 @@ using NHibernate.Util;
 
 namespace NHibernate.AdoNet.Util
 {
-	public class DdlFormatter: IFormatter
+	public partial class DdlFormatter: IFormatter
 	{
 		private const string Indent1 = "\n    ";
 		private const string Indent2 = "\n      ";

@@ -51,5 +51,30 @@ namespace NHibernate.Type
 					}
 				}
 		}
+
+		private async Task<object> GetCurrentTimestampAsync(ISessionImplementor session)
+		{
+			Dialect.Dialect dialect = session.Factory.Dialect;
+			string timestampSelectString = dialect.CurrentTimestampSelectString;
+			return await (UsePreparedStatementAsync(timestampSelectString, session));
+		}
+
+		public override async Task<object> SeedAsync(ISessionImplementor session)
+		{
+			if (session == null)
+			{
+				log.Debug("incoming session was null; using current vm time");
+				return await (base.SeedAsync(session));
+			}
+			else if (!session.Factory.Dialect.SupportsCurrentTimestampSelection)
+			{
+				log.Debug("falling back to vm-based timestamp, as dialect does not support current timestamp selection");
+				return await (base.SeedAsync(session));
+			}
+			else
+			{
+				return await (GetCurrentTimestampAsync(session));
+			}
+		}
 	}
 }

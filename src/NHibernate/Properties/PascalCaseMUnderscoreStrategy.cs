@@ -4,7 +4,7 @@ namespace NHibernate.Properties
 	/// Implementation of <see cref="IFieldNamingStrategy"/> for fields that are prefixed with
 	/// an <c>m_</c> and the first character in PropertyName capitalized.
 	/// </summary>
-	public class PascalCaseMUnderscoreStrategy : IFieldNamingStrategy
+	public partial class PascalCaseMUnderscoreStrategy : IFieldNamingStrategy
 	{
 		#region IFieldNamingStrategy Members
 

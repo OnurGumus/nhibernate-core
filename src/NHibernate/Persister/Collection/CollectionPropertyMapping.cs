@@ -7,7 +7,7 @@ namespace NHibernate.Persister.Collection
 	/// <summary>
 	/// Summary description for CollectionPropertyMapping.
 	/// </summary>
-	public class CollectionPropertyMapping : IPropertyMapping
+	public partial class CollectionPropertyMapping : IPropertyMapping
 	{
 		private readonly IQueryableCollection memberPersister;
 

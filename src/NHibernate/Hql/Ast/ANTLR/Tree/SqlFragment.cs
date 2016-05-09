@@ -13,7 +13,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class SqlFragment : SqlNode, IParameterContainer 
+	public partial class SqlFragment : SqlNode, IParameterContainer 
 	{
 		private JoinFragment _joinFragment;
 		private FromElement _fromElement;

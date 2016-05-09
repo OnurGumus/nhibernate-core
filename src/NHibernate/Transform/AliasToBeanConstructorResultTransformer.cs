@@ -5,7 +5,7 @@ using System.Reflection;
 namespace NHibernate.Transform
 {
 	[Serializable]
-	public class AliasToBeanConstructorResultTransformer : IResultTransformer
+	public partial class AliasToBeanConstructorResultTransformer : IResultTransformer
 	{
 		private readonly ConstructorInfo constructor;
 

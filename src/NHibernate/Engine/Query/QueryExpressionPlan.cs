@@ -6,7 +6,7 @@ using NHibernate.Linq;
 namespace NHibernate.Engine.Query
 {
 	[Serializable]
-	public class QueryExpressionPlan : HQLQueryPlan, IQueryExpressionPlan
+	public partial class QueryExpressionPlan : HQLQueryPlan, IQueryExpressionPlan
 	{
 		public IQueryExpression QueryExpression { get; private set; }
 

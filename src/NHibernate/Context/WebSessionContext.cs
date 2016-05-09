@@ -9,7 +9,7 @@ namespace NHibernate.Context
 	/// for each System.Web.HttpContext. Works only with web applications.
 	/// </summary>
 	[Serializable]
-	public class WebSessionContext : MapBasedSessionContext
+	public partial class WebSessionContext : MapBasedSessionContext
 	{
 		private const string SessionFactoryMapKey = "NHibernate.Context.WebSessionContext.SessionFactoryMapKey";
 

@@ -9,7 +9,7 @@ namespace NHibernate.Criterion
 	/// Base class for <see cref="ICriterion"/> implementations.
 	/// </summary>
 	[Serializable]
-	public abstract class AbstractCriterion : ICriterion
+	public abstract partial class AbstractCriterion : ICriterion
 	{
 		/// <summary>
 		/// Gets a string representation of the <see cref="AbstractCriterion"/>.  

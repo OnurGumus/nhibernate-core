@@ -11,7 +11,7 @@ namespace NHibernate.Transaction
 	/// Wraps an ADO.NET <see cref="IDbTransaction"/> to implement
 	/// the <see cref="ITransaction" /> interface.
 	/// </summary>
-	public class AdoTransaction : ITransaction
+	public partial class AdoTransaction : ITransaction
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AdoTransaction));
 		private ISessionImplementor session;

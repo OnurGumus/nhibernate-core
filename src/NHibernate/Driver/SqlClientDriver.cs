@@ -10,7 +10,7 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// A NHibernate Driver for using the SqlClient DataProvider
 	/// </summary>
-	public class SqlClientDriver : DriverBase, IEmbeddedBatcherFactoryProvider
+	public partial class SqlClientDriver : DriverBase, IEmbeddedBatcherFactoryProvider
 	{
 		public const int MaxSizeForAnsiClob = 2147483647; // int.MaxValue
 		public const int MaxSizeForClob = 1073741823; // int.MaxValue / 2

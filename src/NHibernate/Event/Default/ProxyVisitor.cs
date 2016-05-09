@@ -7,7 +7,7 @@ namespace NHibernate.Event.Default
 	/// <summary>
 	/// Reassociates uninitialized proxies with the session
 	/// </summary>
-	public abstract class ProxyVisitor : AbstractVisitor
+	public abstract partial class ProxyVisitor : AbstractVisitor
 	{
 		public ProxyVisitor(IEventSource session) : base(session) { }
 

@@ -5,7 +5,7 @@ using NHibernate.Properties;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public class PropertyToField
+	public partial class PropertyToField
 	{
 		private static readonly Dictionary<string, IFieldNamingStrategy> FieldNamingStrategies = new Dictionary<string, IFieldNamingStrategy>
 			{

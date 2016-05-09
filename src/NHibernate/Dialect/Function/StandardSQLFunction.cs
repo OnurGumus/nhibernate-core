@@ -16,7 +16,7 @@ namespace NHibernate.Dialect.Function
 	/// for processing of the associated function.
 	/// </remarks>
 	[Serializable]
-	public class StandardSQLFunction : ISQLFunction
+	public partial class StandardSQLFunction : ISQLFunction
 	{
 		private IType returnType = null;
 		protected readonly string name;

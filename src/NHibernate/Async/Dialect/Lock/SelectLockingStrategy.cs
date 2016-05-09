@@ -30,10 +30,10 @@ namespace NHibernate.Dialect.Lock
 				IDataReader rs = null;
 				try
 				{
-					lockable.IdentifierType.NullSafeSet(st, id, 0, session);
+					await (lockable.IdentifierType.NullSafeSetAsync(st, id, 0, session));
 					if (lockable.IsVersioned)
 					{
-						lockable.VersionType.NullSafeSet(st, version, lockable.IdentifierType.GetColumnSpan(factory), session);
+						await (lockable.VersionType.NullSafeSetAsync(st, version, lockable.IdentifierType.GetColumnSpan(factory), session));
 					}
 
 					rs = await (session.Batcher.ExecuteReaderAsync(st));

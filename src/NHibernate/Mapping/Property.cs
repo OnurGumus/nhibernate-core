@@ -13,7 +13,7 @@ namespace NHibernate.Mapping
 	/// or component).
 	/// </summary>
 	[Serializable]
-	public class Property : IMetaAttributable
+	public partial class Property : IMetaAttributable
 	{
 		private string name;
 		private IValue propertyValue;

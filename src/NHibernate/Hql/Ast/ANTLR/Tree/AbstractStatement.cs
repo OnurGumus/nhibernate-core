@@ -10,7 +10,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public abstract class AbstractStatement : HqlSqlWalkerNode, IDisplayableNode, IStatement
+	public abstract partial class AbstractStatement : HqlSqlWalkerNode, IDisplayableNode, IStatement
 	{
 		protected AbstractStatement(IToken token) : base(token)
 		{

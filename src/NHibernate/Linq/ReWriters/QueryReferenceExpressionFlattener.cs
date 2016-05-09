@@ -9,7 +9,7 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.ReWriters
 {
-	public class QueryReferenceExpressionFlattener : ExpressionTreeVisitor
+	public partial class QueryReferenceExpressionFlattener : ExpressionTreeVisitor
 	{
 		private readonly QueryModel _model;
 

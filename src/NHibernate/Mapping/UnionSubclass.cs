@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace NHibernate.Mapping
 {
 	[Serializable]
-	public class UnionSubclass : Subclass, ITableOwner
+	public partial class UnionSubclass : Subclass, ITableOwner
 	{
 		private Table table;
 

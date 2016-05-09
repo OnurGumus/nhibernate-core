@@ -15,7 +15,7 @@ using Remotion.Linq.Parsing.Structure.NodeTypeProviders;
 
 namespace NHibernate.Linq
 {
-	public static class NhRelinqQueryParser
+	public static partial class NhRelinqQueryParser
 	{
 		private static readonly QueryParser QueryParser;
 
@@ -42,7 +42,7 @@ namespace NHibernate.Linq
 		}
 	}
 
-	public class NHibernateNodeTypeProvider : INodeTypeProvider
+	public partial class NHibernateNodeTypeProvider : INodeTypeProvider
 	{
 		private INodeTypeProvider defaultNodeTypeProvider;
 
@@ -98,7 +98,7 @@ namespace NHibernate.Linq
 		}
 	}
 
-	public class AsQueryableExpressionNode : MethodCallExpressionNodeBase
+	public partial class AsQueryableExpressionNode : MethodCallExpressionNodeBase
 	{
 		public AsQueryableExpressionNode(MethodCallExpressionParseInfo parseInfo) : base(parseInfo)
 		{
@@ -115,7 +115,7 @@ namespace NHibernate.Linq
 		}
 	}
 
-	public class CacheableExpressionNode : ResultOperatorExpressionNodeBase
+	public partial class CacheableExpressionNode : ResultOperatorExpressionNodeBase
 	{
 		private readonly MethodCallExpressionParseInfo _parseInfo;
 		private readonly ConstantExpression _data;
@@ -137,7 +137,7 @@ namespace NHibernate.Linq
 		}
 	}
 
-	public class CacheableResultOperator : ResultOperatorBase
+	public partial class CacheableResultOperator : ResultOperatorBase
 	{
 		public MethodCallExpressionParseInfo ParseInfo { get; private set; }
 		public ConstantExpression Data { get; private set; }
@@ -169,7 +169,7 @@ namespace NHibernate.Linq
 	}
 
 
-	internal class TimeoutExpressionNode : ResultOperatorExpressionNodeBase
+	internal partial class TimeoutExpressionNode : ResultOperatorExpressionNodeBase
 	{
 		private readonly MethodCallExpressionParseInfo _parseInfo;
 		private readonly ConstantExpression _timeout;
@@ -192,7 +192,7 @@ namespace NHibernate.Linq
 		}
 	}
 
-	internal class TimeoutResultOperator : ResultOperatorBase
+	internal partial class TimeoutResultOperator : ResultOperatorBase
 	{
 		public MethodCallExpressionParseInfo ParseInfo { get; private set; }
 		public ConstantExpression Timeout { get; private set; }

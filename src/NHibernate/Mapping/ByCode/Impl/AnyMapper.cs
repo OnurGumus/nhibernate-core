@@ -7,7 +7,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class AnyMapper : IAnyMapper
+	public partial class AnyMapper : IAnyMapper
 	{
 		private const string DefaultIdColumnNameWhenNoProperty = "ReferencedId";
 		private const string DefaultMetaColumnNameWhenNoProperty = "ReferencedClass";

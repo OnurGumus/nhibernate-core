@@ -6,7 +6,7 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Cache.Entry
 {
-	public class StructuredCacheEntry : ICacheEntryStructure
+	public partial class StructuredCacheEntry : ICacheEntryStructure
 	{
 		private readonly IEntityPersister persister;
 

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class CustomizersHolder : ICustomizersHolder
+	public partial class CustomizersHolder : ICustomizersHolder
 	{
 		private readonly Dictionary<PropertyPath, List<Action<IAnyMapper>>> anyCustomizers =
 			new Dictionary<PropertyPath, List<Action<IAnyMapper>>>();

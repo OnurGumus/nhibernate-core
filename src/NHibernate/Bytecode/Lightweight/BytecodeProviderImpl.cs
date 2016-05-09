@@ -10,7 +10,7 @@ namespace NHibernate.Bytecode.Lightweight
 	/// Used in <see cref="NHibernate.Persister.Entity.AbstractEntityPersister"/> and
 	/// <see cref="NHibernate.Type.ComponentType"/>
 	/// </remarks>
-	public class BytecodeProviderImpl : AbstractBytecodeProvider
+	public partial class BytecodeProviderImpl : AbstractBytecodeProvider
 	{
 
 		#region IBytecodeProvider Members

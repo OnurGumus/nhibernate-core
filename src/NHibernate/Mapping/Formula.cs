@@ -8,7 +8,7 @@ namespace NHibernate.Mapping
 	/// A formula is a derived column value.
 	/// </summary>
 	[Serializable]
-	public class Formula : ISelectable
+	public partial class Formula : ISelectable
 	{
 		private static int formulaUniqueInteger = 0;
 

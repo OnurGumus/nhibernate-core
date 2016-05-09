@@ -6,7 +6,7 @@ using System.Security.Permissions;
 namespace NHibernate.AdoNet
 {
 	[Serializable]
-	public class TooManyRowsAffectedException : HibernateException
+	public partial class TooManyRowsAffectedException : HibernateException
 	{
 		private readonly int expectedRowCount;
 		private readonly int actualRowCount;

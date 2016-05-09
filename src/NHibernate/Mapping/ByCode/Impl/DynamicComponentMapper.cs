@@ -5,7 +5,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class DynamicComponentMapper : IDynamicComponentMapper
+	public partial class DynamicComponentMapper : IDynamicComponentMapper
 	{
 		private readonly HbmDynamicComponent component;
 		private readonly IAccessorPropertyMapper accessorPropertyMapper;

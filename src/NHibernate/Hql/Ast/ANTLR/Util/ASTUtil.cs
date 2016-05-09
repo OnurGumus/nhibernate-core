@@ -6,7 +6,7 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 namespace NHibernate.Hql.Ast.ANTLR.Util
 {
 	[CLSCompliant(false)]
-	public static class ASTUtil
+	public static partial class ASTUtil
 	{
 		public static void MakeSiblingOfParent(IASTNode parent, IASTNode child)
 		{

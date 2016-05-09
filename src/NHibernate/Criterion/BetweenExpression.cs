@@ -11,7 +11,7 @@ namespace NHibernate.Criterion
 	/// An <see cref="ICriterion"/> that represents a "between" constraint.
 	/// </summary>
 	[Serializable]
-	public class BetweenExpression : AbstractCriterion
+	public partial class BetweenExpression : AbstractCriterion
 	{
 		private readonly object _hi;
 		private readonly object _lo;

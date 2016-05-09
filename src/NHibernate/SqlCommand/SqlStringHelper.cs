@@ -8,7 +8,7 @@ namespace NHibernate.SqlCommand
 	/// <summary>
 	/// Helper methods for SqlString.
 	/// </summary>
-	public static class SqlStringHelper
+	public static partial class SqlStringHelper
 	{
 
 		public static SqlString Join(SqlString separator, IEnumerable objects)

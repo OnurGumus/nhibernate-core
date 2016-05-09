@@ -10,7 +10,7 @@ namespace NHibernate.Type
 	/// <see cref="DbType.String" /> column.
 	/// </summary>
 	[Serializable]
-	public class TypeType : ImmutableType
+	public partial class TypeType : ImmutableType
 	{
 		/// <summary></summary>
 		internal TypeType()

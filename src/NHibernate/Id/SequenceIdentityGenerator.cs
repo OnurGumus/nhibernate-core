@@ -32,7 +32,7 @@ namespace NHibernate.Id
 
 		#region Nested type: SequenceIdentityDelegate
 
-		public class SequenceIdentityDelegate : OutputParamReturningDelegate
+		public partial class SequenceIdentityDelegate : OutputParamReturningDelegate
 		{
 			private readonly string sequenceNextValFragment;
 

@@ -1,6 +1,6 @@
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class NoMemberPropertyMapper : IAccessorPropertyMapper
+	public partial class NoMemberPropertyMapper : IAccessorPropertyMapper
 	{
 		#region IAccessorPropertyMapper Members
 

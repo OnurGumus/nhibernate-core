@@ -8,7 +8,7 @@ namespace NHibernate.Event
 	/// Represents an operation we are about to perform against the database. 
 	/// </summary>
 	[Serializable]
-	public abstract class AbstractPreDatabaseOperationEvent : AbstractEvent, IPreDatabaseOperationEventArgs
+	public abstract partial class AbstractPreDatabaseOperationEvent : AbstractEvent, IPreDatabaseOperationEventArgs
 	{
 		/// <summary> Constructs an event containing the pertinent information. </summary>
 		/// <param name="source">The session from which the event originated. </param>

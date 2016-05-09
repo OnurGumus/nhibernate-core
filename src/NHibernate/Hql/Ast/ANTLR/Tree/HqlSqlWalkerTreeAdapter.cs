@@ -4,7 +4,7 @@ using Antlr.Runtime;
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
-	public class HqlSqlWalkerTreeAdaptor : ASTTreeAdaptor
+	public partial class HqlSqlWalkerTreeAdaptor : ASTTreeAdaptor
 	{
 		private readonly HqlSqlWalker _walker;
 

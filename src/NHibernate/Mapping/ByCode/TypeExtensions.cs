@@ -8,7 +8,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public static class TypeExtensions
+	public static partial class TypeExtensions
 	{
 		private const BindingFlags PropertiesOfClassHierarchy =	BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
 		private const BindingFlags PropertiesOrFieldOfClass = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly;

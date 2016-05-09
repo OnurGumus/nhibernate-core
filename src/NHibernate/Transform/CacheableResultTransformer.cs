@@ -10,7 +10,7 @@ namespace NHibernate.Transform
 	/// </summary>
 	/// @author Gail Badner
 	[Serializable]
-	public class CacheableResultTransformer : IResultTransformer
+	public partial class CacheableResultTransformer : IResultTransformer
 	{
 		// Applies to Java original:
 		// would be nice to be able to have this class extend

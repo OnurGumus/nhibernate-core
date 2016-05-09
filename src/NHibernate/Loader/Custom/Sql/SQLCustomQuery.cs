@@ -13,7 +13,7 @@ namespace NHibernate.Loader.Custom.Sql
 {
 	/// <summary> Implements Hibernate's built-in support for native SQL queries. </summary>
 	///<remarks>This support is built on top of the notion of "custom queries"...</remarks>
-	public class SQLCustomQuery : ICustomQuery
+	public partial class SQLCustomQuery : ICustomQuery
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (SQLCustomQuery));
 

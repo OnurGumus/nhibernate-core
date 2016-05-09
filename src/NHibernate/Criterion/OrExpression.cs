@@ -7,7 +7,7 @@ namespace NHibernate.Criterion
 	/// <c>"or"</c> between them.
 	/// </summary>
 	[Serializable]
-	public class OrExpression : LogicalExpression
+	public partial class OrExpression : LogicalExpression
 	{
 		/// <summary>
 		/// Initialize a new instance of the <see cref="OrExpression" /> class for 

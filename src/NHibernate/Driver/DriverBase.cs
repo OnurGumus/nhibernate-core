@@ -13,7 +13,7 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// Base class for the implementation of IDriver
 	/// </summary>
-	public abstract class DriverBase : IDriver, ISqlParameterFormatter
+	public abstract partial class DriverBase : IDriver, ISqlParameterFormatter
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DriverBase));
 

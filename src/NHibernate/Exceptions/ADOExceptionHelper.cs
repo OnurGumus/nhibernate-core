@@ -8,7 +8,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Exceptions
 {
-	public static class ADOExceptionHelper
+	public static partial class ADOExceptionHelper
 	{
 		public const string SQLNotAvailable = "SQL not available";
 

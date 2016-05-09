@@ -5,7 +5,7 @@ using NHibernate.Driver;
 
 namespace NHibernate.Dialect
 {
-	public class MsSql2008Dialect : MsSql2005Dialect
+	public partial class MsSql2008Dialect : MsSql2005Dialect
 	{
 		protected override void RegisterDateTimeTypeMappings()
 		{

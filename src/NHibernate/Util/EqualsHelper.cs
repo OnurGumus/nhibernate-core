@@ -1,6 +1,6 @@
 namespace NHibernate.Util
 {
-	public static class EqualsHelper
+	public static partial class EqualsHelper
 	{
 		public new static bool Equals(object x, object y)
 		{

@@ -1,6 +1,6 @@
 namespace NHibernate.Properties
 {
-	public class PascalCaseMStrategy : IFieldNamingStrategy
+	public partial class PascalCaseMStrategy : IFieldNamingStrategy
 	{
 		#region IFieldNamingStrategy Members
 

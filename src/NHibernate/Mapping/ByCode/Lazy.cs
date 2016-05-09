@@ -2,7 +2,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public abstract class LazyRelation
+	public abstract partial class LazyRelation
 	{
 		public static LazyRelation Proxy = new LazyProxy();
 		public static LazyRelation NoProxy = new LazyNoProxy();

@@ -8,7 +8,7 @@ namespace NHibernate.SqlCommand
 	/// <example>
 	/// <code>decode(pkvalue, key1, 1, key2, 2, ..., 0)</code>
 	/// </example>
-	public class DecodeCaseFragment : CaseFragment
+	public partial class DecodeCaseFragment : CaseFragment
 	{
 		public DecodeCaseFragment(Dialect.Dialect dialect) : base(dialect) {}
 

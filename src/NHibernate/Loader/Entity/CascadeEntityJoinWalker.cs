@@ -6,7 +6,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Loader.Entity
 {
-	public class CascadeEntityJoinWalker : AbstractEntityJoinWalker
+	public partial class CascadeEntityJoinWalker : AbstractEntityJoinWalker
 	{
 		private readonly CascadingAction cascadeAction;
 

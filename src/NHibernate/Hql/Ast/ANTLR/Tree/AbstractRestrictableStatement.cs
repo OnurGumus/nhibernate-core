@@ -6,7 +6,7 @@ using NHibernate.Hql.Ast.ANTLR.Util;
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
-	public abstract class AbstractRestrictableStatement : AbstractStatement, IRestrictableStatement
+	public abstract partial class AbstractRestrictableStatement : AbstractStatement, IRestrictableStatement
 	{
 		private FromClause _fromClause;
 		private IASTNode _whereClause;

@@ -4,7 +4,7 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
-    public static class CrossJoinDictionaryArrays
+    public static partial class CrossJoinDictionaryArrays
     {
         public static IList<Dictionary<IASTNode, IASTNode>> PerformCrossJoin(IEnumerable<KeyValuePair<IASTNode, IASTNode[]>> input)
         {

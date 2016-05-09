@@ -19,7 +19,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 	/// <summary>
 	/// Configuration parsed values for a class-cache XML node.
 	/// </summary>
-	public class ClassCacheConfiguration
+	public partial class ClassCacheConfiguration
 	{
 		internal ClassCacheConfiguration(XPathNavigator classCacheElement)
 		{

@@ -7,7 +7,7 @@ namespace NHibernate.AdoNet
 {
 	using Action = System.Action;
 
-	public class MySqlClientSqlCommandSet : IDisposable
+	public partial class MySqlClientSqlCommandSet : IDisposable
 	{
 		private static readonly System.Type adapterType;
 		private readonly object instance;

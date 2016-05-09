@@ -3,7 +3,7 @@ using NHibernate.Transform;
 
 namespace NHibernate.Hql
 {
-	public sealed class HolderInstantiator
+	public sealed partial class HolderInstantiator
 	{
 		public static readonly HolderInstantiator NoopInstantiator = new HolderInstantiator(null, null);
 

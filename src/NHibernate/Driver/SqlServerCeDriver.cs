@@ -11,7 +11,7 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// A NHibernate driver for Microsoft SQL Server CE data provider
 	/// </summary>
-	public class SqlServerCeDriver : ReflectionBasedDriver
+	public partial class SqlServerCeDriver : ReflectionBasedDriver
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SqlServerCeDriver"/> class.

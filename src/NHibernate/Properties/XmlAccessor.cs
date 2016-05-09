@@ -12,7 +12,7 @@ namespace NHibernate.Properties
 	/// or XmlAttribute. 
 	/// </summary>
 	[Serializable]
-	public class XmlAccessor : IPropertyAccessor
+	public partial class XmlAccessor : IPropertyAccessor
 	{
 		private readonly ISessionFactoryImplementor factory;
 		private readonly string nodeName;
@@ -86,7 +86,7 @@ namespace NHibernate.Properties
 
 		/// <summary> For nodes like <tt>"@bar"</tt></summary>
 		[Serializable]
-		public class AttributeGetter : XmlGetter
+		public partial class AttributeGetter : XmlGetter
 		{
 			private readonly string attributeName;
 
@@ -110,7 +110,7 @@ namespace NHibernate.Properties
 
 		/// <summary> For nodes like <tt>"@bar"</tt></summary>
 		[Serializable]
-		public class AttributeSetter : XmlSetter
+		public partial class AttributeSetter : XmlSetter
 		{
 			private readonly string attributeName;
 
@@ -148,7 +148,7 @@ namespace NHibernate.Properties
 
 		/// <summary> For nodes like <tt>"foo/@bar"</tt></summary>
 		[Serializable]
-		public class ElementAttributeGetter : XmlGetter
+		public partial class ElementAttributeGetter : XmlGetter
 		{
 			private readonly string attributeName;
 			private readonly string elementName;
@@ -191,7 +191,7 @@ namespace NHibernate.Properties
 
 		/// <summary> For nodes like <tt>"foo/@bar"</tt></summary>
 		[Serializable]
-		public class ElementAttributeSetter : XmlSetter
+		public partial class ElementAttributeSetter : XmlSetter
 		{
 			private readonly string attributeName;
 			private readonly string elementName;
@@ -243,7 +243,7 @@ namespace NHibernate.Properties
 
 		/// <summary> For nodes like <tt>"foo"</tt></summary>
 		[Serializable]
-		public class ElementGetter : XmlGetter
+		public partial class ElementGetter : XmlGetter
 		{
 			private readonly string elementName;
 
@@ -267,7 +267,7 @@ namespace NHibernate.Properties
 
 		/// <summary> For nodes like <tt>"foo"</tt></summary>
 		[Serializable]
-		public class ElementSetter : XmlSetter
+		public partial class ElementSetter : XmlSetter
 		{
 			private readonly string elementName;
 
@@ -302,7 +302,7 @@ namespace NHibernate.Properties
 
 		/// <summary> For nodes like <tt>"."</tt></summary>
 		[Serializable]
-		public class TextGetter : XmlGetter
+		public partial class TextGetter : XmlGetter
 		{
 			public TextGetter(IType propertyType, ISessionFactoryImplementor factory) : base(propertyType, factory) {}
 
@@ -319,7 +319,7 @@ namespace NHibernate.Properties
 
 		/// <summary> For nodes like <tt>"."</tt></summary>
 		[Serializable]
-		public class TextSetter : XmlSetter
+		public partial class TextSetter : XmlSetter
 		{
 			public TextSetter(IType propertyType) : base(propertyType) {}
 
@@ -347,7 +347,7 @@ namespace NHibernate.Properties
 
 		/// <summary> Defines the strategy for getting property values out of a dom4j Node.</summary>
 		[Serializable]
-		public abstract class XmlGetter : IGetter
+		public abstract partial class XmlGetter : IGetter
 		{
 			protected ISessionFactoryImplementor factory;
 			protected IType propertyType;
@@ -393,7 +393,7 @@ namespace NHibernate.Properties
 		#region Nested type: XmlSetter
 
 		[Serializable]
-		public abstract class XmlSetter : ISetter
+		public abstract partial class XmlSetter : ISetter
 		{
 			protected internal IType propertyType;
 

@@ -7,7 +7,7 @@ namespace NHibernate.Engine
 	/// records to return from the IDataReader.
 	/// </summary>
 	[Serializable]
-	public sealed class RowSelection
+	public sealed partial class RowSelection
 	{
 		/// <summary>
 		/// Indicates that the no value has been set on the Property.

@@ -10,9 +10,9 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion.Lambda
 {
 
-	public class LambdaRestrictionBuilder
+	public partial class LambdaRestrictionBuilder
 	{
-		public class LambdaBetweenBuilder
+		public partial class LambdaBetweenBuilder
 		{
 			private ExpressionProcessor.ProjectionInfo projection;
 			private object lo;

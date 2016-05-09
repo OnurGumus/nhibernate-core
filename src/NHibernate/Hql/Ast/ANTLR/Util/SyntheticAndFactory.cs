@@ -16,7 +16,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class SyntheticAndFactory
+	public partial class SyntheticAndFactory
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SyntheticAndFactory));
 		private readonly HqlSqlWalker _hqlSqlWalker;

@@ -6,7 +6,7 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class JoinedSubclassMapper : AbstractPropertyContainerMapper, IJoinedSubclassMapper
+	public partial class JoinedSubclassMapper : AbstractPropertyContainerMapper, IJoinedSubclassMapper
 	{
 		private readonly HbmJoinedSubclass classMapping = new HbmJoinedSubclass();
 		private readonly KeyMapper keyMapper;

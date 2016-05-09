@@ -12,7 +12,7 @@ namespace NHibernate.Context
 	/// Not recommended for .NET 2.0 web applications.
 	/// </summary>
 	[Serializable]
-	public class CallSessionContext : MapBasedSessionContext
+	public partial class CallSessionContext : MapBasedSessionContext
 	{
 		private const string SessionFactoryMapKey = "NHibernate.Context.CallSessionContext.SessionFactoryMapKey";
 

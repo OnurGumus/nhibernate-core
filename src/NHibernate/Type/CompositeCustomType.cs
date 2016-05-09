@@ -13,7 +13,7 @@ using System.Collections.Generic;
 namespace NHibernate.Type
 {
 	[Serializable]
-	public class CompositeCustomType : AbstractType, IAbstractComponentType
+	public partial class CompositeCustomType : AbstractType, IAbstractComponentType
 	{
 		private readonly ICompositeUserType userType;
 		private readonly string name;

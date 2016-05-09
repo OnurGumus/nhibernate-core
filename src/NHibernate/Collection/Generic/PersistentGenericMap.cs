@@ -20,7 +20,7 @@ namespace NHibernate.Collection.Generic
 	/// <typeparam name="TValue">The type of the elements in the IDictionary.</typeparam>
 	[Serializable]
 	[DebuggerTypeProxy(typeof(DictionaryProxy<,>))]
-	public class PersistentGenericMap<TKey, TValue> : AbstractPersistentCollection, IDictionary<TKey, TValue>, ICollection
+	public partial class PersistentGenericMap<TKey, TValue> : AbstractPersistentCollection, IDictionary<TKey, TValue>, ICollection
 	{
 		protected IDictionary<TKey, TValue> WrappedMap;
 
@@ -481,7 +481,7 @@ namespace NHibernate.Collection.Generic
 
 		#region DelayedOperations
 
-		protected sealed class ClearDelayedOperation : IDelayedOperation
+		protected sealed partial class ClearDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericMap<TKey, TValue> _enclosingInstance;
 
@@ -506,7 +506,7 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		protected sealed class PutDelayedOperation : IDelayedOperation
+		protected sealed partial class PutDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericMap<TKey, TValue> _enclosingInstance;
 			private readonly TKey _index;
@@ -537,7 +537,7 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		protected sealed class RemoveDelayedOperation : IDelayedOperation
+		protected sealed partial class RemoveDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericMap<TKey, TValue> _enclosingInstance;
 			private readonly TKey _index;

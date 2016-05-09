@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public static class MappingExtensions
+	public static partial class MappingExtensions
 	{
 		public static EntityMode ToEntityMode(this HbmTuplizerEntitymode source)
 		{

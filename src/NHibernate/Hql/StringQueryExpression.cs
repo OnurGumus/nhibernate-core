@@ -6,7 +6,7 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 
 namespace NHibernate.Hql
 {
-	public class StringQueryExpression : IQueryExpression
+	public partial class StringQueryExpression : IQueryExpression
 	{
 		private readonly string _queryString;
 
@@ -29,7 +29,7 @@ namespace NHibernate.Hql
 		public IList<NamedParameterDescriptor> ParameterDescriptors { get; private set; }
 	}
 
-	internal static class StringQueryExpressionExtensions
+	internal static partial class StringQueryExpressionExtensions
 	{
 		public static StringQueryExpression ToQueryExpression(this string queryString)
 		{

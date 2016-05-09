@@ -4,7 +4,7 @@ using NHibernate.Linq;
 
 namespace NHibernate.Cfg.Loquacious
 {
-	internal class FluentSessionFactoryConfiguration : IFluentSessionFactoryConfiguration
+	internal partial class FluentSessionFactoryConfiguration : IFluentSessionFactoryConfiguration
 	{
 		private readonly Configuration configuration;
 
@@ -74,7 +74,7 @@ namespace NHibernate.Cfg.Loquacious
 		#endregion
 	}
 
-	internal class CollectionFactoryConfiguration : ICollectionFactoryConfiguration
+	internal partial class CollectionFactoryConfiguration : ICollectionFactoryConfiguration
 	{
 		private readonly FluentSessionFactoryConfiguration fc;
 

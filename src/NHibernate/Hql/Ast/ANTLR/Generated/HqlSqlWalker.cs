@@ -12134,7 +12134,7 @@ public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 
 
 	#region Follow sets
-	private static class Follow
+	private static partial class Follow
 	{
 		public static readonly BitSet _selectStatement_in_statement202 = new BitSet(new ulong[]{0x2UL});
 		public static readonly BitSet _updateStatement_in_statement206 = new BitSet(new ulong[]{0x2UL});

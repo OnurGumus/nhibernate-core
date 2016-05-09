@@ -11,7 +11,7 @@ namespace NHibernate.Loader.Collection
 	/// <summary>
 	/// Walker for collections of values and many-to-many associations
 	/// </summary>
-	public class BasicCollectionJoinWalker : CollectionJoinWalker
+	public partial class BasicCollectionJoinWalker : CollectionJoinWalker
 	{
 		private readonly IQueryableCollection collectionPersister;
 

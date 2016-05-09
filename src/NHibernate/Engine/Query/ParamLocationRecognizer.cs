@@ -6,7 +6,7 @@ namespace NHibernate.Engine.Query
 	/// Implements a parameter parser recognizer specifically for the purpose
 	/// of journaling parameter locations. 
 	/// </summary>
-	public class ParamLocationRecognizer : ParameterParser.IRecognizer
+	public partial class ParamLocationRecognizer : ParameterParser.IRecognizer
 	{
 		private readonly Dictionary<string, NamedParameterDescription> namedParameterDescriptions =
 			new Dictionary<string, NamedParameterDescription>();
@@ -92,7 +92,7 @@ namespace NHibernate.Engine.Query
 		}
 		#endregion
 
-		public class NamedParameterDescription
+		public partial class NamedParameterDescription
 		{
 			private readonly bool jpaStyle;
 			private readonly List<int> positions = new List<int>();

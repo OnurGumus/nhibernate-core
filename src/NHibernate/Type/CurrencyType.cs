@@ -4,7 +4,7 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	[Serializable]
-	public class CurrencyType : DecimalType
+	public partial class CurrencyType : DecimalType
 	{
 		internal CurrencyType() : this(SqlTypeFactory.Currency) { }
 		internal CurrencyType(SqlType sqlType) : base(sqlType) { }

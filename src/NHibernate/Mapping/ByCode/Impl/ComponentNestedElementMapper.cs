@@ -5,7 +5,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class ComponentNestedElementMapper : IComponentElementMapper
+	public partial class ComponentNestedElementMapper : IComponentElementMapper
 	{
 		private readonly IAccessorPropertyMapper _accessorPropertyMapper;
 		private readonly HbmNestedCompositeElement _component;

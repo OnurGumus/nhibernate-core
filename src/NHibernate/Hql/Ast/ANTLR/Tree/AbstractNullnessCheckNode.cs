@@ -14,7 +14,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public abstract class AbstractNullnessCheckNode : UnaryLogicOperatorNode 
+	public abstract partial class AbstractNullnessCheckNode : UnaryLogicOperatorNode 
 	{
 		protected AbstractNullnessCheckNode(IToken token) : base(token)
 		{

@@ -10,7 +10,7 @@ namespace NHibernate.Mapping
 	/// element columns).
 	/// </summary>
 	[Serializable]
-	public class Set : Collection
+	public partial class Set : Collection
 	{
 		public Set(PersistentClass owner) : base(owner)
 		{

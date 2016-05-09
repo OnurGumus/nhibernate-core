@@ -13,7 +13,7 @@ namespace NHibernate
 	/// in the scope of a single <see cref="ISession"/>.
 	/// </summary>
 	[Serializable]
-	public class NonUniqueObjectException : HibernateException
+	public partial class NonUniqueObjectException : HibernateException
 	{
 		private readonly object identifier;
 		private readonly string entityName;

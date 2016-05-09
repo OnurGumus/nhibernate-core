@@ -4,7 +4,7 @@ namespace NHibernate.Properties
 	/// Implementation of <see cref="IFieldNamingStrategy"/> for fields that are prefixed with
 	/// an underscore and the PropertyName is changed to lower case.
 	/// </summary>
-	public class LowerCaseUnderscoreStrategy : IFieldNamingStrategy
+	public partial class LowerCaseUnderscoreStrategy : IFieldNamingStrategy
 	{
 		#region IFieldNamingStrategy Members
 

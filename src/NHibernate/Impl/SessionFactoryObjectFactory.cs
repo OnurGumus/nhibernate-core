@@ -18,7 +18,7 @@ namespace NHibernate.Impl
 	/// be in this object.
 	/// </para>
 	/// </remarks>
-	public static class SessionFactoryObjectFactory
+	public static partial class SessionFactoryObjectFactory
 	{
 		private static readonly IInternalLogger log;
 

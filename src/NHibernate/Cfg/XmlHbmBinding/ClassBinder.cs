@@ -9,7 +9,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public abstract class ClassBinder : Binder
+	public abstract partial class ClassBinder : Binder
 	{
 		protected readonly Dialect.Dialect dialect;
 

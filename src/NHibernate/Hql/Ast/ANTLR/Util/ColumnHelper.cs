@@ -4,7 +4,7 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 namespace NHibernate.Hql.Ast.ANTLR.Util
 {
 	[CLSCompliant(false)]
-	public class ColumnHelper
+	public partial class ColumnHelper
 	{
 		public static void GenerateSingleScalarColumn(IASTFactory factory, IASTNode node, int i)
 		{

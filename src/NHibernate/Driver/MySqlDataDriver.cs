@@ -16,7 +16,7 @@ namespace NHibernate.Driver
 	/// for any updates and/or documentation regarding MySQL.
 	/// </para>
 	/// </remarks>
-	public class MySqlDataDriver : ReflectionBasedDriver
+	public partial class MySqlDataDriver : ReflectionBasedDriver
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MySqlDataDriver"/> class.

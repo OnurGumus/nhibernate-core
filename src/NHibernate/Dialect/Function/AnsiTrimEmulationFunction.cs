@@ -18,7 +18,7 @@ namespace NHibernate.Dialect.Function
 	/// functionality.
 	/// </summary>
 	[Serializable]
-	public class AnsiTrimEmulationFunction : ISQLFunction, IFunctionGrammar
+	public partial class AnsiTrimEmulationFunction : ISQLFunction, IFunctionGrammar
 	{
 		private static readonly ISQLFunction LeadingSpaceTrim = new SQLFunctionTemplate(NHibernateUtil.String, "ltrim( ?1 )");
 		private static readonly ISQLFunction TrailingSpaceTrim = new SQLFunctionTemplate(NHibernateUtil.String, "rtrim( ?1 )");

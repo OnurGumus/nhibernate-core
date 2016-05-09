@@ -7,7 +7,7 @@ namespace NHibernate.Properties
 {
 	/// <summary> Used to declare properties not represented at the pojo level </summary>
 	[Serializable]
-	public class NoopAccessor : IPropertyAccessor
+	public partial class NoopAccessor : IPropertyAccessor
 	{
 		#region IPropertyAccessor Members
 

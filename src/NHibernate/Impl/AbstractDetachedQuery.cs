@@ -20,7 +20,7 @@ namespace NHibernate.Impl
 	/// the value of the parameter setter override the value read from the POCO.
 	/// </remarks>
 	[Serializable]
-	public abstract class AbstractDetachedQuery : IDetachedQuery, IDetachedQueryImplementor
+	public abstract partial class AbstractDetachedQuery : IDetachedQuery, IDetachedQueryImplementor
 	{
 		// Fields are protected for test scope
 		// All information are hold local to have more probability to make AbstractDetachedQuery serializable without

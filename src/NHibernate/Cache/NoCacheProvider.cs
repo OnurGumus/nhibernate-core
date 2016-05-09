@@ -7,7 +7,7 @@ namespace NHibernate.Cache
 	/// <summary>
 	/// A cache provider placeholder used when caching is disabled.
 	/// </summary>
-	public class NoCacheProvider : ICacheProvider
+	public partial class NoCacheProvider : ICacheProvider
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(NoCacheProvider));
 

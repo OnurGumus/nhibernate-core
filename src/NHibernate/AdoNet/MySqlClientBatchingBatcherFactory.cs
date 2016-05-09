@@ -2,7 +2,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.AdoNet
 {
-	public class MySqlClientBatchingBatcherFactory : IBatcherFactory
+	public partial class MySqlClientBatchingBatcherFactory : IBatcherFactory
 	{
 		public virtual IBatcher CreateBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
 		{

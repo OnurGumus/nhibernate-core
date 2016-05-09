@@ -12,7 +12,7 @@ using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.Visitors
 {
-	public class HqlGeneratorExpressionTreeVisitor : IHqlExpressionVisitor
+	public partial class HqlGeneratorExpressionTreeVisitor : IHqlExpressionVisitor
 	{
 		private readonly HqlTreeBuilder _hqlTreeBuilder = new HqlTreeBuilder();
 		private readonly VisitorParameters _parameters;

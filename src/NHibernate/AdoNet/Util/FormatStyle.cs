@@ -1,7 +1,7 @@
 namespace NHibernate.AdoNet.Util
 {
 	/// <summary> Represents the the understood types or styles of formatting.  </summary>
-	public class FormatStyle
+	public partial class FormatStyle
 	{
 		public static readonly FormatStyle Basic = new FormatStyle("basic", new BasicFormatter());
 		public static readonly FormatStyle Ddl = new FormatStyle("ddl", new DdlFormatter());

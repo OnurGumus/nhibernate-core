@@ -15,7 +15,7 @@ namespace NHibernate.Persister.Entity
 	/// Default implementation of the <c>ClassPersister</c> interface. Implements the
 	/// "table-per-class hierarchy" mapping strategy for an entity class.
 	/// </summary>
-	public class SingleTableEntityPersister : AbstractEntityPersister, IQueryable
+	public partial class SingleTableEntityPersister : AbstractEntityPersister, IQueryable
 	{
 		// the class hierarchy structure
 		private readonly int joinSpan;
@@ -617,7 +617,7 @@ namespace NHibernate.Persister.Entity
 			const string abstractClassWithNoSubclassExceptionMessageTemplate = 
 @"The class {0} can't be instatiated and does not have mapped subclasses; 
 possible solutions:
-- don't map the abstract class
+- don't map the abstract partial class
 - map the its subclasses.";
 
 			if (NeedsDiscriminator)

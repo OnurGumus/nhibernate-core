@@ -16,7 +16,7 @@ namespace NHibernate.Criterion
 	/// </summary>
 	/// <seealso cref="ICriteria"/>
 	/// <seealso cref="Projections"/>
-	public class Restrictions
+	public partial class Restrictions
 	{
 		internal Restrictions()
 		{

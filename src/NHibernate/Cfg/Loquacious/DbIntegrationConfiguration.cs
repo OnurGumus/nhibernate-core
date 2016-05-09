@@ -9,7 +9,7 @@ using NHibernate.Transaction;
 
 namespace NHibernate.Cfg.Loquacious
 {
-	internal class DbIntegrationConfiguration : IDbIntegrationConfiguration
+	internal partial class DbIntegrationConfiguration : IDbIntegrationConfiguration
 	{
 		private readonly Configuration configuration;
 
@@ -73,7 +73,7 @@ namespace NHibernate.Cfg.Loquacious
 		#endregion
 	}
 
-	internal class DbSchemaIntegrationConfiguration : IDbSchemaIntegrationConfiguration
+	internal partial class DbSchemaIntegrationConfiguration : IDbSchemaIntegrationConfiguration
 	{
 		private readonly DbIntegrationConfiguration dbc;
 
@@ -111,7 +111,7 @@ namespace NHibernate.Cfg.Loquacious
 		#endregion
 	}
 
-	internal class CommandsConfiguration : ICommandsConfiguration
+	internal partial class CommandsConfiguration : ICommandsConfiguration
 	{
 		private readonly DbIntegrationConfiguration dbc;
 
@@ -167,7 +167,7 @@ namespace NHibernate.Cfg.Loquacious
 		#endregion
 	}
 
-	internal class TransactionConfiguration : ITransactionConfiguration
+	internal partial class TransactionConfiguration : ITransactionConfiguration
 	{
 		private readonly DbIntegrationConfiguration dbc;
 
@@ -187,7 +187,7 @@ namespace NHibernate.Cfg.Loquacious
 		#endregion
 	}
 
-	internal class BatcherConfiguration : IBatcherConfiguration
+	internal partial class BatcherConfiguration : IBatcherConfiguration
 	{
 		private readonly DbIntegrationConfiguration dbc;
 
@@ -225,7 +225,7 @@ namespace NHibernate.Cfg.Loquacious
 		#endregion
 	}
 
-	internal class ConnectionConfiguration : IConnectionConfiguration
+	internal partial class ConnectionConfiguration : IConnectionConfiguration
 	{
 		private readonly DbIntegrationConfiguration dbc;
 

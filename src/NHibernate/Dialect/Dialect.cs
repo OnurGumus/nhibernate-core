@@ -27,7 +27,7 @@ namespace NHibernate.Dialect
 	/// Subclasses should provide a public default constructor that <c>Register()</c>
 	/// a set of type mappings and default Hibernate properties.
 	/// </remarks>
-	public abstract class Dialect
+	public abstract partial class Dialect
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(Dialect));
 
@@ -1226,7 +1226,7 @@ namespace NHibernate.Dialect
 		/// Notice that we aren't differentiating between [ ) and ( ] on purpose, it would complicate
 		/// the code and it is not legal at any rate.
 		/// </summary>
-		public class QuotedAndParenthesisStringTokenizer : IEnumerable<SqlString>
+		public partial class QuotedAndParenthesisStringTokenizer : IEnumerable<SqlString>
 		{
 			private readonly SqlString _original;
 

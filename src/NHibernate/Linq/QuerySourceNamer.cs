@@ -8,7 +8,7 @@ namespace NHibernate.Linq
 	/// Associate unique names to query sources. The HQL AST parser will rename them anyway, but we need to
 	/// ensure uniqueness that is not provided by IQuerySource.ItemName.
 	/// </summary>
-	public class QuerySourceNamer
+	public partial class QuerySourceNamer
 	{
 		private readonly IDictionary<IQuerySource, string> _map = new Dictionary<IQuerySource, string>();
 		private readonly IList<string> _names = new List<string>();

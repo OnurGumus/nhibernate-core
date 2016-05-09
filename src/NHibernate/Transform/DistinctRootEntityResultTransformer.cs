@@ -7,12 +7,12 @@ using System.Runtime.CompilerServices;
 namespace NHibernate.Transform
 {
 	[Serializable]
-	public class DistinctRootEntityResultTransformer : IResultTransformer, ITupleSubsetResultTransformer
+	public partial class DistinctRootEntityResultTransformer : IResultTransformer, ITupleSubsetResultTransformer
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DistinctRootEntityResultTransformer));
 		private static readonly object Hasher = new object();
 
-		internal sealed class Identity
+		internal sealed partial class Identity
 		{
 			internal readonly object entity;
 

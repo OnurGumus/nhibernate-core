@@ -11,7 +11,7 @@ using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
-    public class ProcessAggregateFromSeed : IResultOperatorProcessor<AggregateFromSeedResultOperator>
+    public partial class ProcessAggregateFromSeed : IResultOperatorProcessor<AggregateFromSeedResultOperator>
     {
         public void Process(AggregateFromSeedResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
         {

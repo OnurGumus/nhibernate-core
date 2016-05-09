@@ -7,7 +7,7 @@ namespace NHibernate.Mapping
 	/// A bag permits duplicates, so it has no primary key
 	/// </summary>
 	[Serializable]
-	public class Bag : Collection
+	public partial class Bag : Collection
 	{
 		/// <summary>
 		/// A bag permits duplicates, so it has no primary key.

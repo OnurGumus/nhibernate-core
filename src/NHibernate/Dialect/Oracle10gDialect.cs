@@ -9,7 +9,7 @@ namespace NHibernate.Dialect
 	/// The main difference between this dialect and <see cref="Oracle9iDialect"/>
 	/// is the use of "ANSI join syntax" here...
 	/// </remarks>
-	public class Oracle10gDialect : Oracle9iDialect
+	public partial class Oracle10gDialect : Oracle9iDialect
 	{
 		public override JoinFragment CreateOuterJoinFragment()
 		{

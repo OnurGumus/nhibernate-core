@@ -5,7 +5,7 @@ using System;
 namespace NHibernate.Properties
 {
 	[Serializable]
-	public class MapAccessor : IPropertyAccessor
+	public partial class MapAccessor : IPropertyAccessor
 	{
 		#region IPropertyAccessor Members
 
@@ -26,7 +26,7 @@ namespace NHibernate.Properties
 
 		#endregion
 		[Serializable]
-		public sealed class MapSetter : ISetter
+		public sealed partial class MapSetter : ISetter
 		{
 			private readonly string name;
 
@@ -51,7 +51,7 @@ namespace NHibernate.Properties
 			}
 		}
 		[Serializable]
-		public sealed class MapGetter : IGetter
+		public sealed partial class MapGetter : IGetter
 		{
 			private readonly string name;
 

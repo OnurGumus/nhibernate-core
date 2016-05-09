@@ -3,7 +3,7 @@ using Antlr.Runtime;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
-	public class SemanticException : QueryException
+	public partial class SemanticException : QueryException
 	{
 		public SemanticException(string message) : base(message)
 		{

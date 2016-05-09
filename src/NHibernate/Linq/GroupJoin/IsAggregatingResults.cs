@@ -4,7 +4,7 @@ using Remotion.Linq.Clauses;
 
 namespace NHibernate.Linq.GroupJoin
 {
-	public class IsAggregatingResults
+	public partial class IsAggregatingResults
 	{
 		public List<GroupJoinClause> NonAggregatingClauses  { get; set; }
 		public List<GroupJoinClause> AggregatingClauses  { get; set; }

@@ -7,7 +7,7 @@ namespace NHibernate
 	/// Indicated that a transaction could not be begun, committed, or rolled back
 	/// </summary>
 	[Serializable]
-	public class TransactionException : HibernateException
+	public partial class TransactionException : HibernateException
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TransactionException"/> class.

@@ -4,7 +4,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class FilterMapper : IFilterMapper
+	public partial class FilterMapper : IFilterMapper
 	{
 		private readonly HbmFilter filter;
 

@@ -6,7 +6,7 @@ using NHibernate.Type;
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
-	public class UnaryArithmeticNode : AbstractSelectExpression, IUnaryOperatorNode 
+	public partial class UnaryArithmeticNode : AbstractSelectExpression, IUnaryOperatorNode 
 	{
 		public UnaryArithmeticNode(IToken token) : base(token)
 		{

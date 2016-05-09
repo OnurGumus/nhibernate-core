@@ -32,7 +32,7 @@ namespace NHibernate.Dialect
 	///	</item>
 	/// </list>
 	/// </remarks>
-	public class SybaseASA9Dialect : Dialect
+	public partial class SybaseASA9Dialect : Dialect
 	{
 		public SybaseASA9Dialect()
 		{

@@ -2,7 +2,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public static class ForClass<T>
+	public static partial class ForClass<T>
 	{
 		private const BindingFlags DefaultFlags =
 			BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;

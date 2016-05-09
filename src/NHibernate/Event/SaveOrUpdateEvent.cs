@@ -7,7 +7,7 @@ namespace NHibernate.Event
 	/// An event class for saveOrUpdate()
 	/// </summary>
 	[Serializable]
-	public class SaveOrUpdateEvent : AbstractEvent
+	public partial class SaveOrUpdateEvent : AbstractEvent
 	{
 		private object entity;
 		private string entityName;

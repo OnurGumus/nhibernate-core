@@ -6,7 +6,7 @@ using NHibernate.Properties;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class AccessorPropertyMapper : IAccessorPropertyMapper
+	public partial class AccessorPropertyMapper : IAccessorPropertyMapper
 	{
 		private const BindingFlags FieldBindingFlag =
 			BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;

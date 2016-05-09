@@ -7,7 +7,7 @@ namespace NHibernate.SqlCommand
 	/// <code>case when ... then ... end as ...</code>
 	/// </summary>
 	/// <remarks>This class looks StringHelper.SqlParameter safe...</remarks>
-	public class ANSICaseFragment : CaseFragment
+	public partial class ANSICaseFragment : CaseFragment
 	{
 		public ANSICaseFragment(Dialect.Dialect dialect) : base(dialect) {}
 

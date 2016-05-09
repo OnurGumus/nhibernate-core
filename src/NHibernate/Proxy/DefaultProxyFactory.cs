@@ -5,7 +5,7 @@ using NHibernate.Proxy.DynamicProxy;
 
 namespace NHibernate.Proxy
 {
-	public class DefaultProxyFactory : AbstractProxyFactory
+	public partial class DefaultProxyFactory : AbstractProxyFactory
 	{
 		private readonly ProxyFactory factory = new ProxyFactory();
 		protected static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (DefaultProxyFactory));

@@ -8267,7 +8267,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 
 
 	#region Follow sets
-	private static class Follow
+	private static partial class Follow
 	{
 		public static readonly BitSet _selectStatement_in_statement59 = new BitSet(new ulong[]{0x2UL});
 		public static readonly BitSet _updateStatement_in_statement64 = new BitSet(new ulong[]{0x2UL});

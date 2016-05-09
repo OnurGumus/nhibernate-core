@@ -6,7 +6,7 @@ namespace NHibernate.Exceptions
 	/// Collect data of an <see cref="ADOException"/> to be converted.
 	/// </summary>
 	[Serializable]
-	public class AdoExceptionContextInfo
+	public partial class AdoExceptionContextInfo
 	{
 		// This class was introduced, in NH, to allow less intrusive possible extensions 
 		// of information given to the ISQLExceptionConverter 

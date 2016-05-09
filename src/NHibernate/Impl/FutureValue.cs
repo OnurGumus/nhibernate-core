@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Impl
 {
-    internal class FutureValue<T> : IFutureValue<T>, IDelayedValue
+    internal partial class FutureValue<T> : IFutureValue<T>, IDelayedValue
     {
         public delegate IEnumerable<T> GetResult();
 

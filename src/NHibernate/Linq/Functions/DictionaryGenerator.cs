@@ -10,7 +10,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Linq.Functions
 {
-	public class DictionaryItemGenerator : BaseHqlGeneratorForMethod
+	public partial class DictionaryItemGenerator : BaseHqlGeneratorForMethod
 	{
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
@@ -23,7 +23,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class DictionaryContainsKeyGenerator : BaseHqlGeneratorForMethod
+	public partial class DictionaryContainsKeyGenerator : BaseHqlGeneratorForMethod
 	{
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
@@ -31,7 +31,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public abstract class GenericDictionaryRuntimeMethodHqlGeneratorBase<TGenerator> : IRuntimeMethodHqlGenerator
+	public abstract partial class GenericDictionaryRuntimeMethodHqlGeneratorBase<TGenerator> : IRuntimeMethodHqlGenerator
 		where TGenerator : IHqlGeneratorForMethod, new()
 	{
 		private readonly IHqlGeneratorForMethod generator = new TGenerator();
@@ -49,7 +49,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 	
-	public abstract class DictionaryRuntimeMethodHqlGeneratorBase<TGenerator> : IRuntimeMethodHqlGenerator
+	public abstract partial class DictionaryRuntimeMethodHqlGeneratorBase<TGenerator> : IRuntimeMethodHqlGenerator
 		where TGenerator : IHqlGeneratorForMethod, new()
 	{
 		private readonly IHqlGeneratorForMethod generator = new TGenerator();
@@ -67,7 +67,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class GenericDictionaryContainsKeyRuntimeHqlGenerator : GenericDictionaryRuntimeMethodHqlGeneratorBase<DictionaryContainsKeyGenerator>
+	public partial class GenericDictionaryContainsKeyRuntimeHqlGenerator : GenericDictionaryRuntimeMethodHqlGeneratorBase<DictionaryContainsKeyGenerator>
 	{
 		protected override string MethodName
 		{
@@ -75,7 +75,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 	
-	public class DictionaryContainsKeyRuntimeHqlGenerator : DictionaryRuntimeMethodHqlGeneratorBase<DictionaryContainsKeyGenerator>
+	public partial class DictionaryContainsKeyRuntimeHqlGenerator : DictionaryRuntimeMethodHqlGeneratorBase<DictionaryContainsKeyGenerator>
 	{
 		protected override string MethodName
 		{
@@ -83,7 +83,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class DictionaryItemRuntimeHqlGenerator : DictionaryRuntimeMethodHqlGeneratorBase<DictionaryItemGenerator>
+	public partial class DictionaryItemRuntimeHqlGenerator : DictionaryRuntimeMethodHqlGeneratorBase<DictionaryItemGenerator>
 	{
 		protected override string MethodName
 		{
@@ -91,7 +91,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 	
-	public class GenericDictionaryItemRuntimeHqlGenerator : GenericDictionaryRuntimeMethodHqlGeneratorBase<DictionaryItemGenerator>
+	public partial class GenericDictionaryItemRuntimeHqlGenerator : GenericDictionaryRuntimeMethodHqlGeneratorBase<DictionaryItemGenerator>
 	{
 		protected override string MethodName
 		{

@@ -9,7 +9,7 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Decimal"/> column.
 	/// </summary>
 	[Serializable]
-	public class DecimalType : PrimitiveType, IIdentifierType
+	public partial class DecimalType : PrimitiveType, IIdentifierType
 	{
 		public DecimalType()
 			: this(SqlTypeFactory.Decimal)

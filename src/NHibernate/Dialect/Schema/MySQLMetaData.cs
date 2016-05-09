@@ -4,7 +4,7 @@ using System.Data.Common;
 
 namespace NHibernate.Dialect.Schema
 {
-	public class MySQLDataBaseSchema : AbstractDataBaseSchema
+	public partial class MySQLDataBaseSchema : AbstractDataBaseSchema
 	{
 		public MySQLDataBaseSchema(DbConnection connection) : base(connection)
 		{
@@ -21,7 +21,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public class MySQLTableMetadata : AbstractTableMetadata
+	public partial class MySQLTableMetadata : AbstractTableMetadata
 	{
 		public MySQLTableMetadata(DataRow rs, IDataBaseSchema meta, bool extras) : base(rs, meta, extras)
 		{
@@ -67,7 +67,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public class MySQLColumnMetadata : AbstractColumnMetaData
+	public partial class MySQLColumnMetadata : AbstractColumnMetaData
 	{
 		public MySQLColumnMetadata(DataRow rs)
 			: base(rs)
@@ -82,7 +82,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public class MySQLIndexMetadata : AbstractIndexMetadata
+	public partial class MySQLIndexMetadata : AbstractIndexMetadata
 	{
 		public MySQLIndexMetadata(DataRow rs)
 			: base(rs)
@@ -91,7 +91,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public class MySQLForeignKeyMetadata : AbstractForeignKeyMetadata
+	public partial class MySQLForeignKeyMetadata : AbstractForeignKeyMetadata
 	{
 		public MySQLForeignKeyMetadata(DataRow rs)
 			: base(rs)

@@ -5,7 +5,7 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.ReWriters
 {
-	public class ArrayIndexExpressionFlattener : ExpressionTreeVisitor
+	public partial class ArrayIndexExpressionFlattener : ExpressionTreeVisitor
 	{
 		public static void ReWrite(QueryModel model)
 		{

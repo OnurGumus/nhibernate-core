@@ -13,7 +13,7 @@ namespace NHibernate.SqlTypes
 	/// setting the properties on the <see cref="IDbDataParameter"/> correctly.
 	/// </remarks>
 	[Serializable]
-	public class AnsiStringSqlType : SqlType
+	public partial class AnsiStringSqlType : SqlType
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AnsiStringSqlType"/> class.

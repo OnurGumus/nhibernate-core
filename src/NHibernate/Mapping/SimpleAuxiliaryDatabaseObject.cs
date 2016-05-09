@@ -15,7 +15,7 @@ namespace NHibernate.Mapping
 	/// This is the form created when the mapping documents use &lt;create/&gt; and &lt;drop/&gt;.
 	/// </remarks>
 	[Serializable]
-	public class SimpleAuxiliaryDatabaseObject : AbstractAuxiliaryDatabaseObject
+	public partial class SimpleAuxiliaryDatabaseObject : AbstractAuxiliaryDatabaseObject
 	{
 		private readonly string sqlCreateString;
 		private readonly string sqlDropString;

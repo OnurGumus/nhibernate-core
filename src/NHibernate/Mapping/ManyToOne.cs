@@ -7,7 +7,7 @@ namespace NHibernate.Mapping
 {
 	/// <summary> A many-to-one association mapping</summary>
 	[Serializable]
-	public class ManyToOne : ToOne
+	public partial class ManyToOne : ToOne
 	{
 		/// <summary>
 		/// 

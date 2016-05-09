@@ -7,7 +7,7 @@ namespace NHibernate.Tuple
 {
 	/// <summary> Centralizes handling of <see cref="EntityMode"/> to <see cref="ITuplizer"/> mappings. </summary>
 	[Serializable]
-	public abstract class EntityModeToTuplizerMapping : IDeserializationCallback
+	public abstract partial class EntityModeToTuplizerMapping : IDeserializationCallback
 	{
 
 		// NH-1660

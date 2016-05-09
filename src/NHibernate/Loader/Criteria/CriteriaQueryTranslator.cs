@@ -14,7 +14,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Loader.Criteria
 {
-	public class CriteriaQueryTranslator : ICriteriaQuery
+	public partial class CriteriaQueryTranslator : ICriteriaQuery
 	{
 		public static readonly string RootSqlAlias = CriteriaSpecification.RootAlias + '_';
 		private static readonly IInternalLogger logger = LoggerProvider.LoggerFor(typeof(CriteriaQueryTranslator));

@@ -13,7 +13,7 @@ namespace NHibernate.Tuple
 	/// Author: Steve Ebersole
 	/// </remarks>
 	[Serializable]
-	public class IdentifierProperty : Property
+	public partial class IdentifierProperty : Property
 	{
 		private readonly bool isVirtual;
 		private readonly bool embedded;

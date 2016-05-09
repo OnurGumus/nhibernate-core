@@ -11,7 +11,7 @@ namespace NHibernate.Impl
 	/// <seealso cref="IQuery"/>
 	/// <seealso cref="ISession.GetNamedQuery(string)"/>
 	[Serializable]
-	public class DetachedNamedQuery : AbstractDetachedQuery
+	public partial class DetachedNamedQuery : AbstractDetachedQuery
 	{
 		private readonly string queryName;
 		private bool cacheableWasSet;

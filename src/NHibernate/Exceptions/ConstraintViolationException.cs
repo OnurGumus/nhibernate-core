@@ -8,7 +8,7 @@ namespace NHibernate.Exceptions
 	/// resulted in a violation of a defined integrity constraint. 
 	/// </summary>
 	[Serializable]
-	public class ConstraintViolationException : ADOException
+	public partial class ConstraintViolationException : ADOException
 	{
 		private readonly string constraintName;
 		public ConstraintViolationException(SerializationInfo info, StreamingContext context)

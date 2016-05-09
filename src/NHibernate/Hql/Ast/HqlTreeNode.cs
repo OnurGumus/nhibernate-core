@@ -7,7 +7,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast
 {
-	public class HqlTreeNode
+	public partial class HqlTreeNode
 	{
 		public IASTFactory Factory { get; private set; }
 		private readonly IASTNode _node;
@@ -104,7 +104,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public static class HqlTreeNodeExtensions
+	public static partial class HqlTreeNodeExtensions
 	{
 		public static HqlExpression AsExpression(this HqlTreeNode node)
 		{
@@ -124,7 +124,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public abstract class HqlStatement : HqlTreeNode
+	public abstract partial class HqlStatement : HqlTreeNode
 	{
 		protected HqlStatement(int type, string text, IASTFactory factory, params HqlTreeNode[] children)
 			: base(type, text, factory, children)
@@ -137,7 +137,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public abstract class HqlExpression : HqlTreeNode
+	public abstract partial class HqlExpression : HqlTreeNode
 	{
 		protected HqlExpression(int type, string text, IASTFactory factory, IEnumerable<HqlTreeNode> children)
 			: base(type, text, factory, children)
@@ -150,7 +150,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public abstract class HqlBooleanExpression : HqlExpression
+	public abstract partial class HqlBooleanExpression : HqlExpression
 	{
 		protected HqlBooleanExpression(int type, string text, IASTFactory factory, IEnumerable<HqlTreeNode> children)
 			: base(type, text, factory, children)
@@ -163,7 +163,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlQuery : HqlExpression
+	public partial class HqlQuery : HqlExpression
 	{
 		internal HqlQuery(IASTFactory factory, params HqlStatement[] children)
 			: base(HqlSqlWalker.QUERY, "query", factory, children)
@@ -171,7 +171,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlIdent : HqlExpression
+	public partial class HqlIdent : HqlExpression
 	{
 		internal HqlIdent(IASTFactory factory, string ident)
 			: base(HqlSqlWalker.IDENT, ident, factory)
@@ -228,7 +228,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlRange : HqlStatement
+	public partial class HqlRange : HqlStatement
 	{
 		internal HqlRange(IASTFactory factory, params HqlTreeNode[] children)
 			: base(HqlSqlWalker.RANGE, "range", factory, children)
@@ -236,7 +236,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlFrom : HqlStatement
+	public partial class HqlFrom : HqlStatement
 	{
 		internal HqlFrom(IASTFactory factory, params HqlTreeNode[] children)
 			: base(HqlSqlWalker.FROM, "from", factory, children)
@@ -244,7 +244,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlSelectFrom : HqlStatement
+	public partial class HqlSelectFrom : HqlStatement
 	{
 		internal HqlSelectFrom(IASTFactory factory, params HqlTreeNode[] children)
 			: base(HqlSqlWalker.SELECT_FROM, "select_from", factory, children)
@@ -252,7 +252,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlAlias : HqlExpression
+	public partial class HqlAlias : HqlExpression
 	{
 		public HqlAlias(IASTFactory factory, string @alias)
 			: base(HqlSqlWalker.ALIAS, alias, factory)
@@ -260,7 +260,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlDivide : HqlExpression
+	public partial class HqlDivide : HqlExpression
 	{
 		public HqlDivide(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
 			: base(HqlSqlWalker.DIV, "/", factory, lhs, rhs)
@@ -268,7 +268,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlMultiplty : HqlExpression
+	public partial class HqlMultiplty : HqlExpression
 	{
 		public HqlMultiplty(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
 			: base(HqlSqlWalker.STAR, "*", factory, lhs, rhs)
@@ -276,7 +276,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlSubtract : HqlExpression
+	public partial class HqlSubtract : HqlExpression
 	{
 		public HqlSubtract(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
 			: base(HqlSqlWalker.MINUS, "-", factory, lhs, rhs)
@@ -284,7 +284,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlAdd : HqlExpression
+	public partial class HqlAdd : HqlExpression
 	{
 		public HqlAdd(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
 			: base(HqlSqlWalker.PLUS, "+", factory, lhs, rhs)
@@ -292,7 +292,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlBooleanOr : HqlBooleanExpression
+	public partial class HqlBooleanOr : HqlBooleanExpression
 	{
 		public HqlBooleanOr(IASTFactory factory, HqlBooleanExpression lhs, HqlBooleanExpression rhs)
 			: base(HqlSqlWalker.OR, "or", factory, lhs, rhs)
@@ -300,7 +300,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlBooleanAnd : HqlBooleanExpression
+	public partial class HqlBooleanAnd : HqlBooleanExpression
 	{
 		public HqlBooleanAnd(IASTFactory factory, HqlBooleanExpression lhs, HqlBooleanExpression rhs)
 			: base(HqlSqlWalker.AND, "and", factory, lhs, rhs)
@@ -308,7 +308,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlEquality : HqlBooleanExpression
+	public partial class HqlEquality : HqlBooleanExpression
 	{
 		public HqlEquality(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
 			: base(HqlSqlWalker.EQ, "==", factory, lhs, rhs)
@@ -316,7 +316,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlParameter : HqlExpression
+	public partial class HqlParameter : HqlExpression
 	{
 		public HqlParameter(IASTFactory factory, string name)
 			: base(HqlSqlWalker.COLON, ":", factory)
@@ -325,7 +325,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlDot : HqlExpression
+	public partial class HqlDot : HqlExpression
 	{
 		public HqlDot(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
 			: base(HqlSqlWalker.DOT, ".", factory, lhs, rhs)
@@ -333,14 +333,14 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlBooleanDot : HqlBooleanExpression
+	public partial class HqlBooleanDot : HqlBooleanExpression
 	{
 		public HqlBooleanDot(IASTFactory factory, HqlDot dot) : base(dot.AstNode.Type, dot.AstNode.Text, factory, dot.Children)
 		{
 		}
 	}
 
-	public class HqlWhere : HqlStatement
+	public partial class HqlWhere : HqlStatement
 	{
 		public HqlWhere(IASTFactory factory, HqlExpression expression)
 			: base(HqlSqlWalker.WHERE, "where", factory, expression)
@@ -348,7 +348,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlWith : HqlStatement
+	public partial class HqlWith : HqlStatement
 	{
 		public HqlWith(IASTFactory factory, HqlExpression expression)
 			: base(HqlSqlWalker.WITH, "with", factory, expression)
@@ -356,7 +356,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlHaving : HqlStatement
+	public partial class HqlHaving : HqlStatement
 	{
 		public HqlHaving(IASTFactory factory, HqlExpression expression)
 			: base(HqlSqlWalker.HAVING, "having", factory, expression)
@@ -364,19 +364,19 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlSkip : HqlStatement
+	public partial class HqlSkip : HqlStatement
 	{
 		public HqlSkip(IASTFactory factory, HqlExpression parameter)
 			: base(HqlSqlWalker.SKIP, "skip", factory, parameter) { }
 	}
 
-	public class HqlTake : HqlStatement
+	public partial class HqlTake : HqlStatement
 	{
 		public HqlTake(IASTFactory factory, HqlExpression parameter)
 			: base(HqlSqlWalker.TAKE, "take", factory, parameter) {}
 	}
 
-	public class HqlConstant : HqlExpression
+	public partial class HqlConstant : HqlExpression
 	{
 		public HqlConstant(IASTFactory factory, int type, string value)
 			: base(type, value, factory)
@@ -384,7 +384,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlStringConstant : HqlConstant
+	public partial class HqlStringConstant : HqlConstant
 	{
 		public HqlStringConstant(IASTFactory factory, string s)
 			: base(factory, HqlSqlWalker.QUOTED_String, s)
@@ -392,7 +392,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlDoubleConstant : HqlConstant
+	public partial class HqlDoubleConstant : HqlConstant
 	{
 		public HqlDoubleConstant(IASTFactory factory, string s)
 			: base(factory, HqlSqlWalker.NUM_DOUBLE, s)
@@ -400,7 +400,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlFloatConstant : HqlConstant
+	public partial class HqlFloatConstant : HqlConstant
 	{
 		public HqlFloatConstant(IASTFactory factory, string s)
 			: base(factory, HqlSqlWalker.NUM_FLOAT, s)
@@ -408,7 +408,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlIntegerConstant : HqlConstant
+	public partial class HqlIntegerConstant : HqlConstant
 	{
 		public HqlIntegerConstant(IASTFactory factory, string s)
 			: base(factory, HqlSqlWalker.NUM_INT, s)
@@ -416,7 +416,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlDecimalConstant : HqlConstant
+	public partial class HqlDecimalConstant : HqlConstant
 	{
 		public HqlDecimalConstant(IASTFactory factory, string s)
 			: base(factory, HqlSqlWalker.NUM_DECIMAL, s)
@@ -424,7 +424,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlFalse : HqlConstant
+	public partial class HqlFalse : HqlConstant
 	{
 		public HqlFalse(IASTFactory factory)
 			: base(factory, HqlSqlWalker.FALSE, "false")
@@ -432,7 +432,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlTrue : HqlConstant
+	public partial class HqlTrue : HqlConstant
 	{
 		public HqlTrue(IASTFactory factory)
 			: base(factory, HqlSqlWalker.TRUE, "true")
@@ -440,7 +440,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlNull : HqlConstant
+	public partial class HqlNull : HqlConstant
 	{
 		public HqlNull(IASTFactory factory)
 			: base(factory, HqlSqlWalker.NULL, "null")
@@ -448,7 +448,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlOrderBy : HqlStatement
+	public partial class HqlOrderBy : HqlStatement
 	{
 		public HqlOrderBy(IASTFactory factory)
 			: base(HqlSqlWalker.ORDER, "order by", factory)
@@ -462,7 +462,7 @@ namespace NHibernate.Hql.Ast
 		Descending
 	}
 
-	public class HqlDirectionStatement : HqlStatement
+	public partial class HqlDirectionStatement : HqlStatement
 	{
 		public HqlDirectionStatement(int type, string text, IASTFactory factory)
 			: base(type, text, factory)
@@ -470,7 +470,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlDirectionAscending : HqlDirectionStatement
+	public partial class HqlDirectionAscending : HqlDirectionStatement
 	{
 		public HqlDirectionAscending(IASTFactory factory)
 			: base(HqlSqlWalker.ASCENDING, "asc", factory)
@@ -478,7 +478,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlDirectionDescending : HqlDirectionStatement
+	public partial class HqlDirectionDescending : HqlDirectionStatement
 	{
 		public HqlDirectionDescending(IASTFactory factory)
 			: base(HqlSqlWalker.DESCENDING, "desc", factory)
@@ -486,7 +486,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlSelect : HqlStatement
+	public partial class HqlSelect : HqlStatement
 	{
 		public HqlSelect(IASTFactory factory, params HqlExpression[] expression)
 			: base(HqlSqlWalker.SELECT, "select", factory, expression)
@@ -494,7 +494,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlElse : HqlStatement
+	public partial class HqlElse : HqlStatement
 	{
 		public HqlElse(IASTFactory factory, HqlExpression ifFalse)
 			: base(HqlSqlWalker.ELSE, "else", factory, ifFalse)
@@ -502,7 +502,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlWhen : HqlStatement
+	public partial class HqlWhen : HqlStatement
 	{
 		public HqlWhen(IASTFactory factory, HqlExpression predicate, HqlExpression ifTrue)
 			: base(HqlSqlWalker.WHEN, "when", factory, predicate, ifTrue)
@@ -510,7 +510,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlCase : HqlExpression
+	public partial class HqlCase : HqlExpression
 	{
 		public HqlCase(IASTFactory factory, HqlWhen[] whenClauses, HqlExpression ifFalse)
 			: base(HqlSqlWalker.CASE, "case", factory, whenClauses)
@@ -522,7 +522,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlGreaterThanOrEqual : HqlBooleanExpression
+	public partial class HqlGreaterThanOrEqual : HqlBooleanExpression
 	{
 		public HqlGreaterThanOrEqual(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
 			: base(HqlSqlWalker.GE, "ge", factory, lhs, rhs)
@@ -530,7 +530,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlGreaterThan : HqlBooleanExpression
+	public partial class HqlGreaterThan : HqlBooleanExpression
 	{
 		public HqlGreaterThan(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
 			: base(HqlSqlWalker.GT, "gt", factory, lhs, rhs)
@@ -538,7 +538,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlLessThanOrEqual : HqlBooleanExpression
+	public partial class HqlLessThanOrEqual : HqlBooleanExpression
 	{
 		public HqlLessThanOrEqual(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
 			: base(HqlSqlWalker.LE, "le", factory, lhs, rhs)
@@ -546,7 +546,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlLessThan : HqlBooleanExpression
+	public partial class HqlLessThan : HqlBooleanExpression
 	{
 		public HqlLessThan(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
 			: base(HqlSqlWalker.LT, "lt", factory, lhs, rhs)
@@ -554,7 +554,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlInequality : HqlBooleanExpression
+	public partial class HqlInequality : HqlBooleanExpression
 	{
 		public HqlInequality(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
 			: base(HqlSqlWalker.NE, "ne", factory, lhs, rhs)
@@ -562,7 +562,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlRowStar : HqlStatement
+	public partial class HqlRowStar : HqlStatement
 	{
 		public HqlRowStar(IASTFactory factory)
 			: base(HqlSqlWalker.ROW_STAR, "*", factory)
@@ -570,7 +570,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlCount : HqlExpression
+	public partial class HqlCount : HqlExpression
 	{
 		public HqlCount(IASTFactory factory)
 			: base(HqlSqlWalker.COUNT, "count", factory)
@@ -583,7 +583,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlAs : HqlExpression
+	public partial class HqlAs : HqlExpression
 	{
 		public HqlAs(IASTFactory factory, HqlExpression expression, System.Type type)
 			: base(HqlSqlWalker.AS, "as", factory, expression)
@@ -599,7 +599,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlCast : HqlExpression
+	public partial class HqlCast : HqlExpression
 	{
 		public HqlCast(IASTFactory factory, HqlExpression expression, System.Type type)
 			: base(HqlSqlWalker.METHOD_CALL, "method", factory)
@@ -609,7 +609,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlCoalesce : HqlExpression
+	public partial class HqlCoalesce : HqlExpression
 	{
 		public HqlCoalesce(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
 			: base(HqlSqlWalker.METHOD_CALL, "coalesce", factory)
@@ -619,7 +619,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlDictionaryIndex : HqlExpression
+	public partial class HqlDictionaryIndex : HqlExpression
 	{
 		public HqlDictionaryIndex(IASTFactory factory, HqlExpression dictionary, HqlExpression index)
 			: base(HqlSqlWalker.INDEX_OP, "[", factory, dictionary, index)
@@ -627,7 +627,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlIndices : HqlExpression
+	public partial class HqlIndices : HqlExpression
 	{
 		public HqlIndices(IASTFactory factory, HqlExpression dictionary)
 			: base(HqlSqlWalker.INDICES, "indices", factory, dictionary)
@@ -635,7 +635,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlExpressionList : HqlStatement
+	public partial class HqlExpressionList : HqlStatement
 	{
 		public HqlExpressionList(IASTFactory factory, params HqlExpression[] expressions)
 			: base(HqlSqlWalker.EXPR_LIST, "expr_list", factory, expressions)
@@ -648,7 +648,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlBooleanNot : HqlBooleanExpression
+	public partial class HqlBooleanNot : HqlBooleanExpression
 	{
 		public HqlBooleanNot(IASTFactory factory, HqlBooleanExpression operand)
 			: base(HqlSqlWalker.NOT, "not", factory, operand)
@@ -656,7 +656,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlAverage : HqlExpression
+	public partial class HqlAverage : HqlExpression
 	{
 		public HqlAverage(IASTFactory factory, HqlExpression expression)
 			: base(HqlSqlWalker.AGGREGATE, "avg", factory, expression)
@@ -664,14 +664,14 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlBitwiseNot : HqlExpression
+	public partial class HqlBitwiseNot : HqlExpression
 	{
 		public HqlBitwiseNot(IASTFactory factory) : base(HqlSqlWalker.BNOT, "not", factory)
 		{
 		}
 	}
 
-	public class HqlSum : HqlExpression
+	public partial class HqlSum : HqlExpression
 	{
 		public HqlSum(IASTFactory factory)
 			: base(HqlSqlWalker.AGGREGATE, "sum", factory)
@@ -684,7 +684,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlMax : HqlExpression
+	public partial class HqlMax : HqlExpression
 	{
 		public HqlMax(IASTFactory factory, HqlExpression expression)
 			: base(HqlSqlWalker.AGGREGATE, "max", factory, expression)
@@ -692,7 +692,7 @@ namespace NHibernate.Hql.Ast
 		}
 }
 
-	public class HqlMin : HqlExpression
+	public partial class HqlMin : HqlExpression
 	{
 		public HqlMin(IASTFactory factory, HqlExpression expression)
 			: base(HqlSqlWalker.AGGREGATE, "min", factory, expression)
@@ -700,21 +700,21 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlJoin : HqlStatement
+	public partial class HqlJoin : HqlStatement
 	{
 		public HqlJoin(IASTFactory factory, HqlExpression expression, HqlAlias @alias) : base(HqlSqlWalker.JOIN, "join", factory, expression, @alias)
 		{
 		}
 	}
 
-	public class HqlLeftJoin : HqlTreeNode
+	public partial class HqlLeftJoin : HqlTreeNode
 	{
 		public HqlLeftJoin(IASTFactory factory, HqlExpression expression, HqlAlias @alias) : base(HqlSqlWalker.JOIN, "join", factory, new HqlLeft(factory), expression, @alias)
 		{
 		}
 	}
 
-	public class HqlFetchJoin : HqlTreeNode
+	public partial class HqlFetchJoin : HqlTreeNode
 	{
 		public HqlFetchJoin(IASTFactory factory, HqlExpression expression, HqlAlias @alias)
 			: base(HqlSqlWalker.JOIN, "join", factory, new HqlFetch(factory), expression, @alias)
@@ -722,7 +722,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlLeftFetchJoin : HqlTreeNode
+	public partial class HqlLeftFetchJoin : HqlTreeNode
 	{
 		public HqlLeftFetchJoin(IASTFactory factory, HqlExpression expression, HqlAlias @alias)
 			: base(HqlSqlWalker.JOIN, "join", factory, new HqlLeft(factory), new HqlFetch(factory), expression, @alias)
@@ -730,14 +730,14 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlFetch : HqlTreeNode
+	public partial class HqlFetch : HqlTreeNode
 	{
 		public HqlFetch(IASTFactory factory) : base(HqlSqlWalker.FETCH, "fetch", factory)
 		{
 		}
 	}
 
-	public class HqlClass : HqlExpression
+	public partial class HqlClass : HqlExpression
 	{
 		public HqlClass(IASTFactory factory)
 			: base(HqlSqlWalker.CLASS, "class", factory)
@@ -745,7 +745,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlBitwiseOr : HqlExpression
+	public partial class HqlBitwiseOr : HqlExpression
 	{
 		public HqlBitwiseOr(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
 			: base(HqlSqlWalker.BOR, "bor", factory, lhs, rhs)
@@ -753,7 +753,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlBitwiseAnd : HqlExpression
+	public partial class HqlBitwiseAnd : HqlExpression
 	{
 		public HqlBitwiseAnd(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
 			: base(HqlSqlWalker.BAND, "band", factory, lhs, rhs)
@@ -761,7 +761,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlLeft : HqlTreeNode
+	public partial class HqlLeft : HqlTreeNode
 	{
 		public HqlLeft(IASTFactory factory)
 			: base(HqlSqlWalker.LEFT, "left", factory)
@@ -769,42 +769,42 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlAny : HqlBooleanExpression
+	public partial class HqlAny : HqlBooleanExpression
 	{
 		public HqlAny(IASTFactory factory) : base(HqlSqlWalker.ANY, "any", factory)
 		{
 		}
 	}
 
-	public class HqlExists : HqlBooleanExpression
+	public partial class HqlExists : HqlBooleanExpression
 	{
 		public HqlExists(IASTFactory factory, HqlQuery query) : base(HqlSqlWalker.EXISTS, "exists", factory, query)
 		{
 		}
 	}
 
-	public class HqlElements : HqlBooleanExpression
+	public partial class HqlElements : HqlBooleanExpression
 	{
 		public HqlElements(IASTFactory factory) : base(HqlSqlWalker.ELEMENTS, "elements", factory)
 		{
 		}
 	}
 
-	public class HqlDistinct : HqlStatement
+	public partial class HqlDistinct : HqlStatement
 	{
 		public HqlDistinct(IASTFactory factory) : base(HqlSqlWalker.DISTINCT, "distinct", factory)
 		{
 		}
 	}
 
-	public class HqlGroupBy : HqlStatement
+	public partial class HqlGroupBy : HqlStatement
 	{
 		public HqlGroupBy(IASTFactory factory, params HqlExpression[] expressions) : base(HqlSqlWalker.GROUP, "group by", factory, expressions)
 		{
 		}
 	}
 
-	public class HqlAll : HqlBooleanExpression
+	public partial class HqlAll : HqlBooleanExpression
 	{
 		public HqlAll(IASTFactory factory)
 			: base(HqlSqlWalker.ALL, "all", factory)
@@ -812,7 +812,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlLike : HqlBooleanExpression
+	public partial class HqlLike : HqlBooleanExpression
 	{
 		public HqlLike(IASTFactory factory, HqlExpression lhs, HqlExpression rhs)
 			: base(HqlSqlWalker.LIKE, "like", factory, lhs, rhs)
@@ -820,7 +820,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlConcat : HqlExpression
+	public partial class HqlConcat : HqlExpression
 	{
 		public HqlConcat(IASTFactory factory, params HqlExpression[] args)
 			: base(HqlSqlWalker.METHOD_CALL, "method", factory)
@@ -830,7 +830,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlMethodCall : HqlExpression
+	public partial class HqlMethodCall : HqlExpression
 	{
 		public HqlMethodCall(IASTFactory factory, string methodName, IEnumerable<HqlExpression> parameters)
 			: base(HqlSqlWalker.METHOD_CALL, "method", factory)
@@ -840,7 +840,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlBooleanMethodCall : HqlBooleanExpression
+	public partial class HqlBooleanMethodCall : HqlBooleanExpression
 	{
 		public HqlBooleanMethodCall(IASTFactory factory, string methodName, IEnumerable<HqlExpression> parameters)
 			: base(HqlSqlWalker.METHOD_CALL, "method", factory)
@@ -850,7 +850,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlExpressionSubTreeHolder : HqlExpression
+	public partial class HqlExpressionSubTreeHolder : HqlExpression
 	{
 		public HqlExpressionSubTreeHolder(IASTFactory factory, HqlTreeNode[] children) : base(int.MinValue, "expression sub-tree holder", factory, children)
 		{
@@ -861,7 +861,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlIsNull : HqlBooleanExpression
+	public partial class HqlIsNull : HqlBooleanExpression
 	{
 		public HqlIsNull(IASTFactory factory, HqlExpression lhs)
 			: base(HqlSqlWalker.IS_NULL, "is null", factory, lhs)
@@ -869,21 +869,21 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlIsNotNull : HqlBooleanExpression
+	public partial class HqlIsNotNull : HqlBooleanExpression
 	{
 		public HqlIsNotNull(IASTFactory factory, HqlExpression lhs) : base(HqlSqlWalker.IS_NOT_NULL, "is not null", factory, lhs)
 		{
 		}
 	}
 
-	public class HqlStar : HqlExpression
+	public partial class HqlStar : HqlExpression
 	{
 		public HqlStar(IASTFactory factory) : base(HqlSqlWalker.ROW_STAR, "*", factory)
 		{
 		}
 	}
 
-	public class HqlIn : HqlBooleanExpression
+	public partial class HqlIn : HqlBooleanExpression
 	{
 		public HqlIn(IASTFactory factory, HqlExpression itemExpression, HqlTreeNode source)
 			: base(HqlSqlWalker.IN, "in", factory, itemExpression)
@@ -892,7 +892,7 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
-	public class HqlInList : HqlTreeNode
+	public partial class HqlInList : HqlTreeNode
 	{
 		public HqlInList(IASTFactory factory, HqlTreeNode source)
 			: base(HqlSqlWalker.IN_LIST, "inlist", factory, source)

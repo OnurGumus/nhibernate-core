@@ -7,7 +7,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Represents a 'is null' check.
 	/// </summary>
 	[CLSCompliant(false)]
-	public class IsNullLogicOperatorNode : AbstractNullnessCheckNode
+	public partial class IsNullLogicOperatorNode : AbstractNullnessCheckNode
 	{
 		public IsNullLogicOperatorNode(IToken token) : base(token) {}
 

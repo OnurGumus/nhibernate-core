@@ -2,7 +2,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Persister.Entity
 {
-	public class BasicEntityPropertyMapping : AbstractPropertyMapping
+	public partial class BasicEntityPropertyMapping : AbstractPropertyMapping
 	{
 		private readonly AbstractEntityPersister persister;
 

@@ -8,7 +8,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 	/// Its essential purpose is to keep an internal counter to ensure that the
 	/// generated aliases are unique.
 	/// </summary>
-	public class AliasGenerator
+	public partial class AliasGenerator
 	{
 		private int next;
 

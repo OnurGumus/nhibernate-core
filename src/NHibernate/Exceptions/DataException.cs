@@ -9,7 +9,7 @@ namespace NHibernate.Exceptions
 	/// illegal operation, mismatched types or incorrect cardinality. 
 	/// </summary>
 	[Serializable]
-	public class DataException : ADOException
+	public partial class DataException : ADOException
 	{
 		public DataException(SerializationInfo info, StreamingContext context) : base(info, context) {}
 		public DataException(string message, Exception innerException, string sql) : base(message, innerException, sql) {}

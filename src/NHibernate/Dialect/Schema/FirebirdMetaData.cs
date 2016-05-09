@@ -4,7 +4,7 @@ using System.Data.Common;
 
 namespace NHibernate.Dialect.Schema
 {
-	public class FirebirdDataBaseSchema : AbstractDataBaseSchema
+	public partial class FirebirdDataBaseSchema : AbstractDataBaseSchema
 	{
 		public FirebirdDataBaseSchema(DbConnection connection) : base(connection) { }
 
@@ -19,7 +19,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public class FirebirdTableMetadata : AbstractTableMetadata
+	public partial class FirebirdTableMetadata : AbstractTableMetadata
 	{
 		public FirebirdTableMetadata(DataRow rs, IDataBaseSchema meta, bool extras) : base(rs, meta, extras) { }
 
@@ -63,7 +63,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public class FirebirdColumnMetadata : AbstractColumnMetaData
+	public partial class FirebirdColumnMetadata : AbstractColumnMetaData
 	{
 		public FirebirdColumnMetadata(DataRow rs)
 			: base(rs)
@@ -78,7 +78,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public class FirebirdIndexMetadata : AbstractIndexMetadata
+	public partial class FirebirdIndexMetadata : AbstractIndexMetadata
 	{
 		public FirebirdIndexMetadata(DataRow rs)
 			: base(rs)
@@ -87,7 +87,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public class FirebirdForeignKeyMetadata : AbstractForeignKeyMetadata
+	public partial class FirebirdForeignKeyMetadata : AbstractForeignKeyMetadata
 	{
 		public FirebirdForeignKeyMetadata(DataRow rs)
 			: base(rs)

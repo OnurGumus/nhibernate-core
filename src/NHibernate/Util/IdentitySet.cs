@@ -8,7 +8,7 @@ namespace NHibernate.Util
 	/// <summary> 
 	/// Set implementation that use reference equals instead of Equals() as its comparison mechanism.
 	/// </summary>
-	public class IdentitySet : ISet<object>
+	public partial class IdentitySet : ISet<object>
 	{
 		private IDictionary map;
 		private static readonly object DumpValue = new object();

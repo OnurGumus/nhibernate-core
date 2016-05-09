@@ -9,7 +9,7 @@ namespace NHibernate.Engine
 	/// <summary> A contract for defining the aspects of cascading various persistence actions. </summary>
 	/// <seealso cref="CascadingAction"/>
 	[Serializable]
-	public abstract class CascadeStyle : ISerializable
+	public abstract partial class CascadeStyle : ISerializable
 	{
 		/// <summary> package-protected constructor</summary>
 		internal CascadeStyle() {}
@@ -101,7 +101,7 @@ namespace NHibernate.Engine
 		}
 
 		[Serializable]
-		private sealed class CascadeStyleSingletonReference : IObjectReference, ISerializable
+		private sealed partial class CascadeStyleSingletonReference : IObjectReference, ISerializable
 		{
 			private readonly string _cascadeStyle;
 
@@ -251,7 +251,7 @@ namespace NHibernate.Engine
 		}
 
 		[Serializable]
-		public sealed class MultipleCascadeStyle : CascadeStyle, ISerializable
+		public sealed partial class MultipleCascadeStyle : CascadeStyle, ISerializable
 		{
 			private readonly CascadeStyle[] styles;
 			public MultipleCascadeStyle(CascadeStyle[] styles)

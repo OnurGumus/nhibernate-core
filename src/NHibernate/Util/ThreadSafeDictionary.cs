@@ -6,7 +6,7 @@ using System.Threading;
 namespace NHibernate.Util
 {
 	[Serializable]
-	public class ThreadSafeDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+	public partial class ThreadSafeDictionary<TKey, TValue> : IDictionary<TKey, TValue>
 	{
 		private object _syncRoot;
 

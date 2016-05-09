@@ -11,7 +11,7 @@ namespace NHibernate.Loader.Collection
 	/// <seealso cref="OneToManyJoinWalker" />
 	/// <seealso cref="BasicCollectionJoinWalker" />
 	/// </summary>
-	public abstract class CollectionJoinWalker : JoinWalker
+	public abstract partial class CollectionJoinWalker : JoinWalker
 	{
 		public CollectionJoinWalker(ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 			: base(factory, enabledFilters) {}

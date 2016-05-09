@@ -7,7 +7,7 @@ using Remotion.Linq.Clauses.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
-	public class ProcessNonAggregatingGroupBy : IResultOperatorProcessor<NonAggregatingGroupBy>
+	public partial class ProcessNonAggregatingGroupBy : IResultOperatorProcessor<NonAggregatingGroupBy>
 	{
 		public void Process(NonAggregatingGroupBy resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
 		{

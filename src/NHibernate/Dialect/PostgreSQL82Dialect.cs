@@ -11,7 +11,7 @@ namespace NHibernate.Dialect
 	/// and <c>DROP SEQUENCE IF EXISTS sequencename</c> syntax.
 	/// See <see cref="PostgreSQLDialect" /> for more information.
 	/// </remarks>
-	public class PostgreSQL82Dialect : PostgreSQL81Dialect
+	public partial class PostgreSQL82Dialect : PostgreSQL81Dialect
 	{
 		public PostgreSQL82Dialect()
 		{

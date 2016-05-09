@@ -5,7 +5,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Linq
 {
-	internal static class LinqLogging
+	internal static partial class LinqLogging
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor("NHibernate.Linq");
 

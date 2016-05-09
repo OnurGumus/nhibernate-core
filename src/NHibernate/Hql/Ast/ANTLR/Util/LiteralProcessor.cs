@@ -10,7 +10,7 @@ using NHibernate.Util;
 namespace NHibernate.Hql.Ast.ANTLR.Util
 {
 	[CLSCompliant(false)]
-	public class LiteralProcessor
+	public partial class LiteralProcessor
 	{
 		public const string ErrorCannotFetchWithIterate = "fetch may not be used with scroll() or iterate()";
 		public const string ErrorNamedParameterDoesNotAppear = "Named parameter does not appear in Query: ";

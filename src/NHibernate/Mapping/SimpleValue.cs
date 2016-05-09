@@ -13,7 +13,7 @@ namespace NHibernate.Mapping
 	/// Any value that maps to columns.
 	/// </summary>
 	[Serializable]
-	public class SimpleValue : IKeyValue
+	public partial class SimpleValue : IKeyValue
 	{
 		private readonly List<ISelectable> columns = new List<ISelectable>();
 		private IType type;

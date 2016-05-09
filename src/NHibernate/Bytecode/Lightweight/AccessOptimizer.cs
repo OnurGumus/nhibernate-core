@@ -2,7 +2,7 @@ using NHibernate.Properties;
 
 namespace NHibernate.Bytecode.Lightweight
 {
-	public class AccessOptimizer : IAccessOptimizer
+	public partial class AccessOptimizer : IAccessOptimizer
 	{
 		private readonly GetPropertyValuesInvoker getDelegate;
 		private readonly SetPropertyValuesInvoker setDelegate;

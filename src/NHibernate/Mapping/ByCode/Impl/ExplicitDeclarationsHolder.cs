@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class ExplicitDeclarationsHolder : IModelExplicitDeclarationsHolder
+	public partial class ExplicitDeclarationsHolder : IModelExplicitDeclarationsHolder
 	{
 		private readonly HashSet<MemberInfo> any = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> arrays = new HashSet<MemberInfo>();

@@ -9,7 +9,7 @@ namespace NHibernate.SqlCommand.Parser
 	/// Represents SQL Server SELECT query parser, primarily intended to support generation of 
 	/// limit queries by SQL Server dialects.
 	/// </summary>
-	internal class MsSqlSelectParser
+	internal partial class MsSqlSelectParser
 	{
 		private readonly List<ColumnDefinition> _columns = new List<ColumnDefinition>();
 		private readonly List<OrderDefinition> _orders = new List<OrderDefinition>();
@@ -330,7 +330,7 @@ namespace NHibernate.SqlCommand.Parser
 			return false;
 		}
 
-		public class ColumnDefinition
+		public partial class ColumnDefinition
 		{
 			public string Name { get; private set; }
 			public string Alias { get; private set; }
@@ -356,7 +356,7 @@ namespace NHibernate.SqlCommand.Parser
 			}
 		}
 
-		public class OrderDefinition
+		public partial class OrderDefinition
 		{
 			public ColumnDefinition Column { get; private set; }
 			public bool IsDescending { get; private set; }

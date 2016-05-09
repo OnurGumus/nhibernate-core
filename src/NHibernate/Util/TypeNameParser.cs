@@ -6,12 +6,12 @@ using System.Text.RegularExpressions;
 
 namespace NHibernate.Util
 {
-	public class ParserException : ApplicationException
+	public partial class ParserException : ApplicationException
 	{
 		public ParserException(string message) : base(message) { }
 	}
 
-	public class TypeNameParser
+	public partial class TypeNameParser
 	{
 		private readonly string defaultNamespace;
 		private readonly string defaultAssembly;

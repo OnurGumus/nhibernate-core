@@ -4,7 +4,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class ColumnMapper : IColumnMapper
+	public partial class ColumnMapper : IColumnMapper
 	{
 		private readonly HbmColumn mapping;
 

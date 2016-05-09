@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Impl
 {
-    internal class DelayedEnumerator<T> : IEnumerable<T>, IDelayedValue
+    internal partial class DelayedEnumerator<T> : IEnumerable<T>, IDelayedValue
     {
         public delegate IEnumerable<T> GetResult();
 

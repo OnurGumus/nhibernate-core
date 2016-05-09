@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace NHibernate
 {
 	[Serializable]
-	public class StaleStateException : HibernateException
+	public partial class StaleStateException : HibernateException
 	{
 		public StaleStateException(string message) : base(message)
 		{

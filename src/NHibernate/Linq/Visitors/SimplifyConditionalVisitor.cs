@@ -7,7 +7,7 @@ namespace NHibernate.Linq.Visitors
 	/// <summary>
 	/// Some conditional expressions can be reduced to just their IfTrue or IfFalse part.
 	/// </summary>
-	internal class SimplifyConditionalVisitor :ExpressionTreeVisitor
+	internal partial class SimplifyConditionalVisitor :ExpressionTreeVisitor
 	{
 		protected override Expression VisitConditionalExpression(ConditionalExpression expression)
 		{

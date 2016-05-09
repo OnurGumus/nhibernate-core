@@ -39,7 +39,7 @@ namespace NHibernate
 		IInternalLogger LoggerFor(System.Type type);
 	}
 
-	public class LoggerProvider
+	public partial class LoggerProvider
 	{
 		private const string NhibernateLoggerConfKey = "nhibernate-logger";
 		private readonly ILoggerFactory loggerFactory;
@@ -120,7 +120,7 @@ namespace NHibernate
 		}
 	}
 
-	public class NoLoggingLoggerFactory: ILoggerFactory
+	public partial class NoLoggingLoggerFactory: ILoggerFactory
 	{
 		private static readonly IInternalLogger Nologging = new NoLoggingInternalLogger();
 		public IInternalLogger LoggerFor(string keyName)
@@ -134,7 +134,7 @@ namespace NHibernate
 		}
 	}
 
-	public class NoLoggingInternalLogger: IInternalLogger
+	public partial class NoLoggingInternalLogger: IInternalLogger
 	{
 		public bool IsErrorEnabled
 		{
@@ -218,7 +218,7 @@ namespace NHibernate
 		}
 	}
 
-	public class Log4NetLoggerFactory: ILoggerFactory
+	public partial class Log4NetLoggerFactory: ILoggerFactory
 	{
 		private static readonly System.Type LogManagerType = System.Type.GetType("log4net.LogManager, log4net");
 		private static readonly Func<string, object> GetLoggerByNameDelegate;
@@ -248,7 +248,7 @@ namespace NHibernate
 		}
 	}
 
-	public class Log4NetLogger: IInternalLogger
+	public partial class Log4NetLogger: IInternalLogger
 	{
 		private static readonly System.Type ILogType = System.Type.GetType("log4net.ILog, log4net");
 		private static readonly Func<object, bool> IsErrorEnabledDelegate;

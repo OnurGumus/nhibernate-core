@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public class SplitDefinition
+	public partial class SplitDefinition
 	{
 		public SplitDefinition(System.Type @on, string groupId, MemberInfo member)
 		{

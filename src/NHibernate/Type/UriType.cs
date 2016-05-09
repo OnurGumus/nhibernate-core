@@ -5,7 +5,7 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	[Serializable]
-	public class UriType : ImmutableType, IDiscriminatorType
+	public partial class UriType : ImmutableType, IDiscriminatorType
 	{
 		public UriType()
 			: base(new StringSqlType())

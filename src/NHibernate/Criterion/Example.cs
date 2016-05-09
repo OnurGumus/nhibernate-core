@@ -27,7 +27,7 @@ namespace NHibernate.Criterion
 	/// </remarks>
 	/// <seealso cref="ICriteria"/>
 	[Serializable]
-	public class Example : AbstractCriterion
+	public partial class Example : AbstractCriterion
 	{
 		private readonly object _entity;
 		private readonly HashSet<string> _excludedProperties = new HashSet<string>();

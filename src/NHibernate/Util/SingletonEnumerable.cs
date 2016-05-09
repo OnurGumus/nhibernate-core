@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Util
 {
-	public sealed class SingletonEnumerable<T> : IEnumerable<T>
+	public sealed partial class SingletonEnumerable<T> : IEnumerable<T>
 	{
 		private readonly T value;
 

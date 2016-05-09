@@ -4,7 +4,7 @@ using NHibernate.Properties;
 namespace NHibernate.Mapping
 {
 	[Serializable]
-	public class IndexBackref : Property
+	public partial class IndexBackref : Property
 	{
 		private string collectionRole;
 		private string entityName;

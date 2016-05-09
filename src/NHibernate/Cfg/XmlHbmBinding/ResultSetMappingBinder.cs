@@ -10,7 +10,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public class ResultSetMappingBinder : Binder
+	public partial class ResultSetMappingBinder : Binder
 	{
 		public ResultSetMappingBinder(Mappings mappings)
 			: base(mappings)

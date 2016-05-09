@@ -1,0 +1,40 @@
+using NHibernate.Cfg;
+using NHibernate.Intercept;
+using System.Threading.Tasks;
+
+namespace NHibernate.Proxy
+{
+	/// <summary>
+	/// NHibernateProxyHelper provides convenience methods for working with
+	/// objects that might be instances of Classes or the Proxied version of 
+	/// the Class.
+	/// </summary>
+	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+	public static partial class NHibernateProxyHelper
+	{
+		public static async Task<System.Type> GuessClassAsync(object entity)
+		{
+			if (entity.IsProxy())
+			{
+				var proxy = entity as INHibernateProxy;
+				var li = proxy.HibernateLazyInitializer;
+				if (li.IsUninitialized)
+				{
+					return li.PersistentClass;
+				}
+
+				//NH-3145 : implementation could be a IFieldInterceptorAccessor 
+				entity = await (li.GetImplementationAsync());
+			}
+
+			var fieldInterceptorAccessor = entity as IFieldInterceptorAccessor;
+			if (fieldInterceptorAccessor != null)
+			{
+				var fieldInterceptor = fieldInterceptorAccessor.FieldInterceptor;
+				return fieldInterceptor.MappedClass;
+			}
+
+			return entity.GetType();
+		}
+	}
+}

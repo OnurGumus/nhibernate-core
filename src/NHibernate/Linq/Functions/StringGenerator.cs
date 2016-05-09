@@ -8,7 +8,7 @@ using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Linq.Functions
 {
-	public class LikeGenerator : IHqlGeneratorForMethod, IRuntimeMethodHqlGenerator
+	public partial class LikeGenerator : IHqlGeneratorForMethod, IRuntimeMethodHqlGenerator
 	{
 		public IEnumerable<MethodInfo> SupportedMethods
 		{
@@ -46,7 +46,7 @@ namespace NHibernate.Linq.Functions
 	}
 
 
-	public class LengthGenerator : BaseHqlGeneratorForProperty
+	public partial class LengthGenerator : BaseHqlGeneratorForProperty
 	{
 		public LengthGenerator()
 		{
@@ -59,7 +59,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class StartsWithGenerator : BaseHqlGeneratorForMethod
+	public partial class StartsWithGenerator : BaseHqlGeneratorForMethod
 	{
 		public StartsWithGenerator()
 		{
@@ -76,7 +76,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class EndsWithGenerator : BaseHqlGeneratorForMethod
+	public partial class EndsWithGenerator : BaseHqlGeneratorForMethod
 	{
 		public EndsWithGenerator()
 		{
@@ -93,7 +93,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class ContainsGenerator : BaseHqlGeneratorForMethod
+	public partial class ContainsGenerator : BaseHqlGeneratorForMethod
 	{
 		public ContainsGenerator()
 		{
@@ -111,7 +111,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class ToLowerGenerator : BaseHqlGeneratorForMethod
+	public partial class ToLowerGenerator : BaseHqlGeneratorForMethod
 	{
 		public ToLowerGenerator()
 		{
@@ -128,7 +128,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class ToUpperGenerator : BaseHqlGeneratorForMethod
+	public partial class ToUpperGenerator : BaseHqlGeneratorForMethod
 	{
 		public ToUpperGenerator()
 		{
@@ -145,7 +145,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class SubStringGenerator : BaseHqlGeneratorForMethod
+	public partial class SubStringGenerator : BaseHqlGeneratorForMethod
 	{
 		public SubStringGenerator()
 		{
@@ -169,7 +169,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class IndexOfGenerator : BaseHqlGeneratorForMethod
+	public partial class IndexOfGenerator : BaseHqlGeneratorForMethod
 	{
 		public IndexOfGenerator()
 		{
@@ -197,7 +197,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class ReplaceGenerator : BaseHqlGeneratorForMethod
+	public partial class ReplaceGenerator : BaseHqlGeneratorForMethod
 	{
 		public ReplaceGenerator()
 		{
@@ -217,7 +217,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class TrimGenerator : BaseHqlGeneratorForMethod
+	public partial class TrimGenerator : BaseHqlGeneratorForMethod
 	{
 		public TrimGenerator()
 		{
@@ -257,7 +257,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class ToStringRuntimeMethodHqlGenerator : IRuntimeMethodHqlGenerator
+	public partial class ToStringRuntimeMethodHqlGenerator : IRuntimeMethodHqlGenerator
 	{
 		private readonly ToStringHqlGeneratorForMethod generator = new ToStringHqlGeneratorForMethod();
 
@@ -272,7 +272,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public class ToStringHqlGeneratorForMethod : IHqlGeneratorForMethod
+	public partial class ToStringHqlGeneratorForMethod : IHqlGeneratorForMethod
 	{
 		public IEnumerable<MethodInfo> SupportedMethods
 		{

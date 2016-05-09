@@ -32,7 +32,7 @@ namespace NHibernate.Dialect
 	/// </para>
 	/// </remarks>
 	/// <seealso cref="PostgreSQLDialect" />
-	public class PostgreSQL81Dialect : PostgreSQLDialect
+	public partial class PostgreSQL81Dialect : PostgreSQLDialect
 	{
 		public override string ForUpdateNowaitString
 		{

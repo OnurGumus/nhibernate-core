@@ -9,7 +9,7 @@ using NHibernate.Util;
 namespace NHibernate.Proxy
 {
 	[Serializable]
-	public class DefaultLazyInitializer : BasicLazyInitializer, DynamicProxy.IInterceptor
+	public partial class DefaultLazyInitializer : BasicLazyInitializer, DynamicProxy.IInterceptor
 	{
 		public DefaultLazyInitializer(string entityName, System.Type persistentClass, object id, MethodInfo getIdentifierMethod,
 							   MethodInfo setIdentifierMethod, IAbstractComponentType componentIdType,

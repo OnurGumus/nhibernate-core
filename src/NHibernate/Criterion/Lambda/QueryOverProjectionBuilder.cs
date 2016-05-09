@@ -9,7 +9,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion.Lambda
 {
 
-	public class QueryOverProjectionBuilder<T>
+	public partial class QueryOverProjectionBuilder<T>
 	{
 
 		private ProjectionList projectionList;

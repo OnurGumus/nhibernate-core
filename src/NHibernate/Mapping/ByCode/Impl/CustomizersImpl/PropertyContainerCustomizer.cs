@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public class PropertyContainerCustomizer<TEntity>
+	public partial class PropertyContainerCustomizer<TEntity>
 	{
 		private readonly IModelExplicitDeclarationsHolder explicitDeclarationsHolder;
 

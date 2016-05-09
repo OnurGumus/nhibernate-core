@@ -7,7 +7,7 @@ namespace NHibernate.Hql.Ast.ANTLR
     /// A custom token class for the HQL grammar.
     /// </summary>
 	[CLSCompliant(false)]
-	public class HqlToken : CommonToken
+	public partial class HqlToken : CommonToken
     {
         /// <summary>
         /// The previous token type.

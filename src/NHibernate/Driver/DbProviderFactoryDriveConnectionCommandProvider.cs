@@ -4,7 +4,7 @@ using System.Data.Common;
 
 namespace NHibernate.Driver
 {
-	public class DbProviderFactoryDriveConnectionCommandProvider : IDriveConnectionCommandProvider
+	public partial class DbProviderFactoryDriveConnectionCommandProvider : IDriveConnectionCommandProvider
 	{
 		private readonly DbProviderFactory dbProviderFactory;
 

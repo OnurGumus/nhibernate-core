@@ -8,7 +8,7 @@ using Antlr.Runtime.Tree;
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
-	public class ASTNode : IASTNode, ITree
+	public partial class ASTNode : IASTNode, ITree
 	{
 		private int _startIndex;
 		private int _stopIndex;

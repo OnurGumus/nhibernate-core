@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace NHibernate.Stat
 {
-	public class StatisticsImpl : IStatistics, IStatisticsImplementor
+	public partial class StatisticsImpl : IStatistics, IStatisticsImplementor
 	{
 		private object _syncRoot;
 

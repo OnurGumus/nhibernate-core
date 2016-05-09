@@ -15,7 +15,7 @@ namespace NHibernate.Criterion
 	/// Should Order implement ICriteriaQuery?
 	/// </remarks>
 	[Serializable]
-	public class Order
+	public partial class Order
 	{
 		protected bool ascending;
 		protected string propertyName;

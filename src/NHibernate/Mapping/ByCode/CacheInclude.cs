@@ -2,7 +2,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public abstract class CacheInclude
+	public abstract partial class CacheInclude
 	{
 		public static CacheInclude All = new AllCacheInclude();
 		public static CacheInclude NonLazy = new NonLazyCacheInclude();
@@ -11,7 +11,7 @@ namespace NHibernate.Mapping.ByCode
 
 		#region Nested type: AllCacheInclude
 
-		public class AllCacheInclude : CacheInclude
+		public partial class AllCacheInclude : CacheInclude
 		{
 			internal override HbmCacheInclude ToHbm()
 			{
@@ -23,7 +23,7 @@ namespace NHibernate.Mapping.ByCode
 
 		#region Nested type: NonLazyCacheInclude
 
-		public class NonLazyCacheInclude : CacheInclude
+		public partial class NonLazyCacheInclude : CacheInclude
 		{
 			internal override HbmCacheInclude ToHbm()
 			{

@@ -8,7 +8,7 @@ namespace NHibernate.Cfg
 	/// something screwy in the hibernate.cfg.xml.
 	/// </summary>
 	[Serializable]
-	public class HibernateConfigException : MappingException
+	public partial class HibernateConfigException : MappingException
 	{
 		private const string baseMessage = "An exception occurred during configuration of persistence layer.";
 

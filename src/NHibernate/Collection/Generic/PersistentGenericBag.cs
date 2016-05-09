@@ -22,7 +22,7 @@ namespace NHibernate.Collection.Generic
 	/// <remarks>The underlying collection used is an <see cref="List{T}"/></remarks>
 	[Serializable]
 	[DebuggerTypeProxy(typeof (CollectionProxy<>))]
-	public class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, IList
+	public partial class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, IList
 	{
 		// TODO NH: find a way to writeonce (no duplicated code from PersistentBag)
 
@@ -533,7 +533,7 @@ namespace NHibernate.Collection.Generic
 			return result;
 		}
 
-		private sealed class ClearDelayedOperation : IDelayedOperation
+		private sealed partial class ClearDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericBag<T> _enclosingInstance;
 
@@ -558,7 +558,7 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		private sealed class SimpleAddDelayedOperation : IDelayedOperation
+		private sealed partial class SimpleAddDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericBag<T> _enclosingInstance;
 			private readonly T _value;

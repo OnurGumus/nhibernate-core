@@ -14,7 +14,7 @@ namespace NHibernate.Util
 	/// <summary>
 	/// Helper class for Reflection related code.
 	/// </summary>
-	public static class ReflectHelper
+	public static partial class ReflectHelper
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ReflectHelper));
 
@@ -349,7 +349,7 @@ namespace NHibernate.Util
 		/// <param name="type">The <see cref="System.Type"/> to find the constructor for.</param>
 		/// <returns>
 		/// The <see cref="ConstructorInfo"/> for the no argument constructor, or <see langword="null" /> if the
-		/// <c>type</c> is an abstract class.
+		/// <c>type</c> is an abstract partial class.
 		/// </returns>
 		/// <exception cref="InstantiationException">
 		/// Thrown when there is a problem calling the method GetConstructor on <see cref="System.Type"/>.

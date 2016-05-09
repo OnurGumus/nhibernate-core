@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	/// PersistentEnumType
 	/// </summary>
 	[Serializable]
-	public class PersistentEnumType : AbstractEnumType
+	public partial class PersistentEnumType : AbstractEnumType
 	{
 		#region Converters
 
@@ -26,7 +26,7 @@ namespace NHibernate.Type
 			SqlType SqlType { get; }
 		}
 		[Serializable]
-		private abstract class AbstractEnumConverter<T> : IEnumConverter
+		private abstract partial class AbstractEnumConverter<T> : IEnumConverter
 		{
 			public object ToObject(System.Type enumClass, object code)
 			{
@@ -282,7 +282,7 @@ namespace NHibernate.Type
 	}
 
 	[Serializable]
-	public class EnumType<T> : PersistentEnumType
+	public partial class EnumType<T> : PersistentEnumType
 	{
 		private readonly string typeName;
 

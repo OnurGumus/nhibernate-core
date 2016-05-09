@@ -9,7 +9,7 @@ namespace NHibernate.Mapping
 	/// An Unique Key constraint in the database.
 	/// </summary>
 	[Serializable]
-	public class UniqueKey : Constraint
+	public partial class UniqueKey : Constraint
 	{
 		/// <summary>
 		/// Generates the SQL string to create the Unique Key Constraint in the database.

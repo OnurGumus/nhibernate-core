@@ -12,7 +12,7 @@ namespace NHibernate.Loader.Collection
 	/// Walker for one-to-many associations
 	/// </summary>
 	/// <seealso cref="OneToManyLoader" />
-	public class OneToManyJoinWalker : CollectionJoinWalker
+	public partial class OneToManyJoinWalker : CollectionJoinWalker
 	{
 		private readonly IOuterJoinLoadable elementPersister;
 		private readonly IQueryableCollection oneToManyPersister;

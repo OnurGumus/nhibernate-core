@@ -11,7 +11,7 @@ using NHibernate.Type;
 namespace NHibernate.Criterion
 {
 	[Serializable]
-	public abstract class SubqueryExpression : AbstractCriterion
+	public abstract partial class SubqueryExpression : AbstractCriterion
 	{
 		private readonly CriteriaImpl criteriaImpl;
 		private readonly String quantifier;

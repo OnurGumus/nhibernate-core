@@ -8,7 +8,7 @@ using NHibernate.Mapping.ByCode.Impl.CustomizersImpl;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public class ModelMapper
+	public partial class ModelMapper
 	{
 		private readonly ICustomizersHolder customizerHolder;
 		private readonly IModelExplicitDeclarationsHolder explicitDeclarationsHolder;

@@ -14,7 +14,7 @@ namespace NHibernate.Linq.Clauses
 	/// <see cref="QueryModelVisitor"/>'s <see cref="QueryModelVisitor.VisitAdditionalFromClause"/> will
 	/// then emit the correct HQL join.
 	/// </summary>
-	public class NhJoinClause : AdditionalFromClause
+	public partial class NhJoinClause : AdditionalFromClause
 	{
 		public NhJoinClause(string itemName, System.Type itemType, Expression fromExpression)
 			: this(itemName, itemType, fromExpression, new NhWithClause[0])

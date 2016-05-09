@@ -2,7 +2,7 @@
 
 namespace NHibernate.SqlCommand.Parser
 {
-	internal static class SqlParserUtils
+	internal static partial class SqlParserUtils
 	{
 		public static int ReadDelimitedText(string text, int maxOffset, int offset)
 		{

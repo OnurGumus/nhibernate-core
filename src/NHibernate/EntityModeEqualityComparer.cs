@@ -4,7 +4,7 @@ using System;
 namespace NHibernate
 {
 	[Serializable]
-	public class EntityModeEqualityComparer : IEqualityComparer<EntityMode>
+	public partial class EntityModeEqualityComparer : IEqualityComparer<EntityMode>
 	{
 		public bool Equals(EntityMode x, EntityMode y)
 		{

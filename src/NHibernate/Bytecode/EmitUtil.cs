@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Bytecode
 {
-	public class EmitUtil
+	public partial class EmitUtil
 	{
 		private EmitUtil()
 		{

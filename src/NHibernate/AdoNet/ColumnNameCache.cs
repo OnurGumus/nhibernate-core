@@ -4,7 +4,7 @@ using System.Threading;
 namespace NHibernate.AdoNet
 {
 	/// <summary> Implementation of ColumnNameCache. Thread safe. </summary>
-	public class ColumnNameCache
+	public partial class ColumnNameCache
 	{
 		private readonly ReaderWriterLockSlim _cacheLock = new ReaderWriterLockSlim();
 		private readonly Dictionary<string, int> _columnNameToIndexCache;

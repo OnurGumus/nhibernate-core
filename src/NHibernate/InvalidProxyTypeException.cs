@@ -14,7 +14,7 @@ namespace NHibernate
 	/// but cannot be used as a proxy for itself.
 	/// </summary>
 	[Serializable]
-	public class InvalidProxyTypeException : MappingException
+	public partial class InvalidProxyTypeException : MappingException
 	{
 		public InvalidProxyTypeException(ICollection<string> errors)
 			: base(FormatMessage(errors))

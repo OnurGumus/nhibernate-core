@@ -14,7 +14,7 @@ namespace NHibernate.Criterion
 	/// logical operator.
 	/// </summary>
 	[Serializable]
-	public abstract class Junction : AbstractCriterion
+	public abstract partial class Junction : AbstractCriterion
 	{
 		private readonly IList<ICriterion> criteria = new List<ICriterion>();
 

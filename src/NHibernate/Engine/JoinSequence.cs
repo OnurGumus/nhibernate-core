@@ -9,7 +9,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
-	public class JoinSequence
+	public partial class JoinSequence
 	{
 		private readonly ISessionFactoryImplementor factory;
 		private readonly List<Join> joins = new List<Join>();
@@ -39,7 +39,7 @@ namespace NHibernate.Engine
 			return buf.Append('}').ToString();
 		}
 
-		private sealed class Join
+		private sealed partial class Join
 		{
 			private readonly IAssociationType associationType;
 			private readonly IJoinable joinable;

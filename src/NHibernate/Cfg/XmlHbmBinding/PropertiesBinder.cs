@@ -8,7 +8,7 @@ using Array = System.Array;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public class PropertiesBinder : ClassBinder
+	public partial class PropertiesBinder : ClassBinder
 	{
 		private readonly PersistentClass persistentClass;
 		private readonly Component component;

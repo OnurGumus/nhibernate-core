@@ -6,7 +6,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class OneToOneMapper : IOneToOneMapper
+	public partial class OneToOneMapper : IOneToOneMapper
 	{
 		private readonly IAccessorPropertyMapper _entityPropertyMapper;
 		private readonly MemberInfo _member;
@@ -123,7 +123,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		#endregion
 	}
 
-	public class OneToOneMapper<T> : OneToOneMapper, IOneToOneMapper<T>
+	public partial class OneToOneMapper<T> : OneToOneMapper, IOneToOneMapper<T>
 	{
 		public OneToOneMapper(MemberInfo member, HbmOneToOne oneToOne) 
 			: base(member, oneToOne)

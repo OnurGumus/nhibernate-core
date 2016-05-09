@@ -10,7 +10,7 @@ namespace NHibernate.Id.Insert
 	/// </summary>
 	/// <remarks>
 	/// </remarks>
-	public class ReturningIdentifierInsert : NoCommentsInsert
+	public partial class ReturningIdentifierInsert : NoCommentsInsert
 	{
 		private readonly string identifierColumnName;
 		private readonly string returnParameterName;

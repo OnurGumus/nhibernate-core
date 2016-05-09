@@ -8,7 +8,7 @@ namespace NHibernate.Engine.Query.Sql
 	/// names a fetched role. 
 	/// </summary>
 	[Serializable]
-	public class NativeSQLQueryJoinReturn : NativeSQLQueryNonScalarReturn
+	public partial class NativeSQLQueryJoinReturn : NativeSQLQueryNonScalarReturn
 	{
 		private readonly string ownerAlias;
 		private readonly string ownerProperty;

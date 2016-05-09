@@ -19,7 +19,7 @@ namespace NHibernate.Collection.Generic
 	/// </summary>
 	[Serializable]
 	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
-	public class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>
+	public partial class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>
 	{
 		/// <summary>
 		/// The <see cref="ISet{T}"/> that NHibernate is wrapping.
@@ -524,7 +524,7 @@ namespace NHibernate.Collection.Generic
 
 		#region DelayedOperations
 
-		protected sealed class ClearDelayedOperation : IDelayedOperation
+		protected sealed partial class ClearDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericSet<T> _enclosingInstance;
 
@@ -549,7 +549,7 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		protected sealed class SimpleAddDelayedOperation : IDelayedOperation
+		protected sealed partial class SimpleAddDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericSet<T> _enclosingInstance;
 			private readonly T _value;
@@ -576,7 +576,7 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		protected sealed class SimpleRemoveDelayedOperation : IDelayedOperation
+		protected sealed partial class SimpleRemoveDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericSet<T> _enclosingInstance;
 			private readonly T _value;

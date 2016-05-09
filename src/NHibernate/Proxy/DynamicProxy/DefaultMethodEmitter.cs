@@ -13,7 +13,7 @@ using System.Reflection.Emit;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
-	internal class DefaultMethodEmitter : IMethodBodyEmitter
+	internal partial class DefaultMethodEmitter : IMethodBodyEmitter
 	{
 		private static readonly MethodInfo getInterceptor;
 

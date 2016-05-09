@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public static class Generators
+	public static partial class Generators
 	{
 		static Generators()
 		{
@@ -74,7 +74,7 @@ namespace NHibernate.Mapping.ByCode
 		}
 	}
 
-	public class UUIDStringGeneratorDef : IGeneratorDef
+	public partial class UUIDStringGeneratorDef : IGeneratorDef
 	{
 		#region Implementation of IGeneratorDef
 
@@ -101,7 +101,7 @@ namespace NHibernate.Mapping.ByCode
 		#endregion
 	}
 
-	public class UUIDHexGeneratorDef : IGeneratorDef
+	public partial class UUIDHexGeneratorDef : IGeneratorDef
 	{
 		#region Implementation of IGeneratorDef
 
@@ -150,7 +150,7 @@ namespace NHibernate.Mapping.ByCode
 		#endregion
 	}
 
-	public class TriggerIdentityGeneratorDef : IGeneratorDef
+	public partial class TriggerIdentityGeneratorDef : IGeneratorDef
 	{
 		#region Implementation of IGeneratorDef
 
@@ -177,7 +177,7 @@ namespace NHibernate.Mapping.ByCode
 		#endregion
 	}
 
-	public class TableHiLoGeneratorDef : IGeneratorDef
+	public partial class TableHiLoGeneratorDef : IGeneratorDef
 	{
 		#region Implementation of IGeneratorDef
 
@@ -204,7 +204,7 @@ namespace NHibernate.Mapping.ByCode
 		#endregion
 	}
 
-	public class TableGeneratorDef : IGeneratorDef
+	public partial class TableGeneratorDef : IGeneratorDef
 	{
 		#region Implementation of IGeneratorDef
 
@@ -231,7 +231,7 @@ namespace NHibernate.Mapping.ByCode
 		#endregion
 	}
 
-	public class SequenceIdentityGeneratorDef : IGeneratorDef
+	public partial class SequenceIdentityGeneratorDef : IGeneratorDef
 	{
 		#region Implementation of IGeneratorDef
 
@@ -258,7 +258,7 @@ namespace NHibernate.Mapping.ByCode
 		#endregion
 	}
 
-	public class SequenceHiLoGeneratorDef : IGeneratorDef
+	public partial class SequenceHiLoGeneratorDef : IGeneratorDef
 	{
 		#region Implementation of IGeneratorDef
 
@@ -285,7 +285,7 @@ namespace NHibernate.Mapping.ByCode
 		#endregion
 	}
 
-	public class SelectGeneratorDef : IGeneratorDef
+	public partial class SelectGeneratorDef : IGeneratorDef
 	{
 		#region Implementation of IGeneratorDef
 
@@ -312,7 +312,7 @@ namespace NHibernate.Mapping.ByCode
 		#endregion
 	}
 
-	public class NativeGuidGeneratorDef : IGeneratorDef
+	public partial class NativeGuidGeneratorDef : IGeneratorDef
 	{
 		#region Implementation of IGeneratorDef
 
@@ -339,7 +339,7 @@ namespace NHibernate.Mapping.ByCode
 		#endregion
 	}
 
-	public class IncrementGeneratorDef : IGeneratorDef
+	public partial class IncrementGeneratorDef : IGeneratorDef
 	{
 		#region Implementation of IGeneratorDef
 
@@ -366,7 +366,7 @@ namespace NHibernate.Mapping.ByCode
 		#endregion
 	}
 
-	public class CounterGeneratorDef : IGeneratorDef
+	public partial class CounterGeneratorDef : IGeneratorDef
 	{
 		#region Implementation of IGeneratorDef
 
@@ -393,7 +393,7 @@ namespace NHibernate.Mapping.ByCode
 		#endregion
 	}
 
-	public class AssignedGeneratorDef : IGeneratorDef
+	public partial class AssignedGeneratorDef : IGeneratorDef
 	{
 		#region Implementation of IGeneratorDef
 
@@ -420,7 +420,7 @@ namespace NHibernate.Mapping.ByCode
 		#endregion
 	}
 
-	public class ForeignGeneratorDef : IGeneratorDef
+	public partial class ForeignGeneratorDef : IGeneratorDef
 	{
 		private readonly object param;
 
@@ -458,7 +458,7 @@ namespace NHibernate.Mapping.ByCode
 		#endregion
 	}
 
-	public class NativeGeneratorDef : IGeneratorDef
+	public partial class NativeGeneratorDef : IGeneratorDef
 	{
 		#region Implementation of IGeneratorDef
 
@@ -485,7 +485,7 @@ namespace NHibernate.Mapping.ByCode
 		#endregion
 	}
 
-	public class HighLowGeneratorDef : IGeneratorDef
+	public partial class HighLowGeneratorDef : IGeneratorDef
 	{
 		#region Implementation of IGeneratorDef
 
@@ -511,7 +511,7 @@ namespace NHibernate.Mapping.ByCode
 		#endregion
 	}
 
-	public class GuidGeneratorDef : IGeneratorDef
+	public partial class GuidGeneratorDef : IGeneratorDef
 	{
 		#region Implementation of IGeneratorDef
 
@@ -537,7 +537,7 @@ namespace NHibernate.Mapping.ByCode
 		#endregion
 	}
 
-	public class GuidCombGeneratorDef : IGeneratorDef
+	public partial class GuidCombGeneratorDef : IGeneratorDef
 	{
 		#region Implementation of IGeneratorDef
 
@@ -563,7 +563,7 @@ namespace NHibernate.Mapping.ByCode
 		#endregion
 	}
 
-	public class SequenceGeneratorDef : IGeneratorDef
+	public partial class SequenceGeneratorDef : IGeneratorDef
 	{
 		#region Implementation of IGeneratorDef
 
@@ -589,7 +589,7 @@ namespace NHibernate.Mapping.ByCode
 		#endregion
 	}
 
-	public class IdentityGeneratorDef : IGeneratorDef
+	public partial class IdentityGeneratorDef : IGeneratorDef
 	{
 		#region Implementation of IGeneratorDef
 
@@ -615,7 +615,7 @@ namespace NHibernate.Mapping.ByCode
 		#endregion
 	}
 
-	public class EnhancedSequenceGeneratorDef : IGeneratorDef
+	public partial class EnhancedSequenceGeneratorDef : IGeneratorDef
 	{
 		#region Implementation of IGeneratorDef
 
@@ -641,7 +641,7 @@ namespace NHibernate.Mapping.ByCode
 		#endregion
 	}
 
-	public class EnhancedTableGeneratorDef : IGeneratorDef
+	public partial class EnhancedTableGeneratorDef : IGeneratorDef
 	{
 		#region Implementation of IGeneratorDef
 

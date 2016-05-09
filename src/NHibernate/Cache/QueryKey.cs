@@ -11,7 +11,7 @@ using NHibernate.Util;
 namespace NHibernate.Cache
 {
 	[Serializable]
-	public class QueryKey
+	public partial class QueryKey
 	{
 		private readonly ISessionFactoryImplementor _factory;
 		private readonly SqlString _sqlQueryString;

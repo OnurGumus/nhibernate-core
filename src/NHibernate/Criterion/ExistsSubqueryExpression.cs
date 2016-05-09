@@ -4,7 +4,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion
 {
 	[Serializable]
-	public class ExistsSubqueryExpression : SubqueryExpression
+	public partial class ExistsSubqueryExpression : SubqueryExpression
 	{
 		protected override SqlString ToLeftSqlString(ICriteria criteria, ICriteriaQuery outerQuery)
 		{

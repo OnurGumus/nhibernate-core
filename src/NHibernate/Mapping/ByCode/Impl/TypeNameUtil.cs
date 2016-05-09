@@ -3,7 +3,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public static class TypeNameUtil
+	public static partial class TypeNameUtil
 	{
 		public static string GetNhTypeName(this System.Type type)
 		{

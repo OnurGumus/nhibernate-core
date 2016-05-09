@@ -12,7 +12,7 @@ namespace NHibernate.Properties
 	/// so the value should be written directly to the field.
 	/// </remarks>
 	[Serializable]
-	public class NoSetterAccessor : IPropertyAccessor
+	public partial class NoSetterAccessor : IPropertyAccessor
 	{
 		private readonly IFieldNamingStrategy namingStrategy;
 

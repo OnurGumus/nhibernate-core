@@ -19,7 +19,7 @@ namespace NHibernate.Dialect
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public class IngresDialect : Dialect
+	public partial class IngresDialect : Dialect
 	{
 		public IngresDialect()
 		{

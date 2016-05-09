@@ -2,7 +2,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public class ComposedIdCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IComposedIdMapper<TEntity> where TEntity : class
+	public partial class ComposedIdCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IComposedIdMapper<TEntity> where TEntity : class
 	{
 		public ComposedIdCustomizer(IModelExplicitDeclarationsHolder explicitDeclarationsHolder, ICustomizersHolder customizersHolder)
 			: base(explicitDeclarationsHolder, customizersHolder, null) {}

@@ -5,7 +5,7 @@ namespace NHibernate.Mapping
 {
 	/// <summary> Placeholder for typedef information</summary>
 	[Serializable]
-	public class TypeDef
+	public partial class TypeDef
 	{
 		private readonly string typeClass;
 		private readonly IDictionary<string, string> parameters;

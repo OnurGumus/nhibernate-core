@@ -15,7 +15,7 @@ using System.Runtime.Serialization;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
-	public sealed class ProxyFactory
+	public sealed partial class ProxyFactory
 	{
 		private static readonly ConstructorInfo defaultBaseConstructor = typeof(object).GetConstructor(new System.Type[0]);
 		private static readonly MethodInfo getTypeFromHandle = typeof(System.Type).GetMethod("GetTypeFromHandle");

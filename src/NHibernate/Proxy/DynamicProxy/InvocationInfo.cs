@@ -13,7 +13,7 @@ using System.Text;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
-	public class InvocationInfo
+	public partial class InvocationInfo
 	{
 		private readonly object[] args;
 		private readonly object proxy;

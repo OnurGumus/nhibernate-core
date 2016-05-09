@@ -4,7 +4,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	internal static class FlushModeConverter
+	internal static partial class FlushModeConverter
 	{
 		public static FlushMode GetFlushMode(HbmQuery querySchema)
 		{

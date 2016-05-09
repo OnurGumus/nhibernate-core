@@ -3,7 +3,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Cache.Entry
 {
-	public class StructuredMapCacheEntry : ICacheEntryStructure
+	public partial class StructuredMapCacheEntry : ICacheEntryStructure
 	{
 		public object Structure(object item)
 		{

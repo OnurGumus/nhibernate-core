@@ -4,7 +4,7 @@ using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
-	public class ProcessOfType : IResultOperatorProcessor<OfTypeResultOperator>
+	public partial class ProcessOfType : IResultOperatorProcessor<OfTypeResultOperator>
 	{
 		#region IResultOperatorProcessor<OfTypeResultOperator> Members
 

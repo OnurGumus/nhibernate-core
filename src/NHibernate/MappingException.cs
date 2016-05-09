@@ -8,7 +8,7 @@ namespace NHibernate
 	/// something screwy in the O-R mappings
 	/// </summary>
 	[Serializable]
-	public class MappingException : HibernateException
+	public partial class MappingException : HibernateException
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MappingException"/> class.

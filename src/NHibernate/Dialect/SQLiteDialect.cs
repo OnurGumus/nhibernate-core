@@ -16,7 +16,7 @@ namespace NHibernate.Dialect
 	/// Author: <a href="mailto:ib@stalker.ro"> Ioan Bizau </a>
 	/// </p>
 	/// </remarks>
-	public class SQLiteDialect : Dialect
+	public partial class SQLiteDialect : Dialect
 	{
 		/// <summary>
 		/// 
@@ -307,7 +307,7 @@ namespace NHibernate.Dialect
 		}
 
 		[Serializable]
-		protected class SQLiteCastFunction : CastFunction
+		protected partial class SQLiteCastFunction : CastFunction
 		{
 			protected override bool CastingIsRequired(string sqlType)
 			{

@@ -8,7 +8,7 @@ namespace NHibernate.Cfg
 	/// <summary>
 	/// Summary description for ConfigurationSectionHandler.
 	/// </summary>
-	public class ConfigurationSectionHandler : IConfigurationSectionHandler
+	public partial class ConfigurationSectionHandler : IConfigurationSectionHandler
 	{
 		#region IConfigurationSectionHandler Members
 

@@ -13,7 +13,7 @@ namespace NHibernate.Util
 	/// To print collections of entities or typed values, use
 	/// <see cref="NHibernate.Impl.Printer" />.
 	/// </remarks>
-	public static class CollectionPrinter
+	public static partial class CollectionPrinter
 	{
 		private static void AppendNullOrValue(StringBuilder builder, object value)
 		{

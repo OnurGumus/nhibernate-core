@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace NHibernate.Linq.Functions
 {
-	internal class CompareGenerator : BaseHqlGeneratorForMethod, IRuntimeMethodHqlGenerator
+	internal partial class CompareGenerator : BaseHqlGeneratorForMethod, IRuntimeMethodHqlGenerator
 	{
 		private static readonly HashSet<MethodInfo> ActingMethods = new HashSet<MethodInfo>
 			{

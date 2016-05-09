@@ -4,7 +4,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Loader.Entity
 {
-	public class CascadeEntityLoader : AbstractEntityLoader
+	public partial class CascadeEntityLoader : AbstractEntityLoader
 	{
 		public CascadeEntityLoader(IOuterJoinLoadable persister, CascadingAction action, ISessionFactoryImplementor factory)
 			: base(persister, persister.IdentifierType, factory, new CollectionHelper.EmptyMapClass<string, IFilter>())

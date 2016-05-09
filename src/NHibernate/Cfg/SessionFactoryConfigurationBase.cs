@@ -3,7 +3,7 @@ using NHibernate.Cfg.ConfigurationSchema;
 
 namespace NHibernate.Cfg
 {
-	public class SessionFactoryConfigurationBase : ISessionFactoryConfiguration
+	public partial class SessionFactoryConfigurationBase : ISessionFactoryConfiguration
 	{
 		private string name = string.Empty;
 		private readonly IDictionary<string, string> properties = new Dictionary<string, string>();

@@ -17,7 +17,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
-	public class MultiQueryImpl : IMultiQuery
+	public partial class MultiQueryImpl : IMultiQuery
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(MultiQueryImpl));
 
@@ -789,7 +789,7 @@ namespace NHibernate.Impl
 		ICollection<string> QuerySpaces { get; }
 	}
 
-	internal class HqlTranslatorWrapper : ITranslator
+	internal partial class HqlTranslatorWrapper : ITranslator
 	{
 		private readonly IQueryTranslator innerTranslator;
 
@@ -819,7 +819,7 @@ namespace NHibernate.Impl
 		}
 	}
 
-	internal class SqlTranslator : ITranslator
+	internal partial class SqlTranslator : ITranslator
 	{
 		private readonly CustomLoader loader;
 

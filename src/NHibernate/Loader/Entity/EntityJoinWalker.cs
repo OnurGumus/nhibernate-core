@@ -11,7 +11,7 @@ namespace NHibernate.Loader.Entity
 	/// A walker for loaders that fetch entities
 	/// </summary>
 	/// <seealso cref="EntityLoader"/>
-	public class EntityJoinWalker : AbstractEntityJoinWalker
+	public partial class EntityJoinWalker : AbstractEntityJoinWalker
 	{
 		private readonly LockMode lockMode;
 

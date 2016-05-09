@@ -6,7 +6,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class KeyManyToOneMapper : IManyToOneMapper
+	public partial class KeyManyToOneMapper : IManyToOneMapper
 	{
 		private readonly IAccessorPropertyMapper _entityPropertyMapper;
 		private readonly HbmKeyManyToOne _manyToOne;

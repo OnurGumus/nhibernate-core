@@ -22,7 +22,7 @@ namespace NHibernate.Util
 	/// enqueuement.
 	/// </remarks>
 	[Serializable]
-	public class SoftLimitMRUCache : IDeserializationCallback
+	public partial class SoftLimitMRUCache : IDeserializationCallback
 	{
 		private const int DefaultStrongRefCount = 128;
 		private object _syncRoot;

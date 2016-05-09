@@ -7,7 +7,7 @@ using NHibernate.Impl;
 
 namespace NHibernate.Transaction
 {
-	public class AdoNetWithDistributedTransactionFactory : ITransactionFactory
+	public partial class AdoNetWithDistributedTransactionFactory : ITransactionFactory
 	{
 		private static readonly IInternalLogger logger = LoggerProvider.LoggerFor(typeof(ITransactionFactory));
 
@@ -90,7 +90,7 @@ namespace NHibernate.Transaction
 			}
 		}
 
-		public class DistributedTransactionContext : ITransactionContext, IEnlistmentNotification
+		public partial class DistributedTransactionContext : ITransactionContext, IEnlistmentNotification
 		{
 			public System.Transactions.Transaction AmbientTransation { get; set; }
 			public bool ShouldCloseSessionOnDistributedTransactionCompleted { get; set; }

@@ -3,7 +3,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public class MapKeyCustomizer : IMapKeyMapper
+	public partial class MapKeyCustomizer : IMapKeyMapper
 	{
 		private readonly ICustomizersHolder customizersHolder;
 		private readonly PropertyPath propertyPath;

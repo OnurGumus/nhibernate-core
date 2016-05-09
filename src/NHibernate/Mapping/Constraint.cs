@@ -11,7 +11,7 @@ namespace NHibernate.Mapping
 	/// Base class for relational constraints in the database.
 	/// </summary>
 	[Serializable]
-	public abstract class Constraint : IRelationalModel
+	public abstract partial class Constraint : IRelationalModel
 	{
 		private string name;
 		private readonly List<Column> columns = new List<Column>();

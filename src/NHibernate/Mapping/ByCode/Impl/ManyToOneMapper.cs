@@ -7,7 +7,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class ManyToOneMapper : IManyToOneMapper
+	public partial class ManyToOneMapper : IManyToOneMapper
 	{
 		private readonly IAccessorPropertyMapper _entityPropertyMapper;
 		private readonly HbmManyToOne _manyToOne;

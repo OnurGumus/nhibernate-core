@@ -11,7 +11,7 @@ namespace NHibernate.Properties
 	/// The default (and recommended strategy).
 	/// </summary>
 	[Serializable]
-	public class BasicPropertyAccessor : IPropertyAccessor
+	public partial class BasicPropertyAccessor : IPropertyAccessor
 	{
 		#region IPropertyAccessor Members
 
@@ -167,7 +167,7 @@ namespace NHibernate.Properties
 		/// An <see cref="IGetter"/> for a Property <c>get</c>.
 		/// </summary>
 		[Serializable]
-		public sealed class BasicGetter : IGetter, IOptimizableGetter
+		public sealed partial class BasicGetter : IGetter, IOptimizableGetter
 		{
 			private readonly System.Type clazz;
 			private readonly PropertyInfo property;
@@ -263,7 +263,7 @@ namespace NHibernate.Properties
 		/// An <see cref="ISetter"/> for a Property <c>set</c>.
 		/// </summary>
 		[Serializable]
-		public sealed class BasicSetter : ISetter, IOptimizableSetter
+		public sealed partial class BasicSetter : ISetter, IOptimizableSetter
 		{
 			private readonly System.Type clazz;
 			private readonly PropertyInfo property;

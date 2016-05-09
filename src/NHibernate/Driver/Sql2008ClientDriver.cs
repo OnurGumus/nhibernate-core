@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace NHibernate.Driver
 {
-	public class Sql2008ClientDriver : SqlClientDriver
+	public partial class Sql2008ClientDriver : SqlClientDriver
 	{
 		protected override void InitializeParameter(IDbDataParameter dbParam, string name, SqlTypes.SqlType sqlType)
 		{

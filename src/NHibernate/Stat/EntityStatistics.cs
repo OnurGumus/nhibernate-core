@@ -5,7 +5,7 @@ namespace NHibernate.Stat
 {
 	/// <summary> Entity related statistics </summary>
 	[Serializable]
-	public class EntityStatistics : CategorizedStatistics
+	public partial class EntityStatistics : CategorizedStatistics
 	{
 		internal long loadCount;
 		internal long updateCount;

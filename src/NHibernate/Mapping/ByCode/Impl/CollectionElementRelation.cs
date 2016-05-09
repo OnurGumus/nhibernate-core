@@ -3,7 +3,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class CollectionElementRelation : ICollectionElementRelation
+	public partial class CollectionElementRelation : ICollectionElementRelation
 	{
 		private readonly System.Type collectionElementType;
 		private readonly Action<object> elementRelationshipAssing;

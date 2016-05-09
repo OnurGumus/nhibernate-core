@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	/// would work just fine.
 	/// </remarks>
 	[Serializable]
-	public class BinaryBlobType : BinaryType
+	public partial class BinaryBlobType : BinaryType
 	{
 		public BinaryBlobType(): base(new BinaryBlobSqlType()) {}
 		internal BinaryBlobType(BinarySqlType sqlType) : base(sqlType) {}

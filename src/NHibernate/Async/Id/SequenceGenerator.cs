@@ -47,7 +47,7 @@ namespace NHibernate.Id
 					try
 					{
 						reader.Read();
-						object result = IdentifierGeneratorFactory.Get(reader, identifierType, session);
+						object result = await (IdentifierGeneratorFactory.GetAsync(reader, identifierType, session));
 						if (log.IsDebugEnabled)
 						{
 							log.Debug("Sequence identifier generated: " + result);

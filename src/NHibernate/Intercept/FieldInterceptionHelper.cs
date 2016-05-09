@@ -4,7 +4,7 @@ using NHibernate.Engine;
 namespace NHibernate.Intercept
 {
 	/// <summary> Helper class for dealing with enhanced entity classes. </summary>
-	public static class FieldInterceptionHelper
+	public static partial class FieldInterceptionHelper
 	{
 		// VERY IMPORTANT!!!! - This class needs to be free of any static references
 		// to any Castle/Spring/LinFu classes.  Otherwise, users will always need both

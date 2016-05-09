@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	/// to the database.
 	/// </summary>
 	[Serializable]
-	public class GenericSetType<T> : CollectionType
+	public partial class GenericSetType<T> : CollectionType
 	{
 		/// <summary>
 		/// Initializes a new instance of a <see cref="GenericSetType{T}"/> class for

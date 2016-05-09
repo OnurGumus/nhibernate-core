@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public class ConventionModelMapper : ModelMapper
+	public partial class ConventionModelMapper : ModelMapper
 	{
 		public ConventionModelMapper()
 			: base(new SimpleModelInspector())

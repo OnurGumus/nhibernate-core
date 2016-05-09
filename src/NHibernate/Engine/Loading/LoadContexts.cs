@@ -24,7 +24,7 @@ namespace NHibernate.Engine.Loading
 	/// This would also allow maintaining a single mapping as we could reliably get
 	/// notification of the result-set closing...
 	/// </remarks>
-	public class LoadContexts
+	public partial class LoadContexts
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(LoadContexts));
 

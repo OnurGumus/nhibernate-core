@@ -12,7 +12,7 @@ using NHibernate.Type;
 namespace NHibernate.Tuple.Entity
 {
 	/// <summary> Support for tuplizers relating to entities. </summary>
-	public abstract class AbstractEntityTuplizer : IEntityTuplizer
+	public abstract partial class AbstractEntityTuplizer : IEntityTuplizer
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AbstractEntityTuplizer));
 		private readonly EntityMetamodel entityMetamodel;

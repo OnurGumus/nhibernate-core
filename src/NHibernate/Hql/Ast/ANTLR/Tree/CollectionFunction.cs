@@ -9,7 +9,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class CollectionFunction : MethodNode, IDisplayableNode 
+	public partial class CollectionFunction : MethodNode, IDisplayableNode 
 	{
 		public CollectionFunction(IToken token) : base(token)
 		{

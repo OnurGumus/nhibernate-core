@@ -4,7 +4,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Driver
 {
-	public abstract class ReflectionBasedDriver : DriverBase
+	public abstract partial class ReflectionBasedDriver : DriverBase
 	{
 		protected const string ReflectionTypedProviderExceptionMessageTemplate = "The IDbCommand and IDbConnection implementation in the assembly {0} could not be found. "
 		                                                                       + "Ensure that the assembly {0} is located in the application directory or in the Global "

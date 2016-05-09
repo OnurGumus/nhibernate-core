@@ -11,7 +11,7 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Loader.Custom.Sql
 {
-	public class SQLQueryParser
+	public partial class SQLQueryParser
 	{
 		public interface IParserContext
 		{
@@ -250,7 +250,7 @@ namespace NHibernate.Loader.Custom.Sql
 			return recognizer.result.ToSqlString();
 		}
 
-		public class ParameterSubstitutionRecognizer : ParameterParser.IRecognizer
+		public partial class ParameterSubstitutionRecognizer : ParameterParser.IRecognizer
 		{
 			private readonly ISessionFactoryImplementor factory;
 			internal SqlStringBuilder result = new SqlStringBuilder();

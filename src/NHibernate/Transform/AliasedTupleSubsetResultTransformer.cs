@@ -9,7 +9,7 @@ namespace NHibernate.Transform
 	/// </summary>
 	/// @author Gail Badner
 	[Serializable]
-	public abstract class AliasedTupleSubsetResultTransformer : ITupleSubsetResultTransformer
+	public abstract partial class AliasedTupleSubsetResultTransformer : ITupleSubsetResultTransformer
 	{
 
 		public abstract bool IsTransformedValueATupleElement(string[] aliases, int tupleLength);

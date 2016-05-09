@@ -13,7 +13,7 @@ namespace NHibernate.Type
 	/// matches up with the capabilities of <see cref="System.Single" />  
 	/// </remarks>
 	[Serializable]
-	public class SingleType : PrimitiveType
+	public partial class SingleType : PrimitiveType
 	{
 		/// <summary></summary>
 		public SingleType() : base(SqlTypeFactory.Single)

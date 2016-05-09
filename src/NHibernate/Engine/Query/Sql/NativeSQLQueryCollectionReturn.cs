@@ -11,7 +11,7 @@ namespace NHibernate.Engine.Query.Sql
 	/// itself as the "root" of the result). 
 	/// </summary>
 	[Serializable]
-	public class NativeSQLQueryCollectionReturn : NativeSQLQueryNonScalarReturn
+	public partial class NativeSQLQueryCollectionReturn : NativeSQLQueryNonScalarReturn
 	{
 		private readonly string ownerEntityName;
 		private readonly string ownerProperty;

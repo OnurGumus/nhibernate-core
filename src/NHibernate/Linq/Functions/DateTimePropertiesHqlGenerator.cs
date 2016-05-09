@@ -7,7 +7,7 @@ using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Linq.Functions
 {
-	public class DateTimePropertiesHqlGenerator : BaseHqlGeneratorForProperty
+	public partial class DateTimePropertiesHqlGenerator : BaseHqlGeneratorForProperty
 	{
 		public DateTimePropertiesHqlGenerator()
 		{

@@ -29,7 +29,7 @@ namespace NHibernate.Engine.Query
 
 	/// <summary> Defines a query execution plan for an HQL query (or filter). </summary>
 	[Serializable]
-	public class HQLQueryPlan : IQueryPlan
+	public partial class HQLQueryPlan : IQueryPlan
 	{
 		protected static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(HQLQueryPlan));
 

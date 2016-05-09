@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace NHibernate
 {
 	[Serializable]
-	public class SessionException : HibernateException
+	public partial class SessionException : HibernateException
 	{
 		public SessionException(string message)
 			: base(message)

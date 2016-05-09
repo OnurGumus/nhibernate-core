@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Util
 {
-	public class AssemblyQualifiedTypeName
+	public partial class AssemblyQualifiedTypeName
 	{
 		private readonly string type;
 		private readonly string assembly;

@@ -5,7 +5,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public class NamedSQLQueryBinder : Binder
+	public partial class NamedSQLQueryBinder : Binder
 	{
 		public NamedSQLQueryBinder(Mappings mappings)
 			: base(mappings)

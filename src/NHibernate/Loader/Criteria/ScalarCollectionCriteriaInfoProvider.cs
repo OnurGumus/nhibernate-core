@@ -6,7 +6,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Loader.Criteria
 {
-	public class ScalarCollectionCriteriaInfoProvider : ICriteriaInfoProvider
+	public partial class ScalarCollectionCriteriaInfoProvider : ICriteriaInfoProvider
 	{
 		private readonly String role;
 		private readonly IQueryableCollection persister;

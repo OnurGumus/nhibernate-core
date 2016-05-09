@@ -3,7 +3,7 @@ using System.Data;
 
 namespace NHibernate.Dialect.Schema
 {
-	public abstract class AbstractColumnMetaData : IColumnMetadata
+	public abstract partial class AbstractColumnMetaData : IColumnMetadata
 	{
 		private string name;
 		private string typeName;

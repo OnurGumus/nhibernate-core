@@ -54,7 +54,7 @@ namespace NHibernate.SqlCommand
 		void Bind(IDbCommand command, ISessionImplementor session);
 	}
 
-	public class SqlCommandImpl : ISqlCommand
+	public partial class SqlCommandImpl : ISqlCommand
 	{
 		private readonly SqlString query;
 		private readonly ICollection<IParameterSpecification> specifications;

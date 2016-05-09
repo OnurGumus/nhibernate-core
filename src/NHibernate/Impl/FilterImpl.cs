@@ -9,7 +9,7 @@ namespace NHibernate.Impl
 	/// <summary>
 	/// </summary>
 	[Serializable]
-	public class FilterImpl : IFilter
+	public partial class FilterImpl : IFilter
 	{
 		public static readonly string MARKER = "$FILTER_PLACEHOLDER$";
 

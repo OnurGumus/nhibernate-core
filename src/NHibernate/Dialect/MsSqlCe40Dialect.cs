@@ -2,7 +2,7 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
 {
-	public class MsSqlCe40Dialect : MsSqlCeDialect
+	public partial class MsSqlCe40Dialect : MsSqlCeDialect
 	{
 		public override bool SupportsLimitOffset
 		{

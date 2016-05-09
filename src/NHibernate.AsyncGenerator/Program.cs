@@ -15,6 +15,7 @@ using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using NHibernate.AsyncGenerator;
 using NHibernate.AsyncGenerator.Extensions;
+using Nito.AsyncEx;
 using DocumentInfo = NHibernate.AsyncGenerator.DocumentInfo;
 
 namespace NHibernate.AsyncGenerator
@@ -54,11 +55,15 @@ namespace NHibernate.AsyncGenerator
 
 		public Dictionary<INamedTypeSymbol, DocumentType> Types { get; } = new Dictionary<INamedTypeSymbol, DocumentType>();
 
-		public DocumentAsyncMember GetOrCreateAsyncMember(ISymbol symbol)
+		public DocumentAsyncMember GetAsyncMember(ISymbol symbol, bool create = false)
 		{
 			if (AsyncMembers.ContainsKey(symbol))
 			{
 				return AsyncMembers[symbol];
+			}
+			if (!create)
+			{
+				return null;
 			}
 			var location = symbol.Locations.Single(o => !o.SourceTree.FilePath.Contains(@"\Async\"));
 			var memberNodes = Node.DescendantNodes()
@@ -72,6 +77,11 @@ namespace NHibernate.AsyncGenerator
 			}
 			else
 			{
+				if (memberNodes.Count == 0)
+				{
+					
+				}
+
 				memberNode = memberNodes[0];
 			}
 
@@ -96,7 +106,7 @@ namespace NHibernate.AsyncGenerator
 
 		public Dictionary<INamedTypeSymbol, DocumentType> Types { get; } = new Dictionary<INamedTypeSymbol, DocumentType>();
 
-		public DocumentType GetOrCreateType(ISymbol symbol)
+		public DocumentType GetType(ISymbol symbol, bool create = false)
 		{
 			var nestedTypes = new Stack<INamedTypeSymbol>();
 			var type = symbol.ContainingType;
@@ -106,6 +116,7 @@ namespace NHibernate.AsyncGenerator
 				type = type.ContainingType;
 			}
 			DocumentType currentDocType = null;
+			var path = Node.SyntaxTree.FilePath;
 			while (nestedTypes.Count > 0)
 			{
 				var typeSymbol = nestedTypes.Pop();
@@ -114,19 +125,21 @@ namespace NHibernate.AsyncGenerator
 					currentDocType = (currentDocType?.Types ?? Types)[typeSymbol];
 					continue;
 				}
-				var location = typeSymbol.Locations.Single(o => !o.SourceTree.FilePath.Contains(@"\Async\"));
-				var nodes = Node.DescendantNodes()
-										 .OfType<TypeDeclarationSyntax>()
-										 .Where(o => o.Span.Contains(location.SourceSpan))
-										 .ToList();
-				TypeDeclarationSyntax node;
-				if (nodes.Count > 1)
+				if (!create)
 				{
-					node = nodes.Last();
+					return null;
 				}
-				else
+
+				var location = typeSymbol.Locations.SingleOrDefault(o => o.SourceTree.FilePath == path);
+				if (location == null)
 				{
-					node = nodes[0];
+					
+				}
+				var node = Node.DescendantNodes()
+							   .OfType<TypeDeclarationSyntax>()
+							   .SingleOrDefault(o => o.ChildTokens().First(t => t.IsKind(SyntaxKind.IdentifierToken)).Span ==  location.SourceSpan);
+				if (node == null)
+				{
 				}
 				var docType = new DocumentType(typeSymbol, node);
 				(currentDocType?.Types ?? Types).Add(typeSymbol, docType);
@@ -164,18 +177,35 @@ namespace NHibernate.AsyncGenerator
 			GetOrCreateAsyncMember(memberSymbol);
 		}
 
-		public DocumentNamespace GetOrCreateNamespace(ISymbol symbol)
+		public DocumentNamespace GetNamespace(ISymbol symbol, bool create = false) 
 		{
 			var namespaceSymbol = symbol.ContainingNamespace;
 			if (Namespaces.ContainsKey(namespaceSymbol))
 			{
 				return Namespaces[namespaceSymbol];
 			}
+			if (!create)
+			{
+				return null;
+			}
 
 			var location = namespaceSymbol.Locations.Single(o => o.SourceTree.FilePath == Path);
 			var node = RootNode.DescendantNodes()
-									 .OfType<NamespaceDeclarationSyntax>()
-									 .First(o => o.Span.Contains(location.SourceSpan));
+							   .OfType<NamespaceDeclarationSyntax>()
+							   .SingleOrDefault(
+								   o =>
+								   {
+									   var identifier = o.ChildNodes().OfType<IdentifierNameSyntax>().SingleOrDefault();
+									   if (identifier != null)
+									   {
+										   return identifier.Span == location.SourceSpan;
+									   }
+									   return o.ChildNodes().OfType<QualifiedNameSyntax>().Single().Right.Span == location.SourceSpan;
+								   });
+			if (node == null)
+			{
+				
+			}
 			var docNamespace = new DocumentNamespace(namespaceSymbol, node);
 			Namespaces.Add(namespaceSymbol, docNamespace);
 			return docNamespace;
@@ -183,7 +213,12 @@ namespace NHibernate.AsyncGenerator
 
 		public DocumentAsyncMember GetOrCreateAsyncMember(ISymbol symbol)
 		{
-			return GetOrCreateNamespace(symbol).GetOrCreateType(symbol).GetOrCreateAsyncMember(symbol);
+			return GetNamespace(symbol, true).GetType(symbol, true).GetAsyncMember(symbol, true);
+		}
+
+		public bool ContainsReference(ISymbol symbol, ReferenceLocation reference)
+		{
+			return GetNamespace(symbol)?.GetType(symbol)?.GetAsyncMember(symbol)?.References?.Contains(reference) == true;
 		}
 
 		public ISymbol GetEnclosingMethodOrPropertyOrField(ReferenceLocation reference)
@@ -207,7 +242,7 @@ namespace NHibernate.AsyncGenerator
 					var method = (IMethodSymbol)current;
 					if (method.IsAccessor())
 					{
-						return method.AssociatedSymbol;
+						return method.AssociatedSymbol; 
 					}
 
 					if (method.MethodKind != MethodKind.AnonymousFunction)
@@ -218,14 +253,19 @@ namespace NHibernate.AsyncGenerator
 			}
 
 			// try harder!
+			/*
 			var typeSymbol = enclosingSymbol as ITypeSymbol;
 			if (typeSymbol != null)
 			{
 				var sourceSpan = reference.Location.SourceSpan;
 				var node = RootNode.DescendantNodes(descendIntoTrivia: true)
-					.First(o => o.Span == sourceSpan);
-				return SemanticModel.GetSymbolInfo(node).Symbol;
-			}
+					.FirstOrDefault(o => o.Span == sourceSpan);
+				if (node != null)
+				{
+					return new Tuple<ISymbol, bool>(SemanticModel.GetSymbolInfo(node).Symbol, true); // trivia
+				}
+				
+			*/
 			return null;
 		}
 	}
@@ -287,12 +327,13 @@ namespace NHibernate.AsyncGenerator
 				{
 					info.AddAsyncMember(memberSymbol);
 					await GetAllReferenceLocations(
-						await SymbolFinder.FindReferencesAsync(memberSymbol, Project.Solution).ConfigureAwait(false),
-						2).ConfigureAwait(false);
+						await SymbolFinder.FindReferencesAsync(memberSymbol, Project.Solution).ConfigureAwait(false)).ConfigureAwait(false);
 				}
 			}
 			return info;
 		}
+
+		private HashSet<ReferenceLocation> IgnoredReferenceLocation { get; } = new HashSet<ReferenceLocation>();
 
 		private async Task GetAllReferenceLocations(IEnumerable<ReferencedSymbol> references, int maxDepth = int.MaxValue, int depth = 0)
 		{
@@ -303,70 +344,132 @@ namespace NHibernate.AsyncGenerator
 			depth++;
 			foreach (var refLocation in references.SelectMany(o => o.Locations).Where(o => !o.Location.SourceTree.FilePath.Contains(@"\Async\")))
 			{
+				if (IgnoredReferenceLocation.Contains(refLocation))
+				{
+					continue;
+				}
 				var info = await GetOrCreate(refLocation.Document).ConfigureAwait(false);
 				var symbol = info.GetEnclosingMethodOrPropertyOrField(refLocation);
 				if (symbol == null)
 				{
 					continue;
 				}
-				var asyncMember = info.GetOrCreateAsyncMember(symbol);
-				if (asyncMember.References.Contains(refLocation))
+				// check if we already processed the reference
+				if (info.ContainsReference(symbol, refLocation))
 				{
 					continue;
 				}
-				asyncMember.References.Add(refLocation);
-				info.ReferenceLocations.Add(refLocation, symbol);
 
-				var methodSymbol = asyncMember.Symbol as IMethodSymbol;
-				if (methodSymbol != null)
+				// check if the symbol is a method otherwise skip
+				var methodSymbol = symbol as IMethodSymbol;
+				if (methodSymbol == null)
 				{
-					var overriden = methodSymbol.OverriddenMethod != null;
-					while (methodSymbol.OverriddenMethod != null)
+					Console.WriteLine($"Symbol {symbol} is not a method and cannot be made async");
+					IgnoredReferenceLocation.Add(refLocation);
+					continue;
+				}
+				if (methodSymbol.MethodKind != MethodKind.Ordinary)
+				{
+					Console.WriteLine($"Method {methodSymbol} is a {methodSymbol.MethodKind} and cannot be made async");
+					IgnoredReferenceLocation.Add(refLocation);
+					continue;
+				}
+
+				var baseMethods = new HashSet<ISymbol>();
+				if (methodSymbol.ContainingType.TypeKind == TypeKind.Interface)
+				{
+					baseMethods.Add(methodSymbol);
+				}
+
+				// check if the method is implementing an external interface if the skip as we cannot modify externals
+				var type = methodSymbol.ContainingType;
+				var skip = false;
+				foreach (var interfaceMember in type.AllInterfaces
+					.SelectMany(o => o.GetMembers(methodSymbol.Name)
+						.Where(m => type.FindImplementationForInterfaceMember(m) != null)))
+				{
+					var synatx = interfaceMember.DeclaringSyntaxReferences.SingleOrDefault();
+					if (synatx == null)
 					{
-						var doc = Project.GetDocument(methodSymbol.OverriddenMethod.DeclaringSyntaxReferences.Single().SyntaxTree);
-						info = await GetOrCreate(doc).ConfigureAwait(false);
-						info.GetOrCreateAsyncMember(methodSymbol.OverriddenMethod);
-						methodSymbol = methodSymbol.OverriddenMethod;
+						Console.WriteLine($"Method {methodSymbol} implements an external interface {interfaceMember} and cannot be made async");
+						IgnoredReferenceLocation.Add(refLocation);
+						skip = true;
+						break;
 					}
-					symbol = methodSymbol;
-					if (overriden)
+					baseMethods.Add(interfaceMember);
+				}
+				if (skip)
+				{
+					continue;
+				}
+
+				// check if the method is overriding an external method
+				var overridenMethod = methodSymbol.OverriddenMethod;
+				while (overridenMethod != null)
+				{
+					var synatx = overridenMethod.DeclaringSyntaxReferences.SingleOrDefault();
+					if (synatx == null)
 					{
-						var overrides = await SymbolFinder.FindOverridesAsync(symbol, Project.Solution).ConfigureAwait(false);
-						foreach (var overide in overrides)
-						{
-							var doc = Project.GetDocument(overide.DeclaringSyntaxReferences.Single().SyntaxTree);
-							info = await GetOrCreate(doc).ConfigureAwait(false);
-							info.GetOrCreateAsyncMember(overide);
-						}
+						Console.WriteLine($"Method {methodSymbol} overrides an external method {overridenMethod} and cannot be made async");
+						IgnoredReferenceLocation.Add(refLocation);
+						skip = true;
+						break;
+					}
+					if (overridenMethod.OverriddenMethod != null)
+					{
+						overridenMethod = overridenMethod.OverriddenMethod;
+					}
+					else
+					{
+						break;
 					}
 				}
-				if (symbol.ContainingType.TypeKind == TypeKind.Interface)
+				if (skip)
 				{
-					var implementations = await SymbolFinder.FindImplementationsAsync(symbol, Project.Solution).ConfigureAwait(false);
+					continue;
+				}
+
+				// save the reference
+				info.GetOrCreateAsyncMember(methodSymbol).References.Add(refLocation);
+
+				// get and save all interface implementations
+				foreach (var interfaceMethod in baseMethods)
+				{
+					var implementations = await SymbolFinder.FindImplementationsAsync(interfaceMethod, Project.Solution).ConfigureAwait(false);
 					foreach (var implementation in implementations)
 					{
-						var doc = Project.GetDocument(implementation.DeclaringSyntaxReferences.Single().SyntaxTree);
+						var synatx = implementation.DeclaringSyntaxReferences.Single();
+						var doc = Project.GetDocument(synatx.SyntaxTree);
 						info = await GetOrCreate(doc).ConfigureAwait(false);
 						info.GetOrCreateAsyncMember(implementation);
 					}
 				}
-				else
+
+				// get and save all derived methods
+				if (overridenMethod != null)
 				{
-					var type = symbol.ContainingType;
-					foreach(var interfaceMember in type.AllInterfaces
-						.SelectMany(o => o.GetMembers(symbol.Name)
-							.Where(m => type.FindImplementationForInterfaceMember(m) != null)))
+					var overrides = await SymbolFinder.FindOverridesAsync(overridenMethod, Project.Solution).ConfigureAwait(false);
+					foreach (var overide in overrides)
 					{
-						var doc = Project.GetDocument(interfaceMember.DeclaringSyntaxReferences.Single().SyntaxTree);
+						var synatx = overide.DeclaringSyntaxReferences.Single();
+						var doc = Project.GetDocument(synatx.SyntaxTree);
 						info = await GetOrCreate(doc).ConfigureAwait(false);
-						info.GetOrCreateAsyncMember(interfaceMember);
-						await GetAllReferenceLocations(await SymbolFinder.FindReferencesAsync(interfaceMember, Project.Solution).ConfigureAwait(false), maxDepth, depth)
-							.ConfigureAwait(false);
+						info.GetOrCreateAsyncMember(overide);
 					}
+					baseMethods.Add(overridenMethod);
 				}
 
-				await GetAllReferenceLocations(await SymbolFinder.FindReferencesAsync(symbol, Project.Solution).ConfigureAwait(false), maxDepth, depth)
-					.ConfigureAwait(false);
+				if (!baseMethods.Any())
+				{
+					baseMethods.Add(methodSymbol);
+				}
+
+				foreach (var baseMethod in baseMethods)
+				{
+					await GetAllReferenceLocations(await SymbolFinder.FindReferencesAsync(baseMethod, Project.Solution).ConfigureAwait(false), maxDepth, depth)
+							.ConfigureAwait(false);
+				}
+
 			}
 		}
 
@@ -424,20 +527,30 @@ namespace NHibernate.AsyncGenerator
 				else
 				{
 					expressionNode = methodNode.DescendantNodes()
-											   .First(o => o.Span == reference.Location.SourceSpan);
+											   .OfType<SimpleNameSyntax>()
+											   .First(
+												   o =>
+												   {
+													   if (o is GenericNameSyntax)
+													   {
+														   return o.ChildTokens().First(t => t.IsKind(SyntaxKind.IdentifierToken)).Span ==
+																  reference.Location.SourceSpan;
+													   }
+													   return o.Span == reference.Location.SourceSpan;
+												   });
 				}
 
-				var identifierNode = expressionNode as IdentifierNameSyntax;
-				if (identifierNode == null)
+				var nameNode = expressionNode as SimpleNameSyntax;
+				if (nameNode == null)
 				{
-					throw new Exception("Not an IdentifierNameSyntax");
+					throw new Exception("Not an SimpleNameSyntax");
 				}
 				var anotation = Guid.NewGuid().ToString();
 				methodNode = methodNode
 					
-					.ReplaceNode(identifierNode,
-					identifierNode
-						.WithIdentifier(SyntaxFactory.Identifier(identifierNode.Identifier.Value + "Async"))
+					.ReplaceNode(nameNode,
+					nameNode
+						.WithIdentifier(SyntaxFactory.Identifier(nameNode.Identifier.Value + "Async"))
 						.WithAdditionalAnnotations(new SyntaxAnnotation(anotation)));
 				expressionNode = methodNode.GetAnnotatedNodes(anotation).Single();
 				var invocationNode = expressionNode.Ancestors().OfType<InvocationExpressionSyntax>().FirstOrDefault();
@@ -568,7 +681,7 @@ namespace NHibernate.AsyncGenerator
 			var workspace = MSBuildWorkspace.Create();
 			var project = workspace.OpenProjectAsync(Path.Combine(nhPath, "NHibernate.csproj")).Result;
 			var documentInfos = new DocumentInfos(project);
-			documentInfos.Analize().GetAwaiter().GetResult();
+			AsyncContext.Run(() => documentInfos.Analize());
 
 			foreach (var pair in documentInfos.Where(o => o.Value.Namespaces.Any()))
 			{

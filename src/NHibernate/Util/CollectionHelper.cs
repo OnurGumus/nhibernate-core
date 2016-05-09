@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Util
 {
-	public static class CollectionHelper
+	public static partial class CollectionHelper
 	{
 		[Serializable]
 		private class EmptyEnumerator : IDictionaryEnumerator
@@ -405,7 +405,7 @@ namespace NHibernate.Util
 		}
 
 		[Serializable]
-		public class EmptyEnumerableClass<T> : IEnumerable<T>
+		public partial class EmptyEnumerableClass<T> : IEnumerable<T>
 		{
 			#region IEnumerable<T> Members
 
@@ -469,7 +469,7 @@ namespace NHibernate.Util
 		/// A read-only dictionary that is always empty and permits lookup by <see langword="null" /> key.
 		/// </summary>
 		[Serializable]
-		public class EmptyMapClass<TKey, TValue> : IDictionary<TKey, TValue>
+		public partial class EmptyMapClass<TKey, TValue> : IDictionary<TKey, TValue>
 		{
 			private static readonly EmptyEnumerator<TKey, TValue> emptyEnumerator = new EmptyEnumerator<TKey, TValue>();
 

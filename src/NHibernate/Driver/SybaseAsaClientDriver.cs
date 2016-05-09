@@ -5,7 +5,7 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// The SybaseAsaClientDriver driver provides a database driver for Adaptive Server Anywhere 9.0.
 	/// </summary>
-	public class SybaseAsaClientDriver : ReflectionBasedDriver
+	public partial class SybaseAsaClientDriver : ReflectionBasedDriver
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SybaseAsaClientDriver" /> class.

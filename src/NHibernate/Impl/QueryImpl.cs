@@ -10,7 +10,7 @@ namespace NHibernate.Impl
 	/// for "ordinary" HQL queries (not collection filters)
 	/// </summary>
 	/// <seealso cref="CollectionFilterImpl"/>
-	public class QueryImpl : AbstractQueryImpl2
+	public partial class QueryImpl : AbstractQueryImpl2
 	{
 		public QueryImpl(string queryString, FlushMode flushMode, ISessionImplementor session, ParameterMetadata parameterMetadata)
 			: base(queryString, flushMode, session, parameterMetadata)

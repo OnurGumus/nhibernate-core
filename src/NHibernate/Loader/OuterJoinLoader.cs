@@ -14,7 +14,7 @@ namespace NHibernate.Loader
 	/// Generates an SQL select string containing all properties of those classes.
 	/// Tables are joined using an ANSI-style left outer join.
 	/// </remarks>
-	public abstract class OuterJoinLoader : BasicLoader
+	public abstract partial class OuterJoinLoader : BasicLoader
 	{
 		// Having these fields as protected prevents CLS compliance, so they are
 		// private in NHibernate, and setters are created for the relevant

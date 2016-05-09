@@ -14,7 +14,7 @@ namespace NHibernate.Linq.Visitors
 	/// Replaces them with appropriate joins, maintaining reference equality between different clauses.
 	/// This allows extracted GroupBy key expression to also be replaced so that they can continue to match replaced Select expressions
 	/// </summary>
-	internal class MemberExpressionJoinDetector : ExpressionTreeVisitor
+	internal partial class MemberExpressionJoinDetector : ExpressionTreeVisitor
 	{
 		private readonly IIsEntityDecider _isEntityDecider;
 		private readonly IJoiner _joiner;

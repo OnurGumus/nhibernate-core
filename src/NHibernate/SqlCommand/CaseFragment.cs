@@ -4,7 +4,7 @@ using NHibernate.Util;
 namespace NHibernate.SqlCommand
 {
 	/// <summary> Abstract SQL case fragment renderer </summary>
-	public abstract class CaseFragment
+	public abstract partial class CaseFragment
 	{
 		protected internal readonly Dialect.Dialect dialect;
 		protected internal string returnColumnName;

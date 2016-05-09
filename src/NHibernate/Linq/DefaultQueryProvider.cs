@@ -16,7 +16,7 @@ namespace NHibernate.Linq
 		void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters);
 	}
 
-	public class DefaultQueryProvider : INhQueryProvider
+	public partial class DefaultQueryProvider : INhQueryProvider
 	{
 		private static readonly MethodInfo CreateQueryMethodDefinition = ReflectionHelper.GetMethodDefinition((INhQueryProvider p) => p.CreateQuery<object>(null));
 

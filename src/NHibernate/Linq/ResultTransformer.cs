@@ -7,7 +7,7 @@ using NHibernate.Transform;
 namespace NHibernate.Linq
 {
 	[Serializable]
-	public class ResultTransformer : IResultTransformer, IEquatable<ResultTransformer>
+	public partial class ResultTransformer : IResultTransformer, IEquatable<ResultTransformer>
 	{
 		private readonly Func<object[], object> _itemTransformation;
 		private readonly Func<IEnumerable<object>, object> _listTransformation;

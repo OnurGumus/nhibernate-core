@@ -6,7 +6,7 @@ namespace NHibernate.AdoNet
 	/// A BatcherFactory implementation which constructs Batcher instances
 	/// that do not perform batch operations. 
 	/// </summary>
-	public class NonBatchingBatcherFactory : IBatcherFactory
+	public partial class NonBatchingBatcherFactory : IBatcherFactory
 	{
 		public virtual IBatcher CreateBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
 		{

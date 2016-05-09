@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace NHibernate
 {
 	[Serializable]
-	public class DuplicateMappingException : MappingException
+	public partial class DuplicateMappingException : MappingException
 	{
 		private readonly string type;
 		private readonly string name;

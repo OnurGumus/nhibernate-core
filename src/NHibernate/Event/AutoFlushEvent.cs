@@ -5,7 +5,7 @@ namespace NHibernate.Event
 {
 	/// <summary>Defines an event class for the auto-flushing of a session. </summary>
 	[Serializable]
-	public class AutoFlushEvent : FlushEvent
+	public partial class AutoFlushEvent : FlushEvent
 	{
 		private ISet<string> querySpaces;
 		private bool flushRequired;

@@ -9,7 +9,7 @@ namespace NHibernate.Criterion
 	/// An <see cref="ICriterion"/> that negates another <see cref="ICriterion"/>.
 	/// </summary>
 	[Serializable]
-	public class NotExpression : AbstractCriterion
+	public partial class NotExpression : AbstractCriterion
 	{
 		private readonly ICriterion _criterion;
 

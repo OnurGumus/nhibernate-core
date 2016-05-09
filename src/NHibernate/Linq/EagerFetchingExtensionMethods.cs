@@ -8,7 +8,7 @@ using Remotion.Linq.Utilities;
 
 namespace NHibernate.Linq
 {
-    public static class EagerFetchingExtensionMethods
+    public static partial class EagerFetchingExtensionMethods
     {
         public static INhFetchRequest<TOriginating, TRelated> Fetch<TOriginating, TRelated>(
             this IQueryable<TOriginating> query, Expression<Func<TOriginating, TRelated>> relatedObjectSelector)
@@ -65,7 +65,7 @@ namespace NHibernate.Linq
     {
     }
 
-    public class NhFetchRequest<TQueried, TFetch> : QueryableBase<TQueried>, INhFetchRequest<TQueried, TFetch>
+    public partial class NhFetchRequest<TQueried, TFetch> : QueryableBase<TQueried>, INhFetchRequest<TQueried, TFetch>
     {
         public NhFetchRequest(IQueryProvider provider, Expression expression)
             : base(provider, expression)

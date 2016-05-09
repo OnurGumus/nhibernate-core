@@ -8,7 +8,7 @@ namespace NHibernate
 		Xml
 	}
 
-	public static class EntityModeHelper
+	public static partial class EntityModeHelper
 	{
 		public static string ToString(EntityMode entityMode)
 		{

@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
-	public class ProcessFirstOrSingleBase
+	public partial class ProcessFirstOrSingleBase
 	{
 		protected static void AddClientSideEval(MethodInfo target, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
 		{

@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Exceptions
 {
-    public class SqlParseException : Exception 
+    public partial class SqlParseException : Exception 
     {
 
         public SqlParseException(string Message) : base(Message)

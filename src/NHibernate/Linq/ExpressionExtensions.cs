@@ -7,7 +7,7 @@ using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq
 {
-	public static class ExpressionExtensions
+	public static partial class ExpressionExtensions
 	{
 		public static bool IsGroupingKey(this MemberExpression expression)
 		{

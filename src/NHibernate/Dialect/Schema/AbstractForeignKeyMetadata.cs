@@ -3,7 +3,7 @@ using System.Data;
 
 namespace NHibernate.Dialect.Schema
 {
-	public class AbstractForeignKeyMetadata : IForeignKeyMetadata
+	public partial class AbstractForeignKeyMetadata : IForeignKeyMetadata
 	{
 		private string name;
 		private readonly List<IColumnMetadata> columns = new List<IColumnMetadata>();

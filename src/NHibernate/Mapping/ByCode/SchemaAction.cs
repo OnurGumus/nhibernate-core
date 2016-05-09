@@ -15,7 +15,7 @@ namespace NHibernate.Mapping.ByCode
 		All = Drop | Update | Export | Validate
 	}
 
-	public static class SchemaActionConverter
+	public static partial class SchemaActionConverter
 	{
 		public static string ToSchemaActionString(this SchemaAction source)
 		{

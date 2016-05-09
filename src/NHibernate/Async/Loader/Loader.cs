@@ -47,6 +47,358 @@ namespace NHibernate.Loader
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class Loader
 	{
+		private async Task<object[]> GetRowAsync(IDataReader rs, ILoadable[] persisters, EntityKey[] keys, object optionalObject, EntityKey optionalObjectKey, LockMode[] lockModes, IList hydratedObjects, ISessionImplementor session)
+		{
+			int cols = persisters.Length;
+			IEntityAliases[] descriptors = EntityAliases;
+			if (Log.IsDebugEnabled)
+			{
+				Log.Debug("result row: " + StringHelper.ToString(keys));
+			}
+
+			object[] rowResults = new object[cols];
+			for (int i = 0; i < cols; i++)
+			{
+				object obj = null;
+				EntityKey key = keys[i];
+				if (keys[i] == null)
+				{
+				// do nothing
+				/* TODO NH-1001 : if (persisters[i]...EntityType) is an OneToMany or a ManyToOne and
+					 * the keys.length > 1 and the relation IsIgnoreNotFound probably we are in presence of
+					 * an load with "outer join" the relation can be considerer loaded even if the key is null (mean not found)
+					*/
+				}
+				else
+				{
+					//If the object is already loaded, return the loaded one
+					obj = await (session.GetEntityUsingInterceptorAsync(key));
+					if (obj != null)
+					{
+						await (InstanceAlreadyLoadedAsync(rs, i, persisters[i], key, obj, lockModes[i], session));
+					}
+					else
+					{
+						obj = await (InstanceNotYetLoadedAsync(rs, i, persisters[i], key, lockModes[i], descriptors[i].RowIdAlias, optionalObjectKey, optionalObject, hydratedObjects, session));
+					}
+				}
+
+				rowResults[i] = obj;
+			}
+
+			return rowResults;
+		}
+
+		internal async Task<object> GetRowFromResultSetAsync(IDataReader resultSet, ISessionImplementor session, QueryParameters queryParameters, LockMode[] lockModeArray, EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys, bool returnProxies, IResultTransformer forcedResultTransformer)
+		{
+			ILoadable[] persisters = EntityPersisters;
+			int entitySpan = persisters.Length;
+			for (int i = 0; i < entitySpan; i++)
+			{
+				keys[i] = await (GetKeyFromResultSetAsync(i, persisters[i], i == entitySpan - 1 ? queryParameters.OptionalId : null, resultSet, session));
+			//TODO: the i==entitySpan-1 bit depends upon subclass implementation (very bad)
+			}
+
+			RegisterNonExists(keys, session);
+			// this call is side-effecty
+			object[] row = await (GetRowAsync(resultSet, persisters, keys, queryParameters.OptionalObject, optionalObjectKey, lockModeArray, hydratedObjects, session));
+			await (ReadCollectionElementsAsync(row, resultSet, session));
+			if (returnProxies)
+			{
+				// now get an existing proxy for each row element (if there is one)
+				for (int i = 0; i < entitySpan; i++)
+				{
+					object entity = row[i];
+					object proxy = session.PersistenceContext.ProxyFor(persisters[i], keys[i], entity);
+					if (entity != proxy)
+					{
+						// Force the proxy to resolve itself
+						((INHibernateProxy)proxy).HibernateLazyInitializer.SetImplementation(entity);
+						row[i] = proxy;
+					}
+				}
+			}
+
+			return forcedResultTransformer == null ? await (GetResultColumnOrRowAsync(row, queryParameters.ResultTransformer, resultSet, session)) : forcedResultTransformer.TransformTuple(await (GetResultRowAsync(row, resultSet, session)), ResultRowAliases);
+		}
+
+		private async Task<IList> DoQueryAsync(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies, IResultTransformer forcedResultTransformer)
+		{
+			using (new SessionIdLoggingContext(session.SessionId))
+			{
+				RowSelection selection = queryParameters.RowSelection;
+				int maxRows = HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
+				int entitySpan = EntityPersisters.Length;
+				List<object> hydratedObjects = entitySpan == 0 ? null : new List<object>(entitySpan * 10);
+				IDbCommand st = await (PrepareQueryCommandAsync(queryParameters, false, session));
+				IDataReader rs = await (GetResultSetAsync(st, queryParameters.HasAutoDiscoverScalarTypes, queryParameters.Callable, selection, session));
+				// would be great to move all this below here into another method that could also be used
+				// from the new scrolling stuff.
+				//
+				// Would need to change the way the max-row stuff is handled (i.e. behind an interface) so
+				// that I could do the control breaking at the means to know when to stop
+				LockMode[] lockModeArray = GetLockModes(queryParameters.LockModes);
+				EntityKey optionalObjectKey = GetOptionalObjectKey(queryParameters, session);
+				bool createSubselects = IsSubselectLoadingEnabled;
+				List<EntityKey[]> subselectResultKeys = createSubselects ? new List<EntityKey[]>() : null;
+				IList results = new List<object>();
+				try
+				{
+					HandleEmptyCollections(queryParameters.CollectionKeys, rs, session);
+					EntityKey[] keys = new EntityKey[entitySpan]; // we can reuse it each time
+					if (Log.IsDebugEnabled)
+					{
+						Log.Debug("processing result set");
+					}
+
+					int count;
+					for (count = 0; count < maxRows && rs.Read(); count++)
+					{
+						if (Log.IsDebugEnabled)
+						{
+							Log.Debug("result set row: " + count);
+						}
+
+						object result = await (GetRowFromResultSetAsync(rs, session, queryParameters, lockModeArray, optionalObjectKey, hydratedObjects, keys, returnProxies, forcedResultTransformer));
+						results.Add(result);
+						if (createSubselects)
+						{
+							subselectResultKeys.Add(keys);
+							keys = new EntityKey[entitySpan]; //can't reuse in this case
+						}
+					}
+
+					if (Log.IsDebugEnabled)
+					{
+						Log.Debug(string.Format("done processing result set ({0} rows)", count));
+					}
+				}
+				catch (Exception e)
+				{
+					e.Data["actual-sql-query"] = st.CommandText;
+					throw;
+				}
+				finally
+				{
+					session.Batcher.CloseCommand(st, rs);
+				}
+
+				await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, rs, session, queryParameters.IsReadOnly(session)));
+				if (createSubselects)
+				{
+					CreateSubselects(subselectResultKeys, queryParameters, session);
+				}
+
+				return results;
+			}
+		}
+
+		private async Task<IList> DoQueryAndInitializeNonLazyCollectionsAsync(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies, IResultTransformer forcedResultTransformer)
+		{
+			IPersistenceContext persistenceContext = session.PersistenceContext;
+			bool defaultReadOnlyOrig = persistenceContext.DefaultReadOnly;
+			if (queryParameters.IsReadOnlyInitialized)
+				persistenceContext.DefaultReadOnly = queryParameters.ReadOnly;
+			else
+				queryParameters.ReadOnly = persistenceContext.DefaultReadOnly;
+			persistenceContext.BeforeLoad();
+			IList result;
+			try
+			{
+				try
+				{
+					result = await (DoQueryAsync(session, queryParameters, returnProxies, forcedResultTransformer));
+				}
+				finally
+				{
+					persistenceContext.AfterLoad();
+				}
+
+				await (persistenceContext.InitializeNonLazyCollectionsAsync());
+			}
+			finally
+			{
+				persistenceContext.DefaultReadOnly = defaultReadOnlyOrig;
+			}
+
+			return result;
+		}
+
+		private async Task<IList> DoQueryAndInitializeNonLazyCollectionsAsync(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies)
+		{
+			return await (DoQueryAndInitializeNonLazyCollectionsAsync(session, queryParameters, returnProxies, null));
+		}
+
+		public async Task LoadCollectionBatchAsync(ISessionImplementor session, object[] ids, IType type)
+		{
+			if (Log.IsDebugEnabled)
+			{
+				Log.Debug("batch loading collection: " + MessageHelper.CollectionInfoString(CollectionPersisters[0], ids));
+			}
+
+			IType[] idTypes = new IType[ids.Length];
+			ArrayHelper.Fill(idTypes, type);
+			try
+			{
+				await (DoQueryAndInitializeNonLazyCollectionsAsync(session, new QueryParameters(idTypes, ids, ids), true));
+			}
+			catch (HibernateException)
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
+			}
+			catch (Exception sqle)
+			{
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not initialize a collection batch: " + MessageHelper.CollectionInfoString(CollectionPersisters[0], ids), SqlString);
+			}
+
+			Log.Debug("done batch load");
+		}
+
+		private async Task<IList> GetResultFromQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, IType[] resultTypes, IQueryCache queryCache, QueryKey key)
+		{
+			IList result = null;
+			if ((!queryParameters.ForceCacheRefresh) && (session.CacheMode & CacheMode.Get) == CacheMode.Get)
+			{
+				IPersistenceContext persistenceContext = session.PersistenceContext;
+				bool defaultReadOnlyOrig = persistenceContext.DefaultReadOnly;
+				if (queryParameters.IsReadOnlyInitialized)
+					persistenceContext.DefaultReadOnly = queryParameters.ReadOnly;
+				else
+					queryParameters.ReadOnly = persistenceContext.DefaultReadOnly;
+				try
+				{
+					result = await (queryCache.GetAsync(key, key.ResultTransformer.GetCachedResultTypes(resultTypes), queryParameters.NaturalKeyLookup, querySpaces, session));
+					if (_factory.Statistics.IsStatisticsEnabled)
+					{
+						if (result == null)
+						{
+							_factory.StatisticsImplementor.QueryCacheMiss(QueryIdentifier, queryCache.RegionName);
+						}
+						else
+						{
+							_factory.StatisticsImplementor.QueryCacheHit(QueryIdentifier, queryCache.RegionName);
+						}
+					}
+				}
+				finally
+				{
+					persistenceContext.DefaultReadOnly = defaultReadOnlyOrig;
+				}
+			}
+
+			return result;
+		}
+
+		private async Task<IList> ListUsingQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, IType[] resultTypes)
+		{
+			IQueryCache queryCache = _factory.GetQueryCache(queryParameters.CacheRegion);
+			QueryKey key = GenerateQueryKey(session, queryParameters);
+			IList result = await (GetResultFromQueryCacheAsync(session, queryParameters, querySpaces, resultTypes, queryCache, key));
+			if (result == null)
+			{
+				result = await (DoListAsync(session, queryParameters, key.ResultTransformer));
+				await (PutResultInQueryCacheAsync(session, queryParameters, resultTypes, queryCache, key, result));
+			}
+
+			IResultTransformer resolvedTransformer = ResolveResultTransformer(queryParameters.ResultTransformer);
+			if (resolvedTransformer != null)
+			{
+				result = (AreResultSetRowsTransformedImmediately() ? key.ResultTransformer.RetransformResults(result, ResultRowAliases, queryParameters.ResultTransformer, IncludeInResultRow) : key.ResultTransformer.UntransformToTuples(result));
+			}
+
+			return GetResultList(result, queryParameters.ResultTransformer);
+		}
+
+		protected async Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, IType[] resultTypes)
+		{
+			bool cacheable = _factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable;
+			if (cacheable)
+			{
+				return await (ListUsingQueryCacheAsync(session, queryParameters, querySpaces, resultTypes));
+			}
+
+			return await (ListIgnoreQueryCacheAsync(session, queryParameters));
+		}
+
+		internal async Task InitializeEntitiesAndCollectionsAsync(IList hydratedObjects, object resultSetId, ISessionImplementor session, bool readOnly)
+		{
+			ICollectionPersister[] collectionPersisters = CollectionPersisters;
+			if (collectionPersisters != null)
+			{
+				for (int i = 0; i < collectionPersisters.Length; i++)
+				{
+					if (collectionPersisters[i].IsArray)
+					{
+						await (EndCollectionLoadAsync(resultSetId, session, collectionPersisters[i]));
+					}
+				}
+			}
+
+			//important: reuse the same event instances for performance!
+			PreLoadEvent pre;
+			PostLoadEvent post;
+			if (session.IsEventSource)
+			{
+				var eventSourceSession = (IEventSource)session;
+				pre = new PreLoadEvent(eventSourceSession);
+				post = new PostLoadEvent(eventSourceSession);
+			}
+			else
+			{
+				pre = null;
+				post = null;
+			}
+
+			if (hydratedObjects != null)
+			{
+				int hydratedObjectsSize = hydratedObjects.Count;
+				if (Log.IsDebugEnabled)
+				{
+					Log.Debug(string.Format("total objects hydrated: {0}", hydratedObjectsSize));
+				}
+
+				for (int i = 0; i < hydratedObjectsSize; i++)
+				{
+					await (TwoPhaseLoad.InitializeEntityAsync(hydratedObjects[i], readOnly, session, pre, post));
+				}
+			}
+
+			if (collectionPersisters != null)
+			{
+				for (int i = 0; i < collectionPersisters.Length; i++)
+				{
+					if (!collectionPersisters[i].IsArray)
+					{
+						await (EndCollectionLoadAsync(resultSetId, session, collectionPersisters[i]));
+					}
+				}
+			}
+		}
+
+		protected async Task<object> LoadSingleRowAsync(IDataReader resultSet, ISessionImplementor session, QueryParameters queryParameters, bool returnProxies)
+		{
+			int entitySpan = EntityPersisters.Length;
+			IList hydratedObjects = entitySpan == 0 ? null : new List<object>(entitySpan);
+			object result;
+			try
+			{
+				result = await (GetRowFromResultSetAsync(resultSet, session, queryParameters, GetLockModes(queryParameters.LockModes), null, hydratedObjects, new EntityKey[entitySpan], returnProxies));
+			}
+			catch (HibernateException)
+			{
+				throw; // Don't call Convert on HibernateExceptions
+			}
+			catch (Exception sqle)
+			{
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not read next row of results", SqlString, queryParameters.PositionalParameterValues, queryParameters.NamedParameters);
+			}
+
+			await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, resultSet, session, queryParameters.IsReadOnly(session)));
+			await (session.PersistenceContext.InitializeNonLazyCollectionsAsync());
+			return result;
+		}
+
 		private async Task LoadFromResultSetAsync(IDataReader rs, int i, object obj, string instanceClass, EntityKey key, string rowIdAlias, LockMode lockMode, ILoadable rootPersister, ISessionImplementor session)
 		{
 			object id = key.Identifier;
@@ -78,12 +430,419 @@ namespace NHibernate.Loader
 					// perhaps...well, actually its ok, assuming that the
 					// entity name used in the lookup is the same as the
 					// the one used here, which it will be
-					EntityUniqueKey euk = new EntityUniqueKey(rootPersister.EntityName, ukName, type.SemiResolve(values[index], session, obj), type, session.EntityMode, session.Factory);
+					EntityUniqueKey euk = new EntityUniqueKey(rootPersister.EntityName, ukName, await (type.SemiResolveAsync(values[index], session, obj)), type, session.EntityMode, session.Factory);
 					session.PersistenceContext.AddEntity(euk, obj);
 				}
 			}
 
-			TwoPhaseLoad.PostHydrate(persister, id, values, rowId, obj, lockMode, !eagerPropertyFetch, session);
+			await (TwoPhaseLoad.PostHydrateAsync(persister, id, values, rowId, obj, lockMode, !eagerPropertyFetch, session));
+		}
+
+		private async Task<object> InstanceNotYetLoadedAsync(IDataReader dr, int i, ILoadable persister, EntityKey key, LockMode lockMode, string rowIdAlias, EntityKey optionalObjectKey, object optionalObject, IList hydratedObjects, ISessionImplementor session)
+		{
+			object obj;
+			string instanceClass = await (GetInstanceClassAsync(dr, i, persister, key.Identifier, session));
+			if (optionalObjectKey != null && key.Equals(optionalObjectKey))
+			{
+				// its the given optional object
+				obj = optionalObject;
+			}
+			else
+			{
+				obj = await (session.InstantiateAsync(instanceClass, key.Identifier));
+			}
+
+			// need to hydrate it
+			// grab its state from the DataReader and keep it in the Session
+			// (but don't yet initialize the object itself)
+			// note that we acquired LockMode.READ even if it was not requested
+			LockMode acquiredLockMode = lockMode == LockMode.None ? LockMode.Read : lockMode;
+			await (LoadFromResultSetAsync(dr, i, obj, instanceClass, key, rowIdAlias, acquiredLockMode, persister, session));
+			// materialize associations (and initialize the object) later
+			hydratedObjects.Add(obj);
+			return obj;
+		}
+
+		internal async Task<object> GetRowFromResultSetAsync(IDataReader resultSet, ISessionImplementor session, QueryParameters queryParameters, LockMode[] lockModeArray, EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys, bool returnProxies)
+		{
+			return await (GetRowFromResultSetAsync(resultSet, session, queryParameters, lockModeArray, optionalObjectKey, hydratedObjects, keys, returnProxies, null));
+		}
+
+		private async Task<EntityKey> GetKeyFromResultSetAsync(int i, IEntityPersister persister, object id, IDataReader rs, ISessionImplementor session)
+		{
+			object resultId;
+			// if we know there is exactly 1 row, we can skip.
+			// it would be great if we could _always_ skip this;
+			// it is a problem for <key-many-to-one>
+			if (IsSingleRowLoader && id != null)
+			{
+				resultId = id;
+			}
+			else
+			{
+				IType idType = persister.IdentifierType;
+				resultId = await (idType.NullSafeGetAsync(rs, EntityAliases[i].SuffixedKeyAliases, session, null));
+				bool idIsResultId = id != null && resultId != null && await (idType.IsEqualAsync(id, resultId, session.EntityMode, _factory));
+				if (idIsResultId)
+				{
+					resultId = id; //use the id passed in
+				}
+			}
+
+			return resultId == null ? null : session.GenerateEntityKey(resultId, persister);
+		}
+
+		private static async Task ReadCollectionElementAsync(object optionalOwner, object optionalKey, ICollectionPersister persister, ICollectionAliases descriptor, IDataReader rs, ISessionImplementor session)
+		{
+			IPersistenceContext persistenceContext = session.PersistenceContext;
+			object collectionRowKey = await (persister.ReadKeyAsync(rs, descriptor.SuffixedKeyAliases, session));
+			if (collectionRowKey != null)
+			{
+				// we found a collection element in the result set
+				if (Log.IsDebugEnabled)
+				{
+					Log.Debug("found row of collection: " + MessageHelper.CollectionInfoString(persister, collectionRowKey));
+				}
+
+				object owner = optionalOwner;
+				if (owner == null)
+				{
+					owner = persistenceContext.GetCollectionOwner(collectionRowKey, persister);
+					if (owner == null)
+					{
+					//TODO: This is assertion is disabled because there is a bug that means the
+					//      original owner of a transient, uninitialized collection is not known 
+					//      if the collection is re-referenced by a different object associated 
+					//      with the current Session
+					//throw new AssertionFailure("bug loading unowned collection");
+					}
+				}
+
+				IPersistentCollection rowCollection = persistenceContext.LoadContexts.GetCollectionLoadContext(rs).GetLoadingCollection(persister, collectionRowKey);
+				if (rowCollection != null)
+				{
+					await (rowCollection.ReadFromAsync(rs, persister, descriptor, owner));
+				}
+			}
+			else if (optionalKey != null)
+			{
+				// we did not find a collection element in the result set, so we
+				// ensure that a collection is created with the owner's identifier,
+				// since what we have is an empty collection
+				if (Log.IsDebugEnabled)
+				{
+					Log.Debug("result set contains (possibly empty) collection: " + MessageHelper.CollectionInfoString(persister, optionalKey));
+				}
+
+				persistenceContext.LoadContexts.GetCollectionLoadContext(rs).GetLoadingCollection(persister, optionalKey);
+			// handle empty collection
+			}
+		// else no collection element, but also no owner
+		}
+
+		private async Task ReadCollectionElementsAsync(object[] row, IDataReader resultSet, ISessionImplementor session)
+		{
+			//TODO: make this handle multiple collection roles!
+			ICollectionPersister[] collectionPersisters = CollectionPersisters;
+			if (collectionPersisters != null)
+			{
+				ICollectionAliases[] descriptors = CollectionAliases;
+				int[] collectionOwners = CollectionOwners;
+				for (int i = 0; i < collectionPersisters.Length; i++)
+				{
+					bool hasCollectionOwners = collectionOwners != null && collectionOwners[i] > -1;
+					//true if this is a query and we are loading multiple instances of the same collection role
+					//otherwise this is a CollectionInitializer and we are loading up a single collection or batch
+					object owner = hasCollectionOwners ? row[collectionOwners[i]] : null;
+					//if null, owner will be retrieved from session
+					ICollectionPersister collectionPersister = collectionPersisters[i];
+					object key;
+					if (owner == null)
+					{
+						key = null;
+					}
+					else
+					{
+						key = collectionPersister.CollectionType.GetKeyOfOwner(owner, session);
+					//TODO: old version did not require hashmap lookup:
+					//keys[collectionOwner].getIdentifier()
+					}
+
+					await (ReadCollectionElementAsync(owner, key, collectionPersister, descriptors[i], resultSet, session));
+				}
+			}
+		}
+
+		private async Task CheckVersionAsync(int i, IEntityPersister persister, object id, object entity, IDataReader rs, ISessionImplementor session)
+		{
+			object version = session.PersistenceContext.GetEntry(entity).Version;
+			// null version means the object is in the process of being loaded somewhere else in the ResultSet
+			if (version != null)
+			{
+				IVersionType versionType = persister.VersionType;
+				object currentVersion = await (versionType.NullSafeGetAsync(rs, EntityAliases[i].SuffixedVersionAliases, session, null));
+				if (!versionType.IsEqual(version, currentVersion))
+				{
+					if (session.Factory.Statistics.IsStatisticsEnabled)
+					{
+						session.Factory.StatisticsImplementor.OptimisticFailure(persister.EntityName);
+					}
+
+					throw new StaleObjectStateException(persister.EntityName, id);
+				}
+			}
+		}
+
+		private async Task InstanceAlreadyLoadedAsync(IDataReader rs, int i, IEntityPersister persister, EntityKey key, object obj, LockMode lockMode, ISessionImplementor session)
+		{
+			if (!persister.IsInstance(obj, session.EntityMode))
+			{
+				string errorMsg = string.Format("loading object was of wrong class [{0}]", obj.GetType().FullName);
+				throw new WrongClassException(errorMsg, key.Identifier, persister.EntityName);
+			}
+
+			if (LockMode.None != lockMode && UpgradeLocks())
+			{
+				EntityEntry entry = session.PersistenceContext.GetEntry(obj);
+				bool isVersionCheckNeeded = persister.IsVersioned && entry.LockMode.LessThan(lockMode);
+				// we don't need to worry about existing version being uninitialized
+				// because this block isn't called by a re-entrant load (re-entrant
+				// load _always_ have lock mode NONE
+				if (isVersionCheckNeeded)
+				{
+					await (CheckVersionAsync(i, persister, key.Identifier, obj, rs, session));
+					// we need to upgrade the lock mode to the mode requested
+					entry.LockMode = lockMode;
+				}
+			}
+		}
+
+		private async Task<string> GetInstanceClassAsync(IDataReader rs, int i, ILoadable persister, object id, ISessionImplementor session)
+		{
+			if (persister.HasSubclasses)
+			{
+				// code to handle subclasses of topClass
+				object discriminatorValue = await (persister.DiscriminatorType.NullSafeGetAsync(rs, EntityAliases[i].SuffixedDiscriminatorAlias, session, null));
+				string result = persister.GetSubclassForDiscriminatorValue(discriminatorValue);
+				if (result == null)
+				{
+					// woops we got an instance of another class hierarchy branch.
+					throw new WrongClassException(string.Format("Discriminator was: '{0}'", discriminatorValue), id, persister.EntityName);
+				}
+
+				return result;
+			}
+
+			return persister.EntityName;
+		}
+
+		private static async Task EndCollectionLoadAsync(object resultSetId, ISessionImplementor session, ICollectionPersister collectionPersister)
+		{
+			//this is a query and we are loading multiple instances of the same collection role
+			await (session.PersistenceContext.LoadContexts.GetCollectionLoadContext((IDataReader)resultSetId).EndLoadingCollectionsAsync(collectionPersister));
+		}
+
+		private async Task PutResultInQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters, IType[] resultTypes, IQueryCache queryCache, QueryKey key, IList result)
+		{
+			if ((session.CacheMode & CacheMode.Put) == CacheMode.Put)
+			{
+				bool put = await (queryCache.PutAsync(key, key.ResultTransformer.GetCachedResultTypes(resultTypes), result, queryParameters.NaturalKeyLookup, session));
+				if (put && _factory.Statistics.IsStatisticsEnabled)
+				{
+					_factory.StatisticsImplementor.QueryCachePut(QueryIdentifier, queryCache.RegionName);
+				}
+			}
+		}
+
+		protected async Task<IList> LoadEntityAsync(ISessionImplementor session, object id, IType identifierType, object optionalObject, string optionalEntityName, object optionalIdentifier, IEntityPersister persister)
+		{
+			if (Log.IsDebugEnabled)
+			{
+				Log.Debug("loading entity: " + await (MessageHelper.InfoStringAsync(persister, id, identifierType, Factory)));
+			}
+
+			IList result;
+			try
+			{
+				QueryParameters qp = new QueryParameters(new IType[]{identifierType}, new object[]{id}, optionalObject, optionalEntityName, optionalIdentifier);
+				result = await (DoQueryAndInitializeNonLazyCollectionsAsync(session, qp, false));
+			}
+			catch (HibernateException)
+			{
+				throw;
+			}
+			catch (Exception sqle)
+			{
+				ILoadable[] persisters = EntityPersisters;
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not load an entity: " + await (MessageHelper.InfoStringAsync(persisters[persisters.Length - 1], id, identifierType, Factory)), SqlString);
+			}
+
+			Log.Debug("done entity load");
+			return result;
+		}
+
+		protected internal async Task<IList> LoadEntityBatchAsync(ISessionImplementor session, object[] ids, IType idType, object optionalObject, string optionalEntityName, object optionalId, IEntityPersister persister)
+		{
+			if (Log.IsDebugEnabled)
+			{
+				Log.Debug("batch loading entity: " + await (MessageHelper.InfoStringAsync(persister, ids, Factory)));
+			}
+
+			IType[] types = new IType[ids.Length];
+			ArrayHelper.Fill(types, idType);
+			IList result;
+			try
+			{
+				result = await (DoQueryAndInitializeNonLazyCollectionsAsync(session, new QueryParameters(types, ids, optionalObject, optionalEntityName, optionalId), false));
+			}
+			catch (HibernateException)
+			{
+				throw;
+			}
+			catch (Exception sqle)
+			{
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not load an entity batch: " + await (MessageHelper.InfoStringAsync(persister, ids, Factory)), SqlString);
+			// NH: Hibernate3 passes EntityPersisters[0] instead of persister, I think it's wrong.
+			}
+
+			Log.Debug("done entity batch load");
+			return result;
+		}
+
+		protected internal virtual async Task<IDbCommand> PrepareQueryCommandAsync(QueryParameters queryParameters, bool scroll, ISessionImplementor session)
+		{
+			ISqlCommand sqlCommand = CreateSqlCommand(queryParameters, session);
+			SqlString sqlString = sqlCommand.Query;
+			sqlCommand.ResetParametersIndexesForTheCommand(0);
+			IDbCommand command = session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString, sqlCommand.ParameterTypes);
+			try
+			{
+				RowSelection selection = queryParameters.RowSelection;
+				if (selection != null && selection.Timeout != RowSelection.NoValue)
+				{
+					command.CommandTimeout = selection.Timeout;
+				}
+
+				await (sqlCommand.BindAsync(command, session));
+				IDriver driver = _factory.ConnectionProvider.Driver;
+				driver.RemoveUnusedCommandParameters(command, sqlString);
+				driver.ExpandQueryParameters(command, sqlString);
+			}
+			catch (HibernateException)
+			{
+				session.Batcher.CloseCommand(command, null);
+				throw;
+			}
+			catch (Exception sqle)
+			{
+				session.Batcher.CloseCommand(command, null);
+				ADOExceptionReporter.LogExceptions(sqle);
+				throw;
+			}
+
+			return command;
+		}
+
+		protected async Task<IList> DoListAsync(ISessionImplementor session, QueryParameters queryParameters, IResultTransformer forcedResultTransformer)
+		{
+			bool statsEnabled = Factory.Statistics.IsStatisticsEnabled;
+			var stopWatch = new Stopwatch();
+			if (statsEnabled)
+			{
+				stopWatch.Start();
+			}
+
+			IList result;
+			try
+			{
+				result = await (DoQueryAndInitializeNonLazyCollectionsAsync(session, queryParameters, true, forcedResultTransformer));
+			}
+			catch (HibernateException)
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
+			}
+			catch (Exception sqle)
+			{
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not execute query", SqlString, queryParameters.PositionalParameterValues, queryParameters.NamedParameters);
+			}
+
+			if (statsEnabled)
+			{
+				stopWatch.Stop();
+				Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, result.Count, stopWatch.Elapsed);
+			}
+
+			return result;
+		}
+
+		protected async Task<IList> DoListAsync(ISessionImplementor session, QueryParameters queryParameters)
+		{
+			return await (DoListAsync(session, queryParameters, null));
+		}
+
+		private async Task<IList> ListIgnoreQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters)
+		{
+			return GetResultList(await (DoListAsync(session, queryParameters)), queryParameters.ResultTransformer);
+		}
+
+		public async Task LoadCollectionAsync(ISessionImplementor session, object id, IType type)
+		{
+			if (Log.IsDebugEnabled)
+			{
+				Log.Debug("loading collection: " + MessageHelper.CollectionInfoString(CollectionPersisters[0], id));
+			}
+
+			object[] ids = new object[]{id};
+			try
+			{
+				await (DoQueryAndInitializeNonLazyCollectionsAsync(session, new QueryParameters(new IType[]{type}, ids, ids), true));
+			}
+			catch (HibernateException)
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
+			}
+			catch (Exception sqle)
+			{
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not initialize a collection: " + MessageHelper.CollectionInfoString(CollectionPersisters[0], id), SqlString);
+			}
+
+			Log.Debug("done loading collection");
+		}
+
+		protected async Task<IList> LoadEntityAsync(ISessionImplementor session, object key, object index, IType keyType, IType indexType, IEntityPersister persister)
+		{
+			Log.Debug("loading collection element by index");
+			IList result;
+			try
+			{
+				result = await (DoQueryAndInitializeNonLazyCollectionsAsync(session, new QueryParameters(new IType[]{keyType, indexType}, new object[]{key, index}), false));
+			}
+			catch (Exception sqle)
+			{
+				throw ADOExceptionHelper.Convert(_factory.SQLExceptionConverter, sqle, "could not collection element by index", SqlString);
+			}
+
+			Log.Debug("done entity load");
+			return result;
+		}
+
+		protected async Task LoadCollectionSubselectAsync(ISessionImplementor session, object[] ids, object[] parameterValues, IType[] parameterTypes, IDictionary<string, TypedValue> namedParameters, IType type)
+		{
+			try
+			{
+				await (DoQueryAndInitializeNonLazyCollectionsAsync(session, new QueryParameters(parameterTypes, parameterValues, namedParameters, ids), true));
+			}
+			catch (HibernateException)
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
+			}
+			catch (Exception sqle)
+			{
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not load collection by subselect: " + MessageHelper.CollectionInfoString(CollectionPersisters[0], ids), SqlString, parameterValues, namedParameters);
+			}
 		}
 
 		protected async Task<IDataReader> GetResultSetAsync(IDbCommand st, bool autoDiscoverTypes, bool callable, RowSelection selection, ISessionImplementor session)
@@ -117,77 +876,6 @@ namespace NHibernate.Loader
 				ADOExceptionReporter.LogExceptions(sqle);
 				session.Batcher.CloseCommand(st, rs);
 				throw;
-			}
-		}
-
-		private async Task<IList> DoQueryAsync(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies, IResultTransformer forcedResultTransformer)
-		{
-			using (new SessionIdLoggingContext(session.SessionId))
-			{
-				RowSelection selection = queryParameters.RowSelection;
-				int maxRows = HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
-				int entitySpan = EntityPersisters.Length;
-				List<object> hydratedObjects = entitySpan == 0 ? null : new List<object>(entitySpan * 10);
-				IDbCommand st = PrepareQueryCommand(queryParameters, false, session);
-				IDataReader rs = await (GetResultSetAsync(st, queryParameters.HasAutoDiscoverScalarTypes, queryParameters.Callable, selection, session));
-				// would be great to move all this below here into another method that could also be used
-				// from the new scrolling stuff.
-				//
-				// Would need to change the way the max-row stuff is handled (i.e. behind an interface) so
-				// that I could do the control breaking at the means to know when to stop
-				LockMode[] lockModeArray = GetLockModes(queryParameters.LockModes);
-				EntityKey optionalObjectKey = GetOptionalObjectKey(queryParameters, session);
-				bool createSubselects = IsSubselectLoadingEnabled;
-				List<EntityKey[]> subselectResultKeys = createSubselects ? new List<EntityKey[]>() : null;
-				IList results = new List<object>();
-				try
-				{
-					HandleEmptyCollections(queryParameters.CollectionKeys, rs, session);
-					EntityKey[] keys = new EntityKey[entitySpan]; // we can reuse it each time
-					if (Log.IsDebugEnabled)
-					{
-						Log.Debug("processing result set");
-					}
-
-					int count;
-					for (count = 0; count < maxRows && rs.Read(); count++)
-					{
-						if (Log.IsDebugEnabled)
-						{
-							Log.Debug("result set row: " + count);
-						}
-
-						object result = GetRowFromResultSet(rs, session, queryParameters, lockModeArray, optionalObjectKey, hydratedObjects, keys, returnProxies, forcedResultTransformer);
-						results.Add(result);
-						if (createSubselects)
-						{
-							subselectResultKeys.Add(keys);
-							keys = new EntityKey[entitySpan]; //can't reuse in this case
-						}
-					}
-
-					if (Log.IsDebugEnabled)
-					{
-						Log.Debug(string.Format("done processing result set ({0} rows)", count));
-					}
-				}
-				catch (Exception e)
-				{
-					e.Data["actual-sql-query"] = st.CommandText;
-					throw;
-				}
-				finally
-				{
-					session.Batcher.CloseCommand(st, rs);
-				}
-
-				InitializeEntitiesAndCollections(hydratedObjects, rs, session, queryParameters.IsReadOnly(session));
-				if (createSubselects)
-				{
-					CreateSubselects(subselectResultKeys, queryParameters, session);
-				}
-
-				return results;
 			}
 		}
 	}

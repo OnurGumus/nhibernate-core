@@ -9,7 +9,7 @@ namespace NHibernate.AdoNet
 	/// and Postgres). 
 	/// </summary>
 	/// <seealso cref="IDataRecord.GetOrdinal"/>
-	public class ResultSetWrapper : IDataReader
+	public partial class ResultSetWrapper : IDataReader
 	{
 		private readonly IDataReader rs;
 		private readonly ColumnNameCache columnNameCache;

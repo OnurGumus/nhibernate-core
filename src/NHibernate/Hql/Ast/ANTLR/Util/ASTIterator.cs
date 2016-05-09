@@ -11,7 +11,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class ASTIterator : IEnumerable<IASTNode>
+	public partial class ASTIterator : IEnumerable<IASTNode>
 	{
 		private readonly Stack<IASTNode> _stack = new Stack<IASTNode>();
 		private IASTNode _current;

@@ -8,7 +8,7 @@ namespace NHibernate.Criterion
 	using System.Collections.Generic;
 
 	[Serializable]
-	public class IdentifierProjection : SimpleProjection
+	public partial class IdentifierProjection : SimpleProjection
 	{
 		private bool grouped;
 

@@ -3,7 +3,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.SqlCommand
 {
-	public class SqlCommandInfo
+	public partial class SqlCommandInfo
 	{
 		private readonly SqlString text;
 		private readonly SqlType[] parameterTypes;

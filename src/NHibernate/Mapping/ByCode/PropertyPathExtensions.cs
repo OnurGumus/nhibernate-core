@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public static class PropertyPathExtensions
+	public static partial class PropertyPathExtensions
 	{
 		public static System.Type GetContainerEntity(this PropertyPath propertyPath, IModelInspector domainInspector)
 		{

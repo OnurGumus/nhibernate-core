@@ -7,7 +7,7 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class ClassMapper : AbstractPropertyContainerMapper, IClassMapper
+	public partial class ClassMapper : AbstractPropertyContainerMapper, IClassMapper
 	{
 		private readonly HbmClass classMapping;
 		private readonly IIdMapper idMapper;

@@ -7,7 +7,7 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// A NHibernate Driver for using the Oracle.DataAccess.Lite DataProvider
 	/// </summary>
-	public class OracleLiteDataClientDriver : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
+	public partial class OracleLiteDataClientDriver : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
 	{
 		/// <summary>
 		/// Initializes a new instance of <see cref="OracleLiteDataClientDriver"/>.

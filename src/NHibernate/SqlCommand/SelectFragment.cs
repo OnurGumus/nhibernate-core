@@ -9,7 +9,7 @@ namespace NHibernate.SqlCommand
 	/// <summary>
 	/// Represents part of an SQL <c>SELECT</c> clause
 	/// </summary>
-	public class SelectFragment
+	public partial class SelectFragment
 	{
 		private string suffix;
 		private IList<string> columns = new List<string>();

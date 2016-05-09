@@ -8,7 +8,7 @@ namespace NHibernate.Mapping
 	/// A meta attribute is a named value or values.
 	/// </summary>
 	[Serializable]
-	public class MetaAttribute
+	public partial class MetaAttribute
 	{
 		private readonly string name;
 		private readonly List<string> values= new List<string>();

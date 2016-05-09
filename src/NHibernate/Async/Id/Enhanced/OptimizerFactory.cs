@@ -10,44 +10,6 @@ namespace NHibernate.Id.Enhanced
 	public partial class OptimizerFactory
 	{
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		public partial class HiLoOptimizer : OptimizerSupport
-		{
-			[MethodImpl(MethodImplOptions.Synchronized)]
-			public override async Task<object> GenerateAsync(IAccessCallback callback)
-			{
-				if (_lastSourceValue < 0)
-				{
-					_lastSourceValue = await (callback.GetNextValueAsync());
-					while (_lastSourceValue <= 0)
-					{
-						_lastSourceValue = await (callback.GetNextValueAsync());
-					}
-
-					// upperLimit defines the upper end of the bucket values
-					_upperLimit = (_lastSourceValue * IncrementSize) + 1;
-					// initialize value to the low end of the bucket
-					_value = _upperLimit - IncrementSize;
-				}
-				else if (_upperLimit <= _value)
-				{
-					_lastSourceValue = await (callback.GetNextValueAsync());
-					_upperLimit = (_lastSourceValue * IncrementSize) + 1;
-				}
-
-				return Make(_value++);
-			}
-		}
-
-		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		/// <summary>
-		/// Common support for optimizer implementations.
-		/// </summary>
-		public abstract partial class OptimizerSupport : IOptimizer
-		{
-			public abstract Task<object> GenerateAsync(IAccessCallback param);
-		}
-
-		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		/// <summary>
 		/// Optimizer which uses a pool of values, storing the next low value of the range in the database.
 		/// <para>
@@ -88,6 +50,44 @@ namespace NHibernate.Id.Enhanced
 				{
 					_hiValue = await (callback.GetNextValueAsync());
 					_value = _hiValue - IncrementSize;
+				}
+
+				return Make(_value++);
+			}
+		}
+
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		/// <summary>
+		/// Common support for optimizer implementations.
+		/// </summary>
+		public abstract partial class OptimizerSupport : IOptimizer
+		{
+			public abstract Task<object> GenerateAsync(IAccessCallback param);
+		}
+
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		public partial class HiLoOptimizer : OptimizerSupport
+		{
+			[MethodImpl(MethodImplOptions.Synchronized)]
+			public override async Task<object> GenerateAsync(IAccessCallback callback)
+			{
+				if (_lastSourceValue < 0)
+				{
+					_lastSourceValue = await (callback.GetNextValueAsync());
+					while (_lastSourceValue <= 0)
+					{
+						_lastSourceValue = await (callback.GetNextValueAsync());
+					}
+
+					// upperLimit defines the upper end of the bucket values
+					_upperLimit = (_lastSourceValue * IncrementSize) + 1;
+					// initialize value to the low end of the bucket
+					_value = _upperLimit - IncrementSize;
+				}
+				else if (_upperLimit <= _value)
+				{
+					_lastSourceValue = await (callback.GetNextValueAsync());
+					_upperLimit = (_lastSourceValue * IncrementSize) + 1;
 				}
 
 				return Make(_value++);

@@ -14,7 +14,7 @@ namespace NHibernate.Impl
 	/// Implementation of the <see cref="ICriteria"/> interface
 	/// </summary>
 	[Serializable]
-	public class CriteriaImpl : ICriteria
+	public partial class CriteriaImpl : ICriteria
 	{
 		private readonly System.Type persistentClass;
 		private readonly List<CriterionEntry> criteria = new List<CriterionEntry>();
@@ -634,7 +634,7 @@ namespace NHibernate.Impl
 		}
 
 		[Serializable]
-		public sealed class Subcriteria : ICriteria
+		public sealed partial class Subcriteria : ICriteria
 		{
 			// Added to simulate Java-style inner class
 			private readonly CriteriaImpl root;
@@ -944,7 +944,7 @@ namespace NHibernate.Impl
 		}
 
 		[Serializable]
-		public sealed class CriterionEntry
+		public sealed partial class CriterionEntry
 		{
 			private readonly ICriterion criterion;
 			private readonly ICriteria criteria;
@@ -972,7 +972,7 @@ namespace NHibernate.Impl
 		}
 
 		[Serializable]
-		public sealed class OrderEntry
+		public sealed partial class OrderEntry
 		{
 			private readonly Order order;
 			private readonly ICriteria criteria;

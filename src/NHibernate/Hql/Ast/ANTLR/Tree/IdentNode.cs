@@ -12,7 +12,7 @@ using NHibernate.Util;
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
-	public class IdentNode : FromReferenceNode, ISelectExpression
+	public partial class IdentNode : FromReferenceNode, ISelectExpression
 	{
 		private const int Unknown = 0;
 		private const int PropertyRef = 1;

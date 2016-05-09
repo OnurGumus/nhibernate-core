@@ -6,7 +6,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Loader
 {
-	public abstract class BasicLoader : Loader
+	public abstract partial class BasicLoader : Loader
 	{
 		protected static readonly string[] NoSuffix = {string.Empty};
 

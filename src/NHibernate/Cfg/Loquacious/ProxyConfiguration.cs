@@ -2,7 +2,7 @@ using NHibernate.Bytecode;
 
 namespace NHibernate.Cfg.Loquacious
 {
-	internal class ProxyConfiguration : IProxyConfiguration
+	internal partial class ProxyConfiguration : IProxyConfiguration
 	{
 		private readonly FluentSessionFactoryConfiguration fc;
 
@@ -30,7 +30,7 @@ namespace NHibernate.Cfg.Loquacious
 		#endregion
 	}
 
-	internal class ProxyConfigurationProperties: IProxyConfigurationProperties
+	internal partial class ProxyConfigurationProperties: IProxyConfigurationProperties
 	{
 		private readonly Configuration configuration;
 

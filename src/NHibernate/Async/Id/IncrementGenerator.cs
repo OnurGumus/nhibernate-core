@@ -29,6 +29,17 @@ namespace NHibernate.Id
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class IncrementGenerator : IIdentifierGenerator, IConfigurable
 	{
+		[MethodImpl(MethodImplOptions.Synchronized)]
+		public async Task<object> GenerateAsync(ISessionImplementor session, object obj)
+		{
+			if (_sql != null)
+			{
+				await (GetNextAsync(session));
+			}
+
+			return IdentifierGeneratorFactory.CreateNumber(_next++, _returnClass);
+		}
+
 		private async Task GetNextAsync(ISessionImplementor session)
 		{
 			Logger.Debug("fetching initial value: " + _sql);
@@ -68,17 +79,6 @@ namespace NHibernate.Id
 				Logger.Error("could not get increment value", sqle);
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "could not fetch initial value for increment generator");
 			}
-		}
-
-		[MethodImpl(MethodImplOptions.Synchronized)]
-		public async Task<object> GenerateAsync(ISessionImplementor session, object obj)
-		{
-			if (_sql != null)
-			{
-				await (GetNextAsync(session));
-			}
-
-			return IdentifierGeneratorFactory.CreateNumber(_next++, _returnClass);
 		}
 	}
 }

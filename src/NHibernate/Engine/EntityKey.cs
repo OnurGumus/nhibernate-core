@@ -10,7 +10,7 @@ namespace NHibernate.Engine
 	/// and the identifier space (eg. tablename)
 	/// </summary>
 	[Serializable]
-	public sealed class EntityKey
+	public sealed partial class EntityKey
 	{
 		private readonly object identifier;
 		private readonly string rootEntityName;

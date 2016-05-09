@@ -6,7 +6,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class MapKeyManyToManyMapper : IMapKeyManyToManyMapper
+	public partial class MapKeyManyToManyMapper : IMapKeyManyToManyMapper
 	{
 		private const string DefaultColumnName = "mapKeyRelation";
 		private readonly HbmMapKeyManyToMany mapping;

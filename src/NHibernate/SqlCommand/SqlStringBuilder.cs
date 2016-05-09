@@ -29,7 +29,7 @@ namespace NHibernate.SqlCommand
 	/// to make sure the correct sql is getting built are specific to MsSql2000Dialect.
 	/// </para>
 	/// </remarks>
-	public class SqlStringBuilder : ISqlStringBuilder
+	public partial class SqlStringBuilder : ISqlStringBuilder
 	{
 		// this holds the strings and parameters that make up the full sql statement.
 		private List<object> sqlParts;

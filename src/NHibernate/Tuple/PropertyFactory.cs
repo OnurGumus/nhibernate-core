@@ -16,7 +16,7 @@ namespace NHibernate.Tuple
 	/// <remarks>
 	/// Author: Steve Ebersole
 	/// </remarks>
-	public class PropertyFactory
+	public partial class PropertyFactory
 	{
 		/// <summary>
 		/// Generates an IdentifierProperty representation of the for a given entity mapping.

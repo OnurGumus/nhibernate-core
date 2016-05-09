@@ -8,7 +8,7 @@ namespace NHibernate.SqlCommand
 	/// <summary>
 	/// Represents an SQL <c>for update of ... nowait</c> statement
 	/// </summary>
-	public class ForUpdateFragment
+	public partial class ForUpdateFragment
 	{
 		private readonly Dialect.Dialect dialect;
 		private readonly StringBuilder aliases = new StringBuilder();

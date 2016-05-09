@@ -19,7 +19,7 @@ namespace NHibernate.Collection.Generic
 	/// <remarks>The underlying collection used is a <see cref="List{T}"/></remarks>
 	[Serializable]
 	[DebuggerTypeProxy(typeof (CollectionProxy<>))]
-	public class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IList
+	public partial class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IList
 	{
 		protected IList<T> WrappedList;
 
@@ -513,7 +513,7 @@ namespace NHibernate.Collection.Generic
 
 		#region DelayedOperations
 
-		protected sealed class ClearDelayedOperation : IDelayedOperation
+		protected sealed partial class ClearDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericList<T> _enclosingInstance;
 
@@ -538,7 +538,7 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		protected sealed class SimpleAddDelayedOperation : IDelayedOperation
+		protected sealed partial class SimpleAddDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericList<T> _enclosingInstance;
 			private readonly T _value;
@@ -565,7 +565,7 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		protected sealed class AddDelayedOperation : IDelayedOperation
+		protected sealed partial class AddDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericList<T> _enclosingInstance;
 			private readonly int _index;
@@ -594,7 +594,7 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		protected sealed class SetDelayedOperation : IDelayedOperation
+		protected sealed partial class SetDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericList<T> _enclosingInstance;
 			private readonly int _index;
@@ -625,7 +625,7 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		protected sealed class RemoveDelayedOperation : IDelayedOperation
+		protected sealed partial class RemoveDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericList<T> _enclosingInstance;
 			private readonly int _index;
@@ -654,7 +654,7 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		protected sealed class SimpleRemoveDelayedOperation : IDelayedOperation
+		protected sealed partial class SimpleRemoveDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericList<T> _enclosingInstance;
 			private readonly T _value;

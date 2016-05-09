@@ -4,7 +4,7 @@ namespace NHibernate.Properties
 	/// Implementation of <see cref="IFieldNamingStrategy"/> for fields that are  
 	/// the PropertyName in all LowerCase characters.
 	/// </summary>
-	public class LowerCaseStrategy : IFieldNamingStrategy
+	public partial class LowerCaseStrategy : IFieldNamingStrategy
 	{
 		#region IFieldNamingStrategy Members
 

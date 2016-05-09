@@ -4,7 +4,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Linq.Expressions
 {
-	public class NhAverageExpression : NhAggregatedExpression
+	public partial class NhAverageExpression : NhAggregatedExpression
 	{
 		public NhAverageExpression(Expression expression) : base(expression, CalculateAverageType(expression.Type), NhExpressionType.Average)
 		{

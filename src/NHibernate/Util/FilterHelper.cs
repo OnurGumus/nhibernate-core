@@ -9,7 +9,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Util
 {
 	/// <summary></summary>
-	public sealed class FilterHelper
+	public sealed partial class FilterHelper
 	{
 		private readonly string[] filterNames;
 		private readonly string[] filterConditions;

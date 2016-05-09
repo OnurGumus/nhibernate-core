@@ -2,13 +2,13 @@
 
 namespace NHibernate.Linq.Expressions
 {
-	public abstract class NhCountExpression : NhAggregatedExpression
+	public abstract partial class NhCountExpression : NhAggregatedExpression
 	{
 		protected NhCountExpression(Expression expression, System.Type type)
 			: base(expression, type, NhExpressionType.Count) {}
 	}
 
-	public class NhShortCountExpression : NhCountExpression
+	public partial class NhShortCountExpression : NhCountExpression
 	{
 		public NhShortCountExpression(Expression expression)
 			: base(expression, typeof (int)) {}
@@ -19,7 +19,7 @@ namespace NHibernate.Linq.Expressions
 		}
 	}
 
-	public class NhLongCountExpression : NhCountExpression
+	public partial class NhLongCountExpression : NhCountExpression
 	{
 		public NhLongCountExpression(Expression expression)
 			: base(expression, typeof (long)) {}

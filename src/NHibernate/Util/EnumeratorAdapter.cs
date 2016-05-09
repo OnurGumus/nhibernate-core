@@ -9,7 +9,7 @@ namespace NHibernate.Util
 	/// interface.
 	/// </summary>
 	/// <typeparam name="T">The type of the enumerated elements.</typeparam>
-	public class EnumeratorAdapter<T> : IEnumerator<T>
+	public partial class EnumeratorAdapter<T> : IEnumerator<T>
 	{
 		private readonly IEnumerator _wrapped;
 

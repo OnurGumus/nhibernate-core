@@ -8,7 +8,7 @@ namespace NHibernate.SqlCommand
 	/// <summary>
 	/// Summary description for QuerySelect.
 	/// </summary>
-	public class QuerySelect
+	public partial class QuerySelect
 	{
 		private readonly JoinFragment joins;
 

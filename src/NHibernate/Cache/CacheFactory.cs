@@ -7,7 +7,7 @@ namespace NHibernate.Cache
 	/// <summary>
 	/// Factory class for creating an <see cref="ICacheConcurrencyStrategy"/>.
 	/// </summary>
-	public static class CacheFactory
+	public static partial class CacheFactory
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(CacheFactory));
 

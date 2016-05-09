@@ -21,7 +21,7 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 namespace NHibernate.Hql.Ast.ANTLR
 {
 	[CLSCompliant(false)]
-	public class QueryTranslatorImpl : IFilterTranslator
+	public partial class QueryTranslatorImpl : IFilterTranslator
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(QueryTranslatorImpl));
 
@@ -434,7 +434,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		}
 	}
 
-	public class HqlParseEngine
+	public partial class HqlParseEngine
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(HqlParseEngine));
 
@@ -526,7 +526,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		}
 	}
 
-	internal class HqlSqlTranslator
+	internal partial class HqlSqlTranslator
 	{
 		private readonly IASTNode _inputAst;
 		private readonly QueryTranslatorImpl _qti;
@@ -578,7 +578,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		}
 	}
 
-	internal class HqlSqlGenerator
+	internal partial class HqlSqlGenerator
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(HqlSqlGenerator));
 

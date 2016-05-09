@@ -24,6 +24,40 @@ namespace NHibernate.Loader.Hql
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class QueryLoader : BasicLoader
 	{
+		public async Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters)
+		{
+			CheckQuery(queryParameters);
+			return await (ListAsync(session, queryParameters, _queryTranslator.QuerySpaces, _queryReturnTypes));
+		}
+
+		protected override async Task<object[]> GetResultRowAsync(object[] row, IDataReader rs, ISessionImplementor session)
+		{
+			object[] resultRow;
+			if (_hasScalars)
+			{
+				string[][] scalarColumns = _scalarColumnNames;
+				int queryCols = _queryReturnTypes.Length;
+				resultRow = new object[queryCols];
+				for (int i = 0; i < queryCols; i++)
+				{
+					resultRow[i] = await (_queryReturnTypes[i].NullSafeGetAsync(rs, scalarColumns[i], session, null));
+				}
+			}
+			else
+			{
+				resultRow = ToResultRow(row);
+			}
+
+			return resultRow;
+		}
+
+		protected override async Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, IDataReader rs, ISessionImplementor session)
+		{
+			Object[] resultRow = await (GetResultRowAsync(row, rs, session));
+			bool hasTransform = HasSelectNew || resultTransformer != null;
+			return (!hasTransform && resultRow.Length == 1 ? resultRow[0] : resultRow);
+		}
+
 		internal async Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session)
 		{
 			CheckQuery(queryParameters);
@@ -34,7 +68,7 @@ namespace NHibernate.Loader.Hql
 				stopWath.Start();
 			}
 
-			IDbCommand cmd = PrepareQueryCommand(queryParameters, false, session);
+			IDbCommand cmd = await (PrepareQueryCommandAsync(queryParameters, false, session));
 			// This IDataReader is disposed of in EnumerableImpl.Dispose
 			IDataReader rs = await (GetResultSetAsync(cmd, queryParameters.HasAutoDiscoverScalarTypes, false, queryParameters.RowSelection, session));
 			HolderInstantiator hi = HolderInstantiator.GetHolderInstantiator(_selectNewTransformer, queryParameters.ResultTransformer, _queryReturnAliases);

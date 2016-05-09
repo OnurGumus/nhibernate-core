@@ -7,7 +7,7 @@ namespace NHibernate
 	/// Indicates that an expected getter or setter method could not be found on a class
 	/// </summary>
 	[Serializable]
-	public class PropertyNotFoundException : MappingException
+	public partial class PropertyNotFoundException : MappingException
 	{
 		private readonly System.Type targetType;
 		private readonly string propertyName;

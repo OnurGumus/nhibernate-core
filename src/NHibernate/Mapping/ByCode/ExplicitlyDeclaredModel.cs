@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public class ExplicitlyDeclaredModel : AbstractExplicitlyDeclaredModel, IModelInspector
+	public partial class ExplicitlyDeclaredModel : AbstractExplicitlyDeclaredModel, IModelInspector
 	{
 		#region Implementation of IModelInspector
 

@@ -5,7 +5,7 @@ using NHibernate.Linq.GroupBy;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
-	public class ProcessClientSideSelect : IResultOperatorProcessor<ClientSideSelect>
+	public partial class ProcessClientSideSelect : IResultOperatorProcessor<ClientSideSelect>
 	{
 		public void Process(ClientSideSelect resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
 		{
@@ -25,7 +25,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			tree.AddListTransformer(lambda);
 		}
 	}
-	public class ProcessClientSideSelect2 : IResultOperatorProcessor<ClientSideSelect2>
+	public partial class ProcessClientSideSelect2 : IResultOperatorProcessor<ClientSideSelect2>
 	{
 		public void Process(ClientSideSelect2 resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
 		{

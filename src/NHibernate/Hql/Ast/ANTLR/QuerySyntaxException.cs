@@ -6,7 +6,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 {
 	[CLSCompliant(false)]
 	[Serializable]
-	public class QuerySyntaxException : QueryException
+	public partial class QuerySyntaxException : QueryException
 	{
 		protected QuerySyntaxException() {}
 		public QuerySyntaxException(string message, string hql) : base(message, hql) {}

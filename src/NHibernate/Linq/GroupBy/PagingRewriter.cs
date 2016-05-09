@@ -7,7 +7,7 @@ using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.GroupBy
 {
-	internal static class PagingRewriter
+	internal static partial class PagingRewriter
 	{
 		private static readonly System.Type[] PagingResultOperators = new[]
 																		  {

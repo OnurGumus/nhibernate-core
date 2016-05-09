@@ -9,7 +9,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class InLogicOperatorNode : BinaryLogicOperatorNode, IBinaryOperatorNode
+	public partial class InLogicOperatorNode : BinaryLogicOperatorNode, IBinaryOperatorNode
 	{
 		public InLogicOperatorNode(IToken token)
 			: base(token)

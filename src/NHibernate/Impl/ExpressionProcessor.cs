@@ -29,9 +29,9 @@ namespace NHibernate.Impl
 	/// <summary>
 	/// Converts lambda expressions to NHibernate criterion/order
 	/// </summary>
-	public static class ExpressionProcessor
+	public static partial class ExpressionProcessor
 	{
-		public class ProjectionInfo
+		public partial class ProjectionInfo
 		{
 			private string _property;
 			private IProjection _projection;
@@ -447,7 +447,7 @@ namespace NHibernate.Impl
 			if (memberExpression != null)
 			{
 				if (memberExpression.Expression == null)
-					return false;  // it's a member of a static class
+					return false;  // it's a member of a static partial class
 
 				if (IsMemberExpression(memberExpression.Expression))
 					return true;

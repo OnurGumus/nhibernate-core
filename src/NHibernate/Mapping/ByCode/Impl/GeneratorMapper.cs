@@ -4,7 +4,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class GeneratorMapper : IGeneratorMapper
+	public partial class GeneratorMapper : IGeneratorMapper
 	{
 		private readonly HbmGenerator _generator;
 

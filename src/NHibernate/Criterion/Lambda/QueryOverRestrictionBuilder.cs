@@ -10,7 +10,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion.Lambda
 {
 
-	public class QueryOverRestrictionBuilder<TRoot,TSubType> : QueryOverRestrictionBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
+	public partial class QueryOverRestrictionBuilder<TRoot,TSubType> : QueryOverRestrictionBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
 
 		public QueryOverRestrictionBuilder(QueryOver<TRoot,TSubType> root, ExpressionProcessor.ProjectionInfo projection)
@@ -27,7 +27,7 @@ namespace NHibernate.Criterion.Lambda
 
 	}
 
-	public class IQueryOverRestrictionBuilder<TRoot,TSubType> : QueryOverRestrictionBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
+	public partial class IQueryOverRestrictionBuilder<TRoot,TSubType> : QueryOverRestrictionBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
 
 		public IQueryOverRestrictionBuilder(IQueryOver<TRoot,TSubType> root, ExpressionProcessor.ProjectionInfo projection)
@@ -44,10 +44,10 @@ namespace NHibernate.Criterion.Lambda
 
 	}
 
-	public class QueryOverRestrictionBuilderBase<TReturn,TRoot,TSubType>
+	public partial class QueryOverRestrictionBuilderBase<TReturn,TRoot,TSubType>
 		where TReturn : IQueryOver<TRoot,TSubType>
 	{
-		public class LambdaBetweenBuilder
+		public partial class LambdaBetweenBuilder
 		{
 			private TReturn root;
 			private ExpressionProcessor.ProjectionInfo projection;

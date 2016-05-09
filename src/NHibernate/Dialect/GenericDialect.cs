@@ -5,7 +5,7 @@ namespace NHibernate.Dialect
 	/// <summary>
 	/// A generic SQL dialect which may or may not work on any actual databases
 	/// </summary>
-	public class GenericDialect : Dialect
+	public partial class GenericDialect : Dialect
 	{
 		/// <summary></summary>
 		public GenericDialect() : base()

@@ -5,7 +5,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Exceptions
 {
 	[Serializable]
-	public class GenericADOException : ADOException
+	public partial class GenericADOException : ADOException
 	{
 	    public GenericADOException()
 	    {

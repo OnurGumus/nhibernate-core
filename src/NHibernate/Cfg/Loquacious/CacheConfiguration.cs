@@ -2,7 +2,7 @@ using NHibernate.Cache;
 
 namespace NHibernate.Cfg.Loquacious
 {
-	internal class CacheConfigurationProperties : ICacheConfigurationProperties
+	internal partial class CacheConfigurationProperties : ICacheConfigurationProperties
 	{
 		private readonly Configuration cfg;
 
@@ -53,7 +53,7 @@ namespace NHibernate.Cfg.Loquacious
 		#endregion
 	}
 
-	internal class CacheConfiguration : ICacheConfiguration
+	internal partial class CacheConfiguration : ICacheConfiguration
 	{
 		private readonly FluentSessionFactoryConfiguration fc;
 
@@ -100,7 +100,7 @@ namespace NHibernate.Cfg.Loquacious
 		#endregion
 	}
 
-	internal class QueryCacheConfiguration : IQueryCacheConfiguration
+	internal partial class QueryCacheConfiguration : IQueryCacheConfiguration
 	{
 		private readonly CacheConfiguration cc;
 

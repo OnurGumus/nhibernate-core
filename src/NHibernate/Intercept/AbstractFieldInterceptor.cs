@@ -6,7 +6,7 @@ using NHibernate.Proxy;
 namespace NHibernate.Intercept
 {
 	[Serializable]
-	public abstract class AbstractFieldInterceptor : IFieldInterceptor
+	public abstract partial class AbstractFieldInterceptor : IFieldInterceptor
 	{
 		public static readonly object InvokeImplementation = new object();
 

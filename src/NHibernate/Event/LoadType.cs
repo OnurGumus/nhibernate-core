@@ -1,7 +1,7 @@
 using System;
 namespace NHibernate.Event
 {
-	public sealed class LoadType
+	public sealed partial class LoadType
 	{
 		private readonly string name;
 		private bool nakedEntityReturned;

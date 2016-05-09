@@ -9,7 +9,7 @@ namespace NHibernate.Engine.Query
 {
 	/// <summary> Acts as a cache for compiled query plans, as well as query-parameter metadata. </summary>
 	[Serializable]
-	public class QueryPlanCache
+	public partial class QueryPlanCache
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(QueryPlanCache));
 

@@ -9,7 +9,7 @@ namespace NHibernate.Mapping
 	/// A mapping for a <c>one-to-many</c> association.
 	/// </summary>
 	[Serializable]
-	public class OneToMany : IValue
+	public partial class OneToMany : IValue
 	{
 		private string referencedEntityName;
 		private readonly Table referencingTable;

@@ -11,7 +11,7 @@ namespace NHibernate.Mapping.ByCode
 	/// <summary>
 	/// Util extensions to use in your test or where you need to see the XML mappings
 	/// </summary>
-	public static class MappingsExtensions
+	public static partial class MappingsExtensions
 	{
 		public static void WriteAllXmlMapping(this IEnumerable<HbmMapping> mappings)
 		{

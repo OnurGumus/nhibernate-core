@@ -15,7 +15,7 @@ namespace NHibernate.Linq.Visitors
 		void MakeInnerIfJoined(string key);
 	}
 
-	public class Joiner : IJoiner
+	public partial class Joiner : IJoiner
 	{
 		private readonly Dictionary<string, NhJoinClause> _joins = new Dictionary<string, NhJoinClause>();
 		private readonly NameGenerator _nameGenerator;

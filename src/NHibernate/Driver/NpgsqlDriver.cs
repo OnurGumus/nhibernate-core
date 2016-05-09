@@ -23,7 +23,7 @@ namespace NHibernate.Driver
 	/// <a href="http://pgfoundry.org/projects/npgsql">http://pgfoundry.org/projects/npgsql</a>. 
 	/// </p>
 	/// </remarks>
-	public class NpgsqlDriver : ReflectionBasedDriver
+	public partial class NpgsqlDriver : ReflectionBasedDriver
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NpgsqlDriver"/> class.

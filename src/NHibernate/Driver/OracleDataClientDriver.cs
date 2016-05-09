@@ -16,7 +16,7 @@ namespace NHibernate.Driver
 	/// on the NHibernate forums in this 
 	/// <a href="http://sourceforge.net/forum/message.php?msg_id=2952662">post</a>.
 	/// </remarks>
-	public class OracleDataClientDriver : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
+	public partial class OracleDataClientDriver : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
 	{
 		private const string driverAssemblyName = "Oracle.DataAccess";
 		private const string connectionTypeName = "Oracle.DataAccess.Client.OracleConnection";

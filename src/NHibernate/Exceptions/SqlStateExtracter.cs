@@ -3,7 +3,7 @@ using System.Data.Common;
 
 namespace NHibernate.Exceptions
 {
-    public abstract class SqlStateExtracter
+    public abstract partial class SqlStateExtracter
     {
         /* Many drivers provide both SqlState and NativeError in the Exception
          * Some of them, like OdbcException, have fields SQLState, NativeError
