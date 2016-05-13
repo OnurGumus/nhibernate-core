@@ -13,7 +13,7 @@ namespace NHibernate.Loader.Custom.Sql
 {
 	public partial class SQLQueryParser
 	{
-		public interface IParserContext
+		public partial interface IParserContext
 		{
 			bool IsEntityAlias(string aliasName);
 			ISqlLoadable GetEntityPersisterByAlias(string alias);

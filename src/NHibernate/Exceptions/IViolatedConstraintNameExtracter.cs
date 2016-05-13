@@ -6,7 +6,7 @@ namespace NHibernate.Exceptions
 	/// Defines a contract for implementations that can extract the name of a violated
 	/// constraint from a SQLException that is the result of that constraint violation. 
 	/// </summary>
-	public interface IViolatedConstraintNameExtracter
+	public partial interface IViolatedConstraintNameExtracter
 	{
 		/// <summary> 
 		/// Extract the name of the violated constraint from the given SQLException. 

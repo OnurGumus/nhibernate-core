@@ -3,6 +3,7 @@ using System.Collections;
 using System.Reflection;
 using NHibernate.Engine;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Properties
 {
@@ -12,15 +13,15 @@ namespace NHibernate.Properties
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		public partial class IndexGetter : IGetter
 		{
-			public async Task<object> GetForInsertAsync(object owner, IDictionary mergeMap, ISessionImplementor session)
+			public Task<object> GetForInsertAsync(object owner, IDictionary mergeMap, ISessionImplementor session)
 			{
-				if (session == null)
+				try
 				{
-					return BackrefPropertyAccessor.Unknown;
+					return Task.FromResult<object>(GetForInsert(owner, mergeMap, session));
 				}
-				else
+				catch (Exception ex)
 				{
-					return session.PersistenceContext.GetIndexInOwner(encloser.entityName, encloser.propertyName, owner, mergeMap);
+					return TaskHelper.FromException<object>(ex);
 				}
 			}
 		}

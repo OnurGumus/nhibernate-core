@@ -5,7 +5,7 @@ namespace NHibernate.Metadata
 	/// <summary>
 	/// Exposes collection metadata to the application
 	/// </summary>
-	public interface ICollectionMetadata
+	public partial interface ICollectionMetadata
 	{
 		/// <summary>
 		/// The collection key type

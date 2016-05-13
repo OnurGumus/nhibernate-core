@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public interface ICandidatePersistentMembersProvider
+	public partial interface ICandidatePersistentMembersProvider
 	{
 		/// <summary>
 		/// Get all candidate persistent properties, or fields, to be used as Persistent-Object-ID, for a given root-entity class or interface.

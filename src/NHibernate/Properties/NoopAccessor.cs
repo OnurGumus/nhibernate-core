@@ -30,7 +30,7 @@ namespace NHibernate.Properties
 
 		/// <summary> A Getter which will always return null. It should not be called anyway.</summary>
 		[Serializable]
-		private class NoopGetter : IGetter
+		private partial class NoopGetter : IGetter
 		{
 			#region IGetter Members
 

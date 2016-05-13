@@ -21,19 +21,6 @@ namespace NHibernate.Event.Default
 			return null;
 		}
 
-		private async Task EvictCollectionAsync(IPersistentCollection collection)
-		{
-			CollectionEntry ce = (CollectionEntry)Session.PersistenceContext.CollectionEntries[collection];
-			Session.PersistenceContext.CollectionEntries.Remove(collection);
-			if (log.IsDebugEnabled)
-				log.Debug("evicting collection: " + await (MessageHelper.CollectionInfoStringAsync(ce.LoadedPersister, collection, ce.LoadedKey, Session)));
-			if (ce.LoadedPersister != null && ce.LoadedKey != null)
-			{
-				//TODO: is this 100% correct?
-				Session.PersistenceContext.CollectionsByKey.Remove(new CollectionKey(ce.LoadedPersister, ce.LoadedKey, Session.EntityMode));
-			}
-		}
-
 		public virtual async Task EvictCollectionAsync(object value, CollectionType type)
 		{
 			IPersistentCollection pc;
@@ -53,6 +40,19 @@ namespace NHibernate.Event.Default
 			IPersistentCollection collection = pc;
 			if (collection.UnsetSession(Session))
 				await (EvictCollectionAsync(collection));
+		}
+
+		private async Task EvictCollectionAsync(IPersistentCollection collection)
+		{
+			CollectionEntry ce = (CollectionEntry)Session.PersistenceContext.CollectionEntries[collection];
+			Session.PersistenceContext.CollectionEntries.Remove(collection);
+			if (log.IsDebugEnabled)
+				log.Debug("evicting collection: " + await (MessageHelper.CollectionInfoStringAsync(ce.LoadedPersister, collection, ce.LoadedKey, Session)));
+			if (ce.LoadedPersister != null && ce.LoadedKey != null)
+			{
+				//TODO: is this 100% correct?
+				Session.PersistenceContext.CollectionsByKey.Remove(new CollectionKey(ce.LoadedPersister, ce.LoadedKey, Session.EntityMode));
+			}
 		}
 	}
 }

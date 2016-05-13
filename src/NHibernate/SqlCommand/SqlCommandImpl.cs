@@ -8,7 +8,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.SqlCommand
 {
-	public interface ISqlCommand
+	public partial interface ISqlCommand
 	{
 		SqlType[] ParameterTypes { get; }
 		SqlString Query { get; }

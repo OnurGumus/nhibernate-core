@@ -8,61 +8,35 @@ using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class SubqueryExpression : AbstractCriterion
 	{
-		public override async Task<SqlString> ToSqlStringAsync(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override Task<SqlString> ToSqlStringAsync(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			ISessionFactoryImplementor factory = criteriaQuery.Factory;
-			var innerQuery = new CriteriaQueryTranslator(factory, criteriaImpl, //implicit polymorphism not supported (would need a union)
- criteriaImpl.EntityOrClassName, criteriaQuery.GenerateSQLAlias(), criteriaQuery);
-			types = innerQuery.HasProjection ? innerQuery.ProjectedTypes : null;
-			if (innerQuery.HasProjection == false)
+			try
 			{
-				throw new QueryException("Cannot use subqueries on a criteria without a projection.");
+				return Task.FromResult<SqlString>(ToSqlString(criteria, criteriaQuery, enabledFilters));
 			}
-
-			IOuterJoinLoadable persister = (IOuterJoinLoadable)factory.GetEntityPersister(criteriaImpl.EntityOrClassName);
-			//patch to generate joins on subqueries
-			//stolen from CriteriaLoader
-			CriteriaJoinWalker walker = new CriteriaJoinWalker(persister, innerQuery, factory, criteriaImpl, criteriaImpl.EntityOrClassName, enabledFilters);
-			parameters = innerQuery.GetQueryParameters(); // parameters can be inferred only after initialize the walker
-			SqlString sql = walker.SqlString;
-			if (criteriaImpl.FirstResult != 0 || criteriaImpl.MaxResults != RowSelection.NoValue)
+			catch (Exception ex)
 			{
-				int ? offset = Loader.Loader.GetOffsetUsingDialect(parameters.RowSelection, factory.Dialect);
-				int ? limit = Loader.Loader.GetLimitUsingDialect(parameters.RowSelection, factory.Dialect);
-				Parameter offsetParameter = offset.HasValue ? innerQuery.CreateSkipParameter(offset.Value) : null;
-				Parameter limitParameter = limit.HasValue ? innerQuery.CreateTakeParameter(limit.Value) : null;
-				sql = factory.Dialect.GetLimitString(sql, offset, limit, offsetParameter, limitParameter);
+				return TaskHelper.FromException<SqlString>(ex);
 			}
-
-			SqlStringBuilder buf = new SqlStringBuilder().Add(ToLeftSqlString(criteria, criteriaQuery));
-			if (op != null)
-			{
-				buf.Add(" ").Add(op).Add(" ");
-			}
-
-			if (quantifier != null && prefixOp)
-			{
-				buf.Add(quantifier).Add(" ");
-			}
-
-			buf.Add("(").Add(sql).Add(")");
-			if (quantifier != null && prefixOp == false)
-			{
-				buf.Add(" ").Add(quantifier);
-			}
-
-			return buf.ToSqlString();
 		}
 
-		public override async Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public override Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return parameters.NamedParameters.Values.ToArray();
+			try
+			{
+				return Task.FromResult<TypedValue[]>(GetTypedValues(criteria, criteriaQuery));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<TypedValue[]>(ex);
+			}
 		}
 	}
 }

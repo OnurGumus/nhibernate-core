@@ -17,7 +17,7 @@ namespace NHibernate.Mapping.ByCode
 		public MemberInfo Member { get; private set; }
 	}
 
-	public interface IModelExplicitDeclarationsHolder
+	public partial interface IModelExplicitDeclarationsHolder
 	{
 		IEnumerable<System.Type> RootEntities { get; }
 		IEnumerable<System.Type> Components { get; }

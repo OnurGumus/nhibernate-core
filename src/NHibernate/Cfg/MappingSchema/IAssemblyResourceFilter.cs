@@ -6,7 +6,7 @@ namespace NHibernate.Cfg.MappingSchema
 	/// Responsible for determining whether an embedded resource should be parsed for HBM XML data while
 	/// iterating through an <see cref="Assembly" />.
 	/// </summary>
-	public interface IAssemblyResourceFilter
+	public partial interface IAssemblyResourceFilter
 	{
 		bool ShouldParse(string resourceName);
 	}

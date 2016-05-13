@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public interface IJoinedSubclassAttributesMapper : IEntityAttributesMapper, IEntitySqlsMapper
+	public partial interface IJoinedSubclassAttributesMapper : IEntityAttributesMapper, IEntitySqlsMapper
 	{
 		void Table(string tableName);
 		void Catalog(string catalogName);
@@ -14,9 +14,9 @@ namespace NHibernate.Mapping.ByCode
 		void Abstract(bool isAbstract);
 	}
 
-	public interface IJoinedSubclassMapper : IJoinedSubclassAttributesMapper, IPropertyContainerMapper {}
+	public partial interface IJoinedSubclassMapper : IJoinedSubclassAttributesMapper, IPropertyContainerMapper {}
 
-	public interface IJoinedSubclassAttributesMapper<TEntity> : IEntityAttributesMapper, IEntitySqlsMapper where TEntity : class
+	public partial interface IJoinedSubclassAttributesMapper<TEntity> : IEntityAttributesMapper, IEntitySqlsMapper where TEntity : class
 	{
 		void Abstract(bool isAbstract);
 		void Extends(System.Type baseType);
@@ -28,5 +28,5 @@ namespace NHibernate.Mapping.ByCode
         void Filter(string filterName, Action<IFilterMapper> filterMapping);
 	}
 
-	public interface IJoinedSubclassMapper<TEntity> : IJoinedSubclassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class {}
+	public partial interface IJoinedSubclassMapper<TEntity> : IJoinedSubclassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class {}
 }

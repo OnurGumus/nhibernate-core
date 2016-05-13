@@ -13,6 +13,18 @@ namespace NHibernate.Type
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class ArrayType : CollectionType
 	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name = "st"></param>
+		/// <param name = "value"></param>
+		/// <param name = "index"></param>
+		/// <param name = "session"></param>
+		public override async Task NullSafeSetAsync(IDbCommand st, object value, int index, ISessionImplementor session)
+		{
+			await (base.NullSafeSetAsync(st, session.PersistenceContext.GetCollectionHolder(value), index, session));
+		}
+
 		public override async Task<object> ReplaceElementsAsync(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session)
 		{
 			Array org = (Array)original;
@@ -50,11 +62,6 @@ namespace NHibernate.Type
 			}
 
 			return CollectionPrinter.ToString(list);
-		}
-
-		public override async Task NullSafeSetAsync(IDbCommand st, object value, int index, ISessionImplementor session)
-		{
-			await (base.NullSafeSetAsync(st, session.PersistenceContext.GetCollectionHolder(value), index, session));
 		}
 	}
 }

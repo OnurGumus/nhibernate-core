@@ -17,6 +17,21 @@ namespace NHibernate.Loader.Entity
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class BatchingEntityLoader : IUniqueEntityLoader
 	{
+		private async Task<object> GetObjectFromListAsync(IList results, object id, ISessionImplementor session)
+		{
+			// get the right object from the list ... would it be easier to just call getEntity() ??
+			foreach (object obj in results)
+			{
+				bool equal = await (idType.IsEqualAsync(id, session.GetContextEntityIdentifier(obj), session.EntityMode, session.Factory));
+				if (equal)
+				{
+					return obj;
+				}
+			}
+
+			return null;
+		}
+
 		public async Task<object> LoadAsync(object id, object optionalObject, ISessionImplementor session)
 		{
 			object[] batch = await (session.PersistenceContext.BatchFetchQueue.GetEntityBatchAsync(persister, id, batchSizes[0]));
@@ -33,21 +48,6 @@ namespace NHibernate.Loader.Entity
 			}
 
 			return await (((IUniqueEntityLoader)loaders[batchSizes.Length - 1]).LoadAsync(id, optionalObject, session));
-		}
-
-		private async Task<object> GetObjectFromListAsync(IList results, object id, ISessionImplementor session)
-		{
-			// get the right object from the list ... would it be easier to just call getEntity() ??
-			foreach (object obj in results)
-			{
-				bool equal = await (idType.IsEqualAsync(id, session.GetContextEntityIdentifier(obj), session.EntityMode, session.Factory));
-				if (equal)
-				{
-					return obj;
-				}
-			}
-
-			return null;
 		}
 	}
 }

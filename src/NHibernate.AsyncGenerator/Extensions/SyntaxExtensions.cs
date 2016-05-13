@@ -11,6 +11,95 @@ namespace NHibernate.AsyncGenerator.Extensions
 {
 	internal static partial class SyntaxExtensions
 	{
+		public static bool IsReturned(this SyntaxNode node)
+		{
+			if (node.IsKind(SyntaxKind.ReturnStatement))
+			{
+				return false;
+			}
+			var statement = node.Ancestors().OfType<StatementSyntax>().FirstOrDefault();
+			if (statement == null || !statement.IsKind(SyntaxKind.ReturnStatement))
+			{
+				return false;
+			}
+			var currNode = node;
+			var totalInvocations = 0;
+			var totalSimpleMemberAccesses = 0;
+			while (!currNode.IsKind(SyntaxKind.ReturnStatement))
+			{
+				switch (currNode.Kind())
+				{
+					case SyntaxKind.ConditionalExpression:
+						var conditionExpression = (ConditionalExpressionSyntax)currNode;
+						if (IsAsyncMethodInvoked(conditionExpression.WhenTrue as InvocationExpressionSyntax) ||
+							IsAsyncMethodInvoked(conditionExpression.WhenFalse as InvocationExpressionSyntax))
+						{
+							return false;
+						}
+						break;
+				}
+				currNode = currNode.Parent;
+				switch (currNode.Kind())
+				{
+					case SyntaxKind.ConditionalExpression:
+						var conditionExpression = (ConditionalExpressionSyntax)currNode;
+						if (conditionExpression.Condition.Contains(node))
+						{
+							return false;
+						}
+						return true;
+					case SyntaxKind.SimpleMemberAccessExpression:
+						if (totalSimpleMemberAccesses > 0)
+						{
+							return false;
+						}
+						totalSimpleMemberAccesses++;
+						break;
+					case SyntaxKind.InvocationExpression:
+						if (IsAsyncMethodInvoked(currNode as InvocationExpressionSyntax) || totalInvocations > 0)
+						{
+							return false;
+						}
+						totalInvocations++;
+						break;
+					case SyntaxKind.ReturnStatement:
+						return true;
+					default:
+						return false;
+				}
+			}
+
+			return true;
+		}
+
+		public static bool IsAsyncMethodInvoked(this InvocationExpressionSyntax node)
+		{
+			if (node == null)
+			{
+				return false;
+			}
+			var identifierNode = node.Expression as SimpleNameSyntax;
+			if (identifierNode != null && identifierNode.Identifier.ValueText.EndsWith("Async"))
+			{
+				return true;
+			}
+			var memberAccessNode = node.Expression as MemberAccessExpressionSyntax;
+			if (memberAccessNode != null && memberAccessNode.ChildNodes().OfType<SimpleNameSyntax>().Last().Identifier.ValueText.EndsWith("Async"))
+			{
+				return true;
+			}
+			return false;
+		}
+
+		public static bool EndsWithReturnStatement(this BaseMethodDeclarationSyntax node)
+		{
+			var lastStatement = node.Body.DescendantNodes()
+									.Where(o => !(o is BlockSyntax))
+									.OfType<StatementSyntax>()
+									.LastOrDefault();
+			return lastStatement?.IsKind(SyntaxKind.ReturnStatement) == true;
+		}
+
 		public static SyntaxToken? GetModifierWithLeadingTrivia(this TypeDeclarationSyntax typeDeclaration)
 		{
 			var interfaceDeclaration = typeDeclaration as InterfaceDeclarationSyntax;

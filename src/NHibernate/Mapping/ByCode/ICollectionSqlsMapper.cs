@@ -1,6 +1,6 @@
 namespace NHibernate.Mapping.ByCode
 {
-	public interface ICollectionSqlsMapper
+	public partial interface ICollectionSqlsMapper
 	{
 		void Loader(string namedQueryReference);
 		void SqlInsert(string sql);

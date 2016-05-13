@@ -1,7 +1,7 @@
 namespace NHibernate.Tuple
 {
 	/// <summary> Contract for implementors responsible for instantiating entity/component instances. </summary>
-	public interface IInstantiator
+	public partial interface IInstantiator
 	{
 		/// <summary> Perform the requested entity instantiation. </summary>
 		/// <param name="id">The id of the entity to be instantiated. </param>

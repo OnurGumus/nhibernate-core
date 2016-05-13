@@ -1,6 +1,6 @@
 namespace NHibernate.Criterion
 {
-	public interface IPropertyProjection
+	public partial interface IPropertyProjection
 	{
 		string PropertyName { get; }
 	}

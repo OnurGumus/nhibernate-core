@@ -40,7 +40,7 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// A strategy for choosing property values for inclusion in the query criteria
 		/// </summary>
-		public interface IPropertySelector
+		public partial interface IPropertySelector
 		{
 			/// <summary>
 			/// Determine if the Property should be included.

@@ -1,6 +1,6 @@
 namespace NHibernate.Cfg.MappingSchema
 {
-	public interface ITypeMapping
+	public partial interface ITypeMapping
 	{
 		HbmType Type { get; }
 	}

@@ -5,7 +5,7 @@ namespace NHibernate.Properties
 	/// <summary>
 	/// Sets values of a particular mapped property.
 	/// </summary>
-	public interface ISetter
+	public partial interface ISetter
 	{
 		/// <summary>
 		/// When implemented by a class, sets the value of the Property/Field on the object.

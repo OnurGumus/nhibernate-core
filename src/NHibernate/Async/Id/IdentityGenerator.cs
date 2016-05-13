@@ -4,6 +4,7 @@ using NHibernate.Engine;
 using NHibernate.Id.Insert;
 using NHibernate.SqlCommand;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Id
 {
@@ -26,11 +27,11 @@ namespace NHibernate.Id
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class IdentityGenerator : AbstractPostInsertGenerator
 	{
-		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		/// <summary> 
 		/// Delegate for dealing with IDENTITY columns where the dialect supports returning
 		/// the generated IDENTITY value directly from the insert statement.
 		/// </summary>
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		public partial class InsertSelectDelegate : AbstractReturningDelegate, IInsertGeneratedIdentifierDelegate
 		{
 			public override async Task<object> ExecuteAndExtractAsync(IDbCommand insert, ISessionImplementor session)
@@ -47,16 +48,16 @@ namespace NHibernate.Id
 			}
 		}
 
-		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		/// <summary> 
 		/// Delegate for dealing with IDENTITY columns where the dialect requires an
 		/// additional command execution to retrieve the generated IDENTITY value
 		/// </summary>
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		public partial class BasicDelegate : AbstractSelectingDelegate, IInsertGeneratedIdentifierDelegate
 		{
-			protected internal override async Task<object> GetResultAsync(ISessionImplementor session, IDataReader rs, object obj)
+			protected internal override Task<object> GetResultAsync(ISessionImplementor session, IDataReader rs, object obj)
 			{
-				return await (IdentifierGeneratorFactory.GetGeneratedIdentityAsync(rs, persister.IdentifierType, session));
+				return IdentifierGeneratorFactory.GetGeneratedIdentityAsync(rs, persister.IdentifierType, session);
 			}
 		}
 	}

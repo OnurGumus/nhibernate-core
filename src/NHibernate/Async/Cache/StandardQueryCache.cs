@@ -18,6 +18,31 @@ namespace NHibernate.Cache
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class StandardQueryCache : IQueryCache
 	{
+		public async Task<bool> PutAsync(QueryKey key, ICacheAssembler[] returnTypes, IList result, bool isNaturalKeyLookup, ISessionImplementor session)
+		{
+			if (isNaturalKeyLookup && result.Count == 0)
+				return false;
+			long ts = session.Timestamp;
+			if (Log.IsDebugEnabled)
+				Log.DebugFormat("caching query results in region: '{0}'; {1}", _regionName, key);
+			IList cacheable = new List<object>(result.Count + 1)
+			{ts};
+			for (int i = 0; i < result.Count; i++)
+			{
+				if (returnTypes.Length == 1)
+				{
+					cacheable.Add(await (returnTypes[0].DisassembleAsync(result[i], session, null)));
+				}
+				else
+				{
+					cacheable.Add(await (TypeHelper.DisassembleAsync((object[])result[i], returnTypes, null, session, null)));
+				}
+			}
+
+			_queryCache.Put(key, cacheable);
+			return true;
+		}
+
 		public async Task<IList> GetAsync(QueryKey key, ICacheAssembler[] returnTypes, bool isNaturalKeyLookup, ISet<string> spaces, ISessionImplementor session)
 		{
 			if (Log.IsDebugEnabled)
@@ -82,31 +107,6 @@ namespace NHibernate.Cache
 			}
 
 			return result;
-		}
-
-		public async Task<bool> PutAsync(QueryKey key, ICacheAssembler[] returnTypes, IList result, bool isNaturalKeyLookup, ISessionImplementor session)
-		{
-			if (isNaturalKeyLookup && result.Count == 0)
-				return false;
-			long ts = session.Timestamp;
-			if (Log.IsDebugEnabled)
-				Log.DebugFormat("caching query results in region: '{0}'; {1}", _regionName, key);
-			IList cacheable = new List<object>(result.Count + 1)
-			{ts};
-			for (int i = 0; i < result.Count; i++)
-			{
-				if (returnTypes.Length == 1)
-				{
-					cacheable.Add(await (returnTypes[0].DisassembleAsync(result[i], session, null)));
-				}
-				else
-				{
-					cacheable.Add(await (TypeHelper.DisassembleAsync((object[])result[i], returnTypes, null, session, null)));
-				}
-			}
-
-			_queryCache.Put(key, cacheable);
-			return true;
 		}
 	}
 }

@@ -5,7 +5,7 @@ namespace NHibernate.Hql
 	/// <summary> 
 	/// Specialized interface for filters.
 	/// </summary>
-	public interface IFilterTranslator : IQueryTranslator
+	public partial interface IFilterTranslator : IQueryTranslator
 	{
 		/// <summary> 
 		/// Compile a filter. This method may be called multiple

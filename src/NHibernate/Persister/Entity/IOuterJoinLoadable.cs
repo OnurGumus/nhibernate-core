@@ -8,7 +8,7 @@ namespace NHibernate.Persister.Entity
 	/// the <c>OuterJoinLoader</c> hierarchy and may be an element
 	/// of a one-to-many association.
 	/// </summary>
-	public interface IOuterJoinLoadable : ILoadable, IJoinable
+	public partial interface IOuterJoinLoadable : ILoadable, IJoinable
 	{
 		// <summary>
 		// Get the name of the column used as a discriminator

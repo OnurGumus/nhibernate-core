@@ -19,6 +19,35 @@ namespace NHibernate.Impl
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class MultiCriteriaImpl : IMultiCriteria
 	{
+		public async Task<IList> ListAsync()
+		{
+			using (new SessionIdLoggingContext(session.SessionId))
+			{
+				bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
+				CreateCriteriaLoaders();
+				CombineCriteriaQueries();
+				if (log.IsDebugEnabled)
+				{
+					log.DebugFormat("Multi criteria with {0} criteria queries.", criteriaQueries.Count);
+					for (int i = 0; i < criteriaQueries.Count; i++)
+					{
+						log.DebugFormat("Query #{0}: {1}", i, criteriaQueries[i]);
+					}
+				}
+
+				if (cacheable)
+				{
+					criteriaResults = await (ListUsingQueryCacheAsync());
+				}
+				else
+				{
+					criteriaResults = await (ListIgnoreQueryCacheAsync());
+				}
+
+				return criteriaResults;
+			}
+		}
+
 		private async Task<IList> ListUsingQueryCacheAsync()
 		{
 			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);
@@ -69,43 +98,16 @@ namespace NHibernate.Impl
 			return GetResultList(result);
 		}
 
-		public async Task<IList> ListAsync()
+		private async Task<IList> ListIgnoreQueryCacheAsync()
 		{
-			using (new SessionIdLoggingContext(session.SessionId))
-			{
-				bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
-				CreateCriteriaLoaders();
-				CombineCriteriaQueries();
-				if (log.IsDebugEnabled)
-				{
-					log.DebugFormat("Multi criteria with {0} criteria queries.", criteriaQueries.Count);
-					for (int i = 0; i < criteriaQueries.Count; i++)
-					{
-						log.DebugFormat("Query #{0}: {1}", i, criteriaQueries[i]);
-					}
-				}
-
-				if (cacheable)
-				{
-					criteriaResults = await (ListUsingQueryCacheAsync());
-				}
-				else
-				{
-					criteriaResults = await (ListIgnoreQueryCacheAsync());
-				}
-
-				return criteriaResults;
-			}
+			return GetResultList(await (DoListAsync()));
 		}
 
-		public async Task<object> GetResultAsync(string key)
+		private async Task<IList> DoListAsync()
 		{
-			if (criteriaResults == null)
-				await (ListAsync());
-			int criteriaResultPosition;
-			if (!criteriaResultPositions.TryGetValue(key, out criteriaResultPosition))
-				throw new InvalidOperationException(String.Format("The key '{0}' is unknown", key));
-			return criteriaResults[criteriaResultPosition];
+			List<IList> results = new List<IList>();
+			await (GetResultsFromDatabaseAsync(results));
+			return results;
 		}
 
 		private async Task GetResultsFromDatabaseAsync(IList results)
@@ -185,16 +187,14 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private async Task<IList> DoListAsync()
+		public async Task<object> GetResultAsync(string key)
 		{
-			List<IList> results = new List<IList>();
-			await (GetResultsFromDatabaseAsync(results));
-			return results;
-		}
-
-		private async Task<IList> ListIgnoreQueryCacheAsync()
-		{
-			return GetResultList(await (DoListAsync()));
+			if (criteriaResults == null)
+				await (ListAsync());
+			int criteriaResultPosition;
+			if (!criteriaResultPositions.TryGetValue(key, out criteriaResultPosition))
+				throw new InvalidOperationException(String.Format("The key '{0}' is unknown", key));
+			return criteriaResults[criteriaResultPosition];
 		}
 	}
 }

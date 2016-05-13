@@ -1,7 +1,7 @@
 using NHibernate.Exceptions;
 namespace NHibernate.Cfg.Loquacious
 {
-	public interface ICommandsConfiguration
+	public partial interface ICommandsConfiguration
 	{
 		ICommandsConfiguration Preparing();
 		ICommandsConfiguration WithTimeout(byte seconds);

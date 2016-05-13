@@ -15,7 +15,7 @@ namespace NHibernate.Intercept
 	}
 
 	/// <summary> Contract for controlling how lazy properties get initialized. </summary>
-	public interface ILazyPropertyInitializer
+	public partial interface ILazyPropertyInitializer
 	{
 		/// <summary> Initialize the property, and return its new value</summary>
 		object InitializeLazyProperty(string fieldName, object entity, ISessionImplementor session);

@@ -6,7 +6,7 @@ namespace NHibernate.Properties
 	/// <summary>
 	/// An <see cref="ISetter" /> that can emit IL to set the property value.
 	/// </summary>
-	public interface IOptimizableSetter
+	public partial interface IOptimizableSetter
 	{
 		/// <summary>
 		/// Emit IL to set the property of an object to the value. The object

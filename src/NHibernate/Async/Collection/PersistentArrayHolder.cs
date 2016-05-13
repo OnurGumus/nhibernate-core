@@ -9,20 +9,33 @@ using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Collection
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class PersistentArrayHolder : AbstractPersistentCollection, ICollection
 	{
-		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner)
+		public override async Task<object> GetSnapshotAsync(ICollectionPersister persister)
 		{
-			object[] cached = (object[])disassembled;
-			array = System.Array.CreateInstance(persister.ElementClass, cached.Length);
-			for (int i = 0; i < cached.Length; i++)
+			EntityMode entityMode = Session.EntityMode;
+			int length = array.Length;
+			Array result = System.Array.CreateInstance(persister.ElementClass, length);
+			for (int i = 0; i < length; i++)
 			{
-				array.SetValue(await (persister.ElementType.AssembleAsync(cached[i], Session, owner)), i);
+				object elt = array.GetValue(i);
+				try
+				{
+					result.SetValue(await (persister.ElementType.DeepCopyAsync(elt, entityMode, persister.Factory)), i);
+				}
+				catch (Exception e)
+				{
+					log.Error("Array element type error", e);
+					throw new HibernateException("Array element type error", e);
+				}
 			}
+
+			return result;
 		}
 
 		public override async Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
@@ -36,19 +49,6 @@ namespace NHibernate.Collection
 			}
 
 			return result;
-		}
-
-		public override async Task<object> ReadFromAsync(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
-		{
-			object element = await (role.ReadElementAsync(rs, owner, descriptor.SuffixedElementAliases, Session));
-			int index = (int)await (role.ReadIndexAsync(rs, descriptor.SuffixedIndexAliases, Session));
-			for (int i = tempList.Count; i <= index; i++)
-			{
-				tempList.Add(null);
-			}
-
-			tempList[index] = element;
-			return element;
 		}
 
 		public override async Task<bool> EqualsSnapshotAsync(ICollectionPersister persister)
@@ -72,70 +72,33 @@ namespace NHibernate.Collection
 			return true;
 		}
 
-		public override async Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula)
+		public override async Task<object> ReadFromAsync(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
-			IList deletes = new List<object>();
-			Array sn = (Array)GetSnapshot();
-			int snSize = sn.Length;
-			int arraySize = array.Length;
-			int end;
-			if (snSize > arraySize)
+			object element = await (role.ReadElementAsync(rs, owner, descriptor.SuffixedElementAliases, Session));
+			int index = (int)await (role.ReadIndexAsync(rs, descriptor.SuffixedIndexAliases, Session));
+			for (int i = tempList.Count; i <= index; i++)
 			{
-				for (int i = arraySize; i < snSize; i++)
-				{
-					deletes.Add(i);
-				}
-
-				end = arraySize;
-			}
-			else
-			{
-				end = snSize;
+				tempList.Add(null);
 			}
 
-			for (int i = 0; i < end; i++)
-			{
-				if (array.GetValue(i) == null && sn.GetValue(i) != null)
-				{
-					deletes.Add(i);
-				}
-			}
-
-			return deletes;
+			tempList[index] = element;
+			return element;
 		}
 
-		public override async Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType)
+		/// <summary>
+		/// Initializes this array holder from the cached values.
+		/// </summary>
+		/// <param name = "persister">The CollectionPersister to use to reassemble the Array.</param>
+		/// <param name = "disassembled">The disassembled Array.</param>
+		/// <param name = "owner">The owner object.</param>
+		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner)
 		{
-			Array sn = (Array)GetSnapshot();
-			return array.GetValue(i) != null && (i >= sn.Length || sn.GetValue(i) == null);
-		}
-
-		public override async Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType)
-		{
-			Array sn = (Array)GetSnapshot();
-			return i < sn.Length && sn.GetValue(i) != null && array.GetValue(i) != null && await (elemType.IsDirtyAsync(array.GetValue(i), sn.GetValue(i), Session));
-		}
-
-		public override async Task<object> GetSnapshotAsync(ICollectionPersister persister)
-		{
-			EntityMode entityMode = Session.EntityMode;
-			int length = array.Length;
-			Array result = System.Array.CreateInstance(persister.ElementClass, length);
-			for (int i = 0; i < length; i++)
+			object[] cached = (object[])disassembled;
+			array = System.Array.CreateInstance(persister.ElementClass, cached.Length);
+			for (int i = 0; i < cached.Length; i++)
 			{
-				object elt = array.GetValue(i);
-				try
-				{
-					result.SetValue(await (persister.ElementType.DeepCopyAsync(elt, entityMode, persister.Factory)), i);
-				}
-				catch (Exception e)
-				{
-					log.Error("Array element type error", e);
-					throw new HibernateException("Array element type error", e);
-				}
+				array.SetValue(await (persister.ElementType.AssembleAsync(cached[i], Session, owner)), i);
 			}
-
-			return result;
 		}
 
 		public override async Task<object> DisassembleAsync(ICollectionPersister persister)
@@ -148,6 +111,36 @@ namespace NHibernate.Collection
 			}
 
 			return result;
+		}
+
+		public override Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula)
+		{
+			try
+			{
+				return Task.FromResult<IEnumerable>(GetDeletes(persister, indexIsFormula));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<IEnumerable>(ex);
+			}
+		}
+
+		public override Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType)
+		{
+			try
+			{
+				return Task.FromResult<bool>(NeedsInserting(entry, i, elemType));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<bool>(ex);
+			}
+		}
+
+		public override async Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType)
+		{
+			Array sn = (Array)GetSnapshot();
+			return i < sn.Length && sn.GetValue(i) != null && array.GetValue(i) != null && await (elemType.IsDirtyAsync(array.GetValue(i), sn.GetValue(i), Session));
 		}
 	}
 }

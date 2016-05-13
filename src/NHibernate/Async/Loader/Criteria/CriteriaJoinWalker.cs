@@ -8,6 +8,7 @@ using NHibernate.Type;
 using NHibernate.Util;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
 using System.Threading.Tasks;
+using System;
 
 namespace NHibernate.Loader.Criteria
 {
@@ -18,11 +19,6 @@ namespace NHibernate.Loader.Criteria
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class CriteriaJoinWalker : AbstractEntityJoinWalker
 	{
-		protected override async Task<SqlString> GetWithClauseAsync(string path)
-		{
-			return await (translator.GetWithClauseAsync(path, EnabledFilters));
-		}
-
 		protected override async Task WalkEntityTreeAsync(IOuterJoinLoadable persister, string alias, string path, int currentDepth)
 		{
 			// NH different behavior (NH-1476, NH-1760, NH-1785)
@@ -39,6 +35,11 @@ namespace NHibernate.Loader.Criteria
 				ILhsAssociationTypeSqlInfo associationTypeSQLInfo = JoinHelper.GetIdLhsSqlInfo(alias, persister, Factory);
 				await (WalkComponentTreeAsync((IAbstractComponentType)type, 0, alias, SubPath(path, propertyName), 0, associationTypeSQLInfo));
 			}
+		}
+
+		protected override Task<SqlString> GetWithClauseAsync(string path)
+		{
+			return translator.GetWithClauseAsync(path, EnabledFilters);
 		}
 	}
 }

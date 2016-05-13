@@ -781,7 +781,7 @@ namespace NHibernate.Impl
 		#endregion
 	}
 
-	public interface ITranslator
+	public partial interface ITranslator
 	{
 		Loader.Loader Loader { get; }
 		IType[] ReturnTypes { get; }

@@ -4,7 +4,7 @@ namespace NHibernate.Properties
 	/// Abstracts the notion of a "property". Defines a strategy for accessing the
 	/// value of a mapped property.
 	/// </summary>
-	public interface IPropertyAccessor
+	public partial interface IPropertyAccessor
 	{
 		/// <summary>
 		/// When implemented by a class, create a "getter" for the mapped property.

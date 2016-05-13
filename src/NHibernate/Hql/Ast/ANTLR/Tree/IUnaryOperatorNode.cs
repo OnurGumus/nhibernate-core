@@ -9,7 +9,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public interface IUnaryOperatorNode : IOperatorNode
+	public partial interface IUnaryOperatorNode : IOperatorNode
 	{
 		/// <summary>
 		/// Retrieves the node representing the operator's single operand.

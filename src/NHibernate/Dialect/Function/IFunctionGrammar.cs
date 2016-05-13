@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 
 namespace NHibernate.Dialect.Function
 {
-	public interface IFunctionGrammar
+	public partial interface IFunctionGrammar
 	{
 		bool IsSeparator(string token);
 		bool IsKnownArgument(string token);

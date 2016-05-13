@@ -9,7 +9,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public interface ISelectExpression
+	public partial interface ISelectExpression
 	{
 		/// <summary>
 		/// Returns the data type of the select expression.

@@ -21,42 +21,19 @@ namespace NHibernate.Impl
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class MultiQueryImpl : IMultiQuery
 	{
-		private async Task<IList> ListUsingQueryCacheAsync()
+		public async Task<IMultiQuery> SetEntityAsync(string name, object val)
 		{
-			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);
-			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
-			ISet<string> querySpaces = new HashSet<string>();
-			List<IType[]> resultTypesList = new List<IType[]>(Translators.Count);
-			for (int i = 0; i < Translators.Count; i++)
+			foreach (IQuery query in queries)
 			{
-				ITranslator queryTranslator = Translators[i];
-				querySpaces.UnionWith(queryTranslator.QuerySpaces);
-				resultTypesList.Add(queryTranslator.ReturnTypes);
+				await (query.SetEntityAsync(name, val));
 			}
 
-			int[] firstRows = new int[Parameters.Count];
-			int[] maxRows = new int[Parameters.Count];
-			for (int i = 0; i < Parameters.Count; i++)
-			{
-				RowSelection rowSelection = Parameters[i].RowSelection;
-				firstRows[i] = rowSelection.FirstRow;
-				maxRows[i] = rowSelection.MaxRows;
-			}
-
-			MultipleQueriesCacheAssembler assembler = new MultipleQueriesCacheAssembler(resultTypesList);
-			QueryKey key = new QueryKey(session.Factory, SqlString, combinedParameters, filterKeys, null).SetFirstRows(firstRows).SetMaxRows(maxRows);
-			IList result = await (assembler.GetResultFromQueryCacheAsync(session, combinedParameters, querySpaces, queryCache, key));
-			if (result == null)
-			{
-				log.Debug("Cache miss for multi query");
-				var list = await (DoListAsync());
-				await (queryCache.PutAsync(key, new ICacheAssembler[]{assembler}, new object[]{list}, false, session));
-				result = list;
-			}
-
-			return GetResultList(result);
+			return this;
 		}
 
+		/// <summary>
+		/// Return the query results of all the queries
+		/// </summary>
 		public async Task<IList> ListAsync()
 		{
 			using (new SessionIdLoggingContext(session.SessionId))
@@ -82,19 +59,6 @@ namespace NHibernate.Impl
 					After();
 				}
 			}
-		}
-
-		public async Task<object> GetResultAsync(string key)
-		{
-			if (queryResults == null)
-			{
-				queryResults = await (ListAsync());
-			}
-
-			int queryResultPosition;
-			if (!queryResultPositions.TryGetValue(key, out queryResultPosition))
-				throw new InvalidOperationException(String.Format("The key '{0}' is unknown", key));
-			return queryResults[queryResultPosition];
 		}
 
 		protected async Task<List<object>> DoListAsync()
@@ -210,11 +174,6 @@ namespace NHibernate.Impl
 			return results;
 		}
 
-		private async Task<IList> ListIgnoreQueryCacheAsync()
-		{
-			return GetResultList(await (DoListAsync()));
-		}
-
 		private async Task AggregateQueriesInformationAsync()
 		{
 			int queryIndex = 0;
@@ -236,14 +195,58 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public async Task<IMultiQuery> SetEntityAsync(string name, object val)
+		public async Task<object> GetResultAsync(string key)
 		{
-			foreach (IQuery query in queries)
+			if (queryResults == null)
 			{
-				await (query.SetEntityAsync(name, val));
+				queryResults = await (ListAsync());
 			}
 
-			return this;
+			int queryResultPosition;
+			if (!queryResultPositions.TryGetValue(key, out queryResultPosition))
+				throw new InvalidOperationException(String.Format("The key '{0}' is unknown", key));
+			return queryResults[queryResultPosition];
+		}
+
+		private async Task<IList> ListIgnoreQueryCacheAsync()
+		{
+			return GetResultList(await (DoListAsync()));
+		}
+
+		private async Task<IList> ListUsingQueryCacheAsync()
+		{
+			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);
+			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters, session.EntityMode);
+			ISet<string> querySpaces = new HashSet<string>();
+			List<IType[]> resultTypesList = new List<IType[]>(Translators.Count);
+			for (int i = 0; i < Translators.Count; i++)
+			{
+				ITranslator queryTranslator = Translators[i];
+				querySpaces.UnionWith(queryTranslator.QuerySpaces);
+				resultTypesList.Add(queryTranslator.ReturnTypes);
+			}
+
+			int[] firstRows = new int[Parameters.Count];
+			int[] maxRows = new int[Parameters.Count];
+			for (int i = 0; i < Parameters.Count; i++)
+			{
+				RowSelection rowSelection = Parameters[i].RowSelection;
+				firstRows[i] = rowSelection.FirstRow;
+				maxRows[i] = rowSelection.MaxRows;
+			}
+
+			MultipleQueriesCacheAssembler assembler = new MultipleQueriesCacheAssembler(resultTypesList);
+			QueryKey key = new QueryKey(session.Factory, SqlString, combinedParameters, filterKeys, null).SetFirstRows(firstRows).SetMaxRows(maxRows);
+			IList result = await (assembler.GetResultFromQueryCacheAsync(session, combinedParameters, querySpaces, queryCache, key));
+			if (result == null)
+			{
+				log.Debug("Cache miss for multi query");
+				var list = await (DoListAsync());
+				await (queryCache.PutAsync(key, new ICacheAssembler[]{assembler}, new object[]{list}, false, session));
+				result = list;
+			}
+
+			return GetResultList(result);
 		}
 	}
 }

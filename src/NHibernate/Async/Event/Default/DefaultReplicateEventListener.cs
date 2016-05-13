@@ -97,14 +97,6 @@ namespace NHibernate.Event.Default
 			await (CascadeAfterReplicateAsync(entity, persister, replicationMode, source));
 		}
 
-		protected override async Task<bool> VisitCollectionsBeforeSaveAsync(object entity, object id, object[] values, Type.IType[] types, IEventSource source)
-		{
-			//TODO: we use two visitors here, inefficient!
-			OnReplicateVisitor visitor = new OnReplicateVisitor(source, id, entity, false);
-			await (visitor.ProcessEntityPropertyValuesAsync(values, types));
-			return await (base.VisitCollectionsBeforeSaveAsync(entity, id, values, types, source));
-		}
-
 		private async Task CascadeAfterReplicateAsync(object entity, IEntityPersister persister, ReplicationMode replicationMode, IEventSource source)
 		{
 			source.PersistenceContext.IncrementCascadeLevel();
@@ -116,6 +108,14 @@ namespace NHibernate.Event.Default
 			{
 				source.PersistenceContext.DecrementCascadeLevel();
 			}
+		}
+
+		protected override async Task<bool> VisitCollectionsBeforeSaveAsync(object entity, object id, object[] values, Type.IType[] types, IEventSource source)
+		{
+			//TODO: we use two visitors here, inefficient!
+			OnReplicateVisitor visitor = new OnReplicateVisitor(source, id, entity, false);
+			await (visitor.ProcessEntityPropertyValuesAsync(values, types));
+			return await (base.VisitCollectionsBeforeSaveAsync(entity, id, values, types, source));
 		}
 	}
 }

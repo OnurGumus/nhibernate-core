@@ -27,6 +27,13 @@ namespace NHibernate.Engine.Loading
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class LoadContexts
 	{
+		/// <summary> 
+		/// Attempt to locate the loading collection given the owner's key.  The lookup here
+		/// occurs against all result-set contexts... 
+		/// </summary>
+		/// <param name = "persister">The collection persister </param>
+		/// <param name = "ownerKey">The owner key </param>
+		/// <returns> The loading collection, or null if not found. </returns>
 		public async Task<IPersistentCollection> LocateLoadingCollectionAsync(ICollectionPersister persister, object ownerKey)
 		{
 			LoadingCollectionEntry lce = LocateLoadingCollectionEntry(new CollectionKey(persister, ownerKey, Session.EntityMode));

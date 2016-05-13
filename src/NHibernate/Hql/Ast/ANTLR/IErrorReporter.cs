@@ -9,7 +9,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public interface IErrorReporter
+	public partial interface IErrorReporter
 	{
 		void ReportError(RecognitionException e);
 

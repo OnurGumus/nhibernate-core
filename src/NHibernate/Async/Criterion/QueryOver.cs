@@ -7,90 +7,147 @@ using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class QueryOver<TRoot> : QueryOver, IQueryOver<TRoot>
 	{
-		private async Task<TRoot> SingleOrDefaultAsync()
+		private Task<IList<TRoot>> ListAsync()
 		{
-			return await (criteria.UniqueResultAsync<TRoot>());
+			return criteria.ListAsync<TRoot>();
 		}
 
-		async Task<TRoot> IQueryOver<TRoot>.SingleOrDefaultAsync()
+		private Task<IList<U>> ListAsync<U>()
 		{
-			return SingleOrDefault();
+			return criteria.ListAsync<U>();
 		}
 
-		async Task<U> IQueryOver<TRoot>.SingleOrDefaultAsync<U>()
+		private Task<TRoot> SingleOrDefaultAsync()
 		{
-			return SingleOrDefault<U>();
+			return criteria.UniqueResultAsync<TRoot>();
 		}
 
-		private async Task<U> SingleOrDefaultAsync<U>()
+		private Task<U> SingleOrDefaultAsync<U>()
 		{
-			return await (criteria.UniqueResultAsync<U>());
+			return criteria.UniqueResultAsync<U>();
 		}
 
-		private async Task<IList<TRoot>> ListAsync()
+		private Task<IEnumerable<TRoot>> FutureAsync()
 		{
-			return await (criteria.ListAsync<TRoot>());
+			return criteria.FutureAsync<TRoot>();
 		}
 
-		async Task<IList<TRoot>> IQueryOver<TRoot>.ListAsync()
+		private Task<IEnumerable<U>> FutureAsync<U>()
 		{
-			return List();
+			return criteria.FutureAsync<U>();
 		}
 
-		async Task<IList<U>> IQueryOver<TRoot>.ListAsync<U>()
+		private Task<IFutureValue<TRoot>> FutureValueAsync()
 		{
-			return List<U>();
+			return criteria.FutureValueAsync<TRoot>();
 		}
 
-		private async Task<IList<U>> ListAsync<U>()
+		private Task<IFutureValue<U>> FutureValueAsync<U>()
 		{
-			return await (criteria.ListAsync<U>());
+			return criteria.FutureValueAsync<U>();
 		}
 
-		private async Task<IFutureValue<U>> FutureValueAsync<U>()
+		Task<IList<TRoot>> IQueryOver<TRoot>.ListAsync()
 		{
-			return await (criteria.FutureValueAsync<U>());
+			try
+			{
+				return Task.FromResult<IList<TRoot>>(List());
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<IList<TRoot>>(ex);
+			}
 		}
 
-		async Task<IFutureValue<TRoot>> IQueryOver<TRoot>.FutureValueAsync()
+		Task<IList<U>> IQueryOver<TRoot>.ListAsync<U>()
 		{
-			return FutureValue();
+			try
+			{
+				return Task.FromResult<IList<U>>(List<U>());
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<IList<U>>(ex);
+			}
 		}
 
-		async Task<IFutureValue<U>> IQueryOver<TRoot>.FutureValueAsync<U>()
+		Task<TRoot> IQueryOver<TRoot>.SingleOrDefaultAsync()
 		{
-			return FutureValue<U>();
+			try
+			{
+				return Task.FromResult<TRoot>(SingleOrDefault());
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<TRoot>(ex);
+			}
 		}
 
-		private async Task<IFutureValue<TRoot>> FutureValueAsync()
+		Task<U> IQueryOver<TRoot>.SingleOrDefaultAsync<U>()
 		{
-			return await (criteria.FutureValueAsync<TRoot>());
+			try
+			{
+				return Task.FromResult<U>(SingleOrDefault<U>());
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<U>(ex);
+			}
 		}
 
-		private async Task<IEnumerable<U>> FutureAsync<U>()
+		Task<IEnumerable<TRoot>> IQueryOver<TRoot>.FutureAsync()
 		{
-			return await (criteria.FutureAsync<U>());
+			try
+			{
+				return Task.FromResult<IEnumerable<TRoot>>(Future());
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<IEnumerable<TRoot>>(ex);
+			}
 		}
 
-		async Task<IEnumerable<TRoot>> IQueryOver<TRoot>.FutureAsync()
+		Task<IEnumerable<U>> IQueryOver<TRoot>.FutureAsync<U>()
 		{
-			return Future();
+			try
+			{
+				return Task.FromResult<IEnumerable<U>>(Future<U>());
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<IEnumerable<U>>(ex);
+			}
 		}
 
-		async Task<IEnumerable<U>> IQueryOver<TRoot>.FutureAsync<U>()
+		Task<IFutureValue<TRoot>> IQueryOver<TRoot>.FutureValueAsync()
 		{
-			return Future<U>();
+			try
+			{
+				return Task.FromResult<IFutureValue<TRoot>>(FutureValue());
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<IFutureValue<TRoot>>(ex);
+			}
 		}
 
-		private async Task<IEnumerable<TRoot>> FutureAsync()
+		Task<IFutureValue<U>> IQueryOver<TRoot>.FutureValueAsync<U>()
 		{
-			return await (criteria.FutureAsync<TRoot>());
+			try
+			{
+				return Task.FromResult<IFutureValue<U>>(FutureValue<U>());
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<IFutureValue<U>>(ex);
+			}
 		}
 	}
 }

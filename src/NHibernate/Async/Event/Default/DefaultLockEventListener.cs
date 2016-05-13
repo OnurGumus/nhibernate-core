@@ -8,20 +8,8 @@ namespace NHibernate.Event.Default
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class DefaultLockEventListener : AbstractLockUpgradeEventListener, ILockEventListener
 	{
-		private async Task CascadeOnLockAsync(LockEvent @event, IEntityPersister persister, object entity)
-		{
-			IEventSource source = @event.Session;
-			source.PersistenceContext.IncrementCascadeLevel();
-			try
-			{
-				await (new Cascade(CascadingAction.Lock, CascadePoint.AfterLock, source).CascadeOnAsync(persister, entity, @event.LockMode));
-			}
-			finally
-			{
-				source.PersistenceContext.DecrementCascadeLevel();
-			}
-		}
-
+		/// <summary>Handle the given lock event. </summary>
+		/// <param name = "event">The lock event to be handled.</param>
 		public virtual async Task OnLockAsync(LockEvent @event)
 		{
 			if (@event.Entity == null)
@@ -59,6 +47,20 @@ namespace NHibernate.Event.Default
 			}
 
 			await (UpgradeLockAsync(entity, entry, @event.LockMode, source));
+		}
+
+		private async Task CascadeOnLockAsync(LockEvent @event, IEntityPersister persister, object entity)
+		{
+			IEventSource source = @event.Session;
+			source.PersistenceContext.IncrementCascadeLevel();
+			try
+			{
+				await (new Cascade(CascadingAction.Lock, CascadePoint.AfterLock, source).CascadeOnAsync(persister, entity, @event.LockMode));
+			}
+			finally
+			{
+				source.PersistenceContext.DecrementCascadeLevel();
+			}
 		}
 	}
 }

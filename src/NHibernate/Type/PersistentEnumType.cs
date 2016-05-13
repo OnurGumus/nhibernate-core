@@ -19,7 +19,7 @@ namespace NHibernate.Type
 		// OLD TODO: ORACLE - An convert is needed because right now everything that Oracle is 
 		// sending to NHibernate is a decimal - not the correct underlying type and I don't know why
 
-		public interface IEnumConverter
+		public partial interface IEnumConverter
 		{
 			object ToObject(System.Type enumClass, object code);
 			object ToEnumValue(object value);

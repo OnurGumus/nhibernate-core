@@ -11,12 +11,52 @@ namespace NHibernate.Type
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class OneToOneType : EntityType, IAssociationType
 	{
-		public override async Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner)
+		public override Task NullSafeSetAsync(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
-			//this should be a call to resolve(), not resolveIdentifier(), 
-			//'cos it might be a property-ref, and we did not cache the
-			//referenced value
-			return await (ResolveIdentifierAsync(session.GetContextEntityIdentifier(owner), session, owner));
+			return TaskHelper.CompletedTask;
+		//nothing to do
+		}
+
+		public override Task NullSafeSetAsync(IDbCommand cmd, object value, int index, ISessionImplementor session)
+		{
+			return TaskHelper.CompletedTask;
+		//nothing to do
+		}
+
+		public override Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session)
+		{
+			try
+			{
+				return Task.FromResult<bool>(IsDirty(old, current, session));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<bool>(ex);
+			}
+		}
+
+		public override Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		{
+			try
+			{
+				return Task.FromResult<bool>(IsDirty(old, current, checkable, session));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<bool>(ex);
+			}
+		}
+
+		public override Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		{
+			try
+			{
+				return Task.FromResult<bool>(IsModified(old, current, checkable, session));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<bool>(ex);
+			}
 		}
 
 		public override async Task<object> HydrateAsync(IDataReader rs, string[] names, ISessionImplementor session, object owner)
@@ -41,39 +81,36 @@ namespace NHibernate.Type
 			return identifier;
 		}
 
-		public override async Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
 		{
-			return false;
+			try
+			{
+				return Task.FromResult<object>(Disassemble(value, session, owner));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 
-		public override async Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session)
+		public override async Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner)
 		{
-			return false;
+			//this should be a call to resolve(), not resolveIdentifier(), 
+			//'cos it might be a property-ref, and we did not cache the
+			//referenced value
+			return await (ResolveIdentifierAsync(session.GetContextEntityIdentifier(owner), session, owner));
 		}
 
-		public override async Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		public override Task<bool[]> ToColumnNullnessAsync(object value, IMapping mapping)
 		{
-			return false;
-		}
-
-		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
-		{
-			return null;
-		}
-
-		public override async Task<bool[]> ToColumnNullnessAsync(object value, IMapping mapping)
-		{
-			return ArrayHelper.EmptyBoolArray;
-		}
-
-		public override async Task NullSafeSetAsync(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
-		{
-		//nothing to do
-		}
-
-		public override async Task NullSafeSetAsync(IDbCommand cmd, object value, int index, ISessionImplementor session)
-		{
-		//nothing to do
+			try
+			{
+				return Task.FromResult<bool[]>(ToColumnNullness(value, mapping));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<bool[]>(ex);
+			}
 		}
 	}
 }

@@ -27,71 +27,6 @@ namespace NHibernate.Impl
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class StatelessSessionImpl : AbstractSessionImpl, IStatelessSession
 	{
-		public override async Task FlushAsync()
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				ManagedFlush(); // NH Different behavior since ADOContext.Context is not implemented
-			}
-		}
-
-		public override async Task<IList> ListFilterAsync(object collection, string filter, QueryParameters parameters)
-		{
-			throw new NotSupportedException();
-		}
-
-		public async Task<object> InsertAsync(string entityName, object entity)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				CheckAndUpdateSessionStatus();
-				IEntityPersister persister = GetEntityPersister(entityName, entity);
-				object id = await (persister.IdentifierGenerator.GenerateAsync(this, entity));
-				object[] state = persister.GetPropertyValues(entity, EntityMode.Poco);
-				if (persister.IsVersioned)
-				{
-					object versionValue = state[persister.VersionProperty];
-					bool substitute = await (Versioning.SeedVersionAsync(state, persister.VersionProperty, persister.VersionType, persister.IsUnsavedVersion(versionValue), this));
-					if (substitute)
-					{
-						persister.SetPropertyValues(entity, state, EntityMode.Poco);
-					}
-				}
-
-				if (id == IdentifierGeneratorFactory.PostInsertIndicator)
-				{
-					id = await (persister.InsertAsync(state, entity, this));
-				}
-				else
-				{
-					await (persister.InsertAsync(id, state, entity, this));
-				}
-
-				await (persister.SetIdentifierAsync(entity, id, EntityMode.Poco));
-				return id;
-			}
-		}
-
-		public async Task<object> InsertAsync(object entity)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				CheckAndUpdateSessionStatus();
-				return await (InsertAsync(null, entity));
-			}
-		}
-
-		public override async Task<object> GetEntityUsingInterceptorAsync(EntityKey key)
-		{
-			CheckAndUpdateSessionStatus();
-			// while a pending Query we should use existing temporary entities so a join fetch does not create multiple instances
-			// of the same parent item (NH-3015, NH-3705).
-			object obj;
-			if (temporaryPersistenceContext.EntitiesByKey.TryGetValue(key, out obj))
-				return obj;
-			return null;
-		}
-
 		public override async Task InitializeCollectionAsync(IPersistentCollection collection, bool writing)
 		{
 			if (temporaryPersistenceContext.IsLoadFinished)
@@ -106,17 +41,61 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results)
+		public override async Task<object> InternalLoadAsync(string entityName, object id, bool eager, bool isNullable)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				var loader = new CustomLoader(customQuery, Factory);
-				var success = false;
+				IEntityPersister persister = Factory.GetEntityPersister(entityName);
+				object loaded = temporaryPersistenceContext.GetEntity(GenerateEntityKey(id, persister, EntityMode.Poco));
+				if (loaded != null)
+				{
+					return loaded;
+				}
+
+				if (!eager && persister.HasProxy)
+				{
+					return persister.CreateProxy(id, this);
+				}
+
+				//TODO: if not loaded, throw an exception
+				return await (GetAsync(entityName, id));
+			}
+		}
+
+		public override Task<object> ImmediateLoadAsync(string entityName, object id)
+		{
+			try
+			{
+				return Task.FromResult<object>(ImmediateLoad(entityName, id));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		public override async Task ListAsync(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				queryParameters.ValidateParameters();
+				var plan = GetHQLQueryPlan(queryExpression, false);
+				bool success = false;
 				try
 				{
-					ArrayHelper.AddAll(results, await (loader.ListAsync(this, queryParameters)));
+					await (plan.PerformListAsync(queryParameters, this, results));
 					success = true;
+				}
+				catch (HibernateException)
+				{
+					// Do not call Convert on HibernateExceptions
+					throw;
+				}
+				catch (Exception e)
+				{
+					throw Convert(e, "Could not execute query");
 				}
 				finally
 				{
@@ -168,108 +147,97 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task ListAsync(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
+		public override Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters)
+		{
+			try
+			{
+				return Task.FromResult<IEnumerable>(Enumerable(queryExpression, queryParameters));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<IEnumerable>(ex);
+			}
+		}
+
+		public override Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters)
+		{
+			try
+			{
+				return Task.FromResult<IEnumerable<T>>(Enumerable<T>(queryExpression, queryParameters));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<IEnumerable<T>>(ex);
+			}
+		}
+
+		public override Task<IList> ListFilterAsync(object collection, string filter, QueryParameters parameters)
+		{
+			try
+			{
+				return Task.FromResult<IList>(ListFilter(collection, filter, parameters));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<IList>(ex);
+			}
+		}
+
+		public override Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters)
+		{
+			try
+			{
+				return Task.FromResult<IList<T>>(ListFilter<T>(collection, filter, parameters));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<IList<T>>(ex);
+			}
+		}
+
+		public override Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters)
+		{
+			try
+			{
+				return Task.FromResult<IEnumerable>(EnumerableFilter(collection, filter, parameters));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<IEnumerable>(ex);
+			}
+		}
+
+		public override Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters)
+		{
+			try
+			{
+				return Task.FromResult<IEnumerable<T>>(EnumerableFilter<T>(collection, filter, parameters));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<IEnumerable<T>>(ex);
+			}
+		}
+
+		public override async Task<object> InstantiateAsync(string clazz, object id)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(queryExpression, false);
-				bool success = false;
-				try
-				{
-					await (plan.PerformListAsync(queryParameters, this, results));
-					success = true;
-				}
-				catch (HibernateException)
-				{
-					// Do not call Convert on HibernateExceptions
-					throw;
-				}
-				catch (Exception e)
-				{
-					throw Convert(e, "Could not execute query");
-				}
-				finally
-				{
-					AfterOperation(success);
-				}
-
-				temporaryPersistenceContext.Clear();
+				return await (Factory.GetEntityPersister(clazz).InstantiateAsync(id, EntityMode.Poco));
 			}
 		}
 
-		public override async Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters)
-		{
-			throw new NotSupportedException();
-		}
-
-		public override async Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override async Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override async Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters)
-		{
-			throw new NotSupportedException();
-		}
-
-		public override async Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters)
-		{
-			throw new NotSupportedException();
-		}
-
-		public override async Task<IQueryTranslator[]> GetQueriesAsync(IQueryExpression query, bool scalar)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				// take the union of the query spaces (ie the queried tables)
-				var plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, EnabledFilters);
-				return plan.Translators;
-			}
-		}
-
-		public override async Task<int> ExecuteUpdateAsync(IQueryExpression queryExpression, QueryParameters queryParameters)
+		public override async Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				queryParameters.ValidateParameters();
-				var plan = GetHQLQueryPlan(queryExpression, false);
-				bool success = false;
-				int result;
+				var loader = new CustomLoader(customQuery, Factory);
+				var success = false;
 				try
 				{
-					result = await (plan.PerformExecuteUpdateAsync(queryParameters, this));
-					success = true;
-				}
-				finally
-				{
-					AfterOperation(success);
-				}
-
-				temporaryPersistenceContext.Clear();
-				return result;
-			}
-		}
-
-		public override async Task<int> ExecuteNativeUpdateAsync(NativeSQLQuerySpecification nativeSQLQuerySpecification, QueryParameters queryParameters)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				CheckAndUpdateSessionStatus();
-				queryParameters.ValidateParameters();
-				NativeSQLQueryPlan plan = GetNativeSQLQueryPlan(nativeSQLQuerySpecification);
-				bool success = false;
-				int result;
-				try
-				{
-					result = await (plan.PerformExecuteUpdateAsync(queryParameters, this));
+					ArrayHelper.AddAll(results, await (loader.ListAsync(this, queryParameters)));
 					success = true;
 				}
 				finally
@@ -278,31 +246,122 @@ namespace NHibernate.Impl
 				}
 
 				temporaryPersistenceContext.Clear();
-				return result;
 			}
 		}
 
-		public async Task DeleteAsync(string entityName, object entity)
+		public override Task<IQueryTranslator[]> GetQueriesAsync(IQueryExpression query, bool scalar)
+		{
+			try
+			{
+				return Task.FromResult<IQueryTranslator[]>(GetQueries(query, scalar));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<IQueryTranslator[]>(ex);
+			}
+		}
+
+		public override Task<object> GetEntityUsingInterceptorAsync(EntityKey key)
+		{
+			try
+			{
+				return Task.FromResult<object>(GetEntityUsingInterceptor(key));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		public override async Task<string> BestGuessEntityNameAsync(object entity)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				if (entity.IsProxy())
+				{
+					var proxy = entity as INHibernateProxy;
+					entity = await (proxy.HibernateLazyInitializer.GetImplementationAsync());
+				}
+
+				return GuessEntityName(entity);
+			}
+		}
+
+		public override Task FlushAsync()
+		{
+			try
+			{
+				Flush();
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		/// <summary> Insert a entity.</summary>
+		/// <param name = "entity">A new transient instance </param>
+		/// <returns> the identifier of the instance </returns>
+		public async Task<object> InsertAsync(object entity)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				return await (InsertAsync(null, entity));
+			}
+		}
+
+		/// <summary> Insert a row. </summary>
+		/// <param name = "entityName">The entityName for the entity to be inserted </param>
+		/// <param name = "entity">a new transient instance </param>
+		/// <returns> the identifier of the instance </returns>
+		public async Task<object> InsertAsync(string entityName, object entity)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
 				IEntityPersister persister = GetEntityPersister(entityName, entity);
-				object id = await (persister.GetIdentifierAsync(entity, EntityMode.Poco));
-				object version = persister.GetVersion(entity, EntityMode.Poco);
-				await (persister.DeleteAsync(id, version, entity, this));
+				object id = await (persister.IdentifierGenerator.GenerateAsync(this, entity));
+				object[] state = persister.GetPropertyValues(entity, EntityMode.Poco);
+				if (persister.IsVersioned)
+				{
+					object versionValue = state[persister.VersionProperty];
+					bool substitute = await (Versioning.SeedVersionAsync(state, persister.VersionProperty, persister.VersionType, persister.IsUnsavedVersion(versionValue), this));
+					if (substitute)
+					{
+						persister.SetPropertyValues(entity, state, EntityMode.Poco);
+					}
+				}
+
+				if (id == IdentifierGeneratorFactory.PostInsertIndicator)
+				{
+					id = await (persister.InsertAsync(state, entity, this));
+				}
+				else
+				{
+					await (persister.InsertAsync(id, state, entity, this));
+				}
+
+				await (persister.SetIdentifierAsync(entity, id, EntityMode.Poco));
+				return id;
 			}
 		}
 
-		public async Task DeleteAsync(object entity)
+		/// <summary> Update a entity.</summary>
+		/// <param name = "entity">a detached entity instance </param>
+		public async Task UpdateAsync(object entity)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				await (DeleteAsync(null, entity));
+				await (UpdateAsync(null, entity));
 			}
 		}
 
+		/// <summary>Update a entity.</summary>
+		/// <param name = "entityName">The entityName for the entity to be updated </param>
+		/// <param name = "entity">a detached entity instance </param>
 		public async Task UpdateAsync(string entityName, object entity)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -328,15 +387,142 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public async Task UpdateAsync(object entity)
+		/// <summary> Delete a entity. </summary>
+		/// <param name = "entity">a detached entity instance </param>
+		public async Task DeleteAsync(object entity)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				await (UpdateAsync(null, entity));
+				await (DeleteAsync(null, entity));
 			}
 		}
 
+		/// <summary> Delete a entity. </summary>
+		/// <param name = "entityName">The entityName for the entity to be deleted </param>
+		/// <param name = "entity">a detached entity instance </param>
+		public async Task DeleteAsync(string entityName, object entity)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				IEntityPersister persister = GetEntityPersister(entityName, entity);
+				object id = await (persister.GetIdentifierAsync(entity, EntityMode.Poco));
+				object version = persister.GetVersion(entity, EntityMode.Poco);
+				await (persister.DeleteAsync(id, version, entity, this));
+			}
+		}
+
+		/// <summary> Retrieve a entity. </summary>
+		/// <returns> a detached entity instance </returns>
+		public async Task<object> GetAsync(string entityName, object id)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return await (GetAsync(entityName, id, LockMode.None));
+			}
+		}
+
+		/// <summary> Retrieve a entity.
+		///
+		/// </summary>
+		/// <returns> a detached entity instance
+		/// </returns>
+		public Task<T> GetAsync<T>(object id)
+		{
+			try
+			{
+				return Task.FromResult<T>(Get<T>(id));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<T>(ex);
+			}
+		}
+
+		private async Task<object> GetAsync(System.Type persistentClass, object id)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return await (GetAsync(persistentClass.FullName, id));
+			}
+		}
+
+		/// <summary>
+		/// Retrieve a entity, obtaining the specified lock mode.
+		/// </summary>
+		/// <returns> a detached entity instance </returns>
+		public async Task<object> GetAsync(string entityName, object id, LockMode lockMode)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				object result = await (Factory.GetEntityPersister(entityName).LoadAsync(id, null, lockMode, this));
+				if (temporaryPersistenceContext.IsLoadFinished)
+				{
+					temporaryPersistenceContext.Clear();
+				}
+
+				return result;
+			}
+		}
+
+		/// <summary>
+		/// Retrieve a entity, obtaining the specified lock mode.
+		/// </summary>
+		/// <returns> a detached entity instance </returns>
+		public async Task<T> GetAsync<T>(object id, LockMode lockMode)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return (T)await (GetAsync(typeof (T).FullName, id, lockMode));
+			}
+		}
+
+		/// <summary>
+		/// Refresh the entity instance state from the database.
+		/// </summary>
+		/// <param name = "entity">The entity to be refreshed. </param>
+		public async Task RefreshAsync(object entity)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				await (RefreshAsync(await (BestGuessEntityNameAsync(entity)), entity, LockMode.None));
+			}
+		}
+
+		/// <summary>
+		/// Refresh the entity instance state from the database.
+		/// </summary>
+		/// <param name = "entityName">The entityName for the entity to be refreshed. </param>
+		/// <param name = "entity">The entity to be refreshed.</param>
+		public async Task RefreshAsync(string entityName, object entity)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				await (RefreshAsync(entityName, entity, LockMode.None));
+			}
+		}
+
+		/// <summary>
+		/// Refresh the entity instance state from the database.
+		/// </summary>
+		/// <param name = "entity">The entity to be refreshed. </param>
+		/// <param name = "lockMode">The LockMode to be applied.</param>
+		public async Task RefreshAsync(object entity, LockMode lockMode)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				await (RefreshAsync(await (BestGuessEntityNameAsync(entity)), entity, lockMode));
+			}
+		}
+
+		/// <summary>
+		/// Refresh the entity instance state from the database.
+		/// </summary>
+		/// <param name = "entityName">The entityName for the entity to be refreshed. </param>
+		/// <param name = "entity">The entity to be refreshed. </param>
+		/// <param name = "lockMode">The LockMode to be applied. </param>
 		public async Task RefreshAsync(string entityName, object entity, LockMode lockMode)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -379,129 +565,51 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public async Task RefreshAsync(object entity)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				await (RefreshAsync(await (BestGuessEntityNameAsync(entity)), entity, LockMode.None));
-			}
-		}
-
-		public async Task RefreshAsync(string entityName, object entity)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				await (RefreshAsync(entityName, entity, LockMode.None));
-			}
-		}
-
-		public async Task RefreshAsync(object entity, LockMode lockMode)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				await (RefreshAsync(await (BestGuessEntityNameAsync(entity)), entity, lockMode));
-			}
-		}
-
-		public override async Task<object> InstantiateAsync(string clazz, object id)
+		public override async Task<int> ExecuteNativeUpdateAsync(NativeSQLQuerySpecification nativeSQLQuerySpecification, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				CheckAndUpdateSessionStatus();
-				return await (Factory.GetEntityPersister(clazz).InstantiateAsync(id, EntityMode.Poco));
-			}
-		}
-
-		public override async Task<object> InternalLoadAsync(string entityName, object id, bool eager, bool isNullable)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				CheckAndUpdateSessionStatus();
-				IEntityPersister persister = Factory.GetEntityPersister(entityName);
-				object loaded = temporaryPersistenceContext.GetEntity(GenerateEntityKey(id, persister, EntityMode.Poco));
-				if (loaded != null)
+				queryParameters.ValidateParameters();
+				NativeSQLQueryPlan plan = GetNativeSQLQueryPlan(nativeSQLQuerySpecification);
+				bool success = false;
+				int result;
+				try
 				{
-					return loaded;
+					result = await (plan.PerformExecuteUpdateAsync(queryParameters, this));
+					success = true;
+				}
+				finally
+				{
+					AfterOperation(success);
 				}
 
-				if (!eager && persister.HasProxy)
-				{
-					return persister.CreateProxy(id, this);
-				}
-
-				//TODO: if not loaded, throw an exception
-				return await (GetAsync(entityName, id));
-			}
-		}
-
-		public override async Task<object> ImmediateLoadAsync(string entityName, object id)
-		{
-			throw new SessionException("proxies cannot be fetched by a stateless session");
-		}
-
-		public override async Task<string> BestGuessEntityNameAsync(object entity)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				if (entity.IsProxy())
-				{
-					var proxy = entity as INHibernateProxy;
-					entity = await (proxy.HibernateLazyInitializer.GetImplementationAsync());
-				}
-
-				return GuessEntityName(entity);
-			}
-		}
-
-		public async Task<object> GetAsync(string entityName, object id, LockMode lockMode)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				CheckAndUpdateSessionStatus();
-				object result = await (Factory.GetEntityPersister(entityName).LoadAsync(id, null, lockMode, this));
-				if (temporaryPersistenceContext.IsLoadFinished)
-				{
-					temporaryPersistenceContext.Clear();
-				}
-
+				temporaryPersistenceContext.Clear();
 				return result;
 			}
 		}
 
-		public async Task<object> GetAsync(string entityName, object id)
+		public override async Task<int> ExecuteUpdateAsync(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{
-				return await (GetAsync(entityName, id, LockMode.None));
-			}
-		}
+				CheckAndUpdateSessionStatus();
+				queryParameters.ValidateParameters();
+				var plan = GetHQLQueryPlan(queryExpression, false);
+				bool success = false;
+				int result;
+				try
+				{
+					result = await (plan.PerformExecuteUpdateAsync(queryParameters, this));
+					success = true;
+				}
+				finally
+				{
+					AfterOperation(success);
+				}
 
-		/// <summary> Retrieve a entity.
-		///
-		/// </summary>
-		/// <returns> a detached entity instance
-		/// </returns>
-		public async Task<T> GetAsync<T>(object id)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				return (T)Get(typeof (T), id);
-			}
-		}
-
-		public async Task<T> GetAsync<T>(object id, LockMode lockMode)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				return (T)await (GetAsync(typeof (T).FullName, id, lockMode));
-			}
-		}
-
-		private async Task<object> GetAsync(System.Type persistentClass, object id)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				return await (GetAsync(persistentClass.FullName, id));
+				temporaryPersistenceContext.Clear();
+				return result;
 			}
 		}
 	}

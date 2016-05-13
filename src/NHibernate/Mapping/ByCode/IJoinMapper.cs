@@ -2,7 +2,7 @@
 
 namespace NHibernate.Mapping.ByCode
 {
-	public interface IJoinAttributesMapper : IEntitySqlsMapper
+	public partial interface IJoinAttributesMapper : IEntitySqlsMapper
 	{
 		void Table(string tableName);
 		void Catalog(string catalogName);
@@ -13,9 +13,9 @@ namespace NHibernate.Mapping.ByCode
 		void Fetch(FetchKind fetchMode);
 	}
 
-	public interface IJoinMapper : IJoinAttributesMapper, ICollectionPropertiesContainerMapper, IBasePlainPropertyContainerMapper { }
+	public partial interface IJoinMapper : IJoinAttributesMapper, ICollectionPropertiesContainerMapper, IBasePlainPropertyContainerMapper { }
 
-	public interface IJoinAttributesMapper<TEntity> : IEntitySqlsMapper where TEntity : class
+	public partial interface IJoinAttributesMapper<TEntity> : IEntitySqlsMapper where TEntity : class
 	{
 		void Table(string tableName);
 		void Catalog(string catalogName);
@@ -26,6 +26,6 @@ namespace NHibernate.Mapping.ByCode
 		void Key(Action<IKeyMapper<TEntity>> keyMapping);
 	}
 
-	public interface IJoinMapper<TEntity> : IJoinAttributesMapper<TEntity>, ICollectionPropertiesContainerMapper<TEntity>, IBasePlainPropertyContainerMapper<TEntity> 
+	public partial interface IJoinMapper<TEntity> : IJoinAttributesMapper<TEntity>, ICollectionPropertiesContainerMapper<TEntity>, IBasePlainPropertyContainerMapper<TEntity> 
 		where TEntity : class {}
 }

@@ -7,35 +7,35 @@ using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class AbstractEmptinessExpression : AbstractCriterion
 	{
-		public override async Task<SqlString> ToSqlStringAsync(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			var entityName = criteriaQuery.GetEntityName(criteria, propertyName);
-			var actualPropertyName = criteriaQuery.GetPropertyName(propertyName);
-			var sqlAlias = criteriaQuery.GetSQLAlias(criteria, propertyName);
-			var factory = criteriaQuery.Factory;
-			var collectionPersister = GetQueryableCollection(entityName, actualPropertyName, factory);
-			var collectionKeys = collectionPersister.KeyColumnNames;
-			var ownerKeys = ((ILoadable)factory.GetEntityPersister(entityName)).IdentifierColumnNames;
-			var innerSelect = new StringBuilder();
-			innerSelect.Append("(select 1 from ").Append(collectionPersister.TableName).Append(" where ").Append(new ConditionalFragment().SetTableAlias(sqlAlias).SetCondition(ownerKeys, collectionKeys).ToSqlStringFragment());
-			if (collectionPersister.HasWhere)
+			try
 			{
-				innerSelect.Append(" and (").Append(collectionPersister.GetSQLWhereString(collectionPersister.TableName)).Append(") ");
+				return Task.FromResult<TypedValue[]>(GetTypedValues(criteria, criteriaQuery));
 			}
-
-			innerSelect.Append(")");
-			return new SqlString(new object[]{ExcludeEmpty ? "exists" : "not exists", innerSelect.ToString()});
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<TypedValue[]>(ex);
+			}
 		}
 
-		public override async Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public override Task<SqlString> ToSqlStringAsync(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			return NO_VALUES;
+			try
+			{
+				return Task.FromResult<SqlString>(ToSqlString(criteria, criteriaQuery, enabledFilters));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<SqlString>(ex);
+			}
 		}
 	}
 }

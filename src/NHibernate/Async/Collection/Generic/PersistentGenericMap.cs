@@ -16,29 +16,29 @@ namespace NHibernate.Collection.Generic
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class PersistentGenericMap<TKey, TValue> : AbstractPersistentCollection, IDictionary<TKey, TValue>, ICollection
 	{
-		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner)
+		public override async Task<object> GetSnapshotAsync(ICollectionPersister persister)
 		{
-			object[] array = (object[])disassembled;
-			int size = array.Length;
-			BeforeInitialize(persister, size);
-			for (int i = 0; i < size; i += 2)
+			EntityMode entityMode = Session.EntityMode;
+			Dictionary<TKey, TValue> clonedMap = new Dictionary<TKey, TValue>(WrappedMap.Count);
+			foreach (KeyValuePair<TKey, TValue> e in WrappedMap)
 			{
-				WrappedMap[(TKey)await (persister.IndexType.AssembleAsync(array[i], Session, owner))] = (TValue)await (persister.ElementType.AssembleAsync(array[i + 1], Session, owner));
+				object copy = await (persister.ElementType.DeepCopyAsync(e.Value, entityMode, persister.Factory));
+				clonedMap[e.Key] = (TValue)copy;
 			}
+
+			return clonedMap;
 		}
 
-		public override async Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
+		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
 		{
-			var sn = (IDictionary<TKey, TValue>)snapshot;
-			return GetOrphans((ICollection)sn.Values, (ICollection)WrappedMap.Values, entityName, Session);
-		}
-
-		public override async Task<object> ReadFromAsync(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
-		{
-			object element = await (role.ReadElementAsync(rs, owner, descriptor.SuffixedElementAliases, Session));
-			object index = await (role.ReadIndexAsync(rs, descriptor.SuffixedIndexAliases, Session));
-			AddDuringInitialize(index, element);
-			return element;
+			try
+			{
+				return Task.FromResult<ICollection>(GetOrphans(snapshot, entityName));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<ICollection>(ex);
+			}
 		}
 
 		public override async Task<bool> EqualsSnapshotAsync(ICollectionPersister persister)
@@ -61,49 +61,29 @@ namespace NHibernate.Collection.Generic
 			return true;
 		}
 
-		public override async Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula)
+		public override async Task<object> ReadFromAsync(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
-			IList deletes = new List<object>();
-			var sn = (IDictionary<TKey, TValue>)GetSnapshot();
-			foreach (var e in sn)
+			object element = await (role.ReadElementAsync(rs, owner, descriptor.SuffixedElementAliases, Session));
+			object index = await (role.ReadIndexAsync(rs, descriptor.SuffixedIndexAliases, Session));
+			AddDuringInitialize(index, element);
+			return element;
+		}
+
+		/// <summary>
+		/// Initializes this PersistentGenericMap from the cached values.
+		/// </summary>
+		/// <param name = "persister">The CollectionPersister to use to reassemble the PersistentGenericMap.</param>
+		/// <param name = "disassembled">The disassembled PersistentGenericMap.</param>
+		/// <param name = "owner">The owner object.</param>
+		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner)
+		{
+			object[] array = (object[])disassembled;
+			int size = array.Length;
+			BeforeInitialize(persister, size);
+			for (int i = 0; i < size; i += 2)
 			{
-				if (!WrappedMap.ContainsKey(e.Key))
-				{
-					object key = e.Key;
-					deletes.Add(indexIsFormula ? e.Value : key);
-				}
+				WrappedMap[(TKey)await (persister.IndexType.AssembleAsync(array[i], Session, owner))] = (TValue)await (persister.ElementType.AssembleAsync(array[i + 1], Session, owner));
 			}
-
-			return deletes;
-		}
-
-		public override async Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType)
-		{
-			var sn = (IDictionary)GetSnapshot();
-			var e = (KeyValuePair<TKey, TValue>)entry;
-			return !sn.Contains(e.Key);
-		}
-
-		public override async Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType)
-		{
-			var sn = (IDictionary)GetSnapshot();
-			var e = (KeyValuePair<TKey, TValue>)entry;
-			var snValue = sn[e.Key];
-			var isNew = !sn.Contains(e.Key);
-			return e.Value != null && snValue != null && await (elemType.IsDirtyAsync(snValue, e.Value, Session)) || (!isNew && ((e.Value == null) != (snValue == null)));
-		}
-
-		public override async Task<object> GetSnapshotAsync(ICollectionPersister persister)
-		{
-			EntityMode entityMode = Session.EntityMode;
-			Dictionary<TKey, TValue> clonedMap = new Dictionary<TKey, TValue>(WrappedMap.Count);
-			foreach (KeyValuePair<TKey, TValue> e in WrappedMap)
-			{
-				object copy = await (persister.ElementType.DeepCopyAsync(e.Value, entityMode, persister.Factory));
-				clonedMap[e.Key] = (TValue)copy;
-			}
-
-			return clonedMap;
 		}
 
 		public override async Task<object> DisassembleAsync(ICollectionPersister persister)
@@ -117,6 +97,39 @@ namespace NHibernate.Collection.Generic
 			}
 
 			return result;
+		}
+
+		public override Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula)
+		{
+			try
+			{
+				return Task.FromResult<IEnumerable>(GetDeletes(persister, indexIsFormula));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<IEnumerable>(ex);
+			}
+		}
+
+		public override Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType)
+		{
+			try
+			{
+				return Task.FromResult<bool>(NeedsInserting(entry, i, elemType));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<bool>(ex);
+			}
+		}
+
+		public override async Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType)
+		{
+			var sn = (IDictionary)GetSnapshot();
+			var e = (KeyValuePair<TKey, TValue>)entry;
+			var snValue = sn[e.Key];
+			var isNew = !sn.Contains(e.Key);
+			return e.Value != null && snValue != null && await (elemType.IsDirtyAsync(snValue, e.Value, Session)) || (!isNew && ((e.Value == null) != (snValue == null)));
 		}
 	}
 }

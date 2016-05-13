@@ -13,7 +13,7 @@ namespace NHibernate.Dialect.Function
 	/// translated to SQL. The Dialect and its sub-classes use this interface to
 	/// provide details required for processing of the function.
 	/// </summary>
-	public interface ISQLFunction
+	public partial interface ISQLFunction
 	{
 		/// <summary>
 		/// The function return type

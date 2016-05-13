@@ -22,7 +22,7 @@ namespace NHibernate.Cache
 	/// </remarks>
 	public partial class ReadWriteCache : ICacheConcurrencyStrategy
 	{
-		public interface ILockable
+		public partial interface ILockable
 		{
 			CacheLock Lock(long timeout, int id);
 			bool IsLock { get; }

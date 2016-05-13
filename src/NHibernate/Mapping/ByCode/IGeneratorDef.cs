@@ -1,6 +1,6 @@
 namespace NHibernate.Mapping.ByCode
 {
-	public interface IGeneratorDef
+	public partial interface IGeneratorDef
 	{
 		string Class { get; }
 		object Params { get; }

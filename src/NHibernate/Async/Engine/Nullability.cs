@@ -13,64 +13,12 @@ namespace NHibernate.Engine
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public sealed partial class Nullability
 	{
-		private async Task<string> CheckComponentNullabilityAsync(object value, IAbstractComponentType compType)
-		{
-			// will check current level if some of them are not null or sublevels if they exist
-			bool[] nullability = compType.PropertyNullability;
-			if (nullability != null)
-			{
-				//do the test
-				object[] values = await (compType.GetPropertyValuesAsync(value, session.EntityMode));
-				IType[] propertyTypes = compType.Subtypes;
-				for (int i = 0; i < values.Length; i++)
-				{
-					object subvalue = values[i];
-					if (!nullability[i] && subvalue == null)
-					{
-						return compType.PropertyNames[i];
-					}
-					else if (subvalue != null)
-					{
-						string breakProperties = await (CheckSubElementsNullabilityAsync(propertyTypes[i], subvalue));
-						if (breakProperties != null)
-						{
-							return BuildPropertyPath(compType.PropertyNames[i], breakProperties);
-						}
-					}
-				}
-			}
-
-			return null;
-		}
-
-		private async Task<string> CheckSubElementsNullabilityAsync(IType propertyType, object value)
-		{
-			//for non null args, check for components and elements containing components
-			if (propertyType.IsComponentType)
-			{
-				return await (CheckComponentNullabilityAsync(value, (IAbstractComponentType)propertyType));
-			}
-			else if (propertyType.IsCollectionType)
-			{
-				//persistent collections may have components
-				CollectionType collectionType = (CollectionType)propertyType;
-				IType collectionElementType = collectionType.GetElementType(session.Factory);
-				if (collectionElementType.IsComponentType)
-				{
-					//check for all components values in the collection
-					IAbstractComponentType componentType = (IAbstractComponentType)collectionElementType;
-					IEnumerable ec = CascadingAction.GetLoadedElementsIterator(session, collectionType, value);
-					foreach (object compValue in ec)
-					{
-						if (compValue != null)
-							return await (CheckComponentNullabilityAsync(compValue, componentType));
-					}
-				}
-			}
-
-			return null;
-		}
-
+		/// <summary> 
+		/// Check nullability of the class persister properties
+		/// </summary>
+		/// <param name = "values">entity properties </param>
+		/// <param name = "persister">class persister </param>
+		/// <param name = "isUpdate">whether it is intended to be updated or saved </param>
 		public async Task CheckNullabilityAsync(object[] values, IEntityPersister persister, bool isUpdate)
 		{
 			/*
@@ -114,6 +62,78 @@ namespace NHibernate.Engine
 					}
 				}
 			}
+		}
+
+		/// <summary> 
+		/// Check sub elements-nullability. Returns property path that break
+		/// nullability or null if none 
+		/// </summary>
+		/// <param name = "propertyType">type to check </param>
+		/// <param name = "value">value to check </param>
+		/// <returns> property path </returns>
+		private async Task<string> CheckSubElementsNullabilityAsync(IType propertyType, object value)
+		{
+			//for non null args, check for components and elements containing components
+			if (propertyType.IsComponentType)
+			{
+				return await (CheckComponentNullabilityAsync(value, (IAbstractComponentType)propertyType));
+			}
+			else if (propertyType.IsCollectionType)
+			{
+				//persistent collections may have components
+				CollectionType collectionType = (CollectionType)propertyType;
+				IType collectionElementType = collectionType.GetElementType(session.Factory);
+				if (collectionElementType.IsComponentType)
+				{
+					//check for all components values in the collection
+					IAbstractComponentType componentType = (IAbstractComponentType)collectionElementType;
+					IEnumerable ec = CascadingAction.GetLoadedElementsIterator(session, collectionType, value);
+					foreach (object compValue in ec)
+					{
+						if (compValue != null)
+							return await (CheckComponentNullabilityAsync(compValue, componentType));
+					}
+				}
+			}
+
+			return null;
+		}
+
+		/// <summary> 
+		/// Check component nullability. Returns property path that break
+		/// nullability or null if none 
+		/// </summary>
+		/// <param name = "value">component properties </param>
+		/// <param name = "compType">component not-nullable type </param>
+		/// <returns> property path </returns>
+		private async Task<string> CheckComponentNullabilityAsync(object value, IAbstractComponentType compType)
+		{
+			// will check current level if some of them are not null or sublevels if they exist
+			bool[] nullability = compType.PropertyNullability;
+			if (nullability != null)
+			{
+				//do the test
+				object[] values = await (compType.GetPropertyValuesAsync(value, session.EntityMode));
+				IType[] propertyTypes = compType.Subtypes;
+				for (int i = 0; i < values.Length; i++)
+				{
+					object subvalue = values[i];
+					if (!nullability[i] && subvalue == null)
+					{
+						return compType.PropertyNames[i];
+					}
+					else if (subvalue != null)
+					{
+						string breakProperties = await (CheckSubElementsNullabilityAsync(propertyTypes[i], subvalue));
+						if (breakProperties != null)
+						{
+							return BuildPropertyPath(compType.PropertyNames[i], breakProperties);
+						}
+					}
+				}
+			}
+
+			return null;
 		}
 	}
 }

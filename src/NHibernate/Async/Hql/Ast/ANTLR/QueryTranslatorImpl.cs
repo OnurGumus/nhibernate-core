@@ -23,6 +23,29 @@ namespace NHibernate.Hql.Ast.ANTLR
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class QueryTranslatorImpl : IFilterTranslator
 	{
+		/// <summary>
+		/// Compile a "normal" query. This method may be called multiple
+		/// times. Subsequent invocations are no-ops.
+		/// </summary>
+		/// <param name = "replacements">Defined query substitutions.</param>
+		/// <param name = "shallow">Does this represent a shallow (scalar or entity-id) select?</param>
+		public Task CompileAsync(IDictionary<string, string> replacements, bool shallow)
+		{
+			return DoCompileAsync(replacements, shallow, null);
+		}
+
+		/// <summary>
+		/// Compile a filter. This method may be called multiple
+		/// times. Subsequent invocations are no-ops.
+		/// </summary>
+		/// <param name = "collectionRole">the role name of the collection used as the basis for the filter.</param>
+		/// <param name = "replacements">Defined query substitutions.</param>
+		/// <param name = "shallow">Does this represent a shallow (scalar or entity-id) select?</param>
+		public Task CompileAsync(string collectionRole, IDictionary<string, string> replacements, bool shallow)
+		{
+			return DoCompileAsync(replacements, shallow, collectionRole);
+		}
+
 		public async Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters)
 		{
 			// Delegate to the QueryLoader...
@@ -92,13 +115,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return await (_statementExecutor.ExecuteAsync(queryParameters, session));
 		}
 
-		private async Task<HqlSqlTranslator> AnalyzeAsync(string collectionRole)
-		{
-			var translator = new HqlSqlTranslator(_stageOneAst, this, _factory, _tokenReplacements, collectionRole);
-			await (translator.TranslateAsync());
-			return translator;
-		}
-
+		/// <summary>
+		/// Performs both filter and non-filter compiling.
+		/// </summary>
+		/// <param name = "replacements">Defined query substitutions.</param>
+		/// <param name = "shallow">Does this represent a shallow (scalar or entity-id) select?</param>
+		/// <param name = "collectionRole">the role name of the collection used as the basis for the filter, NULL if this is not a filter.</param>
 		private async Task DoCompileAsync(IDictionary<string, string> replacements, bool shallow, String collectionRole)
 		{
 			// If the query is already compiled, skip the compilation.
@@ -164,14 +186,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 			_enabledFilters = null; //only needed during compilation phase...
 		}
 
-		public async Task CompileAsync(IDictionary<string, string> replacements, bool shallow)
+		private async Task<HqlSqlTranslator> AnalyzeAsync(string collectionRole)
 		{
-			await (DoCompileAsync(replacements, shallow, null));
-		}
-
-		public async Task CompileAsync(string collectionRole, IDictionary<string, string> replacements, bool shallow)
-		{
-			await (DoCompileAsync(replacements, shallow, collectionRole));
+			var translator = new HqlSqlTranslator(_stageOneAst, this, _factory, _tokenReplacements, collectionRole);
+			await (translator.TranslateAsync());
+			return translator;
 		}
 	}
 
@@ -193,7 +212,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				try
 				{
 					// Transform the tree.
-					_resultAst = (IStatement)await (hqlSqlWalker.statementAsync()).Tree;
+					_resultAst = (IStatement)(await (hqlSqlWalker.statementAsync())).Tree;
 				}
 				finally
 				{

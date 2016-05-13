@@ -13,20 +13,12 @@ namespace NHibernate.Impl
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public sealed partial class Printer
 	{
-		public async Task<string> ToStringAsync(IType[] types, object[] values)
-		{
-			List<string> list = new List<string>(types.Length);
-			for (int i = 0; i < types.Length; i++)
-			{
-				if (types[i] != null)
-				{
-					list.Add(await (types[i].ToLoggableStringAsync(values[i], _factory)));
-				}
-			}
-
-			return CollectionPrinter.ToString(list);
-		}
-
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name = "entity">an actual entity object, not a proxy!</param>
+		/// <param name = "entityMode"></param>
+		/// <returns></returns>
 		public async Task<string> ToStringAsync(object entity, EntityMode entityMode)
 		{
 			IClassMetadata cm = _factory.GetClassMetadata(entity.GetType());
@@ -60,6 +52,32 @@ namespace NHibernate.Impl
 			return cm.EntityName + CollectionPrinter.ToString(result);
 		}
 
+		public async Task<string> ToStringAsync(IType[] types, object[] values)
+		{
+			List<string> list = new List<string>(types.Length);
+			for (int i = 0; i < types.Length; i++)
+			{
+				if (types[i] != null)
+				{
+					list.Add(await (types[i].ToLoggableStringAsync(values[i], _factory)));
+				}
+			}
+
+			return CollectionPrinter.ToString(list);
+		}
+
+		public async Task<string> ToStringAsync(IDictionary<string, TypedValue> namedTypedValues)
+		{
+			IDictionary<string, string> result = new Dictionary<string, string>(namedTypedValues.Count);
+			foreach (KeyValuePair<string, TypedValue> me in namedTypedValues)
+			{
+				TypedValue tv = me.Value;
+				result[me.Key] = await (tv.Type.ToLoggableStringAsync(tv.Value, _factory));
+			}
+
+			return CollectionPrinter.ToString(result);
+		}
+
 		public async Task ToStringAsync(IEnumerator enumerator, EntityMode entityMode)
 		{
 			if (!log.IsDebugEnabled || !enumerator.MoveNext())
@@ -80,18 +98,6 @@ namespace NHibernate.Impl
 				log.Debug(await (ToStringAsync(enumerator.Current, entityMode)));
 			}
 			while (enumerator.MoveNext());
-		}
-
-		public async Task<string> ToStringAsync(IDictionary<string, TypedValue> namedTypedValues)
-		{
-			IDictionary<string, string> result = new Dictionary<string, string>(namedTypedValues.Count);
-			foreach (KeyValuePair<string, TypedValue> me in namedTypedValues)
-			{
-				TypedValue tv = me.Value;
-				result[me.Key] = await (tv.Type.ToLoggableStringAsync(tv.Value, _factory));
-			}
-
-			return CollectionPrinter.ToString(result);
 		}
 	}
 }

@@ -20,6 +20,30 @@ namespace NHibernate.Engine
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public static partial class TwoPhaseLoad
 	{
+		/// <summary>
+		/// Register the "hydrated" state of an entity instance, after the first step of 2-phase loading.
+		///
+		/// Add the "hydrated state" (an array) of an uninitialized entity to the session. We don't try
+		/// to resolve any associations yet, because there might be other entities waiting to be
+		/// read from the JDBC result set we are currently processing
+		/// </summary>
+		public static async Task PostHydrateAsync(IEntityPersister persister, object id, object[] values, object rowId, object obj, LockMode lockMode, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
+		{
+			object version = Versioning.GetVersion(values, persister);
+			session.PersistenceContext.AddEntry(obj, Status.Loading, values, rowId, id, version, lockMode, true, persister, false, lazyPropertiesAreUnfetched);
+			if (log.IsDebugEnabled && version != null)
+			{
+				System.String versionStr = persister.IsVersioned ? await (persister.VersionType.ToLoggableStringAsync(version, session.Factory)) : "null";
+				log.Debug("Version: " + versionStr);
+			}
+		}
+
+		/// <summary>
+		/// Perform the second step of 2-phase load. Fully initialize the entity instance.
+		/// After processing a JDBC result set, we "resolve" all the associations
+		/// between the entities which were instantiated and had their state
+		/// "hydrated" into an array
+		/// </summary>
 		public static async Task InitializeEntityAsync(object entity, bool readOnly, ISessionImplementor session, PreLoadEvent preLoadEvent, PostLoadEvent postLoadEvent)
 		{
 			//TODO: Should this be an InitializeEntityEventListener??? (watch out for performance!)
@@ -132,17 +156,6 @@ namespace NHibernate.Engine
 			{
 				stopWath.Stop();
 				factory.StatisticsImplementor.LoadEntity(persister.EntityName, stopWath.Elapsed);
-			}
-		}
-
-		public static async Task PostHydrateAsync(IEntityPersister persister, object id, object[] values, object rowId, object obj, LockMode lockMode, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
-		{
-			object version = Versioning.GetVersion(values, persister);
-			session.PersistenceContext.AddEntry(obj, Status.Loading, values, rowId, id, version, lockMode, true, persister, false, lazyPropertiesAreUnfetched);
-			if (log.IsDebugEnabled && version != null)
-			{
-				System.String versionStr = persister.IsVersioned ? await (persister.VersionType.ToLoggableStringAsync(version, session.Factory)) : "null";
-				log.Debug("Version: " + versionStr);
 			}
 		}
 	}

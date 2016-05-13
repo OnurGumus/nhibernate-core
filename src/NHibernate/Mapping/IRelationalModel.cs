@@ -5,7 +5,7 @@ namespace NHibernate.Mapping
 	/// <summary>
 	/// Operations to create/drop the mapping element in the database.
 	/// </summary>
-	public interface IRelationalModel
+	public partial interface IRelationalModel
 	{
 		/// <summary>
 		/// When implemented by a class, generates the SQL string to create 

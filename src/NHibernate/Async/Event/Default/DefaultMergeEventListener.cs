@@ -15,6 +15,39 @@ namespace NHibernate.Event.Default
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class DefaultMergeEventListener : AbstractSaveEventListener, IMergeEventListener
 	{
+		public virtual async Task OnMergeAsync(MergeEvent @event)
+		{
+			EventCache copyCache = new EventCache();
+			await (OnMergeAsync(@event, copyCache));
+			// TODO: iteratively get transient entities and retry merge until one of the following conditions:
+			//   1) transientCopyCache.size() == 0
+			//   2) transientCopyCache.size() is not decreasing and copyCache.size() is not increasing
+			// TODO: find out if retrying can add entities to copyCache (don't think it can...)
+			// For now, just retry once; throw TransientObjectException if there are still any transient entities
+			IDictionary transientCopyCache = await (this.GetTransientCopyCacheAsync(@event, copyCache));
+			if (transientCopyCache.Count > 0)
+			{
+				await (RetryMergeTransientEntitiesAsync(@event, transientCopyCache, copyCache));
+				// find any entities that are still transient after retry
+				transientCopyCache = await (this.GetTransientCopyCacheAsync(@event, copyCache));
+				if (transientCopyCache.Count > 0)
+				{
+					ISet<string> transientEntityNames = new HashSet<string>();
+					foreach (object transientEntity in transientCopyCache.Keys)
+					{
+						string transientEntityName = @event.Session.GuessEntityName(transientEntity);
+						transientEntityNames.Add(transientEntityName);
+						log.InfoFormat("transient instance could not be processed by merge: {0} [{1}]", transientEntityName, transientEntity.ToString());
+					}
+
+					throw new TransientObjectException("one or more objects is an unsaved transient instance - save transient instance(s) before merging: " + transientEntityNames);
+				}
+			}
+
+			copyCache.Clear();
+			copyCache = null;
+		}
+
 		public virtual async Task OnMergeAsync(MergeEvent @event, IDictionary copiedAlready)
 		{
 			EventCache copyCache = (EventCache)copiedAlready;
@@ -109,52 +142,27 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		public virtual async Task OnMergeAsync(MergeEvent @event)
+		protected virtual async Task EntityIsPersistentAsync(MergeEvent @event, IDictionary copyCache)
 		{
-			EventCache copyCache = new EventCache();
-			await (OnMergeAsync(@event, copyCache));
-			// TODO: iteratively get transient entities and retry merge until one of the following conditions:
-			//   1) transientCopyCache.size() == 0
-			//   2) transientCopyCache.size() is not decreasing and copyCache.size() is not increasing
-			// TODO: find out if retrying can add entities to copyCache (don't think it can...)
-			// For now, just retry once; throw TransientObjectException if there are still any transient entities
-			IDictionary transientCopyCache = await (this.GetTransientCopyCacheAsync(@event, copyCache));
-			if (transientCopyCache.Count > 0)
-			{
-				await (RetryMergeTransientEntitiesAsync(@event, transientCopyCache, copyCache));
-				// find any entities that are still transient after retry
-				transientCopyCache = await (this.GetTransientCopyCacheAsync(@event, copyCache));
-				if (transientCopyCache.Count > 0)
-				{
-					ISet<string> transientEntityNames = new HashSet<string>();
-					foreach (object transientEntity in transientCopyCache.Keys)
-					{
-						string transientEntityName = @event.Session.GuessEntityName(transientEntity);
-						transientEntityNames.Add(transientEntityName);
-						log.InfoFormat("transient instance could not be processed by merge: {0} [{1}]", transientEntityName, transientEntity.ToString());
-					}
-
-					throw new TransientObjectException("one or more objects is an unsaved transient instance - save transient instance(s) before merging: " + transientEntityNames);
-				}
-			}
-
-			copyCache.Clear();
-			copyCache = null;
+			log.Debug("ignoring persistent instance");
+			//TODO: check that entry.getIdentifier().equals(requestedId)
+			object entity = @event.Entity;
+			IEventSource source = @event.Session;
+			IEntityPersister persister = source.GetEntityPersister(@event.EntityName, entity);
+			((EventCache)copyCache).Add(entity, entity, true); //before cascade!
+			await (CascadeOnMergeAsync(source, persister, entity, copyCache));
+			await (CopyValuesAsync(persister, entity, entity, source, copyCache));
+			@event.Result = entity;
 		}
 
-		private async Task SaveTransientEntityAsync(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache)
+		protected virtual async Task EntityIsTransientAsync(MergeEvent @event, IDictionary copyCache)
 		{
-			// this bit is only *really* absolutely necessary for handling
-			// requestedId, but is also good if we merge multiple object
-			// graphs, since it helps ensure uniqueness
-			if (requestedId == null)
-			{
-				await (SaveWithGeneratedIdAsync(entity, entityName, copyCache, source, false));
-			}
-			else
-			{
-				await (SaveWithRequestedIdAsync(entity, requestedId, entityName, copyCache, source));
-			}
+			log.Info("merging transient instance");
+			object entity = @event.Entity;
+			IEventSource source = @event.Session;
+			IEntityPersister persister = source.GetEntityPersister(@event.EntityName, entity);
+			string entityName = persister.EntityName;
+			@event.Result = await (this.MergeTransientEntityAsync(entity, entityName, @event.RequestedId, source, copyCache));
 		}
 
 		private async Task<object> MergeTransientEntityAsync(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache)
@@ -220,34 +228,19 @@ namespace NHibernate.Event.Default
 			return copy;
 		}
 
-		protected async Task RetryMergeTransientEntitiesAsync(MergeEvent @event, IDictionary transientCopyCache, EventCache copyCache)
+		private async Task SaveTransientEntityAsync(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache)
 		{
-			// TODO: The order in which entities are saved may matter (e.g., a particular
-			// transient entity may need to be saved before other transient entities can
-			// be saved).
-			// Keep retrying the batch of transient entities until either:
-			// 1) there are no transient entities left in transientCopyCache
-			// or 2) no transient entities were saved in the last batch.
-			// For now, just run through the transient entities and retry the merge
-			foreach (object entity in transientCopyCache.Keys)
+			// this bit is only *really* absolutely necessary for handling
+			// requestedId, but is also good if we merge multiple object
+			// graphs, since it helps ensure uniqueness
+			if (requestedId == null)
 			{
-				object copy = transientCopyCache[entity];
-				EntityEntry copyEntry = @event.Session.PersistenceContext.GetEntry(copy);
-				if (entity == @event.Entity)
-					await (MergeTransientEntityAsync(entity, copyEntry.EntityName, @event.RequestedId, @event.Session, copyCache));
-				else
-					await (MergeTransientEntityAsync(entity, copyEntry.EntityName, copyEntry.Id, @event.Session, copyCache));
+				await (SaveWithGeneratedIdAsync(entity, entityName, copyCache, source, false));
 			}
-		}
-
-		protected virtual async Task EntityIsTransientAsync(MergeEvent @event, IDictionary copyCache)
-		{
-			log.Info("merging transient instance");
-			object entity = @event.Entity;
-			IEventSource source = @event.Session;
-			IEntityPersister persister = source.GetEntityPersister(@event.EntityName, entity);
-			string entityName = persister.EntityName;
-			@event.Result = await (this.MergeTransientEntityAsync(entity, entityName, @event.RequestedId, source, copyCache));
+			else
+			{
+				await (SaveWithRequestedIdAsync(entity, requestedId, entityName, copyCache, source));
+			}
 		}
 
 		protected virtual async Task EntityIsDetachedAsync(MergeEvent @event, IDictionary copyCache)
@@ -297,7 +290,7 @@ namespace NHibernate.Event.Default
 				{
 					throw new AssertionFailure("entity was not detached");
 				}
-				else if (!await (source.GetEntityNameAsync(target)).Equals(entityName))
+				else if (!(await (source.GetEntityNameAsync(target))).Equals(entityName))
 				{
 					throw new WrongClassException("class of the given object did not match class of persistent copy", @event.RequestedId, persister.EntityName);
 				}
@@ -317,43 +310,6 @@ namespace NHibernate.Event.Default
 				MarkInterceptorDirty(entity, target);
 				@event.Result = result;
 			}
-		}
-
-		protected virtual async Task CopyValuesAsync(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache)
-		{
-			object[] copiedValues = await (TypeHelper.ReplaceAsync(persister.GetPropertyValues(entity, source.EntityMode), persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes, source, target, copyCache));
-			persister.SetPropertyValues(target, copiedValues, source.EntityMode);
-		}
-
-		protected virtual async Task EntityIsPersistentAsync(MergeEvent @event, IDictionary copyCache)
-		{
-			log.Debug("ignoring persistent instance");
-			//TODO: check that entry.getIdentifier().equals(requestedId)
-			object entity = @event.Entity;
-			IEventSource source = @event.Session;
-			IEntityPersister persister = source.GetEntityPersister(@event.EntityName, entity);
-			((EventCache)copyCache).Add(entity, entity, true); //before cascade!
-			await (CascadeOnMergeAsync(source, persister, entity, copyCache));
-			await (CopyValuesAsync(persister, entity, entity, source, copyCache));
-			@event.Result = entity;
-		}
-
-		protected virtual async Task CopyValuesAsync(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
-		{
-			object[] copiedValues;
-			if (foreignKeyDirection.Equals(ForeignKeyDirection.ForeignKeyToParent))
-			{
-				// this is the second pass through on a merge op, so here we limit the
-				// replacement to associations types (value types were already replaced
-				// during the first pass)
-				copiedValues = await (TypeHelper.ReplaceAssociationsAsync(persister.GetPropertyValues(entity, source.EntityMode), persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes, source, target, copyCache, foreignKeyDirection));
-			}
-			else
-			{
-				copiedValues = await (TypeHelper.ReplaceAsync(persister.GetPropertyValues(entity, source.EntityMode), persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes, source, target, copyCache, foreignKeyDirection));
-			}
-
-			persister.SetPropertyValues(target, copiedValues, source.EntityMode);
 		}
 
 		private static async Task<bool> IsVersionChangedAsync(object entity, IEventSource source, IEntityPersister persister, object target)
@@ -405,6 +361,37 @@ namespace NHibernate.Event.Default
 			}
 		}
 
+		protected virtual async Task CopyValuesAsync(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache)
+		{
+			object[] copiedValues = await (TypeHelper.ReplaceAsync(persister.GetPropertyValues(entity, source.EntityMode), persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes, source, target, copyCache));
+			persister.SetPropertyValues(target, copiedValues, source.EntityMode);
+		}
+
+		protected virtual async Task CopyValuesAsync(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
+		{
+			object[] copiedValues;
+			if (foreignKeyDirection.Equals(ForeignKeyDirection.ForeignKeyToParent))
+			{
+				// this is the second pass through on a merge op, so here we limit the
+				// replacement to associations types (value types were already replaced
+				// during the first pass)
+				copiedValues = await (TypeHelper.ReplaceAssociationsAsync(persister.GetPropertyValues(entity, source.EntityMode), persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes, source, target, copyCache, foreignKeyDirection));
+			}
+			else
+			{
+				copiedValues = await (TypeHelper.ReplaceAsync(persister.GetPropertyValues(entity, source.EntityMode), persister.GetPropertyValues(target, source.EntityMode), persister.PropertyTypes, source, target, copyCache, foreignKeyDirection));
+			}
+
+			persister.SetPropertyValues(target, copiedValues, source.EntityMode);
+		}
+
+		/// <summary>
+		/// Perform any cascades needed as part of this copy event.
+		/// </summary>
+		/// <param name = "source">The merge event being processed. </param>
+		/// <param name = "persister">The persister of the entity being copied. </param>
+		/// <param name = "entity">The entity being copied. </param>
+		/// <param name = "copyCache">A cache of already copied instance. </param>
 		protected virtual async Task CascadeOnMergeAsync(IEventSource source, IEntityPersister persister, object entity, IDictionary copyCache)
 		{
 			source.PersistenceContext.IncrementCascadeLevel();
@@ -418,6 +405,13 @@ namespace NHibernate.Event.Default
 			}
 		}
 
+		/// <summary>
+		/// Determine which merged entities in the copyCache are transient.
+		/// </summary>
+		/// <param name = "event"></param>
+		/// <param name = "copyCache"></param>
+		/// <returns></returns>
+		/// <remarks>Should this method be on the EventCache class?</remarks>
 		protected async Task<EventCache> GetTransientCopyCacheAsync(MergeEvent @event, EventCache copyCache)
 		{
 			EventCache transientCopyCache = new EventCache();
@@ -453,6 +447,32 @@ namespace NHibernate.Event.Default
 			}
 
 			return transientCopyCache;
+		}
+
+		/// <summary>
+		/// Retry merging transient entities
+		/// </summary>
+		/// <param name = "event"></param>
+		/// <param name = "transientCopyCache"></param>
+		/// <param name = "copyCache"></param>
+		protected async Task RetryMergeTransientEntitiesAsync(MergeEvent @event, IDictionary transientCopyCache, EventCache copyCache)
+		{
+			// TODO: The order in which entities are saved may matter (e.g., a particular
+			// transient entity may need to be saved before other transient entities can
+			// be saved).
+			// Keep retrying the batch of transient entities until either:
+			// 1) there are no transient entities left in transientCopyCache
+			// or 2) no transient entities were saved in the last batch.
+			// For now, just run through the transient entities and retry the merge
+			foreach (object entity in transientCopyCache.Keys)
+			{
+				object copy = transientCopyCache[entity];
+				EntityEntry copyEntry = @event.Session.PersistenceContext.GetEntry(copy);
+				if (entity == @event.Entity)
+					await (MergeTransientEntityAsync(entity, copyEntry.EntityName, @event.RequestedId, @event.Session, copyCache));
+				else
+					await (MergeTransientEntityAsync(entity, copyEntry.EntityName, copyEntry.Id, @event.Session, copyCache));
+			}
 		}
 	}
 }

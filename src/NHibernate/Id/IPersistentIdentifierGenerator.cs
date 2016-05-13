@@ -42,7 +42,7 @@ namespace NHibernate.Id
 	/// All <see cref="IPersistentIdentifierGenerator"/>s that also implement 
 	/// An <see cref="IConfigurable" />  have access to a special mapping parameter: schema
 	/// </summary>
-	public interface IPersistentIdentifierGenerator : IIdentifierGenerator
+	public partial interface IPersistentIdentifierGenerator : IIdentifierGenerator
 	{
 		/// <summary>
 		/// The SQL required to create the underlying database objects

@@ -1,9 +1,9 @@
 namespace NHibernate.Mapping.ByCode
 {
-	public interface INaturalIdAttributesMapper
+	public partial interface INaturalIdAttributesMapper
 	{
 		void Mutable(bool isMutable);
 	}
 
-	public interface INaturalIdMapper : INaturalIdAttributesMapper, IBasePlainPropertyContainerMapper {}
+	public partial interface INaturalIdMapper : INaturalIdAttributesMapper, IBasePlainPropertyContainerMapper {}
 }

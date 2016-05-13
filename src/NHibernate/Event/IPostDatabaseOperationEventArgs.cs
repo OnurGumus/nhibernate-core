@@ -5,7 +5,7 @@ namespace NHibernate.Event
 	/// <summary> 
 	/// Represents an operation we performed against the database. 
 	/// </summary>
-	public interface IPostDatabaseOperationEventArgs : IDatabaseEventArgs
+	public partial interface IPostDatabaseOperationEventArgs : IDatabaseEventArgs
 	{
 		/// <summary> The entity involved in the database operation. </summary>
 		object Entity { get; }

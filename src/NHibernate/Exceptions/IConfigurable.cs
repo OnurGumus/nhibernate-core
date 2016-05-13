@@ -6,7 +6,7 @@ namespace NHibernate.Exceptions
 	/// The Configurable interface defines the contract for <see cref="ISQLExceptionConverter"/> impls that
 	/// want to be configured prior to usage given the currently defined Hibernate properties. 
 	/// </summary>
-	public interface IConfigurable
+	public partial interface IConfigurable
 	{
 		/// <summary> Configure the component, using the given settings and properties. </summary>
 		/// <param name="properties">All defined startup properties. </param>

@@ -29,6 +29,11 @@ namespace NHibernate.Loader.Criteria
 			return await (ListAsync(session, translator.GetQueryParameters(), querySpaces, resultTypes));
 		}
 
+		protected override async Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer customResultTransformer, IDataReader rs, ISessionImplementor session)
+		{
+			return ResolveResultTransformer(customResultTransformer).TransformTuple(await (GetResultRowAsync(row, rs, session)), ResultRowAliases);
+		}
+
 		protected override async Task<object[]> GetResultRowAsync(object[] row, IDataReader rs, ISessionImplementor session)
 		{
 			object[] result;
@@ -59,11 +64,6 @@ namespace NHibernate.Loader.Criteria
 			}
 
 			return result;
-		}
-
-		protected override async Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer customResultTransformer, IDataReader rs, ISessionImplementor session)
-		{
-			return ResolveResultTransformer(customResultTransformer).TransformTuple(await (GetResultRowAsync(row, rs, session)), ResultRowAliases);
 		}
 	}
 }

@@ -2,7 +2,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public interface IElementMapper : IColumnsMapper
+	public partial interface IElementMapper : IColumnsMapper
 	{
 		void Type(IType persistentType);
 		void Type<TPersistentType>();

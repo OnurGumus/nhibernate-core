@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public interface ICollectionPropertiesMapping : IEntityPropertyMapping, IReferencePropertyMapping, ICollectionSqlsMapping
+	public partial interface ICollectionPropertiesMapping : IEntityPropertyMapping, IReferencePropertyMapping, ICollectionSqlsMapping
 	{
 		bool Inverse { get; }
 		bool Mutable { get; }

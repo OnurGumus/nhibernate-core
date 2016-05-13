@@ -1,6 +1,6 @@
 namespace NHibernate.Cfg.MappingSchema
 {
-	public interface IIndexedCollectionMapping
+	public partial interface IIndexedCollectionMapping
 	{
 		HbmListIndex ListIndex { get; }
 		HbmIndex Index { get; }

@@ -10,7 +10,7 @@ namespace NHibernate.Persister.Entity
 	/// against dialects which do not support either (1) FOR UPDATE OF or (2) support hint locking
 	/// (in which case *all* queried tables would be locked).
 	/// </remarks>
-	public interface ILockable : IEntityPersister
+	public partial interface ILockable : IEntityPersister
 	{
 		/// <summary> 
 		/// Locks are always applied to the "root table".

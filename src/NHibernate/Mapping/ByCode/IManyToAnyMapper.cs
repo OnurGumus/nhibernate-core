@@ -3,7 +3,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public interface IManyToAnyMapper
+	public partial interface IManyToAnyMapper
 	{
 		void MetaType(IType metaType);
 		void MetaType<TMetaType>();

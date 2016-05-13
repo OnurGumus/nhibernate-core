@@ -8,7 +8,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public interface IResolvableNode
+	public partial interface IResolvableNode
 	{
 		/// <summary>
 		/// Does the work of resolving an identifier or a dot

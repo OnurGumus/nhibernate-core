@@ -13,6 +13,99 @@ namespace NHibernate.Event.Default
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class DefaultFlushEntityEventListener : IFlushEntityEventListener
 	{
+		/// <summary>
+		/// Flushes a single entity's state to the database, by scheduling an update action, if necessary
+		/// </summary>
+		public virtual async Task OnFlushEntityAsync(FlushEntityEvent @event)
+		{
+			object entity = @event.Entity;
+			EntityEntry entry = @event.EntityEntry;
+			IEventSource session = @event.Session;
+			IEntityPersister persister = entry.Persister;
+			Status status = entry.Status;
+			EntityMode entityMode = session.EntityMode;
+			IType[] types = persister.PropertyTypes;
+			bool mightBeDirty = entry.RequiresDirtyCheck(entity);
+			object[] values = await (GetValuesAsync(entity, entry, entityMode, mightBeDirty, session));
+			@event.PropertyValues = values;
+			//TODO: avoid this for non-new instances where mightBeDirty==false
+			bool substitute = await (WrapCollectionsAsync(session, persister, types, values));
+			if (await (IsUpdateNecessaryAsync(@event, mightBeDirty)))
+			{
+				substitute = await (ScheduleUpdateAsync(@event)) || substitute;
+			}
+
+			if (status != Status.Deleted)
+			{
+				// now update the object .. has to be outside the main if block above (because of collections)
+				if (substitute)
+					persister.SetPropertyValues(entity, values, entityMode);
+				// Search for collections by reachability, updating their role.
+				// We don't want to touch collections reachable from a deleted object
+				if (persister.HasCollections)
+				{
+					await (new FlushVisitor(session, entity).ProcessEntityPropertyValuesAsync(values, types));
+				}
+			}
+		}
+
+		private async Task<object[]> GetValuesAsync(object entity, EntityEntry entry, EntityMode entityMode, bool mightBeDirty, ISessionImplementor session)
+		{
+			object[] loadedState = entry.LoadedState;
+			Status status = entry.Status;
+			IEntityPersister persister = entry.Persister;
+			object[] values;
+			if (status == Status.Deleted)
+			{
+				//grab its state saved at deletion
+				values = entry.DeletedState;
+			}
+			else if (!mightBeDirty && loadedState != null)
+			{
+				values = loadedState;
+			}
+			else
+			{
+				await (CheckIdAsync(entity, persister, entry.Id, entityMode));
+				// grab its current state
+				values = persister.GetPropertyValues(entity, entityMode);
+				await (CheckNaturalIdAsync(persister, entry, values, loadedState, entityMode, session));
+			}
+
+			return values;
+		}
+
+		/// <summary>
+		/// make sure user didn't mangle the id
+		/// </summary>
+		/// <param name = "obj">The obj.</param>
+		/// <param name = "persister">The persister.</param>
+		/// <param name = "id">The id.</param>
+		/// <param name = "entityMode">The entity mode.</param>
+		public virtual async Task CheckIdAsync(object obj, IEntityPersister persister, object id, EntityMode entityMode)
+		{
+			if (id != null && id is DelayedPostInsertIdentifier)
+			{
+				// this is a situation where the entity id is assigned by a post-insert generator
+				// and was saved outside the transaction forcing it to be delayed
+				return;
+			}
+
+			if (persister.CanExtractIdOutOfEntity)
+			{
+				if (id == null)
+				{
+					throw new AssertionFailure("null id in " + persister.EntityName + " entry (don't flush the Session after an exception occurs)");
+				}
+
+				object oid = await (persister.GetIdentifierAsync(obj, entityMode));
+				if (!await (persister.IdentifierType.IsEqualAsync(id, oid, EntityMode.Poco)))
+				{
+					throw new HibernateException("identifier of an instance of " + persister.EntityName + " was altered from " + id + " to " + oid);
+				}
+			}
+		}
+
 		private async Task CheckNaturalIdAsync(IEntityPersister persister, EntityEntry entry, object[] current, object[] loaded, EntityMode entityMode, ISessionImplementor session)
 		{
 			if (persister.HasNaturalIdentifier && entry.Status != Status.ReadOnly)
@@ -50,159 +143,25 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		private async Task<object[]> GetValuesAsync(object entity, EntityEntry entry, EntityMode entityMode, bool mightBeDirty, ISessionImplementor session)
+		private async Task<bool> WrapCollectionsAsync(IEventSource session, IEntityPersister persister, IType[] types, object[] values)
 		{
-			object[] loadedState = entry.LoadedState;
-			Status status = entry.Status;
-			IEntityPersister persister = entry.Persister;
-			object[] values;
-			if (status == Status.Deleted)
+			if (persister.HasCollections)
 			{
-				//grab its state saved at deletion
-				values = entry.DeletedState;
-			}
-			else if (!mightBeDirty && loadedState != null)
-			{
-				values = loadedState;
+				// wrap up any new collections directly referenced by the object
+				// or its components
+				// NOTE: we need to do the wrap here even if its not "dirty",
+				// because collections need wrapping but changes to _them_
+				// don't dirty the container. Also, for versioned data, we
+				// need to wrap before calling searchForDirtyCollections
+				WrapVisitor visitor = new WrapVisitor(session);
+				// substitutes into values by side-effect
+				await (visitor.ProcessEntityPropertyValuesAsync(values, types));
+				return visitor.SubstitutionRequired;
 			}
 			else
 			{
-				await (CheckIdAsync(entity, persister, entry.Id, entityMode));
-				// grab its current state
-				values = persister.GetPropertyValues(entity, entityMode);
-				await (CheckNaturalIdAsync(persister, entry, values, loadedState, entityMode, session));
+				return false;
 			}
-
-			return values;
-		}
-
-		public virtual async Task OnFlushEntityAsync(FlushEntityEvent @event)
-		{
-			object entity = @event.Entity;
-			EntityEntry entry = @event.EntityEntry;
-			IEventSource session = @event.Session;
-			IEntityPersister persister = entry.Persister;
-			Status status = entry.Status;
-			EntityMode entityMode = session.EntityMode;
-			IType[] types = persister.PropertyTypes;
-			bool mightBeDirty = entry.RequiresDirtyCheck(entity);
-			object[] values = await (GetValuesAsync(entity, entry, entityMode, mightBeDirty, session));
-			@event.PropertyValues = values;
-			//TODO: avoid this for non-new instances where mightBeDirty==false
-			bool substitute = await (WrapCollectionsAsync(session, persister, types, values));
-			if (await (IsUpdateNecessaryAsync(@event, mightBeDirty)))
-			{
-				substitute = await (ScheduleUpdateAsync(@event)) || substitute;
-			}
-
-			if (status != Status.Deleted)
-			{
-				// now update the object .. has to be outside the main if block above (because of collections)
-				if (substitute)
-					persister.SetPropertyValues(entity, values, entityMode);
-				// Search for collections by reachability, updating their role.
-				// We don't want to touch collections reachable from a deleted object
-				if (persister.HasCollections)
-				{
-					await (new FlushVisitor(session, entity).ProcessEntityPropertyValuesAsync(values, types));
-				}
-			}
-		}
-
-		private async Task<object[]> GetDatabaseSnapshotAsync(ISessionImplementor session, IEntityPersister persister, object id)
-		{
-			if (persister.IsSelectBeforeUpdateRequired)
-			{
-				object[] snapshot = await (session.PersistenceContext.GetDatabaseSnapshotAsync(id, persister));
-				if (snapshot == null)
-				{
-					//do we even really need this? the update will fail anyway....
-					if (session.Factory.Statistics.IsStatisticsEnabled)
-					{
-						session.Factory.StatisticsImplementor.OptimisticFailure(persister.EntityName);
-					}
-
-					throw new StaleObjectStateException(persister.EntityName, id);
-				}
-				else
-				{
-					return snapshot;
-				}
-			}
-			else
-			{
-				//TODO: optimize away this lookup for entities w/o unsaved-value="undefined"
-				EntityKey entityKey = session.GenerateEntityKey(id, persister);
-				return session.PersistenceContext.GetCachedDatabaseSnapshot(entityKey);
-			}
-		}
-
-		protected virtual async Task DirtyCheckAsync(FlushEntityEvent @event)
-		{
-			object entity = @event.Entity;
-			object[] values = @event.PropertyValues;
-			ISessionImplementor session = @event.Session;
-			EntityEntry entry = @event.EntityEntry;
-			IEntityPersister persister = entry.Persister;
-			object id = entry.Id;
-			object[] loadedState = entry.LoadedState;
-			int[] dirtyProperties = session.Interceptor.FindDirty(entity, id, values, loadedState, persister.PropertyNames, persister.PropertyTypes);
-			@event.DatabaseSnapshot = null;
-			bool interceptorHandledDirtyCheck;
-			bool cannotDirtyCheck;
-			if (dirtyProperties == null)
-			{
-				// Interceptor returned null, so do the dirtycheck ourself, if possible
-				interceptorHandledDirtyCheck = false;
-				cannotDirtyCheck = loadedState == null; // object loaded by update()
-				if (!cannotDirtyCheck)
-				{
-					// dirty check against the usual snapshot of the entity
-					dirtyProperties = await (persister.FindDirtyAsync(values, loadedState, entity, session));
-				}
-				else if (entry.Status == Status.Deleted && !@event.EntityEntry.IsModifiableEntity())
-				{
-					// A non-modifiable (e.g., read-only or immutable) entity needs to be have
-					// references to transient entities set to null before being deleted. No other
-					// fields should be updated.
-					if (values != entry.DeletedState)
-					{
-						throw new InvalidOperationException("Entity has status Status.Deleted but values != entry.DeletedState");
-					}
-
-					// Even if loadedState == null, we can dirty-check by comparing currentState and
-					// entry.getDeletedState() because the only fields to be updated are those that
-					// refer to transient entities that are being set to null.
-					// - currentState contains the entity's current property values.
-					// - entry.getDeletedState() contains the entity's current property values with
-					//   references to transient entities set to null.
-					// - dirtyProperties will only contain properties that refer to transient entities
-					object[] currentState = persister.GetPropertyValues(@event.Entity, @event.Session.EntityMode);
-					dirtyProperties = await (persister.FindDirtyAsync(entry.DeletedState, currentState, entity, session));
-					cannotDirtyCheck = false;
-				}
-				else
-				{
-					// dirty check against the database snapshot, if possible/necessary
-					object[] databaseSnapshot = await (GetDatabaseSnapshotAsync(session, persister, id));
-					if (databaseSnapshot != null)
-					{
-						dirtyProperties = await (persister.FindModifiedAsync(databaseSnapshot, values, entity, session));
-						cannotDirtyCheck = false;
-						@event.DatabaseSnapshot = databaseSnapshot;
-					}
-				}
-			}
-			else
-			{
-				// the Interceptor handled the dirty checking
-				cannotDirtyCheck = false;
-				interceptorHandledDirtyCheck = true;
-			}
-
-			@event.DirtyProperties = dirtyProperties;
-			@event.DirtyCheckHandledByInterceptor = interceptorHandledDirtyCheck;
-			@event.DirtyCheckPossible = !cannotDirtyCheck;
 		}
 
 		private async Task<bool> IsUpdateNecessaryAsync(FlushEntityEvent @event, bool mightBeDirty)
@@ -226,34 +185,6 @@ namespace NHibernate.Event.Default
 			{
 				return await (HasDirtyCollectionsAsync(@event, @event.EntityEntry.Persister, status));
 			}
-		}
-
-		protected virtual async Task<bool> HandleInterceptionAsync(FlushEntityEvent @event)
-		{
-			ISessionImplementor session = @event.Session;
-			EntityEntry entry = @event.EntityEntry;
-			IEntityPersister persister = entry.Persister;
-			object entity = @event.Entity;
-			//give the Interceptor a chance to modify property values
-			object[] values = @event.PropertyValues;
-			bool intercepted = InvokeInterceptor(session, entity, entry, values, persister);
-			//now we might need to recalculate the dirtyProperties array
-			if (intercepted && @event.DirtyCheckPossible && !@event.DirtyCheckHandledByInterceptor)
-			{
-				int[] dirtyProperties;
-				if (@event.HasDatabaseSnapshot)
-				{
-					dirtyProperties = await (persister.FindModifiedAsync(@event.DatabaseSnapshot, values, entity, session));
-				}
-				else
-				{
-					dirtyProperties = await (persister.FindDirtyAsync(values, entry.LoadedState, entity, session));
-				}
-
-				@event.DirtyProperties = dirtyProperties;
-			}
-
-			return intercepted;
 		}
 
 		private async Task<bool> ScheduleUpdateAsync(FlushEntityEvent @event)
@@ -324,87 +255,32 @@ namespace NHibernate.Event.Default
 			return intercepted;
 		}
 
-		private async Task<bool> WrapCollectionsAsync(IEventSource session, IEntityPersister persister, IType[] types, object[] values)
+		protected virtual async Task<bool> HandleInterceptionAsync(FlushEntityEvent @event)
 		{
-			if (persister.HasCollections)
+			ISessionImplementor session = @event.Session;
+			EntityEntry entry = @event.EntityEntry;
+			IEntityPersister persister = entry.Persister;
+			object entity = @event.Entity;
+			//give the Interceptor a chance to modify property values
+			object[] values = @event.PropertyValues;
+			bool intercepted = InvokeInterceptor(session, entity, entry, values, persister);
+			//now we might need to recalculate the dirtyProperties array
+			if (intercepted && @event.DirtyCheckPossible && !@event.DirtyCheckHandledByInterceptor)
 			{
-				// wrap up any new collections directly referenced by the object
-				// or its components
-				// NOTE: we need to do the wrap here even if its not "dirty",
-				// because collections need wrapping but changes to _them_
-				// don't dirty the container. Also, for versioned data, we
-				// need to wrap before calling searchForDirtyCollections
-				WrapVisitor visitor = new WrapVisitor(session);
-				// substitutes into values by side-effect
-				await (visitor.ProcessEntityPropertyValuesAsync(values, types));
-				return visitor.SubstitutionRequired;
-			}
-			else
-			{
-				return false;
-			}
-		}
-
-		private async Task<bool> HasDirtyCollectionsAsync(FlushEntityEvent @event, IEntityPersister persister, Status status)
-		{
-			if (IsCollectionDirtyCheckNecessary(persister, status))
-			{
-				DirtyCollectionSearchVisitor visitor = new DirtyCollectionSearchVisitor(@event.Session, persister.PropertyVersionability);
-				await (visitor.ProcessEntityPropertyValuesAsync(@event.PropertyValues, persister.PropertyTypes));
-				bool hasDirtyCollections = visitor.WasDirtyCollectionFound;
-				@event.HasDirtyCollection = hasDirtyCollections;
-				return hasDirtyCollections;
-			}
-			else
-			{
-				return false;
-			}
-		}
-
-		protected async Task<bool> IsUpdateNecessaryAsync(FlushEntityEvent @event)
-		{
-			IEntityPersister persister = @event.EntityEntry.Persister;
-			Status status = @event.EntityEntry.Status;
-			if (!@event.DirtyCheckPossible)
-			{
-				return true;
-			}
-			else
-			{
-				int[] dirtyProperties = @event.DirtyProperties;
-				if (dirtyProperties != null && dirtyProperties.Length != 0)
+				int[] dirtyProperties;
+				if (@event.HasDatabaseSnapshot)
 				{
-					return true; //TODO: suck into event class
+					dirtyProperties = await (persister.FindModifiedAsync(@event.DatabaseSnapshot, values, entity, session));
 				}
 				else
 				{
-					return await (HasDirtyCollectionsAsync(@event, persister, status));
-				}
-			}
-		}
-
-		public virtual async Task CheckIdAsync(object obj, IEntityPersister persister, object id, EntityMode entityMode)
-		{
-			if (id != null && id is DelayedPostInsertIdentifier)
-			{
-				// this is a situation where the entity id is assigned by a post-insert generator
-				// and was saved outside the transaction forcing it to be delayed
-				return;
-			}
-
-			if (persister.CanExtractIdOutOfEntity)
-			{
-				if (id == null)
-				{
-					throw new AssertionFailure("null id in " + persister.EntityName + " entry (don't flush the Session after an exception occurs)");
+					dirtyProperties = await (persister.FindDirtyAsync(values, entry.LoadedState, entity, session));
 				}
 
-				object oid = await (persister.GetIdentifierAsync(obj, entityMode));
-				if (!await (persister.IdentifierType.IsEqualAsync(id, oid, EntityMode.Poco)))
-				{
-					throw new HibernateException("identifier of an instance of " + persister.EntityName + " was altered from " + id + " to " + oid);
-				}
+				@event.DirtyProperties = dirtyProperties;
 			}
+
+			return intercepted;
 		}
 
 		private async Task<object> GetNextVersionAsync(FlushEntityEvent @event)
@@ -431,6 +307,146 @@ namespace NHibernate.Event.Default
 			else
 			{
 				return null;
+			}
+		}
+
+		/// <summary>
+		/// Performs all necessary checking to determine if an entity needs an SQL update
+		/// to synchronize its state to the database. Modifies the event by side-effect!
+		/// Note: this method is quite slow, avoid calling if possible!
+		/// </summary>
+		protected async Task<bool> IsUpdateNecessaryAsync(FlushEntityEvent @event)
+		{
+			IEntityPersister persister = @event.EntityEntry.Persister;
+			Status status = @event.EntityEntry.Status;
+			if (!@event.DirtyCheckPossible)
+			{
+				return true;
+			}
+			else
+			{
+				int[] dirtyProperties = @event.DirtyProperties;
+				if (dirtyProperties != null && dirtyProperties.Length != 0)
+				{
+					return true; //TODO: suck into event class
+				}
+				else
+				{
+					return await (HasDirtyCollectionsAsync(@event, persister, status));
+				}
+			}
+		}
+
+		private async Task<bool> HasDirtyCollectionsAsync(FlushEntityEvent @event, IEntityPersister persister, Status status)
+		{
+			if (IsCollectionDirtyCheckNecessary(persister, status))
+			{
+				DirtyCollectionSearchVisitor visitor = new DirtyCollectionSearchVisitor(@event.Session, persister.PropertyVersionability);
+				await (visitor.ProcessEntityPropertyValuesAsync(@event.PropertyValues, persister.PropertyTypes));
+				bool hasDirtyCollections = visitor.WasDirtyCollectionFound;
+				@event.HasDirtyCollection = hasDirtyCollections;
+				return hasDirtyCollections;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		/// <summary> Perform a dirty check, and attach the results to the event</summary>
+		protected virtual async Task DirtyCheckAsync(FlushEntityEvent @event)
+		{
+			object entity = @event.Entity;
+			object[] values = @event.PropertyValues;
+			ISessionImplementor session = @event.Session;
+			EntityEntry entry = @event.EntityEntry;
+			IEntityPersister persister = entry.Persister;
+			object id = entry.Id;
+			object[] loadedState = entry.LoadedState;
+			int[] dirtyProperties = session.Interceptor.FindDirty(entity, id, values, loadedState, persister.PropertyNames, persister.PropertyTypes);
+			@event.DatabaseSnapshot = null;
+			bool interceptorHandledDirtyCheck;
+			bool cannotDirtyCheck;
+			if (dirtyProperties == null)
+			{
+				// Interceptor returned null, so do the dirtycheck ourself, if possible
+				interceptorHandledDirtyCheck = false;
+				cannotDirtyCheck = loadedState == null; // object loaded by update()
+				if (!cannotDirtyCheck)
+				{
+					// dirty check against the usual snapshot of the entity
+					dirtyProperties = await (persister.FindDirtyAsync(values, loadedState, entity, session));
+				}
+				else if (entry.Status == Status.Deleted && !@event.EntityEntry.IsModifiableEntity())
+				{
+					// A non-modifiable (e.g., read-only or immutable) entity needs to be have
+					// references to transient entities set to null before being deleted. No other
+					// fields should be updated.
+					if (values != entry.DeletedState)
+					{
+						throw new InvalidOperationException("Entity has status Status.Deleted but values != entry.DeletedState");
+					}
+
+					// Even if loadedState == null, we can dirty-check by comparing currentState and
+					// entry.getDeletedState() because the only fields to be updated are those that
+					// refer to transient entities that are being set to null.
+					// - currentState contains the entity's current property values.
+					// - entry.getDeletedState() contains the entity's current property values with
+					//   references to transient entities set to null.
+					// - dirtyProperties will only contain properties that refer to transient entities
+					object[] currentState = persister.GetPropertyValues(@event.Entity, @event.Session.EntityMode);
+					dirtyProperties = await (persister.FindDirtyAsync(entry.DeletedState, currentState, entity, session));
+					cannotDirtyCheck = false;
+				}
+				else
+				{
+					// dirty check against the database snapshot, if possible/necessary
+					object[] databaseSnapshot = await (GetDatabaseSnapshotAsync(session, persister, id));
+					if (databaseSnapshot != null)
+					{
+						dirtyProperties = await (persister.FindModifiedAsync(databaseSnapshot, values, entity, session));
+						cannotDirtyCheck = false;
+						@event.DatabaseSnapshot = databaseSnapshot;
+					}
+				}
+			}
+			else
+			{
+				// the Interceptor handled the dirty checking
+				cannotDirtyCheck = false;
+				interceptorHandledDirtyCheck = true;
+			}
+
+			@event.DirtyProperties = dirtyProperties;
+			@event.DirtyCheckHandledByInterceptor = interceptorHandledDirtyCheck;
+			@event.DirtyCheckPossible = !cannotDirtyCheck;
+		}
+
+		private async Task<object[]> GetDatabaseSnapshotAsync(ISessionImplementor session, IEntityPersister persister, object id)
+		{
+			if (persister.IsSelectBeforeUpdateRequired)
+			{
+				object[] snapshot = await (session.PersistenceContext.GetDatabaseSnapshotAsync(id, persister));
+				if (snapshot == null)
+				{
+					//do we even really need this? the update will fail anyway....
+					if (session.Factory.Statistics.IsStatisticsEnabled)
+					{
+						session.Factory.StatisticsImplementor.OptimisticFailure(persister.EntityName);
+					}
+
+					throw new StaleObjectStateException(persister.EntityName, id);
+				}
+				else
+				{
+					return snapshot;
+				}
+			}
+			else
+			{
+				//TODO: optimize away this lookup for entities w/o unsaved-value="undefined"
+				EntityKey entityKey = session.GenerateEntityKey(id, persister);
+				return session.PersistenceContext.GetCachedDatabaseSnapshot(entityKey);
 			}
 		}
 	}

@@ -8,7 +8,7 @@ namespace NHibernate.Metadata
 	/// Exposes entity class metadata to the application
 	/// </summary>
 	/// <seealso cref="NHibernate.ISessionFactory.GetClassMetadata(System.Type)"/>
-	public interface IClassMetadata
+	public partial interface IClassMetadata
 	{
 		/// <summary>
 		/// The name of the entity

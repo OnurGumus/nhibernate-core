@@ -36,9 +36,16 @@ namespace NHibernate.Criterion
 			return lhs.ToSqlString();
 		}
 
-		public override async Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public override Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new TypedValue[]{typedValue};
+			try
+			{
+				return Task.FromResult<TypedValue[]>(GetTypedValues(criteria, criteriaQuery));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<TypedValue[]>(ex);
+			}
 		}
 	}
 }

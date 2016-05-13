@@ -1,12 +1,12 @@
 namespace NHibernate.Cfg.Loquacious
 {
-	public interface IMappingsConfiguration
+	public partial interface IMappingsConfiguration
 	{
 		IMappingsConfiguration UsingDefaultCatalog(string defaultCatalogName);
 		IFluentSessionFactoryConfiguration UsingDefaultSchema(string defaultSchemaName);
 	}
 
-	public interface IMappingsConfigurationProperties
+	public partial interface IMappingsConfigurationProperties
 	{
 		string DefaultCatalog { set; }
 		string DefaultSchema { set; }

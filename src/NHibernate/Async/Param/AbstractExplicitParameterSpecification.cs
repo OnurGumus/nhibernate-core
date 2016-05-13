@@ -5,6 +5,7 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Param
 {

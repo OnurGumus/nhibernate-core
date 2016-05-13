@@ -10,21 +10,16 @@ namespace NHibernate.Criterion
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class PropertyProjection : SimpleProjection, IPropertyProjection
 	{
-		public override async Task<SqlString> ToSqlStringAsync(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override Task<SqlString> ToSqlStringAsync(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			SqlStringBuilder s = new SqlStringBuilder();
-			string[] cols = criteriaQuery.GetColumnsUsingProjection(criteria, propertyName);
-			for (int i = 0; i < cols.Length; i++)
+			try
 			{
-				s.Add(cols[i]);
-				s.Add(" as y");
-				s.Add((loc + i).ToString());
-				s.Add("_");
-				if (i < cols.Length - 1)
-					s.Add(", ");
+				return Task.FromResult<SqlString>(ToSqlString(criteria, loc, criteriaQuery, enabledFilters));
 			}
-
-			return s.ToSqlString();
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<SqlString>(ex);
+			}
 		}
 	}
 }

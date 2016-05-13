@@ -10,6 +10,16 @@ namespace NHibernate.Cache.Entry
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public sealed partial class CacheEntry
 	{
+		public async Task<object[]> AssembleAsync(object instance, object id, IEntityPersister persister, IInterceptor interceptor, ISessionImplementor session)
+		{
+			if (!persister.EntityName.Equals(subclass))
+			{
+				throw new AssertionFailure("Tried to assemble a different subclass instance");
+			}
+
+			return await (AssembleAsync(disassembledState, instance, id, persister, interceptor, session));
+		}
+
 		private static async Task<object[]> AssembleAsync(object[] values, object result, object id, IEntityPersister persister, IInterceptor interceptor, ISessionImplementor session)
 		{
 			//assembled state gets put in a new array (we read from cache by value!)
@@ -28,16 +38,6 @@ namespace NHibernate.Cache.Entry
 
 			persister.SetPropertyValues(result, assembledProps, session.EntityMode);
 			return assembledProps;
-		}
-
-		public async Task<object[]> AssembleAsync(object instance, object id, IEntityPersister persister, IInterceptor interceptor, ISessionImplementor session)
-		{
-			if (!persister.EntityName.Equals(subclass))
-			{
-				throw new AssertionFailure("Tried to assemble a different subclass instance");
-			}
-
-			return await (AssembleAsync(disassembledState, instance, id, persister, interceptor, session));
 		}
 	}
 }

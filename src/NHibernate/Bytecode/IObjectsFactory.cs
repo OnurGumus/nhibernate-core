@@ -3,7 +3,7 @@ namespace NHibernate.Bytecode
 	/// <summary>
 	/// Interface for instantiate all NHibernate objects.
 	/// </summary>
-	public interface IObjectsFactory
+	public partial interface IObjectsFactory
 	{
 		/// <summary>
 		/// Creates an instance of the specified type.

@@ -7,7 +7,7 @@ using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Linq.Functions
 {
-    public interface IHqlGeneratorForMethod
+    public partial interface IHqlGeneratorForMethod
     {
         IEnumerable<MethodInfo> SupportedMethods { get; }
         HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor);

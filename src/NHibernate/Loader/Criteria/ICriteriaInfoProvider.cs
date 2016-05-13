@@ -4,7 +4,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Loader.Criteria
 {
-    public interface ICriteriaInfoProvider 
+    public partial interface ICriteriaInfoProvider 
     {
         string Name { get; }
         string[] Spaces { get; }

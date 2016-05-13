@@ -3,6 +3,7 @@ using System.Reflection;
 using NHibernate.Engine;
 using System;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Properties
 {
@@ -12,9 +13,16 @@ namespace NHibernate.Properties
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		public sealed partial class MapGetter : IGetter
 		{
-			public async Task<object> GetForInsertAsync(object owner, IDictionary mergeMap, ISessionImplementor session)
+			public Task<object> GetForInsertAsync(object owner, IDictionary mergeMap, ISessionImplementor session)
 			{
-				return Get(owner);
+				try
+				{
+					return Task.FromResult<object>(GetForInsert(owner, mergeMap, session));
+				}
+				catch (Exception ex)
+				{
+					return TaskHelper.FromException<object>(ex);
+				}
 			}
 		}
 	}

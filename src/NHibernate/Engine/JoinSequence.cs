@@ -309,7 +309,7 @@ namespace NHibernate.Engine
 			get { return joins.Count; }
 		}
 
-		public interface ISelector
+		public partial interface ISelector
 		{
 			bool IncludeSubclasses(string alias);
 		}

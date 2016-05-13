@@ -9,7 +9,7 @@ namespace NHibernate.Cache
 	/// Note currently <see cref="NHibernate.Persister.Entity.IEntityPersister">EntityPersisters</see> are
 	/// the only viable source.
 	/// </remarks>
-	public interface IOptimisticCacheSource
+	public partial interface IOptimisticCacheSource
 	{
 		/// <summary> 
 		/// Does this source represent versioned (i.e., and thus optimistically lockable) data? 

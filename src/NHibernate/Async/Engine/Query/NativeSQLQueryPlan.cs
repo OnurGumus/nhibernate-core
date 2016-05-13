@@ -22,6 +22,7 @@ namespace NHibernate.Engine.Query
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class NativeSQLQueryPlan
 	{
+		// DONE : H3.2 Executable query (now can be supported for named SQL query/ storedProcedure)
 		public async Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session)
 		{
 			CoordinateSharedCacheCleanup(session);

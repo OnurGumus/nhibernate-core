@@ -77,22 +77,28 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task<IEnumerable> EnumerableAsync()
+		public override Task<IEnumerable> EnumerableAsync()
 		{
-			throw new NotSupportedException("SQL queries do not currently support enumeration");
+			try
+			{
+				return Task.FromResult<IEnumerable>(Enumerable());
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<IEnumerable>(ex);
+			}
 		}
 
-		public override async Task<IEnumerable<T>> EnumerableAsync<T>()
+		public override Task<IEnumerable<T>> EnumerableAsync<T>()
 		{
-			throw new NotSupportedException("SQL queries do not currently support enumeration");
-		}
-
-		protected internal override async Task<IEnumerable<ITranslator>> GetTranslatorsAsync(ISessionImplementor sessionImplementor, QueryParameters queryParameters)
-		{
-			// NOTE: updates queryParameters.NamedParameters as (desired) side effect
-			ExpandParameterLists(queryParameters.NamedParameters);
-			var sqlQuery = this as ISQLQuery;
-			yield return new SqlTranslator(sqlQuery, sessionImplementor.Factory);
+			try
+			{
+				return Task.FromResult<IEnumerable<T>>(Enumerable<T>());
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<IEnumerable<T>>(ex);
+			}
 		}
 
 		public override async Task<int> ExecuteUpdateAsync()
@@ -106,6 +112,18 @@ namespace NHibernate.Impl
 			finally
 			{
 				After();
+			}
+		}
+
+		protected internal override Task<IEnumerable<ITranslator>> GetTranslatorsAsync(ISessionImplementor sessionImplementor, QueryParameters queryParameters)
+		{
+			try
+			{
+				return Task.FromResult<IEnumerable<ITranslator>>(GetTranslators(sessionImplementor, queryParameters));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<IEnumerable<ITranslator>>(ex);
 			}
 		}
 	}

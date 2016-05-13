@@ -23,37 +23,32 @@ namespace NHibernate.Loader.Custom
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class CustomLoader : Loader
 	{
-		public async Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters)
+		public Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters)
 		{
-			return await (ListAsync(session, queryParameters, querySpaces, resultTypes));
+			return ListAsync(session, queryParameters, querySpaces, resultTypes);
 		}
 
-		protected override async Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, IDataReader rs, ISessionImplementor session)
+		// Not ported: scroll
+		protected override Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, IDataReader rs, ISessionImplementor session)
 		{
-			return await (rowProcessor.BuildResultRowAsync(row, rs, resultTransformer != null, session));
-		}
-
-		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		public partial class ScalarResultColumnProcessor : IResultColumnProcessor
-		{
-			public async Task<object> ExtractAsync(object[] data, IDataReader resultSet, ISessionImplementor session)
-			{
-				return await (type.NullSafeGetAsync(resultSet, alias, session, null));
-			}
-		}
-
-		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		public partial class NonScalarResultColumnProcessor : IResultColumnProcessor
-		{
-			public async Task<object> ExtractAsync(object[] data, IDataReader resultSet, ISessionImplementor session)
-			{
-				return data[position];
-			}
+			return rowProcessor.BuildResultRowAsync(row, rs, resultTransformer != null, session);
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		public partial class ResultRowProcessor
 		{
+			/// <summary> Build a logical result row. </summary>
+			/// <param name = "data">
+			/// Entity data defined as "root returns" and already handled by the normal Loader mechanism.
+			/// </param>
+			/// <param name = "resultSet">The ADO result set (positioned at the row currently being processed). </param>
+			/// <param name = "hasTransformer">Does this query have an associated <see cref = "IResultTransformer"/>. </param>
+			/// <param name = "session">The session from which the query request originated.</param>
+			/// <returns> The logical result row </returns>
+			/// <remarks>
+			/// At this point, Loader has already processed all non-scalar result data.  We
+			/// just need to account for scalar result data here...
+			/// </remarks>
 			public async Task<object> BuildResultRowAsync(object[] data, IDataReader resultSet, bool hasTransformer, ISessionImplementor session)
 			{
 				object[] resultRow;
@@ -75,6 +70,37 @@ namespace NHibernate.Loader.Custom
 				}
 
 				return (hasTransformer) ? resultRow : (resultRow.Length == 1) ? resultRow[0] : resultRow;
+			}
+		}
+
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		public partial interface IResultColumnProcessor
+		{
+			Task<object> ExtractAsync(object[] data, IDataReader resultSet, ISessionImplementor session);
+		}
+
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		public partial class NonScalarResultColumnProcessor : IResultColumnProcessor
+		{
+			public Task<object> ExtractAsync(object[] data, IDataReader resultSet, ISessionImplementor session)
+			{
+				try
+				{
+					return Task.FromResult<object>(Extract(data, resultSet, session));
+				}
+				catch (Exception ex)
+				{
+					return TaskHelper.FromException<object>(ex);
+				}
+			}
+		}
+
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		public partial class ScalarResultColumnProcessor : IResultColumnProcessor
+		{
+			public Task<object> ExtractAsync(object[] data, IDataReader resultSet, ISessionImplementor session)
+			{
+				return type.NullSafeGetAsync(resultSet, alias, session, null);
 			}
 		}
 	}

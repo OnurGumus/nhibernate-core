@@ -3,6 +3,7 @@ using System.Collections;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -16,9 +17,16 @@ namespace NHibernate.Type
 			return await (DeepCopyAsync(original, session.EntityMode, session.Factory));
 		}
 
-		public override async Task<object> DeepCopyAsync(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public override Task<object> DeepCopyAsync(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
 		{
-			return (value == null) ? null : DeepCopyNotNull(value);
+			try
+			{
+				return Task.FromResult<object>(DeepCopy(value, entityMode, factory));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 	}
 }

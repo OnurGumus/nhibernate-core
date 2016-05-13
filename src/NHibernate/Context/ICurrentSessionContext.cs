@@ -31,7 +31,7 @@ namespace NHibernate.Context
 	/// single entry point with session binding support.
 	/// </para>
 	/// </remarks>
-	public interface ICurrentSessionContext
+	public partial interface ICurrentSessionContext
 	{
 		/// <summary>
 		/// Retrieve the current session according to the scoping defined

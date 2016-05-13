@@ -16,6 +16,37 @@ namespace NHibernate.Event.Default
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class AbstractSaveEventListener : AbstractReassociateEventListener
 	{
+		/// <summary> 
+		/// Prepares the save call using the given requested id. 
+		/// </summary>
+		/// <param name = "entity">The entity to be saved. </param>
+		/// <param name = "requestedId">The id to which to associate the entity. </param>
+		/// <param name = "entityName">The name of the entity being saved. </param>
+		/// <param name = "anything">Generally cascade-specific information. </param>
+		/// <param name = "source">The session which is the source of this save event. </param>
+		/// <returns> The id used to save the entity. </returns>
+		protected virtual async Task<object> SaveWithRequestedIdAsync(object entity, object requestedId, string entityName, object anything, IEventSource source)
+		{
+			return await (PerformSaveAsync(entity, requestedId, source.GetEntityPersister(entityName, entity), false, anything, source, true));
+		}
+
+		/// <summary> 
+		/// Prepares the save call using a newly generated id. 
+		/// </summary>
+		/// <param name = "entity">The entity to be saved </param>
+		/// <param name = "entityName">The entity-name for the entity to be saved </param>
+		/// <param name = "anything">Generally cascade-specific information. </param>
+		/// <param name = "source">The session which is the source of this save event. </param>
+		/// <param name = "requiresImmediateIdAccess">
+		/// does the event context require
+		/// access to the identifier immediately after execution of this method (if
+		/// not, post-insert style id generators may be postponed if we are outside
+		/// a transaction). 
+		/// </param>
+		/// <returns> 
+		/// The id used to save the entity; may be null depending on the
+		/// type of id generator used and the requiresImmediateIdAccess value
+		/// </returns>
 		protected virtual async Task<object> SaveWithGeneratedIdAsync(object entity, string entityName, object anything, IEventSource source, bool requiresImmediateIdAccess)
 		{
 			IEntityPersister persister = source.GetEntityPersister(entityName, entity);
@@ -43,20 +74,83 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected virtual async Task CascadeBeforeSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything)
+		/// <summary> 
+		/// Prepares the save call by checking the session caches for a pre-existing
+		/// entity and performing any lifecycle callbacks. 
+		/// </summary>
+		/// <param name = "entity">The entity to be saved. </param>
+		/// <param name = "id">The id by which to save the entity. </param>
+		/// <param name = "persister">The entity's persister instance. </param>
+		/// <param name = "useIdentityColumn">Is an identity column being used? </param>
+		/// <param name = "anything">Generally cascade-specific information. </param>
+		/// <param name = "source">The session from which the event originated. </param>
+		/// <param name = "requiresImmediateIdAccess">
+		/// does the event context require
+		/// access to the identifier immediately after execution of this method (if
+		/// not, post-insert style id generators may be postponed if we are outside
+		/// a transaction). 
+		/// </param>
+		/// <returns> 
+		/// The id used to save the entity; may be null depending on the
+		/// type of id generator used and the requiresImmediateIdAccess value
+		/// </returns>
+		protected virtual async Task<object> PerformSaveAsync(object entity, object id, IEntityPersister persister, bool useIdentityColumn, object anything, IEventSource source, bool requiresImmediateIdAccess)
 		{
-			// cascade-save to many-to-one BEFORE the parent is saved
-			source.PersistenceContext.IncrementCascadeLevel();
-			try
+			if (log.IsDebugEnabled)
 			{
-				await (new Cascade(CascadeAction, CascadePoint.BeforeInsertAfterDelete, source).CascadeOnAsync(persister, entity, anything));
+				log.Debug("saving " + MessageHelper.InfoString(persister, id, source.Factory));
 			}
-			finally
+
+			EntityKey key;
+			if (!useIdentityColumn)
 			{
-				source.PersistenceContext.DecrementCascadeLevel();
+				key = source.GenerateEntityKey(id, persister);
+				object old = source.PersistenceContext.GetEntity(key);
+				if (old != null)
+				{
+					if (source.PersistenceContext.GetEntry(old).Status == Status.Deleted)
+					{
+						await (source.ForceFlushAsync(source.PersistenceContext.GetEntry(old)));
+					}
+					else
+					{
+						throw new NonUniqueObjectException(id, persister.EntityName);
+					}
+				}
+
+				await (persister.SetIdentifierAsync(entity, id, source.EntityMode));
 			}
+			else
+			{
+				key = null;
+			}
+
+			if (InvokeSaveLifecycle(entity, persister, source))
+			{
+				return id; //EARLY EXIT
+			}
+
+			return await (PerformSaveOrReplicateAsync(entity, key, persister, useIdentityColumn, anything, source, requiresImmediateIdAccess));
 		}
 
+		/// <summary> 
+		/// Performs all the actual work needed to save an entity (well to get the save moved to
+		/// the execution queue). 
+		/// </summary>
+		/// <param name = "entity">The entity to be saved </param>
+		/// <param name = "key">The id to be used for saving the entity (or null, in the case of identity columns) </param>
+		/// <param name = "persister">The entity's persister instance. </param>
+		/// <param name = "useIdentityColumn">Should an identity column be used for id generation? </param>
+		/// <param name = "anything">Generally cascade-specific information. </param>
+		/// <param name = "source">The session which is the source of the current event. </param>
+		/// <param name = "requiresImmediateIdAccess">
+		/// Is access to the identifier required immediately
+		/// after the completion of the save?  persist(), for example, does not require this... 
+		/// </param>
+		/// <returns> 
+		/// The id used to save the entity; may be null depending on the
+		/// type of id generator used and the requiresImmediateIdAccess value
+		/// </returns>
 		protected virtual async Task<object> PerformSaveOrReplicateAsync(object entity, EntityKey key, IEntityPersister persister, bool useIdentityColumn, object anything, IEventSource source, bool requiresImmediateIdAccess)
 		{
 			Validate(entity, persister, source);
@@ -128,50 +222,87 @@ namespace NHibernate.Event.Default
 			return id;
 		}
 
-		protected virtual async Task<object> PerformSaveAsync(object entity, object id, IEntityPersister persister, bool useIdentityColumn, object anything, IEventSource source, bool requiresImmediateIdAccess)
+		protected virtual async Task<bool> VisitCollectionsBeforeSaveAsync(object entity, object id, object[] values, IType[] types, IEventSource source)
 		{
-			if (log.IsDebugEnabled)
-			{
-				log.Debug("saving " + MessageHelper.InfoString(persister, id, source.Factory));
-			}
-
-			EntityKey key;
-			if (!useIdentityColumn)
-			{
-				key = source.GenerateEntityKey(id, persister);
-				object old = source.PersistenceContext.GetEntity(key);
-				if (old != null)
-				{
-					if (source.PersistenceContext.GetEntry(old).Status == Status.Deleted)
-					{
-						await (source.ForceFlushAsync(source.PersistenceContext.GetEntry(old)));
-					}
-					else
-					{
-						throw new NonUniqueObjectException(id, persister.EntityName);
-					}
-				}
-
-				await (persister.SetIdentifierAsync(entity, id, source.EntityMode));
-			}
-			else
-			{
-				key = null;
-			}
-
-			if (InvokeSaveLifecycle(entity, persister, source))
-			{
-				return id; //EARLY EXIT
-			}
-
-			return await (PerformSaveOrReplicateAsync(entity, key, persister, useIdentityColumn, anything, source, requiresImmediateIdAccess));
+			WrapVisitor visitor = new WrapVisitor(source);
+			// substitutes into values by side-effect
+			await (visitor.ProcessEntityPropertyValuesAsync(values, types));
+			return visitor.SubstitutionRequired;
 		}
 
-		protected virtual async Task<object> SaveWithRequestedIdAsync(object entity, object requestedId, string entityName, object anything, IEventSource source)
+		/// <summary> 
+		/// Perform any property value substitution that is necessary
+		/// (interceptor callback, version initialization...) 
+		/// </summary>
+		/// <param name = "entity">The entity </param>
+		/// <param name = "id">The entity identifier </param>
+		/// <param name = "values">The snapshot entity state </param>
+		/// <param name = "persister">The entity persister </param>
+		/// <param name = "source">The originating session </param>
+		/// <returns> 
+		/// True if the snapshot state changed such that
+		/// reinjection of the values into the entity is required.
+		/// </returns>
+		protected virtual async Task<bool> SubstituteValuesIfNecessaryAsync(object entity, object id, object[] values, IEntityPersister persister, ISessionImplementor source)
 		{
-			return await (PerformSaveAsync(entity, requestedId, source.GetEntityPersister(entityName, entity), false, anything, source, true));
+			bool substitute = source.Interceptor.OnSave(entity, id, values, persister.PropertyNames, persister.PropertyTypes);
+			//keep the existing version number in the case of replicate!
+			if (persister.IsVersioned)
+			{
+				// NH Specific feature (H3.2 use null value for versionProperty; NH ask to persister to know if a valueType mean unversioned)
+				object versionValue = values[persister.VersionProperty];
+				substitute |= await (Versioning.SeedVersionAsync(values, persister.VersionProperty, persister.VersionType, persister.IsUnsavedVersion(versionValue), source));
+			}
+
+			return substitute;
 		}
 
+		/// <summary> Handles the calls needed to perform pre-save cascades for the given entity. </summary>
+		/// <param name = "source">The session from which the save event originated.</param>
+		/// <param name = "persister">The entity's persister instance. </param>
+		/// <param name = "entity">The entity to be saved. </param>
+		/// <param name = "anything">Generally cascade-specific data </param>
+		protected virtual async Task CascadeBeforeSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything)
+		{
+			// cascade-save to many-to-one BEFORE the parent is saved
+			source.PersistenceContext.IncrementCascadeLevel();
+			try
+			{
+				await (new Cascade(CascadeAction, CascadePoint.BeforeInsertAfterDelete, source).CascadeOnAsync(persister, entity, anything));
+			}
+			finally
+			{
+				source.PersistenceContext.DecrementCascadeLevel();
+			}
+		}
+
+		/// <summary> Handles to calls needed to perform post-save cascades. </summary>
+		/// <param name = "source">The session from which the event originated. </param>
+		/// <param name = "persister">The entity's persister instance. </param>
+		/// <param name = "entity">The entity being saved. </param>
+		/// <param name = "anything">Generally cascade-specific data </param>
+		protected virtual async Task CascadeAfterSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything)
+		{
+			// cascade-save to collections AFTER the collection owner was saved
+			source.PersistenceContext.IncrementCascadeLevel();
+			try
+			{
+				await (new Cascade(CascadeAction, CascadePoint.AfterInsertBeforeDelete, source).CascadeOnAsync(persister, entity, anything));
+			}
+			finally
+			{
+				source.PersistenceContext.DecrementCascadeLevel();
+			}
+		}
+
+		/// <summary> 
+		/// Determine whether the entity is persistent, detached, or transient 
+		/// </summary>
+		/// <param name = "entity">The entity to check </param>
+		/// <param name = "entityName">The name of the entity </param>
+		/// <param name = "entry">The entity's entry in the persistence context </param>
+		/// <param name = "source">The originating session. </param>
+		/// <returns> The state. </returns>
 		protected virtual async Task<EntityState> GetEntityStateAsync(object entity, string entityName, EntityEntry entry, ISessionImplementor source)
 		{
 			if (entry != null)
@@ -223,42 +354,6 @@ namespace NHibernate.Event.Default
 					return EntityState.Detached;
 				}
 			}
-		}
-
-		protected virtual async Task<bool> VisitCollectionsBeforeSaveAsync(object entity, object id, object[] values, IType[] types, IEventSource source)
-		{
-			WrapVisitor visitor = new WrapVisitor(source);
-			// substitutes into values by side-effect
-			await (visitor.ProcessEntityPropertyValuesAsync(values, types));
-			return visitor.SubstitutionRequired;
-		}
-
-		protected virtual async Task CascadeAfterSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything)
-		{
-			// cascade-save to collections AFTER the collection owner was saved
-			source.PersistenceContext.IncrementCascadeLevel();
-			try
-			{
-				await (new Cascade(CascadeAction, CascadePoint.AfterInsertBeforeDelete, source).CascadeOnAsync(persister, entity, anything));
-			}
-			finally
-			{
-				source.PersistenceContext.DecrementCascadeLevel();
-			}
-		}
-
-		protected virtual async Task<bool> SubstituteValuesIfNecessaryAsync(object entity, object id, object[] values, IEntityPersister persister, ISessionImplementor source)
-		{
-			bool substitute = source.Interceptor.OnSave(entity, id, values, persister.PropertyNames, persister.PropertyTypes);
-			//keep the existing version number in the case of replicate!
-			if (persister.IsVersioned)
-			{
-				// NH Specific feature (H3.2 use null value for versionProperty; NH ask to persister to know if a valueType mean unversioned)
-				object versionValue = values[persister.VersionProperty];
-				substitute |= await (Versioning.SeedVersionAsync(values, persister.VersionProperty, persister.VersionType, persister.IsUnsavedVersion(versionValue), source));
-			}
-
-			return substitute;
 		}
 	}
 }

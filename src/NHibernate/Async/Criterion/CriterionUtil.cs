@@ -12,12 +12,6 @@ namespace NHibernate.Criterion
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public static partial class CriterionUtil
 	{
-		internal static async Task<SqlString[]> GetColumnNamesUsingProjectionAsync(IProjection projection, ICriteriaQuery criteriaQuery, ICriteria criteria, IDictionary<string, IFilter> enabledFilters)
-		{
-			SqlString sqlString = await (projection.ToSqlStringAsync(criteria, criteriaQuery.GetIndexForAlias(), criteriaQuery, enabledFilters));
-			return new SqlString[]{SqlStringHelper.RemoveAsAliasesFromSql(sqlString)};
-		}
-
 		public static async Task<SqlString[]> GetColumnNamesAsync(string propertyName, IProjection projection, ICriteriaQuery criteriaQuery, ICriteria criteria, IDictionary<string, IFilter> enabledFilters)
 		{
 			if (projection == null)
@@ -36,6 +30,12 @@ namespace NHibernate.Criterion
 			{
 				return await (GetColumnNamesUsingProjectionAsync(projection, criteriaQuery, criteria, enabledFilters));
 			}
+		}
+
+		internal static async Task<SqlString[]> GetColumnNamesUsingProjectionAsync(IProjection projection, ICriteriaQuery criteriaQuery, ICriteria criteria, IDictionary<string, IFilter> enabledFilters)
+		{
+			SqlString sqlString = await (projection.ToSqlStringAsync(criteria, criteriaQuery.GetIndexForAlias(), criteriaQuery, enabledFilters));
+			return new SqlString[]{SqlStringHelper.RemoveAsAliasesFromSql(sqlString)};
 		}
 	}
 }

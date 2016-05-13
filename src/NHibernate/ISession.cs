@@ -71,7 +71,7 @@ namespace NHibernate
 	/// </para>
 	/// <seealso cref="ISessionFactory"/>
 	/// </remarks>
-	public interface ISession : IDisposable
+	public partial interface ISession : IDisposable
 	{
 		/// <summary> The entity mode in effect for this session.</summary>
 		EntityMode ActiveEntityMode { get; } // NH different implementation: changed name to avoid conflicts

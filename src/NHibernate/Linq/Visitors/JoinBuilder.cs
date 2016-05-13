@@ -8,7 +8,7 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
-	public interface IJoiner
+	public partial interface IJoiner
 	{
 		Expression AddJoin(Expression expression, string key);
 		bool CanAddJoin(Expression expression);

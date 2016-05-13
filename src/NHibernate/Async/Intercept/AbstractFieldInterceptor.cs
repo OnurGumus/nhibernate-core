@@ -9,24 +9,6 @@ namespace NHibernate.Intercept
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class AbstractFieldInterceptor : IFieldInterceptor
 	{
-		private async Task<object> InitializeFieldAsync(string fieldName, object target)
-		{
-			object result;
-			initializing = true;
-			try
-			{
-				var lazyPropertyInitializer = ((ILazyPropertyInitializer)session.Factory.GetEntityPersister(entityName));
-				result = await (lazyPropertyInitializer.InitializeLazyPropertyAsync(fieldName, target, session));
-			}
-			finally
-			{
-				initializing = false;
-			}
-
-			uninitializedFields = null; //let's assume that there is only one lazy fetch group, for now!
-			return result;
-		}
-
 		public async Task<object> InterceptAsync(object target, string fieldName, object value)
 		{
 			// NH Specific: Hibernate only deals with lazy properties here, we deal with 
@@ -77,6 +59,24 @@ namespace NHibernate.Intercept
 			}
 
 			return await (value.HibernateLazyInitializer.GetImplementationAsync(session));
+		}
+
+		private async Task<object> InitializeFieldAsync(string fieldName, object target)
+		{
+			object result;
+			initializing = true;
+			try
+			{
+				var lazyPropertyInitializer = ((ILazyPropertyInitializer)session.Factory.GetEntityPersister(entityName));
+				result = await (lazyPropertyInitializer.InitializeLazyPropertyAsync(fieldName, target, session));
+			}
+			finally
+			{
+				initializing = false;
+			}
+
+			uninitializedFields = null; //let's assume that there is only one lazy fetch group, for now!
+			return result;
 		}
 	}
 }

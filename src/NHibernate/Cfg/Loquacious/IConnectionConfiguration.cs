@@ -5,7 +5,7 @@ using NHibernate.Connection;
 
 namespace NHibernate.Cfg.Loquacious
 {
-	public interface IConnectionConfiguration
+	public partial interface IConnectionConfiguration
 	{
 		IConnectionConfiguration Through<TProvider>() where TProvider : IConnectionProvider;
 		IConnectionConfiguration By<TDriver>() where TDriver : IDriver;

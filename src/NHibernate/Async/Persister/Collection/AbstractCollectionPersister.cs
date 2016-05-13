@@ -34,61 +34,154 @@ namespace NHibernate.Persister.Collection
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class AbstractCollectionPersister : ICollectionMetadata, ISqlLoadableCollection, IPostInsertIdentityPersister
 	{
-		protected async Task<object> PerformInsertAsync(object ownerId, IPersistentCollection collection, object entry, int index, ISessionImplementor session)
+		public async Task InitializeAsync(object key, ISessionImplementor session)
 		{
-			IBinder binder = new GeneratedIdentifierBinder(ownerId, collection, entry, index, session, this);
-			return await (identityDelegate.PerformInsertAsync(SqlInsertRowString, session, binder));
+			await (GetAppropriateInitializer(key, session).InitializeAsync(key, session));
 		}
 
-		public async Task InsertRowsAsync(IPersistentCollection collection, object id, ISessionImplementor session)
+		/// <summary>
+		/// Reads the Element from the IDataReader.  The IDataReader will probably only contain
+		/// the id of the Element.
+		/// </summary>
+		/// <remarks>See ReadElementIdentifier for an explanation of why this method will be depreciated.</remarks>
+		public Task<object> ReadElementAsync(IDataReader rs, object owner, string[] aliases, ISessionImplementor session)
 		{
-			if (!isInverse && RowInsertEnabled)
+			return ElementType.NullSafeGetAsync(rs, aliases, session, owner);
+		}
+
+		public async Task<object> ReadIndexAsync(IDataReader rs, string[] aliases, ISessionImplementor session)
+		{
+			object index = await (IndexType.NullSafeGetAsync(rs, aliases, session, null));
+			if (index == null)
+			{
+				throw new HibernateException("null index column for collection: " + role);
+			}
+
+			index = DecrementIndexByBase(index);
+			return index;
+		}
+
+		public async Task<object> ReadIdentifierAsync(IDataReader rs, string alias, ISessionImplementor session)
+		{
+			object id = await (IdentifierType.NullSafeGetAsync(rs, alias, session, null));
+			if (id == null)
+			{
+				throw new HibernateException("null identifier column for collection: " + role);
+			}
+
+			return id;
+		}
+
+		public Task<object> ReadKeyAsync(IDataReader dr, string[] aliases, ISessionImplementor session)
+		{
+			return KeyType.NullSafeGetAsync(dr, aliases, session, null);
+		}
+
+		protected async Task<int> WriteKeyAsync(IDbCommand st, object id, int i, ISessionImplementor session)
+		{
+			if (id == null)
+			{
+				throw new ArgumentNullException("id", "Null key for collection: " + role);
+			}
+
+			await (KeyType.NullSafeSetAsync(st, id, i, session));
+			return i + keyColumnAliases.Length;
+		}
+
+		protected async Task<int> WriteElementAsync(IDbCommand st, object elt, int i, ISessionImplementor session)
+		{
+			await (ElementType.NullSafeSetAsync(st, elt, i, elementColumnIsSettable, session));
+			return i + ArrayHelper.CountTrue(elementColumnIsSettable);
+		}
+
+		protected async Task<int> WriteIndexAsync(IDbCommand st, object idx, int i, ISessionImplementor session)
+		{
+			await (IndexType.NullSafeSetAsync(st, IncrementIndexByBase(idx), i, indexColumnIsSettable, session));
+			return i + ArrayHelper.CountTrue(indexColumnIsSettable);
+		}
+
+		protected async Task<int> WriteElementToWhereAsync(IDbCommand st, object elt, int i, ISessionImplementor session)
+		{
+			if (elementIsPureFormula)
+			{
+				throw new AssertionFailure("cannot use a formula-based element in the where condition");
+			}
+
+			await (ElementType.NullSafeSetAsync(st, elt, i, elementColumnIsInPrimaryKey, session));
+			return i + elementColumnAliases.Length;
+		}
+
+		protected async Task<int> WriteIndexToWhereAsync(IDbCommand st, object index, int i, ISessionImplementor session)
+		{
+			if (indexContainsFormula)
+			{
+				throw new AssertionFailure("cannot use a formula-based index in the where condition");
+			}
+
+			await (IndexType.NullSafeSetAsync(st, IncrementIndexByBase(index), i, session));
+			return i + indexColumnAliases.Length;
+		}
+
+		protected async Task<int> WriteIdentifierAsync(IDbCommand st, object idx, int i, ISessionImplementor session)
+		{
+			await (IdentifierType.NullSafeSetAsync(st, idx, i, session));
+			return i + 1;
+		}
+
+		public async Task RemoveAsync(object id, ISessionImplementor session)
+		{
+			if (!isInverse && RowDeleteEnabled)
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Inserting rows of collection: " + await (MessageHelper.CollectionInfoStringAsync(this, collection, id, session)));
+					log.Debug("Deleting collection: " + await (MessageHelper.CollectionInfoStringAsync(this, id, Factory)));
 				}
 
+				// Remove all the old entries
 				try
 				{
-					// insert all the new entries
-					await (collection.PreInsertAsync(this));
-					IExpectation expectation = Expectations.AppropriateExpectation(insertCheckStyle);
-					//bool callable = InsertCallable;
+					int offset = 0;
+					IExpectation expectation = Expectations.AppropriateExpectation(DeleteAllCheckStyle);
+					//bool callable = DeleteAllCallable;
 					bool useBatch = expectation.CanBeBatched;
-					int i = 0;
-					int count = 0;
-					IEnumerable entries = collection.Entries(this);
-					foreach (object entry in entries)
+					IDbCommand st = useBatch ? session.Batcher.PrepareBatchCommand(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes) : session.Batcher.PrepareCommand(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes);
+					try
 					{
-						if (await (collection.NeedsInsertingAsync(entry, i, elementType)))
+						await (WriteKeyAsync(st, id, offset, session));
+						if (useBatch)
 						{
-							object entryId;
-							if (!IsIdentifierAssignedByInsert)
-							{
-								// NH Different implementation: write once
-								entryId = await (PerformInsertAsync(id, collection, expectation, entry, i, useBatch, false, session));
-							}
-							else
-							{
-								entryId = await (PerformInsertAsync(id, collection, entry, i, session));
-							}
-
-							collection.AfterRowInsert(this, entry, i, entryId);
-							count++;
+							session.Batcher.AddToBatch(expectation);
+						}
+						else
+						{
+							expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+						}
+					}
+					catch (Exception e)
+					{
+						if (useBatch)
+						{
+							session.Batcher.AbortBatch(e);
 						}
 
-						i++;
+						throw;
+					}
+					finally
+					{
+						if (!useBatch)
+						{
+							session.Batcher.CloseCommand(st, null);
+						}
 					}
 
 					if (log.IsDebugEnabled)
 					{
-						log.Debug(string.Format("done inserting rows: {0} inserted", count));
+						log.Debug("done deleting collection");
 					}
 				}
 				catch (DbException sqle)
 				{
-					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle, "could not insert collection rows: " + await (MessageHelper.CollectionInfoStringAsync(this, collection, id, session)));
+					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle, "could not delete collection: " + MessageHelper.CollectionInfoString(this, id));
 				}
 			}
 		}
@@ -157,85 +250,6 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
-		public async Task InitializeAsync(object key, ISessionImplementor session)
-		{
-			await (GetAppropriateInitializer(key, session).InitializeAsync(key, session));
-		}
-
-		public virtual async Task<object> GetElementByIndexAsync(object key, object index, ISessionImplementor session, object owner)
-		{
-			using (new SessionIdLoggingContext(session.SessionId))
-				try
-				{
-					List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));
-					sqlTl.AddRange(IndexType.SqlTypes(factory));
-					IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sqlSelectRowByIndexString, sqlTl.ToArray());
-					IDataReader rs = null;
-					try
-					{
-						await (KeyType.NullSafeSetAsync(st, key, 0, session));
-						await (IndexType.NullSafeSetAsync(st, IncrementIndexByBase(index), keyColumnNames.Length, session));
-						rs = await (session.Batcher.ExecuteReaderAsync(st));
-						try
-						{
-							if (rs.Read())
-							{
-								return await (ElementType.NullSafeGetAsync(rs, elementColumnAliases, session, owner));
-							}
-							else
-							{
-								return NotFoundObject;
-							}
-						}
-						finally
-						{
-							rs.Close();
-						}
-					}
-					finally
-					{
-						session.Batcher.CloseCommand(st, rs);
-					}
-				}
-				catch (DbException sqle)
-				{
-					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not read row: " + await (MessageHelper.CollectionInfoStringAsync(this, key, Factory)), GenerateSelectSizeString(session));
-				}
-		}
-
-		public async Task<object> ReadElementAsync(IDataReader rs, object owner, string[] aliases, ISessionImplementor session)
-		{
-			return await (ElementType.NullSafeGetAsync(rs, aliases, session, owner));
-		}
-
-		public async Task<object> ReadIndexAsync(IDataReader rs, string[] aliases, ISessionImplementor session)
-		{
-			object index = await (IndexType.NullSafeGetAsync(rs, aliases, session, null));
-			if (index == null)
-			{
-				throw new HibernateException("null index column for collection: " + role);
-			}
-
-			index = DecrementIndexByBase(index);
-			return index;
-		}
-
-		public async Task<object> ReadKeyAsync(IDataReader dr, string[] aliases, ISessionImplementor session)
-		{
-			return await (KeyType.NullSafeGetAsync(dr, aliases, session, null));
-		}
-
-		public async Task<object> ReadIdentifierAsync(IDataReader rs, string alias, ISessionImplementor session)
-		{
-			object id = await (IdentifierType.NullSafeGetAsync(rs, alias, session, null));
-			if (id == null)
-			{
-				throw new HibernateException("null identifier column for collection: " + role);
-			}
-
-			return id;
-		}
-
 		public async Task DeleteRowsAsync(IPersistentCollection collection, object id, ISessionImplementor session)
 		{
 			if (!isInverse && RowDeleteEnabled)
@@ -249,7 +263,7 @@ namespace NHibernate.Persister.Collection
 				try
 				{
 					// delete all the deleted entries
-					IEnumerator deletes = await (collection.GetDeletesAsync(this, !deleteByIndex)).GetEnumerator();
+					IEnumerator deletes = (await (collection.GetDeletesAsync(this, !deleteByIndex))).GetEnumerator();
 					if (deletes.MoveNext())
 					{
 						deletes.Reset();
@@ -340,6 +354,59 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
+		public async Task InsertRowsAsync(IPersistentCollection collection, object id, ISessionImplementor session)
+		{
+			if (!isInverse && RowInsertEnabled)
+			{
+				if (log.IsDebugEnabled)
+				{
+					log.Debug("Inserting rows of collection: " + await (MessageHelper.CollectionInfoStringAsync(this, collection, id, session)));
+				}
+
+				try
+				{
+					// insert all the new entries
+					await (collection.PreInsertAsync(this));
+					IExpectation expectation = Expectations.AppropriateExpectation(insertCheckStyle);
+					//bool callable = InsertCallable;
+					bool useBatch = expectation.CanBeBatched;
+					int i = 0;
+					int count = 0;
+					IEnumerable entries = collection.Entries(this);
+					foreach (object entry in entries)
+					{
+						if (await (collection.NeedsInsertingAsync(entry, i, elementType)))
+						{
+							object entryId;
+							if (!IsIdentifierAssignedByInsert)
+							{
+								// NH Different implementation: write once
+								entryId = await (PerformInsertAsync(id, collection, expectation, entry, i, useBatch, false, session));
+							}
+							else
+							{
+								entryId = await (PerformInsertAsync(id, collection, entry, i, session));
+							}
+
+							collection.AfterRowInsert(this, entry, i, entryId);
+							count++;
+						}
+
+						i++;
+					}
+
+					if (log.IsDebugEnabled)
+					{
+						log.Debug(string.Format("done inserting rows: {0} inserted", count));
+					}
+				}
+				catch (DbException sqle)
+				{
+					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle, "could not insert collection rows: " + await (MessageHelper.CollectionInfoStringAsync(this, collection, id, session)));
+				}
+			}
+		}
+
 		public async Task UpdateRowsAsync(IPersistentCollection collection, object id, ISessionImplementor session)
 		{
 			if (!isInverse && collection.RowUpdatePossible)
@@ -358,6 +425,7 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
+		protected abstract Task<int> DoUpdateRowsAsync(object key, IPersistentCollection collection, ISessionImplementor session);
 		public async Task<int> GetSizeAsync(object key, ISessionImplementor session)
 		{
 			using (new SessionIdLoggingContext(session.SessionId))
@@ -384,6 +452,16 @@ namespace NHibernate.Persister.Collection
 				{
 					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not retrieve collection size: " + await (MessageHelper.CollectionInfoStringAsync(this, key, Factory)), GenerateSelectSizeString(session));
 				}
+		}
+
+		public async Task<bool> IndexExistsAsync(object key, object index, ISessionImplementor session)
+		{
+			return await (ExistsAsync(key, IncrementIndexByBase(index), IndexType, sqlDetectRowByIndexString, session));
+		}
+
+		public Task<bool> ElementExistsAsync(object key, object element, ISessionImplementor session)
+		{
+			return ExistsAsync(key, element, ElementType, sqlDetectRowByElementString, session);
 		}
 
 		private async Task<bool> ExistsAsync(object key, object indexOrElement, IType indexOrElementType, SqlString sql, ISessionImplementor session)
@@ -424,89 +502,45 @@ namespace NHibernate.Persister.Collection
 				}
 		}
 
-		public async Task<bool> IndexExistsAsync(object key, object index, ISessionImplementor session)
+		public virtual async Task<object> GetElementByIndexAsync(object key, object index, ISessionImplementor session, object owner)
 		{
-			return await (ExistsAsync(key, IncrementIndexByBase(index), IndexType, sqlDetectRowByIndexString, session));
-		}
-
-		public async Task<bool> ElementExistsAsync(object key, object element, ISessionImplementor session)
-		{
-			return await (ExistsAsync(key, element, ElementType, sqlDetectRowByElementString, session));
-		}
-
-		public async Task RemoveAsync(object id, ISessionImplementor session)
-		{
-			if (!isInverse && RowDeleteEnabled)
-			{
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("Deleting collection: " + await (MessageHelper.CollectionInfoStringAsync(this, id, Factory)));
-				}
-
-				// Remove all the old entries
+			using (new SessionIdLoggingContext(session.SessionId))
 				try
 				{
-					int offset = 0;
-					IExpectation expectation = Expectations.AppropriateExpectation(DeleteAllCheckStyle);
-					//bool callable = DeleteAllCallable;
-					bool useBatch = expectation.CanBeBatched;
-					IDbCommand st = useBatch ? session.Batcher.PrepareBatchCommand(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes) : session.Batcher.PrepareCommand(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes);
+					List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));
+					sqlTl.AddRange(IndexType.SqlTypes(factory));
+					IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sqlSelectRowByIndexString, sqlTl.ToArray());
+					IDataReader rs = null;
 					try
 					{
-						await (WriteKeyAsync(st, id, offset, session));
-						if (useBatch)
+						await (KeyType.NullSafeSetAsync(st, key, 0, session));
+						await (IndexType.NullSafeSetAsync(st, IncrementIndexByBase(index), keyColumnNames.Length, session));
+						rs = await (session.Batcher.ExecuteReaderAsync(st));
+						try
 						{
-							session.Batcher.AddToBatch(expectation);
+							if (rs.Read())
+							{
+								return await (ElementType.NullSafeGetAsync(rs, elementColumnAliases, session, owner));
+							}
+							else
+							{
+								return NotFoundObject;
+							}
 						}
-						else
+						finally
 						{
-							expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+							rs.Close();
 						}
-					}
-					catch (Exception e)
-					{
-						if (useBatch)
-						{
-							session.Batcher.AbortBatch(e);
-						}
-
-						throw;
 					}
 					finally
 					{
-						if (!useBatch)
-						{
-							session.Batcher.CloseCommand(st, null);
-						}
-					}
-
-					if (log.IsDebugEnabled)
-					{
-						log.Debug("done deleting collection");
+						session.Batcher.CloseCommand(st, rs);
 					}
 				}
 				catch (DbException sqle)
 				{
-					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle, "could not delete collection: " + MessageHelper.CollectionInfoString(this, id));
+					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not read row: " + await (MessageHelper.CollectionInfoStringAsync(this, key, Factory)), GenerateSelectSizeString(session));
 				}
-			}
-		}
-
-		protected async Task<int> WriteElementToWhereAsync(IDbCommand st, object elt, int i, ISessionImplementor session)
-		{
-			if (elementIsPureFormula)
-			{
-				throw new AssertionFailure("cannot use a formula-based element in the where condition");
-			}
-
-			await (ElementType.NullSafeSetAsync(st, elt, i, elementColumnIsInPrimaryKey, session));
-			return i + elementColumnAliases.Length;
-		}
-
-		protected async Task<int> WriteElementAsync(IDbCommand st, object elt, int i, ISessionImplementor session)
-		{
-			await (ElementType.NullSafeSetAsync(st, elt, i, elementColumnIsSettable, session));
-			return i + ArrayHelper.CountTrue(elementColumnIsSettable);
 		}
 
 		protected async Task<object> PerformInsertAsync(object ownerId, IPersistentCollection collection, IExpectation expectation, object entry, int index, bool useBatch, bool callable, ISessionImplementor session)
@@ -559,38 +593,17 @@ namespace NHibernate.Persister.Collection
 			return entryId;
 		}
 
-		protected async Task<int> WriteIndexAsync(IDbCommand st, object idx, int i, ISessionImplementor session)
+		/// <summary>
+		/// Perform an SQL INSERT, and then retrieve a generated identifier.
+		/// </summary>
+		/// <returns> the id of the collection entry </returns>
+		/// <remarks>
+		/// This form is used for PostInsertIdentifierGenerator-style ids (IDENTITY, select, etc).
+		/// </remarks>
+		protected async Task<object> PerformInsertAsync(object ownerId, IPersistentCollection collection, object entry, int index, ISessionImplementor session)
 		{
-			await (IndexType.NullSafeSetAsync(st, IncrementIndexByBase(idx), i, indexColumnIsSettable, session));
-			return i + ArrayHelper.CountTrue(indexColumnIsSettable);
-		}
-
-		protected async Task<int> WriteIdentifierAsync(IDbCommand st, object idx, int i, ISessionImplementor session)
-		{
-			await (IdentifierType.NullSafeSetAsync(st, idx, i, session));
-			return i + 1;
-		}
-
-		protected async Task<int> WriteIndexToWhereAsync(IDbCommand st, object index, int i, ISessionImplementor session)
-		{
-			if (indexContainsFormula)
-			{
-				throw new AssertionFailure("cannot use a formula-based index in the where condition");
-			}
-
-			await (IndexType.NullSafeSetAsync(st, IncrementIndexByBase(index), i, session));
-			return i + indexColumnAliases.Length;
-		}
-
-		protected async Task<int> WriteKeyAsync(IDbCommand st, object id, int i, ISessionImplementor session)
-		{
-			if (id == null)
-			{
-				throw new ArgumentNullException("id", "Null key for collection: " + role);
-			}
-
-			await (KeyType.NullSafeSetAsync(st, id, i, session));
-			return i + keyColumnAliases.Length;
+			IBinder binder = new GeneratedIdentifierBinder(ownerId, collection, entry, index, session, this);
+			return await (identityDelegate.PerformInsertAsync(SqlInsertRowString, session, binder));
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]

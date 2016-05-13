@@ -10,7 +10,7 @@ namespace NHibernate.Mapping.ByCode
 		Cascade,
 	}
 
-	public interface IKeyMapper : IColumnsMapper
+	public partial interface IKeyMapper : IColumnsMapper
 	{
 		void OnDelete(OnDeleteAction deleteAction);
 		void PropertyRef(MemberInfo property);
@@ -29,7 +29,7 @@ namespace NHibernate.Mapping.ByCode
 		void ForeignKey(string foreignKeyName);
 	}
 
-	public interface IKeyMapper<TEntity> : IColumnsMapper
+	public partial interface IKeyMapper<TEntity> : IColumnsMapper
 	{
 		void OnDelete(OnDeleteAction deleteAction);
 		void PropertyRef<TProperty>(Expression<Func<TEntity, TProperty>> propertyGetter);

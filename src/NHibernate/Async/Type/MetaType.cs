@@ -5,6 +5,7 @@ using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -23,9 +24,39 @@ namespace NHibernate.Type
 			return key == null ? null : values[key];
 		}
 
-		public override async Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, System.Collections.IDictionary copiedAlready)
+		public override async Task NullSafeSetAsync(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
-			return original;
+			if (settable[0])
+				await (NullSafeSetAsync(st, value, index, session));
+		}
+
+		public override Task NullSafeSetAsync(IDbCommand st, object value, int index, ISessionImplementor session)
+		{
+			return baseType.NullSafeSetAsync(st, value == null ? null : keys[(string)value], index, session);
+		}
+
+		public override Task<string> ToLoggableStringAsync(object value, ISessionFactoryImplementor factory)
+		{
+			try
+			{
+				return Task.FromResult<string>(ToLoggableString(value, factory));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<string>(ex);
+			}
+		}
+
+		public override Task<object> DeepCopyAsync(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
+		{
+			try
+			{
+				return Task.FromResult<object>(DeepCopy(value, entityMode, factory));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 
 		public override async Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
@@ -33,30 +64,21 @@ namespace NHibernate.Type
 			return checkable[0] && await (IsDirtyAsync(old, current, session));
 		}
 
-		public override async Task<object> DeepCopyAsync(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, System.Collections.IDictionary copiedAlready)
 		{
-			return value;
+			try
+			{
+				return Task.FromResult<object>(Replace(original, current, session, owner, copiedAlready));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 
-		public override async Task<bool[]> ToColumnNullnessAsync(object value, IMapping mapping)
+		public override Task<bool[]> ToColumnNullnessAsync(object value, IMapping mapping)
 		{
-			return await (baseType.ToColumnNullnessAsync(value, mapping));
-		}
-
-		public override async Task<string> ToLoggableStringAsync(object value, ISessionFactoryImplementor factory)
-		{
-			return ToXMLString(value, factory);
-		}
-
-		public override async Task NullSafeSetAsync(IDbCommand st, object value, int index, ISessionImplementor session)
-		{
-			await (baseType.NullSafeSetAsync(st, value == null ? null : keys[(string)value], index, session));
-		}
-
-		public override async Task NullSafeSetAsync(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
-		{
-			if (settable[0])
-				await (NullSafeSetAsync(st, value, index, session));
+			return baseType.ToColumnNullnessAsync(value, mapping);
 		}
 	}
 }

@@ -5,31 +5,35 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class SQLCriterion : AbstractCriterion
 	{
-		public override async Task<SqlString> ToSqlStringAsync(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override Task<SqlString> ToSqlStringAsync(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			var parameters = _sql.GetParameters().ToList();
-			var paramPos = 0;
-			for (int i = 0; i < _typedValues.Length; i++)
+			try
 			{
-				var controlledParameters = criteriaQuery.NewQueryParameter(_typedValues[i]);
-				foreach (Parameter parameter in controlledParameters)
-				{
-					parameters[paramPos++].BackTrack = parameter.BackTrack;
-				}
+				return Task.FromResult<SqlString>(ToSqlString(criteria, criteriaQuery, enabledFilters));
 			}
-
-			return _sql.Replace("{alias}", criteriaQuery.GetSQLAlias(criteria));
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<SqlString>(ex);
+			}
 		}
 
-		public override async Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public override Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return _typedValues;
+			try
+			{
+				return Task.FromResult<TypedValue[]>(GetTypedValues(criteria, criteriaQuery));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<TypedValue[]>(ex);
+			}
 		}
 	}
 }

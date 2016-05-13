@@ -6,6 +6,8 @@ using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using System.Threading.Tasks;
+using System;
+using NHibernate.Util;
 
 namespace NHibernate.Id.Insert
 {
@@ -66,6 +68,21 @@ namespace NHibernate.Id.Insert
 				{
 					throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "could not retrieve generated id after insert: " + persister.GetInfoString(), insertSQL.Text);
 				}
+		}
+
+		/// <summary> Extract the generated key value from the given result set. </summary>
+		/// <param name = "session">The session </param>
+		/// <param name = "rs">The result set containing the generated primary key values. </param>
+		/// <param name = "entity">The entity being saved. </param>
+		/// <returns> The generated identifier </returns>
+		protected internal abstract Task<object> GetResultAsync(ISessionImplementor session, IDataReader rs, object entity);
+		/// <summary> Bind any required parameter values into the SQL command <see cref = "SelectSQL"/>. </summary>
+		/// <param name = "session">The session </param>
+		/// <param name = "ps">The prepared <see cref = "SelectSQL"/> command </param>
+		/// <param name = "entity">The entity being saved. </param>
+		protected internal virtual Task BindParametersAsync(ISessionImplementor session, IDbCommand ps, object entity)
+		{
+			return TaskHelper.CompletedTask;
 		}
 	}
 }

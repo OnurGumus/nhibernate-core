@@ -6,7 +6,7 @@ namespace NHibernate.UserTypes
 	/// Marker interface for user types which want to perform custom
 	/// logging of their corresponding values 
 	/// </summary>
-	public interface ILoggableUserType
+	public partial interface ILoggableUserType
 	{
 		/// <summary> Generate a loggable string representation of the collection (value). </summary>
 		/// <param name="value">The collection to be logged; guaranteed to be non-null and initialized. </param>

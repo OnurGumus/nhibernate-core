@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public interface ICustomizersHolder
+	public partial interface ICustomizersHolder
 	{
 		void AddCustomizer(System.Type type, Action<IClassMapper> classCustomizer);
 		void AddCustomizer(System.Type type, Action<ISubclassMapper> classCustomizer);

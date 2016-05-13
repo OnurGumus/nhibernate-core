@@ -6,7 +6,7 @@ namespace NHibernate.Persister.Entity
 	/// <summary>
 	/// Anything that can be loaded by outer join - namely persisters for classes or collections.
 	/// </summary>
-	public interface IJoinable
+	public partial interface IJoinable
 	{
 		// Should this interface extend PropertyMapping?
 

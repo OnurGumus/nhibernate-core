@@ -10,22 +10,6 @@ namespace NHibernate.Event.Default
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class DefaultEvictEventListener : IEvictEventListener
 	{
-		protected virtual async Task DoEvictAsync(object obj, EntityKey key, IEntityPersister persister, IEventSource session)
-		{
-			if (log.IsDebugEnabled)
-			{
-				log.Debug("evicting " + MessageHelper.InfoString(persister));
-			}
-
-			// remove all collections for the entity from the session-level cache
-			if (persister.HasCollections)
-			{
-				await (new EvictVisitor(session).ProcessAsync(obj, persister));
-			}
-
-			await (new Cascade(CascadingAction.Evict, CascadePoint.AfterEvict, session).CascadeOnAsync(persister, obj));
-		}
-
 		public virtual async Task OnEvictAsync(EvictEvent @event)
 		{
 			IEventSource source = @event.Session;
@@ -64,6 +48,22 @@ namespace NHibernate.Event.Default
 					await (DoEvictAsync(obj, e.EntityKey, e.Persister, source));
 				}
 			}
+		}
+
+		protected virtual async Task DoEvictAsync(object obj, EntityKey key, IEntityPersister persister, IEventSource session)
+		{
+			if (log.IsDebugEnabled)
+			{
+				log.Debug("evicting " + MessageHelper.InfoString(persister));
+			}
+
+			// remove all collections for the entity from the session-level cache
+			if (persister.HasCollections)
+			{
+				await (new EvictVisitor(session).ProcessAsync(obj, persister));
+			}
+
+			await (new Cascade(CascadingAction.Evict, CascadePoint.AfterEvict, session).CascadeOnAsync(persister, obj));
 		}
 	}
 }

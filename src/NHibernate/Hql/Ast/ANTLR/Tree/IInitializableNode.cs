@@ -5,7 +5,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// <summary>
 	/// An interface for initializable AST nodes.
 	/// </summary>
-	public interface IInitializableNode
+	public partial interface IInitializableNode
 	{
 		/// <summary>
 		/// Initializes the node with the parameter.

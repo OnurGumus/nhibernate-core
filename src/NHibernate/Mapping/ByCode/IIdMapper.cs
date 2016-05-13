@@ -3,7 +3,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public interface IIdMapper : IAccessorPropertyMapper, IColumnsMapper
+	public partial interface IIdMapper : IAccessorPropertyMapper, IColumnsMapper
 	{
 		void Generator(IGeneratorDef generator);
 		void Generator(IGeneratorDef generator, Action<IGeneratorMapper> generatorMapping);

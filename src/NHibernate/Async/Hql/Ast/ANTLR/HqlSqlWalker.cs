@@ -17,7 +17,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
-	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class HqlSqlWalker
 	{
 		async Task PostProcessInsertAsync(IASTNode insert)

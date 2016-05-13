@@ -15,6 +15,34 @@ namespace NHibernate.Loader
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class JoinWalker
 	{
+		/// <summary>
+		/// Add on association (one-to-one, many-to-one, or a collection) to a list
+		/// of associations to be fetched by outerjoin (if necessary)
+		/// </summary>
+		private async Task AddAssociationToJoinTreeIfNecessaryAsync(IAssociationType type, string[] aliasedLhsColumns, string alias, string path, int currentDepth, JoinType joinType)
+		{
+			if (joinType >= JoinType.InnerJoin)
+			{
+				await (AddAssociationToJoinTreeAsync(type, aliasedLhsColumns, alias, path, currentDepth, joinType));
+			}
+		}
+
+		protected virtual Task<SqlString> GetWithClauseAsync(string path)
+		{
+			try
+			{
+				return Task.FromResult<SqlString>(GetWithClause(path));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<SqlString>(ex);
+			}
+		}
+
+		/// <summary>
+		/// Add on association (one-to-one, many-to-one, or a collection) to a list
+		/// of associations to be fetched by outerjoin
+		/// </summary>
 		private async Task AddAssociationToJoinTreeAsync(IAssociationType type, string[] aliasedLhsColumns, string alias, string path, int currentDepth, JoinType joinType)
 		{
 			IJoinable joinable = type.GetAssociatedJoinable(Factory);
@@ -37,59 +65,26 @@ namespace NHibernate.Loader
 			}
 		}
 
-		private async Task AddAssociationToJoinTreeIfNecessaryAsync(IAssociationType type, string[] aliasedLhsColumns, string alias, string path, int currentDepth, JoinType joinType)
+		/// <summary>
+		/// For an entity class, return a list of associations to be fetched by outerjoin
+		/// </summary>
+		protected Task WalkEntityTreeAsync(IOuterJoinLoadable persister, string alias)
 		{
-			if (joinType >= JoinType.InnerJoin)
-			{
-				await (AddAssociationToJoinTreeAsync(type, aliasedLhsColumns, alias, path, currentDepth, joinType));
-			}
+			return WalkEntityTreeAsync(persister, alias, string.Empty, 0);
 		}
 
-		protected async Task WalkComponentTreeAsync(IAbstractComponentType componentType, int begin, string alias, string path, int currentDepth, ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
+		/// <summary>
+		/// For a collection role, return a list of associations to be fetched by outerjoin
+		/// </summary>
+		protected Task WalkCollectionTreeAsync(IQueryableCollection persister, string alias)
 		{
-			IType[] types = componentType.Subtypes;
-			string[] propertyNames = componentType.PropertyNames;
-			for (int i = 0; i < types.Length; i++)
-			{
-				if (types[i].IsAssociationType)
-				{
-					var associationType = (IAssociationType)types[i];
-					string[] aliasedLhsColumns = associationTypeSQLInfo.GetAliasedColumnNames(associationType, begin);
-					string[] lhsColumns = associationTypeSQLInfo.GetColumnNames(associationType, begin);
-					string lhsTable = associationTypeSQLInfo.GetTableName(associationType);
-					string subpath = SubPath(path, propertyNames[i]);
-					bool[] propertyNullability = componentType.PropertyNullability;
-					JoinType joinType = GetJoinType(associationType, componentType.GetFetchMode(i), subpath, lhsTable, lhsColumns, propertyNullability == null || propertyNullability[i], currentDepth, componentType.GetCascadeStyle(i));
-					await (AddAssociationToJoinTreeIfNecessaryAsync(associationType, aliasedLhsColumns, alias, subpath, currentDepth, joinType));
-				}
-				else if (types[i].IsComponentType)
-				{
-					string subpath = SubPath(path, propertyNames[i]);
-					await (WalkComponentTreeAsync((IAbstractComponentType)types[i], begin, alias, subpath, currentDepth, associationTypeSQLInfo));
-				}
-
-				begin += types[i].GetColumnSpan(Factory);
-			}
+			return WalkCollectionTreeAsync(persister, alias, string.Empty, 0);
+		//TODO: when this is the entry point, we should use an INNER_JOIN for fetching the many-to-many elements!
 		}
 
-		protected virtual async Task WalkEntityTreeAsync(IOuterJoinLoadable persister, string alias, string path, int currentDepth)
-		{
-			int n = persister.CountSubclassProperties();
-			for (int i = 0; i < n; i++)
-			{
-				IType type = persister.GetSubclassPropertyType(i);
-				ILhsAssociationTypeSqlInfo associationTypeSQLInfo = JoinHelper.GetLhsSqlInfo(alias, i, persister, Factory);
-				if (type.IsAssociationType)
-				{
-					await (WalkEntityAssociationTreeAsync((IAssociationType)type, persister, i, alias, path, persister.IsSubclassPropertyNullable(i), currentDepth, associationTypeSQLInfo));
-				}
-				else if (type.IsComponentType)
-				{
-					await (WalkComponentTreeAsync((IAbstractComponentType)type, 0, alias, SubPath(path, persister.GetSubclassPropertyName(i)), currentDepth, associationTypeSQLInfo));
-				}
-			}
-		}
-
+		/// <summary>
+		/// For a collection role, return a list of associations to be fetched by outerjoin
+		/// </summary>
 		private async Task WalkCollectionTreeAsync(IQueryableCollection persister, string alias, string path, int currentDepth)
 		{
 			if (persister.IsOneToMany)
@@ -121,17 +116,71 @@ namespace NHibernate.Loader
 			}
 		}
 
-		protected async Task WalkCollectionTreeAsync(IQueryableCollection persister, string alias)
+		private async Task WalkEntityAssociationTreeAsync(IAssociationType associationType, IOuterJoinLoadable persister, int propertyNumber, string alias, string path, bool nullable, int currentDepth, ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
 		{
-			await (WalkCollectionTreeAsync(persister, alias, string.Empty, 0));
-		//TODO: when this is the entry point, we should use an INNER_JOIN for fetching the many-to-many elements!
+			string[] aliasedLhsColumns = associationTypeSQLInfo.GetAliasedColumnNames(associationType, 0);
+			string[] lhsColumns = associationTypeSQLInfo.GetColumnNames(associationType, 0);
+			string lhsTable = associationTypeSQLInfo.GetTableName(associationType);
+			string subpath = SubPath(path, persister.GetSubclassPropertyName(propertyNumber));
+			JoinType joinType = GetJoinType(associationType, persister.GetFetchMode(propertyNumber), subpath, lhsTable, lhsColumns, nullable, currentDepth, persister.GetCascadeStyle(propertyNumber));
+			await (AddAssociationToJoinTreeIfNecessaryAsync(associationType, aliasedLhsColumns, alias, subpath, currentDepth, joinType));
 		}
 
-		protected async Task WalkEntityTreeAsync(IOuterJoinLoadable persister, string alias)
+		/// <summary>
+		/// For an entity class, add to a list of associations to be fetched
+		/// by outerjoin
+		/// </summary>
+		protected virtual async Task WalkEntityTreeAsync(IOuterJoinLoadable persister, string alias, string path, int currentDepth)
 		{
-			await (WalkEntityTreeAsync(persister, alias, string.Empty, 0));
+			int n = persister.CountSubclassProperties();
+			for (int i = 0; i < n; i++)
+			{
+				IType type = persister.GetSubclassPropertyType(i);
+				ILhsAssociationTypeSqlInfo associationTypeSQLInfo = JoinHelper.GetLhsSqlInfo(alias, i, persister, Factory);
+				if (type.IsAssociationType)
+				{
+					await (WalkEntityAssociationTreeAsync((IAssociationType)type, persister, i, alias, path, persister.IsSubclassPropertyNullable(i), currentDepth, associationTypeSQLInfo));
+				}
+				else if (type.IsComponentType)
+				{
+					await (WalkComponentTreeAsync((IAbstractComponentType)type, 0, alias, SubPath(path, persister.GetSubclassPropertyName(i)), currentDepth, associationTypeSQLInfo));
+				}
+			}
 		}
 
+		/// <summary>
+		/// For a component, add to a list of associations to be fetched by outerjoin
+		/// </summary>
+		protected async Task WalkComponentTreeAsync(IAbstractComponentType componentType, int begin, string alias, string path, int currentDepth, ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
+		{
+			IType[] types = componentType.Subtypes;
+			string[] propertyNames = componentType.PropertyNames;
+			for (int i = 0; i < types.Length; i++)
+			{
+				if (types[i].IsAssociationType)
+				{
+					var associationType = (IAssociationType)types[i];
+					string[] aliasedLhsColumns = associationTypeSQLInfo.GetAliasedColumnNames(associationType, begin);
+					string[] lhsColumns = associationTypeSQLInfo.GetColumnNames(associationType, begin);
+					string lhsTable = associationTypeSQLInfo.GetTableName(associationType);
+					string subpath = SubPath(path, propertyNames[i]);
+					bool[] propertyNullability = componentType.PropertyNullability;
+					JoinType joinType = GetJoinType(associationType, componentType.GetFetchMode(i), subpath, lhsTable, lhsColumns, propertyNullability == null || propertyNullability[i], currentDepth, componentType.GetCascadeStyle(i));
+					await (AddAssociationToJoinTreeIfNecessaryAsync(associationType, aliasedLhsColumns, alias, subpath, currentDepth, joinType));
+				}
+				else if (types[i].IsComponentType)
+				{
+					string subpath = SubPath(path, propertyNames[i]);
+					await (WalkComponentTreeAsync((IAbstractComponentType)types[i], begin, alias, subpath, currentDepth, associationTypeSQLInfo));
+				}
+
+				begin += types[i].GetColumnSpan(Factory);
+			}
+		}
+
+		/// <summary>
+		/// For a composite element, add to a list of associations to be fetched by outerjoin
+		/// </summary>
 		private async Task WalkCompositeElementTreeAsync(IAbstractComponentType compositeType, string[] cols, IQueryableCollection persister, string alias, string path, int currentDepth)
 		{
 			IType[] types = compositeType.Subtypes;
@@ -160,16 +209,6 @@ namespace NHibernate.Loader
 
 				begin += length;
 			}
-		}
-
-		private async Task WalkEntityAssociationTreeAsync(IAssociationType associationType, IOuterJoinLoadable persister, int propertyNumber, string alias, string path, bool nullable, int currentDepth, ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
-		{
-			string[] aliasedLhsColumns = associationTypeSQLInfo.GetAliasedColumnNames(associationType, 0);
-			string[] lhsColumns = associationTypeSQLInfo.GetColumnNames(associationType, 0);
-			string lhsTable = associationTypeSQLInfo.GetTableName(associationType);
-			string subpath = SubPath(path, persister.GetSubclassPropertyName(propertyNumber));
-			JoinType joinType = GetJoinType(associationType, persister.GetFetchMode(propertyNumber), subpath, lhsTable, lhsColumns, nullable, currentDepth, persister.GetCascadeStyle(propertyNumber));
-			await (AddAssociationToJoinTreeIfNecessaryAsync(associationType, aliasedLhsColumns, alias, subpath, currentDepth, joinType));
 		}
 	}
 }

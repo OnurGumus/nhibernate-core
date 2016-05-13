@@ -6,6 +6,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Threading.Tasks;
+using System;
 
 namespace NHibernate.Engine
 {
@@ -16,36 +17,58 @@ namespace NHibernate.Engine
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public sealed partial class Cascade
 	{
-		private async Task CascadeToOneAsync(object parent, object child, IType type, CascadeStyle style, object anything, bool isCascadeDeleteEnabled)
+		/// <summary> Cascade an action from the parent entity instance to all its children. </summary>
+		/// <param name = "persister">The parent's entity persister </param>
+		/// <param name = "parent">The parent reference. </param>
+		public Task CascadeOnAsync(IEntityPersister persister, object parent)
 		{
-			string entityName = type.IsEntityType ? ((EntityType)type).GetAssociatedEntityName() : null;
-			if (style.ReallyDoCascade(action))
+			return CascadeOnAsync(persister, parent, null);
+		}
+
+		/// <summary> 
+		/// Cascade an action from the parent entity instance to all its children.  This
+		/// form is typically called from within cascade actions. 
+		/// </summary>
+		/// <param name = "persister">The parent's entity persister </param>
+		/// <param name = "parent">The parent reference. </param>
+		/// <param name = "anything">
+		/// Typically some form of cascade-local cache
+		/// which is specific to each CascadingAction type
+		/// </param>
+		public async Task CascadeOnAsync(IEntityPersister persister, object parent, object anything)
+		{
+			if (persister.HasCascades || action.RequiresNoCascadeChecking)
 			{
-				//not really necessary, but good for consistency...
-				eventSource.PersistenceContext.AddChildParent(child, parent);
-				try
+				log.Info("processing cascade " + action + " for: " + persister.EntityName);
+				IType[] types = persister.PropertyTypes;
+				CascadeStyle[] cascadeStyles = persister.PropertyCascadeStyles;
+				EntityMode entityMode = eventSource.EntityMode;
+				bool hasUninitializedLazyProperties = persister.HasUninitializedLazyProperties(parent, entityMode);
+				for (int i = 0; i < types.Length; i++)
 				{
-					await (action.CascadeAsync(eventSource, child, entityName, anything, isCascadeDeleteEnabled));
+					CascadeStyle style = cascadeStyles[i];
+					string propertyName = persister.PropertyNames[i];
+					if (hasUninitializedLazyProperties && persister.PropertyLaziness[i] && !action.PerformOnLazyProperty)
+					{
+						//do nothing to avoid a lazy property initialization
+						continue;
+					}
+
+					if (style.DoCascade(action))
+					{
+						await (CascadePropertyAsync(parent, persister.GetPropertyValue(parent, i, entityMode), types[i], style, propertyName, anything, false));
+					}
+					else if (action.RequiresNoCascadeChecking)
+					{
+						await (action.NoCascadeAsync(eventSource, persister.GetPropertyValue(parent, i, entityMode), parent, persister, i));
+					}
 				}
-				finally
-				{
-					eventSource.PersistenceContext.RemoveChildParent(child);
-				}
+
+				log.Info("done processing cascade " + action + " for: " + persister.EntityName);
 			}
 		}
 
-		private async Task CascadeAssociationAsync(object parent, object child, IType type, CascadeStyle style, object anything, bool isCascadeDeleteEnabled)
-		{
-			if (type.IsEntityType || type.IsAnyType)
-			{
-				await (CascadeToOneAsync(parent, child, type, style, anything, isCascadeDeleteEnabled));
-			}
-			else if (type.IsCollectionType)
-			{
-				await (CascadeCollectionAsync(parent, child, style, anything, (CollectionType)type));
-			}
-		}
-
+		/// <summary> Cascade an action to the child or children</summary>
 		private async Task CascadePropertyAsync(object parent, object child, IType type, CascadeStyle style, string propertyName, object anything, bool isCascadeDeleteEnabled)
 		{
 			if (child != null)
@@ -130,68 +153,52 @@ namespace NHibernate.Engine
 			componentPathStack.Pop();
 		}
 
-		public async Task CascadeOnAsync(IEntityPersister persister, object parent, object anything)
+		private async Task CascadeAssociationAsync(object parent, object child, IType type, CascadeStyle style, object anything, bool isCascadeDeleteEnabled)
 		{
-			if (persister.HasCascades || action.RequiresNoCascadeChecking)
+			if (type.IsEntityType || type.IsAnyType)
 			{
-				log.Info("processing cascade " + action + " for: " + persister.EntityName);
-				IType[] types = persister.PropertyTypes;
-				CascadeStyle[] cascadeStyles = persister.PropertyCascadeStyles;
-				EntityMode entityMode = eventSource.EntityMode;
-				bool hasUninitializedLazyProperties = persister.HasUninitializedLazyProperties(parent, entityMode);
-				for (int i = 0; i < types.Length; i++)
-				{
-					CascadeStyle style = cascadeStyles[i];
-					string propertyName = persister.PropertyNames[i];
-					if (hasUninitializedLazyProperties && persister.PropertyLaziness[i] && !action.PerformOnLazyProperty)
-					{
-						//do nothing to avoid a lazy property initialization
-						continue;
-					}
+				await (CascadeToOneAsync(parent, child, type, style, anything, isCascadeDeleteEnabled));
+			}
+			else if (type.IsCollectionType)
+			{
+				await (CascadeCollectionAsync(parent, child, style, anything, (CollectionType)type));
+			}
+		}
 
-					if (style.DoCascade(action))
-					{
-						await (CascadePropertyAsync(parent, persister.GetPropertyValue(parent, i, entityMode), types[i], style, propertyName, anything, false));
-					}
-					else if (action.RequiresNoCascadeChecking)
-					{
-						await (action.NoCascadeAsync(eventSource, persister.GetPropertyValue(parent, i, entityMode), parent, persister, i));
-					}
+		/// <summary> Cascade an action to a collection</summary>
+		private async Task CascadeCollectionAsync(object parent, object child, CascadeStyle style, object anything, CollectionType type)
+		{
+			ICollectionPersister persister = eventSource.Factory.GetCollectionPersister(type.Role);
+			IType elemType = persister.ElementType;
+			CascadePoint oldCascadeTo = point;
+			if (point == CascadePoint.AfterInsertBeforeDelete)
+				point = CascadePoint.AfterInsertBeforeDeleteViaCollection;
+			//cascade to current collection elements
+			if (elemType.IsEntityType || elemType.IsAnyType || elemType.IsComponentType)
+				await (CascadeCollectionElementsAsync(parent, child, type, style, elemType, anything, persister.CascadeDeleteEnabled));
+			point = oldCascadeTo;
+		}
+
+		/// <summary> Cascade an action to a to-one association or any type</summary>
+		private async Task CascadeToOneAsync(object parent, object child, IType type, CascadeStyle style, object anything, bool isCascadeDeleteEnabled)
+		{
+			string entityName = type.IsEntityType ? ((EntityType)type).GetAssociatedEntityName() : null;
+			if (style.ReallyDoCascade(action))
+			{
+				//not really necessary, but good for consistency...
+				eventSource.PersistenceContext.AddChildParent(child, parent);
+				try
+				{
+					await (action.CascadeAsync(eventSource, child, entityName, anything, isCascadeDeleteEnabled));
 				}
-
-				log.Info("done processing cascade " + action + " for: " + persister.EntityName);
-			}
-		}
-
-		public async Task CascadeOnAsync(IEntityPersister persister, object parent)
-		{
-			await (CascadeOnAsync(persister, parent, null));
-		}
-
-		private async Task DeleteOrphansAsync(string entityName, IPersistentCollection pc)
-		{
-			//TODO: suck this logic into the collection!
-			ICollection orphans;
-			if (pc.WasInitialized)
-			{
-				CollectionEntry ce = eventSource.PersistenceContext.GetCollectionEntry(pc);
-				orphans = ce == null ? CollectionHelper.EmptyCollection : await (ce.GetOrphansAsync(entityName, pc));
-			}
-			else
-			{
-				orphans = pc.GetQueuedOrphans(entityName);
-			}
-
-			foreach (object orphan in orphans)
-			{
-				if (orphan != null)
+				finally
 				{
-					log.Info("deleting orphaned entity instance: " + entityName);
-					await (eventSource.DeleteAsync(entityName, orphan, false, null));
+					eventSource.PersistenceContext.RemoveChildParent(child);
 				}
 			}
 		}
 
+		/// <summary> Cascade to the collection elements</summary>
 		private async Task CascadeCollectionElementsAsync(object parent, object child, CollectionType collectionType, CascadeStyle style, IType elemType, object anything, bool isCascadeDeleteEnabled)
 		{
 			// we can't cascade to non-embedded elements
@@ -220,17 +227,29 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private async Task CascadeCollectionAsync(object parent, object child, CascadeStyle style, object anything, CollectionType type)
+		/// <summary> Delete any entities that were removed from the collection</summary>
+		private async Task DeleteOrphansAsync(string entityName, IPersistentCollection pc)
 		{
-			ICollectionPersister persister = eventSource.Factory.GetCollectionPersister(type.Role);
-			IType elemType = persister.ElementType;
-			CascadePoint oldCascadeTo = point;
-			if (point == CascadePoint.AfterInsertBeforeDelete)
-				point = CascadePoint.AfterInsertBeforeDeleteViaCollection;
-			//cascade to current collection elements
-			if (elemType.IsEntityType || elemType.IsAnyType || elemType.IsComponentType)
-				await (CascadeCollectionElementsAsync(parent, child, type, style, elemType, anything, persister.CascadeDeleteEnabled));
-			point = oldCascadeTo;
+			//TODO: suck this logic into the collection!
+			ICollection orphans;
+			if (pc.WasInitialized)
+			{
+				CollectionEntry ce = eventSource.PersistenceContext.GetCollectionEntry(pc);
+				orphans = ce == null ? CollectionHelper.EmptyCollection : await (ce.GetOrphansAsync(entityName, pc));
+			}
+			else
+			{
+				orphans = pc.GetQueuedOrphans(entityName);
+			}
+
+			foreach (object orphan in orphans)
+			{
+				if (orphan != null)
+				{
+					log.Info("deleting orphaned entity instance: " + entityName);
+					await (eventSource.DeleteAsync(entityName, orphan, false, null));
+				}
+			}
 		}
 	}
 }

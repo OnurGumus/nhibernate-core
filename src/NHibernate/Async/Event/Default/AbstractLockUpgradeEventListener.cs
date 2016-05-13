@@ -12,6 +12,13 @@ namespace NHibernate.Event.Default
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class AbstractLockUpgradeEventListener : AbstractReassociateEventListener
 	{
+		/// <summary> 
+		/// Performs a pessimistic lock upgrade on a given entity, if needed. 
+		/// </summary>
+		/// <param name = "entity">The entity for which to upgrade the lock.</param>
+		/// <param name = "entry">The entity's EntityEntry instance.</param>
+		/// <param name = "requestedLockMode">The lock mode being requested for locking. </param>
+		/// <param name = "source">The session which is the source of the event being processed.</param>
 		protected virtual async Task UpgradeLockAsync(object entity, EntityEntry entry, LockMode requestedLockMode, ISessionImplementor source)
 		{
 			if (requestedLockMode.GreaterThan(entry.LockMode))

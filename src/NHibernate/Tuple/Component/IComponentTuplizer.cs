@@ -10,7 +10,7 @@ namespace NHibernate.Tuple.Component
 	/// ComponentTuplizer implementations should have the following constructor signature:
 	/// (org.hibernate.mapping.Component)
 	/// </remarks>
-	public interface IComponentTuplizer : ITuplizer
+	public partial interface IComponentTuplizer : ITuplizer
 	{
 		/// <summary> Retrieve the current value of the parent property. </summary>
 		/// <param name="component">

@@ -5,6 +5,7 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
@@ -15,7 +16,7 @@ namespace NHibernate.Criterion
 		{
 			//TODO: add a default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
-			var parametersTypes = await (GetTypedValuesAsync(criteria, criteriaQuery)).ToArray();
+			var parametersTypes = (await (GetTypedValuesAsync(criteria, criteriaQuery))).ToArray();
 			var lowType = parametersTypes[0];
 			var highType = parametersTypes[1];
 			SqlString[] columnNames = await (CriterionUtil.GetColumnNamesAsync(_propertyName, _projection, criteriaQuery, criteria, enabledFilters));
@@ -48,9 +49,16 @@ namespace NHibernate.Criterion
 			return sqlBuilder.ToSqlString();
 		}
 
-		public override async Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public override Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return CriterionUtil.GetTypedValues(criteriaQuery, criteria, _projection, _propertyName, _lo, _hi);
+			try
+			{
+				return Task.FromResult<TypedValue[]>(GetTypedValues(criteria, criteriaQuery));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<TypedValue[]>(ex);
+			}
 		}
 	}
 }

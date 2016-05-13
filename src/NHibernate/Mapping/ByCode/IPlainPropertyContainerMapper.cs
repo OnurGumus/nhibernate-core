@@ -5,13 +5,13 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public interface IMinimalPlainPropertyContainerMapper
+	public partial interface IMinimalPlainPropertyContainerMapper
 	{
 		void Property(MemberInfo property, Action<IPropertyMapper> mapping);
 		void ManyToOne(MemberInfo property, Action<IManyToOneMapper> mapping);
 	}
 
-	public interface IBasePlainPropertyContainerMapper : IMinimalPlainPropertyContainerMapper
+	public partial interface IBasePlainPropertyContainerMapper : IMinimalPlainPropertyContainerMapper
 	{
 		void Component(MemberInfo property, Action<IComponentMapper> mapping);
 		void Component(MemberInfo property, Action<IDynamicComponentMapper> mapping);
@@ -19,12 +19,12 @@ namespace NHibernate.Mapping.ByCode
 		void Any(MemberInfo property, System.Type idTypeOfMetaType, Action<IAnyMapper> mapping);
 	}
 
-	public interface IPlainPropertyContainerMapper : IBasePlainPropertyContainerMapper
+	public partial interface IPlainPropertyContainerMapper : IBasePlainPropertyContainerMapper
 	{
 		void OneToOne(MemberInfo property, Action<IOneToOneMapper> mapping);
 	}
 
-	public interface IMinimalPlainPropertyContainerMapper<TContainer>
+	public partial interface IMinimalPlainPropertyContainerMapper<TContainer>
 	{
 		void Property<TProperty>(Expression<Func<TContainer, TProperty>> property);
 		void Property<TProperty>(Expression<Func<TContainer, TProperty>> property, Action<IPropertyMapper> mapping);
@@ -35,7 +35,7 @@ namespace NHibernate.Mapping.ByCode
 		void ManyToOne<TProperty>(string notVisiblePropertyOrFieldName, Action<IManyToOneMapper> mapping) where TProperty : class;
 	}
 
-	public interface IBasePlainPropertyContainerMapper<TContainer> : IMinimalPlainPropertyContainerMapper<TContainer>
+	public partial interface IBasePlainPropertyContainerMapper<TContainer> : IMinimalPlainPropertyContainerMapper<TContainer>
 	{
 		void Component<TComponent>(Expression<Func<TContainer, TComponent>> property, Action<IComponentMapper<TComponent>> mapping);
 		void Component<TComponent>(Expression<Func<TContainer, TComponent>> property);
@@ -49,7 +49,7 @@ namespace NHibernate.Mapping.ByCode
 		void Any<TProperty>(string notVisiblePropertyOrFieldName, System.Type idTypeOfMetaType, Action<IAnyMapper> mapping) where TProperty : class;
 	}
 
-	public interface IPlainPropertyContainerMapper<TContainer> : IBasePlainPropertyContainerMapper<TContainer>
+	public partial interface IPlainPropertyContainerMapper<TContainer> : IBasePlainPropertyContainerMapper<TContainer>
 	{
 		void OneToOne<TProperty>(Expression<Func<TContainer, TProperty>> property, Action<IOneToOneMapper<TProperty>> mapping) where TProperty : class;
 		void OneToOne<TProperty>(string notVisiblePropertyOrFieldName, Action<IOneToOneMapper<TProperty>> mapping) where TProperty : class;

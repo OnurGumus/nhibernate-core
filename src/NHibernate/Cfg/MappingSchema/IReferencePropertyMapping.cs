@@ -1,6 +1,6 @@
 namespace NHibernate.Cfg.MappingSchema
 {
-	public interface IReferencePropertyMapping
+	public partial interface IReferencePropertyMapping
 	{
 		string Cascade { get; }
 	}

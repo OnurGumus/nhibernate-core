@@ -5,7 +5,7 @@ namespace NHibernate.Persister.Collection
 	/// <summary>
 	/// A collection role that may be queried or loaded by outer join.
 	/// </summary>
-	public interface IQueryableCollection : IPropertyMapping, IJoinable, ICollectionPersister
+	public partial interface IQueryableCollection : IPropertyMapping, IJoinable, ICollectionPersister
 	{
 		/// <summary> 
 		/// Get the index formulas if this is an indexed collection 

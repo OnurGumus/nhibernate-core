@@ -4,12 +4,41 @@ using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Type;
 using System.Threading.Tasks;
+using System;
+using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	internal partial class MultipleQueriesCacheAssembler : ICacheAssembler
 	{
+		public async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
+		{
+			IList srcList = (IList)value;
+			var cacheable = new List<object>();
+			for (int i = 0; i < srcList.Count; i++)
+			{
+				ICacheAssembler[] assemblers = (ICacheAssembler[])assemblersList[i];
+				IList itemList = (IList)srcList[i];
+				var singleQueryCached = new List<object>();
+				foreach (object objToCache in itemList)
+				{
+					if (assemblers.Length == 1)
+					{
+						singleQueryCached.Add(await (assemblers[0].DisassembleAsync(objToCache, session, owner)));
+					}
+					else
+					{
+						singleQueryCached.Add(await (TypeHelper.DisassembleAsync((object[])objToCache, assemblers, null, session, null)));
+					}
+				}
+
+				cacheable.Add(singleQueryCached);
+			}
+
+			return cacheable;
+		}
+
 		public async Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner)
 		{
 			IList srcList = (IList)cached;
@@ -37,6 +66,11 @@ namespace NHibernate.Impl
 			return result;
 		}
 
+		public Task BeforeAssembleAsync(object cached, ISessionImplementor session)
+		{
+			return TaskHelper.CompletedTask;
+		}
+
 		public async Task<IList> GetResultFromQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, IQueryCache queryCache, QueryKey key)
 		{
 			if (!queryParameters.ForceCacheRefresh)
@@ -53,37 +87,6 @@ namespace NHibernate.Impl
 			}
 
 			return null;
-		}
-
-		public async Task BeforeAssembleAsync(object cached, ISessionImplementor session)
-		{
-		}
-
-		public async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
-		{
-			IList srcList = (IList)value;
-			var cacheable = new List<object>();
-			for (int i = 0; i < srcList.Count; i++)
-			{
-				ICacheAssembler[] assemblers = (ICacheAssembler[])assemblersList[i];
-				IList itemList = (IList)srcList[i];
-				var singleQueryCached = new List<object>();
-				foreach (object objToCache in itemList)
-				{
-					if (assemblers.Length == 1)
-					{
-						singleQueryCached.Add(await (assemblers[0].DisassembleAsync(objToCache, session, owner)));
-					}
-					else
-					{
-						singleQueryCached.Add(await (TypeHelper.DisassembleAsync((object[])objToCache, assemblers, null, session, null)));
-					}
-				}
-
-				cacheable.Add(singleQueryCached);
-			}
-
-			return cacheable;
 		}
 	}
 }

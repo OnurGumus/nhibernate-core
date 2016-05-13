@@ -5,39 +5,40 @@ using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class DateTimeType : PrimitiveType, IIdentifierType, ILiteralType, IVersionType
 	{
-		public override async Task<int> GetHashCodeAsync(object x, EntityMode entityMode)
+		public virtual Task<object> NextAsync(object current, ISessionImplementor session)
 		{
-			// Custom hash code implementation because DateTimeType is only accurate
-			// up to seconds.
-			DateTime date = (DateTime)x;
-			int hashCode = 1;
-			unchecked
+			return SeedAsync(session);
+		}
+
+		public virtual Task<object> SeedAsync(ISessionImplementor session)
+		{
+			try
 			{
-				hashCode = 31 * hashCode + date.Second;
-				hashCode = 31 * hashCode + date.Minute;
-				hashCode = 31 * hashCode + date.Hour;
-				hashCode = 31 * hashCode + date.Day;
-				hashCode = 31 * hashCode + date.Month;
-				hashCode = 31 * hashCode + date.Year;
+				return Task.FromResult<object>(Seed(session));
 			}
-
-			return hashCode;
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 
-		public virtual async Task<object> SeedAsync(ISessionImplementor session)
+		public override Task<int> GetHashCodeAsync(object x, EntityMode entityMode)
 		{
-			return TimestampType.Round(DateTime.Now, TimeSpan.TicksPerSecond);
-		}
-
-		public virtual async Task<object> NextAsync(object current, ISessionImplementor session)
-		{
-			return await (SeedAsync(session));
+			try
+			{
+				return Task.FromResult<int>(GetHashCode(x, entityMode));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<int>(ex);
+			}
 		}
 	}
 }

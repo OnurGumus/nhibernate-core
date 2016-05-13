@@ -2,7 +2,7 @@ using NHibernate.Type;
 
 namespace NHibernate
 {
-	public interface ISQLQuery : IQuery
+	public partial interface ISQLQuery : IQuery
 	{
 		/// <summary>
 		/// Declare a "root" entity, without specifying an alias

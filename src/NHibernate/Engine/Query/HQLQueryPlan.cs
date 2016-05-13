@@ -10,7 +10,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Engine.Query
 {
-    public interface IQueryPlan
+    public partial interface IQueryPlan
     {
         ParameterMetadata ParameterMetadata { get; }
         ISet<string> QuerySpaces { get; }
@@ -22,7 +22,7 @@ namespace NHibernate.Engine.Query
         IEnumerable PerformIterate(QueryParameters queryParameters, IEventSource session);
     }
 
-    public interface IQueryExpressionPlan : IQueryPlan
+    public partial interface IQueryExpressionPlan : IQueryPlan
     {
         IQueryExpression QueryExpression { get; }
     }

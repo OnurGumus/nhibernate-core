@@ -1,7 +1,7 @@
 namespace NHibernate.Mapping.ByCode
 {
-	public interface IBagPropertiesMapper : ICollectionPropertiesMapper {}
+	public partial interface IBagPropertiesMapper : ICollectionPropertiesMapper {}
 
-	public interface IBagPropertiesMapper<TEntity, TElement> : ICollectionPropertiesMapper<TEntity, TElement>
+	public partial interface IBagPropertiesMapper<TEntity, TElement> : ICollectionPropertiesMapper<TEntity, TElement>
 	{}
 }

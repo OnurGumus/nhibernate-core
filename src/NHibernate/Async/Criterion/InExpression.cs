@@ -31,7 +31,7 @@ namespace NHibernate.Criterion
 			SqlString[] columnNames = await (CriterionUtil.GetColumnNamesAsync(_propertyName, _projection, criteriaQuery, criteria, enabledFilters));
 			// Generate SqlString of the form:
 			// columnName1 in (values) and columnName2 in (values) and ...
-			Parameter[] parameters = await (GetParameterTypedValuesAsync(criteria, criteriaQuery)).SelectMany(t => criteriaQuery.NewQueryParameter(t)).ToArray();
+			Parameter[] parameters = (await (GetParameterTypedValuesAsync(criteria, criteriaQuery))).SelectMany(t => criteriaQuery.NewQueryParameter(t)).ToArray();
 			for (int columnIndex = 0; columnIndex < columnNames.Length; columnIndex++)
 			{
 				SqlString columnName = columnNames[columnIndex];
@@ -57,6 +57,14 @@ namespace NHibernate.Criterion
 			return result.ToSqlString();
 		}
 
+		public override async Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			var list = await (GetParameterTypedValuesAsync(criteria, criteriaQuery));
+			if (_projection != null)
+				list.InsertRange(0, await (_projection.GetTypedValuesAsync(criteria, criteriaQuery)));
+			return list.ToArray();
+		}
+
 		private async Task<List<TypedValue>> GetParameterTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			IType type = GetElementType(criteria, criteriaQuery);
@@ -69,7 +77,7 @@ namespace NHibernate.Criterion
 				{
 					for (int j = 0; j < _values.Length; j++)
 					{
-						object subval = _values[j] == null ? null : await (actype.GetPropertyValuesAsync(_values[j], EntityMode.Poco))[i];
+						object subval = _values[j] == null ? null : (await (actype.GetPropertyValuesAsync(_values[j], EntityMode.Poco)))[i];
 						list.Add(new TypedValue(types[i], subval, EntityMode.Poco));
 					}
 				}
@@ -80,14 +88,6 @@ namespace NHibernate.Criterion
 			{
 				return _values.Select(v => new TypedValue(type, v, EntityMode.Poco)).ToList();
 			}
-		}
-
-		public override async Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
-		{
-			var list = await (GetParameterTypedValuesAsync(criteria, criteriaQuery));
-			if (_projection != null)
-				list.InsertRange(0, await (_projection.GetTypedValuesAsync(criteria, criteriaQuery)));
-			return list.ToArray();
 		}
 	}
 }

@@ -1,6 +1,6 @@
 namespace NHibernate.Cfg.MappingSchema
 {
-	public interface IComponentMapping : IPropertiesContainerMapping
+	public partial interface IComponentMapping : IPropertiesContainerMapping
 	{
 		string Class { get; }
 		HbmParent Parent { get; }

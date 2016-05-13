@@ -7,7 +7,7 @@ namespace NHibernate.Mapping
 	/// of an entity, or a foreign key of a collection or join table or
 	/// joined subclass table.
 	/// </summary>
-	public interface IKeyValue : IValue
+	public partial interface IKeyValue : IValue
 	{
 		void CreateForeignKeyOfEntity(string entityName);
 

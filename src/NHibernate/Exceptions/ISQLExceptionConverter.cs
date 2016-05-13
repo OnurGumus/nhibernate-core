@@ -16,7 +16,7 @@ namespace NHibernate.Exceptions
 	/// configuration steps prior to first use.
 	/// </remarks>
 	/// <seealso cref="SQLExceptionConverterFactory"/>
-	public interface ISQLExceptionConverter
+	public partial interface ISQLExceptionConverter
 	{
 		/// <summary> 
 		/// Convert the given <see cref="System.Data.Common.DbException"/> into custom Exception. 

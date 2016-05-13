@@ -9,49 +9,20 @@ namespace NHibernate.Engine
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public static partial class Collections
 	{
-		private static async Task PrepareCollectionForUpdateAsync(IPersistentCollection collection, CollectionEntry entry, EntityMode entityMode, ISessionFactoryImplementor factory)
+		/// <summary> 
+		/// Record the fact that this collection was dereferenced 
+		/// </summary>
+		/// <param name = "coll">The collection to be updated by unreachability. </param>
+		/// <param name = "session">The session.</param>
+		public static async Task ProcessUnreachableCollectionAsync(IPersistentCollection coll, ISessionImplementor session)
 		{
-			//1. record the collection role that this collection is referenced by
-			//2. decide if the collection needs deleting/creating/updating (but don't actually schedule the action yet)
-			if (entry.IsProcessed)
-				throw new AssertionFailure("collection was processed twice by flush()");
-			entry.IsProcessed = true;
-			ICollectionPersister loadedPersister = entry.LoadedPersister;
-			ICollectionPersister currentPersister = entry.CurrentPersister;
-			if (loadedPersister != null || currentPersister != null)
+			if (coll.Owner == null)
 			{
-				// it is or was referenced _somewhere_
-				bool ownerChanged = loadedPersister != currentPersister || !await (currentPersister.KeyType.IsEqualAsync(entry.LoadedKey, entry.CurrentKey, entityMode, factory));
-				if (ownerChanged)
-				{
-					// do a check
-					bool orphanDeleteAndRoleChanged = loadedPersister != null && currentPersister != null && loadedPersister.HasOrphanDelete;
-					if (orphanDeleteAndRoleChanged)
-					{
-						throw new HibernateException("Don't change the reference to a collection with cascade=\"all-delete-orphan\": " + loadedPersister.Role);
-					}
-
-					// do the work
-					if (currentPersister != null)
-					{
-						entry.IsDorecreate = true; // we will need to create new entries
-					}
-
-					if (loadedPersister != null)
-					{
-						entry.IsDoremove = true; // we will need to remove ye olde entries
-						if (entry.IsDorecreate)
-						{
-							log.Debug("Forcing collection initialization");
-							await (collection.ForceInitializationAsync()); // force initialize!
-						}
-					}
-				}
-				else if (collection.IsDirty)
-				{
-					// else if it's elements changed
-					entry.IsDoupdate = true;
-				}
+				await (ProcessNeverReferencedCollectionAsync(coll, session));
+			}
+			else
+			{
+				await (ProcessDereferencedCollectionAsync(coll, session));
 			}
 		}
 
@@ -107,18 +78,22 @@ namespace NHibernate.Engine
 			await (PrepareCollectionForUpdateAsync(coll, entry, session.EntityMode, session.Factory));
 		}
 
-		public static async Task ProcessUnreachableCollectionAsync(IPersistentCollection coll, ISessionImplementor session)
+		private static async Task ProcessNeverReferencedCollectionAsync(IPersistentCollection coll, ISessionImplementor session)
 		{
-			if (coll.Owner == null)
-			{
-				await (ProcessNeverReferencedCollectionAsync(coll, session));
-			}
-			else
-			{
-				await (ProcessDereferencedCollectionAsync(coll, session));
-			}
+			CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(coll);
+			log.Debug("Found collection with unloaded owner: " + await (MessageHelper.CollectionInfoStringAsync(entry.LoadedPersister, coll, entry.LoadedKey, session)));
+			entry.CurrentPersister = entry.LoadedPersister;
+			entry.CurrentKey = entry.LoadedKey;
+			await (PrepareCollectionForUpdateAsync(coll, entry, session.EntityMode, session.Factory));
 		}
 
+		/// <summary> 
+		/// Initialize the role of the collection. 
+		/// </summary>
+		/// <param name = "collection">The collection to be updated by reachability. </param>
+		/// <param name = "type">The type of the collection. </param>
+		/// <param name = "entity">The owner of the collection. </param>
+		/// <param name = "session">The session.</param>
 		public static async Task ProcessReachableCollectionAsync(IPersistentCollection collection, CollectionType type, object entity, ISessionImplementor session)
 		{
 			collection.Owner = entity;
@@ -150,13 +125,50 @@ namespace NHibernate.Engine
 			await (PrepareCollectionForUpdateAsync(collection, ce, session.EntityMode, factory));
 		}
 
-		private static async Task ProcessNeverReferencedCollectionAsync(IPersistentCollection coll, ISessionImplementor session)
+		private static async Task PrepareCollectionForUpdateAsync(IPersistentCollection collection, CollectionEntry entry, EntityMode entityMode, ISessionFactoryImplementor factory)
 		{
-			CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(coll);
-			log.Debug("Found collection with unloaded owner: " + await (MessageHelper.CollectionInfoStringAsync(entry.LoadedPersister, coll, entry.LoadedKey, session)));
-			entry.CurrentPersister = entry.LoadedPersister;
-			entry.CurrentKey = entry.LoadedKey;
-			await (PrepareCollectionForUpdateAsync(coll, entry, session.EntityMode, session.Factory));
+			//1. record the collection role that this collection is referenced by
+			//2. decide if the collection needs deleting/creating/updating (but don't actually schedule the action yet)
+			if (entry.IsProcessed)
+				throw new AssertionFailure("collection was processed twice by flush()");
+			entry.IsProcessed = true;
+			ICollectionPersister loadedPersister = entry.LoadedPersister;
+			ICollectionPersister currentPersister = entry.CurrentPersister;
+			if (loadedPersister != null || currentPersister != null)
+			{
+				// it is or was referenced _somewhere_
+				bool ownerChanged = loadedPersister != currentPersister || !await (currentPersister.KeyType.IsEqualAsync(entry.LoadedKey, entry.CurrentKey, entityMode, factory));
+				if (ownerChanged)
+				{
+					// do a check
+					bool orphanDeleteAndRoleChanged = loadedPersister != null && currentPersister != null && loadedPersister.HasOrphanDelete;
+					if (orphanDeleteAndRoleChanged)
+					{
+						throw new HibernateException("Don't change the reference to a collection with cascade=\"all-delete-orphan\": " + loadedPersister.Role);
+					}
+
+					// do the work
+					if (currentPersister != null)
+					{
+						entry.IsDorecreate = true; // we will need to create new entries
+					}
+
+					if (loadedPersister != null)
+					{
+						entry.IsDoremove = true; // we will need to remove ye olde entries
+						if (entry.IsDorecreate)
+						{
+							log.Debug("Forcing collection initialization");
+							await (collection.ForceInitializationAsync()); // force initialize!
+						}
+					}
+				}
+				else if (collection.IsDirty)
+				{
+					// else if it's elements changed
+					entry.IsDoupdate = true;
+				}
+			}
 		}
 	}
 }

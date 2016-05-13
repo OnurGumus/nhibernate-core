@@ -8,7 +8,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: Steve Ebersole
 	/// Ported by: Steve Strong
 	/// </summary>
-	public interface IExpectedTypeAwareNode
+	public partial interface IExpectedTypeAwareNode
 	{
 		IType ExpectedType { get; set; }
 	}

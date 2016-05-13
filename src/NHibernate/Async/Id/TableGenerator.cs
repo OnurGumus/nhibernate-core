@@ -36,6 +36,7 @@ namespace NHibernate.Id
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
 	{
+		private readonly AsyncLock _lock = new AsyncLock();
 		/// <summary>
 		/// Generate a <see cref = "short "/>, <see cref = "int "/>, or <see cref = "long "/> 
 		/// for the identifier by selecting and updating a value in a table.
@@ -43,13 +44,19 @@ namespace NHibernate.Id
 		/// <param name = "session">The <see cref = "ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name = "obj">The entity for which the id is being generated.</param>
 		/// <returns>The new identifier as a <see cref = "short "/>, <see cref = "int "/>, or <see cref = "long "/>.</returns>
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual async Task<object> GenerateAsync(ISessionImplementor session, object obj)
 		{
-			// This has to be done using a different connection to the containing
-			// transaction becase the new hi value must remain valid even if the
-			// containing transaction rolls back.
-			return DoWorkInNewTransaction(session);
+			using (var releaser = await _lock.LockAsync())
+			{
+				try
+				{
+					return Task.FromResult<object>(Generate(session, obj));
+				}
+				catch (Exception ex)
+				{
+					return TaskHelper.FromException<object>(ex);
+				}
+			}
 		}
 	}
 }

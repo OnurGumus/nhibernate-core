@@ -9,72 +9,167 @@ using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class CompositeCustomType : AbstractType, IAbstractComponentType
 	{
-		public override async Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner)
+		public virtual Task<object[]> GetPropertyValuesAsync(object component, ISessionImplementor session)
 		{
-			return userType.Assemble(cached, session, owner);
+			return GetPropertyValuesAsync(component, session.EntityMode);
 		}
 
-		public override async Task<object> NullSafeGetAsync(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public virtual Task<object[]> GetPropertyValuesAsync(object component, EntityMode entityMode)
 		{
-			return userType.NullSafeGet(rs, names, session, owner);
-		}
-
-		public override async Task<object> NullSafeGetAsync(IDataReader rs, string name, ISessionImplementor session, object owner)
-		{
-			return userType.NullSafeGet(rs, new string[]{name}, session, owner);
-		}
-
-		public override async Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, IDictionary copiedAlready)
-		{
-			return userType.Replace(original, current, session, owner);
-		}
-
-		public virtual async Task<object> GetPropertyValueAsync(object component, int i, ISessionImplementor session)
-		{
-			return GetPropertyValue(component, i);
-		}
-
-		public virtual async Task<object[]> GetPropertyValuesAsync(object component, ISessionImplementor session)
-		{
-			return await (GetPropertyValuesAsync(component, session.EntityMode));
-		}
-
-		public virtual async Task<object[]> GetPropertyValuesAsync(object component, EntityMode entityMode)
-		{
-			int len = Subtypes.Length;
-			object[] result = new object[len];
-			for (int i = 0; i < len; i++)
+			try
 			{
-				result[i] = GetPropertyValue(component, i);
+				return Task.FromResult<object[]>(GetPropertyValues(component, entityMode));
 			}
-
-			return result;
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object[]>(ex);
+			}
 		}
 
-		public override async Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		public virtual Task<object> GetPropertyValueAsync(object component, int i, ISessionImplementor session)
 		{
-			return await (IsDirtyAsync(old, current, session));
+			try
+			{
+				return Task.FromResult<object>(GetPropertyValue(component, i, session));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 
-		public override async Task<bool> IsEqualAsync(object x, object y, EntityMode entityMode)
+		public override Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner)
 		{
-			return userType.Equals(x, y);
+			try
+			{
+				return Task.FromResult<object>(Assemble(cached, session, owner));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 
-		public override async Task<object> DeepCopyAsync(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public override Task<object> DeepCopyAsync(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
 		{
-			return userType.DeepCopy(value);
+			try
+			{
+				return Task.FromResult<object>(DeepCopy(value, entityMode, factory));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 
-		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
+		public override Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
 		{
-			return userType.Disassemble(value, session);
+			try
+			{
+				return Task.FromResult<object>(Disassemble(value, session, owner));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		public override Task<object> NullSafeGetAsync(IDataReader rs, string name, ISessionImplementor session, object owner)
+		{
+			try
+			{
+				return Task.FromResult<object>(NullSafeGet(rs, name, session, owner));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		public override Task<object> NullSafeGetAsync(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		{
+			try
+			{
+				return Task.FromResult<object>(NullSafeGet(rs, names, session, owner));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		public override Task NullSafeSetAsync(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		{
+			try
+			{
+				NullSafeSet(st, value, index, settable, session);
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		public override Task NullSafeSetAsync(IDbCommand cmd, object value, int index, ISessionImplementor session)
+		{
+			try
+			{
+				NullSafeSet(cmd, value, index, session);
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		public override Task<string> ToLoggableStringAsync(object value, ISessionFactoryImplementor factory)
+		{
+			try
+			{
+				return Task.FromResult<string>(ToLoggableString(value, factory));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<string>(ex);
+			}
+		}
+
+		public override Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
+		{
+			return IsDirtyAsync(old, current, session);
+		}
+
+		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, IDictionary copiedAlready)
+		{
+			try
+			{
+				return Task.FromResult<object>(Replace(original, current, session, owner, copiedAlready));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		public override Task<bool> IsEqualAsync(object x, object y, EntityMode entityMode)
+		{
+			try
+			{
+				return Task.FromResult<bool>(IsEqual(x, y, entityMode));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<bool>(ex);
+			}
 		}
 
 		public override async Task<bool[]> ToColumnNullnessAsync(object value, IMapping mapping)
@@ -93,22 +188,6 @@ namespace NHibernate.Type
 			}
 
 			return result;
-		}
-
-		public override async Task<string> ToLoggableStringAsync(object value, ISessionFactoryImplementor factory)
-		{
-			return value == null ? "null" : value.ToString();
-		}
-
-		public override async Task NullSafeSetAsync(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
-		{
-			userType.NullSafeSet(st, value, index, settable, session);
-		}
-
-		public override async Task NullSafeSetAsync(IDbCommand cmd, object value, int index, ISessionImplementor session)
-		{
-			bool[] settable = Enumerable.Repeat(true, GetColumnSpan(session.Factory)).ToArray();
-			userType.NullSafeSet(cmd, value, index, settable, session);
 		}
 	}
 }

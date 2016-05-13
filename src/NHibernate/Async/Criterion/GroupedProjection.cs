@@ -4,6 +4,7 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
@@ -15,9 +16,15 @@ namespace NHibernate.Criterion
 			return renderedProjection = await (projection.ToSqlStringAsync(criteria, position, criteriaQuery, enabledFilters));
 		}
 
-		public async Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		/// <summary>
+		/// Gets the typed values for parameters in this projection
+		/// </summary>
+		/// <param name = "criteria">The criteria.</param>
+		/// <param name = "criteriaQuery">The criteria query.</param>
+		/// <returns></returns>
+		public Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return await (projection.GetTypedValuesAsync(criteria, criteriaQuery));
+			return projection.GetTypedValuesAsync(criteria, criteriaQuery);
 		}
 	}
 }

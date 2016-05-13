@@ -9,7 +9,7 @@ namespace NHibernate
 	/// Interface  to create queries in "detached mode" where the NHibernate session is not available.
 	/// All methods have the same semantics as the corresponding methods of the <see cref="IQuery"/> interface.
 	/// </summary>
-	public interface IDetachedQuery
+	public partial interface IDetachedQuery
 	{
 		/// <summary>
 		/// Get an executable instance of <see cref="IQuery"/>,

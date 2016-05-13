@@ -13,6 +13,7 @@ namespace NHibernate.Event.Default
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class DefaultInitializeCollectionEventListener : IInitializeCollectionEventListener
 	{
+		/// <summary> called by a collection that wants to initialize itself</summary>
 		public virtual async Task OnInitializeCollectionAsync(InitializeCollectionEvent @event)
 		{
 			IPersistentCollection collection = @event.Collection;
@@ -54,6 +55,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
+		/// <summary> Try to initialize a collection from the cache</summary>
 		private async Task<bool> InitializeCollectionFromCacheAsync(object id, ICollectionPersister persister, IPersistentCollection collection, ISessionImplementor source)
 		{
 			if (!(source.EnabledFilters.Count == 0) && persister.IsAffectedByEnabledFilters(source))

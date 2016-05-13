@@ -7,7 +7,7 @@ namespace NHibernate.Bytecode
 	/// <summary>
 	/// Type factory for collections types.
 	/// </summary>
-	public interface ICollectionTypeFactory
+	public partial interface ICollectionTypeFactory
 	{
 		/// <summary>
 		/// Creates a new <see cref="CollectionType"/> for an <see cref="System.Array"/>.

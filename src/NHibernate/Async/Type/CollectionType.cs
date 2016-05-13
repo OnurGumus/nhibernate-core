@@ -18,6 +18,140 @@ namespace NHibernate.Type
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class CollectionType : AbstractType, IAssociationType
 	{
+		public override Task<bool> IsEqualAsync(object x, object y, EntityMode entityMode)
+		{
+			try
+			{
+				return Task.FromResult<bool>(IsEqual(x, y, entityMode));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<bool>(ex);
+			}
+		}
+
+		public override Task<int> GetHashCodeAsync(object x, EntityMode entityMode)
+		{
+			try
+			{
+				return Task.FromResult<int>(GetHashCode(x, entityMode));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<int>(ex);
+			}
+		}
+
+		public override Task<object> NullSafeGetAsync(IDataReader rs, string name, ISessionImplementor session, object owner)
+		{
+			return NullSafeGetAsync(rs, new string[]{name}, session, owner);
+		}
+
+		public override Task<object> NullSafeGetAsync(IDataReader rs, string[] name, ISessionImplementor session, object owner)
+		{
+			return ResolveIdentifierAsync(null, session, owner);
+		}
+
+		public override Task NullSafeSetAsync(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		{
+			return TaskHelper.CompletedTask;
+		// NOOP
+		}
+
+		public override Task NullSafeSetAsync(IDbCommand cmd, object value, int index, ISessionImplementor session)
+		{
+			return TaskHelper.CompletedTask;
+		}
+
+		public override async Task<string> ToLoggableStringAsync(object value, ISessionFactoryImplementor factory)
+		{
+			if (value == null)
+			{
+				return "null";
+			}
+			else if (!NHibernateUtil.IsInitialized(value))
+			{
+				return "<uninitialized>";
+			}
+			else
+			{
+				return await (RenderLoggableStringAsync(value, factory));
+			}
+		}
+
+		public override Task<object> DeepCopyAsync(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
+		{
+			try
+			{
+				return Task.FromResult<object>(DeepCopy(value, entityMode, factory));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
+		{
+			//remember the uk value
+			//This solution would allow us to eliminate the owner arg to disassemble(), but
+			//what if the collection was null, and then later had elements added? seems unsafe
+			//session.getPersistenceContext().getCollectionEntry( (PersistentCollection) value ).getKey();
+			object key = GetKeyOfOwner(owner, session);
+			if (key == null)
+			{
+				return null;
+			}
+			else
+			{
+				return await (GetPersister(session).KeyType.DisassembleAsync(key, session, owner));
+			}
+		}
+
+		public override async Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner)
+		{
+			//we must use the "remembered" uk value, since it is 
+			//not available from the EntityEntry during assembly
+			if (cached == null)
+			{
+				return null;
+			}
+			else
+			{
+				object key = await (GetPersister(session).KeyType.AssembleAsync(cached, session, owner));
+				return await (ResolveKeyAsync(key, session, owner));
+			}
+		}
+
+		public override async Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session)
+		{
+			// collections don't dirty an unversioned parent entity
+			// TODO: I don't like this implementation; it would be better if this was handled by SearchForDirtyCollections();
+			return IsOwnerVersioned(session) && await (base.IsDirtyAsync(old, current, session));
+		}
+
+		public override Task<object> HydrateAsync(IDataReader rs, string[] name, ISessionImplementor session, object owner)
+		{
+			try
+			{
+				return Task.FromResult<object>(Hydrate(rs, name, session, owner));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		public override async Task<object> ResolveIdentifierAsync(object key, ISessionImplementor session, object owner)
+		{
+			return await (ResolveKeyAsync(GetKeyOfOwner(owner, session), session, owner));
+		}
+
+		private Task<object> ResolveKeyAsync(object key, ISessionImplementor session, object owner)
+		{
+			return key == null ? Task.FromResult<object>(null) : GetCollectionAsync(key, session, owner);
+		}
+
 		public async Task<object> GetCollectionAsync(object key, ISessionImplementor session, object owner)
 		{
 			ICollectionPersister persister = GetPersister(session);
@@ -66,46 +200,16 @@ namespace NHibernate.Type
 			return collection.GetValue();
 		}
 
-		private async Task<object> ResolveKeyAsync(object key, ISessionImplementor session, object owner)
+		public override Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner)
 		{
-			return key == null ? null : await (GetCollectionAsync(key, session, owner));
-		}
-
-		public override async Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner)
-		{
-			//we must use the "remembered" uk value, since it is 
-			//not available from the EntityEntry during assembly
-			if (cached == null)
+			try
 			{
-				return null;
+				return Task.FromResult<object>(SemiResolve(value, session, owner));
 			}
-			else
+			catch (Exception ex)
 			{
-				object key = await (GetPersister(session).KeyType.AssembleAsync(cached, session, owner));
-				return await (ResolveKeyAsync(key, session, owner));
+				return TaskHelper.FromException<object>(ex);
 			}
-		}
-
-		public override async Task<object> ResolveIdentifierAsync(object key, ISessionImplementor session, object owner)
-		{
-			return await (ResolveKeyAsync(GetKeyOfOwner(owner, session), session, owner));
-		}
-
-		public override async Task<object> NullSafeGetAsync(IDataReader rs, string[] name, ISessionImplementor session, object owner)
-		{
-			return await (ResolveIdentifierAsync(null, session, owner));
-		}
-
-		public override async Task<object> NullSafeGetAsync(IDataReader rs, string name, ISessionImplementor session, object owner)
-		{
-			return await (NullSafeGetAsync(rs, new string[]{name}, session, owner));
-		}
-
-		public override async Task<object> HydrateAsync(IDataReader rs, string[] name, ISessionImplementor session, object owner)
-		{
-			// can't just return null here, since that would
-			// cause an owning component to become null
-			return NotNullCollection;
 		}
 
 		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache)
@@ -163,100 +267,33 @@ namespace NHibernate.Type
 			return result;
 		}
 
-		public override async Task<bool> IsModifiedAsync(object oldHydratedState, object currentState, bool[] checkable, ISessionImplementor session)
+		public override Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			return false;
+			return IsDirtyAsync(old, current, session);
 		}
 
-		public override async Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session)
+		public override Task<bool> IsModifiedAsync(object oldHydratedState, object currentState, bool[] checkable, ISessionImplementor session)
 		{
-			// collections don't dirty an unversioned parent entity
-			// TODO: I don't like this implementation; it would be better if this was handled by SearchForDirtyCollections();
-			return IsOwnerVersioned(session) && await (base.IsDirtyAsync(old, current, session));
-		}
-
-		public override async Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
-		{
-			return await (IsDirtyAsync(old, current, session));
-		}
-
-		public override async Task<int> CompareAsync(object x, object y, EntityMode? entityMode)
-		{
-			return 0; // collections cannot be compared
-		}
-
-		public override async Task<bool> IsEqualAsync(object x, object y, EntityMode entityMode)
-		{
-			return x == y || (x is IPersistentCollection && ((IPersistentCollection)x).IsWrapper(y)) || (y is IPersistentCollection && ((IPersistentCollection)y).IsWrapper(x));
-		}
-
-		public override async Task<object> DeepCopyAsync(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
-		{
-			return value;
-		}
-
-		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
-		{
-			//remember the uk value
-			//This solution would allow us to eliminate the owner arg to disassemble(), but
-			//what if the collection was null, and then later had elements added? seems unsafe
-			//session.getPersistenceContext().getCollectionEntry( (PersistentCollection) value ).getKey();
-			object key = GetKeyOfOwner(owner, session);
-			if (key == null)
+			try
 			{
-				return null;
+				return Task.FromResult<bool>(IsModified(oldHydratedState, currentState, checkable, session));
 			}
-			else
+			catch (Exception ex)
 			{
-				return await (GetPersister(session).KeyType.DisassembleAsync(key, session, owner));
+				return TaskHelper.FromException<bool>(ex);
 			}
 		}
 
-		public override async Task<bool[]> ToColumnNullnessAsync(object value, IMapping mapping)
-		{
-			return ArrayHelper.EmptyBoolArray;
-		}
-
-		public override async Task<int> GetHashCodeAsync(object x, EntityMode entityMode)
-		{
-			throw new InvalidOperationException("cannot perform lookups on collections");
-		}
-
-		public override async Task<string> ToLoggableStringAsync(object value, ISessionFactoryImplementor factory)
-		{
-			if (value == null)
-			{
-				return "null";
-			}
-			else if (!NHibernateUtil.IsInitialized(value))
-			{
-				return "<uninitialized>";
-			}
-			else
-			{
-				return await (RenderLoggableStringAsync(value, factory));
-			}
-		}
-
-		protected internal virtual async Task<string> RenderLoggableStringAsync(object value, ISessionFactoryImplementor factory)
-		{
-			IList list = new List<object>();
-			IType elemType = GetElementType(factory);
-			IEnumerable iter = GetElementsIterator(value);
-			foreach (object o in iter)
-				list.Add(await (elemType.ToLoggableStringAsync(o, factory)));
-			return CollectionPrinter.ToString(list);
-		}
-
-		public override async Task NullSafeSetAsync(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
-		{
-		// NOOP
-		}
-
-		public override async Task NullSafeSetAsync(IDbCommand cmd, object value, int index, ISessionImplementor session)
-		{
-		}
-
+		/// <summary> 
+		/// Get the id value from the owning entity key, usually the same as the key, but might be some
+		/// other property, in the case of property-ref 
+		/// </summary>
+		/// <param name = "key">The collection owner key </param>
+		/// <param name = "session">The session from which the request is originating. </param>
+		/// <returns> 
+		/// The collection owner's id, if it can be obtained from the key;
+		/// otherwise, null is returned
+		/// </returns>
 		public virtual async Task<object> GetIdOfOwnerOrNullAsync(object key, ISessionImplementor session)
 		{
 			object ownerId = null;
@@ -284,9 +321,28 @@ namespace NHibernate.Type
 			return ownerId;
 		}
 
-		public override async Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner)
+		public override Task<bool[]> ToColumnNullnessAsync(object value, IMapping mapping)
 		{
-			throw new NotSupportedException("collection mappings may not form part of a property-ref");
+			try
+			{
+				return Task.FromResult<bool[]>(ToColumnNullness(value, mapping));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<bool[]>(ex);
+			}
+		}
+
+		public override Task<int> CompareAsync(object x, object y, EntityMode? entityMode)
+		{
+			try
+			{
+				return Task.FromResult<int>(Compare(x, y, entityMode));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<int>(ex);
+			}
 		}
 
 		public virtual async Task<bool> ContainsAsync(object collection, object childObject, ISessionImplementor session)
@@ -311,6 +367,16 @@ namespace NHibernate.Type
 			}
 
 			return false;
+		}
+
+		protected internal virtual async Task<string> RenderLoggableStringAsync(object value, ISessionFactoryImplementor factory)
+		{
+			IList list = new List<object>();
+			IType elemType = GetElementType(factory);
+			IEnumerable iter = GetElementsIterator(value);
+			foreach (object o in iter)
+				list.Add(await (elemType.ToLoggableStringAsync(o, factory)));
+			return CollectionPrinter.ToString(list);
 		}
 	}
 }

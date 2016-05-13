@@ -22,7 +22,7 @@ namespace NHibernate.Id.Enhanced
 		/// Used instead of constructor injection since that is already a public understanding and
 		/// because not all optimizers care.
 		/// </summary>
-		public interface IInitialValueAwareOptimizer
+		public partial interface IInitialValueAwareOptimizer
 		{
 			/// <summary>
 			/// Reports the user-specified initial value to the optimizer.

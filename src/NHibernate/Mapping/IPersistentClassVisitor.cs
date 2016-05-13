@@ -1,11 +1,11 @@
 namespace NHibernate.Mapping
 {
-	public interface IPersistentClassVisitor
+	public partial interface IPersistentClassVisitor
 	{
 		object Accept(PersistentClass clazz);
 	}
 
-	public interface IPersistentClassVisitor<T> where T : PersistentClass
+	public partial interface IPersistentClassVisitor<T> where T : PersistentClass
 	{
 		object Accept(T clazz);
 	}

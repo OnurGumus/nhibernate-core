@@ -92,7 +92,7 @@ namespace NHibernate.Collection
 		private string role;
 		private object key;
 
-		// collections detect changes made via their public interface and mark
+		// collections detect changes made via their public partial interface and mark
 		// themselves as dirty as a performance optimization
 		private bool dirty;
 		private object storedSnapshot;

@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public interface IOneToOneMapper : IEntityPropertyMapper
+	public partial interface IOneToOneMapper : IEntityPropertyMapper
 	{
 		void Cascade(Cascade cascadeStyle);
 		void Lazy(LazyRelation lazyRelation);
@@ -15,7 +15,7 @@ namespace NHibernate.Mapping.ByCode
 		void Class(System.Type clazz);
 	}
 
-	public interface IOneToOneMapper<T> : IOneToOneMapper
+	public partial interface IOneToOneMapper<T> : IOneToOneMapper
 	{
 		void PropertyReference<TProperty>(Expression<Func<T, TProperty>> reference);
 	}

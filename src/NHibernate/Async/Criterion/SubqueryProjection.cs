@@ -5,6 +5,7 @@ using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
@@ -13,12 +14,12 @@ namespace NHibernate.Criterion
 	{
 		public override async Task<SqlString> ToSqlStringAsync(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			return await (_subQuery.ToSqlStringAsync(criteria, criteriaQuery, enabledFilters)).Append(new SqlString(" as y", loc.ToString(), "_"));
+			return (await (_subQuery.ToSqlStringAsync(criteria, criteriaQuery, enabledFilters))).Append(new SqlString(" as y", loc.ToString(), "_"));
 		}
 
-		public override async Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public override Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return await (_subQuery.GetTypedValuesAsync(criteria, criteriaQuery));
+			return _subQuery.GetTypedValuesAsync(criteria, criteriaQuery);
 		}
 	}
 }

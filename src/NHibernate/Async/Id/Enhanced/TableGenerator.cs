@@ -88,18 +88,28 @@ namespace NHibernate.Id.Enhanced
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
 	{
-		[MethodImpl(MethodImplOptions.Synchronized)]
+		private readonly AsyncLock _lock = new AsyncLock();
 		public virtual async Task<object> GenerateAsync(ISessionImplementor session, object obj)
 		{
-			return await (Optimizer.GenerateAsync(new TableAccessCallback(session, this)));
+			using (var releaser = await _lock.LockAsync())
+			{
+				return await (Optimizer.GenerateAsync(new TableAccessCallback(session, this)));
+			}
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		private partial class TableAccessCallback : IAccessCallback
 		{
-			public async Task<long> GetNextValueAsync()
+			public Task<long> GetNextValueAsync()
 			{
-				return Convert.ToInt64(owner.DoWorkInNewTransaction(session));
+				try
+				{
+					return Task.FromResult<long>(GetNextValue());
+				}
+				catch (Exception ex)
+				{
+					return TaskHelper.FromException<long>(ex);
+				}
 			}
 		}
 	}

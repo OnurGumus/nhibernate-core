@@ -10,7 +10,7 @@ namespace NHibernate.Dialect.Schema
 	/// <remarks>
 	/// Implementation is provide by a dialect.
 	/// </remarks>
-	public interface IDataBaseSchema
+	public partial interface IDataBaseSchema
 	{
 		/// <summary>
 		/// In the Java language, this field indicates that the database treats mixed-case, 

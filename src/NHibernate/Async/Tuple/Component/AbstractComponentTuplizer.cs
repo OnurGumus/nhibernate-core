@@ -2,6 +2,7 @@ using System;
 using NHibernate.Engine;
 using NHibernate.Properties;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Tuple.Component
 {
@@ -9,9 +10,16 @@ namespace NHibernate.Tuple.Component
 	public abstract partial class AbstractComponentTuplizer : IComponentTuplizer
 	{
 		/// <summary> This method does not populate the component parent</summary>
-		public virtual async Task<object> InstantiateAsync()
+		public virtual Task<object> InstantiateAsync()
 		{
-			return instantiator.Instantiate();
+			try
+			{
+				return Task.FromResult<object>(Instantiate());
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 	}
 }

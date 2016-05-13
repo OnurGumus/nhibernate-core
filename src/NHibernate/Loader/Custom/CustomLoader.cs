@@ -433,7 +433,7 @@ namespace NHibernate.Loader.Custom
 			}
 		}
 
-		public interface IResultColumnProcessor
+		public partial interface IResultColumnProcessor
 		{
 			object Extract(object[] data, IDataReader resultSet, ISessionImplementor session);
 			void PerformDiscovery(MetaData metadata, IList<IType> types, IList<string> aliases);

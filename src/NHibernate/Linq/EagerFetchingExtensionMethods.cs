@@ -61,7 +61,7 @@ namespace NHibernate.Linq
         }
     }
 
-    public interface INhFetchRequest<TQueried, TFetch> : IOrderedQueryable<TQueried>
+    public partial interface INhFetchRequest<TQueried, TFetch> : IOrderedQueryable<TQueried>
     {
     }
 

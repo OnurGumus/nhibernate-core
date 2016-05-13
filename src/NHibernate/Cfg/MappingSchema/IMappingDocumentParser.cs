@@ -6,7 +6,7 @@ namespace NHibernate.Cfg.MappingSchema
 	/// Responsible for converting a <see cref="Stream" /> of HBM XML into an instance of
 	/// <see cref="HbmMapping" />.
 	/// </summary>
-	public interface IMappingDocumentParser
+	public partial interface IMappingDocumentParser
 	{
 		HbmMapping Parse(Stream stream);
 	}

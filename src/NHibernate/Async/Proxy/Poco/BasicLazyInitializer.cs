@@ -12,6 +12,18 @@ namespace NHibernate.Proxy.Poco
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class BasicLazyInitializer : AbstractLazyInitializer
 	{
+		/// <summary>
+		/// Invokes the method if this is something that the LazyInitializer can handle
+		/// without the underlying proxied object being instantiated.
+		/// </summary>
+		/// <param name = "method">The name of the method/property to Invoke.</param>
+		/// <param name = "args">The arguments to pass the method/property.</param>
+		/// <param name = "proxy">The proxy object that the method is being invoked on.</param>
+		/// <returns>
+		/// The result of the Invoke if the underlying proxied object is not needed.  If the 
+		/// underlying proxied object is needed then it returns the result <see cref = "AbstractLazyInitializer.InvokeImplementation"/>
+		/// which indicates that the Proxy will need to forward to the real implementation.
+		/// </returns>
 		public virtual async Task<object> InvokeAsync(MethodInfo method, object[] args, object proxy)
 		{
 			string methodName = method.Name;

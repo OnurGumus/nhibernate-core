@@ -1,6 +1,7 @@
 using System;
 using NHibernate.Engine;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Id
 {
@@ -23,9 +24,16 @@ namespace NHibernate.Id
 		/// <param name = "session">The <see cref = "ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name = "obj">The entity for which the id is being generated.</param>
 		/// <returns>The new identifier as a <see cref = "Guid"/>.</returns>
-		public async Task<object> GenerateAsync(ISessionImplementor session, object obj)
+		public Task<object> GenerateAsync(ISessionImplementor session, object obj)
 		{
-			return Guid.NewGuid();
+			try
+			{
+				return Task.FromResult<object>(Generate(session, obj));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 	}
 }

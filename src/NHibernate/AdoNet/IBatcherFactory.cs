@@ -3,7 +3,7 @@ using NHibernate.Engine;
 namespace NHibernate.AdoNet
 {
 	/// <summary> Factory for <see cref="IBatcher"/> instances.</summary>
-	public interface IBatcherFactory
+	public partial interface IBatcherFactory
 	{
 		IBatcher CreateBatcher(ConnectionManager connectionManager, IInterceptor interceptor);
 	}

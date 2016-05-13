@@ -6,7 +6,7 @@ namespace NHibernate.Event
 	/// An event listener that requires access to mappings to
 	/// initialize state at initialization time.
 	/// </summary>
-	public interface IInitializable
+	public partial interface IInitializable
 	{
 		void Initialize(Configuration cfg);
 	}

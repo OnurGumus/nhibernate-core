@@ -7,7 +7,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: Steve Ebersole
 	/// Ported by: Steve Strong
 	/// </summary>
-	public interface IOperatorNode 
+	public partial interface IOperatorNode 
 	{
 		/// <summary>
 		/// Called by the tree walker during hql-sql semantic analysis

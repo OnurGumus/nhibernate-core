@@ -7,7 +7,7 @@ namespace NHibernate.Mapping
 	/// in the mappings.  Allows Hibernate to manage their lifecycle as part of
 	/// creating/dropping the schema. 
 	/// </summary>
-	public interface IAuxiliaryDatabaseObject : IRelationalModel
+	public partial interface IAuxiliaryDatabaseObject : IRelationalModel
 	{
 		/// <summary> 
 		/// Add the given dialect name to the scope of dialects to which

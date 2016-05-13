@@ -5,6 +5,7 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Id.Insert
 {
@@ -17,10 +18,16 @@ namespace NHibernate.Id.Insert
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class OutputParamReturningDelegate : AbstractReturningDelegate
 	{
-		public override async Task<object> ExecuteAndExtractAsync(IDbCommand insert, ISessionImplementor session)
+		public override Task<object> ExecuteAndExtractAsync(IDbCommand insert, ISessionImplementor session)
 		{
-			session.Batcher.ExecuteNonQuery(insert);
-			return Convert.ChangeType(((IDbDataParameter)insert.Parameters[driveGeneratedParamName]).Value, Persister.IdentifierType.ReturnedClass);
+			try
+			{
+				return Task.FromResult<object>(ExecuteAndExtract(insert, session));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 	}
 }

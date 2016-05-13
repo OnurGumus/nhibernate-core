@@ -7,7 +7,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// An <see cref="IType"/> that represents some kind of association between entities.
 	/// </summary>
-	public interface IAssociationType : IType
+	public partial interface IAssociationType : IType
 	{
 		/// <summary>
 		/// When implemented by a class, gets the type of foreign key directionality 

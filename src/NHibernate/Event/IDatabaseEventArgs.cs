@@ -1,6 +1,6 @@
 namespace NHibernate.Event
 {
-	public interface IDatabaseEventArgs
+	public partial interface IDatabaseEventArgs
 	{
 		/// <summary> 
 		/// Returns the session event source for this event.  

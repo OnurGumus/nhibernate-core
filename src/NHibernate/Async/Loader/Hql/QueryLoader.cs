@@ -30,6 +30,13 @@ namespace NHibernate.Loader.Hql
 			return await (ListAsync(session, queryParameters, _queryTranslator.QuerySpaces, _queryReturnTypes));
 		}
 
+		protected override async Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, IDataReader rs, ISessionImplementor session)
+		{
+			Object[] resultRow = await (GetResultRowAsync(row, rs, session));
+			bool hasTransform = HasSelectNew || resultTransformer != null;
+			return (!hasTransform && resultRow.Length == 1 ? resultRow[0] : resultRow);
+		}
+
 		protected override async Task<object[]> GetResultRowAsync(object[] row, IDataReader rs, ISessionImplementor session)
 		{
 			object[] resultRow;
@@ -49,13 +56,6 @@ namespace NHibernate.Loader.Hql
 			}
 
 			return resultRow;
-		}
-
-		protected override async Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, IDataReader rs, ISessionImplementor session)
-		{
-			Object[] resultRow = await (GetResultRowAsync(row, rs, session));
-			bool hasTransform = HasSelectNew || resultTransformer != null;
-			return (!hasTransform && resultRow.Length == 1 ? resultRow[0] : resultRow);
 		}
 
 		internal async Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session)

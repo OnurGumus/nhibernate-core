@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
@@ -19,9 +20,9 @@ namespace NHibernate.Criterion
 			return builder.ToSqlString();
 		}
 
-		public override async Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public override Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return await (_criterion.GetTypedValuesAsync(criteria, criteriaQuery));
+			return _criterion.GetTypedValuesAsync(criteria, criteriaQuery);
 		}
 	}
 }

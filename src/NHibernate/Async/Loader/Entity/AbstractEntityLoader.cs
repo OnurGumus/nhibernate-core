@@ -9,6 +9,8 @@ using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
 using System.Threading.Tasks;
+using System;
+using NHibernate.Util;
 
 namespace NHibernate.Loader.Entity
 {
@@ -18,14 +20,16 @@ namespace NHibernate.Loader.Entity
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class AbstractEntityLoader : OuterJoinLoader, IUniqueEntityLoader
 	{
-		public async Task<object> LoadAsync(object id, object optionalObject, ISessionImplementor session)
+		public Task<object> LoadAsync(object id, object optionalObject, ISessionImplementor session)
 		{
-			return Load(session, id, optionalObject, id);
-		}
-
-		protected override async Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, IDataReader rs, ISessionImplementor session)
-		{
-			return row[row.Length - 1];
+			try
+			{
+				return Task.FromResult<object>(Load(id, optionalObject, session));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 
 		protected virtual async Task<object> LoadAsync(ISessionImplementor session, object id, object optionalObject, object optionalId)
@@ -49,6 +53,18 @@ namespace NHibernate.Loader.Entity
 				{
 					throw new HibernateException(string.Format("More than one row with the given identifier was found: {0}, for class: {1}", id, persister.EntityName));
 				}
+			}
+		}
+
+		protected override Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, IDataReader rs, ISessionImplementor session)
+		{
+			try
+			{
+				return Task.FromResult<object>(GetResultColumnOrRow(row, resultTransformer, rs, session));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
 			}
 		}
 	}

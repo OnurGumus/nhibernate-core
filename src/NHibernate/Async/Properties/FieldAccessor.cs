@@ -14,9 +14,16 @@ namespace NHibernate.Properties
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		public sealed partial class FieldGetter : IGetter, IOptimizableGetter
 		{
-			public async Task<object> GetForInsertAsync(object owner, IDictionary mergeMap, ISessionImplementor session)
+			public Task<object> GetForInsertAsync(object owner, IDictionary mergeMap, ISessionImplementor session)
 			{
-				return Get(owner);
+				try
+				{
+					return Task.FromResult<object>(GetForInsert(owner, mergeMap, session));
+				}
+				catch (Exception ex)
+				{
+					return TaskHelper.FromException<object>(ex);
+				}
 			}
 		}
 	}

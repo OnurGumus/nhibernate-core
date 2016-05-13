@@ -20,25 +20,16 @@ namespace NHibernate.Impl
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class AbstractQueryImpl : IQuery
 	{
-		public abstract Task<IList> ListAsync();
-		public abstract Task ListAsync(IList results);
-		public abstract Task<IList<T>> ListAsync<T>();
-		public async Task<object> UniqueResultAsync()
+		public async Task<IQuery> SetEntityAsync(int position, object val)
 		{
-			return UniqueElement(await (ListAsync()));
+			SetParameter(position, val, NHibernateUtil.Entity(await (NHibernateProxyHelper.GuessClassAsync(val))));
+			return this;
 		}
 
-		public async Task<T> UniqueResultAsync<T>()
+		public async Task<IQuery> SetEntityAsync(string name, object val)
 		{
-			object result = await (UniqueResultAsync());
-			if (result == null && typeof (T).IsValueType)
-			{
-				return default (T);
-			}
-			else
-			{
-				return (T)result;
-			}
+			SetParameter(name, val, NHibernateUtil.Entity(await (NHibernateProxyHelper.GuessClassAsync(val))));
+			return this;
 		}
 
 		public async Task<IEnumerable<T>> FutureAsync<T>()
@@ -52,30 +43,42 @@ namespace NHibernate.Impl
 			return session.FutureQueryBatch.GetEnumerator<T>();
 		}
 
-		public async Task<IFutureValue<T>> FutureValueAsync<T>()
+		public Task<IFutureValue<T>> FutureValueAsync<T>()
 		{
-			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
+			try
 			{
-				return new FutureValue<T>(ListAsync<T>);
+				return Task.FromResult<IFutureValue<T>>(FutureValue<T>());
 			}
-
-			session.FutureQueryBatch.Add<T>(this);
-			return session.FutureQueryBatch.GetFutureValue<T>();
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<IFutureValue<T>>(ex);
+			}
 		}
 
+		public abstract Task<int> ExecuteUpdateAsync();
 		public abstract Task<IEnumerable> EnumerableAsync();
 		public abstract Task<IEnumerable<T>> EnumerableAsync<T>();
-		public abstract Task<int> ExecuteUpdateAsync();
-		public async Task<IQuery> SetEntityAsync(string name, object val)
+		public abstract Task<IList> ListAsync();
+		public abstract Task ListAsync(IList results);
+		public abstract Task<IList<T>> ListAsync<T>();
+		public async Task<T> UniqueResultAsync<T>()
 		{
-			SetParameter(name, val, NHibernateUtil.Entity(await (NHibernateProxyHelper.GuessClassAsync(val))));
-			return this;
+			object result = await (UniqueResultAsync());
+			if (result == null && typeof (T).IsValueType)
+			{
+				return default (T);
+			}
+			else
+			{
+				return (T)result;
+			}
 		}
 
-		public async Task<IQuery> SetEntityAsync(int position, object val)
+		public async Task<object> UniqueResultAsync()
 		{
-			SetParameter(position, val, NHibernateUtil.Entity(await (NHibernateProxyHelper.GuessClassAsync(val))));
-			return this;
+			return UniqueElement(await (ListAsync()));
 		}
+
+		protected internal abstract Task<IEnumerable<ITranslator>> GetTranslatorsAsync(ISessionImplementor sessionImplementor, QueryParameters queryParameters);
 	}
 }

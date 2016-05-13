@@ -5,7 +5,7 @@ namespace NHibernate.Mapping
 	/// <summary>
 	/// Defines mapping elements to which filters may be applied.
 	/// </summary>
-	public interface IFilterable
+	public partial interface IFilterable
 	{
 		void AddFilter(string name, string condition);
 

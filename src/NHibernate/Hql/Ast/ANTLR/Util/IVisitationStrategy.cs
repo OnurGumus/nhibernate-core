@@ -4,7 +4,7 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 namespace NHibernate.Hql.Ast.ANTLR.Util
 {
 	[CLSCompliant(false)]
-	public interface IVisitationStrategy
+	public partial interface IVisitationStrategy
 	{
 		void Visit(IASTNode node);
 	}

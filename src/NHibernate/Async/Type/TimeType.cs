@@ -2,24 +2,23 @@ using System;
 using System.Data;
 using NHibernate.SqlTypes;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class TimeType : PrimitiveType, IIdentifierType, ILiteralType
 	{
-		public override async Task<int> GetHashCodeAsync(object x, EntityMode entityMode)
+		public override Task<int> GetHashCodeAsync(object x, EntityMode entityMode)
 		{
-			DateTime date = (DateTime)x;
-			int hashCode = 1;
-			unchecked
+			try
 			{
-				hashCode = 31 * hashCode + date.Second;
-				hashCode = 31 * hashCode + date.Minute;
-				hashCode = 31 * hashCode + date.Hour;
+				return Task.FromResult<int>(GetHashCode(x, entityMode));
 			}
-
-			return hashCode;
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<int>(ex);
+			}
 		}
 	}
 }

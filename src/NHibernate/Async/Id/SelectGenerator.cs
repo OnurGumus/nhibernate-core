@@ -18,10 +18,16 @@ namespace NHibernate.Id
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class SelectGenerator : AbstractPostInsertGenerator, IConfigurable
 	{
-		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		/// <summary> The delegate for the select generation strategy.</summary>
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		public partial class SelectGeneratorDelegate : AbstractSelectingDelegate
 		{
+			protected internal override async Task BindParametersAsync(ISessionImplementor session, IDbCommand ps, object entity)
+			{
+				object uniqueKeyValue = ((IEntityPersister)persister).GetPropertyValue(entity, uniqueKeyPropertyName, session.EntityMode);
+				await (uniqueKeyType.NullSafeSetAsync(ps, uniqueKeyValue, 0, session));
+			}
+
 			protected internal override async Task<object> GetResultAsync(ISessionImplementor session, IDataReader rs, object entity)
 			{
 				if (!rs.Read())
@@ -30,12 +36,6 @@ namespace NHibernate.Id
 				}
 
 				return await (idType.NullSafeGetAsync(rs, persister.RootTableKeyColumnNames, session, entity));
-			}
-
-			protected internal override async Task BindParametersAsync(ISessionImplementor session, IDbCommand ps, object entity)
-			{
-				object uniqueKeyValue = ((IEntityPersister)persister).GetPropertyValue(entity, uniqueKeyPropertyName, session.EntityMode);
-				await (uniqueKeyType.NullSafeSetAsync(ps, uniqueKeyValue, 0, session));
 			}
 		}
 	}

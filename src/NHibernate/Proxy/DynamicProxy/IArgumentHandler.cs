@@ -11,7 +11,7 @@ using System.Reflection.Emit;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
-	public interface IArgumentHandler
+	public partial interface IArgumentHandler
 	{
 		void PushArguments(ParameterInfo[] parameters, ILGenerator IL, bool isStatic);
 	}

@@ -8,11 +8,6 @@ namespace NHibernate.Engine
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class EntityUniqueKey
 	{
-		public async Task<bool> EqualsAsync(EntityUniqueKey that)
-		{
-			return that == null ? false : that.EntityName.Equals(entityName) && that.UniqueKeyName.Equals(uniqueKeyName) && await (keyType.IsEqualAsync(that.key, key, entityMode));
-		}
-
 		public async Task<int> GenerateHashCodeAsync(ISessionFactoryImplementor factory)
 		{
 			int result = 17;
@@ -24,6 +19,11 @@ namespace NHibernate.Engine
 			}
 
 			return result;
+		}
+
+		public async Task<bool> EqualsAsync(EntityUniqueKey that)
+		{
+			return that == null ? false : that.EntityName.Equals(entityName) && that.UniqueKeyName.Equals(uniqueKeyName) && await (keyType.IsEqualAsync(that.key, key, entityMode));
 		}
 	}
 }

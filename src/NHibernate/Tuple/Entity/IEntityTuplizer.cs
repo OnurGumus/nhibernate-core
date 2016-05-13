@@ -10,7 +10,7 @@ namespace NHibernate.Tuple.Entity
 	/// EntityTuplizer implementations should have the following constructor signature:
 	/// (<see cref="EntityMetamodel"/>, <see cref="Mapping.PersistentClass"/>)
 	/// </remarks>
-	public interface IEntityTuplizer : ITuplizer
+	public partial interface IEntityTuplizer : ITuplizer
 	{
 		/// <summary> 
 		/// Does the <see cref="ITuplizer.MappedClass">class</see> managed by this tuplizer implement

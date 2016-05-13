@@ -14,6 +14,14 @@ namespace NHibernate.Transaction
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class AdoTransaction : ITransaction
 	{
+		/// <summary>
+		/// Commits the <see cref = "ITransaction"/> by flushing the <see cref = "ISession"/>
+		/// and committing the <see cref = "IDbTransaction"/>.
+		/// </summary>
+		/// <exception cref = "TransactionException">
+		/// Thrown if there is any exception while trying to call <c>Commit()</c> on 
+		/// the underlying <see cref = "IDbTransaction"/>.
+		/// </exception>
 		public async Task CommitAsync()
 		{
 			using (new SessionIdLoggingContext(sessionId))

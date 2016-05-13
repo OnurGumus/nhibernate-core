@@ -20,6 +20,13 @@ namespace NHibernate.Tuple
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class PropertyFactory
 	{
+		/// <summary>
+		/// Generates a VersionProperty representation for an entity mapping given its
+		/// version mapping Property.
+		/// </summary>
+		/// <param name = "property">The version mapping Property.</param>
+		/// <param name = "lazyAvailable">Is property lazy loading currently available.</param>
+		/// <returns>The appropriate VersionProperty definition.</returns>
 		public static async Task<VersionProperty> BuildVersionPropertyAsync(Mapping.Property property, bool lazyAvailable)
 		{
 			String mappedUnsavedValue = ((IKeyValue)property.Value).NullValue;

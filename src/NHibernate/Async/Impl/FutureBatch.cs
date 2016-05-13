@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
+using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
@@ -19,5 +21,7 @@ namespace NHibernate.Impl
 			results = await (GetResultsFromAsync(multiApproach));
 			ClearCurrentFutureBatch();
 		}
+
+		protected abstract Task<IList> GetResultsFromAsync(TMultiApproach multiApproach);
 	}
 }

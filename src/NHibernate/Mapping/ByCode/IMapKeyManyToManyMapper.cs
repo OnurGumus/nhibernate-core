@@ -1,6 +1,6 @@
 namespace NHibernate.Mapping.ByCode
 {
-	public interface IMapKeyManyToManyMapper : IColumnsMapper
+	public partial interface IMapKeyManyToManyMapper : IColumnsMapper
 	{
 		void ForeignKey(string foreignKeyName);
 		void Formula(string formula);

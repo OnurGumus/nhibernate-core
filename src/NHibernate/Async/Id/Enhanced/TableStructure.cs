@@ -5,6 +5,7 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.AdoNet.Util;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Id.Enhanced
 {
@@ -17,9 +18,16 @@ namespace NHibernate.Id.Enhanced
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		private partial class TableAccessCallback : IAccessCallback
 		{
-			public virtual async Task<long> GetNextValueAsync()
+			public virtual Task<long> GetNextValueAsync()
 			{
-				return Convert.ToInt64(_owner.DoWorkInNewTransaction(_session));
+				try
+				{
+					return Task.FromResult<long>(GetNextValue());
+				}
+				catch (Exception ex)
+				{
+					return TaskHelper.FromException<long>(ex);
+				}
 			}
 		}
 	}

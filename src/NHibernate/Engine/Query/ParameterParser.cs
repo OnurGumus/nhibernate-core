@@ -12,7 +12,7 @@ namespace NHibernate.Engine.Query
 	/// </summary>
 	public partial class ParameterParser
 	{
-		public interface IRecognizer
+		public partial interface IRecognizer
 		{
 			void OutParameter(int position);
 			void OrdinalParameter(int position);

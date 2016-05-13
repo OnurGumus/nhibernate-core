@@ -8,7 +8,7 @@ namespace NHibernate.Hql
 	/// Facade for generation of <see cref="NHibernate.Hql.IQueryTranslator"/> 
 	/// and <see cref="NHibernate.Hql.IFilterTranslator"/> instances.
 	/// </summary>
-	public interface IQueryTranslatorFactory
+	public partial interface IQueryTranslatorFactory
 	{
 		/// <summary>
 		/// Construct a <see cref="NHibernate.Hql.IQueryTranslator"/> instance 

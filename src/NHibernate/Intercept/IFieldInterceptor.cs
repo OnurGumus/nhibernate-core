@@ -3,7 +3,7 @@ using NHibernate.Engine;
 namespace NHibernate.Intercept
 {
 	/// <summary> Contract for field interception handlers. </summary>
-	public interface IFieldInterceptor
+	public partial interface IFieldInterceptor
 	{
 		/// <summary> Is the entity considered dirty? </summary>
 		/// <value> True if the entity is dirty; otherwise false. </value>

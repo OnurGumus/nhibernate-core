@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
@@ -33,9 +34,9 @@ namespace NHibernate.Criterion
 			return sqlBuilder.ToSqlString();
 		}
 
-		public override async Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public override Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return _projection == null ? NoValues : await (_projection.GetTypedValuesAsync(criteria, criteriaQuery));
+			return _projection == null ? Task.FromResult<TypedValue[]>(NoValues) : _projection.GetTypedValuesAsync(criteria, criteriaQuery);
 		}
 	}
 }

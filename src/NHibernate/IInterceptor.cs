@@ -21,7 +21,7 @@ namespace NHibernate
 	///	proxy to be lazily initialized).
 	///	</para>
 	/// </remarks>
-	public interface IInterceptor
+	public partial interface IInterceptor
 	{
 		/// <summary>
 		/// Called just before an object is initialized

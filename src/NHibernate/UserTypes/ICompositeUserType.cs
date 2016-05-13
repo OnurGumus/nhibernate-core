@@ -22,7 +22,7 @@ namespace NHibernate.UserTypes
 	/// Disassemble() provide conversion to/from a cacheable
 	/// representation.
 	/// </summary>
-	public interface ICompositeUserType
+	public partial interface ICompositeUserType
 	{
 		/// <summary>
 		/// Get the "property names" that may be used in a query.

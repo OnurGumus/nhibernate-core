@@ -2,7 +2,7 @@ using System.Data;
 
 namespace NHibernate.Driver
 {
-	public interface IDriveConnectionCommandProvider
+	public partial interface IDriveConnectionCommandProvider
 	{
 		IDbConnection CreateConnection();
 		IDbCommand CreateCommand();

@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Mapping
 {
-	public interface ITableOwner
+	public partial interface ITableOwner
 	{
 		Table Table { set; }
 	}

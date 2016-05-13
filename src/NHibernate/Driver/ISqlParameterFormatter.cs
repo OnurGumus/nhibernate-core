@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Driver
 {
-	public interface ISqlParameterFormatter
+	public partial interface ISqlParameterFormatter
 	{
 		string GetParameterName(int index);
 	}

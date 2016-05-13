@@ -7,7 +7,7 @@ namespace NHibernate.UserTypes
 	/// made parameterizable by implementing this interface. Parameters for a
 	/// type may be set by using a nested type element for the property element
 	/// </summary>
-	public interface IParameterizedType
+	public partial interface IParameterizedType
 	{
 		/// <summary>
 		/// Gets called by Hibernate to pass the configured type parameters to 

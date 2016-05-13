@@ -22,85 +22,12 @@ namespace NHibernate.Engine.Loading
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class CollectionLoadContext
 	{
-		private async Task EndLoadingCollectionAsync(LoadingCollectionEntry lce, ICollectionPersister persister)
-		{
-			if (log.IsDebugEnabled)
-			{
-				log.Debug("ending loading collection [" + lce + "]");
-			}
-
-			ISessionImplementor session = LoadContext.PersistenceContext.Session;
-			EntityMode em = session.EntityMode;
-			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
-			var stopWath = new Stopwatch();
-			if (statsEnabled)
-			{
-				stopWath.Start();
-			}
-
-			bool hasNoQueuedAdds = lce.Collection.EndRead(persister); // warning: can cause a recursive calls! (proxy initialization)
-			if (persister.CollectionType.HasHolder(em))
-			{
-				LoadContext.PersistenceContext.AddCollectionHolder(lce.Collection);
-			}
-
-			CollectionEntry ce = LoadContext.PersistenceContext.GetCollectionEntry(lce.Collection);
-			if (ce == null)
-			{
-				ce = await (LoadContext.PersistenceContext.AddInitializedCollectionAsync(persister, lce.Collection, lce.Key));
-			}
-			else
-			{
-				await (ce.PostInitializeAsync(lce.Collection));
-			}
-
-			bool addToCache = hasNoQueuedAdds && persister.HasCache && ((session.CacheMode & CacheMode.Put) == CacheMode.Put) && !ce.IsDoremove; // and this is not a forced initialization during flush
-			if (addToCache)
-			{
-				await (AddCollectionToCacheAsync(lce, persister));
-			}
-
-			if (log.IsDebugEnabled)
-			{
-				log.Debug("collection fully initialized: " + await (MessageHelper.CollectionInfoStringAsync(persister, lce.Collection, lce.Key, session)));
-			}
-
-			if (statsEnabled)
-			{
-				stopWath.Stop();
-				session.Factory.StatisticsImplementor.LoadCollection(persister.Role, stopWath.Elapsed);
-			}
-		}
-
-		private async Task EndLoadingCollectionsAsync(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries)
-		{
-			if (matchedCollectionEntries == null || matchedCollectionEntries.Count == 0)
-			{
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("no collections were found in result set for role: " + persister.Role);
-				}
-
-				return;
-			}
-
-			int count = matchedCollectionEntries.Count;
-			if (log.IsDebugEnabled)
-			{
-				log.Debug(count + " collections were found in result set for role: " + persister.Role);
-			}
-
-			for (int i = 0; i < count; i++)
-			{
-				await (EndLoadingCollectionAsync(matchedCollectionEntries[i], persister));
-			}
-
-			if (log.IsDebugEnabled)
-			{
-				log.Debug(count + " collections initialized for role: " + persister.Role);
-			}
-		}
-
+		/// <summary> 
+		/// Finish the process of collection-loading for this bound result set.  Mainly this
+		/// involves cleaning up resources and notifying the collections that loading is
+		/// complete. 
+		/// </summary>
+		/// <param name = "persister">The persister for which to complete loading. </param>
 		public async Task EndLoadingCollectionsAsync(ICollectionPersister persister)
 		{
 			if (!loadContexts.HasLoadingCollectionEntries && (localLoadingCollectionKeys.Count == 0))
@@ -157,6 +84,88 @@ namespace NHibernate.Engine.Loading
 			}
 		}
 
+		private async Task EndLoadingCollectionsAsync(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries)
+		{
+			if (matchedCollectionEntries == null || matchedCollectionEntries.Count == 0)
+			{
+				if (log.IsDebugEnabled)
+				{
+					log.Debug("no collections were found in result set for role: " + persister.Role);
+				}
+
+				return;
+			}
+
+			int count = matchedCollectionEntries.Count;
+			if (log.IsDebugEnabled)
+			{
+				log.Debug(count + " collections were found in result set for role: " + persister.Role);
+			}
+
+			for (int i = 0; i < count; i++)
+			{
+				await (EndLoadingCollectionAsync(matchedCollectionEntries[i], persister));
+			}
+
+			if (log.IsDebugEnabled)
+			{
+				log.Debug(count + " collections initialized for role: " + persister.Role);
+			}
+		}
+
+		private async Task EndLoadingCollectionAsync(LoadingCollectionEntry lce, ICollectionPersister persister)
+		{
+			if (log.IsDebugEnabled)
+			{
+				log.Debug("ending loading collection [" + lce + "]");
+			}
+
+			ISessionImplementor session = LoadContext.PersistenceContext.Session;
+			EntityMode em = session.EntityMode;
+			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
+			var stopWath = new Stopwatch();
+			if (statsEnabled)
+			{
+				stopWath.Start();
+			}
+
+			bool hasNoQueuedAdds = lce.Collection.EndRead(persister); // warning: can cause a recursive calls! (proxy initialization)
+			if (persister.CollectionType.HasHolder(em))
+			{
+				LoadContext.PersistenceContext.AddCollectionHolder(lce.Collection);
+			}
+
+			CollectionEntry ce = LoadContext.PersistenceContext.GetCollectionEntry(lce.Collection);
+			if (ce == null)
+			{
+				ce = await (LoadContext.PersistenceContext.AddInitializedCollectionAsync(persister, lce.Collection, lce.Key));
+			}
+			else
+			{
+				await (ce.PostInitializeAsync(lce.Collection));
+			}
+
+			bool addToCache = hasNoQueuedAdds && persister.HasCache && ((session.CacheMode & CacheMode.Put) == CacheMode.Put) && !ce.IsDoremove; // and this is not a forced initialization during flush
+			if (addToCache)
+			{
+				await (AddCollectionToCacheAsync(lce, persister));
+			}
+
+			if (log.IsDebugEnabled)
+			{
+				log.Debug("collection fully initialized: " + await (MessageHelper.CollectionInfoStringAsync(persister, lce.Collection, lce.Key, session)));
+			}
+
+			if (statsEnabled)
+			{
+				stopWath.Stop();
+				session.Factory.StatisticsImplementor.LoadCollection(persister.Role, stopWath.Elapsed);
+			}
+		}
+
+		/// <summary> Add the collection to the second-level cache </summary>
+		/// <param name = "lce">The entry representing the collection to add </param>
+		/// <param name = "persister">The persister </param>
 		private async Task AddCollectionToCacheAsync(LoadingCollectionEntry lce, ICollectionPersister persister)
 		{
 			ISessionImplementor session = LoadContext.PersistenceContext.Session;

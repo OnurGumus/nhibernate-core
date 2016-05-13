@@ -49,44 +49,7 @@ namespace NHibernate.Criterion
 			return builder.ToSqlString();
 		}
 
-		protected async Task AppendPropertyConditionAsync(String propertyName, object propertyValue, ICriteria criteria, ICriteriaQuery cq, IDictionary<string, IFilter> enabledFilters, SqlStringBuilder builder)
-		{
-			if (builder.Count > 1)
-			{
-				builder.Add(" and ");
-			}
-
-			ICriterion crit = propertyValue != null ? GetNotNullPropertyCriterion(propertyValue, propertyName) : new NullExpression(propertyName);
-			builder.Add(await (crit.ToSqlStringAsync(criteria, cq, enabledFilters)));
-		}
-
-		protected async Task AppendComponentConditionAsync(String path, object component, IAbstractComponentType type, ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters, SqlStringBuilder builder)
-		{
-			if (component != null)
-			{
-				String[] propertyNames = type.PropertyNames;
-				object[] values = await (type.GetPropertyValuesAsync(component, GetEntityMode(criteria, criteriaQuery)));
-				IType[] subtypes = type.Subtypes;
-				for (int i = 0; i < propertyNames.Length; i++)
-				{
-					String subpath = StringHelper.Qualify(path, propertyNames[i]);
-					object value = values[i];
-					if (IsPropertyIncluded(value, subpath, subtypes[i]))
-					{
-						IType subtype = subtypes[i];
-						if (subtype.IsComponentType)
-						{
-							await (AppendComponentConditionAsync(subpath, value, (IAbstractComponentType)subtype, criteria, criteriaQuery, enabledFilters, builder));
-						}
-						else
-						{
-							await (AppendPropertyConditionAsync(subpath, value, criteria, criteriaQuery, enabledFilters, builder));
-						}
-					}
-				}
-			}
-		}
-
+		//note: now that Criterion are adding typed values via ICriteriaQuery.AddUsedTypedValues this function is never called.
 		public override async Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			IEntityPersister meta = criteriaQuery.Factory.GetEntityPersister(criteriaQuery.GetEntityName(criteria));
@@ -137,6 +100,44 @@ namespace NHibernate.Criterion
 						else
 						{
 							AddPropertyTypedValue(value, subtype, list);
+						}
+					}
+				}
+			}
+		}
+
+		protected async Task AppendPropertyConditionAsync(String propertyName, object propertyValue, ICriteria criteria, ICriteriaQuery cq, IDictionary<string, IFilter> enabledFilters, SqlStringBuilder builder)
+		{
+			if (builder.Count > 1)
+			{
+				builder.Add(" and ");
+			}
+
+			ICriterion crit = propertyValue != null ? GetNotNullPropertyCriterion(propertyValue, propertyName) : new NullExpression(propertyName);
+			builder.Add(await (crit.ToSqlStringAsync(criteria, cq, enabledFilters)));
+		}
+
+		protected async Task AppendComponentConditionAsync(String path, object component, IAbstractComponentType type, ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters, SqlStringBuilder builder)
+		{
+			if (component != null)
+			{
+				String[] propertyNames = type.PropertyNames;
+				object[] values = await (type.GetPropertyValuesAsync(component, GetEntityMode(criteria, criteriaQuery)));
+				IType[] subtypes = type.Subtypes;
+				for (int i = 0; i < propertyNames.Length; i++)
+				{
+					String subpath = StringHelper.Qualify(path, propertyNames[i]);
+					object value = values[i];
+					if (IsPropertyIncluded(value, subpath, subtypes[i]))
+					{
+						IType subtype = subtypes[i];
+						if (subtype.IsComponentType)
+						{
+							await (AppendComponentConditionAsync(subpath, value, (IAbstractComponentType)subtype, criteria, criteriaQuery, enabledFilters, builder));
+						}
+						else
+						{
+							await (AppendPropertyConditionAsync(subpath, value, criteria, criteriaQuery, enabledFilters, builder));
 						}
 					}
 				}

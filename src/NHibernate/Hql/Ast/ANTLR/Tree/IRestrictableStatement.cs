@@ -9,7 +9,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public interface IRestrictableStatement : IStatement
+	public partial interface IRestrictableStatement : IStatement
 	{
 		/// <summary>
 		/// Retrieves the from-clause in effect for this statement; could be null if the from-clause

@@ -1,6 +1,8 @@
 using NHibernate.Engine;
 using NHibernate.Id.Insert;
 using System.Threading.Tasks;
+using System;
+using NHibernate.Util;
 
 namespace NHibernate.Id
 {
@@ -16,9 +18,16 @@ namespace NHibernate.Id
 		/// <c>IdentityColumnIndicator</c> Indicates to the Session that identity (i.e. identity/autoincrement column)
 		/// key generation should be used.
 		/// </returns>
-		public async Task<object> GenerateAsync(ISessionImplementor s, object obj)
+		public Task<object> GenerateAsync(ISessionImplementor s, object obj)
 		{
-			return IdentifierGeneratorFactory.PostInsertIndicator;
+			try
+			{
+				return Task.FromResult<object>(Generate(s, obj));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 	}
 }

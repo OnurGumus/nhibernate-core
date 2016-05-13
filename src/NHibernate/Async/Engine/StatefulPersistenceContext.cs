@@ -19,6 +19,31 @@ namespace NHibernate.Engine
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class StatefulPersistenceContext : IPersistenceContext, ISerializable, IDeserializationCallback
 	{
+		/// <summary>
+		/// Get the current state of the entity as known to the underlying
+		/// database, or null if there is no corresponding row
+		/// </summary>
+		public async Task<object[]> GetDatabaseSnapshotAsync(object id, IEntityPersister persister)
+		{
+			EntityKey key = session.GenerateEntityKey(id, persister);
+			object cached;
+			if (entitySnapshotsByKey.TryGetValue(key, out cached))
+			{
+				return cached == NoRow ? null : (object[])cached;
+			}
+			else
+			{
+				object[] snapshot = await (persister.GetDatabaseSnapshotAsync(id, session));
+				entitySnapshotsByKey[key] = snapshot ?? NoRow;
+				return snapshot;
+			}
+		}
+
+		/// <summary>
+		/// Get the values of the natural id fields as known to the underlying
+		/// database, or null if the entity has no natural id or there is no
+		/// corresponding row.
+		/// </summary>
 		public async Task<object[]> GetNaturalIdSnapshotAsync(object id, IEntityPersister persister)
 		{
 			if (!persister.HasNaturalIdentifier)
@@ -65,30 +90,75 @@ namespace NHibernate.Engine
 			}
 		}
 
-		public async Task<object[]> GetDatabaseSnapshotAsync(object id, IEntityPersister persister)
+		/// <summary>
+		/// Get the entity instance underlying the given proxy, throwing
+		/// an exception if the proxy is uninitialized. If the given object
+		/// is not a proxy, simply return the argument.
+		/// </summary>
+		public async Task<object> UnproxyAsync(object maybeProxy)
 		{
-			EntityKey key = session.GenerateEntityKey(id, persister);
-			object cached;
-			if (entitySnapshotsByKey.TryGetValue(key, out cached))
+			// TODO H3.2 Not ported
+			//ElementWrapper wrapper = maybeProxy as ElementWrapper;
+			//if (wrapper != null)
+			//{
+			//  maybeProxy = wrapper.Element;
+			//}
+			if (maybeProxy.IsProxy())
 			{
-				return cached == NoRow ? null : (object[])cached;
+				INHibernateProxy proxy = maybeProxy as INHibernateProxy;
+				ILazyInitializer li = proxy.HibernateLazyInitializer;
+				if (li.IsUninitialized)
+					throw new PersistentObjectException("object was an uninitialized proxy for " + li.PersistentClass.FullName);
+				return await (li.GetImplementationAsync()); // unwrap the object
 			}
 			else
 			{
-				object[] snapshot = await (persister.GetDatabaseSnapshotAsync(id, session));
-				entitySnapshotsByKey[key] = snapshot ?? NoRow;
-				return snapshot;
+				return maybeProxy;
 			}
 		}
 
-		public async Task<CollectionEntry> AddInitializedCollectionAsync(ICollectionPersister persister, IPersistentCollection collection, object id)
+		/// <summary>
+		/// Possibly unproxy the given reference and reassociate it with the current session.
+		/// </summary>
+		/// <param name = "maybeProxy">The reference to be unproxied if it currently represents a proxy. </param>
+		/// <returns> The unproxied instance. </returns>
+		public async Task<object> UnproxyAndReassociateAsync(object maybeProxy)
 		{
-			CollectionEntry ce = new CollectionEntry(collection, persister, id, flushing);
-			await (ce.PostInitializeAsync(collection));
-			AddCollection(collection, ce, id);
-			return ce;
+			// TODO H3.2 Not ported
+			//ElementWrapper wrapper = maybeProxy as ElementWrapper;
+			//if (wrapper != null)
+			//{
+			//  maybeProxy = wrapper.Element;
+			//}
+			if (maybeProxy.IsProxy())
+			{
+				var proxy = maybeProxy as INHibernateProxy;
+				ILazyInitializer li = proxy.HibernateLazyInitializer;
+				ReassociateProxy(li, proxy);
+				return await (li.GetImplementationAsync()); //initialize + unwrap the object
+			}
+
+			return maybeProxy;
 		}
 
+		/// <summary> Get the ID for the entity that owned this persistent collection when it was loaded </summary>
+		/// <param name = "collection">The persistent collection </param>
+		/// <returns> the owner ID if available from the collection's loaded key; otherwise, returns null </returns>
+		public virtual Task<object> GetLoadedCollectionOwnerIdOrNullAsync(IPersistentCollection collection)
+		{
+			try
+			{
+				return Task.FromResult<object>(GetLoadedCollectionOwnerIdOrNull(collection));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		/// <summary> Get the ID for the entity that owned this persistent collection when it was loaded </summary>
+		/// <param name = "ce">The collection entry </param>
+		/// <returns> the owner ID if available from the collection's loaded key; otherwise, returns null </returns>
 		private async Task<object> GetLoadedCollectionOwnerIdOrNullAsync(CollectionEntry ce)
 		{
 			if (ce == null || ce.LoadedKey == null || ce.LoadedPersister == null)
@@ -101,14 +171,20 @@ namespace NHibernate.Engine
 			return await (ce.LoadedPersister.CollectionType.GetIdOfOwnerOrNullAsync(ce.LoadedKey, session));
 		}
 
-		/// <summary> Get the ID for the entity that owned this persistent collection when it was loaded </summary>
-		/// <param name = "collection">The persistent collection </param>
-		/// <returns> the owner ID if available from the collection's loaded key; otherwise, returns null </returns>
-		public virtual async Task<object> GetLoadedCollectionOwnerIdOrNullAsync(IPersistentCollection collection)
+		/// <summary> add a collection we just pulled out of the cache (does not need initializing)</summary>
+		public async Task<CollectionEntry> AddInitializedCollectionAsync(ICollectionPersister persister, IPersistentCollection collection, object id)
 		{
-			return GetLoadedCollectionOwnerIdOrNull(GetCollectionEntry(collection));
+			CollectionEntry ce = new CollectionEntry(collection, persister, id, flushing);
+			await (ce.PostInitializeAsync(collection));
+			AddCollection(collection, ce, id);
+			return ce;
 		}
 
+		/// <summary>
+		/// Force initialization of all non-lazy collections encountered during
+		/// the current two-phase load (actually, this is a no-op, unless this
+		/// is the "outermost" load)
+		/// </summary>
 		public async Task InitializeNonLazyCollectionsAsync()
 		{
 			if (loadCounter == 0)
@@ -134,62 +210,10 @@ namespace NHibernate.Engine
 			}
 		}
 
-		public async Task<object> UnproxyAsync(object maybeProxy)
-		{
-			// TODO H3.2 Not ported
-			//ElementWrapper wrapper = maybeProxy as ElementWrapper;
-			//if (wrapper != null)
-			//{
-			//  maybeProxy = wrapper.Element;
-			//}
-			if (maybeProxy.IsProxy())
-			{
-				INHibernateProxy proxy = maybeProxy as INHibernateProxy;
-				ILazyInitializer li = proxy.HibernateLazyInitializer;
-				if (li.IsUninitialized)
-					throw new PersistentObjectException("object was an uninitialized proxy for " + li.PersistentClass.FullName);
-				return await (li.GetImplementationAsync()); // unwrap the object
-			}
-			else
-			{
-				return maybeProxy;
-			}
-		}
-
-		public async Task SetReadOnlyAsync(object entityOrProxy, bool readOnly)
-		{
-			if (entityOrProxy == null)
-				throw new ArgumentNullException("entityOrProxy");
-			if (IsReadOnly(entityOrProxy) == readOnly)
-				return;
-			if (entityOrProxy is INHibernateProxy)
-			{
-				INHibernateProxy proxy = (INHibernateProxy)entityOrProxy;
-				SetProxyReadOnly(proxy, readOnly);
-				if (NHibernateUtil.IsInitialized(proxy))
-				{
-					SetEntityReadOnly(await (proxy.HibernateLazyInitializer.GetImplementationAsync()), readOnly);
-				}
-			}
-			else
-			{
-				SetEntityReadOnly(entityOrProxy, readOnly);
-				// PersistenceContext.proxyFor( entity ) returns entity if there is no proxy for that entity
-				// so need to check the return value to be sure it is really a proxy
-				object maybeProxy = this.Session.PersistenceContext.ProxyFor(entityOrProxy);
-				if (maybeProxy is INHibernateProxy)
-				{
-					SetProxyReadOnly((INHibernateProxy)maybeProxy, readOnly);
-				}
-			}
-		}
-
-		private async Task<bool> IsFoundInParentAsync(string property, object childEntity, IEntityPersister persister, ICollectionPersister collectionPersister, object potentialParent)
-		{
-			object collection = persister.GetPropertyValue(potentialParent, property, session.EntityMode);
-			return collection != null && NHibernateUtil.IsInitialized(collection) && await (collectionPersister.CollectionType.ContainsAsync(collection, childEntity, session));
-		}
-
+		/// <summary>
+		/// Search the persistence context for an owner for the child object,
+		/// given a collection role
+		/// </summary>
 		public async Task<object> GetOwnerIdAsync(string entityName, string propertyName, object childEntity, IDictionary mergeMap)
 		{
 			string collectionRole = entityName + '.' + propertyName;
@@ -266,23 +290,39 @@ namespace NHibernate.Engine
 			return null;
 		}
 
-		public async Task<object> UnproxyAndReassociateAsync(object maybeProxy)
+		private async Task<bool> IsFoundInParentAsync(string property, object childEntity, IEntityPersister persister, ICollectionPersister collectionPersister, object potentialParent)
 		{
-			// TODO H3.2 Not ported
-			//ElementWrapper wrapper = maybeProxy as ElementWrapper;
-			//if (wrapper != null)
-			//{
-			//  maybeProxy = wrapper.Element;
-			//}
-			if (maybeProxy.IsProxy())
-			{
-				var proxy = maybeProxy as INHibernateProxy;
-				ILazyInitializer li = proxy.HibernateLazyInitializer;
-				ReassociateProxy(li, proxy);
-				return await (li.GetImplementationAsync()); //initialize + unwrap the object
-			}
+			object collection = persister.GetPropertyValue(potentialParent, property, session.EntityMode);
+			return collection != null && NHibernateUtil.IsInitialized(collection) && await (collectionPersister.CollectionType.ContainsAsync(collection, childEntity, session));
+		}
 
-			return maybeProxy;
+		/// <inheritdoc/>
+		public async Task SetReadOnlyAsync(object entityOrProxy, bool readOnly)
+		{
+			if (entityOrProxy == null)
+				throw new ArgumentNullException("entityOrProxy");
+			if (IsReadOnly(entityOrProxy) == readOnly)
+				return;
+			if (entityOrProxy is INHibernateProxy)
+			{
+				INHibernateProxy proxy = (INHibernateProxy)entityOrProxy;
+				SetProxyReadOnly(proxy, readOnly);
+				if (NHibernateUtil.IsInitialized(proxy))
+				{
+					SetEntityReadOnly(await (proxy.HibernateLazyInitializer.GetImplementationAsync()), readOnly);
+				}
+			}
+			else
+			{
+				SetEntityReadOnly(entityOrProxy, readOnly);
+				// PersistenceContext.proxyFor( entity ) returns entity if there is no proxy for that entity
+				// so need to check the return value to be sure it is really a proxy
+				object maybeProxy = this.Session.PersistenceContext.ProxyFor(entityOrProxy);
+				if (maybeProxy is INHibernateProxy)
+				{
+					SetProxyReadOnly((INHibernateProxy)maybeProxy, readOnly);
+				}
+			}
 		}
 	}
 }

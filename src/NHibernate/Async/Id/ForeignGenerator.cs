@@ -24,6 +24,16 @@ namespace NHibernate.Id
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class ForeignGenerator : IIdentifierGenerator, IConfigurable
 	{
+		/// <summary>
+		/// Generates an identifier from the value of a Property. 
+		/// </summary>
+		/// <param name = "sessionImplementor">The <see cref = "ISessionImplementor"/> this id is being generated in.</param>
+		/// <param name = "obj">The entity for which the id is being generated.</param>
+		/// <returns>
+		/// The identifier value from the associated object or  
+		/// <see cref = "IdentifierGeneratorFactory.ShortCircuitIndicator"/> if the <c>session</c>
+		/// already contains <c>obj</c>.
+		/// </returns>
 		public async Task<object> GenerateAsync(ISessionImplementor sessionImplementor, object obj)
 		{
 			ISession session = (ISession)sessionImplementor;

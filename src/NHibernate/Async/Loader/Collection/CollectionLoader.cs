@@ -6,6 +6,8 @@ using NHibernate.Persister.Collection;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using System.Threading.Tasks;
+using System;
+using NHibernate.Util;
 
 namespace NHibernate.Loader.Collection
 {
@@ -17,9 +19,9 @@ namespace NHibernate.Loader.Collection
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class CollectionLoader : OuterJoinLoader, ICollectionInitializer
 	{
-		public virtual async Task InitializeAsync(object id, ISessionImplementor session)
+		public virtual Task InitializeAsync(object id, ISessionImplementor session)
 		{
-			await (LoadCollectionAsync(session, id, KeyType));
+			return LoadCollectionAsync(session, id, KeyType);
 		}
 	}
 }

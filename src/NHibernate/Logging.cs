@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace NHibernate
 {
-	public interface IInternalLogger
+	public partial interface IInternalLogger
 	{
 		bool IsErrorEnabled { get; }
 		bool IsFatalEnabled { get; }
@@ -33,7 +33,7 @@ namespace NHibernate
 		void WarnFormat(string format, params object[] args);
 	}
 
-	public interface ILoggerFactory
+	public partial interface ILoggerFactory
 	{
 		IInternalLogger LoggerFor(string keyName);
 		IInternalLogger LoggerFor(System.Type type);

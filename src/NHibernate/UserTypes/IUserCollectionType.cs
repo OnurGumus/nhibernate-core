@@ -5,7 +5,7 @@ using NHibernate.Persister.Collection;
 
 namespace NHibernate.UserTypes
 {
-	public interface IUserCollectionType
+	public partial interface IUserCollectionType
 	{
 		/// <summary>
 		/// Instantiate an uninitialized instance of the collection wrapper

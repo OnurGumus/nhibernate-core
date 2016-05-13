@@ -13,6 +13,11 @@ namespace NHibernate.Event.Default
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class DefaultRefreshEventListener : IRefreshEventListener
 	{
+		public virtual async Task OnRefreshAsync(RefreshEvent @event)
+		{
+			await (OnRefreshAsync(@event, IdentityMap.Instantiate(10)));
+		}
+
 		public virtual async Task OnRefreshAsync(RefreshEvent @event, IDictionary refreshedAlready)
 		{
 			IEventSource source = @event.Session;
@@ -101,11 +106,6 @@ namespace NHibernate.Event.Default
 			// because a transient entity is "self refreshed"
 			if (!await (ForeignKeys.IsTransientAsync(persister.EntityName, obj, result == null, @event.Session)))
 				UnresolvableObjectException.ThrowIfNull(result, id, persister.EntityName);
-		}
-
-		public virtual async Task OnRefreshAsync(RefreshEvent @event)
-		{
-			await (OnRefreshAsync(@event, IdentityMap.Instantiate(10)));
 		}
 	}
 }

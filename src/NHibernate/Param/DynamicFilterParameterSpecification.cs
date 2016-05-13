@@ -94,7 +94,7 @@ namespace NHibernate.Param
 		}
 
 		[Serializable]
-		private class CollectionOfValuesType : IType
+		private partial class CollectionOfValuesType : IType
 		{
 			private readonly IType elementType;
 			private readonly int valueSpan;

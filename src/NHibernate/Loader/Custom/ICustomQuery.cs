@@ -9,7 +9,7 @@ namespace NHibernate.Loader.Custom
 	/// to be executed by Hibernate, returning managed entities, collections and
 	/// simple scalar values. 
 	/// </summary>
-	public interface ICustomQuery
+	public partial interface ICustomQuery
 	{
 		/// <summary> The SQL query string to be performed. </summary>
 		SqlString SQL { get; }

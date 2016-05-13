@@ -8,7 +8,7 @@ namespace NHibernate.Bytecode
 	/// <remarks>
 	/// Used to abstract from the tupizer.
 	/// </remarks>
-	public interface IProxyFactoryFactory
+	public partial interface IProxyFactoryFactory
 	{
 		/// <summary> 
 		/// Build a proxy factory specifically for handling runtime

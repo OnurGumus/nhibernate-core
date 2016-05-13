@@ -12,12 +12,16 @@ namespace NHibernate.Criterion
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public sealed partial class SQLProjection : IProjection
 	{
-		public async Task<SqlString> ToSqlStringAsync(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public Task<SqlString> ToSqlStringAsync(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			//SqlString result = new SqlString(criteriaQuery.GetSQLAlias(criteria));
-			//result.Replace(sql, "{alias}");
-			//return result;
-			return new SqlString(StringHelper.Replace(sql, "{alias}", criteriaQuery.GetSQLAlias(criteria)));
+			try
+			{
+				return Task.FromResult<SqlString>(ToSqlString(criteria, loc, criteriaQuery, enabledFilters));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<SqlString>(ex);
+			}
 		}
 
 		/// <summary>
@@ -26,9 +30,16 @@ namespace NHibernate.Criterion
 		/// <param name = "criteria">The criteria.</param>
 		/// <param name = "criteriaQuery">The criteria query.</param>
 		/// <returns></returns>
-		public async Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new TypedValue[0];
+			try
+			{
+				return Task.FromResult<TypedValue[]>(GetTypedValues(criteria, criteriaQuery));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<TypedValue[]>(ex);
+			}
 		}
 	}
 }

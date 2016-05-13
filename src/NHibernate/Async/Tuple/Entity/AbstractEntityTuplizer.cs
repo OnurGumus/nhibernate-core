@@ -8,6 +8,8 @@ using NHibernate.Properties;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using System.Threading.Tasks;
+using System;
+using NHibernate.Util;
 
 namespace NHibernate.Tuple.Entity
 {
@@ -15,6 +17,17 @@ namespace NHibernate.Tuple.Entity
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class AbstractEntityTuplizer : IEntityTuplizer
 	{
+		public async Task<object> InstantiateAsync(object id)
+		{
+			object result = Instantiator.Instantiate(id);
+			if (id != null)
+			{
+				await (SetIdentifierAsync(result, id));
+			}
+
+			return result;
+		}
+
 		public async Task<object> GetIdentifierAsync(object entity)
 		{
 			object id;
@@ -78,22 +91,6 @@ namespace NHibernate.Tuple.Entity
 			}
 		}
 
-		public async Task<object> InstantiateAsync(object id)
-		{
-			object result = Instantiator.Instantiate(id);
-			if (id != null)
-			{
-				await (SetIdentifierAsync(result, id));
-			}
-
-			return result;
-		}
-
-		public async Task<object> InstantiateAsync()
-		{
-			return await (InstantiateAsync(null));
-		}
-
 		public virtual async Task<object[]> GetPropertyValuesToInsertAsync(object entity, IDictionary mergeMap, ISessionImplementor session)
 		{
 			int span = entityMetamodel.PropertySpan;
@@ -104,6 +101,11 @@ namespace NHibernate.Tuple.Entity
 			}
 
 			return result;
+		}
+
+		public Task<object> InstantiateAsync()
+		{
+			return InstantiateAsync(null);
 		}
 	}
 }

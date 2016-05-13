@@ -6,18 +6,13 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Driver
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class BasicResultSetsCommand : IResultSetsCommand
 	{
-		protected virtual async Task BindParametersAsync(IDbCommand command)
-		{
-			var wholeQueryParametersList = Sql.GetParameters().ToList();
-			ForEachSqlCommand((sqlLoaderCommand, offset) => await (sqlLoaderCommand.BindAsync(command, wholeQueryParametersList, offset, Session)));
-		}
-
 		public virtual async Task<IDataReader> GetReaderAsync(int ? commandTimeout)
 		{
 			var batcher = Session.Batcher;
@@ -32,6 +27,19 @@ namespace NHibernate.Driver
 			log.Info(command.CommandText);
 			await (BindParametersAsync(command));
 			return new BatcherDataReaderWrapper(batcher, command);
+		}
+
+		protected virtual Task BindParametersAsync(IDbCommand command)
+		{
+			try
+			{
+				BindParameters(command);
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 	}
 }

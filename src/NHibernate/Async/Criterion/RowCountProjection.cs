@@ -2,6 +2,7 @@ using System;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
@@ -10,9 +11,16 @@ namespace NHibernate.Criterion
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class RowCountProjection : SimpleProjection
 	{
-		public override async Task<SqlString> ToSqlStringAsync(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
+		public override Task<SqlString> ToSqlStringAsync(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
-			return new SqlString("count(*) as y", position.ToString(), "_");
+			try
+			{
+				return Task.FromResult<SqlString>(ToSqlString(criteria, position, criteriaQuery, enabledFilters));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<SqlString>(ex);
+			}
 		}
 	}
 }

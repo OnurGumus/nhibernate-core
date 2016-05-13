@@ -10,16 +10,10 @@ namespace NHibernate.Engine
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class CollectionEntry
 	{
-		public async Task<ICollection> GetOrphansAsync(string entityName, IPersistentCollection collection)
-		{
-			if (snapshot == null)
-			{
-				throw new AssertionFailure("no collection snapshot for orphan delete");
-			}
-
-			return await (collection.GetOrphansAsync(snapshot, entityName));
-		}
-
+		/// <summary> 
+		/// Determine if the collection is "really" dirty, by checking dirtiness
+		/// of the collection elements, if necessary
+		/// </summary>
 		private async Task DirtyAsync(IPersistentCollection collection)
 		{
 			// if the collection is initialized and it was previously persistent
@@ -31,6 +25,10 @@ namespace NHibernate.Engine
 			}
 		}
 
+		/// <summary>
+		/// Prepares this CollectionEntry for the Flush process.
+		/// </summary>
+		/// <param name = "collection">The <see cref = "IPersistentCollection"/> that this CollectionEntry will be responsible for flushing.</param>
 		public async Task PreFlushAsync(IPersistentCollection collection)
 		{
 			bool nonMutableChange = collection.IsDirty && LoadedPersister != null && !LoadedPersister.IsMutable;
@@ -54,6 +52,17 @@ namespace NHibernate.Engine
 			processed = false;
 		}
 
+		/// <summary>
+		/// Updates the CollectionEntry to reflect that the <see cref = "IPersistentCollection"/>
+		/// has been initialized.
+		/// </summary>
+		/// <param name = "collection">The initialized <see cref = "AbstractPersistentCollection"/> that this Entry is for.</param>
+		public async Task PostInitializeAsync(IPersistentCollection collection)
+		{
+			snapshot = LoadedPersister.IsMutable ? await (collection.GetSnapshotAsync(LoadedPersister)) : null;
+			collection.SetSnapshot(loadedKey, role, snapshot);
+		}
+
 		public async Task AfterActionAsync(IPersistentCollection collection)
 		{
 			loadedKey = CurrentKey;
@@ -68,10 +77,14 @@ namespace NHibernate.Engine
 			collection.PostAction();
 		}
 
-		public async Task PostInitializeAsync(IPersistentCollection collection)
+		public async Task<ICollection> GetOrphansAsync(string entityName, IPersistentCollection collection)
 		{
-			snapshot = LoadedPersister.IsMutable ? await (collection.GetSnapshotAsync(LoadedPersister)) : null;
-			collection.SetSnapshot(loadedKey, role, snapshot);
+			if (snapshot == null)
+			{
+				throw new AssertionFailure("no collection snapshot for orphan delete");
+			}
+
+			return await (collection.GetOrphansAsync(snapshot, entityName));
 		}
 	}
 }

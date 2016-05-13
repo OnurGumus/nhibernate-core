@@ -59,15 +59,16 @@ namespace NHibernate.Id
 		/// <param name = "session">The <see cref = "ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name = "obj">The entity for which the id is being generated.</param>
 		/// <returns>The new identifier as a <see cref = "string "/>.</returns>
-		public virtual async Task<object> GenerateAsync(ISessionImplementor session, object obj)
+		public virtual Task<object> GenerateAsync(ISessionImplementor session, object obj)
 		{
-			string guidString = GenerateNewGuid();
-			if (format != FormatWithDigitsOnly && sep != null)
+			try
 			{
-				return StringHelper.Replace(guidString, "-", sep);
+				return Task.FromResult<object>(Generate(session, obj));
 			}
-
-			return guidString;
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 	}
 }

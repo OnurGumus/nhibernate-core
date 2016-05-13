@@ -1,6 +1,8 @@
 using NHibernate.Engine;
 using NHibernate.Id.Insert;
 using System.Threading.Tasks;
+using System;
+using NHibernate.Util;
 
 namespace NHibernate.Id
 {
@@ -12,9 +14,16 @@ namespace NHibernate.Id
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class SequenceIdentityGenerator : SequenceGenerator, IPostInsertIdentifierGenerator
 	{
-		public override async Task<object> GenerateAsync(ISessionImplementor session, object obj)
+		public override Task<object> GenerateAsync(ISessionImplementor session, object obj)
 		{
-			return IdentifierGeneratorFactory.PostInsertIndicator;
+			try
+			{
+				return Task.FromResult<object>(Generate(session, obj));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 	}
 }

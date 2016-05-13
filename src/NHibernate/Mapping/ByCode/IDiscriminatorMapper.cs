@@ -3,7 +3,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public interface IDiscriminatorMapper
+	public partial interface IDiscriminatorMapper
 	{
 		void Column(string column);
 		void Column(Action<IColumnMapper> columnMapper);

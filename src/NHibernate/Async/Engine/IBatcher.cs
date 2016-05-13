@@ -4,6 +4,7 @@ using NHibernate.AdoNet;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Engine
 {

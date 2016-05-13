@@ -6,7 +6,7 @@ namespace NHibernate.Id
 	/// <summary> 
 	/// A persister that may have an identity assigned by execution of a SQL <tt>INSERT</tt>. 
 	/// </summary>
-	public interface IPostInsertIdentityPersister
+	public partial interface IPostInsertIdentityPersister
 	{
 		/* NH cosideration:
 		 * this interface was de-wired from IEntityPersister because we want use it for ICollectionPersister too.

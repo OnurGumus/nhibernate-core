@@ -16,36 +16,29 @@ namespace NHibernate.Collection.Generic
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IList
 	{
-		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner)
+		public override async Task<object> GetSnapshotAsync(ICollectionPersister persister)
 		{
-			object[] array = (object[])disassembled;
-			int size = array.Length;
-			BeforeInitialize(persister, size);
-			for (int i = 0; i < size; i++)
+			EntityMode entityMode = Session.EntityMode;
+			var clonedList = new List<T>(WrappedList.Count);
+			foreach (T current in WrappedList)
 			{
-				var element = await (persister.ElementType.AssembleAsync(array[i], Session, owner));
-				WrappedList.Add((T)(element ?? DefaultForType));
-			}
-		}
-
-		public override async Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
-		{
-			var sn = (IList<T>)snapshot;
-			return GetOrphans((ICollection)sn, (ICollection)WrappedList, entityName, Session);
-		}
-
-		public override async Task<object> ReadFromAsync(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
-		{
-			var element = (T)await (role.ReadElementAsync(rs, owner, descriptor.SuffixedElementAliases, Session));
-			int index = (int)await (role.ReadIndexAsync(rs, descriptor.SuffixedIndexAliases, Session));
-			//pad with nulls from the current last element up to the new index
-			for (int i = WrappedList.Count; i <= index; i++)
-			{
-				WrappedList.Insert(i, DefaultForType);
+				var deepCopy = (T)await (persister.ElementType.DeepCopyAsync(current, entityMode, persister.Factory));
+				clonedList.Add(deepCopy);
 			}
 
-			WrappedList[index] = element;
-			return element;
+			return clonedList;
+		}
+
+		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
+		{
+			try
+			{
+				return Task.FromResult<ICollection>(GetOrphans(snapshot, entityName));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<ICollection>(ex);
+			}
 		}
 
 		public override async Task<bool> EqualsSnapshotAsync(ICollectionPersister persister)
@@ -68,59 +61,36 @@ namespace NHibernate.Collection.Generic
 			return true;
 		}
 
-		public override async Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula)
+		public override async Task<object> ReadFromAsync(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
-			IList deletes = new List<object>();
-			var sn = (IList<T>)GetSnapshot();
-			int end;
-			if (sn.Count > WrappedList.Count)
+			var element = (T)await (role.ReadElementAsync(rs, owner, descriptor.SuffixedElementAliases, Session));
+			int index = (int)await (role.ReadIndexAsync(rs, descriptor.SuffixedIndexAliases, Session));
+			//pad with nulls from the current last element up to the new index
+			for (int i = WrappedList.Count; i <= index; i++)
 			{
-				for (int i = WrappedList.Count; i < sn.Count; i++)
-				{
-					deletes.Add(indexIsFormula ? (object)sn[i] : i);
-				}
-
-				end = WrappedList.Count;
-			}
-			else
-			{
-				end = sn.Count;
+				WrappedList.Insert(i, DefaultForType);
 			}
 
-			for (int i = 0; i < end; i++)
-			{
-				if (WrappedList[i] == null && sn[i] != null)
-				{
-					deletes.Add(indexIsFormula ? (object)sn[i] : i);
-				}
-			}
-
-			return deletes;
+			WrappedList[index] = element;
+			return element;
 		}
 
-		public override async Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType)
+		/// <summary>
+		/// Initializes this PersistentGenericList from the cached values.
+		/// </summary>
+		/// <param name = "persister">The CollectionPersister to use to reassemble the PersistentGenericList.</param>
+		/// <param name = "disassembled">The disassembled PersistentList.</param>
+		/// <param name = "owner">The owner object.</param>
+		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner)
 		{
-			var sn = (IList<T>)GetSnapshot();
-			return WrappedList[i] != null && (i >= sn.Count || sn[i] == null);
-		}
-
-		public override async Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType)
-		{
-			var sn = (IList<T>)GetSnapshot();
-			return i < sn.Count && sn[i] != null && WrappedList[i] != null && await (elemType.IsDirtyAsync(WrappedList[i], sn[i], Session));
-		}
-
-		public override async Task<object> GetSnapshotAsync(ICollectionPersister persister)
-		{
-			EntityMode entityMode = Session.EntityMode;
-			var clonedList = new List<T>(WrappedList.Count);
-			foreach (T current in WrappedList)
+			object[] array = (object[])disassembled;
+			int size = array.Length;
+			BeforeInitialize(persister, size);
+			for (int i = 0; i < size; i++)
 			{
-				var deepCopy = (T)await (persister.ElementType.DeepCopyAsync(current, entityMode, persister.Factory));
-				clonedList.Add(deepCopy);
+				var element = await (persister.ElementType.AssembleAsync(array[i], Session, owner));
+				WrappedList.Add((T)(element ?? DefaultForType));
 			}
-
-			return clonedList;
 		}
 
 		public override async Task<object> DisassembleAsync(ICollectionPersister persister)
@@ -133,6 +103,36 @@ namespace NHibernate.Collection.Generic
 			}
 
 			return result;
+		}
+
+		public override Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula)
+		{
+			try
+			{
+				return Task.FromResult<IEnumerable>(GetDeletes(persister, indexIsFormula));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<IEnumerable>(ex);
+			}
+		}
+
+		public override Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType)
+		{
+			try
+			{
+				return Task.FromResult<bool>(NeedsInserting(entry, i, elemType));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<bool>(ex);
+			}
+		}
+
+		public override async Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType)
+		{
+			var sn = (IList<T>)GetSnapshot();
+			return i < sn.Count && sn[i] != null && WrappedList[i] != null && await (elemType.IsDirtyAsync(WrappedList[i], sn[i], Session));
 		}
 	}
 }

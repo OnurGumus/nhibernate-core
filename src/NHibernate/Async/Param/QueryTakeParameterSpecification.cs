@@ -6,6 +6,7 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Param
 {
@@ -15,6 +16,11 @@ namespace NHibernate.Param
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class QueryTakeParameterSpecification : IParameterSpecification
 	{
+		public Task BindAsync(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		{
+			return BindAsync(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
+		}
+
 		public async Task BindAsync(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			// The QueryTakeParameterSpecification is unique so we can use multiSqlQueryParametersList
@@ -26,11 +32,6 @@ namespace NHibernate.Param
 				int position = effectiveParameterLocations.Single();
 				await (type.NullSafeSetAsync(command, value, position, session));
 			}
-		}
-
-		public async Task BindAsync(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
-		{
-			await (BindAsync(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session));
 		}
 	}
 }

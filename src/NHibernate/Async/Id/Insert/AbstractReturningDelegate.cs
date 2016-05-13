@@ -4,6 +4,8 @@ using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using System.Threading.Tasks;
+using System;
+using NHibernate.Util;
 
 namespace NHibernate.Id.Insert
 {
@@ -37,5 +39,7 @@ namespace NHibernate.Id.Insert
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "could not insert: " + persister.GetInfoString(), insertSQL.Text);
 			}
 		}
+
+		public abstract Task<object> ExecuteAndExtractAsync(IDbCommand insert, ISessionImplementor session);
 	}
 }

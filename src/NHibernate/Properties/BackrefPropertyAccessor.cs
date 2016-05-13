@@ -69,7 +69,7 @@ namespace NHibernate.Properties
 
 		/// <summary> The Getter implementation for id backrefs.</summary>
 		[Serializable]
-		private class BackrefGetter : IGetter
+		private partial class BackrefGetter : IGetter
 		{
 			private readonly BackrefPropertyAccessor encloser;
 

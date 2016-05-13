@@ -11,7 +11,7 @@ using NHibernate.Transform;
 namespace NHibernate
 {
 
-	public interface IQueryOver
+	public partial interface IQueryOver
 	{
 		/// <summary>
 		/// Access the underlying ICriteria
@@ -36,7 +36,7 @@ namespace NHibernate
 	///		.List();
 	/// </code>
 	/// </remarks>
-	public interface IQueryOver<TRoot> : IQueryOver
+	public partial interface IQueryOver<TRoot> : IQueryOver
 	{
 		/// <summary>
 		/// Get the results of the root type and fill the <see cref="IList&lt;T&gt;"/>
@@ -174,7 +174,7 @@ namespace NHibernate
 	///		.List();
 	/// </code>
 	/// </remarks>
-	public interface IQueryOver<TRoot,TSubType> : IQueryOver<TRoot>
+	public partial interface IQueryOver<TRoot,TSubType> : IQueryOver<TRoot>
 	{
 
 		/// <summary>

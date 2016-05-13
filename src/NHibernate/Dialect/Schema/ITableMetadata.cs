@@ -1,6 +1,6 @@
 namespace NHibernate.Dialect.Schema
 {
-	public interface ITableMetadata
+	public partial interface ITableMetadata
 	{
 		string Name { get; }
 

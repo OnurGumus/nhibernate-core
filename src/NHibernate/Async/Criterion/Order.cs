@@ -11,6 +11,9 @@ namespace NHibernate.Criterion
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class Order
 	{
+		/// <summary>
+		/// Render the SQL fragment
+		/// </summary>
 		public virtual async Task<SqlString> ToSqlStringAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			if (projection != null)

@@ -13,6 +13,31 @@ namespace NHibernate.Type
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class DbTimestampType : TimestampType, IVersionType
 	{
+		public override async Task<object> SeedAsync(ISessionImplementor session)
+		{
+			if (session == null)
+			{
+				log.Debug("incoming session was null; using current vm time");
+				return await (base.SeedAsync(session));
+			}
+			else if (!session.Factory.Dialect.SupportsCurrentTimestampSelection)
+			{
+				log.Debug("falling back to vm-based timestamp, as dialect does not support current timestamp selection");
+				return await (base.SeedAsync(session));
+			}
+			else
+			{
+				return await (GetCurrentTimestampAsync(session));
+			}
+		}
+
+		private async Task<object> GetCurrentTimestampAsync(ISessionImplementor session)
+		{
+			Dialect.Dialect dialect = session.Factory.Dialect;
+			string timestampSelectString = dialect.CurrentTimestampSelectString;
+			return await (UsePreparedStatementAsync(timestampSelectString, session));
+		}
+
 		protected virtual async Task<object> UsePreparedStatementAsync(string timestampSelectString, ISessionImplementor session)
 		{
 			var tsSelect = new SqlString(timestampSelectString);
@@ -50,31 +75,6 @@ namespace NHibernate.Type
 						}
 					}
 				}
-		}
-
-		private async Task<object> GetCurrentTimestampAsync(ISessionImplementor session)
-		{
-			Dialect.Dialect dialect = session.Factory.Dialect;
-			string timestampSelectString = dialect.CurrentTimestampSelectString;
-			return await (UsePreparedStatementAsync(timestampSelectString, session));
-		}
-
-		public override async Task<object> SeedAsync(ISessionImplementor session)
-		{
-			if (session == null)
-			{
-				log.Debug("incoming session was null; using current vm time");
-				return await (base.SeedAsync(session));
-			}
-			else if (!session.Factory.Dialect.SupportsCurrentTimestampSelection)
-			{
-				log.Debug("falling back to vm-based timestamp, as dialect does not support current timestamp selection");
-				return await (base.SeedAsync(session));
-			}
-			else
-			{
-				return await (GetCurrentTimestampAsync(session));
-			}
 		}
 	}
 }

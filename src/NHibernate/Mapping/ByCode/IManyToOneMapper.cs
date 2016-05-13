@@ -1,6 +1,6 @@
 namespace NHibernate.Mapping.ByCode
 {
-	public interface IManyToOneMapper : IEntityPropertyMapper, IColumnsMapper
+	public partial interface IManyToOneMapper : IEntityPropertyMapper, IColumnsMapper
 	{
 		/// <summary>
 		/// Force the many-to-one to a different type than the one of the property.

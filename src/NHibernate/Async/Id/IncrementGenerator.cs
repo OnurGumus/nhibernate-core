@@ -9,6 +9,7 @@ using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
+using NHibernate.Util;
 using System.Threading.Tasks;
 
 namespace NHibernate.Id
@@ -29,15 +30,24 @@ namespace NHibernate.Id
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class IncrementGenerator : IIdentifierGenerator, IConfigurable
 	{
-		[MethodImpl(MethodImplOptions.Synchronized)]
+		private readonly AsyncLock _lock = new AsyncLock();
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name = "session"></param>
+		/// <param name = "obj"></param>
+		/// <returns></returns>
 		public async Task<object> GenerateAsync(ISessionImplementor session, object obj)
 		{
-			if (_sql != null)
+			using (var releaser = await _lock.LockAsync())
 			{
-				await (GetNextAsync(session));
-			}
+				if (_sql != null)
+				{
+					await (GetNextAsync(session));
+				}
 
-			return IdentifierGeneratorFactory.CreateNumber(_next++, _returnClass);
+				return IdentifierGeneratorFactory.CreateNumber(_next++, _returnClass);
+			}
 		}
 
 		private async Task GetNextAsync(ISessionImplementor session)

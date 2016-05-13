@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {

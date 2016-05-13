@@ -35,6 +35,13 @@ namespace NHibernate.Id
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class SequenceGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
+		/// <summary>
+		/// Generate an <see cref = "Int16"/>, <see cref = "Int32"/>, or <see cref = "Int64"/> 
+		/// for the identifier by using a database sequence.
+		/// </summary>
+		/// <param name = "session">The <see cref = "ISessionImplementor"/> this id is being generated in.</param>
+		/// <param name = "obj">The entity for which the id is being generated.</param>
+		/// <returns>The new identifier as a <see cref = "Int16"/>, <see cref = "Int32"/>, or <see cref = "Int64"/>.</returns>
 		public virtual async Task<object> GenerateAsync(ISessionImplementor session, object obj)
 		{
 			try

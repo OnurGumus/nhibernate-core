@@ -1,6 +1,6 @@
 namespace NHibernate.Cfg.MappingSchema
 {
-	public interface ICollectionSqlsMapping
+	public partial interface ICollectionSqlsMapping
 	{
 		HbmLoader SqlLoader { get; }
 		HbmCustomSQL SqlInsert { get; }

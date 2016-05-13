@@ -11,17 +11,13 @@ using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Threading.Tasks;
+using System;
 
 namespace NHibernate.Loader.Entity
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class CollectionElementLoader : OuterJoinLoader
 	{
-		protected override async Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer transformer, IDataReader rs, ISessionImplementor session)
-		{
-			return row[row.Length - 1];
-		}
-
 		public virtual async Task<object> LoadElementAsync(ISessionImplementor session, object key, object index)
 		{
 			IList list = await (LoadEntityAsync(session, key, index, keyType, indexType, persister));
@@ -43,6 +39,18 @@ namespace NHibernate.Loader.Entity
 				{
 					throw new HibernateException("More than one row was found");
 				}
+			}
+		}
+
+		protected override Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer transformer, IDataReader rs, ISessionImplementor session)
+		{
+			try
+			{
+				return Task.FromResult<object>(GetResultColumnOrRow(row, transformer, rs, session));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
 			}
 		}
 	}

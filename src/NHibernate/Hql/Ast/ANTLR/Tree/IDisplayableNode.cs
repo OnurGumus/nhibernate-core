@@ -5,7 +5,7 @@
 	/// by the ASTPrinter to display information (besides the node type and node
 	/// text).
 	/// </summary>
-	public interface IDisplayableNode
+	public partial interface IDisplayableNode
 	{
 		/// <summary>
 		/// Returns additional display text for the AST node.

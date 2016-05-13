@@ -1,6 +1,6 @@
 namespace NHibernate.Mapping.ByCode
 {
-	public interface IEntityPropertyMapper : IAccessorPropertyMapper
+	public partial interface IEntityPropertyMapper : IAccessorPropertyMapper
 	{
 		void OptimisticLock(bool takeInConsiderationForOptimisticLock);
 	}

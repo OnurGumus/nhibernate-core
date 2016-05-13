@@ -36,7 +36,7 @@ namespace NHibernate.Engine
 		}
 	}
 
-	public interface ILhsAssociationTypeSqlInfo
+	public partial interface ILhsAssociationTypeSqlInfo
 	{
 		/// <summary>
 		/// Get the aliased columns of the owning entity which are to 

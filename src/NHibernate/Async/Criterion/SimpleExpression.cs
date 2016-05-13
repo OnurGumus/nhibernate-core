@@ -12,6 +12,10 @@ namespace NHibernate.Criterion
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class SimpleExpression : AbstractCriterion
 	{
+		/// <summary>
+		/// Converts the SimpleExpression to a <see cref = "SqlString"/>.
+		/// </summary>
+		/// <returns>A SqlString that contains a valid Sql fragment.</returns>
 		public override async Task<SqlString> ToSqlStringAsync(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			SqlString[] columnNames = await (CriterionUtil.GetColumnNamesForSimpleExpressionAsync(propertyName, _projection, criteriaQuery, criteria, enabledFilters, this, value));

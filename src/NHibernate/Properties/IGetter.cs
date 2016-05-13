@@ -7,7 +7,7 @@ namespace NHibernate.Properties
 	/// <summary>
 	/// Gets values of a particular mapped property.
 	/// </summary>
-	public interface IGetter
+	public partial interface IGetter
 	{
 		/// <summary>
 		/// When implemented by a class, gets the value of the Property/Field from the object.

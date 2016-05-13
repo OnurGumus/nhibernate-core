@@ -29,6 +29,12 @@ namespace NHibernate.Criterion
 			return buf.ToSqlString();
 		}
 
+		/// <summary>
+		/// Gets the typed values for parameters in this projection
+		/// </summary>
+		/// <param name = "criteria">The criteria.</param>
+		/// <param name = "criteriaQuery">The criteria query.</param>
+		/// <returns></returns>
 		public async Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			List<TypedValue> values = new List<TypedValue>();

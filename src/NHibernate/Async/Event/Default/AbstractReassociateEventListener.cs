@@ -11,6 +11,14 @@ namespace NHibernate.Event.Default
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class AbstractReassociateEventListener
 	{
+		/// <summary>
+		/// Associates a given entity (either transient or associated with another session) to the given session.
+		/// </summary>
+		/// <param name = "event">The event triggering the re-association </param>
+		/// <param name = "entity">The entity to be associated </param>
+		/// <param name = "id">The id of the entity. </param>
+		/// <param name = "persister">The entity's persister instance. </param>
+		/// <returns> An EntityEntry representing the entity within this session. </returns>
 		protected async Task<EntityEntry> ReassociateAsync(AbstractEvent @event, object entity, object id, IEntityPersister persister)
 		{
 			if (log.IsDebugEnabled)

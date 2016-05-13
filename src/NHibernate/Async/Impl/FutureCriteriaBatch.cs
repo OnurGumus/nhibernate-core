@@ -1,14 +1,16 @@
 using System.Collections;
 using System.Threading.Tasks;
+using System;
+using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class FutureCriteriaBatch : FutureBatch<ICriteria, IMultiCriteria>
 	{
-		protected override async Task<IList> GetResultsFromAsync(IMultiCriteria multiApproach)
+		protected override Task<IList> GetResultsFromAsync(IMultiCriteria multiApproach)
 		{
-			return await (multiApproach.ListAsync());
+			return multiApproach.ListAsync();
 		}
 	}
 }

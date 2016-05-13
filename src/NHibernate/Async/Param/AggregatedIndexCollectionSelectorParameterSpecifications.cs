@@ -6,6 +6,7 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Param
 {
@@ -21,14 +22,30 @@ namespace NHibernate.Param
 		//  }
 		//  return bindCount;
 		//}
-		public async Task BindAsync(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public Task BindAsync(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
-			throw new NotImplementedException();
+			try
+			{
+				Bind(command, sqlQueryParametersList, queryParameters, session);
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 
-		public async Task BindAsync(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public Task BindAsync(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
-			throw new NotImplementedException();
+			try
+			{
+				Bind(command, multiSqlQueryParametersList, singleSqlParametersOffset, sqlQueryParametersList, queryParameters, session);
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 	}
 }

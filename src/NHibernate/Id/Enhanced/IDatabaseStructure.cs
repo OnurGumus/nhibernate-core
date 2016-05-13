@@ -5,7 +5,7 @@ namespace NHibernate.Id.Enhanced
 	/// <summary> 
 	/// Encapsulates definition of the underlying data structure backing a sequence-style generator. 
 	/// </summary>
-	public interface IDatabaseStructure
+	public partial interface IDatabaseStructure
 	{
 		/// <summary> The name of the database structure (table or sequence).</summary>
 		string Name { get; }

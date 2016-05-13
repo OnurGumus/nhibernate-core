@@ -20,7 +20,7 @@ namespace NHibernate.AdoNet
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ConnectionManager));
 
-		public interface Callback
+		public partial interface Callback
 		{
 			void ConnectionOpened();
 			void ConnectionCleanedUp();

@@ -11,6 +11,11 @@ namespace NHibernate.Action
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public sealed partial class CollectionRecreateAction : CollectionAction
 	{
+		/// <summary> Execute this action</summary>
+		/// <remarks>
+		/// This method is called when a new non-null collection is persisted
+		/// or when an existing (non-null) collection is moved to a new owner
+		/// </remarks>
 		public override async Task ExecuteAsync()
 		{
 			bool statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;

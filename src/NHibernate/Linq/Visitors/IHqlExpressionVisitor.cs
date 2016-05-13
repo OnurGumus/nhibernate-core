@@ -3,7 +3,7 @@ using NHibernate.Hql.Ast;
 
 namespace NHibernate.Linq.Visitors
 {
-	public interface IHqlExpressionVisitor
+	public partial interface IHqlExpressionVisitor
 	{
 		ISessionFactory SessionFactory { get; }
 

@@ -8,7 +8,7 @@
 
 namespace NHibernate.Proxy.DynamicProxy
 {
-	public interface IProxy
+	public partial interface IProxy
 	{
 		IInterceptor Interceptor { get; set; }
 	}

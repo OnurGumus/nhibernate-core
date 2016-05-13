@@ -28,94 +28,10 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
-	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class HqlSqlWalker : Antlr.Runtime.Tree.TreeParser
 	{
-		[GrammarRule("insertStatement")]
-		private async Task<AstTreeRuleReturnScope<IASTNode, IASTNode>> insertStatementAsync()
-		{
-			EnterRule_insertStatement();
-			EnterRule("insertStatement", 5);
-			TraceIn("insertStatement", 5);
-			AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
-			retval.Start = (IASTNode)input.LT(1);
-			IASTNode root_0 = default (IASTNode);
-			IASTNode _first_0 = default (IASTNode);
-			IASTNode _last = default (IASTNode);
-			IASTNode INSERT9 = default (IASTNode);
-			AstTreeRuleReturnScope<IASTNode, IASTNode> intoClause10 = default (AstTreeRuleReturnScope<IASTNode, IASTNode>);
-			AstTreeRuleReturnScope<IASTNode, IASTNode> query11 = default (AstTreeRuleReturnScope<IASTNode, IASTNode>);
-			IASTNode INSERT9_tree = default (IASTNode);
-			try
-			{
-				DebugEnterRule(GrammarFileName, "insertStatement");
-				DebugLocation(77, 1);
-				try
-				{
-					// HqlSqlWalker.g:86:2: ( ^( INSERT intoClause query ) )
-					DebugEnterAlt(1);
-					// HqlSqlWalker.g:86:4: ^( INSERT intoClause query )
-					{
-						root_0 = (IASTNode)adaptor.Nil();
-						DebugLocation(86, 4);
-						_last = (IASTNode)input.LT(1);
-						{
-							IASTNode _save_last_1 = _last;
-							IASTNode _first_1 = default (IASTNode);
-							IASTNode root_1 = (IASTNode)adaptor.Nil();
-							DebugLocation(86, 7);
-							_last = (IASTNode)input.LT(1);
-							INSERT9 = (IASTNode)Match(input, INSERT, Follow._INSERT_in_insertStatement357);
-							INSERT9_tree = (IASTNode)adaptor.DupNode(INSERT9);
-							root_1 = (IASTNode)adaptor.BecomeRoot(INSERT9_tree, root_1);
-							DebugLocation(86, 14);
-							BeforeStatement("insert", INSERT);
-							Match(input, TokenTypes.Down, null);
-							DebugLocation(86, 55);
-							_last = (IASTNode)input.LT(1);
-							PushFollow(Follow._intoClause_in_insertStatement361);
-							intoClause10 = intoClause();
-							PopFollow();
-							adaptor.AddChild(root_1, intoClause10.Tree);
-							DebugLocation(86, 66);
-							_last = (IASTNode)input.LT(1);
-							PushFollow(Follow._query_in_insertStatement363);
-							query11 = query();
-							PopFollow();
-							adaptor.AddChild(root_1, query11.Tree);
-							Match(input, TokenTypes.Up, null);
-							adaptor.AddChild(root_0, root_1);
-							_last = _save_last_1;
-						}
-					}
-
-					retval.Tree = (IASTNode)adaptor.RulePostProcessing(root_0);
-					BeforeStatementCompletion("insert");
-					await (PostProcessInsertAsync(retval.Tree));
-					AfterStatementCompletion("insert");
-				}
-				catch (RecognitionException re)
-				{
-					ReportError(re);
-					Recover(input, re);
-				}
-				finally
-				{
-					TraceOut("insertStatement", 5);
-					LeaveRule("insertStatement", 5);
-					LeaveRule_insertStatement();
-				}
-
-				DebugLocation(87, 1);
-			}
-			finally
-			{
-				DebugExitRule(GrammarFileName, "insertStatement");
-			}
-
-			return retval;
-		}
-
+		// $ANTLR start "statement"
+		// HqlSqlWalker.g:43:8: public statement : ( selectStatement | updateStatement | deleteStatement | insertStatement );
 		[GrammarRule("statement")]
 		public async Task<AstTreeRuleReturnScope<IASTNode, IASTNode>> statementAsync()
 		{
@@ -261,6 +177,93 @@ namespace NHibernate.Hql.Ast.ANTLR
 			finally
 			{
 				DebugExitRule(GrammarFileName, "statement");
+			}
+
+			return retval;
+		}
+
+		// $ANTLR start "insertStatement"
+		// HqlSqlWalker.g:77:1: insertStatement : ^( INSERT intoClause query ) ;
+		[GrammarRule("insertStatement")]
+		private async Task<AstTreeRuleReturnScope<IASTNode, IASTNode>> insertStatementAsync()
+		{
+			EnterRule_insertStatement();
+			EnterRule("insertStatement", 5);
+			TraceIn("insertStatement", 5);
+			AstTreeRuleReturnScope<IASTNode, IASTNode> retval = new AstTreeRuleReturnScope<IASTNode, IASTNode>();
+			retval.Start = (IASTNode)input.LT(1);
+			IASTNode root_0 = default (IASTNode);
+			IASTNode _first_0 = default (IASTNode);
+			IASTNode _last = default (IASTNode);
+			IASTNode INSERT9 = default (IASTNode);
+			AstTreeRuleReturnScope<IASTNode, IASTNode> intoClause10 = default (AstTreeRuleReturnScope<IASTNode, IASTNode>);
+			AstTreeRuleReturnScope<IASTNode, IASTNode> query11 = default (AstTreeRuleReturnScope<IASTNode, IASTNode>);
+			IASTNode INSERT9_tree = default (IASTNode);
+			try
+			{
+				DebugEnterRule(GrammarFileName, "insertStatement");
+				DebugLocation(77, 1);
+				try
+				{
+					// HqlSqlWalker.g:86:2: ( ^( INSERT intoClause query ) )
+					DebugEnterAlt(1);
+					// HqlSqlWalker.g:86:4: ^( INSERT intoClause query )
+					{
+						root_0 = (IASTNode)adaptor.Nil();
+						DebugLocation(86, 4);
+						_last = (IASTNode)input.LT(1);
+						{
+							IASTNode _save_last_1 = _last;
+							IASTNode _first_1 = default (IASTNode);
+							IASTNode root_1 = (IASTNode)adaptor.Nil();
+							DebugLocation(86, 7);
+							_last = (IASTNode)input.LT(1);
+							INSERT9 = (IASTNode)Match(input, INSERT, Follow._INSERT_in_insertStatement357);
+							INSERT9_tree = (IASTNode)adaptor.DupNode(INSERT9);
+							root_1 = (IASTNode)adaptor.BecomeRoot(INSERT9_tree, root_1);
+							DebugLocation(86, 14);
+							BeforeStatement("insert", INSERT);
+							Match(input, TokenTypes.Down, null);
+							DebugLocation(86, 55);
+							_last = (IASTNode)input.LT(1);
+							PushFollow(Follow._intoClause_in_insertStatement361);
+							intoClause10 = intoClause();
+							PopFollow();
+							adaptor.AddChild(root_1, intoClause10.Tree);
+							DebugLocation(86, 66);
+							_last = (IASTNode)input.LT(1);
+							PushFollow(Follow._query_in_insertStatement363);
+							query11 = query();
+							PopFollow();
+							adaptor.AddChild(root_1, query11.Tree);
+							Match(input, TokenTypes.Up, null);
+							adaptor.AddChild(root_0, root_1);
+							_last = _save_last_1;
+						}
+					}
+
+					retval.Tree = (IASTNode)adaptor.RulePostProcessing(root_0);
+					BeforeStatementCompletion("insert");
+					await (PostProcessInsertAsync(retval.Tree));
+					AfterStatementCompletion("insert");
+				}
+				catch (RecognitionException re)
+				{
+					ReportError(re);
+					Recover(input, re);
+				}
+				finally
+				{
+					TraceOut("insertStatement", 5);
+					LeaveRule("insertStatement", 5);
+					LeaveRule_insertStatement();
+				}
+
+				DebugLocation(87, 1);
+			}
+			finally
+			{
+				DebugExitRule(GrammarFileName, "insertStatement");
 			}
 
 			return retval;

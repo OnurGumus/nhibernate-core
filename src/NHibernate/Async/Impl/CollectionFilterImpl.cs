@@ -13,20 +13,6 @@ namespace NHibernate.Impl
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class CollectionFilterImpl : QueryImpl
 	{
-		public override async Task<IList> ListAsync()
-		{
-			VerifyParameters();
-			IDictionary<string, TypedValue> namedParams = NamedParams;
-			return await (Session.ListFilterAsync(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams)));
-		}
-
-		public override async Task<IList<T>> ListAsync<T>()
-		{
-			VerifyParameters();
-			IDictionary<string, TypedValue> namedParams = NamedParams;
-			return await (Session.ListFilterAsync<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams)));
-		}
-
 		public override async Task<IEnumerable> EnumerableAsync()
 		{
 			VerifyParameters();
@@ -39,6 +25,20 @@ namespace NHibernate.Impl
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			return await (Session.EnumerableFilterAsync<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams)));
+		}
+
+		public override async Task<IList> ListAsync()
+		{
+			VerifyParameters();
+			IDictionary<string, TypedValue> namedParams = NamedParams;
+			return await (Session.ListFilterAsync(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams)));
+		}
+
+		public override async Task<IList<T>> ListAsync<T>()
+		{
+			VerifyParameters();
+			IDictionary<string, TypedValue> namedParams = NamedParams;
+			return await (Session.ListFilterAsync<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams)));
 		}
 	}
 }

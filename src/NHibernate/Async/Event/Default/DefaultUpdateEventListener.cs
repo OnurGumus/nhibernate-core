@@ -2,17 +2,13 @@ using System;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Event.Default
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class DefaultUpdateEventListener : DefaultSaveOrUpdateEventListener
 	{
-		protected override async Task<object> SaveWithGeneratedOrRequestedIdAsync(SaveOrUpdateEvent @event)
-		{
-			return await (SaveWithGeneratedIdAsync(@event.Entity, @event.EntityName, null, @event.Session, true));
-		}
-
 		protected override async Task<object> PerformSaveOrUpdateAsync(SaveOrUpdateEvent @event)
 		{
 			// this implementation is supposed to tolerate incorrect unsaved-value
@@ -36,6 +32,15 @@ namespace NHibernate.Event.Default
 			}
 		}
 
+		protected override Task<object> SaveWithGeneratedOrRequestedIdAsync(SaveOrUpdateEvent @event)
+		{
+			return SaveWithGeneratedIdAsync(@event.Entity, @event.EntityName, null, @event.Session, true);
+		}
+
+		/// <summary> 
+		/// If the user specified an id, assign it to the instance and use that, 
+		/// otherwise use the id already assigned to the instance
+		/// </summary>
 		protected override async Task<object> GetUpdateIdAsync(object entity, IEntityPersister persister, object requestedId, EntityMode entityMode)
 		{
 			if (requestedId == null)

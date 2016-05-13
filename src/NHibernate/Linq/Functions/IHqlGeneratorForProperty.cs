@@ -6,7 +6,7 @@ using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Linq.Functions
 {
-    public interface IHqlGeneratorForProperty
+    public partial interface IHqlGeneratorForProperty
     {
         IEnumerable<MemberInfo> SupportedProperties { get; }
         HqlTreeNode BuildHql(MemberInfo member, Expression expression, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor);

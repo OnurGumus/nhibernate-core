@@ -2,6 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using NHibernate.Engine;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Id
 {
@@ -12,9 +13,16 @@ namespace NHibernate.Id
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class CounterGenerator : IIdentifierGenerator
 	{
-		public async Task<object> GenerateAsync(ISessionImplementor cache, object obj)
+		public Task<object> GenerateAsync(ISessionImplementor cache, object obj)
 		{
-			return unchecked ((DateTime.Now.Ticks << 16) + Count);
+			try
+			{
+				return Task.FromResult<object>(Generate(cache, obj));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 	}
 }

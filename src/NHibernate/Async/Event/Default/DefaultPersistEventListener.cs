@@ -11,18 +11,9 @@ namespace NHibernate.Event.Default
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class DefaultPersistEventListener : AbstractSaveEventListener, IPersistEventListener
 	{
-		protected virtual async Task EntityIsTransientAsync(PersistEvent @event, IDictionary createCache)
+		public virtual async Task OnPersistAsync(PersistEvent @event)
 		{
-			log.Debug("saving transient instance");
-			IEventSource source = @event.Session;
-			object entity = await (source.PersistenceContext.UnproxyAsync(@event.Entity));
-			object tempObject;
-			tempObject = createCache[entity];
-			createCache[entity] = entity;
-			if (tempObject == null)
-			{
-				await (SaveWithGeneratedIdAsync(entity, @event.EntityName, createCache, source, false));
-			}
+			await (OnPersistAsync(@event, IdentityMap.Instantiate(10)));
 		}
 
 		public virtual async Task OnPersistAsync(PersistEvent @event, IDictionary createdAlready)
@@ -68,11 +59,6 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		public virtual async Task OnPersistAsync(PersistEvent @event)
-		{
-			await (OnPersistAsync(@event, IdentityMap.Instantiate(10)));
-		}
-
 		protected virtual async Task EntityIsPersistentAsync(PersistEvent @event, IDictionary createCache)
 		{
 			log.Debug("ignoring persistent instance");
@@ -97,6 +83,23 @@ namespace NHibernate.Event.Default
 			{
 				await (CascadeBeforeSaveAsync(source, persister, entity, createCache));
 				await (CascadeAfterSaveAsync(source, persister, entity, createCache));
+			}
+		}
+
+		/// <summary> Handle the given create event. </summary>
+		/// <param name = "event">The save event to be handled. </param>
+		/// <param name = "createCache"></param>
+		protected virtual async Task EntityIsTransientAsync(PersistEvent @event, IDictionary createCache)
+		{
+			log.Debug("saving transient instance");
+			IEventSource source = @event.Session;
+			object entity = await (source.PersistenceContext.UnproxyAsync(@event.Entity));
+			object tempObject;
+			tempObject = createCache[entity];
+			createCache[entity] = entity;
+			if (tempObject == null)
+			{
+				await (SaveWithGeneratedIdAsync(entity, @event.EntityName, createCache, source, false));
 			}
 		}
 	}

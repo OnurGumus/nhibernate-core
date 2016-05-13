@@ -1,6 +1,6 @@
 namespace NHibernate.Mapping.ByCode
 {
-	public interface IEntitySqlsMapper
+	public partial interface IEntitySqlsMapper
 	{
 		void Loader(string namedQueryReference);
 		void SqlInsert(string sql);

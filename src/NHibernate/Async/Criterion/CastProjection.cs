@@ -1,4 +1,6 @@
 using System.Threading.Tasks;
+using System;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
@@ -29,9 +31,9 @@ namespace NHibernate.Criterion
 			return new SqlString("cast( ", val, " as ", sqlType, ") as ", GetColumnAliases(position, criteria, criteriaQuery)[0]);
 		}
 
-		public override async Task<NHibernate.Engine.TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public override Task<NHibernate.Engine.TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return await (projection.GetTypedValuesAsync(criteria, criteriaQuery));
+			return projection.GetTypedValuesAsync(criteria, criteriaQuery);
 		}
 	}
 }

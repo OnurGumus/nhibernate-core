@@ -16,6 +16,35 @@ namespace NHibernate.AsyncGenerator.Extensions
 {
 	internal static partial class SyntaxExtensions
 	{
+		public static TypeDeclarationSyntax AddGeneratedCodeAttribute(this TypeDeclarationSyntax typeDeclaration, bool keepExisting = true)
+		{
+			// If there are some comments we need to move them before the attribute
+			var modifier = typeDeclaration.GetModifierWithLeadingTrivia();
+			if (modifier.HasValue)
+			{
+				typeDeclaration = typeDeclaration.ReplaceToken(modifier.Value, modifier.Value.WithLeadingTrivia(SyntaxTriviaList.Empty));
+			}
+
+			var attrList = SyntaxFactory.AttributeList(
+				SyntaxFactory.Token(SyntaxKind.OpenBracketToken).WithLeadingTrivia(modifier?.LeadingTrivia ?? SyntaxTriviaList.Empty),
+				null,
+				SyntaxFactory.SeparatedList(
+					new List<AttributeSyntax>
+					{
+						SyntaxFactory.Attribute(SyntaxFactory.IdentifierName("System.CodeDom.Compiler.GeneratedCode(\"AsyncGenerator\", \"1.0.0\")"))
+					}
+				),
+				SyntaxFactory.Token(SyntaxKind.CloseBracketToken)
+			);
+			if (keepExisting)
+			{
+				return typeDeclaration
+					.WithAttributes(typeDeclaration.AttributeLists.Add(attrList));
+			}
+			return typeDeclaration
+				.WithAttributes(SyntaxFactory.List(new List<AttributeListSyntax> { attrList }));
+		}
+
 		public static TypeDeclarationSyntax AddPartial(this TypeDeclarationSyntax typeDeclaration)
 		{
 			var interfaceDeclaration = typeDeclaration as InterfaceDeclarationSyntax;
@@ -67,29 +96,62 @@ namespace NHibernate.AsyncGenerator.Extensions
 			return typeDeclaration;
 		}
 
-		public static MethodDeclarationSyntax ReturnAsTask(
-			this MethodDeclarationSyntax methodNode,
-			IMethodSymbol methodSymbol,
-			CancellationToken cancellationToken = default(CancellationToken))
+		public static MethodDeclarationSyntax WithoutAttribute(this MethodDeclarationSyntax methodDeclaration, string name)
 		{
-			if (methodSymbol.ReturnsVoid)
-			{
-				return methodNode.WithReturnType(SyntaxFactory.IdentifierName("Task")).NormalizeWhitespace();
-			}
-			return methodNode.WithReturnType(SyntaxFactory.GenericName("Task").AddTypeArgumentListArguments(methodNode.ReturnType)).NormalizeWhitespace();
+			var attr = methodDeclaration.AttributeLists.FirstOrDefault(o => o.Attributes.Any(a => a.Name.ToString() == name));
+			return attr != null
+				? methodDeclaration.WithAttributeLists(methodDeclaration.AttributeLists.Remove(attr))
+				: methodDeclaration;
 		}
 
-		public static T AddAwait<T>(
-			this SyntaxNode oldNode,
-			T root,
-			CancellationToken cancellationToken = default(CancellationToken)) where T : SyntaxNode
+		public static TypeDeclarationSyntax WithoutAttributes(this TypeDeclarationSyntax typeDeclaration)
+		{
+			var interfaceDeclaration = typeDeclaration as InterfaceDeclarationSyntax;
+			if (interfaceDeclaration != null)
+			{
+				return interfaceDeclaration
+					.WithAttributeLists(SyntaxFactory.List<AttributeListSyntax>());
+			}
+			var classDeclaration = typeDeclaration as ClassDeclarationSyntax;
+			if (classDeclaration != null)
+			{
+				return classDeclaration
+					.WithAttributeLists(SyntaxFactory.List<AttributeListSyntax>());
+			}
+			return typeDeclaration;
+		}
+
+		public static MethodDeclarationSyntax ReturnAsTask(
+			this MethodDeclarationSyntax methodNode,
+			IMethodSymbol methodSymbol)
+		{
+			var leadingTrivia = methodNode.ReturnType.GetLeadingTrivia();
+			if (methodSymbol.ReturnsVoid)
+			{
+				return methodNode
+					.WithReturnType(SyntaxFactory.IdentifierName("Task").WithLeadingTrivia(leadingTrivia));
+			}
+			return methodNode
+				.WithReturnType(SyntaxFactory.GenericName("Task")
+				.WithLeadingTrivia(leadingTrivia)
+				.AddTypeArgumentListArguments(methodNode.ReturnType.WithoutLeadingTrivia()));
+		}
+
+		public static SyntaxNode AddAwait(this SyntaxNode oldNode)
 		{
 			var expression = oldNode as ExpressionSyntax;
 			if (expression == null)
 			{
-				return default(T);
+				return default(ExpressionSyntax);
 			}
-			return root.ReplaceNode(oldNode, ConvertToAwaitExpression(expression));
+			var awaitNode = ConvertToAwaitExpression(expression);
+			var nextToken = expression.Parent.ChildNodesAndTokens().FirstOrDefault(o => o.SpanStart >= expression.Span.End); // token can be in a new line
+			if (nextToken.IsKind(SyntaxKind.DotToken) || nextToken.IsKind(SyntaxKind.BracketedArgumentList))
+			{
+				awaitNode = SyntaxFactory.ParenthesizedExpression(awaitNode);
+			}
+
+			return awaitNode;
 		}
 
 		private static bool IsInAsyncFunction(ExpressionSyntax expression)
@@ -112,7 +174,7 @@ namespace NHibernate.AsyncGenerator.Extensions
 			return false;
 		}
 
-		private static SyntaxNode ConvertToAwaitExpression(ExpressionSyntax expression)
+		private static ExpressionSyntax ConvertToAwaitExpression(ExpressionSyntax expression)
 		{
 			if ((expression is BinaryExpressionSyntax || expression is ConditionalExpressionSyntax) && expression.HasTrailingTrivia)
 			{

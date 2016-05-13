@@ -29,7 +29,7 @@ namespace NHibernate.Classic
 	/// <c>identity</c> key generation is used.
 	/// </para>
 	/// </remarks>
-	public interface ILifecycle
+	public partial interface ILifecycle
 	{
 		/// <summary>
 		/// Called when an entity is saved
