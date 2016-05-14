@@ -24,8 +24,8 @@ namespace NHibernate.Id.Enhanced
 				_owner._accessCounter++;
 				try
 				{
-					IDbCommand st = _session.Batcher.PrepareCommand(CommandType.Text, _owner._sql, SqlTypeFactory.NoTypes);
-					IDataReader rs = null;
+					DbCommand st = _session.Batcher.PrepareCommand(CommandType.Text, _owner._sql, SqlTypeFactory.NoTypes);
+					DbDataReader rs = null;
 					try
 					{
 						rs = await (_session.Batcher.ExecuteReaderAsync(st));

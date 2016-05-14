@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using NHibernate.DebugHelpers;
@@ -116,7 +116,7 @@ namespace NHibernate.Collection.Generic
 			return old != null && await (elemType.IsDirtyAsync(old, entry, Session));
 		}
 
-		public override async Task<object> ReadFromAsync(IDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor, object owner)
+		public override async Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor, object owner)
 		{
 			object element = await (persister.ReadElementAsync(reader, owner, descriptor.SuffixedElementAliases, Session));
 			object id = await (persister.ReadIdentifierAsync(reader, descriptor.SuffixedIdentifierAlias, Session));

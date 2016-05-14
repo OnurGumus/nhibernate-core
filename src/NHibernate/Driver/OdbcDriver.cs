@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Data.Odbc;
 using NHibernate.SqlTypes;
 
@@ -13,12 +14,12 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public partial class OdbcDriver : DriverBase
 	{
-		public override IDbConnection CreateConnection()
+		public override DbConnection CreateConnection()
 		{
 			return new OdbcConnection();
 		}
 
-		public override IDbCommand CreateCommand()
+		public override DbCommand CreateCommand()
 		{
 			return new OdbcCommand();
 		}
@@ -38,7 +39,7 @@ namespace NHibernate.Driver
 			get { return String.Empty; }
 		}
 
-		private static void SetVariableLengthParameterSize(IDbDataParameter dbParam, SqlType sqlType)
+		private static void SetVariableLengthParameterSize(DbParameter dbParam, SqlType sqlType)
 		{
 			// Override the defaults using data from SqlType.
 			if (sqlType.LengthDefined)
@@ -48,12 +49,12 @@ namespace NHibernate.Driver
 
 			if (sqlType.PrecisionDefined)
 			{
-				dbParam.Precision = sqlType.Precision;
-				dbParam.Scale = sqlType.Scale;
+				((IDbDataParameter) dbParam).Precision = sqlType.Precision;
+				((IDbDataParameter) dbParam).Scale = sqlType.Scale;
 			}
 		}
 
-		protected override void InitializeParameter(IDbDataParameter dbParam, string name, SqlType sqlType)
+		protected override void InitializeParameter(DbParameter dbParam, string name, SqlType sqlType)
 		{
 			base.InitializeParameter(dbParam, name, sqlType);
 			SetVariableLengthParameterSize(dbParam, sqlType);

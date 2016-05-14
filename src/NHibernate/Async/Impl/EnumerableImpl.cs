@@ -54,13 +54,13 @@ namespace NHibernate.Impl
 					else
 					{
 						object[] currentResults = new object[_types.Length];
-						// move through each of the ITypes contained in the IDataReader and convert them
+						// move through each of the ITypes contained in the DbDataReader and convert them
 						// to their objects.  
 						for (int i = 0; i < _types.Length; i++)
 						{
-							// The IType knows how to extract its value out of the IDataReader.  If the IType
-							// is a value type then the value will simply be pulled out of the IDataReader.  If
-							// the IType is an Entity type then the IType will extract the id from the IDataReader
+							// The IType knows how to extract its value out of the DbDataReader.  If the IType
+							// is a value type then the value will simply be pulled out of the DbDataReader.  If
+							// the IType is an Entity type then the IType will extract the id from the DbDataReader
 							// and use the ISession to load an instance of the object.
 							currentResults[i] = await (_types[i].NullSafeGetAsync(_reader, _names[i], _session, null));
 						}

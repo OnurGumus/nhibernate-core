@@ -1,6 +1,7 @@
 #if NET_4_5
 using System;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
@@ -21,8 +22,8 @@ namespace NHibernate.Id
 			var sql = new SqlString(session.Factory.Dialect.SelectGUIDString);
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
-				IDataReader reader = null;
+				DbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
+				DbDataReader reader = null;
 				try
 				{
 					reader = await (session.Batcher.ExecuteReaderAsync(st));

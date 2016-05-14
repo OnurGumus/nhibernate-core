@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using NHibernate.Action;
 using NHibernate.Engine.Query.Sql;
@@ -42,7 +43,7 @@ namespace NHibernate.Engine.Query
 				parametersSpecifications.ResetEffectiveExpectedType(queryParameters);
 				var sqlParametersList = sql.GetParameters().ToList();
 				SqlType[] sqlTypes = parametersSpecifications.GetQueryParameterTypes(sqlParametersList, session.Factory);
-				IDbCommand ps = session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTypes);
+				DbCommand ps = session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTypes);
 				try
 				{
 					if (selection != null && selection.Timeout != RowSelection.NoValue)

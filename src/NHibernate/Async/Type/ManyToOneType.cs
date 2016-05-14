@@ -1,6 +1,6 @@
 #if NET_4_5
 using System;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlTypes;
@@ -12,27 +12,27 @@ namespace NHibernate.Type
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class ManyToOneType : EntityType
 	{
-		public override async Task NullSafeSetAsync(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override async Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			await (GetIdentifierOrUniqueKeyType(session.Factory).NullSafeSetAsync(st, await (GetReferenceValueAsync(value, session)), index, settable, session));
 		}
 
-		public override async Task NullSafeSetAsync(IDbCommand cmd, object value, int index, ISessionImplementor session)
+		public override async Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			await (GetIdentifierOrUniqueKeyType(session.Factory).NullSafeSetAsync(cmd, await (GetReferenceValueAsync(value, session)), index, session));
 		}
 
 		/// <summary>
-		/// Hydrates the Identifier from <see cref = "IDataReader"/>.
+		/// Hydrates the Identifier from <see cref = "DbDataReader"/>.
 		/// </summary>
-		/// <param name = "rs">The <see cref = "IDataReader"/> that contains the query results.</param>
+		/// <param name = "rs">The <see cref = "DbDataReader"/> that contains the query results.</param>
 		/// <param name = "names">A string array of column names to read from.</param>
 		/// <param name = "session">The <see cref = "ISessionImplementor"/> this is occurring in.</param>
 		/// <param name = "owner">The object that this Entity will be a part of.</param>
 		/// <returns>
 		/// An instantiated object that used as the identifier of the type.
 		/// </returns>
-		public override async Task<object> HydrateAsync(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			// return the (fully resolved) identifier value, but do not resolve
 			// to the actual referenced entity instance

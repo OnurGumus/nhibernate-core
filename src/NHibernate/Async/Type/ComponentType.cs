@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Reflection;
 using System.Xml;
 using NHibernate.Engine;
@@ -120,7 +120,7 @@ namespace NHibernate.Type
 			return false;
 		}
 
-		public override async Task<object> NullSafeGetAsync(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			return await (ResolveIdentifierAsync(await (HydrateAsync(rs, names, session, owner)), session, owner));
 		}
@@ -132,7 +132,7 @@ namespace NHibernate.Type
 		/// <param name = "value"></param>
 		/// <param name = "begin"></param>
 		/// <param name = "session"></param>
-		public override async Task NullSafeSetAsync(IDbCommand st, object value, int begin, ISessionImplementor session)
+		public override async Task NullSafeSetAsync(DbCommand st, object value, int begin, ISessionImplementor session)
 		{
 			object[] subvalues = await (NullSafeGetValuesAsync(value, session.EntityMode));
 			for (int i = 0; i < propertySpan; i++)
@@ -142,7 +142,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override async Task NullSafeSetAsync(IDbCommand st, object value, int begin, bool[] settable, ISessionImplementor session)
+		public override async Task NullSafeSetAsync(DbCommand st, object value, int begin, bool[] settable, ISessionImplementor session)
 		{
 			object[] subvalues = await (NullSafeGetValuesAsync(value, session.EntityMode));
 			int loc = 0;
@@ -185,7 +185,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<object> NullSafeGetAsync(IDataReader rs, string name, ISessionImplementor session, object owner)
+		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			return NullSafeGetAsync(rs, new string[]{name}, session, owner);
 		}
@@ -353,7 +353,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override async Task<object> HydrateAsync(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			int begin = 0;
 			bool notNull = false;

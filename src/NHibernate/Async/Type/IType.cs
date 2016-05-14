@@ -1,6 +1,6 @@
 #if NET_4_5
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -23,21 +23,21 @@ namespace NHibernate.Type
 		Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session);
 		Task<bool> IsModifiedAsync(object oldHydratedState, object currentState, bool[] checkable, ISessionImplementor session);
 		/// <include file = 'IType.cs.xmldoc'
-		///path = '//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, String[], ISessionImplementor, Object)"]/*'
+		///path = '//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, String[], ISessionImplementor, Object)"]/*'
 		////> 
-		Task<object> NullSafeGetAsync(IDataReader rs, string[] names, ISessionImplementor session, object owner);
+		Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner);
 		/// <include file = 'IType.cs.xmldoc'
-		///path = '//members[@type="IType"]/member[@name="M:IType.NullSafeGet(IDataReader, String, ISessionImplementor, Object)"]/*'
+		///path = '//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, String, ISessionImplementor, Object)"]/*'
 		////> 
-		Task<object> NullSafeGetAsync(IDataReader rs, string name, ISessionImplementor session, object owner);
+		Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner);
 		/// <include file = 'IType.cs.xmldoc'
 		///path = '//members[@type="IType"]/member[@name="M:IType.NullSafeSet(settable)"]/*'
 		////> 
-		Task NullSafeSetAsync(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session);
+		Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session);
 		/// <include file = 'IType.cs.xmldoc'
 		///path = '//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
 		////> 
-		Task NullSafeSetAsync(IDbCommand st, object value, int index, ISessionImplementor session);
+		Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session);
 		/// <include file = 'IType.cs.xmldoc'
 		///path = '//members[@type="IType"]/member[@name="M:IType.ToString"]/*'
 		////> 
@@ -49,7 +49,7 @@ namespace NHibernate.Type
 		/// <include file = 'IType.cs.xmldoc'
 		///path = '//members[@type="IType"]/member[@name="M:IType.Hydrate"]/*'
 		////> 
-		Task<object> HydrateAsync(IDataReader rs, string[] names, ISessionImplementor session, object owner);
+		Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner);
 		/// <include file = 'IType.cs.xmldoc'
 		///path = '//members[@type="IType"]/member[@name="M:IType.ResolveIdentifier"]/*'
 		////> 

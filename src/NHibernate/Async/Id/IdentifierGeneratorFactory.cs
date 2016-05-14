@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -87,11 +87,11 @@ namespace NHibernate.Id
 	public static partial class IdentifierGeneratorFactory
 	{
 		/// <summary> Get the generated identifier when using identity columns</summary>
-		/// <param name = "rs">The <see cref = "IDataReader"/> to read the identifier value from.</param>
+		/// <param name = "rs">The <see cref = "DbDataReader"/> to read the identifier value from.</param>
 		/// <param name = "type">The <see cref = "IIdentifierType"/> the value should be converted to.</param>
 		/// <param name = "session">The <see cref = "ISessionImplementor"/> the value is retrieved in.</param>
 		/// <returns> The value for the identifier. </returns>
-		public static async Task<object> GetGeneratedIdentityAsync(IDataReader rs, IType type, ISessionImplementor session)
+		public static async Task<object> GetGeneratedIdentityAsync(DbDataReader rs, IType type, ISessionImplementor session)
 		{
 			if (!rs.Read())
 			{
@@ -108,20 +108,20 @@ namespace NHibernate.Id
 		}
 
 		/// <summary>
-		/// Gets the value of the identifier from the <see cref = "IDataReader"/> and
+		/// Gets the value of the identifier from the <see cref = "DbDataReader"/> and
 		/// ensures it is the correct <see cref = "System.Type"/>.
 		/// </summary>
-		/// <param name = "rs">The <see cref = "IDataReader"/> to read the identifier value from.</param>
+		/// <param name = "rs">The <see cref = "DbDataReader"/> to read the identifier value from.</param>
 		/// <param name = "type">The <see cref = "IIdentifierType"/> the value should be converted to.</param>
 		/// <param name = "session">The <see cref = "ISessionImplementor"/> the value is retrieved in.</param>
 		/// <returns>
 		/// The value for the identifier.
 		/// </returns>
 		/// <exception cref = "IdentifierGenerationException">
-		/// Thrown if there is any problem getting the value from the <see cref = "IDataReader"/>
+		/// Thrown if there is any problem getting the value from the <see cref = "DbDataReader"/>
 		/// or with converting it to the <see cref = "System.Type"/>.
 		/// </exception>
-		public static async Task<object> GetAsync(IDataReader rs, IType type, ISessionImplementor session)
+		public static async Task<object> GetAsync(DbDataReader rs, IType type, ISessionImplementor session)
 		{
 			// here is an interesting one: 
 			// - MsSql's @@identity returns a Decimal

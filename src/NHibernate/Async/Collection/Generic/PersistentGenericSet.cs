@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using NHibernate.Collection.Generic.SetHelpers;
@@ -85,7 +85,7 @@ namespace NHibernate.Collection.Generic
 			SetInitialized();
 		}
 
-		public override async Task<object> ReadFromAsync(IDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
+		public override async Task<object> ReadFromAsync(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
 			var element = await (role.ReadElementAsync(rs, owner, descriptor.SuffixedElementAliases, Session));
 			if (element != null)

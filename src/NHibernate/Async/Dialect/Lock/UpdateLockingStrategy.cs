@@ -1,6 +1,7 @@
 #if NET_4_5
 using System;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Impl;
@@ -28,7 +29,7 @@ namespace NHibernate.Dialect.Lock
 			ISessionFactoryImplementor factory = session.Factory;
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes);
+				DbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes);
 				try
 				{
 					await (lockable.VersionType.NullSafeSetAsync(st, version, 1, session));

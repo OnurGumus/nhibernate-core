@@ -1,6 +1,6 @@
 #if NET_4_5
 using System;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlTypes;
@@ -12,13 +12,13 @@ namespace NHibernate.Type
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class OneToOneType : EntityType, IAssociationType
 	{
-		public override Task NullSafeSetAsync(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			return TaskHelper.CompletedTask;
 		//nothing to do
 		}
 
-		public override Task NullSafeSetAsync(IDbCommand cmd, object value, int index, ISessionImplementor session)
+		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			return TaskHelper.CompletedTask;
 		//nothing to do
@@ -60,7 +60,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override async Task<object> HydrateAsync(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			IType type = GetIdentifierOrUniqueKeyType(session.Factory);
 			object identifier = session.GetContextEntityIdentifier(owner);

@@ -1,7 +1,7 @@
 #if NET_4_5
 using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -13,25 +13,25 @@ namespace NHibernate.Type
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class MetaType : AbstractType
 	{
-		public override async Task<object> NullSafeGetAsync(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			object key = await (baseType.NullSafeGetAsync(rs, names, session, owner));
 			return key == null ? null : values[key];
 		}
 
-		public override async Task<object> NullSafeGetAsync(IDataReader rs, string name, ISessionImplementor session, object owner)
+		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			object key = await (baseType.NullSafeGetAsync(rs, name, session, owner));
 			return key == null ? null : values[key];
 		}
 
-		public override async Task NullSafeSetAsync(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override async Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			if (settable[0])
 				await (NullSafeSetAsync(st, value, index, session));
 		}
 
-		public override Task NullSafeSetAsync(IDbCommand st, object value, int index, ISessionImplementor session)
+		public override Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session)
 		{
 			return baseType.NullSafeSetAsync(st, value == null ? null : keys[(string)value], index, session);
 		}

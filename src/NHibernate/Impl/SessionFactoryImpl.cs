@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security;
@@ -50,10 +50,10 @@ namespace NHibernate.Impl
 	/// Caches "compiled" queries (memory sensitive cache)
 	/// </item>
 	/// <item>
-	/// Manages <c>PreparedStatements/IDbCommands</c> - how true in NH?
+	/// Manages <c>PreparedStatements/DbCommands</c> - how true in NH?
 	/// </item>
 	/// <item>
-	/// Delegates <c>IDbConnection</c> management to the <see cref="IConnectionProvider"/>
+	/// Delegates <c>DbConnection</c> management to the <see cref="IConnectionProvider"/>
 	/// </item>
 	/// <item>
 	/// Factory for instances of <see cref="ISession"/>
@@ -463,12 +463,12 @@ namespace NHibernate.Impl
 			return OpenSession(interceptor);
 		}
 
-		public ISession OpenSession(IDbConnection connection)
+		public ISession OpenSession(DbConnection connection)
 		{
 			return OpenSession(connection, interceptor);
 		}
 
-		public ISession OpenSession(IDbConnection connection, IInterceptor sessionLocalInterceptor)
+		public ISession OpenSession(DbConnection connection, IInterceptor sessionLocalInterceptor)
 		{
 			if (sessionLocalInterceptor == null)
 			{
@@ -487,7 +487,7 @@ namespace NHibernate.Impl
 			return OpenSession(null, true, timestamp, sessionLocalInterceptor);
 		}
 
-		public ISession OpenSession(IDbConnection connection, bool flushBeforeCompletionEnabled, bool autoCloseSessionEnabled,
+		public ISession OpenSession(DbConnection connection, bool flushBeforeCompletionEnabled, bool autoCloseSessionEnabled,
 									ConnectionReleaseMode connectionReleaseMode)
 		{
 #pragma warning disable 618
@@ -1097,7 +1097,7 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary> Get a new stateless session for the given ADO.NET connection.</summary>
-		public IStatelessSession OpenStatelessSession(IDbConnection connection)
+		public IStatelessSession OpenStatelessSession(DbConnection connection)
 		{
 			return new StatelessSessionImpl(connection, this);
 		}
@@ -1206,7 +1206,7 @@ namespace NHibernate.Impl
 			return errors;
 		}
 
-		private SessionImpl OpenSession(IDbConnection connection, bool autoClose, long timestamp, IInterceptor sessionLocalInterceptor)
+		private SessionImpl OpenSession(DbConnection connection, bool autoClose, long timestamp, IInterceptor sessionLocalInterceptor)
 		{
 #pragma warning disable 618
 			var isInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled = settings.IsInterceptorsBeforeTransactionCompletionIgnoreExceptionsEnabled;

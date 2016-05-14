@@ -80,8 +80,8 @@ namespace NHibernate.Persister.Entity
 				try
 				{
 					object result = null;
-					IDbCommand ps = null;
-					IDataReader rs = null;
+					DbCommand ps = null;
+					DbDataReader rs = null;
 					try
 					{
 						SqlString lazySelect = SQLLazySelectString;
@@ -162,8 +162,8 @@ namespace NHibernate.Persister.Entity
 			using (new SessionIdLoggingContext(session.SessionId))
 				try
 				{
-					IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, SQLSnapshotSelectString, IdentifierType.SqlTypes(factory));
-					IDataReader rs = null;
+					DbCommand st = session.Batcher.PrepareCommand(CommandType.Text, SQLSnapshotSelectString, IdentifierType.SqlTypes(factory));
+					DbDataReader rs = null;
 					try
 					{
 						await (IdentifierType.NullSafeSetAsync(st, id, 0, session));
@@ -222,7 +222,7 @@ namespace NHibernate.Persister.Entity
 			SqlCommandInfo versionIncrementCommand = GenerateVersionIncrementUpdateString();
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand(versionIncrementCommand.CommandType, versionIncrementCommand.Text, versionIncrementCommand.ParameterTypes);
+				DbCommand st = session.Batcher.PrepareCommand(versionIncrementCommand.CommandType, versionIncrementCommand.Text, versionIncrementCommand.ParameterTypes);
 				try
 				{
 					await (VersionType.NullSafeSetAsync(st, nextVersion, 0, session));
@@ -257,8 +257,8 @@ namespace NHibernate.Persister.Entity
 			using (new SessionIdLoggingContext(session.SessionId))
 				try
 				{
-					IDbCommand st = session.Batcher.PrepareQueryCommand(CommandType.Text, VersionSelectString, IdentifierType.SqlTypes(Factory));
-					IDataReader rs = null;
+					DbCommand st = session.Batcher.PrepareQueryCommand(CommandType.Text, VersionSelectString, IdentifierType.SqlTypes(Factory));
+					DbDataReader rs = null;
 					try
 					{
 						await (IdentifierType.NullSafeSetAsync(st, id, 0, session));
@@ -367,13 +367,13 @@ namespace NHibernate.Persister.Entity
 			return hasColumns ? updateBuilder.ToSqlCommandInfo() : null;
 		}
 
-		protected Task<int> DehydrateAsync(object id, object[] fields, bool[] includeProperty, bool[][] includeColumns, int j, IDbCommand st, ISessionImplementor session)
+		protected Task<int> DehydrateAsync(object id, object[] fields, bool[] includeProperty, bool[][] includeColumns, int j, DbCommand st, ISessionImplementor session)
 		{
 			return DehydrateAsync(id, fields, null, includeProperty, includeColumns, j, st, session, 0);
 		}
 
 		/// <summary> Marshall the fields of a persistent instance to a prepared statement</summary>
-		protected async Task<int> DehydrateAsync(object id, object[] fields, object rowId, bool[] includeProperty, bool[][] includeColumns, int table, IDbCommand statement, ISessionImplementor session, int index)
+		protected async Task<int> DehydrateAsync(object id, object[] fields, object rowId, bool[] includeProperty, bool[][] includeColumns, int table, DbCommand statement, ISessionImplementor session, int index)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -419,7 +419,7 @@ namespace NHibernate.Persister.Entity
 		/// Unmarshall the fields of a persistent instance from a result set,
 		/// without resolving associations or collections
 		/// </summary>
-		public async Task<object[]> HydrateAsync(IDataReader rs, object id, object obj, ILoadable rootLoadable, string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session)
+		public async Task<object[]> HydrateAsync(DbDataReader rs, object id, object obj, ILoadable rootLoadable, string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -428,8 +428,8 @@ namespace NHibernate.Persister.Entity
 
 			AbstractEntityPersister rootPersister = (AbstractEntityPersister)rootLoadable;
 			bool hasDeferred = rootPersister.HasSequentialSelect;
-			IDbCommand sequentialSelect = null;
-			IDataReader sequentialResultSet = null;
+			DbCommand sequentialSelect = null;
+			DbDataReader sequentialResultSet = null;
 			bool sequentialSelectEmpty = false;
 			using (new SessionIdLoggingContext(session.SessionId))
 				try
@@ -492,7 +492,7 @@ namespace NHibernate.Persister.Entity
 							}
 							else
 							{
-								IDataReader propertyResultSet = propertyIsDeferred ? sequentialResultSet : rs;
+								DbDataReader propertyResultSet = propertyIsDeferred ? sequentialResultSet : rs;
 								string[] cols = propertyIsDeferred ? propertyColumnAliases[i] : suffixedPropertyColumns[i];
 								values[i] = await (types[i].HydrateAsync(propertyResultSet, cols, session, obj));
 							}
@@ -580,7 +580,7 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				// Render the SQL query
-				IDbCommand insertCmd = useBatch ? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes) : session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
+				DbCommand insertCmd = useBatch ? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes) : session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
 				try
 				{
 					int index = 0;
@@ -636,7 +636,7 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				int index = 0;
-				IDbCommand statement = useBatch ? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes) : session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
+				DbCommand statement = useBatch ? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes) : session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
 				try
 				{
 					//index += expectation.Prepare(statement, factory.ConnectionProvider.Driver);
@@ -747,7 +747,7 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				int index = 0;
-				IDbCommand statement;
+				DbCommand statement;
 				if (useBatch)
 				{
 					statement = session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
@@ -1219,8 +1219,8 @@ namespace NHibernate.Persister.Entity
 			using (new SessionIdLoggingContext(session.SessionId))
 				try
 				{
-					IDbCommand cmd = session.Batcher.PrepareQueryCommand(CommandType.Text, selectionSQL, IdentifierType.SqlTypes(Factory));
-					IDataReader rs = null;
+					DbCommand cmd = session.Batcher.PrepareQueryCommand(CommandType.Text, selectionSQL, IdentifierType.SqlTypes(Factory));
+					DbDataReader rs = null;
 					try
 					{
 						await (IdentifierType.NullSafeSetAsync(cmd, id, 0, session));
@@ -1311,8 +1311,8 @@ namespace NHibernate.Persister.Entity
 			using (new SessionIdLoggingContext(session.SessionId))
 				try
 				{
-					IDbCommand ps = session.Batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));
-					IDataReader rs = null;
+					DbCommand ps = session.Batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));
+					DbDataReader rs = null;
 					try
 					{
 						await (IdentifierType.NullSafeSetAsync(ps, id, 0, session));
@@ -1349,7 +1349,7 @@ namespace NHibernate.Persister.Entity
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		private partial class GeneratedIdentifierBinder : IBinder
 		{
-			public virtual Task BindValuesAsync(IDbCommand ps)
+			public virtual Task BindValuesAsync(DbCommand ps)
 			{
 				return entityPersister.DehydrateAsync(null, fields, notNull, entityPersister.propertyColumnInsertable, 0, ps, session);
 			}

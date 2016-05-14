@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -332,14 +332,14 @@ namespace NHibernate.Collection
 		/// <returns></returns>
 		public abstract Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType);
 		/// <summary>
-		/// Reads the row from the <see cref = "IDataReader"/>.
+		/// Reads the row from the <see cref = "DbDataReader"/>.
 		/// </summary>
-		/// <param name = "reader">The IDataReader that contains the value of the Identifier</param>
+		/// <param name = "reader">The DbDataReader that contains the value of the Identifier</param>
 		/// <param name = "role">The persister for this Collection.</param>
 		/// <param name = "descriptor">The descriptor providing result set column names</param>
 		/// <param name = "owner">The owner of this Collection.</param>
 		/// <returns>The object that was contained in the row.</returns>
-		public abstract Task<object> ReadFromAsync(IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner);
+		public abstract Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner);
 		/// <summary>
 		/// Do we need to insert this element?
 		/// </summary>

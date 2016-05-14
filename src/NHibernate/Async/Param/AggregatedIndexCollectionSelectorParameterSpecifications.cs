@@ -1,7 +1,7 @@
 #if NET_4_5
 using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -14,7 +14,7 @@ namespace NHibernate.Param
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class AggregatedIndexCollectionSelectorParameterSpecifications : IParameterSpecification
 	{
-		//public int Bind(IDbCommand statement, QueryParameters qp, ISessionImplementor session, int position)
+		//public int Bind(DbCommand statement, QueryParameters qp, ISessionImplementor session, int position)
 		//{
 		//  int bindCount = 0;
 		//  foreach (IParameterSpecification spec in _paramSpecs)
@@ -23,7 +23,7 @@ namespace NHibernate.Param
 		//  }
 		//  return bindCount;
 		//}
-		public Task BindAsync(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public Task BindAsync(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			try
 			{
@@ -36,7 +36,7 @@ namespace NHibernate.Param
 			}
 		}
 
-		public Task BindAsync(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public Task BindAsync(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			try
 			{

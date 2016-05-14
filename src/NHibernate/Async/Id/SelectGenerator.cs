@@ -1,6 +1,6 @@
 #if NET_4_5
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Id.Insert;
 using NHibernate.Persister.Entity;
@@ -23,13 +23,13 @@ namespace NHibernate.Id
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		public partial class SelectGeneratorDelegate : AbstractSelectingDelegate
 		{
-			protected internal override async Task BindParametersAsync(ISessionImplementor session, IDbCommand ps, object entity)
+			protected internal override async Task BindParametersAsync(ISessionImplementor session, DbCommand ps, object entity)
 			{
 				object uniqueKeyValue = ((IEntityPersister)persister).GetPropertyValue(entity, uniqueKeyPropertyName, session.EntityMode);
 				await (uniqueKeyType.NullSafeSetAsync(ps, uniqueKeyValue, 0, session));
 			}
 
-			protected internal override async Task<object> GetResultAsync(ISessionImplementor session, IDataReader rs, object entity)
+			protected internal override async Task<object> GetResultAsync(ISessionImplementor session, DbDataReader rs, object entity)
 			{
 				if (!rs.Read())
 				{

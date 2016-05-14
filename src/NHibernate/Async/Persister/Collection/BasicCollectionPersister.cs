@@ -33,7 +33,7 @@ namespace NHibernate.Persister.Collection
 				return 0;
 			try
 			{
-				IDbCommand st = null;
+				DbCommand st = null;
 				IExpectation expectation = Expectations.AppropriateExpectation(UpdateCheckStyle);
 				//bool callable = UpdateCallable;
 				bool useBatch = expectation.CanBeBatched;

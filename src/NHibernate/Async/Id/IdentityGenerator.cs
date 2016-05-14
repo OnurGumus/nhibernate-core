@@ -1,6 +1,7 @@
 #if NET_4_5
 using System;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Id.Insert;
 using NHibernate.SqlCommand;
@@ -35,9 +36,9 @@ namespace NHibernate.Id
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		public partial class InsertSelectDelegate : AbstractReturningDelegate, IInsertGeneratedIdentifierDelegate
 		{
-			public override async Task<object> ExecuteAndExtractAsync(IDbCommand insert, ISessionImplementor session)
+			public override async Task<object> ExecuteAndExtractAsync(DbCommand insert, ISessionImplementor session)
 			{
-				IDataReader rs = await (session.Batcher.ExecuteReaderAsync(insert));
+				DbDataReader rs = await (session.Batcher.ExecuteReaderAsync(insert));
 				try
 				{
 					return await (IdentifierGeneratorFactory.GetGeneratedIdentityAsync(rs, persister.IdentifierType, session));
@@ -56,7 +57,7 @@ namespace NHibernate.Id
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		public partial class BasicDelegate : AbstractSelectingDelegate, IInsertGeneratedIdentifierDelegate
 		{
-			protected internal override Task<object> GetResultAsync(ISessionImplementor session, IDataReader rs, object obj)
+			protected internal override Task<object> GetResultAsync(ISessionImplementor session, DbDataReader rs, object obj)
 			{
 				return IdentifierGeneratorFactory.GetGeneratedIdentityAsync(rs, persister.IdentifierType, session);
 			}

@@ -1,7 +1,7 @@
 #if NET_4_5
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Param;
@@ -43,7 +43,7 @@ namespace NHibernate.Loader.Entity
 			}
 		}
 
-		protected override Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer transformer, IDataReader rs, ISessionImplementor session)
+		protected override Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer transformer, DbDataReader rs, ISessionImplementor session)
 		{
 			try
 			{

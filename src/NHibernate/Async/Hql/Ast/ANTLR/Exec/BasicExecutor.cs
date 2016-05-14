@@ -23,7 +23,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		public override async Task<int> ExecuteAsync(QueryParameters parameters, ISessionImplementor session)
 		{
 			CoordinateSharedCacheCleanup(session);
-			IDbCommand st = null;
+			DbCommand st = null;
 			RowSelection selection = parameters.RowSelection;
 			try
 			{

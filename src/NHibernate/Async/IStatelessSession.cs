@@ -1,6 +1,7 @@
 #if NET_4_5
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Linq.Expressions;
 using NHibernate.Engine;
 using System.Threading.Tasks;

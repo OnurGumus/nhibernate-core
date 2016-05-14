@@ -25,7 +25,7 @@ namespace NHibernate.Id.Insert
 			try
 			{
 				// prepare and execute the insert
-				IDbCommand insert = session.Batcher.PrepareCommand(insertSQL.CommandType, insertSQL.Text, insertSQL.ParameterTypes);
+				DbCommand insert = session.Batcher.PrepareCommand(insertSQL.CommandType, insertSQL.Text, insertSQL.ParameterTypes);
 				try
 				{
 					await (binder.BindValuesAsync(insert));
@@ -46,11 +46,11 @@ namespace NHibernate.Id.Insert
 				try
 				{
 					//fetch the generated id in a separate query
-					IDbCommand idSelect = session.Batcher.PrepareCommand(CommandType.Text, selectSQL, ParametersTypes);
+					DbCommand idSelect = session.Batcher.PrepareCommand(CommandType.Text, selectSQL, ParametersTypes);
 					try
 					{
 						await (BindParametersAsync(session, idSelect, binder.Entity));
-						IDataReader rs = await (session.Batcher.ExecuteReaderAsync(idSelect));
+						DbDataReader rs = await (session.Batcher.ExecuteReaderAsync(idSelect));
 						try
 						{
 							return await (GetResultAsync(session, rs, binder.Entity));
@@ -76,12 +76,12 @@ namespace NHibernate.Id.Insert
 		/// <param name = "rs">The result set containing the generated primary key values. </param>
 		/// <param name = "entity">The entity being saved. </param>
 		/// <returns> The generated identifier </returns>
-		protected internal abstract Task<object> GetResultAsync(ISessionImplementor session, IDataReader rs, object entity);
+		protected internal abstract Task<object> GetResultAsync(ISessionImplementor session, DbDataReader rs, object entity);
 		/// <summary> Bind any required parameter values into the SQL command <see cref = "SelectSQL"/>. </summary>
 		/// <param name = "session">The session </param>
 		/// <param name = "ps">The prepared <see cref = "SelectSQL"/> command </param>
 		/// <param name = "entity">The entity being saved. </param>
-		protected internal virtual Task BindParametersAsync(ISessionImplementor session, IDbCommand ps, object entity)
+		protected internal virtual Task BindParametersAsync(ISessionImplementor session, DbCommand ps, object entity)
 		{
 			return TaskHelper.CompletedTask;
 		}

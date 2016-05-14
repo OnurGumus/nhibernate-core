@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Dialect;
 using NHibernate.Exceptions;
 using NHibernate.Util;
@@ -57,17 +58,17 @@ namespace NHibernate.Test.ExceptionsTest
 
 			ISession session = OpenSession();
 			session.BeginTransaction();
-			IDbConnection connection = session.Connection;
+			DbConnection connection = session.Connection;
 
 			// Attempt to insert some bad values into the T_MEMBERSHIP table that should
 			// result in a constraint violation
-			IDbCommand ps = null;
+			DbCommand ps = null;
 			try
 			{
 				ps = connection.CreateCommand();
 				ps.CommandType = CommandType.Text;
 				ps.CommandText = "INSERT INTO T_MEMBERSHIP (user_id, group_id) VALUES (@p1, @p2)";
-				IDbDataParameter pr = ps.CreateParameter();
+				DbParameter pr = ps.CreateParameter();
 				pr.ParameterName = "p1";
 				pr.DbType = DbType.Int64;
 				pr.Value = 52134241L; // Non-existent user_id
@@ -122,10 +123,10 @@ namespace NHibernate.Test.ExceptionsTest
 			ISQLExceptionConverter converter = sessions.Settings.SqlExceptionConverter;
 
 			ISession session = OpenSession();
-			IDbConnection connection = session.Connection;
+			DbConnection connection = session.Connection;
 
 			// prepare/execute a query against a non-existent table
-			IDbCommand ps = null;
+			DbCommand ps = null;
 			try
 			{
 				ps = connection.CreateCommand();

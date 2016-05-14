@@ -1,7 +1,7 @@
 #if NET_4_5
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;

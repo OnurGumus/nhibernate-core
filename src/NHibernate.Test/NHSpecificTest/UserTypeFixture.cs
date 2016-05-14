@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Connection;
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
@@ -38,12 +38,12 @@ namespace NHibernate.Test.NHSpecificTest
 
 			// manually read from the db
 			IConnectionProvider provider = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
-			IDbConnection conn = provider.GetConnection();
-			IDbCommand cmd = conn.CreateCommand();
+			DbConnection conn = provider.GetConnection();
+			DbCommand cmd = conn.CreateCommand();
 			cmd.Connection = conn;
 			cmd.CommandText = "select * from usertype";
 
-			IDataReader reader = cmd.ExecuteReader();
+			DbDataReader reader = cmd.ExecuteReader();
 
 			while (reader.Read())
 			{

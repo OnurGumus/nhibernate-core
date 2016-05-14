@@ -1,6 +1,6 @@
 #if NET_4_5
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Collection;
@@ -41,24 +41,24 @@ namespace NHibernate.Persister.Collection
 		/// <param name = "session"></param>
 		Task InitializeAsync(object key, ISessionImplementor session);
 		/// <summary>
-		/// Read the key from a row of the <see cref = "IDataReader"/>
+		/// Read the key from a row of the <see cref = "DbDataReader"/>
 		/// </summary>
-		Task<object> ReadKeyAsync(IDataReader rs, string[] keyAliases, ISessionImplementor session);
+		Task<object> ReadKeyAsync(DbDataReader rs, string[] keyAliases, ISessionImplementor session);
 		/// <summary>
-		/// Read the element from a row of the <see cref = "IDataReader"/>
+		/// Read the element from a row of the <see cref = "DbDataReader"/>
 		/// </summary>
 		 //TODO: the ReadElement should really be a parameterized TElement
-		Task<object> ReadElementAsync(IDataReader rs, object owner, string[] columnAliases, ISessionImplementor session);
+		Task<object> ReadElementAsync(DbDataReader rs, object owner, string[] columnAliases, ISessionImplementor session);
 		/// <summary>
-		/// Read the index from a row of the <see cref = "IDataReader"/>
+		/// Read the index from a row of the <see cref = "DbDataReader"/>
 		/// </summary>
 		 //TODO: the ReadIndex should really be a parameterized TIndex
-		Task<object> ReadIndexAsync(IDataReader rs, string[] columnAliases, ISessionImplementor session);
+		Task<object> ReadIndexAsync(DbDataReader rs, string[] columnAliases, ISessionImplementor session);
 		/// <summary>
-		/// Read the identifier from a row of the <see cref = "IDataReader"/>
+		/// Read the identifier from a row of the <see cref = "DbDataReader"/>
 		/// </summary>
 		 //TODO: the ReadIdentifier should really be a parameterized TIdentifier
-		Task<object> ReadIdentifierAsync(IDataReader rs, string columnAlias, ISessionImplementor session);
+		Task<object> ReadIdentifierAsync(DbDataReader rs, string columnAlias, ISessionImplementor session);
 		/// <summary>
 		/// Completely remove the persistent state of the collection
 		/// </summary>

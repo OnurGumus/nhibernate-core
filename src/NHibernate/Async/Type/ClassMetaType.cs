@@ -1,6 +1,6 @@
 #if NET_4_5
 using System;
-using System.Data;
+using System.Data.Common;
 using System.Xml;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -12,12 +12,12 @@ namespace NHibernate.Type
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class ClassMetaType : AbstractType
 	{
-		public override Task<object> NullSafeGetAsync(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			return NullSafeGetAsync(rs, names[0], session, owner);
 		}
 
-		public override Task<object> NullSafeGetAsync(IDataReader rs, string name, ISessionImplementor session, object owner)
+		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			try
 			{
@@ -29,13 +29,13 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override async Task NullSafeSetAsync(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override async Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			if (settable[0])
 				await (NullSafeSetAsync(st, value, index, session));
 		}
 
-		public override Task NullSafeSetAsync(IDbCommand st, object value, int index, ISessionImplementor session)
+		public override Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session)
 		{
 			try
 			{

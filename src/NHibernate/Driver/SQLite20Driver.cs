@@ -35,7 +35,7 @@ namespace NHibernate.Driver
 		{
 		}
 
-        public override IDbConnection CreateConnection()
+        public override DbConnection CreateConnection()
         {
             DbConnection connection = (DbConnection)base.CreateConnection();
             connection.StateChange += Connection_StateChange;

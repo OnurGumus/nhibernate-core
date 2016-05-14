@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -99,7 +100,7 @@ namespace NHibernate.Loader
 		/// <param name = "returnProxies">Should proxies be generated</param>
 		/// <returns>The loaded "row".</returns>
 		/// <exception cref = "HibernateException"/>
-		protected async Task<object> LoadSingleRowAsync(IDataReader resultSet, ISessionImplementor session, QueryParameters queryParameters, bool returnProxies)
+		protected async Task<object> LoadSingleRowAsync(DbDataReader resultSet, ISessionImplementor session, QueryParameters queryParameters, bool returnProxies)
 		{
 			int entitySpan = EntityPersisters.Length;
 			IList hydratedObjects = entitySpan == 0 ? null : new List<object>(entitySpan);
@@ -122,12 +123,12 @@ namespace NHibernate.Loader
 			return result;
 		}
 
-		internal Task<object> GetRowFromResultSetAsync(IDataReader resultSet, ISessionImplementor session, QueryParameters queryParameters, LockMode[] lockModeArray, EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys, bool returnProxies)
+		internal Task<object> GetRowFromResultSetAsync(DbDataReader resultSet, ISessionImplementor session, QueryParameters queryParameters, LockMode[] lockModeArray, EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys, bool returnProxies)
 		{
 			return GetRowFromResultSetAsync(resultSet, session, queryParameters, lockModeArray, optionalObjectKey, hydratedObjects, keys, returnProxies, null);
 		}
 
-		internal async Task<object> GetRowFromResultSetAsync(IDataReader resultSet, ISessionImplementor session, QueryParameters queryParameters, LockMode[] lockModeArray, EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys, bool returnProxies, IResultTransformer forcedResultTransformer)
+		internal async Task<object> GetRowFromResultSetAsync(DbDataReader resultSet, ISessionImplementor session, QueryParameters queryParameters, LockMode[] lockModeArray, EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys, bool returnProxies, IResultTransformer forcedResultTransformer)
 		{
 			ILoadable[] persisters = EntityPersisters;
 			int entitySpan = persisters.Length;
@@ -163,7 +164,7 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Read any collection elements contained in a single row of the result set
 		/// </summary>
-		private async Task ReadCollectionElementsAsync(object[] row, IDataReader resultSet, ISessionImplementor session)
+		private async Task ReadCollectionElementsAsync(object[] row, DbDataReader resultSet, ISessionImplementor session)
 		{
 			//TODO: make this handle multiple collection roles!
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
@@ -204,8 +205,8 @@ namespace NHibernate.Loader
 				int maxRows = HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
 				int entitySpan = EntityPersisters.Length;
 				List<object> hydratedObjects = entitySpan == 0 ? null : new List<object>(entitySpan * 10);
-				IDbCommand st = await (PrepareQueryCommandAsync(queryParameters, false, session));
-				IDataReader rs = await (GetResultSetAsync(st, queryParameters.HasAutoDiscoverScalarTypes, queryParameters.Callable, selection, session));
+				DbCommand st = await (PrepareQueryCommandAsync(queryParameters, false, session));
+				DbDataReader rs = await (GetResultSetAsync(st, queryParameters.HasAutoDiscoverScalarTypes, queryParameters.Callable, selection, session));
 				// would be great to move all this below here into another method that could also be used
 				// from the new scrolling stuff.
 				//
@@ -325,7 +326,7 @@ namespace NHibernate.Loader
 		private static async Task EndCollectionLoadAsync(object resultSetId, ISessionImplementor session, ICollectionPersister collectionPersister)
 		{
 			//this is a query and we are loading multiple instances of the same collection role
-			await (session.PersistenceContext.LoadContexts.GetCollectionLoadContext((IDataReader)resultSetId).EndLoadingCollectionsAsync(collectionPersister));
+			await (session.PersistenceContext.LoadContexts.GetCollectionLoadContext((DbDataReader)resultSetId).EndLoadingCollectionsAsync(collectionPersister));
 		}
 
 		/// <summary>
@@ -335,7 +336,7 @@ namespace NHibernate.Loader
 		/// This empty implementation merely returns its first argument. This is
 		/// overridden by some subclasses.
 		/// </remarks>
-		protected virtual Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, IDataReader rs, ISessionImplementor session)
+		protected virtual Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, DbDataReader rs, ISessionImplementor session)
 		{
 			try
 			{
@@ -347,7 +348,7 @@ namespace NHibernate.Loader
 			}
 		}
 
-		protected virtual Task<object[]> GetResultRowAsync(Object[] row, IDataReader rs, ISessionImplementor session)
+		protected virtual Task<object[]> GetResultRowAsync(Object[] row, DbDataReader rs, ISessionImplementor session)
 		{
 			try
 			{
@@ -362,7 +363,7 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Read one collection element from the current row of the ADO.NET result set
 		/// </summary>
-		private static async Task ReadCollectionElementAsync(object optionalOwner, object optionalKey, ICollectionPersister persister, ICollectionAliases descriptor, IDataReader rs, ISessionImplementor session)
+		private static async Task ReadCollectionElementAsync(object optionalOwner, object optionalKey, ICollectionPersister persister, ICollectionAliases descriptor, DbDataReader rs, ISessionImplementor session)
 		{
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 			object collectionRowKey = await (persister.ReadKeyAsync(rs, descriptor.SuffixedKeyAliases, session));
@@ -411,13 +412,13 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// Read a row of <c>EntityKey</c>s from the <c>IDataReader</c> into the given array.
+		/// Read a row of <c>EntityKey</c>s from the <c>DbDataReader</c> into the given array.
 		/// </summary>
 		/// <remarks>
 		/// Warning: this method is side-effecty. If an <c>id</c> is given, don't bother going
-		/// to the <c>IDataReader</c>
+		/// to the <c>DbDataReader</c>
 		/// </remarks>
-		private async Task<EntityKey> GetKeyFromResultSetAsync(int i, IEntityPersister persister, object id, IDataReader rs, ISessionImplementor session)
+		private async Task<EntityKey> GetKeyFromResultSetAsync(int i, IEntityPersister persister, object id, DbDataReader rs, ISessionImplementor session)
 		{
 			object resultId;
 			// if we know there is exactly 1 row, we can skip.
@@ -442,12 +443,12 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// Check the version of the object in the <c>IDataReader</c> against
+		/// Check the version of the object in the <c>DbDataReader</c> against
 		/// the object version in the session cache, throwing an exception
 		/// if the version numbers are different.
 		/// </summary>
 		/// <exception cref = "StaleObjectStateException"></exception>
-		private async Task CheckVersionAsync(int i, IEntityPersister persister, object id, object entity, IDataReader rs, ISessionImplementor session)
+		private async Task CheckVersionAsync(int i, IEntityPersister persister, object id, object entity, DbDataReader rs, ISessionImplementor session)
 		{
 			object version = session.PersistenceContext.GetEntry(entity).Version;
 			// null version means the object is in the process of being loaded somewhere else in the ResultSet
@@ -468,12 +469,12 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// Resolve any ids for currently loaded objects, duplications within the <c>IDataReader</c>,
-		/// etc. Instantiate empty objects to be initialized from the <c>IDataReader</c>. Return an
+		/// Resolve any ids for currently loaded objects, duplications within the <c>DbDataReader</c>,
+		/// etc. Instantiate empty objects to be initialized from the <c>DbDataReader</c>. Return an
 		/// array of objects (a row of results) and an array of booleans (by side-effect) that determine
 		/// whether the corresponding object should be initialized
 		/// </summary>
-		private async Task<object[]> GetRowAsync(IDataReader rs, ILoadable[] persisters, EntityKey[] keys, object optionalObject, EntityKey optionalObjectKey, LockMode[] lockModes, IList hydratedObjects, ISessionImplementor session)
+		private async Task<object[]> GetRowAsync(DbDataReader rs, ILoadable[] persisters, EntityKey[] keys, object optionalObject, EntityKey optionalObjectKey, LockMode[] lockModes, IList hydratedObjects, ISessionImplementor session)
 		{
 			int cols = persisters.Length;
 			IEntityAliases[] descriptors = EntityAliases;
@@ -518,7 +519,7 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// The entity instance is already in the session cache
 		/// </summary>
-		private async Task InstanceAlreadyLoadedAsync(IDataReader rs, int i, IEntityPersister persister, EntityKey key, object obj, LockMode lockMode, ISessionImplementor session)
+		private async Task InstanceAlreadyLoadedAsync(DbDataReader rs, int i, IEntityPersister persister, EntityKey key, object obj, LockMode lockMode, ISessionImplementor session)
 		{
 			if (!persister.IsInstance(obj, session.EntityMode))
 			{
@@ -545,7 +546,7 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// The entity instance is not in the session cache
 		/// </summary>
-		private async Task<object> InstanceNotYetLoadedAsync(IDataReader dr, int i, ILoadable persister, EntityKey key, LockMode lockMode, string rowIdAlias, EntityKey optionalObjectKey, object optionalObject, IList hydratedObjects, ISessionImplementor session)
+		private async Task<object> InstanceNotYetLoadedAsync(DbDataReader dr, int i, ILoadable persister, EntityKey key, LockMode lockMode, string rowIdAlias, EntityKey optionalObjectKey, object optionalObject, IList hydratedObjects, ISessionImplementor session)
 		{
 			object obj;
 			string instanceClass = await (GetInstanceClassAsync(dr, i, persister, key.Identifier, session));
@@ -571,11 +572,11 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// Hydrate the state of an object from the SQL <c>IDataReader</c>, into
+		/// Hydrate the state of an object from the SQL <c>DbDataReader</c>, into
 		/// an array of "hydrated" values (do not resolve associations yet),
 		/// and pass the hydrated state to the session.
 		/// </summary>
-		private async Task LoadFromResultSetAsync(IDataReader rs, int i, object obj, string instanceClass, EntityKey key, string rowIdAlias, LockMode lockMode, ILoadable rootPersister, ISessionImplementor session)
+		private async Task LoadFromResultSetAsync(DbDataReader rs, int i, object obj, string instanceClass, EntityKey key, string rowIdAlias, LockMode lockMode, ILoadable rootPersister, ISessionImplementor session)
 		{
 			object id = key.Identifier;
 			// Get the persister for the _subclass_
@@ -615,9 +616,9 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// Determine the concrete class of an instance for the <c>IDataReader</c>
+		/// Determine the concrete class of an instance for the <c>DbDataReader</c>
 		/// </summary>
-		private async Task<string> GetInstanceClassAsync(IDataReader rs, int i, ILoadable persister, object id, ISessionImplementor session)
+		private async Task<string> GetInstanceClassAsync(DbDataReader rs, int i, ILoadable persister, object id, ISessionImplementor session)
 		{
 			if (persister.HasSubclasses)
 			{
@@ -637,23 +638,23 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// Obtain an <c>IDbCommand</c> with all parameters pre-bound. Bind positional parameters,
+		/// Obtain an <c>DbCommand</c> with all parameters pre-bound. Bind positional parameters,
 		/// named parameters, and limit parameters.
 		/// </summary>
 		/// <remarks>
-		/// Creates an IDbCommand object and populates it with the values necessary to execute it against the 
+		/// Creates an DbCommand object and populates it with the values necessary to execute it against the 
 		/// database to Load an Entity.
 		/// </remarks>
-		/// <param name = "queryParameters">The <see cref = "QueryParameters"/> to use for the IDbCommand.</param>
+		/// <param name = "queryParameters">The <see cref = "QueryParameters"/> to use for the DbCommand.</param>
 		/// <param name = "scroll">TODO: find out where this is used...</param>
 		/// <param name = "session">The SessionImpl this Command is being prepared in.</param>
-		/// <returns>A CommandWrapper wrapping an IDbCommand that is ready to be executed.</returns>
-		protected internal virtual async Task<IDbCommand> PrepareQueryCommandAsync(QueryParameters queryParameters, bool scroll, ISessionImplementor session)
+		/// <returns>A CommandWrapper wrapping an DbCommand that is ready to be executed.</returns>
+		protected internal virtual async Task<DbCommand> PrepareQueryCommandAsync(QueryParameters queryParameters, bool scroll, ISessionImplementor session)
 		{
 			ISqlCommand sqlCommand = CreateSqlCommand(queryParameters, session);
 			SqlString sqlString = sqlCommand.Query;
 			sqlCommand.ResetParametersIndexesForTheCommand(0);
-			IDbCommand command = session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString, sqlCommand.ParameterTypes);
+			DbCommand command = session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString, sqlCommand.ParameterTypes);
 			try
 			{
 				RowSelection selection = queryParameters.RowSelection;
@@ -683,18 +684,18 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// Fetch a <c>IDbCommand</c>, call <c>SetMaxRows</c> and then execute it,
-		/// advance to the first result and return an SQL <c>IDataReader</c>
+		/// Fetch a <c>DbCommand</c>, call <c>SetMaxRows</c> and then execute it,
+		/// advance to the first result and return an SQL <c>DbDataReader</c>
 		/// </summary>
-		/// <param name = "st">The <see cref = "IDbCommand"/> to execute.</param>
-		/// <param name = "selection">The <see cref = "RowSelection"/> to apply to the <see cref = "IDbCommand"/> and <see cref = "IDataReader"/>.</param>
+		/// <param name = "st">The <see cref = "DbCommand"/> to execute.</param>
+		/// <param name = "selection">The <see cref = "RowSelection"/> to apply to the <see cref = "DbCommand"/> and <see cref = "DbDataReader"/>.</param>
 		/// <param name = "autoDiscoverTypes">true if result types need to be auto-discovered by the loader; false otherwise.</param>
 		/// <param name = "session">The <see cref = "ISession"/> to load in.</param>
 		/// <param name = "callable"></param>
-		/// <returns>An IDataReader advanced to the first record in RowSelection.</returns>
-		protected async Task<IDataReader> GetResultSetAsync(IDbCommand st, bool autoDiscoverTypes, bool callable, RowSelection selection, ISessionImplementor session)
+		/// <returns>An DbDataReader advanced to the first record in RowSelection.</returns>
+		protected async Task<DbDataReader> GetResultSetAsync(DbCommand st, bool autoDiscoverTypes, bool callable, RowSelection selection, ISessionImplementor session)
 		{
-			IDataReader rs = null;
+			DbDataReader rs = null;
 			try
 			{
 				Log.Info(st.CommandText);

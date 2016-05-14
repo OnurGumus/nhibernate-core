@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Param;
@@ -30,12 +30,12 @@ namespace NHibernate.Loader.Criteria
 			return await (ListAsync(session, translator.GetQueryParameters(), querySpaces, resultTypes));
 		}
 
-		protected override async Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer customResultTransformer, IDataReader rs, ISessionImplementor session)
+		protected override async Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer customResultTransformer, DbDataReader rs, ISessionImplementor session)
 		{
 			return ResolveResultTransformer(customResultTransformer).TransformTuple(await (GetResultRowAsync(row, rs, session)), ResultRowAliases);
 		}
 
-		protected override async Task<object[]> GetResultRowAsync(object[] row, IDataReader rs, ISessionImplementor session)
+		protected override async Task<object[]> GetResultRowAsync(object[] row, DbDataReader rs, ISessionImplementor session)
 		{
 			object[] result;
 			if (translator.HasProjection)

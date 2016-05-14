@@ -1,7 +1,7 @@
 #if NET_4_5
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
@@ -13,11 +13,11 @@ using System.Threading.Tasks;
 namespace NHibernate.Engine.Loading
 {
 	/// <summary> 
-	/// Represents state associated with the processing of a given <see cref = "IDataReader"/>
+	/// Represents state associated with the processing of a given <see cref = "DbDataReader"/>
 	/// in regards to loading collections.
 	/// </summary>
 	/// <remarks>
-	/// Another implementation option to consider is to not expose <see cref = "IDataReader">ResultSets</see>
+	/// Another implementation option to consider is to not expose <see cref = "DbDataReader">ResultSets</see>
 	/// directly (in the JDBC redesign) but to always "wrap" them and apply a [series of] context[s] to that wrapper.
 	/// </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]

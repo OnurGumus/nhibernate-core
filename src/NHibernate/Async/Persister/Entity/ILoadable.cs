@@ -1,7 +1,7 @@
 #if NET_4_5
 using NHibernate.Type;
 using NHibernate.Engine;
-using System.Data;
+using System.Data.Common;
 using System.Threading.Tasks;
 using System;
 using NHibernate.Util;
@@ -18,7 +18,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Retrieve property values from one row of a result set
 		/// </summary>
-		Task<object[]> HydrateAsync(IDataReader rs, object id, object obj, ILoadable rootLoadable, string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session);
+		Task<object[]> HydrateAsync(DbDataReader rs, object id, object obj, ILoadable rootLoadable, string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session);
 	}
 }
 #endif

@@ -186,7 +186,7 @@ namespace NHibernate.Persister.Collection
 					{
 						if (collection.NeedsUpdating(entry, i, ElementType))
 						{
-							IDbCommand st = null;
+							DbCommand st = null;
 							// will still be issued when it used to be null
 							if (useBatch)
 							{
@@ -247,7 +247,7 @@ namespace NHibernate.Persister.Collection
 					{
 						if (collection.NeedsUpdating(entry, i, ElementType))
 						{
-							IDbCommand st = null;
+							DbCommand st = null;
 							if (useBatch)
 							{
 								st = session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, sql.Text,

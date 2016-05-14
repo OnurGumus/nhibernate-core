@@ -1,10 +1,10 @@
-using System.Data;
+using System.Data.Common;
 
 namespace NHibernate.Driver
 {
 	public partial interface IDriveConnectionCommandProvider
 	{
-		IDbConnection CreateConnection();
-		IDbCommand CreateCommand();
+		DbConnection CreateConnection();
+		DbCommand CreateCommand();
 	}
 }

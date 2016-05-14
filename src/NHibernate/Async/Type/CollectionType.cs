@@ -1,7 +1,7 @@
 #if NET_4_5
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using System.Xml;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -43,23 +43,23 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<object> NullSafeGetAsync(IDataReader rs, string name, ISessionImplementor session, object owner)
+		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			return NullSafeGetAsync(rs, new string[]{name}, session, owner);
 		}
 
-		public override Task<object> NullSafeGetAsync(IDataReader rs, string[] name, ISessionImplementor session, object owner)
+		public override Task<object> NullSafeGetAsync(DbDataReader rs, string[] name, ISessionImplementor session, object owner)
 		{
 			return ResolveIdentifierAsync(null, session, owner);
 		}
 
-		public override Task NullSafeSetAsync(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			return TaskHelper.CompletedTask;
 		// NOOP
 		}
 
-		public override Task NullSafeSetAsync(IDbCommand cmd, object value, int index, ISessionImplementor session)
+		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			return TaskHelper.CompletedTask;
 		}
@@ -131,7 +131,7 @@ namespace NHibernate.Type
 			return IsOwnerVersioned(session) && await (base.IsDirtyAsync(old, current, session));
 		}
 
-		public override Task<object> HydrateAsync(IDataReader rs, string[] name, ISessionImplementor session, object owner)
+		public override Task<object> HydrateAsync(DbDataReader rs, string[] name, ISessionImplementor session, object owner)
 		{
 			try
 			{

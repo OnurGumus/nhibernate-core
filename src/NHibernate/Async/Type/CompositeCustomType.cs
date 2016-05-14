@@ -1,7 +1,7 @@
 #if NET_4_5
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
@@ -82,7 +82,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<object> NullSafeGetAsync(IDataReader rs, string name, ISessionImplementor session, object owner)
+		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			try
 			{
@@ -94,7 +94,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<object> NullSafeGetAsync(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			try
 			{
@@ -106,7 +106,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task NullSafeSetAsync(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			try
 			{
@@ -119,7 +119,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task NullSafeSetAsync(IDbCommand cmd, object value, int index, ISessionImplementor session)
+		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			try
 			{

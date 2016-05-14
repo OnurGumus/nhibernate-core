@@ -41,16 +41,16 @@ namespace NHibernate.Persister.Collection
 		}
 
 		/// <summary>
-		/// Reads the Element from the IDataReader.  The IDataReader will probably only contain
+		/// Reads the Element from the DbDataReader.  The DbDataReader will probably only contain
 		/// the id of the Element.
 		/// </summary>
 		/// <remarks>See ReadElementIdentifier for an explanation of why this method will be depreciated.</remarks>
-		public Task<object> ReadElementAsync(IDataReader rs, object owner, string[] aliases, ISessionImplementor session)
+		public Task<object> ReadElementAsync(DbDataReader rs, object owner, string[] aliases, ISessionImplementor session)
 		{
 			return ElementType.NullSafeGetAsync(rs, aliases, session, owner);
 		}
 
-		public async Task<object> ReadIndexAsync(IDataReader rs, string[] aliases, ISessionImplementor session)
+		public async Task<object> ReadIndexAsync(DbDataReader rs, string[] aliases, ISessionImplementor session)
 		{
 			object index = await (IndexType.NullSafeGetAsync(rs, aliases, session, null));
 			if (index == null)
@@ -62,7 +62,7 @@ namespace NHibernate.Persister.Collection
 			return index;
 		}
 
-		public async Task<object> ReadIdentifierAsync(IDataReader rs, string alias, ISessionImplementor session)
+		public async Task<object> ReadIdentifierAsync(DbDataReader rs, string alias, ISessionImplementor session)
 		{
 			object id = await (IdentifierType.NullSafeGetAsync(rs, alias, session, null));
 			if (id == null)
@@ -73,12 +73,12 @@ namespace NHibernate.Persister.Collection
 			return id;
 		}
 
-		public Task<object> ReadKeyAsync(IDataReader dr, string[] aliases, ISessionImplementor session)
+		public Task<object> ReadKeyAsync(DbDataReader dr, string[] aliases, ISessionImplementor session)
 		{
 			return KeyType.NullSafeGetAsync(dr, aliases, session, null);
 		}
 
-		protected async Task<int> WriteKeyAsync(IDbCommand st, object id, int i, ISessionImplementor session)
+		protected async Task<int> WriteKeyAsync(DbCommand st, object id, int i, ISessionImplementor session)
 		{
 			if (id == null)
 			{
@@ -89,19 +89,19 @@ namespace NHibernate.Persister.Collection
 			return i + keyColumnAliases.Length;
 		}
 
-		protected async Task<int> WriteElementAsync(IDbCommand st, object elt, int i, ISessionImplementor session)
+		protected async Task<int> WriteElementAsync(DbCommand st, object elt, int i, ISessionImplementor session)
 		{
 			await (ElementType.NullSafeSetAsync(st, elt, i, elementColumnIsSettable, session));
 			return i + ArrayHelper.CountTrue(elementColumnIsSettable);
 		}
 
-		protected async Task<int> WriteIndexAsync(IDbCommand st, object idx, int i, ISessionImplementor session)
+		protected async Task<int> WriteIndexAsync(DbCommand st, object idx, int i, ISessionImplementor session)
 		{
 			await (IndexType.NullSafeSetAsync(st, IncrementIndexByBase(idx), i, indexColumnIsSettable, session));
 			return i + ArrayHelper.CountTrue(indexColumnIsSettable);
 		}
 
-		protected async Task<int> WriteElementToWhereAsync(IDbCommand st, object elt, int i, ISessionImplementor session)
+		protected async Task<int> WriteElementToWhereAsync(DbCommand st, object elt, int i, ISessionImplementor session)
 		{
 			if (elementIsPureFormula)
 			{
@@ -112,7 +112,7 @@ namespace NHibernate.Persister.Collection
 			return i + elementColumnAliases.Length;
 		}
 
-		protected async Task<int> WriteIndexToWhereAsync(IDbCommand st, object index, int i, ISessionImplementor session)
+		protected async Task<int> WriteIndexToWhereAsync(DbCommand st, object index, int i, ISessionImplementor session)
 		{
 			if (indexContainsFormula)
 			{
@@ -123,7 +123,7 @@ namespace NHibernate.Persister.Collection
 			return i + indexColumnAliases.Length;
 		}
 
-		protected async Task<int> WriteIdentifierAsync(IDbCommand st, object idx, int i, ISessionImplementor session)
+		protected async Task<int> WriteIdentifierAsync(DbCommand st, object idx, int i, ISessionImplementor session)
 		{
 			await (IdentifierType.NullSafeSetAsync(st, idx, i, session));
 			return i + 1;
@@ -145,7 +145,7 @@ namespace NHibernate.Persister.Collection
 					IExpectation expectation = Expectations.AppropriateExpectation(DeleteAllCheckStyle);
 					//bool callable = DeleteAllCallable;
 					bool useBatch = expectation.CanBeBatched;
-					IDbCommand st = useBatch ? session.Batcher.PrepareBatchCommand(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes) : session.Batcher.PrepareCommand(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes);
+					DbCommand st = useBatch ? session.Batcher.PrepareBatchCommand(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes) : session.Batcher.PrepareCommand(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes);
 					try
 					{
 						await (WriteKeyAsync(st, id, offset, session));
@@ -272,7 +272,7 @@ namespace NHibernate.Persister.Collection
 						int count = 0;
 						while (deletes.MoveNext())
 						{
-							IDbCommand st;
+							DbCommand st;
 							IExpectation expectation = Expectations.AppropriateExpectation(deleteCheckStyle);
 							//bool callable = DeleteCallable;
 							bool useBatch = expectation.CanBeBatched;
@@ -436,8 +436,8 @@ namespace NHibernate.Persister.Collection
 					{
 					}
 
-					IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, GenerateSelectSizeString(session), KeyType.SqlTypes(factory));
-					IDataReader rs = null;
+					DbCommand st = session.Batcher.PrepareCommand(CommandType.Text, GenerateSelectSizeString(session), KeyType.SqlTypes(factory));
+					DbDataReader rs = null;
 					try
 					{
 						await (KeyType.NullSafeSetAsync(st, key, 0, session));
@@ -472,8 +472,8 @@ namespace NHibernate.Persister.Collection
 				{
 					List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));
 					sqlTl.AddRange(indexOrElementType.SqlTypes(factory));
-					IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTl.ToArray());
-					IDataReader rs = null;
+					DbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTl.ToArray());
+					DbDataReader rs = null;
 					try
 					{
 						await (KeyType.NullSafeSetAsync(st, key, 0, session));
@@ -510,8 +510,8 @@ namespace NHibernate.Persister.Collection
 				{
 					List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));
 					sqlTl.AddRange(IndexType.SqlTypes(factory));
-					IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sqlSelectRowByIndexString, sqlTl.ToArray());
-					IDataReader rs = null;
+					DbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sqlSelectRowByIndexString, sqlTl.ToArray());
+					DbDataReader rs = null;
 					try
 					{
 						await (KeyType.NullSafeSetAsync(st, key, 0, session));
@@ -548,7 +548,7 @@ namespace NHibernate.Persister.Collection
 		{
 			object entryId = null;
 			int offset = 0;
-			IDbCommand st = useBatch ? session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes) : session.Batcher.PrepareCommand(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes);
+			DbCommand st = useBatch ? session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes) : session.Batcher.PrepareCommand(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes);
 			try
 			{
 				//offset += expectation.Prepare(st, factory.ConnectionProvider.Driver);
@@ -610,7 +610,7 @@ namespace NHibernate.Persister.Collection
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		protected partial class GeneratedIdentifierBinder : IBinder
 		{
-			public async Task BindValuesAsync(IDbCommand cm)
+			public async Task BindValuesAsync(DbCommand cm)
 			{
 				int offset = 0;
 				offset = await (persister.WriteKeyAsync(cm, ownerId, offset, session));

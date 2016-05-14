@@ -1,6 +1,6 @@
 #if NET_4_5
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
 using NHibernate.Loader;
@@ -59,17 +59,17 @@ namespace NHibernate.Collection
 		/// <param name = "owner"></param>
 		Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner);
 		/// <summary>
-		/// Reads the row from the <see cref = "IDataReader"/>.
+		/// Reads the row from the <see cref = "DbDataReader"/>.
 		/// </summary>
 		/// <remarks>
 		/// This method should be prepared to handle duplicate elements caused by fetching multiple collections.
 		/// </remarks>
-		/// <param name = "reader">The IDataReader that contains the value of the Identifier</param>
+		/// <param name = "reader">The DbDataReader that contains the value of the Identifier</param>
 		/// <param name = "role">The persister for this Collection.</param>
 		/// <param name = "descriptor">The descriptor providing result set column names</param>
 		/// <param name = "owner">The owner of this Collection.</param>
 		/// <returns>The object that was contained in the row.</returns>
-		Task<object> ReadFromAsync(IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner);
+		Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner);
 		/// <summary>
 		/// Does the current state exactly match the snapshot?
 		/// </summary>

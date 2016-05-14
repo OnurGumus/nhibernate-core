@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 namespace NHibernate.Transaction
 {
 	/// <summary>
-	/// Wraps an ADO.NET <see cref = "IDbTransaction"/> to implement
+	/// Wraps an ADO.NET <see cref = "DbTransaction"/> to implement
 	/// the <see cref = "ITransaction"/> interface.
 	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
@@ -17,11 +18,11 @@ namespace NHibernate.Transaction
 	{
 		/// <summary>
 		/// Commits the <see cref = "ITransaction"/> by flushing the <see cref = "ISession"/>
-		/// and committing the <see cref = "IDbTransaction"/>.
+		/// and committing the <see cref = "DbTransaction"/>.
 		/// </summary>
 		/// <exception cref = "TransactionException">
 		/// Thrown if there is any exception while trying to call <c>Commit()</c> on 
-		/// the underlying <see cref = "IDbTransaction"/>.
+		/// the underlying <see cref = "DbTransaction"/>.
 		/// </exception>
 		public async Task CommitAsync()
 		{
@@ -41,7 +42,7 @@ namespace NHibernate.Transaction
 				try
 				{
 					trans.Commit();
-					log.Debug("IDbTransaction Committed");
+					log.Debug("DbTransaction Committed");
 					committed = true;
 					AfterTransactionCompletion(true);
 					Dispose();

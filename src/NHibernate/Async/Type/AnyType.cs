@@ -1,7 +1,7 @@
 #if NET_4_5
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using System.Reflection;
 using System.Xml;
 using NHibernate.Engine;
@@ -29,7 +29,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<object> NullSafeGetAsync(IDataReader rs, string name, ISessionImplementor session, object owner)
+		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			try
 			{
@@ -41,12 +41,12 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override async Task<object> NullSafeGetAsync(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			return await (ResolveAnyAsync((string)await (metaType.NullSafeGetAsync(rs, names[0], session, owner)), await (identifierType.NullSafeGetAsync(rs, names[1], session, owner)), session));
 		}
 
-		public override async Task<object> HydrateAsync(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
 			string entityName = (string)await (metaType.NullSafeGetAsync(rs, names[0], session, owner));
 			object id = await (identifierType.NullSafeGetAsync(rs, names[1], session, owner));
@@ -71,7 +71,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override async Task NullSafeSetAsync(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override async Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			object id;
 			string entityName;
@@ -104,7 +104,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task NullSafeSetAsync(IDbCommand st, object value, int index, ISessionImplementor session)
+		public override Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session)
 		{
 			return NullSafeSetAsync(st, value, index, null, session);
 		}

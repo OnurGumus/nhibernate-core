@@ -42,8 +42,8 @@ namespace NHibernate.Type
 		protected virtual async Task<object> UsePreparedStatementAsync(string timestampSelectString, ISessionImplementor session)
 		{
 			var tsSelect = new SqlString(timestampSelectString);
-			IDbCommand ps = null;
-			IDataReader rs = null;
+			DbCommand ps = null;
+			DbDataReader rs = null;
 			using (new SessionIdLoggingContext(session.SessionId))
 				try
 				{

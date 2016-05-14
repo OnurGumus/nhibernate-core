@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -21,7 +21,7 @@ namespace NHibernate.Type
 		/// <param name = "value"></param>
 		/// <param name = "index"></param>
 		/// <param name = "session"></param>
-		public override async Task NullSafeSetAsync(IDbCommand st, object value, int index, ISessionImplementor session)
+		public override async Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session)
 		{
 			await (base.NullSafeSetAsync(st, session.PersistenceContext.GetCollectionHolder(value), index, session));
 		}

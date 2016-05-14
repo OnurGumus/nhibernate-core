@@ -1,6 +1,7 @@
 #if NET_4_5
 using System;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -19,7 +20,7 @@ namespace NHibernate.Id.Insert
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class OutputParamReturningDelegate : AbstractReturningDelegate
 	{
-		public override Task<object> ExecuteAndExtractAsync(IDbCommand insert, ISessionImplementor session)
+		public override Task<object> ExecuteAndExtractAsync(DbCommand insert, ISessionImplementor session)
 		{
 			try
 			{

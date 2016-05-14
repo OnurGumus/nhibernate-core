@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -159,12 +160,12 @@ namespace NHibernate.Test.DialectTest
 			sessions.ConnectionProvider.Configure(conf.Properties);
 			IDriver driver = sessions.ConnectionProvider.Driver;
 
-			using (IDbConnection connection = sessions.ConnectionProvider.GetConnection())
+			using (DbConnection connection = sessions.ConnectionProvider.GetConnection())
 			{
-				IDbCommand statement = driver.GenerateCommand(CommandType.Text, new SqlString(dialect.CurrentTimestampSelectString),
+				DbCommand statement = driver.GenerateCommand(CommandType.Text, new SqlString(dialect.CurrentTimestampSelectString),
 															  new SqlType[0]);
 				statement.Connection = connection;
-				using (IDataReader reader = statement.ExecuteReader())
+				using (DbDataReader reader = statement.ExecuteReader())
 				{
 					Assert.That(reader.Read(), "should return one record");
 					Assert.That(reader[0], Is.InstanceOf<DateTime>());

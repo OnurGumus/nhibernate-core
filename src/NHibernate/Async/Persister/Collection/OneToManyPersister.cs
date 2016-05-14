@@ -44,7 +44,7 @@ namespace NHibernate.Persister.Collection
 					{
 						if (await (collection.NeedsUpdatingAsync(entry, i, ElementType)))
 						{
-							IDbCommand st = null;
+							DbCommand st = null;
 							// will still be issued when it used to be null
 							if (useBatch)
 							{
@@ -105,7 +105,7 @@ namespace NHibernate.Persister.Collection
 					{
 						if (await (collection.NeedsUpdatingAsync(entry, i, ElementType)))
 						{
-							IDbCommand st = null;
+							DbCommand st = null;
 							if (useBatch)
 							{
 								st = session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, sql.Text, SqlInsertRowString.ParameterTypes);

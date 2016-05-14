@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Collection;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
@@ -12,13 +12,13 @@ using System.Threading.Tasks;
 namespace NHibernate.Engine.Loading
 {
 	/// <summary> 
-	/// Maps <see cref = "IDataReader"/> to specific contextual data
-	/// related to processing that <see cref = "IDataReader"/>.
+	/// Maps <see cref = "DbDataReader"/> to specific contextual data
+	/// related to processing that <see cref = "DbDataReader"/>.
 	/// </summary>
 	/// <remarks>
 	/// Implementation note: internally an <see cref = "IdentityMap"/> is used to maintain
 	/// the mappings; <see cref = "IdentityMap"/> was chosen because I'd rather not be
-	/// dependent upon potentially bad <see cref = "IDataReader"/> and <see cref = "IDataReader"/>
+	/// dependent upon potentially bad <see cref = "DbDataReader"/> and <see cref = "DbDataReader"/>
 	/// implementations.
 	/// Considering the JDBC-redesign work, would further like this contextual info
 	/// not mapped separately, but available based on the result set being processed.

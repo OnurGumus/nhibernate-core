@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Xml;
 using NHibernate.Engine;
@@ -17,12 +17,12 @@ namespace NHibernate.Param
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class DynamicFilterParameterSpecification : IParameterSpecification
 	{
-		public Task BindAsync(IDbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public Task BindAsync(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			return BindAsync(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
 		}
 
-		public async Task BindAsync(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public async Task BindAsync(DbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			string backTrackId = GetIdsForBackTrack(session.Factory).First(); // just the first because IType suppose the oders in certain sequence
 			// The same filterName-parameterName can appear more than once in the whole query
@@ -101,7 +101,7 @@ namespace NHibernate.Param
 				}
 			}
 
-			public Task<object> NullSafeGetAsync(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+			public Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 			{
 				try
 				{
@@ -113,7 +113,7 @@ namespace NHibernate.Param
 				}
 			}
 
-			public Task<object> NullSafeGetAsync(IDataReader rs, string name, ISessionImplementor session, object owner)
+			public Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)
 			{
 				try
 				{
@@ -125,7 +125,7 @@ namespace NHibernate.Param
 				}
 			}
 
-			public Task NullSafeSetAsync(IDbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+			public Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 			{
 				try
 				{
@@ -138,7 +138,7 @@ namespace NHibernate.Param
 				}
 			}
 
-			public async Task NullSafeSetAsync(IDbCommand st, object value, int index, ISessionImplementor session)
+			public async Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session)
 			{
 				var start = index;
 				var positions = 0;
@@ -175,7 +175,7 @@ namespace NHibernate.Param
 				}
 			}
 
-			public Task<object> HydrateAsync(IDataReader rs, string[] names, ISessionImplementor session, object owner)
+			public Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 			{
 				try
 				{

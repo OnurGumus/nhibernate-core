@@ -57,7 +57,7 @@ namespace NHibernate.Id
 			try
 			{
 				var cmd = session.Batcher.PrepareCommand(CommandType.Text, _sql, SqlTypeFactory.NoTypes);
-				IDataReader reader = null;
+				DbDataReader reader = null;
 				try
 				{
 					reader = await (session.Batcher.ExecuteReaderAsync(cmd));

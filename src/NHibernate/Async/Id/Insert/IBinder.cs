@@ -1,5 +1,5 @@
 #if NET_4_5
-using System.Data;
+using System.Data.Common;
 using System.Threading.Tasks;
 using System;
 using NHibernate.Util;
@@ -9,7 +9,7 @@ namespace NHibernate.Id.Insert
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface IBinder
 	{
-		Task BindValuesAsync(IDbCommand cm);
+		Task BindValuesAsync(DbCommand cm);
 	}
 }
 #endif

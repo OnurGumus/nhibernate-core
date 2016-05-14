@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 using System.Threading.Tasks;

@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Param;
@@ -30,7 +30,7 @@ namespace NHibernate.Loader.Custom
 		}
 
 		// Not ported: scroll
-		protected override Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, IDataReader rs, ISessionImplementor session)
+		protected override Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, DbDataReader rs, ISessionImplementor session)
 		{
 			return rowProcessor.BuildResultRowAsync(row, rs, resultTransformer != null, session);
 		}
@@ -50,7 +50,7 @@ namespace NHibernate.Loader.Custom
 			/// At this point, Loader has already processed all non-scalar result data.  We
 			/// just need to account for scalar result data here...
 			/// </remarks>
-			public async Task<object> BuildResultRowAsync(object[] data, IDataReader resultSet, bool hasTransformer, ISessionImplementor session)
+			public async Task<object> BuildResultRowAsync(object[] data, DbDataReader resultSet, bool hasTransformer, ISessionImplementor session)
 			{
 				object[] resultRow;
 				// NH Different behavior (patched in NH-1612 to solve Hibernate issue HHH-2831).
@@ -77,13 +77,13 @@ namespace NHibernate.Loader.Custom
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		public partial interface IResultColumnProcessor
 		{
-			Task<object> ExtractAsync(object[] data, IDataReader resultSet, ISessionImplementor session);
+			Task<object> ExtractAsync(object[] data, DbDataReader resultSet, ISessionImplementor session);
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		public partial class NonScalarResultColumnProcessor : IResultColumnProcessor
 		{
-			public Task<object> ExtractAsync(object[] data, IDataReader resultSet, ISessionImplementor session)
+			public Task<object> ExtractAsync(object[] data, DbDataReader resultSet, ISessionImplementor session)
 			{
 				try
 				{
@@ -99,7 +99,7 @@ namespace NHibernate.Loader.Custom
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		public partial class ScalarResultColumnProcessor : IResultColumnProcessor
 		{
-			public Task<object> ExtractAsync(object[] data, IDataReader resultSet, ISessionImplementor session)
+			public Task<object> ExtractAsync(object[] data, DbDataReader resultSet, ISessionImplementor session)
 			{
 				return type.NullSafeGetAsync(resultSet, alias, session, null);
 			}

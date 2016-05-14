@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Threading;
 using NHibernate.Driver;
@@ -21,15 +22,15 @@ namespace NHibernate.AdoNet
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class AbstractBatcher : IBatcher
 	{
-		public virtual Task<IDataReader> ExecuteReaderAsync(IDbCommand cmd)
+		public virtual Task<DbDataReader> ExecuteReaderAsync(DbCommand cmd)
 		{
 			try
 			{
-				return Task.FromResult<IDataReader>(ExecuteReader(cmd));
+				return Task.FromResult<DbDataReader>(ExecuteReader(cmd));
 			}
 			catch (Exception ex)
 			{
-				return TaskHelper.FromException<IDataReader>(ex);
+				return TaskHelper.FromException<DbDataReader>(ex);
 			}
 		}
 	}
