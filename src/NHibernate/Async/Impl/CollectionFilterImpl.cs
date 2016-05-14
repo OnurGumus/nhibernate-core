@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
@@ -42,3 +43,4 @@ namespace NHibernate.Impl
 		}
 	}
 }
+#endif

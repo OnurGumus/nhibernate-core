@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Loader.Criteria;
@@ -29,3 +30,4 @@ namespace NHibernate.Loader
 		}
 	}
 }
+#endif

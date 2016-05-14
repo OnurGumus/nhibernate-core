@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using System.Data;
 using NHibernate.AdoNet;
@@ -30,3 +31,4 @@ namespace NHibernate.Engine
 		Task<IDataReader> ExecuteReaderAsync(IDbCommand cmd);
 	}
 }
+#endif

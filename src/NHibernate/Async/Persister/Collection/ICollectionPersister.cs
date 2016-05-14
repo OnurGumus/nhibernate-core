@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Collections.Generic;
 using System.Data;
 using NHibernate.Cache;
@@ -106,3 +107,4 @@ namespace NHibernate.Persister.Collection
 		Task<object> GetElementByIndexAsync(object key, object index, ISessionImplementor session, object owner);
 	}
 }
+#endif

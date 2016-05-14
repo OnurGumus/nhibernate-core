@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using NHibernate.Engine;
 using NHibernate.Event;
@@ -41,3 +42,4 @@ namespace NHibernate.Cache.Entry
 		}
 	}
 }
+#endif

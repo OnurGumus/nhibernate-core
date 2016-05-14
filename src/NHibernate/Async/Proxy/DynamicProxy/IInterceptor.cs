@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Threading.Tasks;
 using System;
 using NHibernate.Util;
@@ -15,3 +16,4 @@ namespace NHibernate.Proxy.DynamicProxy
 		Task<object> InterceptAsync(InvocationInfo info);
 	}
 }
+#endif

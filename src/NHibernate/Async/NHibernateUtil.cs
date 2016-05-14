@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using System.Collections;
 using NHibernate.Collection;
@@ -103,3 +104,4 @@ namespace NHibernate
 		}
 	}
 }
+#endif

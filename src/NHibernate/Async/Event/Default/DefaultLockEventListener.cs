@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
@@ -64,3 +65,4 @@ namespace NHibernate.Event.Default
 		}
 	}
 }
+#endif

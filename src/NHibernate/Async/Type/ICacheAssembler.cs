@@ -1,3 +1,4 @@
+#if NET_4_5
 using NHibernate.Engine;
 using System.Threading.Tasks;
 using System;
@@ -27,3 +28,4 @@ namespace NHibernate.Type
 		Task BeforeAssembleAsync(object cached, ISessionImplementor session);
 	}
 }
+#endif

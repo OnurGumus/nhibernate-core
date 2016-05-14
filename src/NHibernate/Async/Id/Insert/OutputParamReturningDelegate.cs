@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using System.Data;
 using NHibernate.Dialect;
@@ -31,3 +32,4 @@ namespace NHibernate.Id.Insert
 		}
 	}
 }
+#endif

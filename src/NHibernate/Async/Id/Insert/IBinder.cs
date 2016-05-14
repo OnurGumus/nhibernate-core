@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Data;
 using System.Threading.Tasks;
 using System;
@@ -11,3 +12,4 @@ namespace NHibernate.Id.Insert
 		Task BindValuesAsync(IDbCommand cm);
 	}
 }
+#endif

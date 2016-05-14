@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -16,3 +17,4 @@ namespace NHibernate.Event
 		}
 	}
 }
+#endif

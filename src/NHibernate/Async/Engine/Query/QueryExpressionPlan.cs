@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using System.Collections.Generic;
 using NHibernate.Hql;
@@ -16,3 +17,4 @@ namespace NHibernate.Engine.Query
 		}
 	}
 }
+#endif

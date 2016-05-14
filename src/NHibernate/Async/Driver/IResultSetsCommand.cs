@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Data;
 using NHibernate.SqlCommand;
 using System.Threading.Tasks;
@@ -12,3 +13,4 @@ namespace NHibernate.Driver
 		Task<IDataReader> GetReaderAsync(int ? commandTimeout);
 	}
 }
+#endif

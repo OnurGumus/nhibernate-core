@@ -1,3 +1,4 @@
+#if NET_4_5
 using NHibernate.Type;
 using NHibernate.Engine;
 using System.Data;
@@ -20,3 +21,4 @@ namespace NHibernate.Persister.Entity
 		Task<object[]> HydrateAsync(IDataReader rs, object id, object obj, ILoadable rootLoadable, string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session);
 	}
 }
+#endif

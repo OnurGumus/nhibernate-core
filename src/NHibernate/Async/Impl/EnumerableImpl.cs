@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using System.Collections;
 using System.Data;
@@ -82,3 +83,4 @@ namespace NHibernate.Impl
 		}
 	}
 }
+#endif

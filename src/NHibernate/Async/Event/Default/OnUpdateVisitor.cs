@@ -1,3 +1,4 @@
+#if NET_4_5
 using NHibernate.Collection;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
@@ -51,3 +52,4 @@ namespace NHibernate.Event.Default
 		}
 	}
 }
+#endif

@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using NHibernate.Cache;
 using NHibernate.Cache.Access;
@@ -77,3 +78,4 @@ namespace NHibernate.Event.Default
 		}
 	}
 }
+#endif

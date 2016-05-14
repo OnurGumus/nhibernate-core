@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Collections;
 using NHibernate.Type;
 using NHibernate.Engine;
@@ -30,3 +31,4 @@ namespace NHibernate.Metadata
 		Task SetIdentifierAsync(object entity, object id, EntityMode entityMode);
 	}
 }
+#endif

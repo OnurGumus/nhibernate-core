@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using NHibernate.Engine;
 using System.Threading.Tasks;
@@ -13,3 +14,4 @@ namespace NHibernate.Intercept
 		Task<object> InitializeLazyPropertyAsync(string fieldName, object entity, ISessionImplementor session);
 	}
 }
+#endif

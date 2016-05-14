@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Diagnostics;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
@@ -160,3 +161,4 @@ namespace NHibernate.Engine
 		}
 	}
 }
+#endif

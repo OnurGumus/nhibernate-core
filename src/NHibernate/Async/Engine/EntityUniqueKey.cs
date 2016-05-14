@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using NHibernate.Impl;
 using NHibernate.Type;
@@ -27,3 +28,4 @@ namespace NHibernate.Engine
 		}
 	}
 }
+#endif

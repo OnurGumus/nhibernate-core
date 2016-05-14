@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using System.Collections.Generic;
 using NHibernate.Engine;
@@ -42,3 +43,4 @@ namespace NHibernate.Criterion
 		}
 	}
 }
+#endif

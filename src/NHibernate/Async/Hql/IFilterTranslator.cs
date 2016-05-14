@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
@@ -21,3 +22,4 @@ namespace NHibernate.Hql
 		Task CompileAsync(string collectionRole, IDictionary<string, string> replacements, bool shallow);
 	}
 }
+#endif

@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Collections;
 using System.Data;
 using NHibernate.Collection.Generic;
@@ -127,3 +128,4 @@ namespace NHibernate.Collection
 		Task<ICollection> GetOrphansAsync(object snapshot, string entityName);
 	}
 }
+#endif

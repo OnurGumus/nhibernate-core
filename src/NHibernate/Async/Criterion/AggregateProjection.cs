@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using System.Collections.Generic;
 using NHibernate.SqlCommand;
@@ -29,3 +30,4 @@ namespace NHibernate.Criterion
 		}
 	}
 }
+#endif

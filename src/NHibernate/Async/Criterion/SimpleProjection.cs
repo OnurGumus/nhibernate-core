@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using System.Collections.Generic;
 using NHibernate.SqlCommand;
@@ -32,3 +33,4 @@ namespace NHibernate.Criterion
 		public abstract Task<SqlString> ToSqlStringAsync(ICriteria criteria, int position, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters);
 	}
 }
+#endif

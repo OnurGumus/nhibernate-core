@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -43,3 +44,4 @@ namespace NHibernate.Criterion
 		}
 	}
 }
+#endif

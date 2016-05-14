@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using System.Collections;
 using System.Reflection;
@@ -95,3 +96,4 @@ namespace NHibernate.Proxy.Poco
 		}
 	}
 }
+#endif

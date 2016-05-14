@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using System.Linq;
 using System.Collections;
@@ -105,3 +106,4 @@ namespace NHibernate.Loader.Custom
 		}
 	}
 }
+#endif

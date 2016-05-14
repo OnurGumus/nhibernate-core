@@ -1,3 +1,4 @@
+#if NET_4_5
 using NHibernate.Engine;
 using System.Threading.Tasks;
 using System;
@@ -38,3 +39,4 @@ namespace NHibernate.Id
 		Task<object> GenerateAsync(ISessionImplementor session, object obj);
 	}
 }
+#endif

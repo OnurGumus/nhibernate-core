@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Collections;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -119,3 +120,4 @@ namespace NHibernate.Engine
 		}
 	}
 }
+#endif

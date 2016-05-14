@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using System.Reflection;
 using NHibernate.Properties;
@@ -61,3 +62,4 @@ namespace NHibernate.Engine
 		}
 	}
 }
+#endif

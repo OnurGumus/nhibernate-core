@@ -1,3 +1,4 @@
+#if NET_4_5
 using NHibernate.Cfg;
 using NHibernate.Intercept;
 using System.Threading.Tasks;
@@ -47,3 +48,4 @@ namespace NHibernate.Proxy
 		}
 	}
 }
+#endif

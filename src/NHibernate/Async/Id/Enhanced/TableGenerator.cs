@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using System.Data;
 using System.Collections.Generic;
@@ -114,3 +115,4 @@ namespace NHibernate.Id.Enhanced
 		}
 	}
 }
+#endif

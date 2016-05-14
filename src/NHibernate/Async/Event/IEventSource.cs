@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -30,3 +31,4 @@ namespace NHibernate.Event
 		Task DeleteAsync(string entityName, object child, bool isCascadeDeleteEnabled, ISet<object> transientEntities);
 	}
 }
+#endif

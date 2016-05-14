@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Collection;
@@ -81,3 +82,4 @@ namespace NHibernate.Engine
 		Task SetReadOnlyAsync(object entityOrProxy, bool readOnly);
 	}
 }
+#endif

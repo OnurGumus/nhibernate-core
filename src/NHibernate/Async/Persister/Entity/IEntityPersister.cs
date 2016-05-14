@@ -1,3 +1,4 @@
+#if NET_4_5
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Engine;
@@ -158,3 +159,4 @@ namespace NHibernate.Persister.Entity
 		Task ResetIdentifierAsync(object entity, object currentId, object currentVersion, EntityMode entityMode);
 	}
 }
+#endif

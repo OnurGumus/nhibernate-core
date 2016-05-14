@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Collections;
 using NHibernate.Engine;
 using System.Threading.Tasks;
@@ -27,3 +28,4 @@ namespace NHibernate.Type
 		Task<object> SeedAsync(ISessionImplementor session);
 	}
 }
+#endif

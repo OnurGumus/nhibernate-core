@@ -1,3 +1,4 @@
+#if NET_4_5
 using NHibernate.Action;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -45,3 +46,4 @@ namespace NHibernate.Event.Default
 		}
 	}
 }
+#endif

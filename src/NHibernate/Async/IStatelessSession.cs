@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using System.Data;
 using System.Linq.Expressions;
@@ -93,3 +94,4 @@ namespace NHibernate
 		Task RefreshAsync(string entityName, object entity, LockMode lockMode);
 	}
 }
+#endif

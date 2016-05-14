@@ -1,3 +1,4 @@
+#if NET_4_5
 using NHibernate;
 using System.Threading.Tasks;
 using System;
@@ -42,3 +43,4 @@ namespace NHibernate.Tuple
 		Task<object> InstantiateAsync();
 	}
 }
+#endif

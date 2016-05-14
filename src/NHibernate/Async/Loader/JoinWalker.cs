@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -212,3 +213,4 @@ namespace NHibernate.Loader
 		}
 	}
 }
+#endif

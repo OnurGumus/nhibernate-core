@@ -1,3 +1,4 @@
+#if NET_4_5
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using System.Threading.Tasks;
@@ -74,3 +75,4 @@ namespace NHibernate.Engine
 		}
 	}
 }
+#endif

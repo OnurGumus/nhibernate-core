@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using log4net;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -15,6 +16,7 @@ using NHibernate.AsyncGenerator.Extensions;
 using Nito.AsyncEx;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
+[assembly: log4net.Config.XmlConfigurator()]
 namespace NHibernate.AsyncGenerator
 {
 	public class MethodReferenceResult
@@ -63,6 +65,8 @@ namespace NHibernate.AsyncGenerator
 
 	internal class MethodInfo
 	{
+		private static readonly ILog Logger = LogManager.GetLogger(typeof(MethodInfo));
+
 		public MethodInfo(TypeInfo typeInfo, IMethodSymbol symbol, MethodDeclarationSyntax node)
 		{
 			TypeInfo = typeInfo;
@@ -130,7 +134,7 @@ namespace NHibernate.AsyncGenerator
 				if (invocationNode.Parent.IsKind(SyntaxKind.SelectClause)) // await is not supported in select clause
 				{
 					result.CanBeAsync = false;
-					Console.WriteLine($"Cannot await async method in a select clause:\r\n{invocationNode.Parent}\r\n");
+					Logger.Warn($"Cannot await async method in a select clause:\r\n{invocationNode.Parent}\r\n");
 				}
 				else
 				{
@@ -138,7 +142,7 @@ namespace NHibernate.AsyncGenerator
 					if (anonFunctionNode?.AsyncKeyword.IsMissing == false)
 					{
 						result.CanBeAsync = false;
-						Console.WriteLine($"Cannot await async method in an non async anonymous function:\r\n{anonFunctionNode}\r\n");
+						Logger.Warn($"Cannot await async method in an non async anonymous function:\r\n{anonFunctionNode}\r\n");
 					}
 				}
 
@@ -153,7 +157,7 @@ namespace NHibernate.AsyncGenerator
 					if (!delegateMethod.IsAsync)
 					{
 						result.CanBeAsync = false;
-						Console.WriteLine($"Cannot pass an async method as parameter to a non async Delegate method:\r\n{delegateMethod}\r\n");
+						Logger.Warn($"Cannot pass an async method as parameter to a non async Delegate method:\r\n{delegateMethod}\r\n");
 					}
 					else
 					{
@@ -478,6 +482,8 @@ namespace NHibernate.AsyncGenerator
 
 	internal class ProjectInfo : Dictionary<string, DocumentInfo>
 	{
+		private static readonly ILog Logger = LogManager.GetLogger(typeof(ProjectInfo));
+
 		public ProjectInfo(Project project)
 		{
 			Project = project;
@@ -514,7 +520,7 @@ namespace NHibernate.AsyncGenerator
 		{
 			if (document.Project != Project)
 			{
-				throw new NotSupportedException("Multiple Project for DocumentInfos");
+				throw new NotSupportedException("Multiple Project for ProjectInfo");
 			}
 
 			var docInfo = await GetOrCreateDocumentInfo(document).ConfigureAwait(false);
@@ -560,18 +566,18 @@ namespace NHibernate.AsyncGenerator
 			var methodSymbol = symbol as IMethodSymbol;
 			if (methodSymbol == null)
 			{
-				Console.WriteLine($"Symbol {symbol} is not a method and cannot be made async");
+				Logger.Warn($"Symbol {symbol} is not a method and cannot be made async");
 				return new SymbolInfo();
 			}
 			if (methodSymbol.MethodKind != MethodKind.Ordinary)
 			{
-				Console.WriteLine($"Method {methodSymbol} is a {methodSymbol.MethodKind} and cannot be made async");
+				Logger.Warn($"Method {methodSymbol} is a {methodSymbol.MethodKind} and cannot be made async");
 				return new SymbolInfo();
 			}
 
 			if (methodSymbol.Parameters.Any(o => o.RefKind == RefKind.Out))
 			{
-				Console.WriteLine($"Method {methodSymbol} has out parameters and cannot be made async");
+				Logger.Warn($"Method {methodSymbol} has out parameters and cannot be made async");
 				return new SymbolInfo();
 			}
 
@@ -593,7 +599,7 @@ namespace NHibernate.AsyncGenerator
 				var synatx = interfaceMember.DeclaringSyntaxReferences.SingleOrDefault();
 				if (synatx == null)
 				{
-					Console.WriteLine(
+					Logger.Warn(
 						$"Method {methodSymbol} implements an external interface {interfaceMember} and cannot be made async");
 					return new SymbolInfo();
 				}
@@ -609,7 +615,7 @@ namespace NHibernate.AsyncGenerator
 				var synatx = overridenMethod.DeclaringSyntaxReferences.SingleOrDefault();
 				if (synatx == null)
 				{
-					Console.WriteLine($"Method {methodSymbol} overrides an external method {overridenMethod} and cannot be made async");
+					Logger.Warn($"Method {methodSymbol} overrides an external method {overridenMethod} and cannot be made async");
 					return new SymbolInfo();
 				}
 				if (overridenMethod.OverriddenMethod != null)
@@ -760,6 +766,8 @@ namespace NHibernate.AsyncGenerator
 	{
 		public AsyncConfiguration Async { get; set; } = new AsyncConfiguration();
 
+		public string Directive { get; set; }
+
 	}
 
 	public class YieldToAsyncMethodRewriter : CSharpSyntaxRewriter
@@ -792,20 +800,7 @@ namespace NHibernate.AsyncGenerator
 											.WithArgumentList(
 												ArgumentList()))))));
 
-			var returnStatement = ReturnStatement(IdentifierName("yields")/*
-				InvocationExpression(
-					MemberAccessExpression(
-						SyntaxKind.SimpleMemberAccessExpression,
-						IdentifierName("Task"),
-						GenericName(
-							Identifier("FromResult"))
-							.WithTypeArgumentList(
-								TypeArgumentList(SingletonSeparatedList<TypeSyntax>(_returnType)))))
-					.WithArgumentList(
-						ArgumentList(
-							SingletonSeparatedList(
-								Argument(
-									IdentifierName("yields")))))*/);
+			var returnStatement = ReturnStatement(IdentifierName("yields"));
 
 			node = node.WithBody(
 				Block(
@@ -1215,11 +1210,6 @@ namespace NHibernate.AsyncGenerator
 					{
 						var methodAnalyzeResult = methodInfo.Analyze();
 						tasksUsed |= methodAnalyzeResult.CanSkipAsync || methodAnalyzeResult.IsEmpty || methodAnalyzeResult.Yields || !methodAnalyzeResult.CanBeAsnyc;
-						/*
-						if (methodAnalyzeResult.HasBody)
-						{
-							continue;
-						}*/
 						asyncLock |= methodAnalyzeResult.MustRunSynchronized;
 						memberNodes.Add(RewiteMethod(methodInfo, methodAnalyzeResult));
 					}
@@ -1233,10 +1223,6 @@ namespace NHibernate.AsyncGenerator
 						{
 							var methodAnalyzeResult = methodInfo.Analyze();
 							tasksUsed |= methodAnalyzeResult.CanSkipAsync || methodAnalyzeResult.IsEmpty || methodAnalyzeResult.Yields || !methodAnalyzeResult.CanBeAsnyc;
-							/*if (methodAnalyzeResult.HasBody)
-							{
-								continue;
-							}*/
 							subAsyncLock |= methodAnalyzeResult.MustRunSynchronized;
 							subMemberNodes.Add(RewiteMethod(methodInfo, methodAnalyzeResult));
 						}
@@ -1306,6 +1292,26 @@ namespace NHibernate.AsyncGenerator
 				rootNode = rootNode.AddUsings(UsingDirective(IdentifierName(customTask.Namespace)));
 			}
 
+			if (!string.IsNullOrEmpty(Configuration.Directive))
+			{
+				rootNode = rootNode
+					.WithLeadingTrivia(
+						rootNode.GetLeadingTrivia().Insert(
+							0,
+							Trivia(
+								IfDirectiveTrivia(
+									IdentifierName(Configuration.Directive),
+									true,
+									false,
+									false))))
+					.WithEndOfFileToken(
+						rootNode.EndOfFileToken.WithLeadingTrivia(
+							rootNode.EndOfFileToken.LeadingTrivia.Add(
+								Trivia(
+									EndIfDirectiveTrivia(
+										true)))));
+			}
+
 			var content = rootNode
 				.WithMembers(List(namespaceNodes))
 				.NormalizeWhitespace("	")
@@ -1354,7 +1360,8 @@ namespace NHibernate.AsyncGenerator
 						Namespace = "NHibernate.Util"
 					},
 					AttributeName = "Async"
-				}
+				},
+				Directive = "NET_4_5"
 			};
 
 			foreach (var pair in projectInfo.Where(o => o.Value.NamespaceInfos.Any()))

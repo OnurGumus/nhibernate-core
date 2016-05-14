@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
@@ -15,3 +16,4 @@ namespace NHibernate.Event
 		Task OnDeleteAsync(DeleteEvent @event, ISet<object> transientEntities);
 	}
 }
+#endif

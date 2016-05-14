@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Collections;
 using System.Data;
 using System.Xml;
@@ -129,3 +130,4 @@ namespace NHibernate.Type
 		Task<bool[]> ToColumnNullnessAsync(object value, IMapping mapping);
 	}
 }
+#endif

@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -31,3 +32,4 @@ namespace NHibernate.Criterion
 		Task<TypedValue[]> GetTypedValuesAsync(ICriteria criteria, ICriteriaQuery criteriaQuery);
 	}
 }
+#endif

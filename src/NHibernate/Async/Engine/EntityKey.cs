@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;
@@ -22,3 +23,4 @@ namespace NHibernate.Engine
 		}
 	}
 }
+#endif

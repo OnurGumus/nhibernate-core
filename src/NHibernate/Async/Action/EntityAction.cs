@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using System.IO;
 using System.Runtime.Serialization;
@@ -15,3 +16,4 @@ namespace NHibernate.Action
 		public abstract Task ExecuteAsync();
 	}
 }
+#endif

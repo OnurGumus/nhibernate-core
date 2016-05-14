@@ -1,3 +1,4 @@
+#if NET_4_5
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader.Collection;
@@ -30,3 +31,4 @@ namespace NHibernate.Persister.Collection
 		}
 	}
 }
+#endif

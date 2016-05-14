@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Collections;
 using NHibernate.Criterion;
 using NHibernate.Transform;
@@ -25,3 +26,4 @@ namespace NHibernate
 		Task<object> GetResultAsync(string key);
 	}
 }
+#endif

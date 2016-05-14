@@ -1,3 +1,4 @@
+#if NET_4_5
 using NHibernate.Engine;
 using System.Threading.Tasks;
 using System;
@@ -13,3 +14,4 @@ namespace NHibernate.Intercept
 		Task<object> InterceptAsync(object target, string fieldName, object value);
 	}
 }
+#endif

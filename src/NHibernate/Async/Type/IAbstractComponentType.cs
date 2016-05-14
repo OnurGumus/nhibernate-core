@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Reflection;
 using NHibernate.Engine;
 using System.Threading.Tasks;
@@ -24,3 +25,4 @@ namespace NHibernate.Type
 		Task<object> GetPropertyValueAsync(object component, int i, ISessionImplementor session);
 	}
 }
+#endif

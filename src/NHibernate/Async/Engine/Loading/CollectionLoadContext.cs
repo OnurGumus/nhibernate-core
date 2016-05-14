@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -211,3 +212,4 @@ namespace NHibernate.Engine.Loading
 		}
 	}
 }
+#endif

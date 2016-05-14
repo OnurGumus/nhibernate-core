@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Collections;
 using System.Threading.Tasks;
 using System;
@@ -20,3 +21,4 @@ namespace NHibernate.Event
 		Task OnPersistAsync(PersistEvent @event, IDictionary createdAlready);
 	}
 }
+#endif

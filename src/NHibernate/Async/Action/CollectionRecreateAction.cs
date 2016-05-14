@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using System.Diagnostics;
 using NHibernate.Collection;
@@ -39,3 +40,4 @@ namespace NHibernate.Action
 		}
 	}
 }
+#endif

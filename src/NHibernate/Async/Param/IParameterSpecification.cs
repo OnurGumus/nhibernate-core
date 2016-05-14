@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Collections.Generic;
 using System.Data;
 using NHibernate.Engine;
@@ -40,3 +41,4 @@ namespace NHibernate.Param
 		Task BindAsync(IDbCommand command, IList<Parameter> multiSqlQueryParametersList, int singleSqlParametersOffset, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session);
 	}
 }
+#endif

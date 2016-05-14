@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Threading.Tasks;
 using System;
 using NHibernate.Util;
@@ -17,3 +18,4 @@ namespace NHibernate.Id.Enhanced
 		Task<long> GetNextValueAsync();
 	}
 }
+#endif

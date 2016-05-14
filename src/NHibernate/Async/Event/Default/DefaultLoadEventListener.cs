@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using System.Diagnostics;
 using System.Text;
@@ -464,3 +465,4 @@ namespace NHibernate.Event.Default
 		}
 	}
 }
+#endif

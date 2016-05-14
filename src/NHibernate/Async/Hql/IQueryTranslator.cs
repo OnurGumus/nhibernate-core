@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Engine;
@@ -51,3 +52,4 @@ namespace NHibernate.Hql
 		Task<int> ExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session);
 	}
 }
+#endif

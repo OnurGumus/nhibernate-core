@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using NHibernate.Proxy.DynamicProxy;
 using NHibernate.Util;
@@ -52,3 +53,4 @@ namespace NHibernate.Intercept
 		}
 	}
 }
+#endif

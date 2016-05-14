@@ -1,3 +1,4 @@
+#if NET_4_5
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using System.Threading.Tasks;
@@ -23,3 +24,4 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		Task<int> ExecuteAsync(QueryParameters parameters, ISessionImplementor session);
 	}
 }
+#endif

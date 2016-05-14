@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Engine;
@@ -21,3 +22,4 @@ namespace NHibernate.Cache
 		Task<IList> GetAsync(QueryKey key, ICacheAssembler[] returnTypes, bool isNaturalKeyLookup, ISet<string> spaces, ISessionImplementor session);
 	}
 }
+#endif

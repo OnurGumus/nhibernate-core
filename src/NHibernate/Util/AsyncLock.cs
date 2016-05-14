@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NET_4_5
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -48,3 +49,4 @@ namespace NHibernate.Util
 		}
 	}
 }
+#endif

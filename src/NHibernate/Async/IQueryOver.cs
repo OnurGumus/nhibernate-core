@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -74,3 +75,4 @@ namespace NHibernate
 		Task<IFutureValue<U>> FutureValueAsync<U>();
 	}
 }
+#endif

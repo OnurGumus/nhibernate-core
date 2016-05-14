@@ -1,3 +1,4 @@
+#if NET_4_5
 using NHibernate.Engine;
 using NHibernate.Id.Insert;
 using System.Threading.Tasks;
@@ -27,3 +28,4 @@ namespace NHibernate.Id
 		}
 	}
 }
+#endif

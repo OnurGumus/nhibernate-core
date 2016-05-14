@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Collections;
 using System.Text;
 using NHibernate.Persister.Entity;
@@ -137,3 +138,4 @@ namespace NHibernate.Engine
 		}
 	}
 }
+#endif

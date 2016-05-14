@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Collections;
 using NHibernate.Engine;
 using System.Threading.Tasks;
@@ -47,3 +48,4 @@ namespace NHibernate.Tuple.Entity
 		Task<object[]> GetPropertyValuesToInsertAsync(object entity, IDictionary mergeMap, ISessionImplementor session);
 	}
 }
+#endif

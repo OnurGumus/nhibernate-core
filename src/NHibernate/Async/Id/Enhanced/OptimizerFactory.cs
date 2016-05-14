@@ -1,3 +1,4 @@
+#if NET_4_5
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -140,3 +141,4 @@ namespace NHibernate.Id.Enhanced
 		}
 	}
 }
+#endif

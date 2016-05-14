@@ -1,3 +1,4 @@
+#if NET_4_5
 using NHibernate.Id;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -247,3 +248,4 @@ namespace NHibernate.Engine
 		}
 	}
 }
+#endif

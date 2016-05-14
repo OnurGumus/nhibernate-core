@@ -1,3 +1,4 @@
+#if NET_4_5
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,3 +26,4 @@ namespace NHibernate.Impl
 		protected abstract Task<IList> GetResultsFromAsync(TMultiApproach multiApproach);
 	}
 }
+#endif
