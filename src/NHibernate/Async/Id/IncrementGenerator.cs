@@ -56,16 +56,16 @@ namespace NHibernate.Id
 			Logger.Debug("fetching initial value: " + _sql);
 			try
 			{
-				var cmd = session.Batcher.PrepareCommand(CommandType.Text, _sql, SqlTypeFactory.NoTypes);
+				var cmd = await (session.Batcher.PrepareCommandAsync(CommandType.Text, _sql, SqlTypeFactory.NoTypes));
 				DbDataReader reader = null;
 				try
 				{
 					reader = await (session.Batcher.ExecuteReaderAsync(cmd));
 					try
 					{
-						if (reader.Read())
+						if (await (reader.ReadAsync()))
 						{
-							_next = !reader.IsDBNull(0) ? Convert.ToInt64(reader.GetValue(0)) + 1 : 1L;
+							_next = !await (reader.IsDBNullAsync(0)) ? Convert.ToInt64(reader.GetValue(0)) + 1 : 1L;
 						}
 						else
 						{

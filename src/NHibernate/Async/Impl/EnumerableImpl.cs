@@ -22,6 +22,28 @@ namespace NHibernate.Impl
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class EnumerableImpl : IEnumerable, IEnumerator, IDisposable
 	{
+		private async Task PostNextAsync()
+		{
+			log.Debug("attempting to retrieve next results");
+			bool readResult;
+			try
+			{
+				readResult = await (_reader.ReadAsync());
+				if (!readResult)
+				{
+					log.Debug("exhausted results");
+					_currentResult = null;
+					_session.Batcher.CloseCommand(_cmd, _reader);
+				}
+				else
+					log.Debug("retrieved next results");
+			}
+			catch (DbException e)
+			{
+				throw ADOExceptionHelper.Convert(_session.Factory.SQLExceptionConverter, e, "Error executing Enumerable() query", new SqlString(_cmd.CommandText));
+			}
+		}
+
 		private async Task PostMoveNextAsync(bool hasNext)
 		{
 			_startedReading = true;

@@ -86,16 +86,10 @@ namespace NHibernate.Collection.Generic
 			return deletes;
 		}
 
-		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
+		public override async Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
 		{
-			try
-			{
-				return Task.FromResult<ICollection>(GetOrphans(snapshot, entityName));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<ICollection>(ex);
-			}
+			var sn = (ICollection)snapshot;
+			return await (GetOrphansAsync(sn, (ICollection)_gbag, entityName, Session));
 		}
 
 		public override async Task<object> GetSnapshotAsync(ICollectionPersister persister)

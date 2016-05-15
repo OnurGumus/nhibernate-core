@@ -17,15 +17,17 @@ namespace NHibernate.Type
 			return NullSafeGetAsync(rs, names[0], session, owner);
 		}
 
-		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)
+		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
-			try
+			int index = rs.GetOrdinal(name);
+			if (await (rs.IsDBNullAsync(index)))
 			{
-				return Task.FromResult<object>(NullSafeGet(rs, name, session, owner));
+				return null;
 			}
-			catch (Exception ex)
+			else
 			{
-				return TaskHelper.FromException<object>(ex);
+				string str = (string)NHibernateUtil.String.Get(rs, index);
+				return string.IsNullOrEmpty(str) ? null : str;
 			}
 		}
 

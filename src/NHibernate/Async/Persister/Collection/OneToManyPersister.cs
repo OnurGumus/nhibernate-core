@@ -48,11 +48,11 @@ namespace NHibernate.Persister.Collection
 							// will still be issued when it used to be null
 							if (useBatch)
 							{
-								st = session.Batcher.PrepareBatchCommand(SqlDeleteRowString.CommandType, sql.Text, SqlDeleteRowString.ParameterTypes);
+								st = await (session.Batcher.PrepareBatchCommandAsync(SqlDeleteRowString.CommandType, sql.Text, SqlDeleteRowString.ParameterTypes));
 							}
 							else
 							{
-								st = session.Batcher.PrepareCommand(SqlDeleteRowString.CommandType, sql.Text, SqlDeleteRowString.ParameterTypes);
+								st = await (session.Batcher.PrepareCommandAsync(SqlDeleteRowString.CommandType, sql.Text, SqlDeleteRowString.ParameterTypes));
 							}
 
 							try
@@ -61,11 +61,11 @@ namespace NHibernate.Persister.Collection
 								await (WriteElementToWhereAsync(st, collection.GetSnapshotElement(entry, i), loc, session));
 								if (useBatch)
 								{
-									session.Batcher.AddToBatch(deleteExpectation);
+									await (session.Batcher.AddToBatchAsync(deleteExpectation));
 								}
 								else
 								{
-									deleteExpectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+									deleteExpectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st)), st);
 								}
 							}
 							catch (Exception e)
@@ -108,11 +108,11 @@ namespace NHibernate.Persister.Collection
 							DbCommand st = null;
 							if (useBatch)
 							{
-								st = session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, sql.Text, SqlInsertRowString.ParameterTypes);
+								st = await (session.Batcher.PrepareBatchCommandAsync(SqlInsertRowString.CommandType, sql.Text, SqlInsertRowString.ParameterTypes));
 							}
 							else
 							{
-								st = session.Batcher.PrepareCommand(SqlInsertRowString.CommandType, sql.Text, SqlInsertRowString.ParameterTypes);
+								st = await (session.Batcher.PrepareCommandAsync(SqlInsertRowString.CommandType, sql.Text, SqlInsertRowString.ParameterTypes));
 							}
 
 							try
@@ -127,11 +127,11 @@ namespace NHibernate.Persister.Collection
 								await (WriteElementToWhereAsync(st, collection.GetElement(entry), loc, session));
 								if (useBatch)
 								{
-									session.Batcher.AddToBatch(insertExpectation);
+									await (session.Batcher.AddToBatchAsync(insertExpectation));
 								}
 								else
 								{
-									insertExpectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+									insertExpectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st)), st);
 								}
 							}
 							catch (Exception e)

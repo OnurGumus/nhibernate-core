@@ -159,4 +159,23 @@ namespace NHibernate.Persister.Entity
 		Task ResetIdentifierAsync(object entity, object currentId, object currentVersion, EntityMode entityMode);
 	}
 }
+
+namespace NHibernate.Persister.Entity
+{
+	/// <summary>
+	/// Concrete <c>IEntityPersister</c>s implement mapping and persistence logic for a particular class.
+	/// </summary>
+	/// <remarks>
+	/// Implementors must be threadsafe (preferably immutable) and must provide a constructor of type
+	/// matching the signature of: (PersistentClass, SessionFactoryImplementor)
+	/// </remarks>
+	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+	public partial interface IEntityPersister : IOptimisticCacheSource
+	{
+		/// <summary>
+		/// Load an instance of the persistent class.
+		/// </summary>
+		Task<object> LoadAsync(object id, object optionalObject, LockMode lockMode, ISessionImplementor session);
+	}
+}
 #endif

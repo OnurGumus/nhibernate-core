@@ -131,6 +131,7 @@ namespace NHibernate.Engine
 		/// The Batcher is responsible for ensuring that all of the Drivers rules for how many open
 		/// <see cref="DbDataReader"/>s it can have are followed.
 		/// </remarks>
+		[Async]
 		int ExecuteNonQuery(DbCommand cmd);
 
 		/// <summary>

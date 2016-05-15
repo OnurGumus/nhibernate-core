@@ -29,7 +29,7 @@ namespace NHibernate.Dialect.Lock
 			ISessionFactoryImplementor factory = session.Factory;
 			try
 			{
-				DbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes);
+				DbCommand st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, lockable.IdAndVersionSqlTypes));
 				try
 				{
 					await (lockable.VersionType.NullSafeSetAsync(st, version, 1, session));
@@ -41,7 +41,7 @@ namespace NHibernate.Dialect.Lock
 						await (lockable.VersionType.NullSafeSetAsync(st, version, offset, session));
 					}
 
-					int affected = session.Batcher.ExecuteNonQuery(st);
+					int affected = await (session.Batcher.ExecuteNonQueryAsync(st));
 					if (affected < 0)
 					{
 						factory.StatisticsImplementor.OptimisticFailure(lockable.EntityName);

@@ -20,7 +20,7 @@ namespace NHibernate.Engine
 			for (int i = 0; i < size; i++)
 				await (ExecuteAsync((IExecutable)list[i]));
 			list.Clear();
-			session.Batcher.ExecuteBatch();
+			await (session.Batcher.ExecuteBatchAsync());
 		}
 
 		public async Task ExecuteAsync(IExecutable executable)

@@ -98,6 +98,57 @@ namespace NHibernate.Type
 			}
 		}
 
+		/// <summary>
+		/// Gets the value of the field from the <see cref = "DbDataReader"/>.
+		/// </summary>
+		/// <param name = "rs">The <see cref = "DbDataReader"/> positioned on the correct record.</param>
+		/// <param name = "name">The name of the field to get the value from.</param>
+		/// <returns>The value of the field.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method checks to see if value is null, if it is then the null is returned
+		/// from this method.
+		/// </para>
+		/// <para>
+		/// If the value is not null, then the method <see cref = "Get(DbDataReader, Int32)"/> 
+		/// is called and that method is responsible for retrieving the value.
+		/// </para>
+		/// </remarks>
+		public virtual async Task<object> NullSafeGetAsync(DbDataReader rs, string name)
+		{
+			int index = rs.GetOrdinal(name);
+			if (await (rs.IsDBNullAsync(index)))
+			{
+				if (IsDebugEnabled)
+				{
+					Log.Debug("returning null as column: " + name);
+				}
+
+				// TODO: add a method to NullableType.GetNullValue - if we want to
+				// use "MAGIC" numbers to indicate null values...
+				return null;
+			}
+			else
+			{
+				object val;
+				try
+				{
+					val = Get(rs, index);
+				}
+				catch (InvalidCastException ice)
+				{
+					throw new ADOException(string.Format("Could not cast the value in field {0} of type {1} to the Type {2}.  Please check to make sure that the mapping is correct and that your DataProvider supports this Data Type.", name, rs[index].GetType().Name, GetType().Name), ice);
+				}
+
+				if (IsDebugEnabled)
+				{
+					Log.Debug("returning '" + ToString(val) + "' as column: " + name);
+				}
+
+				return val;
+			}
+		}
+
 		/// <include file = 'IType.cs.xmldoc'
 		///path = '//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, String, ISessionImplementor, Object)"]/*'
 		////> 

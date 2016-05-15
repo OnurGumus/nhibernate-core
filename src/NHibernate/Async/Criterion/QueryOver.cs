@@ -57,98 +57,52 @@ namespace NHibernate.Criterion
 
 		Task<IList<TRoot>> IQueryOver<TRoot>.ListAsync()
 		{
-			try
-			{
-				return Task.FromResult<IList<TRoot>>(List());
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<IList<TRoot>>(ex);
-			}
+			return ListAsync();
 		}
 
 		Task<IList<U>> IQueryOver<TRoot>.ListAsync<U>()
 		{
-			try
-			{
-				return Task.FromResult<IList<U>>(List<U>());
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<IList<U>>(ex);
-			}
+			return ListAsync<U>();
+		}
+
+		async Task<int> IQueryOver<TRoot>.RowCountAsync()
+		{
+			return await (ToRowCountQuery().SingleOrDefaultAsync<int>());
+		}
+
+		async Task<long> IQueryOver<TRoot>.RowCountInt64Async()
+		{
+			return await (ToRowCountInt64Query().SingleOrDefaultAsync<long>());
 		}
 
 		Task<TRoot> IQueryOver<TRoot>.SingleOrDefaultAsync()
 		{
-			try
-			{
-				return Task.FromResult<TRoot>(SingleOrDefault());
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<TRoot>(ex);
-			}
+			return SingleOrDefaultAsync();
 		}
 
 		Task<U> IQueryOver<TRoot>.SingleOrDefaultAsync<U>()
 		{
-			try
-			{
-				return Task.FromResult<U>(SingleOrDefault<U>());
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<U>(ex);
-			}
+			return SingleOrDefaultAsync<U>();
 		}
 
 		Task<IEnumerable<TRoot>> IQueryOver<TRoot>.FutureAsync()
 		{
-			try
-			{
-				return Task.FromResult<IEnumerable<TRoot>>(Future());
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<IEnumerable<TRoot>>(ex);
-			}
+			return FutureAsync();
 		}
 
 		Task<IEnumerable<U>> IQueryOver<TRoot>.FutureAsync<U>()
 		{
-			try
-			{
-				return Task.FromResult<IEnumerable<U>>(Future<U>());
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<IEnumerable<U>>(ex);
-			}
+			return FutureAsync<U>();
 		}
 
 		Task<IFutureValue<TRoot>> IQueryOver<TRoot>.FutureValueAsync()
 		{
-			try
-			{
-				return Task.FromResult<IFutureValue<TRoot>>(FutureValue());
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<IFutureValue<TRoot>>(ex);
-			}
+			return FutureValueAsync();
 		}
 
 		Task<IFutureValue<U>> IQueryOver<TRoot>.FutureValueAsync<U>()
 		{
-			try
-			{
-				return Task.FromResult<IFutureValue<U>>(FutureValue<U>());
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<IFutureValue<U>>(ex);
-			}
+			return FutureValueAsync<U>();
 		}
 	}
 }

@@ -227,7 +227,7 @@ namespace NHibernate.Loader
 					}
 
 					int count;
-					for (count = 0; count < maxRows && rs.Read(); count++)
+					for (count = 0; count < maxRows && await (rs.ReadAsync()); count++)
 					{
 						if (Log.IsDebugEnabled)
 						{
@@ -638,6 +638,22 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
+		/// Advance the cursor to the first required row of the <c>DbDataReader</c>
+		/// </summary>
+		internal static async Task AdvanceAsync(DbDataReader rs, RowSelection selection)
+		{
+			int firstRow = GetFirstRow(selection);
+			if (firstRow != 0)
+			{
+				// DataReaders are forward-only, readonly, so we have to step through
+				for (int i = 0; i < firstRow; i++)
+				{
+					await (rs.ReadAsync());
+				}
+			}
+		}
+
+		/// <summary>
 		/// Obtain an <c>DbCommand</c> with all parameters pre-bound. Bind positional parameters,
 		/// named parameters, and limit parameters.
 		/// </summary>
@@ -709,7 +725,7 @@ namespace NHibernate.Loader
 				Dialect.Dialect dialect = session.Factory.Dialect;
 				if (!dialect.SupportsLimitOffset || !UseLimit(selection, dialect))
 				{
-					Advance(rs, selection);
+					await (AdvanceAsync(rs, selection));
 				}
 
 				if (autoDiscoverTypes)

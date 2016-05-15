@@ -32,7 +32,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					CheckParametersExpectedType(parameters); // NH Different behavior (NH-1898)
 					var sqlQueryParametersList = sql.GetParameters().ToList();
 					SqlType[] parameterTypes = Parameters.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
-					st = session.Batcher.PrepareCommand(CommandType.Text, sql, parameterTypes);
+					st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, parameterTypes));
 					foreach (var parameterSpecification in Parameters)
 					{
 						await (parameterSpecification.BindAsync(st, sqlQueryParametersList, parameters, session));
@@ -46,7 +46,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 						}
 					}
 
-					return session.Batcher.ExecuteNonQuery(st);
+					return await (session.Batcher.ExecuteNonQueryAsync(st));
 				}
 				finally
 				{

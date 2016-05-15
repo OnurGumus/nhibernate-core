@@ -21,7 +21,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		public override async Task<int> ExecuteAsync(QueryParameters parameters, ISessionImplementor session)
 		{
 			CoordinateSharedCacheCleanup(session);
-			CreateTemporaryTableIfNecessary(persister, session);
+			await (CreateTemporaryTableIfNecessaryAsync(persister, session));
 			try
 			{
 				// First, save off the pertinent ids, saving the number of pertinent ids for return
@@ -34,13 +34,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 						var paramsSpec = Walker.Parameters;
 						var sqlQueryParametersList = idInsertSelect.GetParameters().ToList();
 						SqlType[] parameterTypes = paramsSpec.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
-						ps = session.Batcher.PrepareCommand(CommandType.Text, idInsertSelect, parameterTypes);
+						ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, idInsertSelect, parameterTypes));
 						foreach (var parameterSpecification in paramsSpec)
 						{
 							await (parameterSpecification.BindAsync(ps, sqlQueryParametersList, parameters, session));
 						}
 
-						resultCount = session.Batcher.ExecuteNonQuery(ps);
+						resultCount = await (session.Batcher.ExecuteNonQueryAsync(ps));
 					}
 					finally
 					{
@@ -62,8 +62,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					{
 						try
 						{
-							ps = session.Batcher.PrepareCommand(CommandType.Text, deletes[i], new SqlType[0]);
-							session.Batcher.ExecuteNonQuery(ps);
+							ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, deletes[i], new SqlType[0]));
+							await (session.Batcher.ExecuteNonQueryAsync(ps));
 						}
 						finally
 						{
@@ -83,7 +83,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 			finally
 			{
-				DropTemporaryTableIfNecessary(persister, session);
+				await (DropTemporaryTableIfNecessaryAsync(persister, session));
 			}
 		}
 	}

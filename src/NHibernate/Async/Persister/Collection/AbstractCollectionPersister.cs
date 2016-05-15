@@ -145,17 +145,17 @@ namespace NHibernate.Persister.Collection
 					IExpectation expectation = Expectations.AppropriateExpectation(DeleteAllCheckStyle);
 					//bool callable = DeleteAllCallable;
 					bool useBatch = expectation.CanBeBatched;
-					DbCommand st = useBatch ? session.Batcher.PrepareBatchCommand(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes) : session.Batcher.PrepareCommand(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes);
+					DbCommand st = useBatch ? await (session.Batcher.PrepareBatchCommandAsync(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes)) : await (session.Batcher.PrepareCommandAsync(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes));
 					try
 					{
 						await (WriteKeyAsync(st, id, offset, session));
 						if (useBatch)
 						{
-							session.Batcher.AddToBatch(expectation);
+							await (session.Batcher.AddToBatchAsync(expectation));
 						}
 						else
 						{
-							expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+							expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st)), st);
 						}
 					}
 					catch (Exception e)
@@ -278,11 +278,11 @@ namespace NHibernate.Persister.Collection
 							bool useBatch = expectation.CanBeBatched;
 							if (useBatch)
 							{
-								st = session.Batcher.PrepareBatchCommand(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text, SqlDeleteRowString.ParameterTypes);
+								st = await (session.Batcher.PrepareBatchCommandAsync(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text, SqlDeleteRowString.ParameterTypes));
 							}
 							else
 							{
-								st = session.Batcher.PrepareCommand(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text, SqlDeleteRowString.ParameterTypes);
+								st = await (session.Batcher.PrepareCommandAsync(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text, SqlDeleteRowString.ParameterTypes));
 							}
 
 							try
@@ -308,11 +308,11 @@ namespace NHibernate.Persister.Collection
 
 								if (useBatch)
 								{
-									session.Batcher.AddToBatch(expectation);
+									await (session.Batcher.AddToBatchAsync(expectation));
 								}
 								else
 								{
-									expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+									expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st)), st);
 								}
 
 								count++;
@@ -436,13 +436,13 @@ namespace NHibernate.Persister.Collection
 					{
 					}
 
-					DbCommand st = session.Batcher.PrepareCommand(CommandType.Text, GenerateSelectSizeString(session), KeyType.SqlTypes(factory));
+					DbCommand st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, GenerateSelectSizeString(session), KeyType.SqlTypes(factory)));
 					DbDataReader rs = null;
 					try
 					{
 						await (KeyType.NullSafeSetAsync(st, key, 0, session));
 						rs = await (session.Batcher.ExecuteReaderAsync(st));
-						return rs.Read() ? Convert.ToInt32(rs.GetValue(0)) - baseIndex : 0;
+						return await (rs.ReadAsync()) ? Convert.ToInt32(rs.GetValue(0)) - baseIndex : 0;
 					}
 					finally
 					{
@@ -472,7 +472,7 @@ namespace NHibernate.Persister.Collection
 				{
 					List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));
 					sqlTl.AddRange(indexOrElementType.SqlTypes(factory));
-					DbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTl.ToArray());
+					DbCommand st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, sqlTl.ToArray()));
 					DbDataReader rs = null;
 					try
 					{
@@ -481,7 +481,7 @@ namespace NHibernate.Persister.Collection
 						rs = await (session.Batcher.ExecuteReaderAsync(st));
 						try
 						{
-							return rs.Read();
+							return await (rs.ReadAsync());
 						}
 						finally
 						{
@@ -510,7 +510,7 @@ namespace NHibernate.Persister.Collection
 				{
 					List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));
 					sqlTl.AddRange(IndexType.SqlTypes(factory));
-					DbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sqlSelectRowByIndexString, sqlTl.ToArray());
+					DbCommand st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sqlSelectRowByIndexString, sqlTl.ToArray()));
 					DbDataReader rs = null;
 					try
 					{
@@ -519,7 +519,7 @@ namespace NHibernate.Persister.Collection
 						rs = await (session.Batcher.ExecuteReaderAsync(st));
 						try
 						{
-							if (rs.Read())
+							if (await (rs.ReadAsync()))
 							{
 								return await (ElementType.NullSafeGetAsync(rs, elementColumnAliases, session, owner));
 							}
@@ -548,7 +548,7 @@ namespace NHibernate.Persister.Collection
 		{
 			object entryId = null;
 			int offset = 0;
-			DbCommand st = useBatch ? session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes) : session.Batcher.PrepareCommand(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes);
+			DbCommand st = useBatch ? await (session.Batcher.PrepareBatchCommandAsync(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes)) : await (session.Batcher.PrepareCommandAsync(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes));
 			try
 			{
 				//offset += expectation.Prepare(st, factory.ConnectionProvider.Driver);
@@ -567,11 +567,11 @@ namespace NHibernate.Persister.Collection
 				await (WriteElementAsync(st, collection.GetElement(entry), offset, session));
 				if (useBatch)
 				{
-					session.Batcher.AddToBatch(expectation);
+					await (session.Batcher.AddToBatchAsync(expectation));
 				}
 				else
 				{
-					expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+					expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st)), st);
 				}
 			}
 			catch (Exception e)

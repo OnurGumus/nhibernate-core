@@ -216,6 +216,32 @@ namespace NHibernate.Collection
 			}
 		}
 
+		public async Task<ICollection> GetQueuedOrphansAsync(string entityName)
+		{
+			if (HasQueuedOperations)
+			{
+				List<object> additions = new List<object>(operationQueue.Count);
+				List<object> removals = new List<object>(operationQueue.Count);
+				for (int i = 0; i < operationQueue.Count; i++)
+				{
+					IDelayedOperation op = operationQueue[i];
+					if (op.AddedInstance != null)
+					{
+						additions.Add(op.AddedInstance);
+					}
+
+					if (op.Orphan != null)
+					{
+						removals.Add(op.Orphan);
+					}
+				}
+
+				return await (GetOrphansAsync(removals, additions, entityName, session));
+			}
+
+			return CollectionHelper.EmptyCollection;
+		}
+
 		/// <summary>
 		/// Called before inserting rows, to ensure that any surrogate keys are fully generated
 		/// </summary>

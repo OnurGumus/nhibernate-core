@@ -30,16 +30,10 @@ namespace NHibernate.Collection.Generic
 			return clonedMap;
 		}
 
-		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
+		public override async Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
 		{
-			try
-			{
-				return Task.FromResult<ICollection>(GetOrphans(snapshot, entityName));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<ICollection>(ex);
-			}
+			var sn = (IDictionary<TKey, TValue>)snapshot;
+			return await (GetOrphansAsync((ICollection)sn.Values, (ICollection)WrappedMap.Values, entityName, Session));
 		}
 
 		public override async Task<bool> EqualsSnapshotAsync(ICollectionPersister persister)

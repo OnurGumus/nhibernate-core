@@ -25,11 +25,11 @@ namespace NHibernate.Id.Insert
 			try
 			{
 				// prepare and execute the insert
-				DbCommand insert = session.Batcher.PrepareCommand(insertSQL.CommandType, insertSQL.Text, insertSQL.ParameterTypes);
+				DbCommand insert = await (session.Batcher.PrepareCommandAsync(insertSQL.CommandType, insertSQL.Text, insertSQL.ParameterTypes));
 				try
 				{
 					await (binder.BindValuesAsync(insert));
-					session.Batcher.ExecuteNonQuery(insert);
+					await (session.Batcher.ExecuteNonQueryAsync(insert));
 				}
 				finally
 				{
@@ -46,7 +46,7 @@ namespace NHibernate.Id.Insert
 				try
 				{
 					//fetch the generated id in a separate query
-					DbCommand idSelect = session.Batcher.PrepareCommand(CommandType.Text, selectSQL, ParametersTypes);
+					DbCommand idSelect = await (session.Batcher.PrepareCommandAsync(CommandType.Text, selectSQL, ParametersTypes));
 					try
 					{
 						await (BindParametersAsync(session, idSelect, binder.Entity));

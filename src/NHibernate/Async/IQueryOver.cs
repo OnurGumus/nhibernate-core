@@ -37,6 +37,14 @@ namespace NHibernate
 		/// <returns>The list filled with the results.</returns>
 		Task<IList<U>> ListAsync<U>();
 		/// <summary>
+		/// Short for ToRowCountQuery().SingleOrDefault&lt;int&gt;()
+		/// </summary>
+		Task<int> RowCountAsync();
+		/// <summary>
+		/// Short for ToRowCountInt64Query().SingleOrDefault&lt;long&gt;()
+		/// </summary>
+		Task<long> RowCountInt64Async();
+		/// <summary>
 		/// Convenience method to return a single instance that matches
 		/// the query, or null if the query returns no results.
 		/// </summary>

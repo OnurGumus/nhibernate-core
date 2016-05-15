@@ -24,14 +24,14 @@ namespace NHibernate.Id.Enhanced
 				_owner._accessCounter++;
 				try
 				{
-					DbCommand st = _session.Batcher.PrepareCommand(CommandType.Text, _owner._sql, SqlTypeFactory.NoTypes);
+					DbCommand st = await (_session.Batcher.PrepareCommandAsync(CommandType.Text, _owner._sql, SqlTypeFactory.NoTypes));
 					DbDataReader rs = null;
 					try
 					{
 						rs = await (_session.Batcher.ExecuteReaderAsync(st));
 						try
 						{
-							rs.Read();
+							await (rs.ReadAsync());
 							long result = Convert.ToInt64(rs.GetValue(0));
 							if (Log.IsDebugEnabled)
 							{

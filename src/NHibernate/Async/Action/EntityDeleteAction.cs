@@ -7,6 +7,7 @@ using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Persister.Entity;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Action
 {
@@ -74,6 +75,19 @@ namespace NHibernate.Action
 			{
 				stopwatch.Stop();
 				Session.Factory.StatisticsImplementor.DeleteEntity(Persister.EntityName, stopwatch.Elapsed);
+			}
+		}
+
+		protected override Task AfterTransactionCompletionProcessImplAsync(bool success)
+		{
+			try
+			{
+				AfterTransactionCompletionProcessImpl(success);
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
 			}
 		}
 	}

@@ -43,7 +43,7 @@ namespace NHibernate.Engine.Query
 				parametersSpecifications.ResetEffectiveExpectedType(queryParameters);
 				var sqlParametersList = sql.GetParameters().ToList();
 				SqlType[] sqlTypes = parametersSpecifications.GetQueryParameterTypes(sqlParametersList, session.Factory);
-				DbCommand ps = session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTypes);
+				DbCommand ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, sqlTypes));
 				try
 				{
 					if (selection != null && selection.Timeout != RowSelection.NoValue)
@@ -57,7 +57,7 @@ namespace NHibernate.Engine.Query
 						await (parameterSpecification.BindAsync(ps, sqlParametersList, queryParameters, session));
 					}
 
-					result = session.Batcher.ExecuteNonQuery(ps);
+					result = await (session.Batcher.ExecuteNonQueryAsync(ps));
 				}
 				finally
 				{

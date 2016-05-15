@@ -146,16 +146,10 @@ namespace NHibernate.Collection.Generic
 			return map;
 		}
 
-		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
+		public override async Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
 		{
-			try
-			{
-				return Task.FromResult<ICollection>(GetOrphans(snapshot, entityName));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<ICollection>(ex);
-			}
+			var sn = (ISet<SnapshotElement>)GetSnapshot();
+			return await (GetOrphansAsync(sn.Select(x => x.Value).ToArray(), (ICollection)_values, entityName, Session));
 		}
 
 		public override async Task PreInsertAsync(ICollectionPersister persister)

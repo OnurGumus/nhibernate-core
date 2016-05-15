@@ -22,7 +22,7 @@ namespace NHibernate.Id
 			var sql = new SqlString(session.Factory.Dialect.SelectGUIDString);
 			try
 			{
-				DbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
+				DbCommand st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, SqlTypeFactory.NoTypes));
 				DbDataReader reader = null;
 				try
 				{
@@ -30,7 +30,7 @@ namespace NHibernate.Id
 					object result;
 					try
 					{
-						reader.Read();
+						await (reader.ReadAsync());
 						result = await (IdentifierGeneratorFactory.GetAsync(reader, identifierType, session));
 					}
 					finally

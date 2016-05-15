@@ -8,6 +8,7 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Event.Default
 {
@@ -112,4 +113,6 @@ namespace NHibernate.Event.Default
 		}
 	}
 }
+
+
 #endif

@@ -85,10 +85,9 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 		}
 
-		/**
-	 * Perform the validations.
-	 */
-
+		/// <summary>
+		/// Perform the validations.
+		/// </summary>
 		public void Validate()
 		{
 			log.Info("Running schema validator");

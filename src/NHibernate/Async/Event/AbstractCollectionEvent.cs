@@ -11,6 +11,11 @@ namespace NHibernate.Event
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class AbstractCollectionEvent : AbstractEvent
 	{
+		protected static Task<object> GetLoadedOwnerOrNullAsync(IPersistentCollection collection, IEventSource source)
+		{
+			return source.PersistenceContext.GetLoadedCollectionOwnerOrNullAsync(collection);
+		}
+
 		protected static Task<object> GetLoadedOwnerIdOrNullAsync(IPersistentCollection collection, IEventSource source)
 		{
 			return source.PersistenceContext.GetLoadedCollectionOwnerIdOrNullAsync(collection);

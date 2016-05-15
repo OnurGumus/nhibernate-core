@@ -4,8 +4,6 @@ using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using System.Threading.Tasks;
-using System;
-using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
@@ -24,16 +22,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return await (CreateQueryTranslatorsAsync(queryString.ToQueryExpression(), collectionRole, shallow, filters, factory));
 		}
 
-		public Task<IQueryTranslator[]> CreateQueryTranslatorsAsync(IQueryExpression queryExpression, string collectionRole, bool shallow, IDictionary<string, IFilter> filters, ISessionFactoryImplementor factory)
+		public async Task<IQueryTranslator[]> CreateQueryTranslatorsAsync(IQueryExpression queryExpression, string collectionRole, bool shallow, IDictionary<string, IFilter> filters, ISessionFactoryImplementor factory)
 		{
-			try
-			{
-				return Task.FromResult<IQueryTranslator[]>(CreateQueryTranslators(queryExpression, collectionRole, shallow, filters, factory));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<IQueryTranslator[]>(ex);
-			}
+			return await (CreateQueryTranslatorsAsync(queryExpression.Translate(factory, collectionRole != null), queryExpression.Key, collectionRole, shallow, filters, factory));
 		}
 
 		static async Task<IQueryTranslator[]> CreateQueryTranslatorsAsync(IASTNode ast, string queryIdentifier, string collectionRole, bool shallow, IDictionary<string, IFilter> filters, ISessionFactoryImplementor factory)

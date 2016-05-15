@@ -31,7 +31,7 @@ namespace NHibernate.Id
 
 			protected internal override async Task<object> GetResultAsync(ISessionImplementor session, DbDataReader rs, object entity)
 			{
-				if (!rs.Read())
+				if (!await (rs.ReadAsync()))
 				{
 					throw new IdentifierGenerationException("the inserted row could not be located by the unique key: " + uniqueKeyPropertyName);
 				}

@@ -90,17 +90,17 @@ namespace NHibernate.Persister.Entity
 							// null sql means that the only lazy properties
 							// are shared PK one-to-one associations which are
 							// handled differently in the Type#nullSafeGet code...
-							ps = session.Batcher.PrepareCommand(CommandType.Text, lazySelect, IdentifierType.SqlTypes(Factory));
+							ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, lazySelect, IdentifierType.SqlTypes(Factory)));
 							await (IdentifierType.NullSafeSetAsync(ps, id, 0, session));
 							rs = await (session.Batcher.ExecuteReaderAsync(ps));
-							rs.Read();
+							await (rs.ReadAsync());
 						}
 
 						object[] snapshot = entry.LoadedState;
 						for (int j = 0; j < lazyPropertyNames.Length; j++)
 						{
 							object propValue = await (lazyPropertyTypes[j].NullSafeGetAsync(rs, lazyPropertyColumnAliases[j], session, entity));
-							if (InitializeLazyProperty(fieldName, entity, session, snapshot, j, propValue))
+							if (await (InitializeLazyPropertyAsync(fieldName, entity, session, snapshot, j, propValue)))
 							{
 								result = propValue;
 							}
@@ -130,7 +130,7 @@ namespace NHibernate.Persister.Entity
 			for (int j = 0; j < lazyPropertyNames.Length; j++)
 			{
 				object propValue = await (lazyPropertyTypes[j].AssembleAsync(disassembledValues[lazyPropertyNumbers[j]], session, entity));
-				if (InitializeLazyProperty(fieldName, entity, session, snapshot, j, propValue))
+				if (await (InitializeLazyPropertyAsync(fieldName, entity, session, snapshot, j, propValue)))
 				{
 					result = propValue;
 				}
@@ -162,13 +162,13 @@ namespace NHibernate.Persister.Entity
 			using (new SessionIdLoggingContext(session.SessionId))
 				try
 				{
-					DbCommand st = session.Batcher.PrepareCommand(CommandType.Text, SQLSnapshotSelectString, IdentifierType.SqlTypes(factory));
+					DbCommand st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, SQLSnapshotSelectString, IdentifierType.SqlTypes(factory)));
 					DbDataReader rs = null;
 					try
 					{
 						await (IdentifierType.NullSafeSetAsync(st, id, 0, session));
 						rs = await (session.Batcher.ExecuteReaderAsync(st));
-						if (!rs.Read())
+						if (!await (rs.ReadAsync()))
 						{
 							//if there is no resulting row, return null
 							return null;
@@ -222,13 +222,13 @@ namespace NHibernate.Persister.Entity
 			SqlCommandInfo versionIncrementCommand = GenerateVersionIncrementUpdateString();
 			try
 			{
-				DbCommand st = session.Batcher.PrepareCommand(versionIncrementCommand.CommandType, versionIncrementCommand.Text, versionIncrementCommand.ParameterTypes);
+				DbCommand st = await (session.Batcher.PrepareCommandAsync(versionIncrementCommand.CommandType, versionIncrementCommand.Text, versionIncrementCommand.ParameterTypes));
 				try
 				{
 					await (VersionType.NullSafeSetAsync(st, nextVersion, 0, session));
 					await (IdentifierType.NullSafeSetAsync(st, id, 1, session));
 					await (VersionType.NullSafeSetAsync(st, currentVersion, 1 + IdentifierColumnSpan, session));
-					Check(session.Batcher.ExecuteNonQuery(st), id, 0, expectation, st);
+					Check(await (session.Batcher.ExecuteNonQueryAsync(st)), id, 0, expectation, st);
 				}
 				finally
 				{
@@ -263,7 +263,7 @@ namespace NHibernate.Persister.Entity
 					{
 						await (IdentifierType.NullSafeSetAsync(st, id, 0, session));
 						rs = await (session.Batcher.ExecuteReaderAsync(st));
-						if (!rs.Read())
+						if (!await (rs.ReadAsync()))
 						{
 							return null;
 						}
@@ -290,6 +290,11 @@ namespace NHibernate.Persister.Entity
 		public virtual async Task LockAsync(object id, object version, object obj, LockMode lockMode, ISessionImplementor session)
 		{
 			await (GetLocker(lockMode).LockAsync(id, version, obj, session));
+		}
+
+		public async Task<object> LoadByUniqueKeyAsync(string propertyName, object uniqueKey, ISessionImplementor session)
+		{
+			return await (GetAppropriateUniqueKeyLoader(propertyName, session.EnabledFilters).LoadByUniqueKeyAsync(session, uniqueKey));
 		}
 
 		protected virtual Task<SqlCommandInfo> GenerateUpdateStringAsync(bool[] includeProperty, int j, bool useRowId)
@@ -440,10 +445,10 @@ namespace NHibernate.Persister.Entity
 						if (sql != null)
 						{
 							//TODO: I am not so sure about the exception handling in this bit!
-							sequentialSelect = session.Batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));
+							sequentialSelect = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, IdentifierType.SqlTypes(factory)));
 							await (rootPersister.IdentifierType.NullSafeSetAsync(sequentialSelect, id, 0, session));
 							sequentialResultSet = await (session.Batcher.ExecuteReaderAsync(sequentialSelect));
-							if (!sequentialResultSet.Read())
+							if (!await (sequentialResultSet.ReadAsync()))
 							{
 								// TODO: Deal with the "optional" attribute in the <join> mapping;
 								// this code assumes that optional defaults to "true" because it
@@ -580,18 +585,18 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				// Render the SQL query
-				DbCommand insertCmd = useBatch ? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes) : session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
+				DbCommand insertCmd = useBatch ? await (session.Batcher.PrepareBatchCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes)) : await (session.Batcher.PrepareCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes));
 				try
 				{
 					int index = 0;
 					await (DehydrateAsync(tableId, fields, null, notNull, propertyColumnInsertable, j, insertCmd, session, index));
 					if (useBatch)
 					{
-						session.Batcher.AddToBatch(expectation);
+						await (session.Batcher.AddToBatchAsync(expectation));
 					}
 					else
 					{
-						expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(insertCmd), insertCmd);
+						expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(insertCmd)), insertCmd);
 					}
 				}
 				catch (Exception e)
@@ -618,6 +623,39 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
+		/// <summary> Perform an SQL UPDATE or SQL INSERT</summary>
+		protected internal virtual async Task UpdateOrInsertAsync(object id, object[] fields, object[] oldFields, object rowId, bool[] includeProperty, int j, object oldVersion, object obj, SqlCommandInfo sql, ISessionImplementor session)
+		{
+			if (!IsInverseTable(j))
+			{
+				//check if the id comes from an alternate column
+				object tableId = GetJoinTableId(j, fields) ?? id;
+				bool isRowToUpdate;
+				if (IsNullableTable(j) && oldFields != null && IsAllNull(oldFields, j))
+				{
+					//don't bother trying to update, we know there is no row there yet
+					isRowToUpdate = false;
+				}
+				else if (IsNullableTable(j) && IsAllNull(fields, j))
+				{
+					//if all fields are null, we might need to delete existing row
+					isRowToUpdate = true;
+					Delete(tableId, oldVersion, j, obj, SqlDeleteStrings[j], session, null);
+				}
+				else
+				{
+					//there is probably a row there, so try to update
+					//if no rows were updated, we will find out
+					isRowToUpdate = await (UpdateAsync(tableId, fields, oldFields, rowId, includeProperty, j, oldVersion, obj, sql, session));
+				}
+
+				if (!isRowToUpdate && !IsAllNull(fields, j))
+				{
+					await (InsertAsync(tableId, fields, PropertyInsertability, j, SqlInsertStrings[j], obj, session));
+				}
+			}
+		}
+
 		protected async Task<bool> UpdateAsync(object id, object[] fields, object[] oldFields, object rowId, bool[] includeProperty, int j, object oldVersion, object obj, SqlCommandInfo sql, ISessionImplementor session)
 		{
 			bool useVersion = j == 0 && IsVersioned;
@@ -636,7 +674,7 @@ namespace NHibernate.Persister.Entity
 			try
 			{
 				int index = 0;
-				DbCommand statement = useBatch ? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes) : session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
+				DbCommand statement = useBatch ? await (session.Batcher.PrepareBatchCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes)) : await (session.Batcher.PrepareCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes));
 				try
 				{
 					//index += expectation.Prepare(statement, factory.ConnectionProvider.Driver);
@@ -667,12 +705,12 @@ namespace NHibernate.Persister.Entity
 
 					if (useBatch)
 					{
-						session.Batcher.AddToBatch(expectation);
+						await (session.Batcher.AddToBatchAsync(expectation));
 						return true;
 					}
 					else
 					{
-						return Check(session.Batcher.ExecuteNonQuery(statement), id, j, expectation, statement);
+						return Check(await (session.Batcher.ExecuteNonQueryAsync(statement)), id, j, expectation, statement);
 					}
 				}
 				catch (StaleStateException e)
@@ -750,11 +788,11 @@ namespace NHibernate.Persister.Entity
 				DbCommand statement;
 				if (useBatch)
 				{
-					statement = session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
+					statement = await (session.Batcher.PrepareBatchCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes));
 				}
 				else
 				{
-					statement = session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
+					statement = await (session.Batcher.PrepareCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes));
 				}
 
 				try
@@ -789,11 +827,11 @@ namespace NHibernate.Persister.Entity
 
 					if (useBatch)
 					{
-						session.Batcher.AddToBatch(expectation);
+						await (session.Batcher.AddToBatchAsync(expectation));
 					}
 					else
 					{
-						Check(session.Batcher.ExecuteNonQuery(statement), tableId, j, expectation, statement);
+						Check(await (session.Batcher.ExecuteNonQueryAsync(statement)), tableId, j, expectation, statement);
 					}
 				}
 				catch (Exception e)
@@ -873,33 +911,57 @@ namespace NHibernate.Persister.Entity
 				// Now update only the tables with dirty properties (and the table with the version number)
 				if (tableUpdateNeeded[j])
 				{
-					UpdateOrInsert(id, fields, oldFields, j == 0 ? rowId : null, propsToUpdate, j, oldVersion, obj, updateStrings[j], session);
+					await (UpdateOrInsertAsync(id, fields, oldFields, j == 0 ? rowId : null, propsToUpdate, j, oldVersion, obj, updateStrings[j], session));
 				}
 			}
 		}
 
-		public Task<object> InsertAsync(object[] fields, object obj, ISessionImplementor session)
+		public async Task<object> InsertAsync(object[] fields, object obj, ISessionImplementor session)
 		{
-			try
+			int span = TableSpan;
+			object id;
+			if (entityMetamodel.IsDynamicInsert)
 			{
-				return Task.FromResult<object>(Insert(fields, obj, session));
+				// For the case of dynamic-insert="true", we need to generate the INSERT SQL
+				bool[] notNull = GetPropertiesToInsert(fields);
+				id = await (InsertAsync(fields, notNull, GenerateInsertString(true, notNull), obj, session));
+				for (int j = 1; j < span; j++)
+				{
+					await (InsertAsync(id, fields, notNull, j, GenerateInsertString(notNull, j), obj, session));
+				}
 			}
-			catch (Exception ex)
+			else
 			{
-				return TaskHelper.FromException<object>(ex);
+				// For the case of dynamic-insert="false", use the static SQL
+				id = await (InsertAsync(fields, PropertyInsertability, SQLIdentityInsertString, obj, session));
+				for (int j = 1; j < span; j++)
+				{
+					await (InsertAsync(id, fields, PropertyInsertability, j, SqlInsertStrings[j], obj, session));
+				}
 			}
+
+			return id;
 		}
 
-		public Task InsertAsync(object id, object[] fields, object obj, ISessionImplementor session)
+		public async Task InsertAsync(object id, object[] fields, object obj, ISessionImplementor session)
 		{
-			try
+			int span = TableSpan;
+			if (entityMetamodel.IsDynamicInsert)
 			{
-				Insert(id, fields, obj, session);
-				return TaskHelper.CompletedTask;
+				bool[] notNull = GetPropertiesToInsert(fields);
+				// For the case of dynamic-insert="true", we need to generate the INSERT SQL
+				for (int j = 0; j < span; j++)
+				{
+					await (InsertAsync(id, fields, notNull, j, GenerateInsertString(notNull, j), obj, session));
+				}
 			}
-			catch (Exception ex)
+			else
 			{
-				return TaskHelper.FromException<object>(ex);
+				// For the case of dynamic-insert="false", use the static SQL
+				for (int j = 0; j < span; j++)
+				{
+					await (InsertAsync(id, fields, PropertyInsertability, j, SqlInsertStrings[j], obj, session));
+				}
 			}
 		}
 
@@ -1177,7 +1239,7 @@ namespace NHibernate.Persister.Entity
 				throw new AssertionFailure("no insert-generated properties");
 			}
 
-			session.Batcher.ExecuteBatch(); //force immediate execution of the insert
+			await (session.Batcher.ExecuteBatchAsync()); //force immediate execution of the insert
 			if (loaderName == null)
 			{
 				await (ProcessGeneratedPropertiesWithGeneratedSqlAsync(id, entity, state, session, sqlInsertGeneratedValuesSelectString, PropertyInsertGenerationInclusions));
@@ -1200,7 +1262,7 @@ namespace NHibernate.Persister.Entity
 				throw new AssertionFailure("no update-generated properties");
 			}
 
-			session.Batcher.ExecuteBatch(); //force immediate execution of the update
+			await (session.Batcher.ExecuteBatchAsync()); //force immediate execution of the update
 			if (loaderName == null)
 			{
 				await (ProcessGeneratedPropertiesWithGeneratedSqlAsync(id, entity, state, session, sqlUpdateGeneratedValuesSelectString, PropertyUpdateGenerationInclusions));
@@ -1225,7 +1287,7 @@ namespace NHibernate.Persister.Entity
 					{
 						await (IdentifierType.NullSafeSetAsync(cmd, id, 0, session));
 						rs = await (session.Batcher.ExecuteReaderAsync(cmd));
-						if (!rs.Read())
+						if (!await (rs.ReadAsync()))
 						{
 							throw new HibernateException("Unable to locate row for retrieval of generated properties: " + MessageHelper.InfoString(this, id, Factory));
 						}
@@ -1311,14 +1373,14 @@ namespace NHibernate.Persister.Entity
 			using (new SessionIdLoggingContext(session.SessionId))
 				try
 				{
-					DbCommand ps = session.Batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));
+					DbCommand ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, IdentifierType.SqlTypes(factory)));
 					DbDataReader rs = null;
 					try
 					{
 						await (IdentifierType.NullSafeSetAsync(ps, id, 0, session));
 						rs = await (session.Batcher.ExecuteReaderAsync(ps));
 						//if there is no resulting row, return null
-						if (!rs.Read())
+						if (!await (rs.ReadAsync()))
 						{
 							return null;
 						}

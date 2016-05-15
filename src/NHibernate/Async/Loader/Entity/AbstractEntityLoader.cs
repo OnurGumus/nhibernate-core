@@ -23,14 +23,7 @@ namespace NHibernate.Loader.Entity
 	{
 		public Task<object> LoadAsync(object id, object optionalObject, ISessionImplementor session)
 		{
-			try
-			{
-				return Task.FromResult<object>(Load(id, optionalObject, session));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			return LoadAsync(session, id, optionalObject, id);
 		}
 
 		protected virtual async Task<object> LoadAsync(ISessionImplementor session, object id, object optionalObject, object optionalId)

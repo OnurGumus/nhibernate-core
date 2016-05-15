@@ -240,7 +240,7 @@ namespace NHibernate.Engine
 			}
 			else
 			{
-				orphans = pc.GetQueuedOrphans(entityName);
+				orphans = await (pc.GetQueuedOrphansAsync(entityName));
 			}
 
 			foreach (object orphan in orphans)

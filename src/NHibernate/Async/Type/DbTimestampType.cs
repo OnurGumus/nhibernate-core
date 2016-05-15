@@ -47,9 +47,9 @@ namespace NHibernate.Type
 			using (new SessionIdLoggingContext(session.SessionId))
 				try
 				{
-					ps = session.Batcher.PrepareCommand(CommandType.Text, tsSelect, EmptyParams);
+					ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, tsSelect, EmptyParams));
 					rs = await (session.Batcher.ExecuteReaderAsync(ps));
-					rs.Read();
+					await (rs.ReadAsync());
 					DateTime ts = rs.GetDateTime(0);
 					if (log.IsDebugEnabled)
 					{

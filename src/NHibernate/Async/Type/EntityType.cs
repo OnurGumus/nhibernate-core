@@ -259,15 +259,32 @@ namespace NHibernate.Type
 		/// <param name = "session"></param>
 		/// <param name = "owner"></param>
 		/// <returns></returns>
-		public override Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner)
+		public override async Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner)
 		{
-			try
+			if (IsNotEmbedded(session))
 			{
-				return Task.FromResult<object>(ResolveIdentifier(value, session, owner));
+				return value;
 			}
-			catch (Exception ex)
+
+			if (value == null)
 			{
-				return TaskHelper.FromException<object>(ex);
+				return null;
+			}
+			else
+			{
+				if (IsNull(owner, session))
+				{
+					return null; //EARLY EXIT!
+				}
+
+				if (IsReferenceToPrimaryKey)
+				{
+					return await (ResolveIdentifierAsync(value, session));
+				}
+				else
+				{
+					return await (LoadByUniqueKeyAsync(GetAssociatedEntityName(), uniqueKeyPropertyName, value, session));
+				}
 			}
 		}
 
@@ -291,6 +308,42 @@ namespace NHibernate.Type
 			}
 
 			return await (persister.IdentifierType.GetHashCodeAsync(id, entityMode, factory));
+		}
+
+		/// <summary> 
+		/// Load an instance by a unique key that is not the primary key. 
+		/// </summary>
+		/// <param name = "entityName">The name of the entity to load </param>
+		/// <param name = "uniqueKeyPropertyName">The name of the property defining the unique key. </param>
+		/// <param name = "key">The unique key property value. </param>
+		/// <param name = "session">The originating session. </param>
+		/// <returns> The loaded entity </returns>
+		public async Task<object> LoadByUniqueKeyAsync(string entityName, string uniqueKeyPropertyName, object key, ISessionImplementor session)
+		{
+			ISessionFactoryImplementor factory = session.Factory;
+			IUniqueKeyLoadable persister = (IUniqueKeyLoadable)factory.GetEntityPersister(entityName);
+			//TODO: implement caching?! proxies?!
+			EntityUniqueKey euk = new EntityUniqueKey(entityName, uniqueKeyPropertyName, key, GetIdentifierOrUniqueKeyType(factory), session.EntityMode, session.Factory);
+			IPersistenceContext persistenceContext = session.PersistenceContext;
+			try
+			{
+				object result = persistenceContext.GetEntity(euk);
+				if (result == null)
+				{
+					result = await (persister.LoadByUniqueKeyAsync(uniqueKeyPropertyName, key, session));
+				}
+
+				return result == null ? null : persistenceContext.ProxyFor(result);
+			}
+			catch (HibernateException)
+			{
+				// Do not call Convert on HibernateExceptions
+				throw;
+			}
+			catch (Exception sqle)
+			{
+				throw ADOExceptionHelper.Convert(factory.SQLExceptionConverter, sqle, "Error performing LoadByUniqueKey");
+			}
 		}
 
 		public override Task<int> CompareAsync(object x, object y, EntityMode? entityMode)

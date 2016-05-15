@@ -49,12 +49,12 @@ namespace NHibernate.Persister.Collection
 						{
 							if (st == null)
 							{
-								st = session.Batcher.PrepareBatchCommand(SqlUpdateRowString.CommandType, SqlUpdateRowString.Text, SqlUpdateRowString.ParameterTypes);
+								st = await (session.Batcher.PrepareBatchCommandAsync(SqlUpdateRowString.CommandType, SqlUpdateRowString.Text, SqlUpdateRowString.ParameterTypes));
 							}
 						}
 						else
 						{
-							st = session.Batcher.PrepareCommand(SqlUpdateRowString.CommandType, SqlUpdateRowString.Text, SqlUpdateRowString.ParameterTypes);
+							st = await (session.Batcher.PrepareCommandAsync(SqlUpdateRowString.CommandType, SqlUpdateRowString.Text, SqlUpdateRowString.ParameterTypes));
 						}
 
 						try
@@ -80,11 +80,11 @@ namespace NHibernate.Persister.Collection
 
 							if (useBatch)
 							{
-								session.Batcher.AddToBatch(expectation);
+								await (session.Batcher.AddToBatchAsync(expectation));
 							}
 							else
 							{
-								expectation.VerifyOutcomeNonBatched(session.Batcher.ExecuteNonQuery(st), st);
+								expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st)), st);
 							}
 						}
 						catch (Exception e)

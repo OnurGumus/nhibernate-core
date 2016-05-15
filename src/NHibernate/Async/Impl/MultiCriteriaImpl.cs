@@ -142,11 +142,11 @@ namespace NHibernate.Impl
 						int maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
 						if (!dialect.SupportsLimitOffset || !loader.UseLimit(selection, dialect))
 						{
-							Loader.Loader.Advance(reader, selection);
+							await (Loader.Loader.AdvanceAsync(reader, selection));
 						}
 
 						int count;
-						for (count = 0; count < maxRows && reader.Read(); count++)
+						for (count = 0; count < maxRows && await (reader.ReadAsync()); count++)
 						{
 							rowCount++;
 							object o = await (loader.GetRowFromResultSetAsync(reader, session, queryParameters, loader.GetLockModes(queryParameters.LockModes), null, hydratedObjects[i], keys, true));

@@ -95,7 +95,7 @@ namespace NHibernate.Impl
 						int maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
 						if (!dialect.SupportsLimitOffset || !translator.Loader.UseLimit(selection, dialect))
 						{
-							Loader.Loader.Advance(reader, selection);
+							await (Loader.Loader.AdvanceAsync(reader, selection));
 						}
 
 						if (parameter.HasAutoDiscoverScalarTypes)
@@ -116,7 +116,7 @@ namespace NHibernate.Impl
 
 						IList tempResults = new List<object>();
 						int count;
-						for (count = 0; count < maxRows && reader.Read(); count++)
+						for (count = 0; count < maxRows && await (reader.ReadAsync()); count++)
 						{
 							if (log.IsDebugEnabled)
 							{

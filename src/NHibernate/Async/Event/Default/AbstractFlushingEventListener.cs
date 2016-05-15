@@ -227,6 +227,51 @@ namespace NHibernate.Event.Default
 				session.ConnectionManager.FlushEnding();
 			}
 		}
+
+		/// <summary> 
+		/// 1. Recreate the collection key -> collection map
+		/// 2. rebuild the collection entries
+		/// 3. call Interceptor.postFlush()
+		/// </summary>
+		protected virtual async Task PostFlushAsync(ISessionImplementor session)
+		{
+			if (log.IsDebugEnabled)
+			{
+				log.Debug("post flush");
+			}
+
+			IPersistenceContext persistenceContext = session.PersistenceContext;
+			persistenceContext.CollectionsByKey.Clear();
+			persistenceContext.BatchFetchQueue.ClearSubselects();
+			//the database has changed now, so the subselect results need to be invalidated
+			// NH Different implementation: In NET an iterator is immutable;
+			// we need something to hold the persistent collection to remove, and it must be less intrusive as possible
+			IDictionary cEntries = persistenceContext.CollectionEntries;
+			List<IPersistentCollection> keysToRemove = new List<IPersistentCollection>(cEntries.Count);
+			foreach (DictionaryEntry me in cEntries)
+			{
+				CollectionEntry collectionEntry = (CollectionEntry)me.Value;
+				IPersistentCollection persistentCollection = (IPersistentCollection)me.Key;
+				collectionEntry.PostFlush(persistentCollection);
+				if (collectionEntry.LoadedPersister == null)
+				{
+					keysToRemove.Add(persistentCollection);
+				}
+				else
+				{
+					//otherwise recreate the mapping between the collection and its key
+					CollectionKey collectionKey = new CollectionKey(collectionEntry.LoadedPersister, collectionEntry.LoadedKey, session.EntityMode);
+					persistenceContext.CollectionsByKey[collectionKey] = persistentCollection;
+				}
+			}
+
+			foreach (IPersistentCollection key in keysToRemove)
+			{
+				persistenceContext.CollectionEntries.Remove(key);
+			}
+
+			await (session.Interceptor.PostFlushAsync((ICollection)persistenceContext.EntitiesByKey.Values));
+		}
 	}
 }
 #endif

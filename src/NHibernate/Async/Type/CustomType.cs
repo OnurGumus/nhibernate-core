@@ -18,14 +18,7 @@ namespace NHibernate.Type
 	{
 		public override Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			try
-			{
-				return Task.FromResult<object>(NullSafeGet(rs, names, session, owner));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			return userType.NullSafeGetAsync(rs, names, owner);
 		}
 
 		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)
@@ -33,30 +26,15 @@ namespace NHibernate.Type
 			return NullSafeGetAsync(rs, new string[]{name}, session, owner);
 		}
 
-		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
+		public override async Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
-			try
-			{
-				NullSafeSet(st, value, index, settable, session);
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			if (settable[0])
+				await (userType.NullSafeSetAsync(st, value, index));
 		}
 
 		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			try
-			{
-				NullSafeSet(cmd, value, index, session);
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			return userType.NullSafeSetAsync(cmd, value, index);
 		}
 
 		/// <summary>

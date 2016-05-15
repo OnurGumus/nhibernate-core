@@ -142,19 +142,38 @@ namespace NHibernate.Engine
 			return maybeProxy;
 		}
 
+		/// <summary> Get the entity that owned this persistent collection when it was loaded </summary>
+		/// <param name = "collection">The persistent collection </param>
+		/// <returns>
+		/// The owner, if its entity ID is available from the collection's loaded key
+		/// and the owner entity is in the persistence context; otherwise, returns null
+		/// </returns>
+		public virtual async Task<object> GetLoadedCollectionOwnerOrNullAsync(IPersistentCollection collection)
+		{
+			CollectionEntry ce = GetCollectionEntry(collection);
+			if (ce.LoadedPersister == null)
+			{
+				return null; // early exit...
+			}
+
+			object loadedOwner = null;
+			// TODO: an alternative is to check if the owner has changed; if it hasn't then
+			// return collection.getOwner()
+			object entityId = await (GetLoadedCollectionOwnerIdOrNullAsync(ce));
+			if (entityId != null)
+			{
+				loadedOwner = GetCollectionOwner(entityId, ce.LoadedPersister);
+			}
+
+			return loadedOwner;
+		}
+
 		/// <summary> Get the ID for the entity that owned this persistent collection when it was loaded </summary>
 		/// <param name = "collection">The persistent collection </param>
 		/// <returns> the owner ID if available from the collection's loaded key; otherwise, returns null </returns>
-		public virtual Task<object> GetLoadedCollectionOwnerIdOrNullAsync(IPersistentCollection collection)
+		public virtual async Task<object> GetLoadedCollectionOwnerIdOrNullAsync(IPersistentCollection collection)
 		{
-			try
-			{
-				return Task.FromResult<object>(GetLoadedCollectionOwnerIdOrNull(collection));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			return await (GetLoadedCollectionOwnerIdOrNullAsync(GetCollectionEntry(collection)));
 		}
 
 		/// <summary> Get the ID for the entity that owned this persistent collection when it was loaded </summary>

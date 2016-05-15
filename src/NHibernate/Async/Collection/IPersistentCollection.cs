@@ -110,6 +110,8 @@ namespace NHibernate.Collection
 		/// Get all the elements that need deleting
 		/// </summary>
 		Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula);
+		/// <summary> Get the "queued" orphans</summary>
+		Task<ICollection> GetQueuedOrphansAsync(string entityName);
 		/// <summary>
 		/// Called before inserting rows, to ensure that any surrogate keys are fully generated
 		/// </summary>

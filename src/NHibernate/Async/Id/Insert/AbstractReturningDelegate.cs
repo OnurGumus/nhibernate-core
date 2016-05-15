@@ -24,7 +24,7 @@ namespace NHibernate.Id.Insert
 			try
 			{
 				// prepare and execute the insert
-				DbCommand insert = Prepare(insertSQL, session);
+				DbCommand insert = await (PrepareAsync(insertSQL, session));
 				try
 				{
 					await (binder.BindValuesAsync(insert));
@@ -41,6 +41,7 @@ namespace NHibernate.Id.Insert
 			}
 		}
 
+		protected internal abstract Task<DbCommand> PrepareAsync(SqlCommandInfo insertSQL, ISessionImplementor session);
 		public abstract Task<object> ExecuteAndExtractAsync(DbCommand insert, ISessionImplementor session);
 	}
 }

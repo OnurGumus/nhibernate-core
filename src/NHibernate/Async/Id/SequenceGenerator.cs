@@ -47,14 +47,14 @@ namespace NHibernate.Id
 		{
 			try
 			{
-				DbCommand cmd = session.Batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
+				DbCommand cmd = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, SqlTypeFactory.NoTypes));
 				DbDataReader reader = null;
 				try
 				{
 					reader = await (session.Batcher.ExecuteReaderAsync(cmd));
 					try
 					{
-						reader.Read();
+						await (reader.ReadAsync());
 						object result = await (IdentifierGeneratorFactory.GetAsync(reader, identifierType, session));
 						if (log.IsDebugEnabled)
 						{

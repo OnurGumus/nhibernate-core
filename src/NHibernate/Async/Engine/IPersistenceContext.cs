@@ -42,6 +42,13 @@ namespace NHibernate.Engine
 		/// <param name = "maybeProxy">The reference to be unproxied if it currently represents a proxy. </param>
 		/// <returns> The unproxied instance. </returns>
 		Task<object> UnproxyAndReassociateAsync(object maybeProxy);
+		/// <summary> Get the entity that owned this persistent collection when it was loaded </summary>
+		/// <param name = "collection">The persistent collection </param>
+		/// <returns>
+		/// The owner if its entity ID is available from the collection's loaded key
+		/// and the owner entity is in the persistence context; otherwise, returns null
+		/// </returns>
+		Task<object> GetLoadedCollectionOwnerOrNullAsync(IPersistentCollection collection);
 		/// <summary> Get the ID for the entity that owned this persistent collection when it was loaded </summary>
 		/// <param name = "collection">The persistent collection </param>
 		/// <returns> the owner ID if available from the collection's loaded key; otherwise, returns null </returns>

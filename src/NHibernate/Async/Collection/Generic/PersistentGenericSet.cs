@@ -31,16 +31,15 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
+		public override async Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
 		{
-			try
-			{
-				return Task.FromResult<ICollection>(GetOrphans(snapshot, entityName));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<ICollection>(ex);
-			}
+			var sn = new SetSnapShot<T>((IEnumerable<T>)snapshot);
+			// TODO: Avoid duplicating shortcuts and array copy, by making base class GetOrphans() more flexible
+			if (WrappedSet.Count == 0)
+				return sn;
+			if (((ICollection)sn).Count == 0)
+				return sn;
+			return await (GetOrphansAsync(sn, WrappedSet.ToArray(), entityName, Session));
 		}
 
 		public override async Task<bool> EqualsSnapshotAsync(ICollectionPersister persister)

@@ -99,7 +99,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				return ResolveIdentifier(id, session);
+				return await (ResolveIdentifierAsync(id, session));
 			}
 		}
 

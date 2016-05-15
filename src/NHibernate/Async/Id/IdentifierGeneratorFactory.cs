@@ -93,7 +93,7 @@ namespace NHibernate.Id
 		/// <returns> The value for the identifier. </returns>
 		public static async Task<object> GetGeneratedIdentityAsync(DbDataReader rs, IType type, ISessionImplementor session)
 		{
-			if (!rs.Read())
+			if (!await (rs.ReadAsync()))
 			{
 				throw new HibernateException("The database returned no natively generated identity value");
 			}

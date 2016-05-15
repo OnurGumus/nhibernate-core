@@ -221,7 +221,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 		}
 
-		private class TmpIdTableCreationIsolatedWork : IIsolatedWork
+		private partial class TmpIdTableCreationIsolatedWork : IIsolatedWork
 		{
 			private readonly IQueryable persister;
 			private readonly IInternalLogger log;
@@ -266,7 +266,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 		}
 
-		private class TmpIdTableDropIsolatedWork : IIsolatedWork
+		private partial class TmpIdTableDropIsolatedWork : IIsolatedWork
 		{
 			public TmpIdTableDropIsolatedWork(IQueryable persister, IInternalLogger log, ISessionImplementor session)
 			{

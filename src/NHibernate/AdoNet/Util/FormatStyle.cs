@@ -42,7 +42,7 @@ namespace NHibernate.AdoNet.Util
 
 		#region Nested type: NoFormatImpl
 
-		private class NoFormatImpl : IFormatter
+		private partial class NoFormatImpl : IFormatter
 		{
 			#region IFormatter Members
 

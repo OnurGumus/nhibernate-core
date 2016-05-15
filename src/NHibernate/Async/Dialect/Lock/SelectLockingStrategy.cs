@@ -28,7 +28,7 @@ namespace NHibernate.Dialect.Lock
 			ISessionFactoryImplementor factory = session.Factory;
 			try
 			{
-				DbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, lockable.IdAndVersionSqlTypes);
+				DbCommand st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, lockable.IdAndVersionSqlTypes));
 				DbDataReader rs = null;
 				try
 				{
@@ -41,7 +41,7 @@ namespace NHibernate.Dialect.Lock
 					rs = await (session.Batcher.ExecuteReaderAsync(st));
 					try
 					{
-						if (!rs.Read())
+						if (!await (rs.ReadAsync()))
 						{
 							if (factory.Statistics.IsStatisticsEnabled)
 							{

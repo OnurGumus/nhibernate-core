@@ -289,16 +289,20 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override Task FlushAsync()
+		public override async Task FlushAsync()
 		{
-			try
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				Flush();
-				return TaskHelper.CompletedTask;
+				await (ManagedFlushAsync()); // NH Different behavior since ADOContext.Context is not implemented
 			}
-			catch (Exception ex)
+		}
+
+		public async Task ManagedFlushAsync()
+		{
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				return TaskHelper.FromException<object>(ex);
+				CheckAndUpdateSessionStatus();
+				await (Batcher.ExecuteBatchAsync());
 			}
 		}
 
@@ -430,15 +434,11 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <returns> a detached entity instance
 		/// </returns>
-		public Task<T> GetAsync<T>(object id)
+		public async Task<T> GetAsync<T>(object id)
 		{
-			try
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				return Task.FromResult<T>(Get<T>(id));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<T>(ex);
+				return (T)await (GetAsync(typeof (T), id));
 			}
 		}
 

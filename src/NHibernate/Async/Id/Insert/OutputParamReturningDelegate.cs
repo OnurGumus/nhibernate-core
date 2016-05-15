@@ -7,7 +7,6 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Id.Insert
 {
@@ -20,16 +19,26 @@ namespace NHibernate.Id.Insert
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class OutputParamReturningDelegate : AbstractReturningDelegate
 	{
-		public override Task<object> ExecuteAndExtractAsync(DbCommand insert, ISessionImplementor session)
+		protected internal override async Task<DbCommand> PrepareAsync(SqlCommandInfo insertSQL, ISessionImplementor session)
 		{
-			try
-			{
-				return Task.FromResult<object>(ExecuteAndExtract(insert, session));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			DbCommand command = await (session.Batcher.PrepareCommandAsync(CommandType.Text, insertSQL.Text, insertSQL.ParameterTypes));
+			//Add the output parameter
+			DbParameter idParameter = factory.ConnectionProvider.Driver.GenerateParameter(command, ReturnParameterName, paramType);
+			driveGeneratedParamName = idParameter.ParameterName;
+			if (factory.Dialect.InsertGeneratedIdentifierRetrievalMethod == InsertGeneratedIdentifierRetrievalMethod.OutputParameter)
+				idParameter.Direction = ParameterDirection.Output;
+			else if (factory.Dialect.InsertGeneratedIdentifierRetrievalMethod == InsertGeneratedIdentifierRetrievalMethod.ReturnValueParameter)
+				idParameter.Direction = ParameterDirection.ReturnValue;
+			else
+				throw new System.NotImplementedException("Unsupported InsertGeneratedIdentifierRetrievalMethod: " + factory.Dialect.InsertGeneratedIdentifierRetrievalMethod);
+			command.Parameters.Add(idParameter);
+			return command;
+		}
+
+		public override async Task<object> ExecuteAndExtractAsync(DbCommand insert, ISessionImplementor session)
+		{
+			await (session.Batcher.ExecuteNonQueryAsync(insert));
+			return Convert.ChangeType(((DbParameter)insert.Parameters[driveGeneratedParamName]).Value, Persister.IdentifierType.ReturnedClass);
 		}
 	}
 }
