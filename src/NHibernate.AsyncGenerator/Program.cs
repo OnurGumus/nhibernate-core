@@ -222,8 +222,8 @@ namespace NHibernate.AsyncGenerator
 					{
 						ScanForMissingAsyncMembers = true,
 						IgnoreExternalReferences = true,
-						ScanMethodsBody = true,
-						CanScanMethodFunc = symbol => symbol.GetAttributes().Any(a => a.AttributeClass.Name == "TestAttribute")
+						//ScanMethodsBody = true,
+						//CanScanMethodFunc = symbol => symbol.GetAttributes().Any(a => a.AttributeClass.Name == "TestAttribute")
 					}
 				},
 				IgnoreProjectNames = new HashSet<string> { "NHibernate.TestDatabaseSetup" },
