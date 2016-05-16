@@ -7,7 +7,7 @@ using NHibernate.UserTypes;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
-	public class FakeUserCollectionType: IUserCollectionType
+	public partial class FakeUserCollectionType: IUserCollectionType
 	{
 		#region Implementation of IUserCollectionType
 

@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.CfgTest
 {
 	[TestFixture]
-	public class MappingDocumentAggregatorTests
+	public partial class MappingDocumentAggregatorTests
 	{
 		private readonly Assembly domainModelAssembly = typeof (DomainModel.A).Assembly;
 

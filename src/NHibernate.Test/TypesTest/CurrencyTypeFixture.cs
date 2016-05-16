@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	[TestFixture]
-	public class CurrencyTypeFixture : TypeFixtureBase
+	public partial class CurrencyTypeFixture : TypeFixtureBase
 	{
 		protected override string TypeName
 		{

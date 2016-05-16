@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.UserCollection.Parameterized
 {
-	public class DefaultableListType : IUserCollectionType, IParameterizedType
+	public partial class DefaultableListType : IUserCollectionType, IParameterizedType
 	{
 		private string defaultValue;
 

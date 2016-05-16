@@ -5,7 +5,7 @@ namespace NHibernate.Test.MappingExceptions
 	/// <summary>
 	/// Summary description for MissingDefCtor.
 	/// </summary>
-	public class MissingDefCtor
+	public partial class MissingDefCtor
 	{
 		private int _id;
 		private string _something;

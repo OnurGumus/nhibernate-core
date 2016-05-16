@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1301
 {
-	public class ClassA
+	public partial class ClassA
 	{
 		private int id;
 		private IList<ClassB> bCollection = new List<ClassB>();
@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1301
 		}
 	}
 
-	public class ClassB
+	public partial class ClassB
 	{
 		private int id;
 

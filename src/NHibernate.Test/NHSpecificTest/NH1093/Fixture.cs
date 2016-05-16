@@ -6,7 +6,7 @@ using log4net.Core;
 namespace NHibernate.Test.NHSpecificTest.NH1093
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override void Configure(Configuration configuration)
 		{

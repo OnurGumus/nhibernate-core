@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.NHSpecificTest.NH2112
 {
     [Serializable]
-    public abstract class BaseEntity<TEntity, TKey> : IEquatable<TEntity>
+    public abstract partial class BaseEntity<TEntity, TKey> : IEquatable<TEntity>
         where TEntity : BaseEntity<TEntity, TKey>
         where TKey : struct
     {
@@ -46,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2112
         }
     }
 
-    public class A : BaseEntity<A, int>
+    public partial class A : BaseEntity<A, int>
     {
         public A()
         {
@@ -65,7 +65,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2112
 
     }
 
-    public class B : BaseEntity<B, int>
+    public partial class B : BaseEntity<B, int>
     {
         public virtual string Name { get; set; }
     }

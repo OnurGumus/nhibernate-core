@@ -10,7 +10,7 @@ namespace NHibernate.Test.CfgTest
 
 	#region Classes used by the mappings defined in the Dynamic Assembly
 
-	public class A
+	public partial class A
 	{
 		public int Id
 		{
@@ -21,7 +21,7 @@ namespace NHibernate.Test.CfgTest
 		private int id_;
 	}
 
-	public class B : A
+	public partial class B : A
 	{
 		public int Value
 		{
@@ -32,7 +32,7 @@ namespace NHibernate.Test.CfgTest
 		private int value_;
 	}
 
-	public class C : B
+	public partial class C : B
 	{
 		public int Description
 		{
@@ -49,7 +49,7 @@ namespace NHibernate.Test.CfgTest
 	/// Test fixture for NH-178
 	/// </summary>
 	[TestFixture]
-	public class HbmOrderingFixture
+	public partial class HbmOrderingFixture
 	{
 		// Working directory
 		private static string dir_;

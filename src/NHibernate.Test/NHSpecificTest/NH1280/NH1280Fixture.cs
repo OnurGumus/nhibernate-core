@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1280
 {
 	[TestFixture]
-	public class NH1280Fixture : BugTestCase
+	public partial class NH1280Fixture : BugTestCase
 	{
 		public override string BugNumber
 		{

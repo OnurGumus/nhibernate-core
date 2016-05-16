@@ -9,7 +9,7 @@ namespace NHibernate.Test.Subclass
 	/// Test the use of <c>&lt;class&gt;</c> and <c>&lt;subclass&gt;</c> mappings.
 	/// </summary>
 	[TestFixture]
-	public class SubclassFixture : TestCase
+	public partial class SubclassFixture : TestCase
 	{
 		private DateTime testDateTime = new DateTime(2003, 8, 16);
 		private DateTime updateDateTime = new DateTime(2003, 8, 17);

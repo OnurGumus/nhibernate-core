@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.ExpressionTest
 {
 	[TestFixture]
-	public class SQLExpressionFixture : BaseExpressionFixture
+	public partial class SQLExpressionFixture : BaseExpressionFixture
 	{
 		[Test]
 		public void StraightSqlTest()

@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2923
 {
-	public class ExtraLazyFixture : TestCaseMappingByCode
+	public partial class ExtraLazyFixture : TestCaseMappingByCode
 	{
 		private object bobId;
 

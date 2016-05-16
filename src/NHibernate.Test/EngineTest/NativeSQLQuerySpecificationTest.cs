@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.EngineTest
 {
 	[TestFixture]
-	public class NativeSQLQuerySpecificationTest
+	public partial class NativeSQLQuerySpecificationTest
 	{
 		[Test]
 		public void Equality()

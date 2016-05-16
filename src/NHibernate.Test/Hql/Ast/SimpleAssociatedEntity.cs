@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Hql.Ast
 {
-	public class SimpleAssociatedEntity
+	public partial class SimpleAssociatedEntity
 	{
 		private long id;
 		private string name;

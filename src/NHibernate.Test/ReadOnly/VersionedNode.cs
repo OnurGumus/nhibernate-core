@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.ReadOnly
 {
-	public class VersionedNode
+	public partial class VersionedNode
 	{
 		private string id;
 		private string name;

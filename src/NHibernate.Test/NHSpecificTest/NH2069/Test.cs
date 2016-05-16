@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH2069
 {
-    public class Test : TestBase, ITest
+    public partial class Test : TestBase, ITest
     {
         public Test() { }
     

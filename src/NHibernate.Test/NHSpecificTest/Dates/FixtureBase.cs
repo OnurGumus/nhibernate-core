@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.Dates
 {
 	[TestFixture]
-	public abstract class FixtureBase : TestCase
+	public abstract partial class FixtureBase : TestCase
 	{
 		protected abstract override IList Mappings { get; }
 

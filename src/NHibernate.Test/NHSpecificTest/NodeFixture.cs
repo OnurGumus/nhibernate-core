@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest
 	/// Summary description for NodeFixture.
 	/// </summary>
 	[TestFixture]
-	public class NodeFixture : TestCase
+	public partial class NodeFixture : TestCase
 	{
 		protected override IList Mappings
 		{

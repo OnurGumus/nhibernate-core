@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 {
-	public class GetMemberFromReflectedTest
+	public partial class GetMemberFromReflectedTest
 	{
 		private const BindingFlags PrivateMembersFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 

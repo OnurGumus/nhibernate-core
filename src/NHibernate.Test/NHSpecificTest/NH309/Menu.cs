@@ -6,7 +6,7 @@ namespace NHibernate.Test.NHSpecificTest.NH309
 	/// <summary>
 	/// Summary description for Menu.
 	/// </summary>
-	public class Menu
+	public partial class Menu
 	{
 		private int _id;
 		private string _name;

@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.NH2772
 {
-	public class Trip
+	public partial class Trip
 	{
 		private readonly IList<Trackpoint> _Trackpoints;
 
@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2772
 		}
 	}
 
-	public class Trackpoint
+	public partial class Trackpoint
 	{
 		protected Trackpoint()
 		{

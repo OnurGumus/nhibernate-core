@@ -3,7 +3,7 @@ using System;
 namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 {
 	[Serializable]
-	public class Info
+	public partial class Info
 	{
 		private long id;
 		private string text;

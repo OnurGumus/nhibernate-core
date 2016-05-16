@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH276
 {
-	public class Office
+	public partial class Office
 	{
 		private int _id;
 		private string _worker;

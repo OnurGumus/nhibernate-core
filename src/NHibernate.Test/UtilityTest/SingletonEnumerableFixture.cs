@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.UtilityTest
 {
 	[TestFixture]
-	public class SingletonEnumerableFixture
+	public partial class SingletonEnumerableFixture
 	{
 		[Test]
 		public void DifferentEnumeratorInEachRequest()

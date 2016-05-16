@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH607
 {
-	public class PPP : PersistentObject
+	public partial class PPP : PersistentObject
 	{
 		private PackageItem packageItem;
 		private PackageParty packageParty;

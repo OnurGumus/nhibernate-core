@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2347
 {
-	public class Fixture : TestCaseMappingByCode
+	public partial class Fixture : TestCaseMappingByCode
 	{
 		[Test]
 		public void CanSumIntegersAsLongIntegers()

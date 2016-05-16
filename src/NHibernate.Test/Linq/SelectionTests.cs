@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class SelectionTests : LinqTestCase
+	public partial class SelectionTests : LinqTestCase
 	{
 		[Test]
 		public void CanGetCountOnQueryWithAnonymousType()
@@ -457,7 +457,7 @@ namespace NHibernate.Test.Linq
 			Assert.That(fatherIsKnown, Has.Exactly(1).With.Property("FatherIsKnown").True);
 		}
 
-		public class Wrapper<T>
+		public partial class Wrapper<T>
 		{
 			public T item;
 			public string message;

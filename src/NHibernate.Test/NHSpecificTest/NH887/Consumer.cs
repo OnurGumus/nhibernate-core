@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH887
 {
-	public class Consumer
+	public partial class Consumer
 	{
 		private int id;
 		private Child child;

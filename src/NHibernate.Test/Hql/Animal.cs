@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Hql
 {
-	public class Animal
+	public partial class Animal
 	{
 		public Animal()
 		{
@@ -37,7 +37,7 @@ namespace NHibernate.Test.Hql
 		}
 	}
 
-	public class SummaryItem
+	public partial class SummaryItem
 	{
 		private string _description;
 

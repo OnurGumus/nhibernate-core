@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2297
 {
 	[TestFixture]
-	public class Fixture // Purposefully doesn't inherit from BugTestCase
+	public partial class Fixture // Purposefully doesn't inherit from BugTestCase
 	{
 		[TestCase(".MappingsNames.hbm.xml",
 			ExpectedException = typeof (InvalidOperationException),

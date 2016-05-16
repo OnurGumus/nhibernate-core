@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3221
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	/// <typeparam name="TKey"></typeparam>
-	public abstract class EqualityAndHashCodeProvider<T, TKey>
+	public abstract partial class EqualityAndHashCodeProvider<T, TKey>
 		where T : EqualityAndHashCodeProvider<T, TKey>
 	{
 		private int? oldHashCode;

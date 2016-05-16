@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2366
 {
-	public class One
+	public partial class One
 	{
 		private int id;
 		private string value;
@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2366
 		}
 	}
 	
-	public class Two
+	public partial class Two
 	{
 		private int id;
 		private string value;

@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.UnitTesting
 {
 	[TestFixture]
-	public class StringTokenizerFixture
+	public partial class StringTokenizerFixture
 	{
 		[Test]
 		public void SimpleStringWithoutDelimiters()

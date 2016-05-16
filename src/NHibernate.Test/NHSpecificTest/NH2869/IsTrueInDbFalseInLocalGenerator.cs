@@ -8,7 +8,7 @@ using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Test.NHSpecificTest.NH2869
 {
-	public class IsTrueInDbFalseInLocalGenerator : BaseHqlGeneratorForMethod
+	public partial class IsTrueInDbFalseInLocalGenerator : BaseHqlGeneratorForMethod
 	{
 		public IsTrueInDbFalseInLocalGenerator()
 		{

@@ -1,6 +1,6 @@
 namespace NHibernate.Test.IdTest
 {
-	public class Product
+	public partial class Product
 	{
 		private string name;
 

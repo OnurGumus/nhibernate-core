@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.NHSpecificTest.NH1507
 {
 	[Serializable]
-	public class Employee
+	public partial class Employee
 	{
 		private int _id;
 		private IList<Order> nativeOrders;

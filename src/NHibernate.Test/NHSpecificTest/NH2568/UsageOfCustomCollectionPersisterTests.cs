@@ -10,17 +10,17 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2568
 {
-	public class MyEntity
+	public partial class MyEntity
 	{
 		public virtual int Id { get; set; }
 		public virtual ICollection<MyRelated> Relateds { get; set; }
 	}
-	public class MyRelated
+	public partial class MyRelated
 	{
 		public virtual int Id { get; set; }
 	}
 
-	public class UsageOfCustomCollectionPersisterTests
+	public partial class UsageOfCustomCollectionPersisterTests
 	{
 		private HbmMapping GetMappings()
 		{
@@ -44,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2568
 		}
 	}
 
-	public class MyCollectionPersister: OneToManyPersister
+	public partial class MyCollectionPersister: OneToManyPersister
 	{
 		public MyCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, Configuration cfg, ISessionFactoryImplementor factory) : base(collection, cache, cfg, factory) {}
 	}

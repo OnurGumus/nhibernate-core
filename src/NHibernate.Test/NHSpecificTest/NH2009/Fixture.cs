@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2009
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		[Test]
 		public void PropertyRefToJoinedTable()

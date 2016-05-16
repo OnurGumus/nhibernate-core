@@ -12,7 +12,7 @@ namespace NHibernate.Test
 	/// Defaults to true for all support.  Users of different dialects can turn support
 	/// off if the unit tests fail.
 	/// </summary>
-	public class TestDialect
+	public partial class TestDialect
 	{
 		public static TestDialect GetTestDialect(Dialect.Dialect dialect)
 		{

@@ -68,37 +68,4 @@ namespace NHibernate.AdoNet
 		}
 	}
 }
-
-namespace NHibernate.AdoNet
-{
-	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SqlClientBatchingBatcher : AbstractBatcher
-	{
-		public override Task AddToBatchAsync(IExpectation expectation)
-		{
-			try
-			{
-				AddToBatch(expectation);
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
-		}
-
-		protected override Task DoExecuteBatchAsync(DbCommand ps)
-		{
-			try
-			{
-				DoExecuteBatch(ps);
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
-		}
-	}
-}
 #endif

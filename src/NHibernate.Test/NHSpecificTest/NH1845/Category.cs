@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1845
 {
-	public class Category
+	public partial class Category
 	{
 		private readonly IList<Category> subcategories = new List<Category>();
 

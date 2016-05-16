@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH606
 {
-	public class HasNonGenericList
+	public partial class HasNonGenericList
 	{
 		private int id;
 		private IList nonGenericList;
@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH606
 	}
 
 	[TestFixture]
-	public class Fixture
+	public partial class Fixture
 	{
 		[Test]
 		public void InvalidGenericMapping()

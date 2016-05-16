@@ -10,7 +10,7 @@ using System.Linq;
 namespace NHibernate.Test.FilterTest
 {
 	[TestFixture]
-	public class ConfigFixture
+	public partial class ConfigFixture
 	{
 		private class ConfigurationStub: Configuration
 		{

@@ -3,7 +3,7 @@ using System;
 namespace NHibernate.Test.TypedManyToOne
 {
 	[Serializable]
-	public class AddressId
+	public partial class AddressId
 	{
 		private string _type;
 		private int? requestedHash;

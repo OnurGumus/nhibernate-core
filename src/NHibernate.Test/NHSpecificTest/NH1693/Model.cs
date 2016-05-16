@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1693
 {
-	public class Invoice
+	public partial class Invoice
 	{
 		public virtual int ID { get; protected set; }
 		public virtual string Mode { get; set; }

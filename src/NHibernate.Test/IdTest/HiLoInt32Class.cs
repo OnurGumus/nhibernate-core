@@ -5,7 +5,7 @@ namespace NHibernate.Test.IdTest
 	/// <summary>
 	/// Summary description for StringClobClass.
 	/// </summary>
-	public class HiLoInt32Class
+	public partial class HiLoInt32Class
 	{
 		private Int32 _id;
 

@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Stateless
 {
-    public class Contact
+    public partial class Contact
     {
         private int id;
         private Org org;

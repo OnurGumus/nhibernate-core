@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Operations
 {
 	[TestFixture]
-	public class MergeFixture : AbstractOperationTestCase
+	public partial class MergeFixture : AbstractOperationTestCase
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{

@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1291AnonExample
 {
-	public class Home
+	public partial class Home
 	{
 		private int id;
 		private int zip;

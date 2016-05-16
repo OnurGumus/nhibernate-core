@@ -1,6 +1,6 @@
 namespace NHibernate.Test.VersionTest.Db.MsSQL
 {
-	public class SimpleVersioned
+	public partial class SimpleVersioned
 	{
 		public virtual int Id { get; protected set; }
 		public virtual byte[] LastModified { get; protected set; }

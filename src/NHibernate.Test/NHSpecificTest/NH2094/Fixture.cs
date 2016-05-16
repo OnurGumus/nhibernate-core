@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2094
 {
   [TestFixture]
-  public class Fixture : BugTestCase
+  public partial class Fixture : BugTestCase
   {
 	[Test]
 	public void CanAccessInitializedPropertiesOutsideOfSession()

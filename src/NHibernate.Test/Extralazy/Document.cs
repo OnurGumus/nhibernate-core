@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Extralazy
 {
-	public class Document
+	public partial class Document
 	{
 		private string title;
 		private string content;

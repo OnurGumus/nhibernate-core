@@ -3,7 +3,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1355
 	/// <summary>
 	/// Category object for NHibernate mapped table 'Categories'.
 	/// </summary>
-	public class Category
+	public partial class Category
 	{
 		private int id;
 		private string categoryName;

@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Interceptor
 {
-	public class Image
+	public partial class Image
 	{
 		private Detail details;
 		private long id;
@@ -31,7 +31,7 @@ namespace NHibernate.Test.Interceptor
 
 		#region Nested type: Detail
 
-		public class Detail
+		public partial class Detail
 		{
 			private string comment;
 			private long perm1 = -1; // all bits turned on.

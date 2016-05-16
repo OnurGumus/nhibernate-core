@@ -10,7 +10,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
-    public abstract class ReadonlyTestCase : TestCase
+    public abstract partial class ReadonlyTestCase : TestCase
     {
         protected override void CreateSchema()
         {

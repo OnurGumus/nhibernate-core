@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 	/// Test fixture for NH1553, which checks update conflict detection together with snapshot isolation transaction isolation level.
 	/// </summary>
 	[TestFixture]
-	public class SnapshotIsolationUpdateConflictTest : BugTestCase
+	public partial class SnapshotIsolationUpdateConflictTest : BugTestCase
 	{
 		private Person person;
 

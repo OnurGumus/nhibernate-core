@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH2779
 {
-	public class Order
+	public partial class Order
 	{
 		private IList<LineItem> lineItems = new List<LineItem>();
 

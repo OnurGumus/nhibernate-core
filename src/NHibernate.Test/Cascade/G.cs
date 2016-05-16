@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Cascade
 {
-	public class G
+	public partial class G
 	{
 		private long id;
 		private string data;

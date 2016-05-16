@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Hql
 {
 	[TestFixture]
-	public class SqlCommentsFixture : TestCase
+	public partial class SqlCommentsFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Stateless
 {
-    public class Org
+    public partial class Org
     {
         private int id;
         private Country country;

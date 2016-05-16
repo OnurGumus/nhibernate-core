@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace NHibernate.Test.NHSpecificTest.NH1857
 {
-	public class Department
+	public partial class Department
 	{
 		private Department() {}
 

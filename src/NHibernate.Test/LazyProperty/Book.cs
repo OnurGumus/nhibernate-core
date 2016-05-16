@@ -1,6 +1,6 @@
 ﻿namespace NHibernate.Test.LazyProperty
 {
-	public class Book
+	public partial class Book
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }

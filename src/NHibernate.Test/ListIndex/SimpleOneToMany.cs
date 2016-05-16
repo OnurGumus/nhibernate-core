@@ -2,13 +2,13 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.ListIndex
 {
-	public class Image
+	public partial class Image
 	{
 		public virtual int Id { get; set; }
 		public virtual string Path { get; set; }
 	}
 
-	public class Galery
+	public partial class Galery
 	{
 		public Galery()
 		{

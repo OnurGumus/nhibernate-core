@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3132
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		/// <summary>
 		/// push some data into the database

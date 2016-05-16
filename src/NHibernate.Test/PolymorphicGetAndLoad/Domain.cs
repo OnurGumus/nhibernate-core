@@ -1,6 +1,6 @@
 namespace NHibernate.Test.PolymorphicGetAndLoad
 {
-	public class A: INamed
+	public partial class A: INamed
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }
@@ -11,7 +11,7 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 		string Occupation { get; set; }
 	}
 
-	public class B: A, IOccuped
+	public partial class B: A, IOccuped
 	{
 		public virtual string Occupation { get; set; }
 	}
@@ -21,13 +21,13 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 		string Name	{ get; set; }
 	}
 
-	public class GraphA : IMultiGraphNamed
+	public partial class GraphA : IMultiGraphNamed
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }
 	}
 
-	public class GraphB : IMultiGraphNamed
+	public partial class GraphB : IMultiGraphNamed
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }

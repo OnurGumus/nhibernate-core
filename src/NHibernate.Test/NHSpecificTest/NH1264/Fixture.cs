@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1264
 {
 	[TestFixture]
-	public class Fixture : TestCase
+	public partial class Fixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

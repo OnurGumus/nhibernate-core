@@ -3,7 +3,7 @@ using System;
 namespace NHibernate.Test.Criteria
 {
 	[Serializable]
-	public class CityState
+	public partial class CityState
 	{
 		private string city;
 		private string state;

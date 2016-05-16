@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.CompositeId
 {
-	public class Customer
+	public partial class Customer
 	{
 		private string customerId;
 		private string name;

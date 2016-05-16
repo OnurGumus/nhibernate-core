@@ -3,7 +3,7 @@ using System;
 namespace NHibernate.Test.ReadOnly
 {
 	[Serializable]
-	public class DataPoint
+	public partial class DataPoint
 	{
 		private long id;
 		private decimal x;

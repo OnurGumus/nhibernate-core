@@ -11,7 +11,7 @@ namespace NHibernate.Test.UtilityTest
 	/// Test for the IdentityMap.
 	/// </summary>
 	[TestFixture]
-	public class IdentitySetFixture
+	public partial class IdentitySetFixture
 	{
 		protected MutableHashCode item1 = null;
 		protected MutableHashCode item2 = null;

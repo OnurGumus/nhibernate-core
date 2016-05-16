@@ -1,7 +1,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH1502
 {
-	public class Person
+	public partial class Person
 	{
 		private int id;
 		private int iq;

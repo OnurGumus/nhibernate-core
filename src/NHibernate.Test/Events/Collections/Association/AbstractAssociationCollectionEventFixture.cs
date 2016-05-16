@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Events.Collections.Association
 {
-	public abstract class AbstractAssociationCollectionEventFixture : AbstractCollectionEventFixture
+	public abstract partial class AbstractAssociationCollectionEventFixture : AbstractCollectionEventFixture
 	{
 		[Test]
 		public void DeleteParentButNotChild()

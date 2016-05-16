@@ -1,7 +1,7 @@
 ﻿
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH2728
 {
-	public class Dog : IAnimal
+	public partial class Dog : IAnimal
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }

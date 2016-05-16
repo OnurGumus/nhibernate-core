@@ -6,7 +6,7 @@ using System.Linq;
 namespace NHibernate.Test.SubclassFilterTest
 {
 	[TestFixture]
-	public class JoinedSubclassFilterTest : TestCase
+	public partial class JoinedSubclassFilterTest : TestCase
 	{
 		protected override IList Mappings
 		{

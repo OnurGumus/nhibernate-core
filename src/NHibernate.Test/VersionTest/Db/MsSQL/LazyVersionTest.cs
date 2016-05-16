@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.VersionTest.Db.MsSQL
 {
 	[TestFixture]
-	public class LazyVersionTest : TestCase
+	public partial class LazyVersionTest : TestCase
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{

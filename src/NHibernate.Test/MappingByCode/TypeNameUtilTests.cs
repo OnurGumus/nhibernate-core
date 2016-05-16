@@ -5,16 +5,16 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode
 {
-	public class MyEntity
+	public partial class MyEntity
 	{
 
 	}
-	public class MyGenericEntity<T>
+	public partial class MyGenericEntity<T>
 	{
 
 	}
 
-	public class TypeNameUtilTests
+	public partial class TypeNameUtilTests
 	{
 		[Test]
 		public void WhenTypeNullThenNull()

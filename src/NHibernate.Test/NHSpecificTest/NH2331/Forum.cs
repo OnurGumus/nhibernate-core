@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH2331
 {
-	public class Forum
+	public partial class Forum
 	{
 		public virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }

@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.MappingTest
 {
 	[TestFixture]
-	public class NonReflectiveBinderFixture
+	public partial class NonReflectiveBinderFixture
 	{
 		// so far we are using this test to check metadata
 		// TODO: fix the test to work without class implementations

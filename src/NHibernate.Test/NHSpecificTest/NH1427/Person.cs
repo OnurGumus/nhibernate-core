@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH1427
 {
-	public class Person
+	public partial class Person
 	{
 		public virtual int PersonId { get; set; }
 		public virtual string Name { get; set; }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.Extralazy
 {
-	public class Photo
+	public partial class Photo
 	{
 
 		protected Photo() {}

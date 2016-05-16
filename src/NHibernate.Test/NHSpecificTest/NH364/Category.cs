@@ -5,7 +5,7 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 	/// <summary>
 	/// Summary description for Category.
 	/// </summary>
-	public class Category
+	public partial class Category
 	{
 		private int id;
 		private string name;

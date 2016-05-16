@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1789
 {
 	[TestFixture]
-	public class ProxyEqualityProblemTest : BugTestCase
+	public partial class ProxyEqualityProblemTest : BugTestCase
 	{
 		protected override void OnSetUp()
 		{

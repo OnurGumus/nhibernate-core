@@ -3,7 +3,7 @@
 namespace NHibernate.Test.NHSpecificTest.NH2860
 {
 	[TestFixture]
-	public class SampleTest : BugTestCase
+	public partial class SampleTest : BugTestCase
 	{
 		private int objId;
 

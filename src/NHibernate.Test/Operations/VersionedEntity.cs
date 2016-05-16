@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Operations
 {
-	public class VersionedEntity
+	public partial class VersionedEntity
 	{
 		public VersionedEntity()
 		{

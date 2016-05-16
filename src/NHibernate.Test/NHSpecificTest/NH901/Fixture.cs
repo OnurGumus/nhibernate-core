@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH901
 {
-	public abstract class FixtureBase : TestCase
+	public abstract partial class FixtureBase : TestCase
 	{
 		private new ISession OpenSession(IInterceptor interceptor)
 		{
@@ -94,7 +94,7 @@ namespace NHibernate.Test.NHSpecificTest.NH901
 	}
 
 	[TestFixture]
-	public class Fixture : FixtureBase
+	public partial class Fixture : FixtureBase
 	{
 		protected override string MappingsAssembly
 		{
@@ -108,7 +108,7 @@ namespace NHibernate.Test.NHSpecificTest.NH901
 	}
 
 	[TestFixture]
-	public class FixtureByCode : FixtureBase
+	public partial class FixtureByCode : FixtureBase
 	{
 		protected override IList Mappings
 		{
@@ -137,7 +137,7 @@ namespace NHibernate.Test.NHSpecificTest.NH901
 		}
 	}
 
-	public class InterceptorStub : EmptyInterceptor
+	public partial class InterceptorStub : EmptyInterceptor
 	{
 		public object entityToCheck;
 		public bool entityWasDeemedDirty = false;

@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH1136
 {
-	public class Person : IEquatable<Person>
+	public partial class Person : IEquatable<Person>
 	{
 		#region Fields
 

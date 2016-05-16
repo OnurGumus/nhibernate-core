@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.UtilityTest
 {
-	public class TestingClass
+	public partial class TestingClass
 	{
 		public int IntProp
 		{
@@ -23,7 +23,7 @@ namespace NHibernate.Test.UtilityTest
 	}
 
 	[TestFixture]
-	public class ExpressionsHelperFixture
+	public partial class ExpressionsHelperFixture
 	{
 		[Test]
 		public void DecodeMemberAccessExpression()

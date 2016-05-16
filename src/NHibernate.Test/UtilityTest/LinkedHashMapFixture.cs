@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.UtilityTest
 {
 	[TestFixture]
-	public class LinkedHashMapFixture
+	public partial class LinkedHashMapFixture
 	{
 		private static readonly Player[] players = {
 		                                  	new Player("12341", "Boeta Dippenaar"), new Player("23432", "Gary Kirsten"),
@@ -364,7 +364,7 @@ namespace NHibernate.Test.UtilityTest
 	}
 
 	[Serializable]
-	public class Player
+	public partial class Player
 	{
 		private string id;
 		private string name;

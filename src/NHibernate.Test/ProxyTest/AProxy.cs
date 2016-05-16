@@ -5,7 +5,7 @@ namespace NHibernate.Test.ProxyTest
 	/// <summary>
 	/// Summary description for AProxy.
 	/// </summary>
-	public class AProxy
+	public partial class AProxy
 	{
 		private int _id;
 		private string _name;

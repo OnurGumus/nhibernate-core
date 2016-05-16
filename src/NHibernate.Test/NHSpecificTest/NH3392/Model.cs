@@ -3,21 +3,21 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH3392
 {
-    public class Dad
+    public partial class Dad
     {
         public virtual int Id { get; set; }
         public virtual string Name { get; set; }
         public virtual ISet<Kid> Kids { get; set; }
         public virtual ISet<FriendOfTheFamily> Friends { get; set; }
     }
-    public class Mum
+    public partial class Mum
     {
         public virtual int Id { get; set; }
         public virtual string Name { get; set; }
         public virtual ISet<Kid> Kids { get; set; }
         public virtual ISet<FriendOfTheFamily> Friends { get; set; }
     }
-    public class Kid
+    public partial class Kid
     {
         public virtual int MumId { get; set; }
         public virtual int DadId { get; set; }
@@ -35,13 +35,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3392
         }
     }
 
-    public class FriendOfTheFamily
+    public partial class FriendOfTheFamily
     {
         public virtual MumAndDadId Id { get; set; }
         public virtual string Name { get; set; }
     }
 
-    public class MumAndDadId
+    public partial class MumAndDadId
     {
         public virtual int MumId { get; set; }
         public virtual int DadId { get; set; }

@@ -3,7 +3,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Test.TypesTest
 {
-	public class EnumCharClass
+	public partial class EnumCharClass
 	{
 		private int _id;
 		private SampleCharEnum _enumValue;
@@ -29,7 +29,7 @@ namespace NHibernate.Test.TypesTest
 	}
 
 
-	public class EnumCharFoo
+	public partial class EnumCharFoo
 	{
 		private Int32 id;
 
@@ -40,9 +40,9 @@ namespace NHibernate.Test.TypesTest
 		}
 	}
 
-	public class EnumCharBar : EnumCharFoo {}
+	public partial class EnumCharBar : EnumCharFoo {}
 
-	public class EnumCharBaz
+	public partial class EnumCharBaz
 	{
 		private Int32 id;
 		private SampleCharEnum type;

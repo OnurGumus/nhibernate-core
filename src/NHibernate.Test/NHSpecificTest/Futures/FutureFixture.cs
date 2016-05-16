@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.Futures
 {
-	public abstract class FutureFixture : TestCase
+	public abstract partial class FutureFixture : TestCase
 	{
 		protected override IList Mappings
 		{

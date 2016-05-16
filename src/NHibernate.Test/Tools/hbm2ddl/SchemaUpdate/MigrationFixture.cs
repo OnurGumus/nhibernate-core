@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaUpdate
 {
 	[TestFixture]
-	public class MigrationFixture
+	public partial class MigrationFixture
 	{
 
 		private void MigrateSchema(string resource1, string resource2)

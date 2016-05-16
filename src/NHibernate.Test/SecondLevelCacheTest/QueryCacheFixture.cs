@@ -8,7 +8,7 @@ using NHibernate.Transform;
 namespace NHibernate.Test.SecondLevelCacheTests
 {
 	[TestFixture]
-	public class ScalarQueryFixture : TestCase
+	public partial class ScalarQueryFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{
@@ -301,7 +301,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			Assert.That(es.FetchCount, Is.EqualTo(0)); //check that it was being cached
 		}
 
-		public class CustomTransformer: IResultTransformer
+		public partial class CustomTransformer: IResultTransformer
 		{
 			public object TransformTuple(object[] tuple, string[] aliases)
 			{

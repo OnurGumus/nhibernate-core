@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.ExpressionTest.SubQueries
 {
 	[TestFixture]
-	public class SubQueriesSqlFixture : TestCase
+	public partial class SubQueriesSqlFixture : TestCase
 	{
 		private Post post2;
 		private Post post1;

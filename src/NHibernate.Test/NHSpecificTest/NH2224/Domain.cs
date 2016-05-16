@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH2224
 {
-	public class Class1
+	public partial class Class1
 	{
 		private long _number;
 		private DateTime _dateOfChange;

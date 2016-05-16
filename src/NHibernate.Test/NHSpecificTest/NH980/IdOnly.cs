@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH980
 {
-	public class IdOnly
+	public partial class IdOnly
 	{
 		private int id;
 

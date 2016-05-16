@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypedManyToOne
 {
 	[TestFixture]
-	public class TypedManyToOneTest : TestCase
+	public partial class TypedManyToOneTest : TestCase
 	{
 		protected override string MappingsAssembly
 		{

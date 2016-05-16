@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH464
 {
-	public class Promotion
+	public partial class Promotion
 	{
 		private int id;
 		private string description;

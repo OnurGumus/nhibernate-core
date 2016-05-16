@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.SqlTest.Custom.Firebird
 {
 	[TestFixture]
-	public class FireBirdTest : CustomStoredProcSupportTest
+	public partial class FireBirdTest : CustomStoredProcSupportTest
 	{
 		protected override IList Mappings
 		{

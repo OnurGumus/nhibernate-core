@@ -5,7 +5,7 @@ using NHibernate.SqlCommand.Parser;
 namespace NHibernate.Test.SqlCommandTest
 {
 	[TestFixture]
-	public class SqlTokenizerFixture
+	public partial class SqlTokenizerFixture
 	{
 		[Test]
 		public void TokenizeSimpleSelectStatement()

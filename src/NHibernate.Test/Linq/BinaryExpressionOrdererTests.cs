@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class BinaryExpressionOrdererTests : LinqTestCase
+	public partial class BinaryExpressionOrdererTests : LinqTestCase
 	{
 		[Test]
 		public void ValuePropertySwapsToPropertyValue()

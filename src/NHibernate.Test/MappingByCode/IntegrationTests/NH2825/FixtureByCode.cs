@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH2825
 {
 	[TestFixture]
-	public class FixtureByCode : Fixture
+	public partial class FixtureByCode : Fixture
 	{
 		protected override IList Mappings
 		{

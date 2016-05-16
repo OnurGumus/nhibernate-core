@@ -9,7 +9,7 @@ namespace NHibernate.Test.PropertyTest
 	/// invalid values are passed in.
 	/// </summary>
 	[TestFixture]
-	public class BasicSetterExceptionFixture
+	public partial class BasicSetterExceptionFixture
 	{
 		protected IPropertyAccessor _accessor;
 		protected ISetter _setter;
@@ -38,7 +38,7 @@ namespace NHibernate.Test.PropertyTest
 			Assert.That(e.Message, Is.EqualTo("could not set a property value by reflection setter of NHibernate.Test.PropertyTest.BasicSetterExceptionFixture+A.Id"));
 		}
 
-		public class A
+		public partial class A
 		{
 			private int _id = 0;
 

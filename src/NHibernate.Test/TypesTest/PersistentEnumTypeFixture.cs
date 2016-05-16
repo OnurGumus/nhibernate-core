@@ -22,7 +22,7 @@ namespace NHibernate.Test.TypesTest
 	/// The Unit Test for the PersistentEnum Type.
 	/// </summary>
 	[TestFixture]
-	public class PersistentEnumTypeFixture : TypeFixtureBase
+	public partial class PersistentEnumTypeFixture : TypeFixtureBase
 	{
 		protected override string TypeName
 		{
@@ -136,7 +136,7 @@ namespace NHibernate.Test.TypesTest
 		}
 	}
 
-	public class GenericEnumTypeTest
+	public partial class GenericEnumTypeTest
 	{
 		[Test]
 		public void TheNameShouldBeFullNameAndAssembly()

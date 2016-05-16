@@ -3,7 +3,7 @@
 namespace NHibernate.Test.NHSpecificTest.NH1419
 {
 	[Serializable]
-	public class Entry
+	public partial class Entry
 	{
 		private Guid id;
 		private Blog blog;

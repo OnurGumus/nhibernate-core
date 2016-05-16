@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.CfgTest.Loquacious
 {
 	[TestFixture]
-	public class ConfigurationFixture
+	public partial class ConfigurationFixture
 	{
 		[Test]
 		public void CompleteConfiguration()

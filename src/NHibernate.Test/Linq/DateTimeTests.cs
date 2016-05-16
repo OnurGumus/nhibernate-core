@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class DateTimeTests : LinqTestCase
+	public partial class DateTimeTests : LinqTestCase
 	{
 		[Test]
 		public void CanQueryByYear()

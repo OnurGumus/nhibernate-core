@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.CfgTest
 {
 	[TestFixture]
-	public class ConfigurationSerializationTests
+	public partial class ConfigurationSerializationTests
 	{
 		[Test]
 		public void Configuration_should_be_serializable()

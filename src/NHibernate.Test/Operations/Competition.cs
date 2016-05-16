@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Operations
 {
-	public class Competition
+	public partial class Competition
 	{
 		public Competition()
 		{

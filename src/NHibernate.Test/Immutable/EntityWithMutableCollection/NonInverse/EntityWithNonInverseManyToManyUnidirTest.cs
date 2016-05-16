@@ -5,7 +5,7 @@ using NHibernate.Test.Immutable.EntityWithMutableCollection;
 namespace NHibernate.Test.Immutable.EntityWithMutableCollection.NonInverse
 {
 	[TestFixture]
-	public class EntityWithNonInverseManyToManyUnidirTest : AbstractEntityWithManyToManyTest
+	public partial class EntityWithNonInverseManyToManyUnidirTest : AbstractEntityWithManyToManyTest
 	{
 		protected override System.Collections.IList Mappings
 		{

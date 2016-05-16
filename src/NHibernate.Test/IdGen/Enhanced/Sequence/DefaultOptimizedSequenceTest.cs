@@ -6,7 +6,7 @@ namespace NHibernate.Test.IdGen.Enhanced.Sequence
 {
 	[TestFixture(true, typeof(OptimizerFactory.PooledLoOptimizer))]
 	[TestFixture(false, typeof(OptimizerFactory.PooledOptimizer))]
-	public class DefaultOptimizedSequenceTest : TestCase
+	public partial class DefaultOptimizedSequenceTest : TestCase
 	{
 		private readonly bool _preferLo;
 		private readonly System.Type _expectedOptimizerType;

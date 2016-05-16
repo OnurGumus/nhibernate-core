@@ -3,7 +3,7 @@
 namespace NHibernate.Test.NHSpecificTest.NH521
 {
 //	[NHMA.Class(Lazy=true)]
-	public class LazyEntity
+	public partial class LazyEntity
 	{
 		private int _id = 0;
 
@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH521
 	}
 
 //	[NHMA.Class]
-	public class ReferringEntity
+	public partial class ReferringEntity
 	{
 		private int _id = 0;
 

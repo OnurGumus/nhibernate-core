@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2470
 {
 	[TestFixture]
-	public class Class1_Class2_Tests : BugTestCase
+	public partial class Class1_Class2_Tests : BugTestCase
 	{
 		public void Clean()
 		{

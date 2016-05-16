@@ -3,7 +3,7 @@ using log4net.Repository;
 
 namespace NHibernate.Test.NHSpecificTest.NH995
 {
-	public class LogPlugin : IPlugin
+	public partial class LogPlugin : IPlugin
 	{
 		public void Attach(ILoggerRepository repository)
 		{

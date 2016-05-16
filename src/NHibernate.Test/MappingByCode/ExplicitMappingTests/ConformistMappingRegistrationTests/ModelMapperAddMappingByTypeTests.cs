@@ -4,9 +4,9 @@ using NHibernate.Mapping.ByCode;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRegistrationTests
 {
-	public class ModelMapperAddMappingByTypeTests
+	public partial class ModelMapperAddMappingByTypeTests
 	{
-		public class WithOutPublicParameterLessCtor
+		public partial class WithOutPublicParameterLessCtor
 		{
 			public WithOutPublicParameterLessCtor(string something)
 			{

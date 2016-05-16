@@ -7,7 +7,7 @@ namespace NHibernate.Test.DialectTest.SchemaTests
 {
 
 	[TestFixture]
-	public class ColumnMetaDataFixture
+	public partial class ColumnMetaDataFixture
 	{
 		private class TestableColumnMetaData : AbstractColumnMetaData
 		{

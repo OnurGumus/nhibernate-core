@@ -1,6 +1,6 @@
 ﻿namespace NHibernate.Test.NHSpecificTest.NH2242
 {
-    public class UnescapedFormulaDomainClass
+    public partial class UnescapedFormulaDomainClass
     {
         private int id;
 

@@ -5,9 +5,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2188
 {
-	public class AppDomainWithMultipleSearchPath
+	public partial class AppDomainWithMultipleSearchPath
 	{
-		public class MyNhConfiguration: Configuration
+		public partial class MyNhConfiguration: Configuration
 		{
 			public string DefaultConfigurationFilePath()
 			{

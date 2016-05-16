@@ -1,7 +1,7 @@
 
 namespace NHibernate.Test.Stateless.Fetching
 {
-	public class Resource
+	public partial class Resource
 	{
 		private long? id;
 		private string name;

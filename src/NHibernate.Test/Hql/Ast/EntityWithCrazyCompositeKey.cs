@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Hql.Ast
 {
-	public class EntityWithCrazyCompositeKey
+	public partial class EntityWithCrazyCompositeKey
 	{
 		private CrazyCompositeKey id;
 		private string name;

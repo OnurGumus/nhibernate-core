@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.TypeParameters
 {
-	public class Widget
+	public partial class Widget
 	{
 		private int valueOne = 1;
 		private int valueTwo = 2;

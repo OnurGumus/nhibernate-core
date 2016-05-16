@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Deletetransient
 {
-	public class Person
+	public partial class Person
 	{
 		private long id;
 		private string name;

@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.ExpressionTest
 {
 	[TestFixture]
-	public class QueryByExampleTest : TestCase
+	public partial class QueryByExampleTest : TestCase
 	{
 		protected override IList Mappings
 		{

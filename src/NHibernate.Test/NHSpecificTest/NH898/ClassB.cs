@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH898
 {
-	public class ClassB : ClassBParent
+	public partial class ClassB : ClassBParent
 	{
 		private ClassA a;
 		public virtual ClassA A

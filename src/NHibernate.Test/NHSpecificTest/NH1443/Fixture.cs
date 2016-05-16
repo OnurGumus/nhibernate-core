@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1443
 {
 	[TestFixture]
-	public class Fixture
+	public partial class Fixture
 	{
 		private static void Bug(Configuration cfg)
 		{
@@ -62,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1443
 		}
 	}
 
-	public class Aclass
+	public partial class Aclass
 	{
 		public int Id { get; set; }
 	}

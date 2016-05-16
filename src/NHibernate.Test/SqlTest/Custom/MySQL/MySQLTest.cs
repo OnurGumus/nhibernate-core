@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.SqlTest.Custom.MySQL
 {
 	[TestFixture]
-	public class MySQLTest : CustomStoredProcSupportTest
+	public partial class MySQLTest : CustomStoredProcSupportTest
 	{
 		protected override IList Mappings
 		{

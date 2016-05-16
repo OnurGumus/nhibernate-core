@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Hql.Ast
 {
-	public class BooleanLiteralEntity
+	public partial class BooleanLiteralEntity
 	{
 		public virtual long Id { get; set; }
 		public virtual bool YesNoBoolean { get; set; }

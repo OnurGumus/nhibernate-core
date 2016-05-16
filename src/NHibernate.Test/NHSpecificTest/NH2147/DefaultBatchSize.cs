@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2147
 {
-	public class DefaultBatchSize
+	public partial class DefaultBatchSize
 	{
 		private const BindingFlags DefaultFlags =
 			BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;

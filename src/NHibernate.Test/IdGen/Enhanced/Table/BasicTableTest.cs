@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.IdGen.Enhanced.Table
 {
 	[TestFixture]
-	public class BasicTableTest : TestCase
+	public partial class BasicTableTest : TestCase
 	{
 		protected override IList Mappings
 		{

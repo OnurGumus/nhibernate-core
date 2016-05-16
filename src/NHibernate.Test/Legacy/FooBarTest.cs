@@ -22,7 +22,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Legacy
 {
 	[TestFixture]
-	public class FooBarTest : TestCase
+	public partial class FooBarTest : TestCase
 	{
 		// Equivalent of Java String.getBytes()
 		private static byte[] GetBytes(string str)

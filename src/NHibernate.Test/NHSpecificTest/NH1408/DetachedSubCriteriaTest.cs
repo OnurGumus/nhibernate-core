@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1408
 {
 	[TestFixture]
-	public class DetachedSubCriteriaTest : BugTestCase
+	public partial class DetachedSubCriteriaTest : BugTestCase
 	{
 		[Test]
 		public void Test()

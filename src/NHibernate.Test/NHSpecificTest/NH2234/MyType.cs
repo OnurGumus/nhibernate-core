@@ -5,7 +5,7 @@ using NHibernate.UserTypes;
 
 namespace NHibernate.Test.NHSpecificTest.NH2234
 {
-  public class MyUsertype
+  public partial class MyUsertype
   {
     public MyUsertype(int id, string value)
     {
@@ -60,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2234
     }
   }
 
-	public class SimpleCustomType : IUserType
+	public partial class SimpleCustomType : IUserType
 	{
 		private static readonly SqlType[] ReturnSqlTypes = { SqlTypeFactory.Int32 };
 

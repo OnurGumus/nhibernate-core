@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaExportTests
 {
 	[TestFixture]
-	public class WithColumnTagFixture
+	public partial class WithColumnTagFixture
 	{
 		[Test]
 		public void ShouldCreateSchemaWithDefaultClause()

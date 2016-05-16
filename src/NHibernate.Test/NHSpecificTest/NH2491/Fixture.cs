@@ -2,18 +2,18 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2491
 {
-	public class BaseClass
+	public partial class BaseClass
 	{
 		public virtual int Id { get; set; }
 
 		public virtual BaseClass Another { get; set; }
 	}
 
-	public class SubClass : BaseClass
+	public partial class SubClass : BaseClass
 	{
 	}
 
-	public class ReferencingClass
+	public partial class ReferencingClass
 	{
 		public virtual int Id { get; set; }
 
@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2491
 	}
 
 
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override void OnTearDown()
 		{

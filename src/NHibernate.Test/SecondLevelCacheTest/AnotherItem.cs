@@ -1,6 +1,6 @@
 namespace NHibernate.Test.SecondLevelCacheTests
 {
-	public class AnotherItem
+	public partial class AnotherItem
 	{
 		private int id;
 		private string name;

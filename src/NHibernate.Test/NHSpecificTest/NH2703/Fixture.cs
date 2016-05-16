@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2703
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		Parent RootElement = null;
 

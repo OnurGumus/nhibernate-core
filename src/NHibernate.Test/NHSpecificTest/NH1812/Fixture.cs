@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1812
 {
-	public class AstBugBase : BugTestCase
+	public partial class AstBugBase : BugTestCase
 	{
 		[Test]
 		public void Test()
@@ -45,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1812
 	}
 
 	[TestFixture]
-	public class AstBug : AstBugBase
+	public partial class AstBug : AstBugBase
 	{
 
 		/* to the nh guy...

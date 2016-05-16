@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.GhostProperty
 {
 	[TestFixture]
-	public class GhostPropertyFixture : TestCase
+	public partial class GhostPropertyFixture : TestCase
 	{
 		private string log;
 

@@ -5,7 +5,7 @@ using System.Collections;
 namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 {
 	[TestFixture]
-	public class HiLoForcedTableSequenceTest : TestCase
+	public partial class HiLoForcedTableSequenceTest : TestCase
 	{
 		protected override IList Mappings
 		{

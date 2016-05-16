@@ -32,7 +32,7 @@ namespace NHibernate.Test.Cascade.Circle
 	*/
 	
 	[TestFixture]
-	public class MultiPathCircleCascadeTest : TestCase
+	public partial class MultiPathCircleCascadeTest : TestCase
 	{
 		protected override string MappingsAssembly
 		{

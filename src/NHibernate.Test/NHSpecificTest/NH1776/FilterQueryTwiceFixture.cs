@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1776
 {
 	[TestFixture]
-	public class FilterQueryTwiceFixture : BugTestCase
+	public partial class FilterQueryTwiceFixture : BugTestCase
 	{
 		// Note : in this test what is really important is the usage of the same HQL
 		// because QueryPlan

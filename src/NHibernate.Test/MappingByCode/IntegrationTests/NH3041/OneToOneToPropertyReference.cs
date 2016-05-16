@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3041
 {
 	[TestFixture]
-	public class OneToOneToPropertyReference : TestCaseMappingByCode
+	public partial class OneToOneToPropertyReference : TestCaseMappingByCode
 	{
 		protected override void OnSetUp()
 		{

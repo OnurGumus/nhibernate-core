@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
-	public class IdMapperTest
+	public partial class IdMapperTest
 	{
 		// The strategy Assigned is the default and does not need the "generator"
 		//public void SetGeneratorAtCtor()

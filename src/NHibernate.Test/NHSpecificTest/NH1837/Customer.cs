@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH1837
 {
-	public class Customer
+	public partial class Customer
 	{
 		public Customer()
 		{

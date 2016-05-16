@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.SqlTest
 {
-	public class Speech
+	public partial class Speech
 	{
 		private int id;
 		private string name;

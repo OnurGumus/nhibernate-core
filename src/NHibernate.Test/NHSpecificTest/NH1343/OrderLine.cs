@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1343
 {
-	public class OrderLine
+	public partial class OrderLine
 	{
 		protected OrderLine() {}
 

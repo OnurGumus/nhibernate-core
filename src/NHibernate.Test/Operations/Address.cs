@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Operations
 {
-	public class Address
+	public partial class Address
 	{
 		private Person resident;
 		public virtual long Id { get; set; }

@@ -12,7 +12,7 @@ namespace NHibernate.Test.TypesTest
 	/// Tests for mapping a byte[] Property to a BinaryType.
 	/// </summary>
 	[TestFixture]
-	public class BinaryTypeFixture : TypeFixtureBase
+	public partial class BinaryTypeFixture : TypeFixtureBase
 	{
 		protected override string TypeName
 		{

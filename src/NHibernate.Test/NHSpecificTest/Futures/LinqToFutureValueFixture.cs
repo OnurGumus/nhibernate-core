@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.Futures
 {
-	public class LinqToFutureValueFixture : FutureFixture
+	public partial class LinqToFutureValueFixture : FutureFixture
 	{
 		[Test]
 		public void CanExecuteToFutureValueCount()

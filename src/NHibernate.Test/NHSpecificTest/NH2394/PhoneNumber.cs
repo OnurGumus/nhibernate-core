@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH2394
 {
-	public class PhoneNumber
+	public partial class PhoneNumber
 	{
 		public PhoneNumber(int countryCode, string number)
 		{

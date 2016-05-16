@@ -7,7 +7,7 @@ using NHibernate.Criterion;
 namespace NHibernate.Test.NHSpecificTest.NH1018
 {
 	[TestFixture]
-	public class NH1018Fixture : BugTestCase
+	public partial class NH1018Fixture : BugTestCase
 	{
 		[Test]
 		public void Test()

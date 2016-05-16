@@ -6,7 +6,7 @@ using Environment=NHibernate.Cfg.Environment;
 namespace NHibernate.Test.NHSpecificTest.NH496
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		public override string BugNumber
 		{

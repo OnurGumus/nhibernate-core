@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest
 	/// Summary description for UserTypeFixture.
 	/// </summary>
 	[TestFixture]
-	public class UserTypeFixture : TestCase
+	public partial class UserTypeFixture : TestCase
 	{
 		protected override IList Mappings
 		{

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.NHSpecificTest.NH2230
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		[Test]
 		public void CanCreacteRetrieveDeleteComponentsWithPrivateReferenceSetterToParent()

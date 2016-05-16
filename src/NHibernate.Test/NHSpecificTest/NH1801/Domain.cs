@@ -1,12 +1,12 @@
 namespace NHibernate.Test.NHSpecificTest.NH1801
 {
-	public class A
+	public partial class A
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }
 	}
 
-	public class B
+	public partial class B
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }
@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1801
 		public virtual A A { get; set; }
 	}
 
-	public class C
+	public partial class C
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }

@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 {
 	[TestFixture]
-	public class SchemaMetadataUpdaterFixture
+	public partial class SchemaMetadataUpdaterFixture
 	{
 		[Test]
 		public void CanRetrieveReservedWords()

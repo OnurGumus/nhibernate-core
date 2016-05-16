@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH883
 {
-	public class Cat
+	public partial class Cat
 	{
 		private int id;
 		private IList<Cat> children = new List<Cat>();

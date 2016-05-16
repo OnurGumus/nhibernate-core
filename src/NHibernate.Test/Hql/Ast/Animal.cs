@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Hql.Ast
 {
-	public class Animal
+	public partial class Animal
 	{
 		private long id;
 		private float bodyWeight;

@@ -9,14 +9,14 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 {
-	public abstract class Parent
+	public abstract partial class Parent
 	{
 		public virtual ParentId Id { get; set; }
 		public virtual string Name { get; set; }
 		public virtual Address Address { get; set; }
 	}
 
-	public class ParentId
+	public partial class ParentId
 	{
 		public string Key1 { get; set; }
 		public string Key2 { get; set; }
@@ -37,11 +37,11 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 		}
 	}
 
-	public class Child1 : Parent
+	public partial class Child1 : Parent
 	{
 	}
 
-	public class Child2 : Parent
+	public partial class Child2 : Parent
 	{
 	}
 
@@ -93,13 +93,13 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 		}
 	}
 
-	public class Address
+	public partial class Address
 	{
 		public virtual string City { get; set; }
 	}
 
 	[TestFixture]
-	public class ComponentAsIdTest
+	public partial class ComponentAsIdTest
 	{
 		[Test]
 		public void CanHaveSameComponentAsIdMultipleTimesWithDifferentColumnNamesForSameProperty()

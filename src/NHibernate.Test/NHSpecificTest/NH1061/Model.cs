@@ -2,7 +2,7 @@ using System.Collections;
 
 namespace NHibernate.Test.NHSpecificTest.NH1061
 {
-	public class TestNH1061
+	public partial class TestNH1061
 	{
 		private int _Id;
 		public virtual int Id

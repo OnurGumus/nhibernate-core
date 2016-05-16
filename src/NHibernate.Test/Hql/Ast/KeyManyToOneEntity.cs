@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.Hql.Ast
 {
-	public class KeyManyToOneEntity
+	public partial class KeyManyToOneEntity
 	{
 		private Id id;
 		private string name;
@@ -13,7 +13,7 @@ namespace NHibernate.Test.Hql.Ast
 			set { name = value; }
 		}
 
-		public class Id
+		public partial class Id
 		{
 			private KeyManyToOneKeyEntity key1;
 			private string key2;

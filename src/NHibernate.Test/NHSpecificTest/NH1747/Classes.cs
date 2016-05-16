@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1747
 {
-	public class Payment
+	public partial class Payment
 	{
 		private Int32 id;
 		public virtual Int32 Id { get { return id; } set { id = value; } }
@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1747
 		public virtual PaymentBatch PaymentBatch { get { return paymentBatch; } set { paymentBatch = value; } }
 	}
 
-	public class PaymentBatch
+	public partial class PaymentBatch
 	{
 		private Int32 id;
 		public virtual Int32 Id { get { return id; } set { id = value; } }

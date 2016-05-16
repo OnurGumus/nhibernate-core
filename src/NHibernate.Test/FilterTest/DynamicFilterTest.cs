@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.FilterTest
 {
 	[TestFixture]
-	public class DynamicFilterTest : TestCase
+	public partial class DynamicFilterTest : TestCase
 	{
 		private ILog log = LogManager.GetLogger(typeof(DynamicFilterTest));
 
@@ -489,7 +489,7 @@ namespace NHibernate.Test.FilterTest
 			}
 		}
 
-		private class TestData
+		private partial class TestData
 		{
 			public long steveId;
 			public long deptId;

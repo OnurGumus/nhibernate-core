@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {
-	public class NestedComponetsTests
+	public partial class NestedComponetsTests
 	{
 		private class MyClass
 		{

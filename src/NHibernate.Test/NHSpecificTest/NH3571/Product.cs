@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH3571
 {
-	public class Product
+	public partial class Product
 	{
 		public Product()
 		{
@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3571
 		}
 	}
 
-	public class ProductDetails
+	public partial class ProductDetails
 	{
 		private IDictionary _properties;
 

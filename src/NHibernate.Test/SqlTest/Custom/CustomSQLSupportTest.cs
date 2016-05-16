@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.SqlTest.Custom
 {
-	public abstract class CustomSQLSupportTest: TestCase
+	public abstract partial class CustomSQLSupportTest: TestCase
 	{
 		protected override string MappingsAssembly
 		{

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Events.Collections
 {
-	public abstract class AbstractParentWithCollection : IParentWithCollection
+	public abstract partial class AbstractParentWithCollection : IParentWithCollection
 	{
 		private ICollection<IChild> children;
 		private long id;

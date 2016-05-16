@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Operations
 {
-	public class Person
+	public partial class Person
 	{
 		public virtual long Id { get; set; }
 		public virtual string Name { get; set; }

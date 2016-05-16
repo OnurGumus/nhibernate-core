@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.NatureDemo
 {
-	public class ShowXmlDemo
+	public partial class ShowXmlDemo
 	{
 		[Test, Explicit]
 		public void MappingAndShowXmlInConsole()

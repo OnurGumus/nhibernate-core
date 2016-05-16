@@ -10,7 +10,7 @@ using Environment=NHibernate.Cfg.Environment;
 namespace NHibernate.Test.EntityModeTest.Xml.Basic
 {
 	[TestFixture, Ignore("Not supported yet.")]
-	public class XmlFixture : TestCase
+	public partial class XmlFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

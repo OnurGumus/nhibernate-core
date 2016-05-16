@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.CfgTest.Loquacious
 {
 	[TestFixture]
-	public class EntityCacheConfigurationFixture
+	public partial class EntityCacheConfigurationFixture
 	{
 		[Test]
 		public void ConfigureCacheOfClass()

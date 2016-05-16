@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.EntityModeTest.Xml.Many2One
 {
 	[Serializable]
-	public class Car
+	public partial class Car
 	{
 		private ISet<CarPart> carParts = new HashSet<CarPart>();
 

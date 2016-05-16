@@ -2,7 +2,7 @@ using NHibernate.Proxy.DynamicProxy;
 
 namespace NHibernate.Test.DynamicEntity
 {
-	public class ProxyHelper
+	public partial class ProxyHelper
 	{
 		private static readonly ProxyFactory proxyGenerator = new ProxyFactory();
 

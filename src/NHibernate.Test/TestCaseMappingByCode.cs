@@ -3,7 +3,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Test
 {
-	public abstract class TestCaseMappingByCode:TestCase
+	public abstract partial class TestCaseMappingByCode:TestCase
 	{
 		protected override IList Mappings
 		{

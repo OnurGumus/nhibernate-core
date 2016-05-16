@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Events.Collections.Association.Bidirectional.OneToMany
 {
-	public class ParentWithBidirectionalOneToMany : AbstractParentWithCollection
+	public partial class ParentWithBidirectionalOneToMany : AbstractParentWithCollection
 	{
 		public ParentWithBidirectionalOneToMany() { }
 

@@ -6,7 +6,7 @@ using NHibernate.DomainModel.Northwind.Entities;
 
 namespace NHibernate.Test.Linq
 {
-	public static class NorthwindDbCreator
+	public static partial class NorthwindDbCreator
 	{
 		private static readonly DateTime KnownDate = new DateTime(2010, 06, 17);
 

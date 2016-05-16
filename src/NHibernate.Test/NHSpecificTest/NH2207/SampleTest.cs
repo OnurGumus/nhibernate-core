@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2207
 {
 	[TestFixture, Ignore("Demostration of external issue")]
-	public class SampleTest : BugTestCase
+	public partial class SampleTest : BugTestCase
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{

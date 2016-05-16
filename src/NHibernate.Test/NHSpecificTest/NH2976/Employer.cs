@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2976
 {
-	public class Employer
+	public partial class Employer
 	{
 		public virtual Guid Id { get; set; }
 

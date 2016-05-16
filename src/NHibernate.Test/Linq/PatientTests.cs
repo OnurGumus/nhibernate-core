@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
     [TestFixture]
-    public class PatientTests : LinqTestCase
+    public partial class PatientTests : LinqTestCase
     {
         [Test]
         public void CanQueryOnPropertyOfComponent()

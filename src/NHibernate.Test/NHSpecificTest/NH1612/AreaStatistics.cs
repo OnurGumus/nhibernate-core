@@ -2,7 +2,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH1612
 {
-	public class AreaStatistics
+	public partial class AreaStatistics
 	{
 		public virtual MonetaryValue? GDP { get; set; }
 		public virtual int? CitizenCount { get; set; }

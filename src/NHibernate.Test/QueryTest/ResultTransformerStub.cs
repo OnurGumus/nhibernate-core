@@ -3,7 +3,7 @@ using NHibernate.Transform;
 
 namespace NHibernate.Test.QueryTest
 {
-	public class ResultTransformerStub : IResultTransformer
+	public partial class ResultTransformerStub : IResultTransformer
 	{
 		private bool _wasTransformTupleCalled;
 		private bool _wasTransformListCalled;

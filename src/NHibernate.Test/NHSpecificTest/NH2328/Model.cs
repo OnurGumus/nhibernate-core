@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH2328
 {
-	public class ToyBox
+	public partial class ToyBox
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }
@@ -11,12 +11,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2328
 	{
 	}
 
-	public class Circle : IShape
+	public partial class Circle : IShape
 	{
 		public virtual int Id { get; set; }
 	}
 
-	public class Square : IShape
+	public partial class Square : IShape
 	{
 		public virtual int Id { get; set; }
 	}

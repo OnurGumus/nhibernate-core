@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH1483
 {
-	public abstract class BaseClass
+	public abstract partial class BaseClass
 	{
 		private Guid _id;
 

@@ -11,7 +11,7 @@ namespace NHibernate.Test.GenericTest.EnumGeneric
 	/// http://nhibernate.jira.com/browse/NH-1236
 	/// </summary>
 	[TestFixture]
-	public class EnumGenericFixture : TestCase
+	public partial class EnumGenericFixture : TestCase
 	{
 		protected override IList Mappings
 		{

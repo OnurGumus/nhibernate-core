@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.CollectionTest
 {
-	public class Parent
+	public partial class Parent
 	{
 		public virtual Guid Id { get; set; }
 		public virtual IDictionary<int, DateTime?> TypedDates { get; set; }

@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH1408
 {
-	public abstract class DbResource : Entity
+	public abstract partial class DbResource : Entity
 	{
 		private readonly IList<DbResourceKey> keys = new List<DbResourceKey>();
 		private string rawValue;

@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH2390
 {
-	public class Class1
+	public partial class Class1
 	{
 		public long Id { get; private set; }
 		public int Property1 { get; set; }

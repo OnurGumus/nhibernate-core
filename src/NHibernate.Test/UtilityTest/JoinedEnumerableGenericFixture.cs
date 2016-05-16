@@ -7,7 +7,7 @@ namespace NHibernate.Test.UtilityTest
 {
 	// This test is the same of JoinedEnumerableFixture but for generic version.
 	[TestFixture]
-	public class JoinedEnumerableGenericFixture
+	public partial class JoinedEnumerableGenericFixture
 	{
 		[Test]
 		public void WrapsSingle()

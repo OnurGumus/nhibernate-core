@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.UserCollection.Parameterized
 {
-	public class DefaultableListImpl : List<string>, IDefaultableList
+	public partial class DefaultableListImpl : List<string>, IDefaultableList
 	{
 		public DefaultableListImpl() {}
 		public DefaultableListImpl(int capacity) : base(capacity) {}

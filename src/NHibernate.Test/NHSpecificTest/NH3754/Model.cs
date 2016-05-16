@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH3754
 {
-	public class User
+	public partial class User
 	{
 		private int _id;
 		private string _name;

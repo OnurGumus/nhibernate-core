@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.Component.Basic
 {
-	public class User
+	public partial class User
 	{
 		private string userName;
 		private string password;

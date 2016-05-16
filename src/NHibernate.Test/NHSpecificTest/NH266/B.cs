@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH266
 {
-	public class B : A
+	public partial class B : A
 	{
 		private long _number;
 

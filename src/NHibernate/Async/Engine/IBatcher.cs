@@ -70,49 +70,4 @@ namespace NHibernate.Engine
 		Task<int> ExecuteNonQueryAsync(DbCommand cmd);
 	}
 }
-
-namespace NHibernate.Engine
-{
-	/// <summary>
-	/// Manages <see cref = "DbCommand"/>s and <see cref = "DbDataReader"/>s 
-	/// for an <see cref = "ISession"/>. 
-	/// </summary>
-	/// <remarks>
-	/// <p>
-	/// Abstracts ADO.NET batching to maintain the illusion that a single logical batch 
-	/// exists for the whole session, even when batching is disabled.
-	/// Provides transparent <c>DbCommand</c> caching.
-	/// </p>
-	/// <p>
-	/// This will be useful once ADO.NET gets support for batching.  Until that point
-	/// no code exists that will do batching, but this will provide a good point to do
-	/// error checking and making sure the correct number of rows were affected.
-	/// </p>
-	/// </remarks>
-	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial interface IBatcher : IDisposable
-	{
-		/// <summary>
-		/// Get a batchable <see cref = "DbCommand"/> to use for inserting / deleting / updating
-		/// (might be called many times before a single call to <c>ExecuteBatch()</c>
-		/// </summary>
-		/// <remarks>
-		/// After setting parameters, call <c>AddToBatch()</c> - do not execute the statement
-		/// explicitly.
-		/// </remarks>
-		/// <param name = "sql">The <see cref = "SqlString"/> to convert to an <see cref = "DbCommand"/>.</param>
-		/// <param name = "commandType">The <see cref = "CommandType"/> of the command.</param>
-		/// <param name = "parameterTypes">The <see cref = "SqlType">SqlTypes</see> of parameters
-		/// in <paramref name = "sql"/>.</param>
-		/// <returns></returns>
-		Task<DbCommand> PrepareBatchCommandAsync(CommandType commandType, SqlString sql, SqlType[] parameterTypes);
-		/// <summary>
-		/// Add an insert / delete / update to the current batch (might be called multiple times
-		/// for a single <c>PrepareBatchStatement()</c>)
-		/// </summary>
-		/// <param name = "expectation">Determines whether the number of rows affected by query is correct.</param>
-		Task AddToBatchAsync(IExpectation expectation);
-		Task<DbDataReader> ExecuteReaderAsync(DbCommand cmd);
-	}
-}
 #endif

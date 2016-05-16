@@ -7,7 +7,7 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Test.LazyOneToOne
 {
 	[TestFixture]
-	public class LazyOneToOneTest : TestCase
+	public partial class LazyOneToOneTest : TestCase
 	{
 		protected override IList Mappings
 		{

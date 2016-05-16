@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Criteria.Lambda
 {
 	[TestFixture]
-	public class ProjectIntegrationFixture : TestCase
+	public partial class ProjectIntegrationFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

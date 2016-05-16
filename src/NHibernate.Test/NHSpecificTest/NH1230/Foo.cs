@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1230
 {
-	public class Foo
+	public partial class Foo
 	{
 		private string description;
 		private int id;

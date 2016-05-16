@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1612
 {
-	public abstract class Area
+	public abstract partial class Area
 	{
 		public virtual string Code { get; protected set; }
 		public virtual string Name { get; protected set; }

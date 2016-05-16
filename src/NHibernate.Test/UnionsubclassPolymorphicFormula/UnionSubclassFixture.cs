@@ -4,7 +4,7 @@ using System.Collections;
 namespace NHibernate.Test.UnionsubclassPolymorphicFormula
 {
 	[TestFixture, Explicit]
-	public class UnionSubclassFixture : TestCase
+	public partial class UnionSubclassFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

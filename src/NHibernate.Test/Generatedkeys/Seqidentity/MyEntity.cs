@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Generatedkeys.Seqidentity
 {
-	public class MyEntity
+	public partial class MyEntity
 	{
 		private int id;
 		private string name;

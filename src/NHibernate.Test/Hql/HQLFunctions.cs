@@ -10,7 +10,7 @@ namespace NHibernate.Test.Hql
 	/// an override in the specific dialect implementation.
 	/// </summary>
 	[TestFixture]
-	public class HQLFunctions : TestCase
+	public partial class HQLFunctions : TestCase
 	{
 		static readonly Hashtable notSupportedStandardFunction;
 		static HQLFunctions()
@@ -1015,7 +1015,7 @@ group by mr.Description";
 			}
 		}
 	}
-	public class ForNh1725
+	public partial class ForNh1725
 	{
 		public string Description { get; set; }
 		public int Value { get; set; }

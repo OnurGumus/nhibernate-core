@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH1179
 {
-	public class MainClass
+	public partial class MainClass
 	{
 		private int id;
 		private string description;
@@ -37,7 +37,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1179
 		}
 	}
 
-	public class RelatedClass
+	public partial class RelatedClass
 	{
 		private int id;
 		private int aValue;

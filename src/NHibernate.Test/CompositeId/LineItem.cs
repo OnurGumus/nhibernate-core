@@ -1,8 +1,8 @@
 namespace NHibernate.Test.CompositeId
 {
-	public class LineItem
+	public partial class LineItem
 	{
-		public class ID
+		public partial class ID
 		{
 			private string customerId;
 			private int orderNumber;

@@ -9,7 +9,7 @@ namespace NHibernate.Test.ProxyTest
 	/// Summary description for NHibernateProxyHelperFixture.
 	/// </summary>
 	[TestFixture]
-	public class NHibernateProxyHelperFixture : TestCase
+	public partial class NHibernateProxyHelperFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

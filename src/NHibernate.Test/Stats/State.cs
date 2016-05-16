@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Stats
 {
-	public class State : Locality
+	public partial class State : Locality
 	{
 	}
 }

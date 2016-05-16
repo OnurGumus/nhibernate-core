@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH3489
 {
-	public class Department
+	public partial class Department
 	{
 		public Department()
 		{

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2603
 {
-    public class Parent
+    public partial class Parent
     {
         public virtual int Id
         {
@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2603
         }
     }
 
-    public class Child
+    public partial class Child
     {
         public virtual int Id
         {

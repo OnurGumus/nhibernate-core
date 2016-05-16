@@ -3,7 +3,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH2846
 {
-	public class Post
+	public partial class Post
 	{
 		public Post()
 		{
@@ -19,14 +19,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2846
 		public virtual ISet<Comment> Comments { get; set; }
 	}
 
-	public class Category
+	public partial class Category
 	{
 		public virtual int Id { get; set; }
 
 		public virtual string Title { get; set; }
 	}
 
-	public class Comment
+	public partial class Comment
 	{
 		public virtual int Id { get; set; }
 

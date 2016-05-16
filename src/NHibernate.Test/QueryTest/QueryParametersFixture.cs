@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.QueryTest
 {
 	[TestFixture]
-	public class QueryParametersFixture
+	public partial class QueryParametersFixture
 	{
 		[Test]
 		public void ValidateNullParameters()

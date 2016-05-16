@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3037
 {
 	[TestFixture, Explicit("This is a performance test and may take a while.")]
-	public class ByCodeFixture : TestCaseMappingByCode
+	public partial class ByCodeFixture : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{

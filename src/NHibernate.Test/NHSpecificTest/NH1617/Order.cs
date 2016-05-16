@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1617
 {
-    public class Order
+    public partial class Order
     {
         public virtual int Id { get; set; }
         public virtual bool Status { get; set; }

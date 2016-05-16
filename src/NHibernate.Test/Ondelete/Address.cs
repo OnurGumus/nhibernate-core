@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Ondelete
 {
-	public class Address
+	public partial class Address
 	{
 		public string address;
 		public string zip;

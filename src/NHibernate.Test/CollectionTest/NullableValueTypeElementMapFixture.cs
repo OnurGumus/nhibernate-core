@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.CollectionTest
 {
 	[TestFixture]
-	public class NullableValueTypeElementMapFixture : TestCase
+	public partial class NullableValueTypeElementMapFixture : TestCase
 	{
 		protected override IList Mappings
 		{

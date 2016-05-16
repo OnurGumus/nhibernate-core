@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.ReadOnly
 {
 	[TestFixture]
-	public class ReadOnlyProxyTest : AbstractReadOnlyTest
+	public partial class ReadOnlyProxyTest : AbstractReadOnlyTest
 	{
 		protected override IList Mappings
 		{

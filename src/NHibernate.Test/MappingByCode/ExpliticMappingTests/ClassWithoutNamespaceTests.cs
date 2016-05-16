@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {
 	[TestFixture]
-	public class ClassWithoutNamespaceTests
+	public partial class ClassWithoutNamespaceTests
 	{
 		[SetUp]
 		public void OnSetUp()

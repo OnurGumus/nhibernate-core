@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1061
 {
 	[TestFixture]
-	public class Fixture // Not inheriting from BugTestCase on purpose
+	public partial class Fixture // Not inheriting from BugTestCase on purpose
 	{
 		[Test]
 		public void IncrementGeneratorShouldIncludeClassLevelSchemaWhenGettingNextId()

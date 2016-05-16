@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1869
 {
-	public abstract class Entity<T, TKey> where T : Entity<T, TKey>
+	public abstract partial class Entity<T, TKey> where T : Entity<T, TKey>
 	{
 		private int? m_oldHashCode;
 
@@ -54,12 +54,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1869
 		}
 	}
 
-	public class Keyword : Entity<Keyword, int>
+	public partial class Keyword : Entity<Keyword, int>
 	{
 		public override int Id { get; set; }
 	}
 
-	public class NodeKeyword
+	public partial class NodeKeyword
 	{
 		public virtual int NodeId { get; set; }
 		public virtual Keyword Keyword { get; set; }

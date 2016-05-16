@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Cascade
 {
-	public class Job
+	public partial class Job
 	{
 		private long id;
 		private JobBatch batch;

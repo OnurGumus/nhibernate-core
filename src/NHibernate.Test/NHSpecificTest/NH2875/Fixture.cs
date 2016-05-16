@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2875
 {
 	[TestFixture]
-	public class Fixture
+	public partial class Fixture
 	{
 		public const string ForeignKeyName = "FK_NAME_TO_EXPECT_IN_DDL";
 
@@ -48,14 +48,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2875
 		}
 	}
 
-	public class Person
+	public partial class Person
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }
 		public virtual Employee Employee { get; set; }
 	}
 
-	public class Employee
+	public partial class Employee
 	{
 		public virtual int Id { get; set; }
 		public virtual Person Person { get; set; }

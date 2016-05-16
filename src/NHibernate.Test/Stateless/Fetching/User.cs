@@ -1,7 +1,7 @@
 
 namespace NHibernate.Test.Stateless.Fetching
 {
-	public class User
+	public partial class User
 	{
 		private long? id;
 		private string name;

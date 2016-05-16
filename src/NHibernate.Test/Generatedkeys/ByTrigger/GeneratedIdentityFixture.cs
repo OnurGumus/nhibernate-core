@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Generatedkeys.ByTrigger
 {
 	[TestFixture]
-	public class GeneratedIdentityFixture : TestCase
+	public partial class GeneratedIdentityFixture : TestCase
 	{
 		protected override IList Mappings
 		{

@@ -15,13 +15,13 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH2738
 		PlusOne = 1
 	}
 
-	public class MyClass
+	public partial class MyClass
 	{
 		public virtual int Id { get; set; }
 		public virtual MyEmptyEnum MyEmptyEnum { get; set; }
 	}
 
-	public class Fixture
+	public partial class Fixture
 	{
 		[Test]
 		public void WhenMapEmptyEnumThenDoesNotThrowExplicitException()

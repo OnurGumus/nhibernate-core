@@ -6,7 +6,7 @@ namespace NHibernate.Test.CfgTest
 	/// This class should be located in NHibernate.Test assembly
 	/// (used from ConfigurationFixture)
 	/// </summary>
-	public class LocatedInTestAssembly
+	public partial class LocatedInTestAssembly
 	{
 		private int id;
 

@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH940
 {
 	[TestFixture]
-	public class NH940Fixture : BugTestCase
+	public partial class NH940Fixture : BugTestCase
 	{
 		[Test]
 		public void Bug()

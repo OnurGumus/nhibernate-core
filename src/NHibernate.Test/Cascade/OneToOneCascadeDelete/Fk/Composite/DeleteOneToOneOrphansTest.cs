@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Composite
 {
-	public abstract class DeleteOneToOneOrphansTest : TestCase
+	public abstract partial class DeleteOneToOneOrphansTest : TestCase
 	{
 		protected override void OnSetUp()
 		{
@@ -80,7 +80,7 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Composite
 	}
 
 	[TestFixture]
-	public class DeleteOneToOneOrphansTestHbm : DeleteOneToOneOrphansTest
+	public partial class DeleteOneToOneOrphansTestHbm : DeleteOneToOneOrphansTest
 	{
 		protected override IList Mappings
 		{
@@ -89,7 +89,7 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Composite
 	}
 
 	[TestFixture]
-	public class DeleteOneToOneOrphansTestByCode : DeleteOneToOneOrphansTest
+	public partial class DeleteOneToOneOrphansTestByCode : DeleteOneToOneOrphansTest
 	{
 		protected override IList Mappings
 		{

@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.PolymorphicGetAndLoad
 {
-	public class PolymorphicGetAndLoadTest: TestCase
+	public partial class PolymorphicGetAndLoadTest: TestCase
 	{
 		protected override string MappingsAssembly
 		{
@@ -18,7 +18,7 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 			get { return new[] { "PolymorphicGetAndLoad.Mappings.hbm.xml" }; }
 		}
 
-		public class ScenarioWithA : IDisposable
+		public partial class ScenarioWithA : IDisposable
 		{
 			private readonly ISessionFactory factory;
 			private readonly A a;
@@ -49,7 +49,7 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 			}
 		}
 
-		public class ScenarioWithB : IDisposable
+		public partial class ScenarioWithB : IDisposable
 		{
 			private readonly ISessionFactory factory;
 			private readonly B b;

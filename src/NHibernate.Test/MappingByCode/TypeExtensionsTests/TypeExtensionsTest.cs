@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 {
-	public class TypeExtensionsTest
+	public partial class TypeExtensionsTest
 	{
 		private const BindingFlags BindingFlagsIncludePrivate = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
@@ -107,7 +107,7 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		{
 			T Id { get; set; }
 		}
-		private abstract class AbstractEntity<T> : IEntity<T>
+		private abstract partial class AbstractEntity<T> : IEntity<T>
 		{
 			public abstract T Id { get; set; }
 			public abstract bool BaseBool { get; set; }
@@ -218,7 +218,7 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 			Assert.That(typeof(MyBaseClass).HasPublicPropertyOf(typeof(string), x => true), Is.True);
 		}
 
-		private abstract class MyAbstract
+		private abstract partial class MyAbstract
 		{
 			protected int aField;
 			public abstract string Description { get; }

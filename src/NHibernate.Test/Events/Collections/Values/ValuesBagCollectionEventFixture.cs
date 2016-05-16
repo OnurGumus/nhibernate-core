@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Events.Collections.Values
 {
 	[TestFixture]
-	public class ValuesBagCollectionEventFixture : AbstractCollectionEventFixture
+	public partial class ValuesBagCollectionEventFixture : AbstractCollectionEventFixture
 	{
 		protected override IList Mappings
 		{

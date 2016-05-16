@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 {
-	public class Person
+	public partial class Person
 	{
 		private int id;
 		private int iq;

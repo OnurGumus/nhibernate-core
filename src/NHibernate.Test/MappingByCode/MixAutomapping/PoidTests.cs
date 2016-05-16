@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
-	public class PoidTests
+	public partial class PoidTests
 	{
 		private class MyClass
 		{

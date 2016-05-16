@@ -3,7 +3,7 @@ namespace NHibernate.Test
 	using NUnit.Framework;
 
 	[TestFixture]
-	public class NHibernateUtilTest
+	public partial class NHibernateUtilTest
 	{
 		[Test]
 		public void CanGuessTypeOfInt32ByValue()

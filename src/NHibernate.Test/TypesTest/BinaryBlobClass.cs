@@ -5,7 +5,7 @@ namespace NHibernate.Test.TypesTest
 	/// <summary>
 	/// Summary description for BinaryBlobClass.
 	/// </summary>
-	public class BinaryBlobClass
+	public partial class BinaryBlobClass
 	{
 		private int _id;
 		private byte[] _blob;

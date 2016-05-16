@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.Cascade.Circle
 {
-	public class Node
+	public partial class Node
 	{
 		private long nodeId;
 		private long version;

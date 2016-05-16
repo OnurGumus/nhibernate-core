@@ -13,7 +13,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
-	public class PropertyMapperTest
+	public partial class PropertyMapperTest
 	{
 		private enum MyEnum
 		{
@@ -320,7 +320,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		}
 	}
 
-	public class MyType : IUserType
+	public partial class MyType : IUserType
 	{
 		#region Implementation of IUserType
 
@@ -382,7 +382,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		#endregion
 	}
 
-	public class MyCompoType : ICompositeUserType
+	public partial class MyCompoType : ICompositeUserType
 	{
 		public object GetPropertyValue(object component, int property)
 		{

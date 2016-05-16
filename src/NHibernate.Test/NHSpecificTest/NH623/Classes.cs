@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH623
 {
-	public abstract class Element
+	public abstract partial class Element
 	{
 		protected int elementId;
 		protected Document document;
@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 		}
 	}
 
-	public class Paragraph : Element
+	public partial class Paragraph : Element
 	{
 		private string font;
 
@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 		}
 	}
 
-	public class Image : Element
+	public partial class Image : Element
 	{
 		private string img;
 
@@ -65,7 +65,7 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 		}
 	}
 
-	public class Document
+	public partial class Document
 	{
 		private IList<Paragraph> paragraphs;
 		private IList<Image> images;
@@ -124,7 +124,7 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 		}
 	}
 
-	public class Page
+	public partial class Page
 	{
 		private int pageId;
 		private Document document;
@@ -167,7 +167,7 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 		}
 	}
 
-	public class Review
+	public partial class Review
 	{
 		private int reviewId;
 		private Document document;

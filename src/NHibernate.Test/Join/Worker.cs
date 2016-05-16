@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Join
 {
-	public class Worker
+	public partial class Worker
 	{
 		private long _Id;
 		public virtual long Id
@@ -24,7 +24,7 @@ namespace NHibernate.Test.Join
 		}
 	}
 
-	public class PaidWorker : Worker
+	public partial class PaidWorker : Worker
 	{
 		private decimal _Wage;
 		public virtual decimal Wage

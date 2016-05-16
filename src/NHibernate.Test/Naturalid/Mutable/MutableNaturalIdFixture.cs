@@ -9,7 +9,7 @@ using Environment=NHibernate.Cfg.Environment;
 namespace NHibernate.Test.Naturalid.Mutable
 {
 	[TestFixture]
-	public class MutableNaturalIdFixture : TestCase
+	public partial class MutableNaturalIdFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

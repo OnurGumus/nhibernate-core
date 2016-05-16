@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.VersionTest.Db
 {
-	public class Permission
+	public partial class Permission
 	{
 		public virtual long Id { get; set; }
 

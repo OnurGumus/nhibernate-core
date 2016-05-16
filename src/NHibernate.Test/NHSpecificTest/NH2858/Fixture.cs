@@ -8,13 +8,13 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2858
 {
-	public class Entity
+	public partial class Entity
 	{
 		public virtual int Id { get; set; }
 		public virtual Guid TheGuid { get; set; }
 	}
 	
-	public class Fixture : TestCaseMappingByCode
+	public partial class Fixture : TestCaseMappingByCode
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{

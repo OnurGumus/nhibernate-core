@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2530
 {
-	public class Fixture: BugTestCase
+	public partial class Fixture: BugTestCase
 	{
 		protected override void Configure(Cfg.Configuration configuration)
 		{

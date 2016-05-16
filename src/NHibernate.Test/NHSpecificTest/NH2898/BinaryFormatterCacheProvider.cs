@@ -3,7 +3,7 @@ using NHibernate.Cache;
 
 namespace NHibernate.Test.NHSpecificTest.NH2898
 {
-	public class BinaryFormatterCacheProvider : ICacheProvider
+	public partial class BinaryFormatterCacheProvider : ICacheProvider
 	{
 		#region ICacheProvider Members
 

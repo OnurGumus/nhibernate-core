@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Deletetransient
 {
-	public class Address
+	public partial class Address
 	{
 		private long id;
 		private string info;

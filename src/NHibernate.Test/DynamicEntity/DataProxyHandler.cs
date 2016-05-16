@@ -3,7 +3,7 @@ using NHibernate.Proxy.DynamicProxy;
 
 namespace NHibernate.Test.DynamicEntity
 {
-	public sealed class DataProxyHandler : Proxy.DynamicProxy.IInterceptor
+	public sealed partial class DataProxyHandler : Proxy.DynamicProxy.IInterceptor
 	{
 		private readonly Hashtable data = new Hashtable();
 		private readonly string entityName;

@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.Hql
 {
-	public class MaterialResource
+	public partial class MaterialResource
 	{
 		public enum MaterialState : int
 		{

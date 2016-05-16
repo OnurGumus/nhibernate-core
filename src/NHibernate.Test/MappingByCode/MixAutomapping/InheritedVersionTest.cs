@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
-	public class InheritedVersionTest
+	public partial class InheritedVersionTest
 	{
 		private class BaseEntity
 		{

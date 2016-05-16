@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.VersionTest.Db.MsSQL
 {
 	[TestFixture]
-	public class ComplexDomainFixture : TestCase
+	public partial class ComplexDomainFixture : TestCase
 	{
 		protected override IList Mappings
 		{

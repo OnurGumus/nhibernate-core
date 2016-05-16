@@ -5,7 +5,7 @@ namespace NHibernate.Test.DialectTest
 	using NUnit.Framework;
 
 	[TestFixture]
-	public class SqlCEDialectFixture
+	public partial class SqlCEDialectFixture
 	{
         private MsSqlCeDialect dialect;
 

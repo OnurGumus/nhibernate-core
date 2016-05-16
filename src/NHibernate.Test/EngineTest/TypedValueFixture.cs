@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.EngineTest
 {
 	[TestFixture]
-	public class TypedValueFixture
+	public partial class TypedValueFixture
 	{
 		[Test]
 		public void EqualsCollection()

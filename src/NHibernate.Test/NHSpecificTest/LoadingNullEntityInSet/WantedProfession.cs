@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
 {
-	public class WantedProfession
+	public partial class WantedProfession
 	{
 		private int id;
 		private PrimaryProfession primaryProfession;

@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.IdTest
 {
 	[TestFixture]
-	public class IdentifierGeneratorFactoryFixture
+	public partial class IdentifierGeneratorFactoryFixture
 	{
 		/// <summary>
 		/// Testing NH-325 to make sure that an exception is actually

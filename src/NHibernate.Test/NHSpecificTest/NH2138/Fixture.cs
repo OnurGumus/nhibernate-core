@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2138
 {
 	[TestFixture]
-	public class Fixture 
+	public partial class Fixture 
 	{
 		[Test]
 		public void AfterAddAppingShouldHaveAResultsetWithEntityName()

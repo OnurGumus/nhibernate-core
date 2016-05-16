@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Hql.Ast
 {
 	[TestFixture]
-	public class BulkManipulation : BaseFixture
+	public partial class BulkManipulation : BaseFixture
 	{
 		public ISession OpenNewSession()
 		{
@@ -1023,7 +1023,7 @@ namespace NHibernate.Test.Hql.Ast
 
 		#endregion
 
-		private class TestData
+		private partial class TestData
 		{
 			private readonly BulkManipulation tc;
 			public Animal Polliwog;

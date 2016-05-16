@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace NHibernate.AsyncGenerator
 {
-	public class NamespaceInfo
+	public class NamespaceInfo : Dictionary<TypeDeclarationSyntax, TypeInfo>
 	{
 		public NamespaceInfo(DocumentInfo documentInfo, INamespaceSymbol symbol, NamespaceDeclarationSyntax node)
 		{
@@ -24,7 +24,7 @@ namespace NHibernate.AsyncGenerator
 
 		public NamespaceDeclarationSyntax Node { get; }
 
-		public Dictionary<INamedTypeSymbol, TypeInfo> TypeInfos { get; } = new Dictionary<INamedTypeSymbol, TypeInfo>();
+		//public Dictionary<TypeDeclarationSyntax, TypeInfo> TypeInfos { get; } = new Dictionary<TypeDeclarationSyntax, TypeInfo>();
 
 		public TypeInfo GetTypeInfo(IMethodSymbol symbol, bool create = false)
 		{
@@ -44,10 +44,14 @@ namespace NHibernate.AsyncGenerator
 			while (nestedTypes.Count > 0)
 			{
 				var typeSymbol = nestedTypes.Pop().OriginalDefinition;
+				var location = typeSymbol.Locations.Single(o => o.SourceTree.FilePath == path);
+				var node = Node.DescendantNodes()
+							   .OfType<TypeDeclarationSyntax>()
+							   .First(o => o.ChildTokens().First(t => t.IsKind(SyntaxKind.IdentifierToken)).Span == location.SourceSpan);
 
-				if ((currentDocType?.TypeInfos ?? TypeInfos).ContainsKey(typeSymbol))
+				if ((currentDocType?.TypeInfos ?? this).ContainsKey(node))
 				{
-					currentDocType = (currentDocType?.TypeInfos ?? TypeInfos)[typeSymbol];
+					currentDocType = (currentDocType?.TypeInfos ?? this)[node];
 					continue;
 				}
 				if (!create)
@@ -55,12 +59,12 @@ namespace NHibernate.AsyncGenerator
 					return null;
 				}
 
-				var location = typeSymbol.Locations.Single(o => o.SourceTree.FilePath == path);
-				var node = Node.DescendantNodes()
-							   .OfType<TypeDeclarationSyntax>()
-							   .Single(o => o.ChildTokens().Single(t => t.IsKind(SyntaxKind.IdentifierToken)).Span == location.SourceSpan);
 				var docType = new TypeInfo(this, typeSymbol, node);
-				(currentDocType?.TypeInfos ?? TypeInfos).Add(typeSymbol, docType);
+				(currentDocType?.TypeInfos ?? this).Add(node, docType);
+				if ((currentDocType?.TypeInfos ?? this).Keys.GroupBy(o => o.Identifier.ValueText).Any(o => o.Count() > 1))
+				{
+
+				}
 				currentDocType = docType;
 			}
 			return currentDocType;

@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH3332
 {
-	public class DataTypeDescription
+	public partial class DataTypeDescription
 	{
 		private Culture _culture;
 		private DataType _dataType;

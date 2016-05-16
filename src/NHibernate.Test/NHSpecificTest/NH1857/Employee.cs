@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH1857
 {
-	public class Employee
+	public partial class Employee
 	{
 		private Employee() {}
 

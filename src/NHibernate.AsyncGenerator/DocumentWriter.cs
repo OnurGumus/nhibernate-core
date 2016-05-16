@@ -265,11 +265,11 @@ namespace NHibernate.AsyncGenerator
 			var namespaceNodes = new List<MemberDeclarationSyntax>();
 			var customTask = Configuration.Async.CustomTaskType;
 			var tasksUsed = false;
-			foreach (var namespaceInfo in DocumentInfo.NamespaceInfos.Values.OrderBy(o => o.Node.SpanStart))
+			foreach (var namespaceInfo in DocumentInfo.Values.OrderBy(o => o.Node.SpanStart))
 			{
 				var namespaceNode = namespaceInfo.Node;
 				var typeNodes = new List<MemberDeclarationSyntax>();
-				foreach (var typeInfo in namespaceInfo.TypeInfos.Values.OrderBy(o => o.Node.SpanStart))
+				foreach (var typeInfo in namespaceInfo.Values.OrderBy(o => o.Node.SpanStart))
 				{
 					var typeNode = typeInfo.Node;
 					var asyncLock = false;

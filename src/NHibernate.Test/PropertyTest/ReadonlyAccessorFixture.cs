@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.PropertyTest
 {
 	[TestFixture]
-	public class ReadonlyAccessorFixture
+	public partial class ReadonlyAccessorFixture
 	{
 		[Test]
 		public void GetValue()
@@ -29,7 +29,7 @@ namespace NHibernate.Test.PropertyTest
 		}
 	}
 
-	public class Calculation
+	public partial class Calculation
 	{
 		public Calculation() { }
 

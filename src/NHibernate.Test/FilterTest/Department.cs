@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.FilterTest
 {
-	public class Department
+	public partial class Department
 	{
 		private long id;
 		private string name;

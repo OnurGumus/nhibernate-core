@@ -8,7 +8,7 @@ using System.Reflection;
 namespace NHibernate.Test.DialectTest.FunctionTests
 {
 	[TestFixture]
-	public class SerializableTypesFixture
+	public partial class SerializableTypesFixture
 	{
 		[Test]
 		public void AllEmbeddedTypesAreMarkedSerializable()

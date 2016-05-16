@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Ondelete
 {
 	[TestFixture]
-	public class ParentChildFixture : TestCase
+	public partial class ParentChildFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

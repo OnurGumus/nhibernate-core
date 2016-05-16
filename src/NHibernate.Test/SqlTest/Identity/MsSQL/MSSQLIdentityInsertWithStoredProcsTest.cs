@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.SqlTest.Identity.MsSQL
 {
 	[TestFixture]
-	public class MSSQLIdentityInsertWithStoredProcsTest : IdentityInsertWithStoredProcsTest
+	public partial class MSSQLIdentityInsertWithStoredProcsTest : IdentityInsertWithStoredProcsTest
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{

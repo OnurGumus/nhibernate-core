@@ -7,7 +7,7 @@ using NHibernate.Exceptions;
 
 namespace NHibernate.Test.ExceptionsTest
 {
-	public class FbExceptionConverterExample : ISQLExceptionConverter
+	public partial class FbExceptionConverterExample : ISQLExceptionConverter
 	{
 		#region ISQLExceptionConverter Members
 

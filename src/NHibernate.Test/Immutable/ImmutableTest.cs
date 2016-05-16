@@ -13,7 +13,7 @@ namespace NHibernate.Test.Immutable
 	/// Hibernate tests ported from trunk revision 20154 (August 17, 2010)
 	/// </summary>
 	[TestFixture]
-	public class ImmutableTest : TestCase
+	public partial class ImmutableTest : TestCase
 	{
 		protected override void Configure(Configuration configuration)
 		{

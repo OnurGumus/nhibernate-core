@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest
 	/// Summary description for UnsavedValueTest.
 	/// </summary>
 	[TestFixture]
-	public class UnsavedValueFixture : TestCase
+	public partial class UnsavedValueFixture : TestCase
 	{
 		public static int newId = 0;
 

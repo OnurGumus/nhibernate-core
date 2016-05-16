@@ -11,7 +11,7 @@ using Environment=NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.Futures
 {
-	public class TestDriverThatDoesntSupportQueryBatching : SqlClientDriver
+	public partial class TestDriverThatDoesntSupportQueryBatching : SqlClientDriver
 	{
 		public override bool SupportsMultipleQueries
 		{
@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 	/// but this way it's just much easier to test this
 	/// </summary>
 	[TestFixture]
-	public class FallbackFixture : FutureFixture
+	public partial class FallbackFixture : FutureFixture
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{

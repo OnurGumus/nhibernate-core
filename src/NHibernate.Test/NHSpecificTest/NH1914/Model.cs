@@ -9,7 +9,7 @@ using NHibernate.Classic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1914
 {
-	public class IDS
+	public partial class IDS
 	{
 		public String Identifier { get; set; }
 
@@ -18,18 +18,18 @@ namespace NHibernate.Test.NHSpecificTest.NH1914
 		public IDictionary<String,ListOfHLUT> CRSPLUTs { get; set; }
 	}
 
-	public class ListOfHLUT : CustomList<HLUT>
+	public partial class ListOfHLUT : CustomList<HLUT>
 	{
 		public ListOfHLUT() : base() { }
 		public ListOfHLUT(IEnumerable<HLUT> theValues) : base(theValues) { }
 	}
 
-	public class HLUT : LUT
+	public partial class HLUT : LUT
 	{
 		public String Name { get; set; }
 	}
 
-	public class LUT
+	public partial class LUT
 	{
 		public long Identifier { get; set; }
 
@@ -49,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1914
 		public Double Value;
 	}
 
-	public class CustomList<T> : IList<T>, IList, ILifecycle
+	public partial class CustomList<T> : IList<T>, IList, ILifecycle
 	{
 		#region Constructors
 

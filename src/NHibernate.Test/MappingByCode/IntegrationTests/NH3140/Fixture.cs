@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3140
 {
-	public class Fixture
+	public partial class Fixture
 	{
 		[TestCase("DifferentFromBar")]
 		[TestCase("Bar")]

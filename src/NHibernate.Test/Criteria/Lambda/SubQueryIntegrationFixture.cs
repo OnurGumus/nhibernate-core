@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Criteria.Lambda
 {
 	[TestFixture]
-	public class SubQueryIntegrationFixture : TestCase
+	public partial class SubQueryIntegrationFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

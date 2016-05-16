@@ -142,25 +142,6 @@ namespace NHibernate.AsyncGenerator
 			return result;
 		}
 
-		private static bool HaveSameParameters(IMethodSymbol m1, IMethodSymbol m2)
-		{
-			if (m1.Parameters.Length != m2.Parameters.Length)
-			{
-				return false;
-			}
-
-			for (var i = 0; i < m1.Parameters.Length; i++)
-			{
-				if (!m1.Parameters[i].Type.Equals(m2.Parameters[i].Type))
-				{
-					return false;
-				}
-			}
-			return true;
-		}
-
-
-
 		public List<AsyncCounterpartMethod> FindAsyncCounterpartMethodsWhitinBody()
 		{
 			var result = new List<AsyncCounterpartMethod>();
@@ -181,7 +162,7 @@ namespace NHibernate.AsyncGenerator
 				var type = methodInfo.ContainingType;
 				var asyncMethodInfo = type.GetMembers(methodInfo.Name + "Async")
 										  .OfType<IMethodSymbol>()
-										  .FirstOrDefault(o => HaveSameParameters(o, methodInfo));
+										  .FirstOrDefault(o => o.HaveSameParameters(methodInfo));
 				if (asyncMethodInfo == null)
 				{
 					continue;
@@ -234,13 +215,15 @@ namespace NHibernate.AsyncGenerator
 				result.CanBeAsnyc = true;
 			}
 
+			var solutionConfig = TypeInfo.NamespaceInfo.DocumentInfo.ProjectInfo.SolutionInfo.Configuration;
 			if (Node.AttributeLists
 					.SelectMany(o => o.Attributes.Where(a => a.Name.ToString() == "MethodImpl"))
 					.Any(o => o.ArgumentList.Arguments.Any(a => a.Expression.ToString() == "MethodImplOptions.Synchronized")))
 			{
 				result.MustRunSynchronized = true;
 			}
-			else if (counter.InvocationExpressions.Count == 1 && Symbol.GetAttributes().All(o => o.AttributeClass.Name != "TestAttribute"))
+			else if (counter.InvocationExpressions.Count == 1 && Symbol.GetAttributes()
+				.All(o => !solutionConfig.TestAttributeNames.Contains(o.AttributeClass.Name)))
 			{
 				var invocation = counter.InvocationExpressions[0];
 				if (Symbol.ReturnsVoid)

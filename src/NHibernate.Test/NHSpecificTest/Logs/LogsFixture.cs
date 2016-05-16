@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 	using log4net.Repository.Hierarchy;
 
 	[TestFixture]
-	public class LogsFixture : TestCase
+	public partial class LogsFixture : TestCase
 	{
 		protected override IList Mappings
 		{
@@ -45,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 			}
 		}
 
-		public class SessionIdCapturer
+		public partial class SessionIdCapturer
 		{
 			public override string ToString()
 			{
@@ -53,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 			}
 		}
 
-		public class TextLogSpy : IDisposable
+		public partial class TextLogSpy : IDisposable
 		{
 			private readonly TextWriterAppender appender;
 			private readonly Logger loggerImpl;

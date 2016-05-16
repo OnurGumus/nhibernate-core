@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH750
 {
-	public class Device
+	public partial class Device
 	{
 		public Device() : base()
 		{

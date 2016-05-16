@@ -8,7 +8,7 @@ namespace NHibernate.Test.IdGen.Enhanced
 	/// Tests that SequenceStyleGenerator configures itself as expected in various scenarios
 	/// </summary>
 	[TestFixture]
-	public class SequenceStyleConfigUnitFixture
+	public partial class SequenceStyleConfigUnitFixture
 	{
 		private static readonly string[] SequenceString = new[] { "SEQUENCE STRING" };
 		private static readonly string[] PoolSequenceString = new[] { "SEQUENCE STRING", "WITH INTIAL VALUE", "AND INCREMENT" };

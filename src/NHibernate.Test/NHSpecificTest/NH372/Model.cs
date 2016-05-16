@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH372
 {
-	public class BaseParent
+	public partial class BaseParent
 	{
 #pragma warning disable 649
 		private int _Id;
@@ -30,15 +30,15 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 		}
 	}
 
-	public class Parent : BaseParent
+	public partial class Parent : BaseParent
 	{
 	}
 
-	public class DynamicParent : BaseParent
+	public partial class DynamicParent : BaseParent
 	{
 	}
 
-	public class Component
+	public partial class Component
 	{
 		private int _NormalField;
 
@@ -73,7 +73,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 		}
 	}
 
-	public class SubComponent
+	public partial class SubComponent
 	{
 		private int _NormalField;
 

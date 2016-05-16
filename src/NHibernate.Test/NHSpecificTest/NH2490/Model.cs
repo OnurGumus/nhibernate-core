@@ -1,7 +1,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH2490
 {
-    public class Base
+    public partial class Base
     {
         public virtual int Id
         {
@@ -22,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2490
         }
     }
 
-    public class Derived : Base
+    public partial class Derived : Base
     {
         public virtual string ShortContent2
         {

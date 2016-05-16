@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Ado
 {
 	[TestFixture]
-	public class BatcherFixture: TestCase
+	public partial class BatcherFixture: TestCase
 	{
 		protected override string MappingsAssembly
 		{

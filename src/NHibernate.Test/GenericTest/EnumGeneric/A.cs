@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.GenericTest.EnumGeneric
 {
-	public class A
+	public partial class A
 	{
 		private Int64 id;
 		private B? nullableValue;

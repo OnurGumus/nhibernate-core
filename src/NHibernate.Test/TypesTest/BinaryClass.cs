@@ -5,7 +5,7 @@ namespace NHibernate.Test.TypesTest
 	/// <summary>
 	/// Summary description for BinaryClass.
 	/// </summary>
-	public class BinaryClass
+	public partial class BinaryClass
 	{
 		private int _id;
 		private byte[] _defaultSize;

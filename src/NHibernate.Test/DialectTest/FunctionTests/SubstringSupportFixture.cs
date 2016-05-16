@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.DialectTest.FunctionTests
 {
 	[TestFixture]
-	public class SubstringSupportFixture
+	public partial class SubstringSupportFixture
 	{
 		/// <summary>
 		/// Test case data source for DialectShouldUseCorrectSubstringImplementation().

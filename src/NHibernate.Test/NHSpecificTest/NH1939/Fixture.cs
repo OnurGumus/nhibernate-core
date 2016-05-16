@@ -8,7 +8,7 @@ using NHibernate.Cfg;
 namespace NHibernate.Test.NHSpecificTest.NH1939
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 
 		private StringBuilder schemaBuilder;

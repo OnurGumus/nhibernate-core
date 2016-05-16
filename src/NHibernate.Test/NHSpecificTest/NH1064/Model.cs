@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1064
 {
-	public class TypeA
+	public partial class TypeA
 	{
 		public TypeA() { }
 		public TypeA(string name) { this._Name = name; }
@@ -37,7 +37,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1064
 		}
 	}
 
-	public class TypeB
+	public partial class TypeB
 	{
 		public TypeB() { }
 		public TypeB(string name) { this._Name = name; }
@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1064
 		}
 	}
 
-	public class TypeC
+	public partial class TypeC
 	{
 		public TypeC() { }
 		public TypeC(string id, string name)

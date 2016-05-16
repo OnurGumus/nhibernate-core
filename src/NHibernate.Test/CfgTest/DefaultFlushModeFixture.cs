@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.CfgTest
 {
 	[TestFixture]
-	public class DefaultFlushModeFixture
+	public partial class DefaultFlushModeFixture
 	{
 		[Test]
 		public void CanSetDefaultFlushModeThroughXmlConfiguration()

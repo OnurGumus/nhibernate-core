@@ -5,7 +5,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1101
 {
 	// http://nhibernate.jira.com/browse/NH-1101
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override void Configure(Cfg.Configuration configuration)
 		{

@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.AccessAndCorrectPropertyName
 {
-	public class Person
+	public partial class Person
 	{
 		private string _firstName;
 
@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.AccessAndCorrectPropertyName
 		}
 	}
 
-	public class Dog
+	public partial class Dog
 	{
 		private string name;
 

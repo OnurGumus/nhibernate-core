@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.DriverTest
 {
 	[TestFixture]
-	public class OracleDataClientDriverFixture
+	public partial class OracleDataClientDriverFixture
 	{
 		/// <summary>
 		/// Testing NH-302 to verify that a DbType.Boolean gets replaced

@@ -2,19 +2,19 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH1255
 {
-	public class Customer
+	public partial class Customer
 	{
 		public int Id { get; set; }
 		public string Name { get; set; }
 	}
 
-	public class CustomerValue
+	public partial class CustomerValue
 	{
 		public CustomerValueId Id { get; set; }
 		public decimal Value { get; set; }
 	}
 
-	public class CustomerValueId : IEquatable<CustomerValueId>
+	public partial class CustomerValueId : IEquatable<CustomerValueId>
 	{
 		private int? requestedHashCode;
 		public Customer Customer { get; set; }

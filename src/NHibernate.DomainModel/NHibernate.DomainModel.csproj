@@ -40,7 +40,7 @@
     <OutputPath>bin\Debug-2.0\</OutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Debug-2.0\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;NET,NET_2_0</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET,NET_2_0,NET_4_5</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -78,6 +78,8 @@
     <Compile Include="AbstractProxy.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Assignable.cs" />
+    <Compile Include="Async\CustomPersister.cs" />
+    <Compile Include="Async\NHSpecific\NullableInt32Type.cs" />
     <Compile Include="B.cs" />
     <Compile Include="Bar.cs" />
     <Compile Include="BarProxy.cs" />

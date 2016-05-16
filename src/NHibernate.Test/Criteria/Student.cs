@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Criteria
 {
-	public class Student
+	public partial class Student
 	{
 		private long studentNumber;
 		private string name;		

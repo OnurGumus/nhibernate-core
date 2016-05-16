@@ -11,7 +11,7 @@ namespace NHibernate.Test.TypesTest
 	/// Summary description for StringTypeWithLengthFixture.
 	/// </summary>
 	[TestFixture]
-	public class StringTypeWithLengthFixture : TypeFixtureBase
+	public partial class StringTypeWithLengthFixture : TypeFixtureBase
 	{
 		protected override string TypeName
 		{

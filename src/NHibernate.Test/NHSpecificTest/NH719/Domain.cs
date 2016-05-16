@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH719
 {
-	public class A
+	public partial class A
 	{
 		private int id;
 		private string foo;
@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH719
 		}
 	}
 
-	public class B
+	public partial class B
 	{
 		private int id;
 		private string foo;
@@ -57,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.NH719
 		}
 	}
 
-	public class NotCached
+	public partial class NotCached
 	{
 		private int id;
 		private object owner;
@@ -85,7 +85,7 @@ namespace NHibernate.Test.NHSpecificTest.NH719
 		}
 	}
 
-	public class Cached
+	public partial class Cached
 	{
 		private int id;
 		private object owner;

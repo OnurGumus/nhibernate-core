@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1978
 {
 	[TestFixture]
-	public class AliasTest : BugTestCase
+	public partial class AliasTest : BugTestCase
 	{
 		[Test]
 		public void ShouldReturnPlanFromEmployee()

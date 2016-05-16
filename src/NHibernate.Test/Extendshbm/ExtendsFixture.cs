@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Extendshbm
 {
 	[TestFixture]
-	public class ExtendsFixture
+	public partial class ExtendsFixture
 	{
 		protected static string BaseForMappings
 		{

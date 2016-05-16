@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.DialectTest
 {
 	[TestFixture]
-	public class Oracle8iDialectFixture
+	public partial class Oracle8iDialectFixture
 	{
 		#region Limit only
 		[Test]

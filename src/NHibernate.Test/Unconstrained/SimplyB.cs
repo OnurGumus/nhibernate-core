@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.Unconstrained
 {
-	public class SimplyB
+	public partial class SimplyB
 	{
 		private int _id = 0;
 

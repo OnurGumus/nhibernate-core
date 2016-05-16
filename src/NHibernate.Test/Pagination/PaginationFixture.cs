@@ -9,7 +9,7 @@ using Environment=NHibernate.Cfg.Environment;
 namespace NHibernate.Test.Pagination
 {
 	[TestFixture]
-	public class PaginationFixture : TestCase
+	public partial class PaginationFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

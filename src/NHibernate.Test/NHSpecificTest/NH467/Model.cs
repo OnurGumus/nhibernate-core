@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH467
 {
-	public class User
+	public partial class User
 	{
 		private int _id;
 		private string _name;
@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH467
 		}
 	}
 
-	public class Employee
+	public partial class Employee
 	{
 		private int _id;
 		private User _user;

@@ -6,25 +6,25 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode
 {
-	public class A { public int Id { get; set; } }
+	public partial class A { public int Id { get; set; } }
 
-	public class B { public int Id { get; set; } }
+	public partial class B { public int Id { get; set; } }
 
-	public class C { public int Id { get; set; } }
+	public partial class C { public int Id { get; set; } }
 
-	public class D { public int Id { get; set; } }
+	public partial class D { public int Id { get; set; } }
 
-	public class E { public int Id { get; set; } }
+	public partial class E { public int Id { get; set; } }
 
-	public class F { public int Id { get; set; } }
+	public partial class F { public int Id { get; set; } }
 	
-	public class G { public int Id { get; set; } }
+	public partial class G { public int Id { get; set; } }
 	
-	public class H { public int Id { get; set; } }
+	public partial class H { public int Id { get; set; } }
 
-	public class I { public int Id { get; set; } }
+	public partial class I { public int Id { get; set; } }
 
-	public class GeneratorTests
+	public partial class GeneratorTests
 	{
 		[Test]
 		public void TestUUIDHexWithParameters()

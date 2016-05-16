@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 {
-	public class ComponetAsIdTests
+	public partial class ComponetAsIdTests
 	{
 		private class PersonId
 		{

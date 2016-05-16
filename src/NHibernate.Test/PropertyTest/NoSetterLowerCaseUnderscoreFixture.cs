@@ -8,7 +8,7 @@ namespace NHibernate.Test.PropertyTest
 	/// Summary description for NoSetterLowerCaseUnderscoreFixture.
 	/// </summary>
 	[TestFixture]
-	public class NoSetterLowerCaseUnderscoreFixture : NoSetterAccessorFixture
+	public partial class NoSetterLowerCaseUnderscoreFixture : NoSetterAccessorFixture
 	{
 		[SetUp]
 		public override void SetUp()

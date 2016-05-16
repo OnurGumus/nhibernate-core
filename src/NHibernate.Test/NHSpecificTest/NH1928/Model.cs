@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1928
 {
-    public class Customer 
+    public partial class Customer 
     {
 			public virtual int ID { get; protected set; }
         public virtual string Name { get; set; }

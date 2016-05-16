@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 	/// Tests in this class only failed when the code was build with the Roslyn compiler which is included in Visual Studio 2015
 	/// </summary>
 	[TestFixture]
-	public class Fixture : TestCase
+	public partial class Fixture : TestCase
 	{
 		protected Child childAliasField = null;
 		protected A aAliasField = null;

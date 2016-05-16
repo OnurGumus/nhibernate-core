@@ -1,6 +1,6 @@
 namespace NHibernate.Test.FilterTest
 {
-	public class TestClass
+	public partial class TestClass
 	{
 		private int _id;
 

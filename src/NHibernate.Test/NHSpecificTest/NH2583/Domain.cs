@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH2583
 {
-    public class MyRef1
+    public partial class MyRef1
     {
         private static int _idCt = 1000;
         private int _id;
@@ -46,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
         }
     }
 
-    public class MyRef2
+    public partial class MyRef2
     {
         private static int _idCt = 1000;
         private int _id;
@@ -67,7 +67,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
         public virtual int J3 { get; set; }
     }
 
-    public class MyRef3
+    public partial class MyRef3
     {
         private static int _idCt = 3000;
         private int _id;
@@ -93,7 +93,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
     public enum TBO1_BO2_J { Null, BO1, ValueNull, Zero, One }
     public enum TBO1_BO3_L { Null, BO1, ValueNull, Zero, One }
 
-    public class MyBO
+    public partial class MyBO
     {
         private static int _idCt = 0;
         private int _id;

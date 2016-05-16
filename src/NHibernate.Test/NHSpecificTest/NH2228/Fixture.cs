@@ -5,9 +5,9 @@ using NHibernate.Cfg.Loquacious;
 
 namespace NHibernate.Test.NHSpecificTest.NH2228
 {
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
-		public class ParentWithTwoChildrenScenario : IDisposable
+		public partial class ParentWithTwoChildrenScenario : IDisposable
 		{
 			private readonly ISessionFactory factory;
 			private readonly int parentId;

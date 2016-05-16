@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.TypesTest
 {
-	public class EntityClass
+	public partial class EntityClass
 	{
 		private int _id;
 
@@ -20,7 +20,7 @@ namespace NHibernate.Test.TypesTest
 		}
 	}
 
-	public class ComparableEntityClass : EntityClass, IComparable
+	public partial class ComparableEntityClass : EntityClass, IComparable
 	{
 		public ComparableEntityClass() {}
 

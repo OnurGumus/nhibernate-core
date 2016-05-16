@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.UtilityTest
 {
 	[TestFixture]
-	public class ArrayHelperTests
+	public partial class ArrayHelperTests
 	{
 		[Test]
 		public void NullArraysShouldBeEqual()

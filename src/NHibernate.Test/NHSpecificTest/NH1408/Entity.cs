@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1408
 {
-	public abstract class Entity
+	public abstract partial class Entity
 	{
 		private long oid;
 		private int version;

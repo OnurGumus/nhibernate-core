@@ -5,7 +5,7 @@ using System.Collections;
 namespace NHibernate.Test.Unionsubclass
 {
 	[TestFixture]
-	public class DatabaseKeywordsFixture : TestCase
+	public partial class DatabaseKeywordsFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

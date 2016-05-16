@@ -4,7 +4,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Test.UserCollection.Parameterized
 {
-	public class PersistentDefaultableList: PersistentGenericList<string>, IDefaultableList
+	public partial class PersistentDefaultableList: PersistentGenericList<string>, IDefaultableList
 	{
 		public PersistentDefaultableList() {}
 

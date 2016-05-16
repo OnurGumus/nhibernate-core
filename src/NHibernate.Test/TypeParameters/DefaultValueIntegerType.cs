@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.TypeParameters
 {
-	public class DefaultValueIntegerType : IUserType, IParameterizedType
+	public partial class DefaultValueIntegerType : IUserType, IParameterizedType
 	{
 		private int defaultValue;
 		private static NullableType _int32Type = NHibernateUtil.Int32;

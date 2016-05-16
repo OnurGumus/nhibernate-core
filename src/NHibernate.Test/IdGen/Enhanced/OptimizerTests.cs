@@ -4,7 +4,7 @@ using NHibernate.Id.Enhanced;
 namespace NHibernate.Test.IdGen.Enhanced
 {
 	[TestFixture]
-	public class OptimizerTests
+	public partial class OptimizerTests
 	{
 		[Test]
 		public void TestBasicNoOptimizerUsage()

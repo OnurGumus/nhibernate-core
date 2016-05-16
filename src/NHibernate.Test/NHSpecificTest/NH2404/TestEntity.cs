@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH2404
 {
-    public class TestEntity
+    public partial class TestEntity
     {
     	private string name;
         private int id;

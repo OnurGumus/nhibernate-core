@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest
 {
 	[TestFixture]
-	public class BasicClassFixture : TestCase
+	public partial class BasicClassFixture : TestCase
 	{
 		protected override IList Mappings
 		{

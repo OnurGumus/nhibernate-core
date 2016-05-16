@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Interceptor
 {
-	public class User
+	public partial class User
 	{
 		private ISet<string> actions = new HashSet<string>();
 		private DateTime? created;

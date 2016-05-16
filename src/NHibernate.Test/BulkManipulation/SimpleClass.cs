@@ -1,6 +1,6 @@
 namespace NHibernate.Test.BulkManipulation
 {
-	public class SimpleClass
+	public partial class SimpleClass
 	{
 		public virtual string Description { get; set; }
 	}

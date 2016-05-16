@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.SqlTest
 {
-	public class SpaceShip
+	public partial class SpaceShip
 	{
 		private int id;
 		private string name;

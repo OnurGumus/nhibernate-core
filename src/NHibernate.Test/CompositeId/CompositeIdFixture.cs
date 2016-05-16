@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.CompositeId
 {
 	[TestFixture]
-	public class CompositeIdFixture : TestCase
+	public partial class CompositeIdFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

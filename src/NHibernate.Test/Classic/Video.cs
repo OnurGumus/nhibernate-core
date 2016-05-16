@@ -5,7 +5,7 @@ using NHibernate.Classic;
 
 namespace NHibernate.Test.Classic
 {
-	public class Video: IValidatable
+	public partial class Video: IValidatable
 	{
 		private int id;
 		private string name;

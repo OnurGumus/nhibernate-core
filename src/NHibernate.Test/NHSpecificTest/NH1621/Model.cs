@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1621
 {
-	public class Nums
+	public partial class Nums
 	{
 		public virtual int ID { get; set; }
 

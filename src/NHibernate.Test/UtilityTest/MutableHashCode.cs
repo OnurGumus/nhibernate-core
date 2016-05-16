@@ -10,7 +10,7 @@ namespace NHibernate.Test.UtilityTest
 	/// between the construction and field population by NHibernate.
 	/// </summary>
 	[Serializable]
-	public class MutableHashCode
+	public partial class MutableHashCode
 	{
 		private int hashCodeField;
 

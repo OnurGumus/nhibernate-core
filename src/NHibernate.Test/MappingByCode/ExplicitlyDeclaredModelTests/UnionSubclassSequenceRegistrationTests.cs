@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 {
-	public class UnionSubclassSequenceRegistrationTests
+	public partial class UnionSubclassSequenceRegistrationTests
 	{
 		private class MyClass
 		{

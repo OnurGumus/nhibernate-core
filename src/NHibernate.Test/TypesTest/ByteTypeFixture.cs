@@ -8,7 +8,7 @@ namespace NHibernate.Test.TypesTest
 	/// The Unit Tests for the ByteType.
 	/// </summary>
 	[TestFixture]
-	public class ByteTypeFixture : TypeFixtureBase
+	public partial class ByteTypeFixture : TypeFixtureBase
 	{
 		protected override string TypeName
 		{

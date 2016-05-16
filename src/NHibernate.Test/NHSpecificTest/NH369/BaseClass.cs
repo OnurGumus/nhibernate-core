@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH369
 {
-	public class BaseClass
+	public partial class BaseClass
 	{
 		private KeyManyToOneClass _id;
 

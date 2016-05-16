@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH251
 {
 	[TestFixture]
-	public class CustomAccessFixture
+	public partial class CustomAccessFixture
 	{
 		[Test]
 		public void ConfigurationIsOK()

@@ -3,7 +3,7 @@
 
 namespace NHibernate.Test.Stateless
 {
-	public class TreeNode
+	public partial class TreeNode
 	{
 		private ISet<TreeNode> _children = new HashSet<TreeNode>();
 

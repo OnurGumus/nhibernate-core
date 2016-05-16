@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Ondelete
 {
-	public class Person
+	public partial class Person
 	{
 		private long id;
 		private string name;

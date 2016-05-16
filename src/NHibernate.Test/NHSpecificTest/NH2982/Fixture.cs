@@ -5,7 +5,7 @@ using NHibernate.Criterion;
 namespace NHibernate.Test.NHSpecificTest.NH2982
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override void OnSetUp()
 		{

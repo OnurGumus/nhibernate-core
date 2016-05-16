@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 {
-	public class Order
+	public partial class Order
 	{
 		public string Select { get; set; }
 		public string From { get; set; }

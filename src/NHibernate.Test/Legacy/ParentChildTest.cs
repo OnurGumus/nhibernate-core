@@ -11,7 +11,7 @@ namespace NHibernate.Test.Legacy
 	/// Summary description for ParentChildTest.
 	/// </summary>
 	[TestFixture]
-	public class ParentChildTest : TestCase
+	public partial class ParentChildTest : TestCase
 	{
 		protected override IList Mappings
 		{

@@ -5,7 +5,7 @@ using System.Text;
 namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
 {
 	
-	public class Employee
+	public partial class Employee
 	{
 		private int id;
 		private ISet<PrimaryProfession> primaries = new HashSet<PrimaryProfession>();

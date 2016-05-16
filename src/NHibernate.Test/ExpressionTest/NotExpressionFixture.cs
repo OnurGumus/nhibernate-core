@@ -11,7 +11,7 @@ namespace NHibernate.Test.ExpressionTest
 	/// Summary description for NotExpressionFixture.
 	/// </summary>
 	[TestFixture]
-	public class NotExpressionFixture : BaseExpressionFixture
+	public partial class NotExpressionFixture : BaseExpressionFixture
 	{
 		[Test]
 		public void NotSqlStringTest()

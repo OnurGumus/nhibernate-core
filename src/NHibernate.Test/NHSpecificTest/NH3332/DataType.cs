@@ -4,7 +4,7 @@ using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH3332
 {
-	public class DataType
+	public partial class DataType
 	{
 		private ISet<DataTypeDescription> _dataTypeDescriptions = new HashSet<DataTypeDescription>();
 		private ISet<MasterEntity> _masterEntities = new HashSet<MasterEntity>();

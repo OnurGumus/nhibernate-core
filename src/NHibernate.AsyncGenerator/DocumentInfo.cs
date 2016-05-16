@@ -10,7 +10,7 @@ using NHibernate.AsyncGenerator.Extensions;
 
 namespace NHibernate.AsyncGenerator
 {
-	public class DocumentInfo
+	public class DocumentInfo : Dictionary<string, NamespaceInfo>
 	{
 		public DocumentInfo(ProjectInfo projectInfo, Document document)
 		{
@@ -32,14 +32,13 @@ namespace NHibernate.AsyncGenerator
 
 		public SemanticModel SemanticModel { get; set; }
 
-		public Dictionary<INamespaceSymbol, NamespaceInfo> NamespaceInfos { get; } = new Dictionary<INamespaceSymbol, NamespaceInfo>();
-
 		public NamespaceInfo GetNamespaceInfo(ISymbol symbol, bool create = false)
 		{
 			var namespaceSymbol = symbol.ContainingNamespace;
-			if (NamespaceInfos.ContainsKey(namespaceSymbol))
+			var namespaceName = namespaceSymbol.Name;
+			if (ContainsKey(namespaceName))
 			{
-				return NamespaceInfos[namespaceSymbol];
+				return this[namespaceName];
 			}
 			if (!create)
 			{
@@ -64,13 +63,18 @@ namespace NHibernate.AsyncGenerator
 				node = RootNode.DescendantNodes().OfType<NamespaceDeclarationSyntax>().Single(o => o.FullSpan.End == location.SourceSpan.End);
 			}
 			var docNamespace = new NamespaceInfo(this, namespaceSymbol, node);
-			NamespaceInfos.Add(namespaceSymbol, docNamespace);
+			Add(namespaceName, docNamespace);
 			return docNamespace;
 		}
 
 		public MethodInfo GetOrCreateMethodInfo(IMethodSymbol symbol)
 		{
 			return GetNamespaceInfo(symbol, true).GetTypeInfo(symbol, true).GetMethodInfo(symbol, true);
+		}
+
+		public MethodInfo GetMethodInfo(IMethodSymbol symbol)
+		{
+			return GetNamespaceInfo(symbol).GetTypeInfo(symbol).GetMethodInfo(symbol);
 		}
 
 		public TypeInfo GetTypeInfo(INamedTypeSymbol symbol)

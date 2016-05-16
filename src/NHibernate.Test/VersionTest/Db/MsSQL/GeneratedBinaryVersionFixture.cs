@@ -7,7 +7,7 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 	// related issues NH-1687, NH-1685
 
 	[TestFixture]
-	public class GeneratedBinaryVersionFixture : TestCase
+	public partial class GeneratedBinaryVersionFixture : TestCase
 	{
 		protected override IList Mappings
 		{

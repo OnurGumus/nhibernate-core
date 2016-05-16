@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.TransformTests
 {
-	public class ImplementationOfEqualityTests
+	public partial class ImplementationOfEqualityTests
 	{
 		private readonly IEnumerable<System.Type> transformerTypes =
 			typeof (IResultTransformer).Assembly.GetTypes()

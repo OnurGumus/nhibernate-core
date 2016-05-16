@@ -6,10 +6,10 @@ using NHibernate.Intercept;
 
 namespace NHibernate.Test.DynamicProxyTests
 {
-	public class LazyFieldInterceptorSerializable
+	public partial class LazyFieldInterceptorSerializable
 	{
 		[Serializable]
-		public class MyClass
+		public partial class MyClass
 		{
 			public virtual int Id { get; set; }
 		}

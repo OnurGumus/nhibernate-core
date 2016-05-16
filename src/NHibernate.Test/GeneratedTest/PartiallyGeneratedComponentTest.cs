@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.GeneratedTest
 {
 	[TestFixture]
-	public class PartiallyGeneratedComponentTest : TestCase
+	public partial class PartiallyGeneratedComponentTest : TestCase
 	{
 		protected override string MappingsAssembly
 		{

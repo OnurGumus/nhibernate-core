@@ -10,7 +10,7 @@ using NHibernate.Criterion;
 namespace NHibernate.Test.Criteria.Lambda
 {
 	[TestFixture]
-	public class IntegrationFixture : TestCase
+	public partial class IntegrationFixture : TestCase
 	{
 		protected override string MappingsAssembly { get { return "NHibernate.Test"; } }
 

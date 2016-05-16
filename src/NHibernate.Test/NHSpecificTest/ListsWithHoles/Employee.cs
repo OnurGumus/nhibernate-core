@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.ListsWithHoles
 {
-    public class Employee
+    public partial class Employee
     {
         private int id;
         private IList<Employee> children = new List<Employee>();

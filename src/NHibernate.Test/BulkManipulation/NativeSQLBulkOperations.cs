@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.BulkManipulation
 {
 	[TestFixture]
-	public class NativeSQLBulkOperations : TestCase
+	public partial class NativeSQLBulkOperations : TestCase
 	{
 		protected override string MappingsAssembly
 		{

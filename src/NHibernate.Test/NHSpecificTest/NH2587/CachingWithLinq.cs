@@ -10,7 +10,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2587
 {
-	public class Foo
+	public partial class Foo
 	{
 		public Foo()
 		{
@@ -20,13 +20,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2587
 		public virtual ICollection<Bar> Bars { get; set; }
 	}
 
-	public class Bar
+	public partial class Bar
 	{
 		public virtual Guid Id { get; set; }
 		public virtual Foo Foo { get; set; }
 	}
 
-	public class CachingWithLinq : TestCaseMappingByCode
+	public partial class CachingWithLinq : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{
@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2587
 			                    });
 		}
 
-		public class Scenario: IDisposable
+		public partial class Scenario: IDisposable
 		{
 			private readonly ISessionFactory factory;
 

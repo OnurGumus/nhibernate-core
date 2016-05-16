@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.UserCollection
 {
 	[TestFixture]
-	public class UserCollectionTypeTest : TestCase
+	public partial class UserCollectionTypeTest : TestCase
 	{
 		protected override string MappingsAssembly
 		{

@@ -2,13 +2,13 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1907
 {
-	public class Something
+	public partial class Something
 	{
 		public virtual string Name { get; set; }
 		public virtual MyType Relation { get; set; }
 	}
 	[TestFixture]
-	public class Fixture: BugTestCase
+	public partial class Fixture: BugTestCase
 	{
 		[Test]
 		public void CanSetParameterQueryByName()

@@ -5,16 +5,16 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1515
 {
 	[TestFixture]
-	public class Fixture
+	public partial class Fixture
 	{
 		private readonly IProxyValidator pv = new DynProxyTypeValidator();
 
-		public class ClassWithInternal
+		public partial class ClassWithInternal
 		{
 			internal virtual void DoSomething() {}
 		}
 
-		public class ClassWithInternalProperty
+		public partial class ClassWithInternalProperty
 		{
 			internal virtual string DoSomething { get; set; }
 		}

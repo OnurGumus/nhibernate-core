@@ -2,7 +2,7 @@ using log4net;
 
 namespace NHibernate.Test.NHSpecificTest.NH1810
 {
-	public class Disease
+	public partial class Disease
 	{
 		private static readonly ILog Log = LogManager.GetLogger(typeof(Fixture));
 

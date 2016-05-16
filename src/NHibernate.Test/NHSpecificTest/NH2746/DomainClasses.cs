@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH2746
 {
-	public class T1
+	public partial class T1
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }
@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2746
 		}
 	}
 
-	public class T2
+	public partial class T2
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }

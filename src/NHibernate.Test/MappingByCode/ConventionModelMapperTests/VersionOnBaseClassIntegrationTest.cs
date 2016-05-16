@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 {
-	public class VersionOnBaseClassIntegrationTest
+	public partial class VersionOnBaseClassIntegrationTest
 	{
 		private class BaseEntity
 		{

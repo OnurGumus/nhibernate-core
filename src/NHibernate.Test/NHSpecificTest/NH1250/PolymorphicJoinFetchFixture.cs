@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1250
 	/// </summary>
 	/// <remarks>Failure occurs in MsSql2005Dialect only</remarks>
 	[TestFixture]
-	public class PolymorphicJoinFetchFixture : BugTestCase
+	public partial class PolymorphicJoinFetchFixture : BugTestCase
 	{
 		public override string BugNumber
 		{

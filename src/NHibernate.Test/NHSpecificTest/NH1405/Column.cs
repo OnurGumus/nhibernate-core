@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH1405
 {
-	public class Column
+	public partial class Column
 	{
 		/// <summary>
 		/// The column name.  Part 3 of 3 of the primary key.

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.Docs.PersistentClasses
 {
-	public class Cat
+	public partial class Cat
 	{
 		private long _id; // identifier
 		private string _name;

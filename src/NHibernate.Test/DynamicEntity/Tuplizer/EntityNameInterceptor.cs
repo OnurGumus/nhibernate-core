@@ -1,6 +1,6 @@
 namespace NHibernate.Test.DynamicEntity.Tuplizer
 {
-	public class EntityNameInterceptor : EmptyInterceptor
+	public partial class EntityNameInterceptor : EmptyInterceptor
 	{
 		public override string GetEntityName(object entity)
 		{

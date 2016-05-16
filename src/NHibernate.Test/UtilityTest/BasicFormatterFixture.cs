@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.UtilityTest
 {
 	[TestFixture]
-	public class BasicFormatterFixture
+	public partial class BasicFormatterFixture
 	{
 		[Test]
 		public void StringWithNestedDelimiters()

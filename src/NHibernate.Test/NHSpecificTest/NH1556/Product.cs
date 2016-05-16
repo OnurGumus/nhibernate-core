@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1556
 {
-   public class Product
+   public partial class Product
    {
       protected Product()
       {

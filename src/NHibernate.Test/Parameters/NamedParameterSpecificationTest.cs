@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Parameters
 {
-	public class NamedParameterSpecificationTest
+	public partial class NamedParameterSpecificationTest
 	{
 		[Test]
 		public void WhenHasSameNameThenSameHashCode()

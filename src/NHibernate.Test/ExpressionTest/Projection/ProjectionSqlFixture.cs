@@ -7,7 +7,7 @@ using NHibernate.Type;
 namespace NHibernate.Test.ExpressionTest.Projection
 {
     [TestFixture]
-    public class ProjectionSqlFixture : TestCase
+    public partial class ProjectionSqlFixture : TestCase
     {
         protected override string MappingsAssembly
         {
@@ -113,7 +113,7 @@ namespace NHibernate.Test.ExpressionTest.Projection
         }
     }
 	
-	public class ProjectionReport
+	public partial class ProjectionReport
 	{
 		double minPay;
 		double maxPay;

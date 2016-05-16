@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.IdTest
 {
 	[TestFixture]
-	public class TableGeneratorFixture
+	public partial class TableGeneratorFixture
 	{
 		private const BindingFlags Flags =
 			BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;

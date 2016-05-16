@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH335
 {
-	public class Utils
+	public partial class Utils
 	{
 		private static Random random = new Random();
 
@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 		}
 	}
 
-	public class Thing
+	public partial class Thing
 	{
 		public Thing()
 		{
@@ -66,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 		}
 	}
 
-	public class AbcThing : Thing
+	public partial class AbcThing : Thing
 	{
 		private static Random random = new Random();
 
@@ -79,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 		}
 	}
 
-	public class OtherThing : Thing
+	public partial class OtherThing : Thing
 	{
 		public OtherThing()
 			: base()

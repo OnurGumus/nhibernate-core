@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Stateless
 {
-	public class Paper
+	public partial class Paper
 	{
 		private int id;
 		private string color;

@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1359
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		public override string BugNumber
 		{
@@ -76,7 +76,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1359
 			}
 		}
 
-		public class HeaviestPet
+		public partial class HeaviestPet
 		{
 			public string Name;
 			public double Weight;

@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2374
 {
 	[TestFixture]
-	public class NH2374Fixture : BugTestCase
+	public partial class NH2374Fixture : BugTestCase
 	{
 		[Test]
 		public void OneToOne_with_EntityMode_Map()

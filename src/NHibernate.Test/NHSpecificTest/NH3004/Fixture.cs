@@ -6,7 +6,7 @@ using System.Data;
 namespace NHibernate.Test.NHSpecificTest.NH3004
 {
 	[TestFixture]
-	public class Fixture
+	public partial class Fixture
 	{
 		[Test]
 		public void RemoveUnusedCommandParametersBug_1()

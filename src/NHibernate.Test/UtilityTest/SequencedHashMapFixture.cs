@@ -12,7 +12,7 @@ namespace NHibernate.Test.UtilityTest
 	/// Summary description for SequencedHashMapFixture.
 	/// </summary>
 	[TestFixture]
-	public class SequencedHashMapFixture
+	public partial class SequencedHashMapFixture
 	{
 		private SequencedHashMap _shm;
 		private SequencedHashMap _emptyShm;

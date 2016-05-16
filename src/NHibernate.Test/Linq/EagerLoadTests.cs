@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class EagerLoadTests : LinqTestCase
+	public partial class EagerLoadTests : LinqTestCase
 	{
 		[Test]
 		public void CanSelectAndFetch()

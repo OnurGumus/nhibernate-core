@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest
 	/// to function.
 	/// </summary>
 	[TestFixture]
-	public class EmptyMappingsFixture : TestCase
+	public partial class EmptyMappingsFixture : TestCase
 	{
 		protected override IList Mappings
 		{

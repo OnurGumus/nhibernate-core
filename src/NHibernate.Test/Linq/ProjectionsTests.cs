@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class ProjectionsTests : LinqTestCase
+	public partial class ProjectionsTests : LinqTestCase
 	{
 		[Test]
 		public void ProjectAnonymousTypeWithWhere()

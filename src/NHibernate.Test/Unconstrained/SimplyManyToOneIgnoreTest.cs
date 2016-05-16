@@ -6,7 +6,7 @@ namespace NHibernate.Test.Unconstrained
 {
 	// represent another possible ""normal"" use (N.B. H3 create the FK if you don't use <formula>)
 	[TestFixture]
-	public class SimplyManyToOneIgnoreTest : TestCase
+	public partial class SimplyManyToOneIgnoreTest : TestCase
 	{
 		protected override string MappingsAssembly
 		{

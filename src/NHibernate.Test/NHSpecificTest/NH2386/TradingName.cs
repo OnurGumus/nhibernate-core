@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2386
    /// <summary>
     /// represents a trading name for an organisation
     /// </summary>
-    public class TradingName  {
+    public partial class TradingName  {
         private Organisation organisation;
         
         public virtual Guid TradingNameId { get; protected set;}

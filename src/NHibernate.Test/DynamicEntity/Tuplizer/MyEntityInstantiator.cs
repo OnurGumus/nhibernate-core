@@ -3,7 +3,7 @@ using NHibernate.Tuple;
 
 namespace NHibernate.Test.DynamicEntity.Tuplizer
 {
-	public class MyEntityInstantiator : IInstantiator
+	public partial class MyEntityInstantiator : IInstantiator
 	{
 		private readonly System.Type entityType;
 

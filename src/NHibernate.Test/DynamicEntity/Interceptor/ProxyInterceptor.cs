@@ -1,6 +1,6 @@
 namespace NHibernate.Test.DynamicEntity.Interceptor
 {
-	public class ProxyInterceptor : EmptyInterceptor
+	public partial class ProxyInterceptor : EmptyInterceptor
 	{
 		public override string GetEntityName(object entity)
 		{

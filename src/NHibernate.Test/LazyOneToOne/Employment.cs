@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.LazyOneToOne
 {
-	public class Employment
+	public partial class Employment
 	{
 		protected Employment() { }
 		public Employment(Employee e, String org)

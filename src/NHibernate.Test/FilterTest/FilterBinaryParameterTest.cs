@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.FilterTest
 {
 	[TestFixture]
-	public class FilterBinaryParameterTest : TestCase
+	public partial class FilterBinaryParameterTest : TestCase
 	{
 		protected override IList Mappings
 		{

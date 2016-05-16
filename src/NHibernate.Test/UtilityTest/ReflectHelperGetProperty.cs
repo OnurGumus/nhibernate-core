@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.UtilityTest
 {
-	public class ReflectHelperGetProperty
+	public partial class ReflectHelperGetProperty
 	{
 		private class Entity
 		{

@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1714
 {
 	[TestFixture]
-	public class UseCaseDemonstrationFixture : BugTestCase
+	public partial class UseCaseDemonstrationFixture : BugTestCase
 	{
 		protected override void OnSetUp()
 		{
@@ -52,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1714
 		}
 	}
 
-	public class MyCustomEventListener : IPreInsertEventListener
+	public partial class MyCustomEventListener : IPreInsertEventListener
 	{
 		public bool OnPreInsert(PreInsertEvent e)
 		{

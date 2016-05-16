@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 {
-	public class GetMemberFromInterfacesTest
+	public partial class GetMemberFromInterfacesTest
 	{
 		private class BaseEntity
 		{

@@ -5,9 +5,9 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1323
 {
 	[Explicit("Demonstration of not viability")]
-	public class CheckViability: BugTestCase
+	public partial class CheckViability: BugTestCase
 	{
-		public class FullInitializedRetrievedEntity : IDisposable
+		public partial class FullInitializedRetrievedEntity : IDisposable
 		{
 			private readonly ISessionFactory factory;
 			private readonly MyClass entity;

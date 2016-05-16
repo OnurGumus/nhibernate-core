@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class ParameterisedQueries : ReadonlyTestCase
+	public partial class ParameterisedQueries : ReadonlyTestCase
 	{
 		[Test]
 		public void Identical_Expressions_Return_The_Same_Key()

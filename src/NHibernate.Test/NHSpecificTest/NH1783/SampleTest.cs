@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1783
 {
 	[TestFixture]
-	public class SampleTest : BugTestCase
+	public partial class SampleTest : BugTestCase
 	{
 		[Test]
 		public void DatePropertyShouldBeStoredWithoutTimePart()

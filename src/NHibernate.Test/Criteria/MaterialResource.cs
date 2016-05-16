@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.Criteria
 {
-	public class MaterialResource
+	public partial class MaterialResource
 	{
 		private long _id;
 
@@ -30,15 +30,15 @@ namespace NHibernate.Test.Criteria
 		}
 	}
 
-	public class MaterialUnitable : MaterialResource
+	public partial class MaterialUnitable : MaterialResource
 	{
 	}
 
-	public class DeviceDef : MaterialUnitable
+	public partial class DeviceDef : MaterialUnitable
 	{
 	}
 
-	public class MaterialUnit
+	public partial class MaterialUnit
 	{
 		private long _id;
 

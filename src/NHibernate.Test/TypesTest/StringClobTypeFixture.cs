@@ -7,7 +7,7 @@ namespace NHibernate.Test.TypesTest
 	/// Summary description for StringClobTypeFixture.
 	/// </summary>
 	[TestFixture]
-	public class StringClobTypeFixture : TypeFixtureBase
+	public partial class StringClobTypeFixture : TypeFixtureBase
 	{
 		protected override string TypeName
 		{

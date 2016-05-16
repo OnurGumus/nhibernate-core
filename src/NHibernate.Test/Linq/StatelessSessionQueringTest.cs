@@ -6,7 +6,7 @@ using NHibernate.Linq;
 
 namespace NHibernate.Test.Linq
 {
-	public class StatelessSessionQueringTest : LinqTestCase
+	public partial class StatelessSessionQueringTest : LinqTestCase
 	{
 		[Test]
 		public void WhenQueryThroughStatelessSessionThenDoesNotThrows()

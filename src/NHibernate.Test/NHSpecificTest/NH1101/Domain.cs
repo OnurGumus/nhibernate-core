@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1101
 {
-	public class A
+	public partial class A
 	{
 #pragma warning disable 649
 		private int id;
@@ -35,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1101
 			set { b = value; }
 		}
 	}
-	public class B
+	public partial class B
 	{
 		private string str;
 		private int? nInt;

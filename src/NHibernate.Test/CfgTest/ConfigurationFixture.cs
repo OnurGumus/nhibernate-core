@@ -17,7 +17,7 @@ namespace NHibernate.Test.CfgTest
 	/// Summary description for ConfigurationFixture.
 	/// </summary>
 	[TestFixture]
-	public class ConfigurationFixture
+	public partial class ConfigurationFixture
 	{
 		/// <summary>
 		/// Verify that NHibernate can read the configuration from any hibernate.cfg.xml
@@ -420,7 +420,7 @@ namespace NHibernate.Test.CfgTest
 			// No exception expected
 		}
 
-		public class SampleQueryProvider : DefaultQueryProvider
+		public partial class SampleQueryProvider : DefaultQueryProvider
 		{
 			public SampleQueryProvider(ISessionImplementor session) : base(session)
 			{

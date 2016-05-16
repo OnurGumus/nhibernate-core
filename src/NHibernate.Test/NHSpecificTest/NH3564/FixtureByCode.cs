@@ -12,7 +12,7 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.NH3564
 {
-	public class MyDummyCache : ICache
+	public partial class MyDummyCache : ICache
 	{
 		private IDictionary hashtable = new Hashtable();
 		private readonly string regionName;
@@ -78,7 +78,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3564
 		}
 	}
 
-	public class MyDummyCacheProvider : ICacheProvider
+	public partial class MyDummyCacheProvider : ICacheProvider
 	{
 		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
 		{
@@ -106,7 +106,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3564
 		public virtual DateTime DateOfBirth { get; set; }
 	}
 
-	public class FixtureByCode : TestCaseMappingByCode
+	public partial class FixtureByCode : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{

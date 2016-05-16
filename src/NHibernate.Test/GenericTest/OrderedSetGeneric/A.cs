@@ -3,7 +3,7 @@ using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.GenericTest.OrderedSetGeneric
 {
-	public class A
+	public partial class A
 	{
 		private ISet<B> _items = new LinkedHashSet<B>();
 

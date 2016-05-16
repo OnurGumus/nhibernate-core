@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq.ByMethod
 {
 	[TestFixture]
-	public class GroupByTests : LinqTestCase
+	public partial class GroupByTests : LinqTestCase
 	{
 		[Test]
 		public void SingleKeyGroupAndCount()

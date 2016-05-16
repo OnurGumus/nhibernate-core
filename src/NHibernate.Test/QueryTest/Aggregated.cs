@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.QueryTest
 {
-	public class Aggregated
+	public partial class Aggregated
 	{
 		private int id;
 		private byte aByte;

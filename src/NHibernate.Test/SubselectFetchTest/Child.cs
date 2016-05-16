@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace NHibernate.Test.SubselectFetchTest
 {
-	public class Child
+	public partial class Child
 	{
 		private string name;
 		private IList friends;

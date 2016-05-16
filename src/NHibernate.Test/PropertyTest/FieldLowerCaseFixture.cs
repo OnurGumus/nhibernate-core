@@ -8,7 +8,7 @@ namespace NHibernate.Test.PropertyTest
 	/// Test the <c>field.lowercase</c> access strategy.
 	/// </summary>
 	[TestFixture]
-	public class FieldLowerCaseFixture : FieldAccessorFixture
+	public partial class FieldLowerCaseFixture : FieldAccessorFixture
 	{
 		[SetUp]
 		public override void SetUp()

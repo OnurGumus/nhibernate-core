@@ -11,7 +11,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 	/// <summary>
 	/// Hibernate tests ported from trunk revision 19910 (July 8, 2010)
 	/// </summary>
-	public abstract class AbstractEntityWithOneToManyTest : TestCase
+	public abstract partial class AbstractEntityWithOneToManyTest : TestCase
 	{
 		private bool isContractPartiesInverse;
 		private bool isContractPartiesBidirectional;

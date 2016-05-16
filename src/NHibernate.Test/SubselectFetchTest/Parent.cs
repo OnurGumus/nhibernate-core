@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.SubselectFetchTest
 {
-	public class Parent
+	public partial class Parent
 	{
 		private string name;
 		private IList<Child> children = new List<Child>();

@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace NHibernate.Test.IdTest
 {
-	public abstract class IdFixtureBase : TestCase
+	public abstract partial class IdFixtureBase : TestCase
 	{
 		protected abstract string TypeName { get; }
 

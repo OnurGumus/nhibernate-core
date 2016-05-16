@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.PropertyTest
 {
 	[TestFixture]
-	public class FieldCamelCaseMUnderscoreFixture : FieldAccessorFixture
+	public partial class FieldCamelCaseMUnderscoreFixture : FieldAccessorFixture
 	{
 		[SetUp]
 		public override void SetUp()

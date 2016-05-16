@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.ExpressionTest
 {
 	[TestFixture]
-	public class BetweenExpressionFixture : BaseExpressionFixture
+	public partial class BetweenExpressionFixture : BaseExpressionFixture
 	{
 		[Test]
 		public void BetweenSqlStringTest()

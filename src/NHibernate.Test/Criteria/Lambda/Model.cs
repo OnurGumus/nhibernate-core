@@ -11,7 +11,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		Female = 2,
 	}
 
-	public class Person
+	public partial class Person
 	{
 
 		public Person()
@@ -53,18 +53,18 @@ namespace NHibernate.Test.Criteria.Lambda
 
 	}
 
-	public class PersonDetail
+	public partial class PersonDetail
 	{
 		public string	MaidenName	{ get; set; }
 		public DateTime Anniversary { get; set; }
 	}
 
-	public class CustomPerson : Person
+	public partial class CustomPerson : Person
 	{
 		public virtual string MiddleName { get; set; }
 	}
 
-	public class Child
+	public partial class Child
 	{
 		public virtual int		Id			{ get; set; }
 		public virtual string	Nickname	{ get; set; }
@@ -73,7 +73,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		public virtual Person	Parent		{ get; set; }
 	}
 
-	public class Relation
+	public partial class Relation
 	{
 
 		public virtual Relation Related1	{ get; set; }
@@ -90,13 +90,13 @@ namespace NHibernate.Test.Criteria.Lambda
 
 	}
 
-	public class PersonSummary
+	public partial class PersonSummary
 	{
 		public string Name { get; set; }
 		public int Count { get; set; }
 	}
 
-	public class Parent
+	public partial class Parent
 	{
 		public Parent()
 		{
@@ -114,7 +114,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 	}
 
-	public class JoinedChild
+	public partial class JoinedChild
 	{
 		public virtual int		Id			{ get; set; }
 		public virtual Parent	Parent		{ get; set; }

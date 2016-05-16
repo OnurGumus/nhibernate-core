@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		private static IList<Parent> joinGraphUsingHql(ISession s)
 		{

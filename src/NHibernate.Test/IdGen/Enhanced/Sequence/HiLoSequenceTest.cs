@@ -5,7 +5,7 @@ using NHibernate.Id.Enhanced;
 namespace NHibernate.Test.IdGen.Enhanced.Sequence
 {
 	[TestFixture]
-	public class HiLoSequenceTest : TestCase
+	public partial class HiLoSequenceTest : TestCase
 	{
 		protected override IList Mappings
 		{

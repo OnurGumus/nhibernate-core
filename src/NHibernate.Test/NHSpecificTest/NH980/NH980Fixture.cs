@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH980
 {
 	[TestFixture]
-	public class NH980Fixture : BugTestCase
+	public partial class NH980Fixture : BugTestCase
 	{
 		[Test]
 		public void IdGeneratorShouldUseQuotedTableName()

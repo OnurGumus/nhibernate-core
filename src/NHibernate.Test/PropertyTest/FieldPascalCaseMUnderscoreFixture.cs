@@ -8,7 +8,7 @@ namespace NHibernate.Test.PropertyTest
 	/// Test the <c>field.pascalcase-m-underscore</c> access strategy.
 	/// </summary>
 	[TestFixture]
-	public class FieldPascalCaseMUnderscoreFixture : FieldAccessorFixture
+	public partial class FieldPascalCaseMUnderscoreFixture : FieldAccessorFixture
 	{
 		[SetUp]
 		public override void SetUp()

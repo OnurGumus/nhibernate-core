@@ -17,23 +17,6 @@ namespace NHibernate.Event.Default
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class AbstractSaveEventListener : AbstractReassociateEventListener
 	{
-		protected virtual async Task<bool> InvokeSaveLifecycleAsync(object entity, IEntityPersister persister, IEventSource source)
-		{
-			// Sub-insertions should occur before containing insertion so
-			// Try to do the callback now
-			if (persister.ImplementsLifecycle(source.EntityMode))
-			{
-				log.Debug("calling OnSave()");
-				if (await (((ILifecycle)entity).OnSaveAsync(source)) == LifecycleVeto.Veto)
-				{
-					log.Debug("insertion vetoed by OnSave()");
-					return true;
-				}
-			}
-
-			return false;
-		}
-
 		/// <summary> 
 		/// Prepares the save call using the given requested id. 
 		/// </summary>
@@ -143,7 +126,7 @@ namespace NHibernate.Event.Default
 				key = null;
 			}
 
-			if (await (InvokeSaveLifecycleAsync(entity, persister, source)))
+			if (InvokeSaveLifecycle(entity, persister, source))
 			{
 				return id; //EARLY EXIT
 			}

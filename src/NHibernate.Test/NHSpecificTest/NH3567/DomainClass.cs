@@ -2,14 +2,14 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH3567
 {
-	public class Site
+	public partial class Site
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }
 
 
 	}
-	public class Post
+	public partial class Post
 	{
 		public virtual int Id { get; set; }
 		public virtual string Content { get; set; }
@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3567
 
 	}
 
-	public class Comment
+	public partial class Comment
 	{
 		public virtual int Id { get; set; }
 		public virtual string Content { get; set; }

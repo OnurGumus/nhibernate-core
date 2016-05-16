@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3489
 {
 	[TestFixture]
 	[Ignore("Only run to test performance.")]
-	public class Fixture : TestCaseMappingByCode
+	public partial class Fixture : TestCaseMappingByCode
 	{
 		private const int batchSize = 900;
 

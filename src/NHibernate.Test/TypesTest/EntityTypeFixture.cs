@@ -6,7 +6,7 @@ namespace NHibernate.Test.TypesTest
 {
 	// http://nhibernate.jira.com/browse/NH-1473
 	[TestFixture]
-	public class EntityTypeFixture : TypeFixtureBase
+	public partial class EntityTypeFixture : TypeFixtureBase
 	{
 		protected override string TypeName
 		{

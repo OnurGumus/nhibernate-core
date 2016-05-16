@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3153
 {
 	[TestFixture]
-	public class Fixture
+	public partial class Fixture
 	{
 		// Regardless of whether the schema is specified in the <class> or
 		// the <nhibernate-mapping> element, we should get it into the generator

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1574
 {
-	public class TeamStorage
+	public partial class TeamStorage
 	{
 		private DateTime creationDate = DateTime.Now;
 		private int eloRanking;

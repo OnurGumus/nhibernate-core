@@ -8,7 +8,7 @@ using Environment=NHibernate.Cfg.Environment;
 namespace NHibernate.Test.ConnectionStringTest
 {
 	[TestFixture]
-	public class NamedConnectionStringFixture
+	public partial class NamedConnectionStringFixture
 	{
 		[Test]
 		public void InvalidNamedConnectedStringThrows()
@@ -44,7 +44,7 @@ namespace NHibernate.Test.ConnectionStringTest
 		}
 	}
 	
-	public class MockConnectionProvider : ConnectionProvider
+	public partial class MockConnectionProvider : ConnectionProvider
 	{
 		
 		public string PublicConnectionString

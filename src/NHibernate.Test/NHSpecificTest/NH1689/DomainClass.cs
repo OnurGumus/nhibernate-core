@@ -4,7 +4,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1689
 {
 	using System.Collections.Generic;
 
-	public class DomainClass
+	public partial class DomainClass
 	{
 		private int id;
 

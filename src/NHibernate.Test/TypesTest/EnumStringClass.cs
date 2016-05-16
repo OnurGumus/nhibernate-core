@@ -3,7 +3,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Test.TypesTest
 {
-	public class EnumStringClass
+	public partial class EnumStringClass
 	{
 		private int _id;
 		private SampleEnum _enumValue;
@@ -32,7 +32,7 @@ namespace NHibernate.Test.TypesTest
 		Dimmed
 	}
 
-	public class SampleEnumType : EnumStringType
+	public partial class SampleEnumType : EnumStringType
 	{
 		public SampleEnumType()
 			: base(typeof(SampleEnum), 10)

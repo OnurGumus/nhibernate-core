@@ -1,6 +1,6 @@
 ﻿namespace NHibernate.Test.NHSpecificTest.NH2302
 {
-    public class StringLengthEntity
+    public partial class StringLengthEntity
     {
         private int mID = 0;
         public int ID

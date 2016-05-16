@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.EntityModeToTuplizerPerf
 {
 	[TestFixture]
-	public class Fixture
+	public partial class Fixture
 	{
 		private TargetClazz target;
 
@@ -57,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.EntityModeToTuplizerPerf
 			}
 		}
 
-		private class TuplizerStub : ITuplizer
+		private partial class TuplizerStub : ITuplizer
 		{
 			public System.Type MappedClass
 			{

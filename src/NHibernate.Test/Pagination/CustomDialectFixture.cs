@@ -8,7 +8,7 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Test.Pagination
 {
 	[TestFixture]
-	public class CustomDialectFixture : TestCase
+	public partial class CustomDialectFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

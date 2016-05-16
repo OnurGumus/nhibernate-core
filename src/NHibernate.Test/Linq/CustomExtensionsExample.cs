@@ -26,7 +26,7 @@ namespace NHibernate.Test.Linq
 		}
 	}
 
-	public class MyLinqToHqlGeneratorsRegistry: DefaultLinqToHqlGeneratorsRegistry
+	public partial class MyLinqToHqlGeneratorsRegistry: DefaultLinqToHqlGeneratorsRegistry
 	{
 		public MyLinqToHqlGeneratorsRegistry():base()
 		{
@@ -35,7 +35,7 @@ namespace NHibernate.Test.Linq
 		}
 	}
 
-	public class IsLikeGenerator : BaseHqlGeneratorForMethod
+	public partial class IsLikeGenerator : BaseHqlGeneratorForMethod
 	{
 		public IsLikeGenerator()
 		{
@@ -50,7 +50,7 @@ namespace NHibernate.Test.Linq
 		}
 	}
 
-	public class CustomExtensionsExample : LinqTestCase
+	public partial class CustomExtensionsExample : LinqTestCase
 	{
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{

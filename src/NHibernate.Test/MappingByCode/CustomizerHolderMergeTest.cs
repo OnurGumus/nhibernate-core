@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode
 {
-	public class CustomizerHolderMergeTest
+	public partial class CustomizerHolderMergeTest
 	{
 		private class MyClass
 		{

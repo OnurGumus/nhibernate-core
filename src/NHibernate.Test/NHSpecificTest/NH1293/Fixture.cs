@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1293
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override System.Collections.IList Mappings
 		{

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.UserCollection
 {
-	public class MyList : List<Email>
+	public partial class MyList : List<Email>
 	{
 	}
 }

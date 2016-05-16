@@ -6,7 +6,7 @@ namespace NHibernate.Test.ExceptionsTest
 {
 	// This is an example on how to categorize SQL exceptions
 	// It is only to pass the test
-	public class MSSQLExceptionConverterExample : ISQLExceptionConverter
+	public partial class MSSQLExceptionConverterExample : ISQLExceptionConverter
 	{
 		#region ISQLExceptionConverter Members
 

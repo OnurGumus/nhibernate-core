@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.IdGen.NativeGuid
 {
 	[TestFixture]
-	public class NativeGuidGeneratorFixture
+	public partial class NativeGuidGeneratorFixture
 	{
 		protected Configuration cfg;
 		protected ISessionFactoryImplementor sessions;

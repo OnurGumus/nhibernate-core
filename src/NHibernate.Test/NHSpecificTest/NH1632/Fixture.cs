@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 	using Id;
 
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		public override string BugNumber
 		{

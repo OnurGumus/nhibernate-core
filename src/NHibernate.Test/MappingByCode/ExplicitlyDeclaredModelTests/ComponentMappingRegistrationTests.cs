@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 {
-	public class ComponentMappingRegistrationTests
+	public partial class ComponentMappingRegistrationTests
 	{
 		private class MyComponent
 		{

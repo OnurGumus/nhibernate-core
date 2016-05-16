@@ -5,9 +5,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {
-	public class MappingOfPrivateMembersOnRootEntity
+	public partial class MappingOfPrivateMembersOnRootEntity
 	{
-		public class MyClass
+		public partial class MyClass
 		{
 			private int id;
 			private int version;

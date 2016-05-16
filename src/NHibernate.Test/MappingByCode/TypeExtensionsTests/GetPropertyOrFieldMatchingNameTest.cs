@@ -4,7 +4,7 @@ using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 {
-	public class GetPropertyOrFieldMatchingNameTest
+	public partial class GetPropertyOrFieldMatchingNameTest
 	{
 		private class MyClass
 		{

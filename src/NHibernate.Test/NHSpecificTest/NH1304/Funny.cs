@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1304
 {
-	public class Funny
+	public partial class Funny
 	{
 		private int id;
 		private string field;

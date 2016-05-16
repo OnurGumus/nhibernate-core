@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.ReadOnly
 {
-	public abstract class AbstractReadOnlyTest : TestCase
+	public abstract partial class AbstractReadOnlyTest : TestCase
 	{
 		protected override string MappingsAssembly
 		{

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.Properties
 {
-	public class Person
+	public partial class Person
 	{
 		public virtual long Id { get; set; }
 		public virtual string Name { get; set; }
@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 		}
 	}
 
-	public class Address
+	public partial class Address
 	{
 		public virtual long Id { get; set; }
 		public virtual string Addr { get; set; }
@@ -26,14 +26,14 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 		public virtual Person Person { get; set; }
 	}
 
-	public class Account
+	public partial class Account
 	{
 		public virtual string AccountId { get; set; }
 		public virtual Person User { get; set; }
 		public virtual char Type { get; set; }
 	}
 
-	public class DynamicEntity
+	public partial class DynamicEntity
 	{
 		public virtual long Id { get; set; }
 		public virtual string Foo { get; set; }

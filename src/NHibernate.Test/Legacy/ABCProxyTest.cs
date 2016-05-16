@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Legacy
 {
 	[TestFixture]
-	public class ABCProxyTest : TestCase
+	public partial class ABCProxyTest : TestCase
 	{
 		protected override IList Mappings
 		{

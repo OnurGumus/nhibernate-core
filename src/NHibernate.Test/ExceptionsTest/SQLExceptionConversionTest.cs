@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.ExceptionsTest
 {
 	[TestFixture]
-	public class SQLExceptionConversionTest : TestCase
+	public partial class SQLExceptionConversionTest : TestCase
 	{
 		protected override string MappingsAssembly
 		{

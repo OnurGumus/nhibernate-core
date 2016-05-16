@@ -11,7 +11,7 @@ using NHibernate.DomainModel;
 namespace NHibernate.Test.CollectionFilterTest
 {
 	[TestFixture]
-	public class CollectionFilterQueriesTest : TestCase
+	public partial class CollectionFilterQueriesTest : TestCase
 	{
 		protected override IList Mappings
 		{

@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.GenericTest.BagGeneric
 {
 	[TestFixture]
-	public class BagGenericFixture : TestCase
+	public partial class BagGenericFixture : TestCase
 	{
 
 		protected override System.Collections.IList Mappings

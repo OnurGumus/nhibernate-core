@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.DialectTest
 {
 	[TestFixture]
-	public class MsSql2005DialectFixture
+	public partial class MsSql2005DialectFixture
 	{
 		[Test]
 		public void GetLimitString()

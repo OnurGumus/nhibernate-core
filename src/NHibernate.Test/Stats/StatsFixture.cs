@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Stats
 {
 	[TestFixture]
-	public class StatsFixture : TestCase
+	public partial class StatsFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

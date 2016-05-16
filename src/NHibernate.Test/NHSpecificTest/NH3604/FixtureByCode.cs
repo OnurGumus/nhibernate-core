@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3604
 	/// <summary>
 	/// Tests ability to map a non-public property by code via expressions to access the hidden properties
 	/// </summary>
-	public class ByCodeFixture : TestCaseMappingByCode
+	public partial class ByCodeFixture : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{

@@ -6,7 +6,7 @@ using NHibernate.UserTypes;
 
 namespace NHibernate.Test.VersionTest.Db.MsSQL
 {
-	public class BinaryTimestamp : IUserVersionType
+	public partial class BinaryTimestamp : IUserVersionType
 	{
 		#region IUserVersionType Members
 

@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH296
 {
-	public class ProductPK
+	public partial class ProductPK
 	{
 		private int _type;
 		private int _number;

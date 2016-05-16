@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.MappingByCode.NatureDemo.Naturalness
 {
-	public class User
+	public partial class User
 	{
 		public virtual long Id { get; set; }
 

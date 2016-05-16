@@ -9,7 +9,7 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.NH2583
 {
-    public abstract class AbstractMassTestingFixture : BugTestCase
+    public abstract partial class AbstractMassTestingFixture : BugTestCase
     {
 			public const int BatchSize = 200;
 			protected override void Configure(Configuration configuration)
@@ -62,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
             }
         }
 
-        public class SetterTuple<T1, T2, T3, T4, T5, T6, T7>
+        public partial class SetterTuple<T1, T2, T3, T4, T5, T6, T7>
         {
             private readonly Action<MyBO, ISession, T1> _set1;
             private readonly Action<MyBO, ISession, T2> _set2;

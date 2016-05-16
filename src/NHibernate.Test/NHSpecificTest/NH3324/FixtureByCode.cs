@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3324
 {
-	public class FixtureByCode : TestCaseMappingByCode
+	public partial class FixtureByCode : TestCaseMappingByCode
 	{
 		[Test]
 		public void LeftOuterJoin()

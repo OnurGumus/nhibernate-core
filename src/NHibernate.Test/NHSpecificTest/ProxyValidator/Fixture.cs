@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 {
 	[TestFixture]
-	public class Fixture
+	public partial class Fixture
 	{
 		private readonly IProxyValidator pv = new DynProxyTypeValidator();
 
@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 			}
 		}
 
-		public class ValidClass
+		public partial class ValidClass
 		{
 			private int privateField;
 			protected int protectedField;
@@ -70,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 			Validate(typeof(ValidClass));
 		}
 
-		public class InvalidPrivateConstructor : ValidClass
+		public partial class InvalidPrivateConstructor : ValidClass
 		{
 			private InvalidPrivateConstructor()
 			{
@@ -83,7 +83,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidPrivateConstructor)));
 		}
 
-		public class InvalidNonVirtualProperty : ValidClass
+		public partial class InvalidNonVirtualProperty : ValidClass
 		{
 			public int NonVirtualProperty
 			{
@@ -98,7 +98,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidNonVirtualProperty)));
 		}
 
-		public class InvalidPublicField : ValidClass
+		public partial class InvalidPublicField : ValidClass
 		{
 			public int publicField;
 		}
@@ -109,7 +109,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidPublicField)));
 		}
 
-		public class InvalidNonVirtualEvent : ValidClass
+		public partial class InvalidNonVirtualEvent : ValidClass
 		{
 #pragma warning disable 67
 			public event EventHandler NonVirtualEvent;
@@ -132,7 +132,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 			Validate(typeof(ValidInterface));
 		}
 
-		public class MultipleErrors
+		public partial class MultipleErrors
 		{
 			private MultipleErrors()
 			{
@@ -164,7 +164,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 			}
 		}
 
-		public class InvalidNonVirtualInternalProperty : ValidClass
+		public partial class InvalidNonVirtualInternalProperty : ValidClass
 		{
 			internal int NonVirtualProperty
 			{
@@ -173,7 +173,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 			}
 		}
 
-		public class InvalidInternalField : ValidClass
+		public partial class InvalidInternalField : ValidClass
 		{
 #pragma warning disable 649
 			internal int internalField;
@@ -192,7 +192,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidInternalField)));
 		}
 
-		public class InvalidNonVirtualProtectedProperty : ValidClass
+		public partial class InvalidNonVirtualProtectedProperty : ValidClass
 		{
 			protected int NonVirtualProperty
 			{
@@ -208,7 +208,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 			Assert.IsTrue(true, "Always should pass, protected members do not need to be virtual.");
 		}
 
-		public class InvalidNonVirtualProtectedInternalProperty : ValidClass
+		public partial class InvalidNonVirtualProtectedInternalProperty : ValidClass
 		{
 			protected internal int NonVirtualProperty
 			{
@@ -228,7 +228,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 			int NonVirtualMethodImplementsInterface { get; }
 		}
 
-		public class NonVirtualPublicImplementsInterface : ValidClass, INonVirtualPublicImplementsInterface
+		public partial class NonVirtualPublicImplementsInterface : ValidClass, INonVirtualPublicImplementsInterface
 		{
 			public int NonVirtualMethodImplementsInterface
 			{
@@ -242,7 +242,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(NonVirtualPublicImplementsInterface)));
 		}
 
-		public class InvalidVirtualPrivateAutoProperty : ValidClass
+		public partial class InvalidVirtualPrivateAutoProperty : ValidClass
 		{
 			public virtual int NonVirtualSetterProperty
 			{

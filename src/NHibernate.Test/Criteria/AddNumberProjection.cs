@@ -8,7 +8,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Test.Criteria
 {
-	public class AddNumberProjection : SimpleProjection
+	public partial class AddNumberProjection : SimpleProjection
 	{
 		private readonly string propertyName;
 		private readonly int numberToAdd;

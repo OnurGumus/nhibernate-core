@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Hql.Ast
 {
-	public class CrazyCompositeKey
+	public partial class CrazyCompositeKey
 	{
 		private long id;
 		private long otherId;

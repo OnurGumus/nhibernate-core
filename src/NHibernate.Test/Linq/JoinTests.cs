@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class JoinTests : LinqTestCase
+	public partial class JoinTests : LinqTestCase
 	{
 		[Test]
 		public void OrderLinesWith2ImpliedJoinShouldProduce2JoinsInSql()

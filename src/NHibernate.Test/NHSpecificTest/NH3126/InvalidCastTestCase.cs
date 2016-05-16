@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3126
 {
 	[TestFixture]
-	public class InvalidCastWithGenericDictionaryOnCascadeTest : BugTestCase
+	public partial class InvalidCastWithGenericDictionaryOnCascadeTest : BugTestCase
 	{
 		[Test]
 		public void Test()

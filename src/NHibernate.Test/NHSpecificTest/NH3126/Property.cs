@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH3126
 {
-	public class Property
+	public partial class Property
 	{
 		public virtual Guid Id { get; set; }
 

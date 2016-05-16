@@ -1,6 +1,6 @@
 namespace NHibernate.Test.GeneratedTest
 {
-	public class GeneratedPropertyEntity
+	public partial class GeneratedPropertyEntity
 	{
 		private long id;
 		private string name;

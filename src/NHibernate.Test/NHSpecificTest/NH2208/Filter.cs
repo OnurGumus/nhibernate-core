@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH2208
 {
-	public class Filter : BugTestCase
+	public partial class Filter : BugTestCase
 	{
 		[Test, Ignore("Not fixed yet")]
 		public void Test()

@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Hql.Ast
 {
-	public class Name
+	public partial class Name
 	{
 		private string first;
 		private char initial;

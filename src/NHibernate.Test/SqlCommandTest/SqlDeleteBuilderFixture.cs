@@ -12,7 +12,7 @@ namespace NHibernate.Test.SqlCommandTest
 	/// Tests all of the functionality of the SqlDeleteBuilderFixture
 	/// </summary>
 	[TestFixture]
-	public class SqlDeleteBuilderFixture
+	public partial class SqlDeleteBuilderFixture
 	{
 		[Test]
 		public void DeleteSqlStringTest()

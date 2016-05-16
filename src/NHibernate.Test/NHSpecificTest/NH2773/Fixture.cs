@@ -4,7 +4,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2773 {
-   public class Fixture : BugTestCase {
+   public partial class Fixture : BugTestCase {
       private Guid _entityGuid;
 
       protected override void OnSetUp() {

@@ -6,7 +6,7 @@ using System.Linq;
 namespace NHibernate.Test.NHSpecificTest.NH2931
 {
     [TestFixture]
-    public class MappingByCodeTest : BugTestCase
+    public partial class MappingByCodeTest : BugTestCase
     {
         //no xml mappings here, since we use MappingByCode
         protected override System.Collections.IList Mappings

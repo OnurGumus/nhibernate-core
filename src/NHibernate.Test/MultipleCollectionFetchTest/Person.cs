@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.MultipleCollectionFetchTest
 {
-	public class Person
+	public partial class Person
 	{
 		private int id;
 		private ICollection<Person> children;

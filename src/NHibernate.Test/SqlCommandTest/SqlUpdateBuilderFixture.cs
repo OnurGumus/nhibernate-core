@@ -13,7 +13,7 @@ namespace NHibernate.Test.SqlCommandTest
 	/// Tests all of the functionallity of the SqlUpdateBuilder
 	/// </summary>
 	[TestFixture]
-	public class SqlUpdateBuilderFixture
+	public partial class SqlUpdateBuilderFixture
 	{
 		[Test]
 		public void UpdateStringSqlTest()

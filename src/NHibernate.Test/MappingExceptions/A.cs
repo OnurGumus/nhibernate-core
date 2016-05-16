@@ -6,7 +6,7 @@ namespace NHibernate.Test.MappingExceptions
 	/// <summary>
 	/// Summary description for A.
 	/// </summary>
-	public class A
+	public partial class A
 	{
 		private int _id;
 		private string _name;

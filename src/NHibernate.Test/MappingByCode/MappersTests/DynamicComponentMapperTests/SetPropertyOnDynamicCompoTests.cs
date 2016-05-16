@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 {
-	public class SetPropertyOnDynamicCompoTests
+	public partial class SetPropertyOnDynamicCompoTests
 	{
 		private class Person
 		{

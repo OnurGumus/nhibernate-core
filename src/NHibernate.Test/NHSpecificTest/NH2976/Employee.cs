@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH2976
 {
-	public class Employee
+	public partial class Employee
 	{
 		public virtual Guid Id { get; protected set; }
 

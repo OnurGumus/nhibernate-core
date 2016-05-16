@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest
 {
 	[TestFixture]
-	public class LazyLoadBugTest : TestCase
+	public partial class LazyLoadBugTest : TestCase
 	{
 		protected override IList Mappings
 		{

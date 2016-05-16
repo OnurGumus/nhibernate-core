@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 	/// <summary>
 	/// Useful assert to work with datetimes types.
 	/// </summary>
-	public class DateTimeAssert
+	public partial class DateTimeAssert
 	{
 		public static void AreEqual(DateTime dt1, DateTime dt2)
 		{

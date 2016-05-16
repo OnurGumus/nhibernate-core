@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	[TestFixture]
-	public class SerializableTypesFixture
+	public partial class SerializableTypesFixture
 	{
 		[Test]
 		public void AllEmbeddedTypesAreMarkedSerializable()

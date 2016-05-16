@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3641
 		IEntity ChildInterface { get; set; }
 	}
 
-	public class Entity : IEntity
+	public partial class Entity : IEntity
 	{
 		public virtual int Id { get; set; }
 		public virtual bool Flag { get; set; }

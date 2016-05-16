@@ -8,7 +8,7 @@ using NHibernate.Linq;
 namespace NHibernate.Test.NHSpecificTest.NH3614
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		[Test]
 		public void CanProjectListOfStrings()

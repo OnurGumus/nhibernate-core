@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Classic
 {
 	[TestFixture]
-	public class ValidatableFixture : TestCase
+	public partial class ValidatableFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

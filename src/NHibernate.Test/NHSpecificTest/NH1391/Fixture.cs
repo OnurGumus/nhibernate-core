@@ -2,7 +2,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1391
 {
 	[TestFixture]
-	public class Fixture:BugTestCase
+	public partial class Fixture:BugTestCase
 	{
 		private object _idOfPersonWithAnimals;
 		private object _idOfPersonWithCats;

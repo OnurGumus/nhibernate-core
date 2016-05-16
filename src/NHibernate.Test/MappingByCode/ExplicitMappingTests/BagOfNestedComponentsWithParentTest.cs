@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {
-	public class BagOfNestedComponentsWithParentTest
+	public partial class BagOfNestedComponentsWithParentTest
 	{
 		private class Person
 		{

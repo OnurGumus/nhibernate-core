@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
-	public class CallCustomConditions
+	public partial class CallCustomConditions
 	{
 		public enum ActivityType
 		{

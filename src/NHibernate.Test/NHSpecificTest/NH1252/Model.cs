@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1252
 {
-	public class SomeClass
+	public partial class SomeClass
 	{
 		private int id;
 		private string name;
@@ -18,6 +18,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1252
 		}
 	}
 
-	public class SubClass1 : SomeClass {}
-	public class SubClass2 : SomeClass { }
+	public partial class SubClass1 : SomeClass {}
+	public partial class SubClass2 : SomeClass { }
 }

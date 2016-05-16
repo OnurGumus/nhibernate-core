@@ -6,7 +6,7 @@ namespace NHibernate.Test.IdTest
 {
 	[TestFixture]
 	[Ignore("Not supported yet")]
-	public class UseIdentifierRollbackTest: TestCase
+	public partial class UseIdentifierRollbackTest: TestCase
 	{
 		protected override string MappingsAssembly
 		{

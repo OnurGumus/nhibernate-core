@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2761
 {
-	public class B
+	public partial class B
 	{
 		public B()
 		{

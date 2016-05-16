@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.VersionTest
 {
-	public class Thing
+	public partial class Thing
 	{
 		private string description;
 		private Person person;

@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH742
 {
-	public class Point
+	public partial class Point
 	{
 		private int x, y;
 
@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH742
 		}
 	}
 
-	public class SomeClass
+	public partial class SomeClass
 	{
 		private int id;
 		private Point point;

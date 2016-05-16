@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3269
 {
-	public class FixturePublicProperty : TestCaseMappingByCode
+	public partial class FixturePublicProperty : TestCaseMappingByCode
 	{
 		[Test]
 		public void ShouldThrowExceptionWhenTryingToSaveInherited1WithDuplicateName()

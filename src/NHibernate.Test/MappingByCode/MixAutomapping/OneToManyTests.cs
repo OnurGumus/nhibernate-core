@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
-	public class OneToManyTests
+	public partial class OneToManyTests
 	{
 		private class MyClass
 		{

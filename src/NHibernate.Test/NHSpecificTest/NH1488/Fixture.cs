@@ -5,7 +5,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1488
 {
 	// http://nhibernate.jira.com/browse/NH-1488
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		[Test]
 		public void WorkBut()

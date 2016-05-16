@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 namespace NHibernate.Test.NHSpecificTest.NH1899
 {
-    public class Parent
+    public partial class Parent
     {
         private int id;
         private IDictionary<Key, Value> _relations;

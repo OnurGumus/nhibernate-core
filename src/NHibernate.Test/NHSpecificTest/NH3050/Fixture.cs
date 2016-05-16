@@ -14,7 +14,7 @@ using System.Linq;
 namespace NHibernate.Test.NHSpecificTest.NH3050
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		[Test]
 		public void Test()

@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.UtilityTest
 {
-	public class ReflectionHelperIsMethodOfTests
+	public partial class ReflectionHelperIsMethodOfTests
 	{
 		[Test]
 		public void WhenNullMethodInfoThenThrows()
@@ -65,7 +65,7 @@ namespace NHibernate.Test.UtilityTest
 			Assert.That(ReflectionHelper.GetMethodDefinition<List<int>>(t => t.Contains(5)).IsMethodOf(typeof(IEnumerable<>)), Is.False);
 		}
 
-		private abstract class MyAbstractClass<T>
+		private abstract partial class MyAbstractClass<T>
 		{
 			public abstract T MyMethod();
 		}

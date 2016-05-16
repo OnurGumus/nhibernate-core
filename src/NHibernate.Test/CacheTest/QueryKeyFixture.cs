@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.CacheTest
 {
 	[TestFixture]
-	public class QueryKeyFixture : TestCase
+	public partial class QueryKeyFixture : TestCase
 	{
 		private readonly SqlString SqlAll =
 			new SqlString("select entitywith0_.id as id0_, entitywith0_.Description as Descript2_0_, entitywith0_.Value as Value0_ from EntityWithFilters entitywith0_");

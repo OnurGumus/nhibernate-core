@@ -8,7 +8,7 @@ namespace NHibernate.Test.TypesTest
 	/// The Unit Tests for the BooleanType.
 	/// </summary>
 	[TestFixture]
-	public class BooleanTypeFixture : TypeFixtureBase
+	public partial class BooleanTypeFixture : TypeFixtureBase
 	{
 		protected override string TypeName
 		{

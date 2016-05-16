@@ -8,7 +8,7 @@ namespace NHibernate.Test
 	/// Summary description for TestTestCase.
 	/// </summary>
 	[TestFixture]
-	public class TestTestCase : TestCase
+	public partial class TestTestCase : TestCase
 	{
 		protected override IList Mappings
 		{

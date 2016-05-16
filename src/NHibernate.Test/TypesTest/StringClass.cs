@@ -5,7 +5,7 @@ namespace NHibernate.Test.TypesTest
 	/// <summary>
 	/// Summary description for StringClass.
 	/// </summary>
-	public class StringClass
+	public partial class StringClass
 	{
 		private int _id;
 		private string _stringValue;

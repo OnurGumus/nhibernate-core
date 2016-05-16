@@ -8,9 +8,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
 {
-	public class BasicMappingOfSimpleClass
+	public partial class BasicMappingOfSimpleClass
 	{
-		public class MyClass
+		public partial class MyClass
 		{
 			public int Id { get; set; }
 			public string Something { get; set; }

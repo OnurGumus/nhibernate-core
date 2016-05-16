@@ -13,7 +13,7 @@ namespace NHibernate.Test.ExpressionTest
 	/// Summary description for InsensitiveLikeExpressionFixture.
 	/// </summary>
 	[TestFixture]
-	public class InsensitiveLikeExpressionFixture : BaseExpressionFixture
+	public partial class InsensitiveLikeExpressionFixture : BaseExpressionFixture
 	{
 		[Test]
 		public void InsentitiveLikeSqlStringTest()

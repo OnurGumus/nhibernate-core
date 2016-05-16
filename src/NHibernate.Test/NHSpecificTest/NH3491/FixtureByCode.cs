@@ -7,7 +7,7 @@ using System.Linq;
 namespace NHibernate.Test.NHSpecificTest.NH3491
 {
 	[TestFixture]
-	public class FixtureByCode
+	public partial class FixtureByCode
 	{
 		class SomeComponent
 		{

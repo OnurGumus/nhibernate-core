@@ -12,7 +12,7 @@ namespace NHibernate.Test.Legacy
 	/// Summary description for SQLLoaderTest.
 	/// </summary>
 	[TestFixture]
-	public class SQLLoaderTest : TestCase
+	public partial class SQLLoaderTest : TestCase
 	{
 		protected override IList Mappings
 		{

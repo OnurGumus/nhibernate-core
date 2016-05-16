@@ -11,7 +11,7 @@ namespace NHibernate.Test.ExpressionTest
 	/// Summary description for NullExpressionFixture.
 	/// </summary>
 	[TestFixture]
-	public class NullExpressionFixture : BaseExpressionFixture
+	public partial class NullExpressionFixture : BaseExpressionFixture
 	{
 		[Test]
 		public void NullSqlStringTest()

@@ -17,7 +17,7 @@ namespace NHibernate.Test.Legacy
 	/// Summary description for MasterDetailTest.
 	/// </summary>
 	[TestFixture]
-	public class MasterDetailTest : TestCase
+	public partial class MasterDetailTest : TestCase
 	{
 		protected override IList Mappings
 		{

@@ -8,7 +8,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Test.Hql
 {
 	[TestFixture]
-	public class SimpleFunctionsTest : BaseFunctionFixture
+	public partial class SimpleFunctionsTest : BaseFunctionFixture
 	{
 		[Test]
 		public void NoArgFunction()

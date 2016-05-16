@@ -3,7 +3,7 @@ using NHibernate.Dialect.Function;
 
 namespace NHibernate.Test.NHSpecificTest.NH2700
 {
-    public class CustomDialect : MsSql2005Dialect
+    public partial class CustomDialect : MsSql2005Dialect
     {
         public CustomDialect()
         {

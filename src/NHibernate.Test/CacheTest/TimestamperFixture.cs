@@ -8,7 +8,7 @@ namespace NHibernate.Test.CacheTest
 	/// Summary description for TimestamperFixture.
 	/// </summary>
 	[TestFixture]
-	public class TimestamperFixture
+	public partial class TimestamperFixture
 	{
 		[Test,Explicit]
 		public void VerifyIncrease()

@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1760
 {
 	[TestFixture]
-	public class SampleTest : BugTestCase
+	public partial class SampleTest : BugTestCase
 	{
 		private void FillDb()
 		{

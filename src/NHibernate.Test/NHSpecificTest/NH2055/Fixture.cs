@@ -9,7 +9,7 @@ using NHibernate.Cfg;
 namespace NHibernate.Test.NHSpecificTest.NH2055
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
 		{

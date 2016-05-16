@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.EntityModeTest.Xml.Accessors
 {
 	[TestFixture]
-	public class XmlAccessorFixture
+	public partial class XmlAccessorFixture
 	{
 		public static XmlElement dom = GenerateTestElement();
 

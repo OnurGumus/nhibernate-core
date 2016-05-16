@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.MappingByCode.NatureDemo.Naturalness
 {
-	public class Zoo
+	public partial class Zoo
 	{
 		public virtual long Id { get; set; }
 
@@ -17,5 +17,5 @@ namespace NHibernate.Test.MappingByCode.NatureDemo.Naturalness
 		public virtual Address Address { get; set; }
 	}
 
-	public class PettingZoo : Zoo {}
+	public partial class PettingZoo : Zoo {}
 }

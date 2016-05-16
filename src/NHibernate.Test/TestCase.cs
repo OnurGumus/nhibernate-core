@@ -16,7 +16,7 @@ using NHibernate.Hql.Ast.ANTLR;
 
 namespace NHibernate.Test
 {
-	public abstract class TestCase
+	public abstract partial class TestCase
 	{
 		private const bool OutputDdl = false;
 		protected Configuration cfg;

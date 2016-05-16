@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 {
-	public class ClassMapperWithJoinPropertiesTest
+	public partial class ClassMapperWithJoinPropertiesTest
 	{
 		private class MyClass
 		{

@@ -6,7 +6,7 @@ using NHibernate.UserTypes;
 
 namespace NHibernate.Test.NHSpecificTest.NH2297
 {
-	public class InvalidNamesCustomCompositeUserType : InvalidCustomCompositeUserTypeBase
+	public partial class InvalidNamesCustomCompositeUserType : InvalidCustomCompositeUserTypeBase
 	{
 		public override string[] PropertyNames
 		{
@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2297
 	}
 
 
-	public class InvalidTypesCustomCompositeUserType : InvalidCustomCompositeUserTypeBase
+	public partial class InvalidTypesCustomCompositeUserType : InvalidCustomCompositeUserTypeBase
 	{
 		public override Type.IType[] PropertyTypes
 		{
@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2297
 	/// An invalid custom user type mapper.
 	/// </summary>
 	[Serializable]
-	public abstract class InvalidCustomCompositeUserTypeBase : ICompositeUserType
+	public abstract partial class InvalidCustomCompositeUserTypeBase : ICompositeUserType
 	{
 		public System.Type ReturnedClass
 		{

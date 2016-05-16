@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH1579
 {
-	public class Cart : Entity
+	public partial class Cart : Entity
 	{
 		public Cart(string vendorName)
 		{

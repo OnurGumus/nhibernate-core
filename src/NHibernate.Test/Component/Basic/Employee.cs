@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Component.Basic
 {
-	public class Employee 
+	public partial class Employee 
 	{
 		public virtual long Id { get; set; }
 		

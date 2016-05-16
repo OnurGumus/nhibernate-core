@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH1775
 {
-	public class Member
+	public partial class Member
 	{
 		public virtual int Id { get; set;}
 		public virtual string FirstName { get; set; }
@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1775
 		public virtual int Roles { get; set; }
 	}
 
-	public class DTO
+	public partial class DTO
 	{
 		public DTO(int id, string name)
 		{

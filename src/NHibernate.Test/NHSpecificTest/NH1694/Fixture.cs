@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1694
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
@@ -79,13 +79,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1694
 		}
 	}
 
-	public class User
+	public partial class User
 	{
 		public virtual int Id { get; set; }
 		public virtual int OrderStatus { get; set; }
 	}
 
-	public class Orders
+	public partial class Orders
 	{
 		public virtual int Id { get; set; }
 		public virtual bool Status { get; set; }

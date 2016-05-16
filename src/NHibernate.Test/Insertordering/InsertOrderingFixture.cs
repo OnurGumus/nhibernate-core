@@ -12,7 +12,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Insertordering
 {
-	public class InsertOrderingFixture : TestCase
+	public partial class InsertOrderingFixture : TestCase
 	{
 		const int batchSize = 10;
 		const int instancesPerEach = 12;
@@ -77,7 +77,7 @@ namespace NHibernate.Test.Insertordering
 
 		#region Nested type: StatsBatcher
 
-		public class StatsBatcher : SqlClientBatchingBatcher
+		public partial class StatsBatcher : SqlClientBatchingBatcher
 		{
 			private static string batchSQL;
 			private static IList<int> batchSizes = new List<int>();
@@ -133,7 +133,7 @@ namespace NHibernate.Test.Insertordering
 
 		#region Nested type: StatsBatcherFactory
 
-		public class StatsBatcherFactory : IBatcherFactory
+		public partial class StatsBatcherFactory : IBatcherFactory
 		{
 			#region IBatcherFactory Members
 

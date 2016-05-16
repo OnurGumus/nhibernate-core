@@ -11,7 +11,7 @@ namespace NHibernate.Test.SqlCommandTest
 	/// Tests all of the functionality of the SqlSelectBuilderTest
 	/// </summary>
 	[TestFixture]
-	public class SqlSelectBuilderFixture
+	public partial class SqlSelectBuilderFixture
 	{
 		[Test]
 		public void SelectStringSqlTest()

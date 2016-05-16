@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.Insertordering
 {
-	public class Membership
+	public partial class Membership
 	{
 		protected Membership() {}
 

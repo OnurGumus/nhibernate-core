@@ -5,9 +5,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {
-	public class ColumnsNamingConvetions
+	public partial class ColumnsNamingConvetions
 	{
-		public class MyClass
+		public partial class MyClass
 		{
 			public int Id { get; set; }
 			public string Something { get; set; }

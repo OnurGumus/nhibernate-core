@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
-	public class AbstractPropertyContainerMapperTest
+	public partial class AbstractPropertyContainerMapperTest
 	{
 		private class EntitySimple
 		{

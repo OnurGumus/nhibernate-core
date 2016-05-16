@@ -14,7 +14,7 @@ namespace NHibernate.Test.Legacy
 	/// FumTest handles testing Composite Ids.
 	/// </summary>
 	[TestFixture]
-	public class FumTest : TestCase
+	public partial class FumTest : TestCase
 	{
 		protected static short fumKeyShort = 1;
 

@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH276.JoinedSubclass
 {
-	public class Organization
+	public partial class Organization
 	{
 		private int _organizationId;
 		private string _name;

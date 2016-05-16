@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.SqlTest
 {
-	public class Person
+	public partial class Person
 	{
 		private long id;
 		private string name;

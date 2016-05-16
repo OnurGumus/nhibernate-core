@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1867
 {
 	[TestFixture]
-	public class AddMappingTest
+	public partial class AddMappingTest
 	{
 		private const string mappingTemplate = 
 @"<?xml version='1.0' encoding='utf-8' ?>
@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1867
 		private class A
 		{
 			private string Id { get; set; }
-			public class B
+			public partial class B
 			{
 				private string OwnerId { get; set; }
 			}
@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1867
 		private class A<T>
 		{
 			private string Id { get; set; }
-			public class B
+			public partial class B
 			{
 				private string OwnerId { get; set; }
 			}

@@ -122,7 +122,6 @@
     <Compile Include="Async\Cache\Entry\CollectionCacheEntry.cs" />
     <Compile Include="Async\Cache\IQueryCache.cs" />
     <Compile Include="Async\Cache\StandardQueryCache.cs" />
-    <Compile Include="Async\Classic\ILifecycle.cs" />
     <Compile Include="Async\Collection\AbstractPersistentCollection.cs" />
     <Compile Include="Async\Collection\Generic\PersistentGenericBag.cs" />
     <Compile Include="Async\Collection\Generic\PersistentGenericIdentifierBag.cs" />
@@ -192,7 +191,6 @@
     <Compile Include="Async\Driver\ReflectionBasedDriver.cs" />
     <Compile Include="Async\Driver\SqlClientDriver.cs" />
     <Compile Include="Async\Driver\SQLite20Driver.cs" />
-    <Compile Include="Async\EmptyInterceptor.cs" />
     <Compile Include="Async\Engine\ActionQueue.cs" />
     <Compile Include="Async\Engine\BatchFetchQueue.cs" />
     <Compile Include="Async\Engine\Cascade.cs" />
@@ -263,9 +261,6 @@
     <Compile Include="Async\Event\ILockEventListener.cs" />
     <Compile Include="Async\Event\IMergeEventListener.cs" />
     <Compile Include="Async\Event\IPersistEventListener.cs" />
-    <Compile Include="Async\Event\IPostUpdateEventListener.cs" />
-    <Compile Include="Async\Event\IPreInsertEventListener.cs" />
-    <Compile Include="Async\Event\IPreUpdateEventListener.cs" />
     <Compile Include="Async\Event\IRefreshEventListener.cs" />
     <Compile Include="Async\Event\IReplicateEventListener.cs" />
     <Compile Include="Async\Event\ISaveOrUpdateEventListener.cs" />
@@ -314,7 +309,6 @@
     <Compile Include="Async\Id\TableHiLoGenerator.cs" />
     <Compile Include="Async\Id\UUIDHexGenerator.cs" />
     <Compile Include="Async\Id\UUIDStringGenerator.cs" />
-    <Compile Include="Async\IInterceptor.cs" />
     <Compile Include="Async\Impl\AbstractDetachedQuery.cs" />
     <Compile Include="Async\Impl\AbstractQueryImpl.cs" />
     <Compile Include="Async\Impl\AbstractQueryImpl2.cs" />
@@ -471,8 +465,6 @@
     <Compile Include="Async\Type\UInt16Type.cs" />
     <Compile Include="Async\Type\UInt32Type.cs" />
     <Compile Include="Async\Type\UInt64Type.cs" />
-    <Compile Include="Async\UserTypes\ICompositeUserType.cs" />
-    <Compile Include="Async\UserTypes\IUserType.cs" />
     <Compile Include="Bytecode\DefaultProxyFactoryFactory.cs" />
     <Compile Include="Cache\Access\ISoftLock.cs" />
     <Compile Include="Cache\CachedItem.cs" />

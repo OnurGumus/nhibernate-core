@@ -6,18 +6,18 @@ using System.Collections.Generic;
 namespace NHibernate.Test.NHSpecificTest.NH1464
 {
 	[TestFixture]
-	public class Fixture
+	public partial class Fixture
 	{
 		private readonly IProxyValidator pv = new DynProxyTypeValidator();
 
-		public class CPPMimicBase
+		public partial class CPPMimicBase
 		{
 			public virtual void Dispose()
 			{
 				
 			}
 		}
-		public class CPPMimic : CPPMimicBase
+		public partial class CPPMimic : CPPMimicBase
 		{
 			public sealed override void Dispose()
 			{
@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1464
 			}
 		}
 
-		public class Another: IDisposable
+		public partial class Another: IDisposable
 		{
 			protected void Dispose(bool disposing)
 			{
@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1464
 			}
 		}
 
-		public class OneMore : IDisposable
+		public partial class OneMore : IDisposable
 		{
 			public void Dispose(bool disposing)
 			{

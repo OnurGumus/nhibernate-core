@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 {
-	public class ComponetsParentAccessorTests
+	public partial class ComponetsParentAccessorTests
 	{
 		private class MyClass
 		{

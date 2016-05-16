@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Hql.Ast
 {
 	[TestFixture]
-	public class SqlTranslationFixture : BaseFixture
+	public partial class SqlTranslationFixture : BaseFixture
 	{
 		[Test]
 		public void ParseFloatConstant()

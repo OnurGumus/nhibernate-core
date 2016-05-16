@@ -8,7 +8,7 @@ namespace NHibernate.Test.MappingTest
 	/// Summary description for TableFixture.
 	/// </summary>
 	[TestFixture]
-	public class TableFixture
+	public partial class TableFixture
 	{
 		[Test]
 		public void TableNameQuoted()

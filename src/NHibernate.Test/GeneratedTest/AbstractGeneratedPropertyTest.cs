@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.GeneratedTest
 {
-	public abstract class AbstractGeneratedPropertyTest : TestCase
+	public abstract partial class AbstractGeneratedPropertyTest : TestCase
 	{
 		protected override string  MappingsAssembly
 		{

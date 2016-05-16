@@ -4,7 +4,7 @@ using NHibernate.Cfg;
 namespace NHibernate.Test.NHSpecificTest.NH2112
 {
     [TestFixture]
-    public class Fixture : BugTestCase
+    public partial class Fixture : BugTestCase
     {
         protected override void Configure(Configuration configuration)
         {

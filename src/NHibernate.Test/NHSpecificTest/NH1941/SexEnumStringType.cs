@@ -3,7 +3,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Test.NHSpecificTest.NH1941
 {
-	public class SexEnumStringType : EnumStringType<Sex>
+	public partial class SexEnumStringType : EnumStringType<Sex>
 	{
 		public override object GetValue(object enumValue)
 		{

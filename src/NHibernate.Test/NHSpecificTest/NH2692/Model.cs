@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2692
 {
-	public class Parent
+	public partial class Parent
 	{
 		public Parent()
 		{
@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2692
 		public virtual Guid Id { get; set; }
 	}
 
-	public class ChildComponent
+	public partial class ChildComponent
 	{
 		public virtual Parent Parent { get; set; }
 		public virtual bool SomeBool { get; set; }

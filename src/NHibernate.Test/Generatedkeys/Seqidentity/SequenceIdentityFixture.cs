@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Generatedkeys.Seqidentity
 {
 	[TestFixture]
-	public class SequenceIdentityFixture : TestCase
+	public partial class SequenceIdentityFixture : TestCase
 	{
 		protected override IList Mappings
 		{

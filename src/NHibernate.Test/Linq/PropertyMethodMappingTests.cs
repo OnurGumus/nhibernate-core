@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
     [TestFixture]
-    public class PropertyMethodMappingTests : LinqTestCase
+    public partial class PropertyMethodMappingTests : LinqTestCase
     {
         [Test]
         public void CanExecuteCountInSelectClause()

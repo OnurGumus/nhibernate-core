@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class AggregateTests : LinqTestCase
+	public partial class AggregateTests : LinqTestCase
 	{
 		[Test]
 		public void AggregateWithStartsWith()

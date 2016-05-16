@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.DynamicProxyTests.ProxiedMembers
 {
-	public class ClassWithVarietyOfMembers
+	public partial class ClassWithVarietyOfMembers
 	{
 		public virtual void Method1(out int x)
 		{
@@ -16,7 +16,7 @@ namespace NHibernate.Test.DynamicProxyTests.ProxiedMembers
 		}
 	}
 
-	public class Fixture
+	public partial class Fixture
 	{
 		[Test]
 		public void Proxy()

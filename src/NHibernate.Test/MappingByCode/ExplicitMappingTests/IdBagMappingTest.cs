@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {
-	public class IdBagMappingTest
+	public partial class IdBagMappingTest
 	{
 		private class Animal
 		{

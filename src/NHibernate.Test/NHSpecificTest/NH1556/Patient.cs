@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1556
 {
-   public class Patient
+   public partial class Patient
    {
       private long id;
       private string firstName;

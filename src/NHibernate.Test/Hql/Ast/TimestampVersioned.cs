@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.Hql.Ast
 {
-	public class TimestampVersioned
+	public partial class TimestampVersioned
 	{
 		private long id;
 		private DateTime version;

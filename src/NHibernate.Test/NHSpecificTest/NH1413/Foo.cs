@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH1413
 {
-	public class Foo
+	public partial class Foo
 	{
 		private DateTime birthDate;
 		private string name;

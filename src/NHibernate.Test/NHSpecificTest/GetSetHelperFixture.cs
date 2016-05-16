@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest
 	/// a value type from a null.
 	/// </summary>
 	[TestFixture]
-	public class GetSetHelperFixture : TestCase
+	public partial class GetSetHelperFixture : TestCase
 	{
 		protected override IList Mappings
 		{

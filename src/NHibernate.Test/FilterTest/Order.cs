@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.FilterTest
 {
-	public class Order
+	public partial class Order
 	{
 		private long id;
 		private String region;

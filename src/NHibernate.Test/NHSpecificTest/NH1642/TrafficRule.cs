@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH1642
 {
-    public class TrafficRule : AbstractRule
+    public partial class TrafficRule : AbstractRule
     {
     	public TrafficRule()
     	{

@@ -10,7 +10,7 @@ namespace NHibernate.Test.DialectTest
 	/// Summary description for MsSqlDialectFixture.
 	/// </summary>
 	[TestFixture]
-	public class MsSqlDialectFixture : DialectFixture
+	public partial class MsSqlDialectFixture : DialectFixture
 	{
 		[SetUp]
 		public override void SetUp()

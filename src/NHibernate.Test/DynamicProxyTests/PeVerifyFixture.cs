@@ -7,7 +7,7 @@ using NHibernate.Proxy.DynamicProxy;
 
 namespace NHibernate.Test.DynamicProxyTests
 {
-	public class PeVerifyFixture
+	public partial class PeVerifyFixture
 	{
 		private static bool wasCalled;
 
@@ -78,7 +78,7 @@ namespace NHibernate.Test.DynamicProxyTests
 
 		#region PeVerifyTypes
 
-		public class ClassWithPublicDefaultConstructor
+		public partial class ClassWithPublicDefaultConstructor
 		{
 			public ClassWithPublicDefaultConstructor() { InitG<int>(1); }
 			public ClassWithPublicDefaultConstructor(int unused) { }
@@ -87,23 +87,23 @@ namespace NHibernate.Test.DynamicProxyTests
 			public virtual void Init(int value) { Prop1 = value; if (Prop1 == 1) wasCalled = true; }
 		}
 
-		public class ClassWithProtectedDefaultConstructor
+		public partial class ClassWithProtectedDefaultConstructor
 		{
 			protected ClassWithProtectedDefaultConstructor() { wasCalled = true; }
 		}
 
-		public class ClassWithPrivateDefaultConstructor
+		public partial class ClassWithPrivateDefaultConstructor
 		{
 			private ClassWithPrivateDefaultConstructor() { wasCalled = true; }
 		}
 
-		public class ClassWithNoDefaultConstructor
+		public partial class ClassWithNoDefaultConstructor
 		{
 			public ClassWithNoDefaultConstructor(int unused) { wasCalled = true; }
 			public ClassWithNoDefaultConstructor(string unused) { wasCalled = true; }
 		}
 
-		public class ClassWithInternalConstructor
+		public partial class ClassWithInternalConstructor
 		{
 			internal ClassWithInternalConstructor() { wasCalled = true; }
 		}
@@ -112,7 +112,7 @@ namespace NHibernate.Test.DynamicProxyTests
 
 		#region ProxyFactory.IProxyAssemblyBuilder
 
-		public class SavingProxyAssemblyBuilder : IProxyAssemblyBuilder
+		public partial class SavingProxyAssemblyBuilder : IProxyAssemblyBuilder
 		{
 			private string assemblyName;
 

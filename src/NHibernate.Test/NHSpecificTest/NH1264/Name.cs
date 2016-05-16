@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH1264
 {
-   public class Name
+   public partial class Name
 	{
 		private string first;
 		private string last;

@@ -8,7 +8,7 @@ namespace NHibernate.Test.TypesTest
 	/// TestFixtures for the <see cref="DateTimeType"/>.
 	/// </summary>
 	[TestFixture]
-	public class DateTimeTypeFixture
+	public partial class DateTimeTypeFixture
 	{
 		[Test]
 		public void Next()

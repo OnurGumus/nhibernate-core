@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.Criteria
 {
-	public class StudentDTO
+	public partial class StudentDTO
 	{
 #pragma warning disable 649
 		private string studentName;

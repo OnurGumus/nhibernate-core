@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class WhereTests : LinqTestCase
+	public partial class WhereTests : LinqTestCase
 	{
 		[Test]
 		public void NoWhereClause()

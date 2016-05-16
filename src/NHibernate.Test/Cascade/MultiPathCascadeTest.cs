@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Cascade
 {
 	[TestFixture]
-	public class MultiPathCascadeTest : TestCase
+	public partial class MultiPathCascadeTest : TestCase
 	{
 		protected override string MappingsAssembly
 		{

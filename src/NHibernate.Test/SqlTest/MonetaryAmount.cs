@@ -3,7 +3,7 @@ using System;
 namespace NHibernate.Test.SqlTest
 {
 	[Serializable]
-	public class MonetaryAmount : IComparable
+	public partial class MonetaryAmount : IComparable
 	{
 		private decimal value;
 		private string currency;

@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq.ByMethod
 {
 	[TestFixture]
-	public class GroupByHavingTests : LinqTestCase
+	public partial class GroupByHavingTests : LinqTestCase
 	{
 		protected override void Configure(Cfg.Configuration configuration)
 		{

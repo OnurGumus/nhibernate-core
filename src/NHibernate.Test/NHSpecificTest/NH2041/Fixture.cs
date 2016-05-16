@@ -4,7 +4,7 @@ using NHibernate.Cfg;
 
 namespace NHibernate.Test.NHSpecificTest.NH2041
 {
-	public class Fixture
+	public partial class Fixture
 	{
 		[Test]
 		public void WhenJoinTableContainComponentsThenColumnsShouldBeInJoinedTable()

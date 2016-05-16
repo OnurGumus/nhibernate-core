@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH958
 {
 	[TestFixture]
-    public class NH958Fixture : BugTestCase
+    public partial class NH958Fixture : BugTestCase
     {
 		[Test]
 		public void MergeWithAny1()

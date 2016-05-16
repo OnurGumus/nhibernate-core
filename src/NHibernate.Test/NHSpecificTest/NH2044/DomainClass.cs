@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH2044
 {
-    public class DomainClass
+    public partial class DomainClass
     {
         private char symbol;
         private int id;

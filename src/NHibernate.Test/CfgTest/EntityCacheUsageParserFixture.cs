@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.CfgTest
 {
 	[TestFixture]
-	public class EntityCacheUsageParserFixture
+	public partial class EntityCacheUsageParserFixture
 	{
 		[Test]
 		public void CovertToString()

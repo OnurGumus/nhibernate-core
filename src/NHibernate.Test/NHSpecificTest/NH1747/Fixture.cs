@@ -3,7 +3,7 @@
 namespace NHibernate.Test.NHSpecificTest.NH1747
 {
 	[TestFixture]
-	public class JoinTraversalTest : BugTestCase
+	public partial class JoinTraversalTest : BugTestCase
 	{
 		[Test]
 		public void PaymentTableNotContainsFk()

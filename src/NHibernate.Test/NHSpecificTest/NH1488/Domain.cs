@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1488
 {
-	public abstract class Category
+	public abstract partial class Category
 	{
 		private int id;
 		private string name;
@@ -23,18 +23,18 @@ namespace NHibernate.Test.NHSpecificTest.NH1488
 		}
 	}
 
-	public class CustomerCategory : Category
+	public partial class CustomerCategory : Category
 	{
 		public CustomerCategory() {}
 		public CustomerCategory(string name) : base(name) {}
 	}
-	public class OtherCategory : Category
+	public partial class OtherCategory : Category
 	{
 		public OtherCategory() {}
 		public OtherCategory(string name) : base(name) {}
 	}
 
-	public class CustomerNoSmart
+	public partial class CustomerNoSmart
 	{
 		private Category category;
 		private int id;
@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1488
 		}
 	}
 
-	public class Customer
+	public partial class Customer
 	{
 		private CustomerCategory category;
 		private int id;

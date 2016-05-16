@@ -13,7 +13,7 @@ namespace NHibernate.Test.Legacy
 	/// Summary description for SQLFunctionsTest.
 	/// </summary>
 	[TestFixture]
-	public class SQLFunctionsTest : TestCase
+	public partial class SQLFunctionsTest : TestCase
 	{
 		private static readonly ILog log =
 			LogManager.GetLogger(typeof(SQLFunctionsTest));

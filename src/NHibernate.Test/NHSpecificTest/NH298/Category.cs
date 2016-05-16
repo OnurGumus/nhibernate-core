@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH298 {
 
-	public class Category {
+	public partial class Category {
 		private int id;
 		private string name;
 		private IList<Category> subCategories;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.ExceptionsTest
 {
-	public class Group
+	public partial class Group
 	{
 		private long id;
 		private string name;

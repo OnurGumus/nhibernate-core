@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1394
 {
-	public class Person
+	public partial class Person
 	{
 		private int id;
 		private int iq;
@@ -54,7 +54,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 		}
 	}
 
-	public class Pet
+	public partial class Pet
 	{
 		private int id;
 		private string name;

@@ -8,7 +8,7 @@ namespace NHibernate.Test.QueryTest
 	/// Summary description for PositionalParametersFixture.
 	/// </summary>
 	[TestFixture]
-	public class PositionalParametersFixture : TestCase
+	public partial class PositionalParametersFixture : TestCase
 	{
 		protected override IList Mappings
 		{

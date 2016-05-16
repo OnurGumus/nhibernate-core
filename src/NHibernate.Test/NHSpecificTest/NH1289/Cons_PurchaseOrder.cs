@@ -4,7 +4,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1289
 {
 
 	[Serializable]
-	public class Cons_PurchaseOrder : PurchaseOrder
+	public partial class Cons_PurchaseOrder : PurchaseOrder
 	{
 
 	}

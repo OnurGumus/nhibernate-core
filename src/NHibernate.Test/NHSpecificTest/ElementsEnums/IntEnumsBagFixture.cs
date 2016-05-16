@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.ElementsEnums
 {
 	[TestFixture]
-	public class IntEnumsBagFixture : AbstractIntEnumsBagFixture
+	public partial class IntEnumsBagFixture : AbstractIntEnumsBagFixture
 	{
 		protected override IList Mappings
 		{

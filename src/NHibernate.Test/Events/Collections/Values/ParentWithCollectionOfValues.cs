@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Events.Collections.Values
 {
-	public class ParentWithCollectionOfValues : AbstractParentWithCollection
+	public partial class ParentWithCollectionOfValues : AbstractParentWithCollection
 	{
 		public ParentWithCollectionOfValues() {}
 

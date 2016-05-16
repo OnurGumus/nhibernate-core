@@ -4,9 +4,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.DynamicProxyTests.ProxiedMembers
 {
-	public class MetodWithRefDictionaryTest
+	public partial class MetodWithRefDictionaryTest
 	{
-		public class MyClass
+		public partial class MyClass
 		{
 			public virtual void Method(ref Dictionary<string ,string> adictionary)
 			{

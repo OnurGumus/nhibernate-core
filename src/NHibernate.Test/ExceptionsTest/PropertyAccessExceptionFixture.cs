@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.ExceptionsTest
 {
 	[TestFixture]
-	public class PropertyAccessExceptionFixture
+	public partial class PropertyAccessExceptionFixture
 	{
 		/// <summary>
 		/// Verifying that NH-358 has been fixed.

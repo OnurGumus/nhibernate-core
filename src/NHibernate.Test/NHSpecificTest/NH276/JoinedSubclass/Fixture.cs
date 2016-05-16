@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH276.JoinedSubclass
 	/// getting the error.  
 	/// </summary>
 	[TestFixture]
-	public class Fixture : TestCase
+	public partial class Fixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

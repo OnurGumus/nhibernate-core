@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2583
 {
-    public class MassTestingNotAndDeMorganFixture : AbstractMassTestingFixture
+    public partial class MassTestingNotAndDeMorganFixture : AbstractMassTestingFixture
     {
         protected override int TestAndAssert(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds)
         {

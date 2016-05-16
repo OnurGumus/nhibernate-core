@@ -8,7 +8,7 @@ namespace NHibernate.Test.SqlCommandTest
 	/// Summary description for SqlStringBuilderFixture.
 	/// </summary>
 	[TestFixture]
-	public class SqlStringBuilderFixture
+	public partial class SqlStringBuilderFixture
 	{
 		[Test]
 		public void InsertAndAdd()

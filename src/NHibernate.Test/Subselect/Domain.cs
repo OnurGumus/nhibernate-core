@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Subselect
 {
-	public class Human
+	public partial class Human
 	{
 		public virtual int Id { get; set; }
 		public virtual char Sex { get; set; }
@@ -8,7 +8,7 @@ namespace NHibernate.Test.Subselect
 		public virtual string Address { get; set; }
 	}
 
-	public class Alien
+	public partial class Alien
 	{
 		public virtual int Id { get; set; }
 		public virtual string Identity { get; set; }
@@ -16,7 +16,7 @@ namespace NHibernate.Test.Subselect
 		public virtual string Species { get; set; }
 	}
 
-	public class Being
+	public partial class Being
 	{
 		public virtual int Id { get; set; }
 		public virtual string Identity { get; set; }

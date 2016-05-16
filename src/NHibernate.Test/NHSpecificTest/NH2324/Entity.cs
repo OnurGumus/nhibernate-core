@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH2324
 {
-	public class Entity
+	public partial class Entity
 	{
 		public virtual long Id { get; set; }
 

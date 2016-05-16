@@ -11,7 +11,7 @@ namespace NHibernate.Test.CfgTest
 	/// Test fixture for NH-185
 	/// </summary>
 	[TestFixture]
-	public class DefaultNsAssmFixture
+	public partial class DefaultNsAssmFixture
 	{
 		// Working directory
 		private static string dir_;

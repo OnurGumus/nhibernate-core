@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.BulkManipulation
 {
 	[TestFixture]
-	public class HqlBulkOperations: BaseFixture
+	public partial class HqlBulkOperations: BaseFixture
 	{
 		[Test]
 		public void SimpleDelete()

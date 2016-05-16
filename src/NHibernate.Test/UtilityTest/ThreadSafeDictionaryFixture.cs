@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.UtilityTest
 {
 	[TestFixture]
-	public class ThreadSafeDictionaryFixture
+	public partial class ThreadSafeDictionaryFixture
 	{
 		public ThreadSafeDictionaryFixture()
 		{

@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH3408
 {
-	public class Country
+	public partial class Country
 	{
 		public virtual int Id { get; set; }
 

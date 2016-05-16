@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Cascade
 {
 	[TestFixture]
-	public class RefreshFixture : TestCase
+	public partial class RefreshFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

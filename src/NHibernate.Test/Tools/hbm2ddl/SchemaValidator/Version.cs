@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 {
-	public class Version
+	public partial class Version
 	{
 		private int id;
 		private string name;

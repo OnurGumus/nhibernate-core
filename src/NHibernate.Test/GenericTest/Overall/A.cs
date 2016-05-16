@@ -6,7 +6,7 @@ namespace NHibernate.Test.GenericTest.Overall
 	/// This class is used in <see cref="Fixture" /> with
 	/// <c>int</c> substituted for <typeparamref name="T" />.
 	/// </summary>
-	public class A<T>
+	public partial class A<T>
 	{
 		public virtual int? Id { get; set; }
 
@@ -15,7 +15,7 @@ namespace NHibernate.Test.GenericTest.Overall
 		public virtual IList<T> Collection { get; set; }
 	}
 
-	public class B
+	public partial class B
 	{
 		public virtual int? Id { get; set; }
 

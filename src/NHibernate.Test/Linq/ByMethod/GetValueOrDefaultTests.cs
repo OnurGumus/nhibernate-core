@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq.ByMethod
 {
 	[TestFixture]
-	public class GetValueOrDefaultTests : LinqTestCase
+	public partial class GetValueOrDefaultTests : LinqTestCase
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{

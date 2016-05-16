@@ -9,7 +9,7 @@ namespace NHibernate.Test.UtilityTest
 	/// Test cases for the <see cref="JoinedEnumerable"/> class.
 	/// </summary>
 	[TestFixture]
-	public class JoinedEnumerableFixture
+	public partial class JoinedEnumerableFixture
 	{
 		/// <summary>
 		/// Test that the JoinedEnumerable works with a single wrapped

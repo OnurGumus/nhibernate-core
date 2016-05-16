@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.PropertyRef
 {
-    public class A
+    public partial class A
     {
         private int _id;
         private int _extraId;

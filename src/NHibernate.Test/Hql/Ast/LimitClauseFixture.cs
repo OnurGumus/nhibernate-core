@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Hql.Ast
 {
 	[TestFixture]
-	public class LimitClauseFixture : BaseFixture
+	public partial class LimitClauseFixture : BaseFixture
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.ReadOnly
 {
 	[Serializable]
-	public class Container
+	public partial class Container
 	{
 		private long id;
 		private string name;

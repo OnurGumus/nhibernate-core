@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Any
 {
-	public class Address
+	public partial class Address
 	{
 		private long id;
 		private ISet<string> lines = new HashSet<string>();

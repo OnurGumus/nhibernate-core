@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH280
 {
-	public class Foo
+	public partial class Foo
 	{
 		public Foo()
 		{

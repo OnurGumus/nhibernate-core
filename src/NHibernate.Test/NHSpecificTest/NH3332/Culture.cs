@@ -4,7 +4,7 @@ using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH3332
 {
-	public class Culture
+	public partial class Culture
 	{
 		private ISet<DataTypeDescription> _dataTypeDescriptions = new HashSet<DataTypeDescription>();
 		private ISet<StateDescription> _stateDescriptions = new HashSet<StateDescription>();

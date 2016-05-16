@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.FileStreamSql2008
 {
-	public class VendorCatalog
+	public partial class VendorCatalog
 	{
 		/// <summary>
 		/// Usual Object Id, nothing weird

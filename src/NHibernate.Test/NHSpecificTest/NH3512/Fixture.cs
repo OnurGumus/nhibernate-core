@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3512
 {
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		private int _id;
 
@@ -68,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3512
 	}
 
 	[TestFixture]
-	public class DynamicUpdateOn : Fixture
+	public partial class DynamicUpdateOn : Fixture
 	{
 		protected override void Configure(Configuration configuration)
 		{
@@ -92,7 +92,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3512
 	}
 
 	[TestFixture]
-	public class DynamicUpdateOff : Fixture
+	public partial class DynamicUpdateOff : Fixture
 	{
 		[Test]
 		public void ShouldChangeVersionWhenBasePropertyChanged()

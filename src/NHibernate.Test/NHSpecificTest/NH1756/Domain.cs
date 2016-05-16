@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.NHSpecificTest.NH1756
 {
 
-	public class Book
+	public partial class Book
 	{
 		private DateTime _version;
 
@@ -20,12 +20,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1756
 		public virtual IList<Page>		Pages	{ get; set; }
 	}
 
-	public class Page
+	public partial class Page
 	{
 		public virtual int				Id		{ get; set; }
 	}
 
-	public class BookNotGenerated
+	public partial class BookNotGenerated
 	{
 		private DateTime _version;
 

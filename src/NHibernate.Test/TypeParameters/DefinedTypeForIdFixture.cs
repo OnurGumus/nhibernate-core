@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypeParameters
 {
 	[TestFixture]
-	public class DefinedTypeForIdFixture : TestCase
+	public partial class DefinedTypeForIdFixture : TestCase
 	{
 		protected override IList Mappings
 		{

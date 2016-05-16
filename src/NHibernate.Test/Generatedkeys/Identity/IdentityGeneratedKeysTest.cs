@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Generatedkeys.Identity
 {
 	[TestFixture]
-	public class IdentityGeneratedKeysTest : TestCase
+	public partial class IdentityGeneratedKeysTest : TestCase
 	{
 		protected override IList Mappings
 		{

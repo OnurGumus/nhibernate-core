@@ -1,6 +1,6 @@
 ﻿namespace NHibernate.Test.VersionTest.Db.MsSQL
 {
-	public class ProductWithVersionAndLazyProperty
+	public partial class ProductWithVersionAndLazyProperty
 	{
 		byte[] _version = null;
 

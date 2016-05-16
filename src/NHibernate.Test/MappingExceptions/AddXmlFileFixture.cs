@@ -5,7 +5,7 @@ namespace NHibernate.Test.MappingExceptions
 	/// <summary>
 	/// Summary description for AddXmlFileFixture.
 	/// </summary>
-	public class AddXmlFileFixture
+	public partial class AddXmlFileFixture
 	{
 		public AddXmlFileFixture()
 		{

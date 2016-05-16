@@ -8,7 +8,7 @@ namespace NHibernate.Test.DriverTest
 	/// http://nhibernate.jira.com/browse/NH-177
 	/// </summary>
 	[TestFixture]
-	public class NullReferenceFixture : TestCase
+	public partial class NullReferenceFixture : TestCase
 	{
 		protected override IList Mappings
 		{

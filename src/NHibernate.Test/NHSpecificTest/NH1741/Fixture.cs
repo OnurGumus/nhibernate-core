@@ -7,11 +7,11 @@ using NHibernate.Util;
 namespace NHibernate.Test.NHSpecificTest.NH1741
 {
 	[TestFixture]
-	public class Fixture: BugTestCase
+	public partial class Fixture: BugTestCase
 	{
 		private const string QueryName = "NH1741_All";
 
-		public class DetachedNamedQueryCrack : DetachedNamedQuery
+		public partial class DetachedNamedQueryCrack : DetachedNamedQuery
 		{
 			private readonly FieldInfo fiCacheable = typeof(AbstractQueryImpl).GetField("cacheable", ReflectHelper.AnyVisibilityInstance);
 			private readonly FieldInfo fiCacheRegion = typeof(AbstractQueryImpl).GetField("cacheRegion", ReflectHelper.AnyVisibilityInstance);

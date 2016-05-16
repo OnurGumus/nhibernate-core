@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {
-	public class NaturalIdTests
+	public partial class NaturalIdTests
 	{
 		private class MyClass
 		{

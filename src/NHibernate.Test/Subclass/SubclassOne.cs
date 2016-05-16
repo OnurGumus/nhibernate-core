@@ -5,7 +5,7 @@ namespace NHibernate.Test.Subclass
 	/// <summary>
 	/// Summary description for JoinedSubclassOne.
 	/// </summary>
-	public class SubclassOne : SubclassBase
+	public partial class SubclassOne : SubclassBase
 	{
 		private long _oneTestLong;
 

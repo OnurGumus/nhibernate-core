@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH315
 	/// Summary description for Fixture.
 	/// </summary>
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		public override string BugNumber
 		{

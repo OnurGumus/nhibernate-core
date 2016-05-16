@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.DriverTest
 {
-	public class SqlServerCeEntity
+	public partial class SqlServerCeEntity
 	{
 		public virtual int Id { get; set; }
 
@@ -20,7 +20,7 @@ namespace NHibernate.Test.DriverTest
 	}
 
 	[TestFixture]
-	public class SqlServerCeDriverFixture : TestCase
+	public partial class SqlServerCeDriverFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

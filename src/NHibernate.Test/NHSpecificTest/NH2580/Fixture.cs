@@ -2,7 +2,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2580
 {
-	public class Fixture: BugTestCase
+	public partial class Fixture: BugTestCase
 	{
 		private class MyClass
 		{

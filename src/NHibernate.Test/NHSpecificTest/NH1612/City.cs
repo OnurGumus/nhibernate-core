@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1612
 {
-	public class City : Area
+	public partial class City : Area
 	{
 		public virtual Country Country { get; protected set; }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.ExpressionTest.SubQueries
 {
-	public class Blog
+	public partial class Blog
 	{
 		private ISet<Post> _posts;
 		private ISet<User> _users;
@@ -49,7 +49,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 		}
 	}
 
-	public class Comment
+	public partial class Comment
 	{
 		private Comment()
 		{
@@ -98,7 +98,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 		}
 	}
 
-	public class Post
+	public partial class Post
 	{
 		private int post_id;
 		private Blog _blog;
@@ -149,7 +149,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 		}
 	}
 
-	public class User
+	public partial class User
 	{
 		private string _userName;
 		private int _userId;
@@ -185,7 +185,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 		}
 	}
 
-	public class Category
+	public partial class Category
 	{
 		private int category_id;
 		private string name;

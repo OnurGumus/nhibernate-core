@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace NHibernate.Test.NHSpecificTest.NH930
 {
-	public abstract class NVariable
+	public abstract partial class NVariable
 	{
 		protected int m_id;
 		protected IList m_precedentVariables;
@@ -21,11 +21,11 @@ namespace NHibernate.Test.NHSpecificTest.NH930
 		}
 	}
 
-	public class NConditionalUDV : NVariable
+	public partial class NConditionalUDV : NVariable
 	{
 	}
 
-	public class NFilterUDV : NVariable
+	public partial class NFilterUDV : NVariable
 	{
 	}
 

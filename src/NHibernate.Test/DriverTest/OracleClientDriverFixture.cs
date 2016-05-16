@@ -9,7 +9,7 @@ namespace NHibernate.Test.DriverTest
 	/// Summary description for OracleClientDriverFixture.
 	/// </summary>
 	[TestFixture]
-	public class OracleClientDriverFixture
+	public partial class OracleClientDriverFixture
 	{
 		/// <summary>
 		/// Verify that the correct Connection Class is being loaded.

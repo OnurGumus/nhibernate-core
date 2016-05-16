@@ -13,7 +13,7 @@ namespace NHibernate.Test.Subclass
 	/// is how the classes are mapped.
 	/// </remarks>
 	[TestFixture]
-	public class SubclassExtendsFixture : SubclassFixture
+	public partial class SubclassExtendsFixture : SubclassFixture
 	{
 		protected override IList Mappings
 		{

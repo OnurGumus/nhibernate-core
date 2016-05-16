@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.MappingTest
 {
 	[TestFixture]
-	public class ColumnFixture
+	public partial class ColumnFixture
 	{
 		private Dialect.Dialect _dialect;
 

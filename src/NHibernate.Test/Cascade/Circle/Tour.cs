@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Cascade.Circle
 {
-	public class Tour
+	public partial class Tour
 	{
 		private long tourId;
 		private long version;

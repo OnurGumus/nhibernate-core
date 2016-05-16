@@ -41,7 +41,7 @@ namespace NHibernate.Test.ReadOnly
 	 */
 	
 	[TestFixture]
-	public class ReadOnlySessionLazyNonLazyTest : AbstractReadOnlyTest
+	public partial class ReadOnlySessionLazyNonLazyTest : AbstractReadOnlyTest
 	{
 		protected override string MappingsAssembly
 		{

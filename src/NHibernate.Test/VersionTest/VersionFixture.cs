@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.VersionTest
 {
 	[TestFixture]
-	public class VersionFixture : TestCase
+	public partial class VersionFixture : TestCase
 	{
 		protected override IList Mappings
 		{

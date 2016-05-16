@@ -3,9 +3,9 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2043
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
-        public class Namer : EmptyInterceptor
+        public partial class Namer : EmptyInterceptor
         {
             public override string GetEntityName(object entity)
             {

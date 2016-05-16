@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
-	public class LinqTestCase : ReadonlyTestCase
+	public partial class LinqTestCase : ReadonlyTestCase
 	{
 		private Northwind _northwind;
 		private ISession _session;

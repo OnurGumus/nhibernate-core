@@ -3,13 +3,13 @@ using System.Collections.ObjectModel;
 
 namespace NHibernate.Test.NHSpecificTest.NH2100
 {
-	public abstract class DomainObject
+	public abstract partial class DomainObject
 	{
 		public virtual int ID { get; set; }
 		public virtual int EntityVersion { get; set; }
 	}
 
-	public class Class1 : DomainObject
+	public partial class Class1 : DomainObject
 	{
 		private readonly IList<Class2> _class2List = new List<Class2>();
 
@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2100
 		}
 	}
 
-	public class Class1DTO : DTO
+	public partial class Class1DTO : DTO
 	{
 		public Class2DTO[] Class2Ary { get; set; }
 	}
@@ -36,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2100
 	/// <summary>
 	/// RG
 	/// </summary>
-	public class Class2 : DomainObject
+	public partial class Class2 : DomainObject
 	{
 		private readonly IList<Class1> _class1List = new List<Class1>();
 
@@ -50,9 +50,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2100
 		}
 	}
 
-	public class Class2DTO : DTO { }
+	public partial class Class2DTO : DTO { }
 
-	public abstract class DTO
+	public abstract partial class DTO
 	{
 		public int ID;
 		public int EntityVersion;

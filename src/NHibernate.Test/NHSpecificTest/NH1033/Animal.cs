@@ -1,7 +1,7 @@
 using System;
 namespace NHibernate.Test.NHSpecificTest.NH1033
 {
-	public class Animal
+	public partial class Animal
 	{
 		public virtual long Id
 		{

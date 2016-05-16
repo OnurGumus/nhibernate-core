@@ -8,7 +8,7 @@ using System;
 namespace NHibernate.Test.NHSpecificTest.NH2664
 {
 	[TestFixture]
-	public class Fixture : TestCase
+	public partial class Fixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

@@ -4,14 +4,14 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2234
 {
-  public class SomethingLinq
+  public partial class SomethingLinq
 	{
 		public virtual string Name { get; set; }
 		public virtual MyUsertype Relation { get; set; }
 	}
 
 	[TestFixture]
-	public class Fixture: BugTestCase
+	public partial class Fixture: BugTestCase
 	{
 	  [Test]
 	  public void CanQueryViaLinq()

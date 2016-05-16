@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.UserCollection
 {
-	public class User
+	public partial class User
 	{
 		private string userName;
 		private IList<Email> emailAddresses = new MyList();

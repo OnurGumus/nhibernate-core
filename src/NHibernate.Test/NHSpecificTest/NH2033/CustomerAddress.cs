@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH2033
 {
-	public class CustomerAddress : IEquatable<CustomerAddress>
+	public partial class CustomerAddress : IEquatable<CustomerAddress>
 	{
 		public virtual Customer Customer { get; set; }
 		public virtual string Type { get; set; }

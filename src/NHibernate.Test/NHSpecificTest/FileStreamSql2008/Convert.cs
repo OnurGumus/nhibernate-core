@@ -5,7 +5,7 @@ namespace NHibernate.Test.NHSpecificTest.FileStreamSql2008
 	/// <summary>
 	/// Byte[]-to-String and String-to-Byte[] converter
 	/// </summary>
-	public class Convert
+	public partial class Convert
 	{
 		public static byte[] ToBytes(string str)
 		{

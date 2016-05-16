@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Ondelete
 {
-	public class Salesperson : Employee
+	public partial class Salesperson : Employee
 	{
 		private ISet<Person> customers = new HashSet<Person>();
 

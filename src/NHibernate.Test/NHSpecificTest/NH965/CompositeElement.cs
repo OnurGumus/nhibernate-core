@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH965
 {
-    public class CompositeElement
+    public partial class CompositeElement
     {
         private string prop;
 

@@ -8,7 +8,7 @@ namespace NHibernate.Test.PropertyTest
 	/// Base test fixture for the Field Accessors.
 	/// </summary>
 	[TestFixture]
-	public class FieldAccessorFixture
+	public partial class FieldAccessorFixture
 	{
 		protected IPropertyAccessor _accessor;
 		protected IGetter _getter;

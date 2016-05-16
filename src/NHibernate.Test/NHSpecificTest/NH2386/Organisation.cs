@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH2386
 {
-    public class Organisation
+    public partial class Organisation
     {
         //internal to TGA
         //private int organisationId;

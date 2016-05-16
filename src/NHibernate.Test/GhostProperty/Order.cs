@@ -1,6 +1,6 @@
 ﻿namespace NHibernate.Test.GhostProperty
 {
-	public class Order
+	public partial class Order
 	{
 		public virtual int Id { get; set; }
 		private Payment payment;
@@ -15,11 +15,11 @@
 		public virtual string NoLazyProperty { get; set; }
 	}
 
-	public abstract class Payment
+	public abstract partial class Payment
 	{
 		public virtual int Id { get; set; }
 	}
 
-	public class WireTransfer : Payment{}
-	public class CreditCard : Payment { }
+	public partial class WireTransfer : Payment{}
+	public partial class CreditCard : Payment { }
 }

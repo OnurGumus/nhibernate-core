@@ -8,7 +8,7 @@ using NHibernate.UserTypes;
 
 namespace NHibernate.Test.UserCollection
 {
-	public class MyListType : IUserCollectionType
+	public partial class MyListType : IUserCollectionType
 	{
 		public IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
 		{

@@ -6,7 +6,7 @@ using System.IO;
 namespace NHibernate.Test.NHSpecificTest.NH2985
 {
 	[Serializable]
-	public class ClassA
+	public partial class ClassA
 	{
 		public virtual Guid Id { get; set; }
 		public virtual String Name { get; set; }
@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2985
 	/// <summary>
 	/// Rappresenta una immagine nel web.
 	/// </summary>
-	public class WebImage
+	public partial class WebImage
 	{
 		public WebImage()
 		{

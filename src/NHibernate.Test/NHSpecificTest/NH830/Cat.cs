@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH830
 {
-	public class Cat
+	public partial class Cat
 	{
 		private int id;
 		private ISet<Cat> children = new HashSet<Cat>();

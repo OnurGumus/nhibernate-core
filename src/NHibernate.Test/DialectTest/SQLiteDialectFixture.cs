@@ -7,7 +7,7 @@ namespace NHibernate.Test.DialectTest
     using SqlCommand;
 
     [TestFixture]
-    public class SQLiteDialectFixture
+    public partial class SQLiteDialectFixture
     {
         private SQLiteDialect dialect;
 

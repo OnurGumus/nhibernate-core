@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1356
 {
-	public class Person
+	public partial class Person
 	{
 		private ICollection<Address> addresses;
 		private int id;

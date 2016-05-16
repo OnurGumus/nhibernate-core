@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.UtilityTest
 {
 	[TestFixture]
-	public class SoftLimitMRUCacheFixture
+	public partial class SoftLimitMRUCacheFixture
 	{
 		[Test]
 		public void DontFillUp()

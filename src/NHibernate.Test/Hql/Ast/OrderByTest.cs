@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Hql.Ast
 {
 	[TestFixture]
-	public class OrderByTest : BaseFixture
+	public partial class OrderByTest : BaseFixture
 	{
 		private TestData data;
 
@@ -377,7 +377,7 @@ namespace NHibernate.Test.Hql.Ast
 		}
 
 
-		private class TestData
+		private partial class TestData
 		{
 			private readonly OrderByTest tc;
 			private StateProvince _stateProvince;

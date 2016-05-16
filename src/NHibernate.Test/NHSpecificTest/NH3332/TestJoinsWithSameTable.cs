@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3332
 {
 	[TestFixture]
-	public class TestJoinsWithSameTable : BugTestCase
+	public partial class TestJoinsWithSameTable : BugTestCase
 	{
 		protected override void OnSetUp()
 		{

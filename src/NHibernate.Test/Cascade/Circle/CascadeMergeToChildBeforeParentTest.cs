@@ -26,7 +26,7 @@ namespace NHibernate.Test.Cascade.Circle
 	*/
 	
 	[TestFixture]
-	public class CascadeMergeToChildBeforeParentTest : TestCase
+	public partial class CascadeMergeToChildBeforeParentTest : TestCase
 	{
 		protected override string MappingsAssembly
 		{

@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1192
 		Underlined=4
 
 	}
-	public class ObjectA
+	public partial class ObjectA
 	{
 		public virtual int Id { get; set; }
 		public virtual Status FontType { get; set; }

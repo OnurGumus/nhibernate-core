@@ -12,7 +12,7 @@ namespace NHibernate.Test.Join
 	using NHibernate.Test.Subclass;
 
 	[TestFixture]
-	public class JoinTest : TestCase
+	public partial class JoinTest : TestCase
 	{
 		private static ILog log = LogManager.GetLogger(typeof(JoinTest));
 

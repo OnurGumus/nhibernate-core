@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1355
 	//http://nhibernate.jira.com/browse/NH-1377
 	//http://nhibernate.jira.com/browse/NH-1379
 	[TestFixture]
-	public class CustomVersionType
+	public partial class CustomVersionType
 	{
 		[Test]
 		public void Bug()

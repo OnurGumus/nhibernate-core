@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1601
 {
     [TestFixture]
-    public class Fixture1 : BugTestCase
+    public partial class Fixture1 : BugTestCase
     {
         /// <summary>
         /// Loads the project do not call Count on the list assigned.

@@ -3,7 +3,7 @@ using System;
 namespace NHibernate.Test.NHSpecificTest.NH1507
 {
 	[Serializable]
-	public class Order
+	public partial class Order
 	{
 		private int _id;
 

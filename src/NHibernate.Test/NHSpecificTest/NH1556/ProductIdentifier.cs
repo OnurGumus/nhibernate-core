@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1556
 {
-   public class ProductIdentifier
+   public partial class ProductIdentifier
    {
       protected ProductIdentifier()
       {

@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.SqlTest
 {
 	[TestFixture]
-	public class SqlTypeFactoryFixture
+	public partial class SqlTypeFactoryFixture
 	{
 		[Test]
 		[Description("Should cache constructed types")]

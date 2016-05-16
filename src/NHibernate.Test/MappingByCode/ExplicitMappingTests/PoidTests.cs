@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {
-	public class PoidTests
+	public partial class PoidTests
 	{
 		private class MyClass
 		{

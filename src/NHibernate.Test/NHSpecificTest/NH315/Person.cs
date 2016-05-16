@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH315
 {
-	public class Person
+	public partial class Person
 	{
 		private int _id;
 

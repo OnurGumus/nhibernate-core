@@ -10,7 +10,7 @@ namespace NHibernate.Test.TypesTest
 	/// Test Fixture for TypeFactory.
 	/// </summary>
 	[TestFixture]
-	public class TypeFactoryFixture
+	public partial class TypeFactoryFixture
 	{
 		public TypeFactoryFixture()
 		{
@@ -61,7 +61,7 @@ namespace NHibernate.Test.TypesTest
 
 		}
 
-		public class GenericPropertyClass
+		public partial class GenericPropertyClass
 		{
 			private long? _genericLong;
 

@@ -2,13 +2,13 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH3057
 {
-	public abstract class BaseClass
+	public abstract partial class BaseClass
 	{
 		public virtual int Id { get; set; }
 		public virtual string InheritedProperty { get; set; }
 	}
 
-	public class AClass 
+	public partial class AClass 
 	{
 		private ICollection<BClass> bs = new List<BClass>(); 
 		
@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3057
 		}
 	}
 
-	public class BClass : BaseClass
+	public partial class BClass : BaseClass
 	{
 		public virtual AClass A { get; set; }
 	}

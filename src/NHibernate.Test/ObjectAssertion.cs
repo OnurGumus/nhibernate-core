@@ -9,7 +9,7 @@ namespace NHibernate.Test
 	/// Helps with Asserts with two Objects.
 	/// </summary>
 	[TestFixture]
-	public class ObjectAssert
+	public partial class ObjectAssert
 	{
 		public ObjectAssert()
 		{

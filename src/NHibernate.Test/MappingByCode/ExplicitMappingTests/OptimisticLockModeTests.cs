@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
 {
 	[TestFixture]
-	public class OptimisticLockModeTests
+	public partial class OptimisticLockModeTests
 	{
 		private class MyClass
 		{

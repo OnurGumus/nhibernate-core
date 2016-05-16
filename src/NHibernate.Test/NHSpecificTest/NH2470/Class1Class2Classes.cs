@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace NHibernate.Test.NHSpecificTest.NH2470
 {
-	public class Class1 : DomainObject
+	public partial class Class1 : DomainObject
     {
         private IList<Class2> _class2List = new List<Class2>();
 
@@ -22,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2470
         }
     }
 
-    public class Class2 : DomainObject
+    public partial class Class2 : DomainObject
     {
         private IList<Class1> _class1List = new List<Class1>();
 

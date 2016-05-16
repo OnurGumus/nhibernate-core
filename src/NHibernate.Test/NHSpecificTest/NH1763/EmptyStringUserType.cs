@@ -6,7 +6,7 @@ using NHibernate.UserTypes;
 namespace NHibernate.Test.NHSpecificTest.NH1763
 {
 	[Serializable]
-	public class EmptyStringUserType : ICompositeUserType
+	public partial class EmptyStringUserType : ICompositeUserType
 	{
 		public EmptyStringUserType()
 		{

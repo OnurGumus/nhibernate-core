@@ -4,7 +4,7 @@ using NHibernate.Proxy;
 
 namespace NHibernate.Test.Bytecode
 {
-	public class WrongProxyFactoryFactory : IProxyFactoryFactory
+	public partial class WrongProxyFactoryFactory : IProxyFactoryFactory
 	{
 		public WrongProxyFactoryFactory()
 		{

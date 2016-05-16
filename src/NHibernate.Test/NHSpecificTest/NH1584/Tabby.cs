@@ -3,7 +3,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1584
 	/// <summary>
 	/// This class describes a few of the properties of a &quot;Tabby&quot; coat pattern.
 	/// </summary>
-	public class Tabby : CoatPattern
+	public partial class Tabby : CoatPattern
 	{
 		public Tabby()
 		{

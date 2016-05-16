@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.Properties
 {
 	[TestFixture]
-	public class CompositePropertyRefTest : BugTestCase
+	public partial class CompositePropertyRefTest : BugTestCase
 	{
 		private long p_id;
 		private long p2_id;

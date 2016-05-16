@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class WhereSubqueryTests : LinqTestCase
+	public partial class WhereSubqueryTests : LinqTestCase
 	{
 		[Test]
 		public void TimesheetsWithNoEntries()

@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest
 {
 	[TestFixture]
-	public class AliasFixture
+	public partial class AliasFixture
 	{
 		[Test]
 		public void NoLeadingUnderscores()

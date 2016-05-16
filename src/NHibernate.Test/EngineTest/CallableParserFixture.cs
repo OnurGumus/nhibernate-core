@@ -6,7 +6,7 @@ using NHibernate.Util;
 namespace NHibernate.Test.EngineTest
 {
 	[TestFixture]
-	public class CallableParserFixture
+	public partial class CallableParserFixture
 	{
 		[Test]
 		public void CanDetermineIsCallable()

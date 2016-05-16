@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH1264
 {
-	public class Passenger
+	public partial class Passenger
 	{
 		private int id;
 

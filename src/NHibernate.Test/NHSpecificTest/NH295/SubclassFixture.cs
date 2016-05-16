@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH295
 {
 	[TestFixture]
-	public class SubclassFixture : TestCase
+	public partial class SubclassFixture : TestCase
 	{
 		protected override IList Mappings
 		{

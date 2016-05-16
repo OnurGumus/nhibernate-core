@@ -11,7 +11,7 @@ namespace NHibernate.Test.UtilityTest
 	/// Summary description for ReflectHelperFixture.
 	/// </summary>
 	[TestFixture]
-	public class ReflectHelperFixture
+	public partial class ReflectHelperFixture
 	{
 		[Test]
 		public void GetConstantValueEnum()
@@ -137,7 +137,7 @@ namespace NHibernate.Test.UtilityTest
 		int List<TK, TV>(string role, string propertyRef, bool embedded, IComparer<TK> comparer);
 	}
 
-	public class ARhf
+	public partial class ARhf
 	{
 		public override bool Equals(object obj)
 		{
@@ -150,7 +150,7 @@ namespace NHibernate.Test.UtilityTest
 		}
 	}
 
-	public class BRhf : ARhf
+	public partial class BRhf : ARhf
 	{
 	}
 
@@ -165,18 +165,18 @@ namespace NHibernate.Test.UtilityTest
 		string Description { get; }
 	}
 
-	public class MyBaseImplementation : IMyBaseInterface
+	public partial class MyBaseImplementation : IMyBaseInterface
 	{
 		public int Id { get; set; }
 		public string Name { get; set; }
 	}
 
-	public class MyDerivedImplementation : MyBaseImplementation, IMyInterface
+	public partial class MyDerivedImplementation : MyBaseImplementation, IMyInterface
 	{
 		public string Description { get; set; }
 	}
 
-	public class MyImplementation: IMyInterface
+	public partial class MyImplementation: IMyInterface
 	{
 		public int Id{ get; set; }
 		public string Name { get; set; }

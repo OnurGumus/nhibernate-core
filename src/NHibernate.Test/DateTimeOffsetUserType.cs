@@ -6,7 +6,7 @@ using NHibernate.UserTypes;
 
 namespace NHibernate.Test
 {
-	public class DateTimeOffsetUserType : IUserType, IParameterizedType
+	public partial class DateTimeOffsetUserType : IUserType, IParameterizedType
 	{
 		public TimeSpan Offset { get; private set; }
 

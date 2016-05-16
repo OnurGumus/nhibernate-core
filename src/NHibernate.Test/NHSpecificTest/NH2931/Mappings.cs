@@ -3,7 +3,7 @@ using NHibernate.Mapping.ByCode.Conformist;
 
 namespace NHibernate.Test.NHSpecificTest.NH2931
 {
-    public class EntityMapping : ClassMapping<Entity>
+    public partial class EntityMapping : ClassMapping<Entity>
     {
         public EntityMapping()
         {
@@ -20,14 +20,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2931
     // explicitly forces the first ordering to occur, but the most common use is simply
     // typeof(SomeEntity).Assembly.GetTypes() to register everything; as shown in 
     //MappingByCodeTest.CompiledMappings_ShouldNotDependOnAddedOrdering_AddedBy_AddMappings
-    public class DerivedClassMapping : JoinedSubclassMapping<DerivedClass>
+    public partial class DerivedClassMapping : JoinedSubclassMapping<DerivedClass>
     {
         public DerivedClassMapping()
         {
             Property(p => p.DerivedProperty);
         }
     }
-    public class BaseClassMapping : JoinedSubclassMapping<BaseClass>
+    public partial class BaseClassMapping : JoinedSubclassMapping<BaseClass>
     {
         public BaseClassMapping()
         {

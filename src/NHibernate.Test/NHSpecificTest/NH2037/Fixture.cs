@@ -2,7 +2,7 @@
 namespace NHibernate.Test.NHSpecificTest.NH2037
 {
  	[TestFixture]
- 	public class Fixture : BugTestCase
+ 	public partial class Fixture : BugTestCase
 	{
  		[Test]
  		public void Test()

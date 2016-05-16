@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1355
 	/// UserTypeTimestamp implements the Nhibernate BinaryType
 	/// that is used to handle Nhibernate version.
 	/// </summary>
-	public class UserTypeTimestamp : IUserVersionType
+	public partial class UserTypeTimestamp : IUserVersionType
 	{
 		#region IUserVersionType Members
 

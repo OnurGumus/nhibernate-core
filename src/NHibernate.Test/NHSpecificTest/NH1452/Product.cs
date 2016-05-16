@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1452
 {
-	public class Product
+	public partial class Product
 	{
 		public virtual string ProductId { get; set; }
 

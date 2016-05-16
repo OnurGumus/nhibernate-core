@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3667
 {
 	[TestFixture]
-	public class MapFixture
+	public partial class MapFixture
 	{
 		[Test]
 		public void TestMapElementElement()

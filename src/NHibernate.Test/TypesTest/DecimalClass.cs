@@ -5,7 +5,7 @@ namespace NHibernate.Test.TypesTest
 	/// <summary>
 	/// Summary description for DecimalClass.
 	/// </summary>
-	public class DecimalClass
+	public partial class DecimalClass
 	{
 		private int _id;
 		private decimal _decimalValue;

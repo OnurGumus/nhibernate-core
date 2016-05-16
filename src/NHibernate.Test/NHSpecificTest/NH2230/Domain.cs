@@ -2,13 +2,13 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2230
 {
-	public class MyEntity
+	public partial class MyEntity
 	{
 		public virtual MyComponentWithParent Component { get; set; }
 		public virtual ICollection<MyComponentWithParent> Children { get; set; }
 	}
 
-	public class MyComponentWithParent
+	public partial class MyComponentWithParent
 	{
 		private MyEntity parent;
 

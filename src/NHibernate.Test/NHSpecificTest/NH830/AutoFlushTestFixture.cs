@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH830
 {
 	[TestFixture]
-	public class AutoFlushTestFixture : BugTestCase
+	public partial class AutoFlushTestFixture : BugTestCase
 	{
 		[Test]
 		public void AutoFlushTest()

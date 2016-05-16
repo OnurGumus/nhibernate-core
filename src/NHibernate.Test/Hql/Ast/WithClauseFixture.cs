@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Hql.Ast
 {
 	[TestFixture]
-	public class WithClauseFixture : BaseFixture
+	public partial class WithClauseFixture : BaseFixture
 	{
 		public ISession OpenNewSession()
 		{
@@ -94,7 +94,7 @@ namespace NHibernate.Test.Hql.Ast
 			data.Cleanup();
 		}
 
-		private class TestData
+		private partial class TestData
 		{
 			private readonly WithClauseFixture tc;
 

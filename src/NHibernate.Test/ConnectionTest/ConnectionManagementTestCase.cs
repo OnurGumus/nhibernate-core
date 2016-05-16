@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace NHibernate.Test.ConnectionTest
 {
-	public abstract class ConnectionManagementTestCase : TestCase
+	public abstract partial class ConnectionManagementTestCase : TestCase
 	{
 		protected override IList Mappings
 		{

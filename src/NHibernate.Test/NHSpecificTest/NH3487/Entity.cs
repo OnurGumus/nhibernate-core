@@ -3,7 +3,7 @@
 namespace NHibernate.Test.NHSpecificTest.NH3487
 {
 	[Serializable]
-	public class Entity
+	public partial class Entity
 	{
 		public virtual Key Id { get; set; }
 		public virtual string Name { get; set; }
@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3487
 	}
 
 	[Serializable]
-	public class Key
+	public partial class Key
 	{
 		public virtual int Id { get; set; }
 

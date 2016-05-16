@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.NHSpecificTest.NH257
 {
 	[Serializable]
-	public class UserGroup : Party
+	public partial class UserGroup : Party
 	{
 		private ISet<User> _users = new HashSet<User>();
 

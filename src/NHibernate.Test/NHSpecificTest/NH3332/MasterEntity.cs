@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH3332
 {
-	public class MasterEntity
+	public partial class MasterEntity
 	{
 		private DataType _dataType;
 		private State _state;

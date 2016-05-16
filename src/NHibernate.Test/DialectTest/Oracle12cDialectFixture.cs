@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.DialectTest
 {
 	[TestFixture]
-	public class oracle12cDialectFixture
+	public partial class oracle12cDialectFixture
 	{
 		[Test]
 		public void GetLimitString()

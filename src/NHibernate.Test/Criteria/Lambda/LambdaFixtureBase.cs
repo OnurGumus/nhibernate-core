@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Criteria.Lambda
 {
 
-	public class LambdaFixtureBase
+	public partial class LambdaFixtureBase
 	{
 
 		private Hashtable _visitedObjects = new Hashtable();

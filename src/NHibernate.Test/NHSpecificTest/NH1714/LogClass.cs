@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1714
 {
-	public class LogClass
+	public partial class LogClass
 	{
 		private byte[] byteData;
 		private int id;

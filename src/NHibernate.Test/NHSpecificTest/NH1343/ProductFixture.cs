@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1343
 {
 	[TestFixture]
-	public class ProductFixture : BugTestCase
+	public partial class ProductFixture : BugTestCase
 	{
 		protected override void OnTearDown()
 		{

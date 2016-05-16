@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1965
 {
-	public class Cat
+	public partial class Cat
 	{
 		public Cat()
 		{
@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1965
 		public virtual IList<Cat> Children { get; set; }
 	}
 
-	public class ReattachWithCollectionTest: TestCaseMappingByCode
+	public partial class ReattachWithCollectionTest: TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{

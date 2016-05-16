@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
     [TestFixture]
-    public class OperatorTests : LinqTestCase
+    public partial class OperatorTests : LinqTestCase
     {
         [Test]
         public void Mod()

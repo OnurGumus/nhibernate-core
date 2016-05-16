@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Composite
 {
-	public class Employee
+	public partial class Employee
 	{
 		public virtual long Id { get; set; }
 		public virtual string Name { get; set; }
@@ -14,9 +14,9 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Composite
 		}
 	}
 
-	public class EmployeeInfo
+	public partial class EmployeeInfo
 	{
-		public class Identifier
+		public partial class Identifier
 		{
 			public virtual long CompanyId { get; set; }
 			public virtual long PersonId { get; set; }

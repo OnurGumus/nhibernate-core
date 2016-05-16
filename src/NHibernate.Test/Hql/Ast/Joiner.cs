@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Hql.Ast
 {
-	public class Joiner
+	public partial class Joiner
 	{
 		private long id;
 		private string name;

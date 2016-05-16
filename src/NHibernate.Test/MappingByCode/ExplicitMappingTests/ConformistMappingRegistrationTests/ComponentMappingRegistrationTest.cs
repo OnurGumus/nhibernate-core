@@ -6,15 +6,15 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRegistrationTests
 {
-	public class ComponentMappingRegistrationTest
+	public partial class ComponentMappingRegistrationTest
 	{
-		public class MyClass
+		public partial class MyClass
 		{
 			public int Id { get; set; }
 			public Name Name { get; set; }
 		}
 
-		public class Name
+		public partial class Name
 		{
 			public string First { get; set; }
 			public string Last { get; set; }

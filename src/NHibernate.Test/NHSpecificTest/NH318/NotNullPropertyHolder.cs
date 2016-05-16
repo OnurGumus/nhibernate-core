@@ -5,7 +5,7 @@ namespace NHibernate.Test.NHSpecificTest.NH318
 	/// <summary>
 	/// Summary description for NotNullPropertyHolder.
 	/// </summary>
-	public class NotNullPropertyHolder
+	public partial class NotNullPropertyHolder
 	{
 		private int _id;
 		private String _notNullProperty;

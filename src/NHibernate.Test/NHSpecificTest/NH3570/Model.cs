@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH3570
 {
-	public class UniParent
+	public partial class UniParent
 	{
 		public UniParent()
 		{
@@ -15,12 +15,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3570
 		public virtual int Version { get; set; }
 	}
 
-	public class UniChild
+	public partial class UniChild
 	{
 		public virtual Guid Id { get; set; }
 	}
 
-	public class BiParent
+	public partial class BiParent
 	{
 		public BiParent()
 		{
@@ -38,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3570
 		}
 	}
 
-	public class BiChild
+	public partial class BiChild
 	{
 		public virtual Guid Id { get; set; }
 		public virtual BiParent Parent { get; set; }

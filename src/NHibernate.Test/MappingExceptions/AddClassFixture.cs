@@ -8,7 +8,7 @@ namespace NHibernate.Test.MappingExceptions
 	/// Summary description for AddClassFixture.
 	/// </summary>
 	[TestFixture]
-	public class AddClassFixture
+	public partial class AddClassFixture
 	{
 		[Test]
 		public void ClassMissingMappingFile()

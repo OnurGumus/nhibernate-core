@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Hql.Ast
 {
-	public class SimpleEntityWithAssociation
+	public partial class SimpleEntityWithAssociation
 	{
 		private long id;
 		private string name;

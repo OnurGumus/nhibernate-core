@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2705
 {
 	[TestFixture]
-	public class Test : BugTestCase
+	public partial class Test : BugTestCase
 	{
 		private static IEnumerable<T> GetAndFetch<T>(string name, ISession session) where T : ItemBase
 		{

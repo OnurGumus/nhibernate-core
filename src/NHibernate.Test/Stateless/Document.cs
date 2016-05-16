@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.Stateless
 {
-	public class Document
+	public partial class Document
 	{
 		private string text;
 		private string name;

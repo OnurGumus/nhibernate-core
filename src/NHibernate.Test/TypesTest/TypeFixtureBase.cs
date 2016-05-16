@@ -9,7 +9,7 @@ namespace NHibernate.Test.TypesTest
 	/// uses mapping file named "(TypeName)Class.hbm.xml" placed in TypesTest
 	/// directory in NHibernate.Test assembly.
 	/// </summary>
-	public abstract class TypeFixtureBase : TestCase
+	public abstract partial class TypeFixtureBase : TestCase
 	{
 		protected abstract string TypeName { get; }
 

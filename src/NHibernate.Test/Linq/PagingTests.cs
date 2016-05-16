@@ -5,14 +5,14 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
-	public class ProductProjection
+	public partial class ProductProjection
 	{
 		public int ProductId { get; set; }
 		public string Name { get; set; }
 	}
 
 	[TestFixture]
-	public class PagingTests : LinqTestCase
+	public partial class PagingTests : LinqTestCase
 	{
 		[Test]
 		public void PageBetweenProjections()

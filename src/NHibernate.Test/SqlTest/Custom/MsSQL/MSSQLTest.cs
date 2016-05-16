@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.SqlTest.Custom.MsSQL
 {
 	[TestFixture]
-	public class MSSQLTest : CustomStoredProcSupportTest
+	public partial class MSSQLTest : CustomStoredProcSupportTest
 	{
 		protected override IList Mappings
 		{

@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.CfgTest
 {
 	[TestFixture]
-	public class SchemaAutoActionFixture
+	public partial class SchemaAutoActionFixture
 	{
 		[Test]
 		public void Equality()

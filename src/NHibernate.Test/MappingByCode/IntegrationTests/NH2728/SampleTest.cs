@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH2728
 {
 	[TestFixture]
-	public class SampleTest : TestCaseMappingByCode
+	public partial class SampleTest : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{

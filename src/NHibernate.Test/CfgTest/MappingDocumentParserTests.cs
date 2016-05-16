@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.CfgTest
 {
 	[TestFixture]
-	public class MappingDocumentParserTests
+	public partial class MappingDocumentParserTests
 	{
 		[Test]
 		public void CanDeserializeHBM()

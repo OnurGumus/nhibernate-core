@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH776
 {
-	public class A
+	public partial class A
 	{
 		private int id;
 		private string foo;
@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH776
 		}
 	}
 
-	public class NotProxied
+	public partial class NotProxied
 	{
 		private int id;
 		private string foo;
@@ -78,7 +78,7 @@ namespace NHibernate.Test.NHSpecificTest.NH776
 		}
 	}
 
-	public class Proxied
+	public partial class Proxied
 	{
 		private int id;
 		private string foo;

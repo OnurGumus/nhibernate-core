@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Criteria
 {
 	[TestFixture]
-	public class ProjectionsTest : TestCase
+	public partial class ProjectionsTest : TestCase
 	{
 		protected override string MappingsAssembly
 		{

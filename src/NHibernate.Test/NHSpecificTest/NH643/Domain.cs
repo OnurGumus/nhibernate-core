@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.NHSpecificTest.NH643
 {
 	[Serializable]
-	public class Parent
+	public partial class Parent
 	{
 		private int _id;
 		private IList<Child> _children = new List<Child>();
@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH643
 	}
 
 	[Serializable]
-	public class Child
+	public partial class Child
 	{
 		private int _id;
 		private Parent _parent;

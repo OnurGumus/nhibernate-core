@@ -1,6 +1,6 @@
 ﻿namespace NHibernate.Test.NHSpecificTest.NH1789
 {
-	public class Cat : DomainObject, ICat
+	public partial class Cat : DomainObject, ICat
 	{
 		public Cat(string name, long id)
 		{

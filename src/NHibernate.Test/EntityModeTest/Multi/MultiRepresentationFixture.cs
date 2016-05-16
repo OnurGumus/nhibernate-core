@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.EntityModeTest.Multi
 {
 	[TestFixture, Ignore("Not supported yet.")]
-	public class MultiRepresentationFixture : TestCase
+	public partial class MultiRepresentationFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{
@@ -19,7 +19,7 @@ namespace NHibernate.Test.EntityModeTest.Multi
 			get { return new[] {"EntityModeTest.Multi.Stock.hbm.xml", "EntityModeTest.Multi.Valuation.hbm.xml"}; }
 		}
 
-		private class TestData
+		private partial class TestData
 		{
 			private readonly ISessionFactory sessions;
 			public long stockId;

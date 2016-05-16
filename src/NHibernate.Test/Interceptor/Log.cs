@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.Interceptor
 {
-	public class Log
+	public partial class Log
 	{
 		private long id;
 		private string entityName;

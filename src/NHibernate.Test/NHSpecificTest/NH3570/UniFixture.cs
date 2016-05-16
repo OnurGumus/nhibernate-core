@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3570
 {
 	[TestFixture]
-	public class UniFixture : BugTestCase
+	public partial class UniFixture : BugTestCase
 	{
 		private Guid id;
 

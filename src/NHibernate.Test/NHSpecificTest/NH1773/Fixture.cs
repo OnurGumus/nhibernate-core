@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.NHSpecificTest.NH1773
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		[Test]
 		public void CustomHQLFunctionsShouldBeRecognizedByTheParser()

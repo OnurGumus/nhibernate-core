@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1850
 	using Environment=NHibernate.Cfg.Environment;
 
 	[TestFixture]
-	public class Fixture:BugTestCase
+	public partial class Fixture:BugTestCase
 	{
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{

@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH712
 	//<component>Core</component> 
   //<link>http://nhibernate.jira.com/browse/NH-712</link> 
 	[TestFixture]
-	public class Fixture
+	public partial class Fixture
 	{
 		[Test]
 		public void Bug()

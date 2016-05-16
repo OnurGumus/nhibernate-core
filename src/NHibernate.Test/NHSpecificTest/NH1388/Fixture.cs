@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1388
 {
-	public class Student
+	public partial class Student
 	{
 		private int _id;
 		private readonly IDictionary<Subject, Major> _majors = new Dictionary<Subject, Major>();
@@ -19,20 +19,20 @@ namespace NHibernate.Test.NHSpecificTest.NH1388
 		}
 	}
 
-	public class Subject
+	public partial class Subject
 	{
 		public int Id { get; set; }
 
 		public string Title { get; set; }
 	}
 
-	public class Major
+	public partial class Major
 	{
 		public string Note { get; set; }
 	}
 
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		[Test]
 		public void BagTest()

@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1487
 {
-	public class Entity
+	public partial class Entity
 	{
 		int field;
 		public int Id { get { return field; } set { field = value; } }
@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1487
 	/// Summary description for TestTestCase.
 	/// </summary>
 	[TestFixture]
-	public class Fixture
+	public partial class Fixture
 	{
 
 		public Configuration GetConf()

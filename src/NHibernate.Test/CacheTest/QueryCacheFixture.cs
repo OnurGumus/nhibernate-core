@@ -8,7 +8,7 @@ using Environment=NHibernate.Cfg.Environment;
 namespace NHibernate.Test.CacheTest
 {
 	[TestFixture]
-	public class QueryCacheFixture : TestCase
+	public partial class QueryCacheFixture : TestCase
 	{
 		protected override IList Mappings
 		{

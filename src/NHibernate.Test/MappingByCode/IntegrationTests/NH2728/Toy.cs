@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH2728
 {
-	public class Toy
+	public partial class Toy
 	{
 		public Toy()
 		{

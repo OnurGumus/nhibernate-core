@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.Join
 {
-	public class Customer : Person
+	public partial class Customer : Person
 	{
 		private Employee _Salesperson;
 		public virtual Employee Salesperson

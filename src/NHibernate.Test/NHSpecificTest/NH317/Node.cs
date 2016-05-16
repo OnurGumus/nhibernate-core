@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH317
 	/// Summary description for Node.
 	/// </summary>
 	[Serializable]
-	public class Node
+	public partial class Node
 	{
 		private int _id;
 		private string _name;

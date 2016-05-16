@@ -11,7 +11,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2500
 {
-    public class Foo
+    public partial class Foo
     {
         public virtual Guid Id { get; set; }
 
@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2500
 
 
     [TestFixture]
-    public class Fixture : TestCaseMappingByCode
+    public partial class Fixture : TestCaseMappingByCode
     {
         protected override HbmMapping GetMappings()
         {

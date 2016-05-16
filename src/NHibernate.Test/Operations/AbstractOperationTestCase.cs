@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Operations
 {
-	public abstract class AbstractOperationTestCase : TestCase
+	public abstract partial class AbstractOperationTestCase : TestCase
 	{
 		protected override string MappingsAssembly
 		{

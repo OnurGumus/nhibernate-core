@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH3093
 {
-	public class Product
+	public partial class Product
 	{
 		public virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }
 		public virtual Family Family { get; set; }
 	}
 	
-	public class Family
+	public partial class Family
 	{
 		public virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }
@@ -19,14 +19,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3093
 		public virtual Segment Segment { get; set; }
 	}
 	
-	public class Cultivation 
+	public partial class Cultivation 
 	{
 		public virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }
 		public virtual Family Family { get; set; }
 	}
 	
-	public class Segment  
+	public partial class Segment  
 	{
 		public virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }

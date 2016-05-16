@@ -355,6 +355,23 @@ namespace NHibernate.AsyncGenerator.Extensions
 			return symbol?.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T;
 		}
 
+		public static bool HaveSameParameters(this IMethodSymbol m1, IMethodSymbol m2)
+		{
+			if (m1.Parameters.Length != m2.Parameters.Length)
+			{
+				return false;
+			}
+
+			for (var i = 0; i < m1.Parameters.Length; i++)
+			{
+				if (!m1.Parameters[i].Type.Equals(m2.Parameters[i].Type))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
 		public static ExpressionSyntax GenerateExpressionSyntax(
 			this ITypeSymbol typeSymbol)
 		{

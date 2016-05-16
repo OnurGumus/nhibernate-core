@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.ListIndex
 {
-	public class B
+	public partial class B
 	{
 		private int _id;
 		private int _aId;

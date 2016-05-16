@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild
 {
-	public class Child
+	public partial class Child
 	{
 		private long _id;
 		private Parent _parent;

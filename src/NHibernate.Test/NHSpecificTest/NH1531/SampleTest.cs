@@ -5,7 +5,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1531
 	// This test is only an Example to show the wrong mapping in the original issue.
 
 	[TestFixture]
-	public class SampleTest : BugTestCase
+	public partial class SampleTest : BugTestCase
 	{
 		private void FillDb()
 		{

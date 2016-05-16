@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.Criteria
 {
-	public class Reptile : Animal
+	public partial class Reptile : Animal
 	{
 		private float bodyTemperature;
 
@@ -13,7 +13,7 @@ namespace NHibernate.Test.Criteria
 		}
 	}
 
-	public class Lizard : Reptile
+	public partial class Lizard : Reptile
 	{
 	}
 }

@@ -13,7 +13,7 @@ namespace NHibernate.Test.Criteria.Lambda
 {
 
 	[TestFixture]
-	public class SubqueryFixture : LambdaFixtureBase
+	public partial class SubqueryFixture : LambdaFixtureBase
 	{
 
 		private Child _subqueryChildAlias = null;

@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
     [TestFixture]
-    public class QueryCacheableTests : LinqTestCase
+    public partial class QueryCacheableTests : LinqTestCase
     {
         protected override void Configure(Configuration cfg)
         {

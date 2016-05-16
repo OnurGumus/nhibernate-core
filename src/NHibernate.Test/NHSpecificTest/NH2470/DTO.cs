@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH2470
 {
-	public abstract class DTO
+	public abstract partial class DTO
     {
         public Guid ID;
         public int EntityVersion;

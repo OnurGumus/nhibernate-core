@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH1574
 {
-	public class Principal
+	public partial class Principal
 	{
 		private bool approved;
 		private bool autoStartVacations;

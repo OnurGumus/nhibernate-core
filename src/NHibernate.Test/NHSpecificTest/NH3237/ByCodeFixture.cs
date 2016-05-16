@@ -8,7 +8,7 @@ using System;
 namespace NHibernate.Test.NHSpecificTest.NH3237
 {
 	[TestFixture]
-	public class ByCodeFixture : TestCaseMappingByCode
+	public partial class ByCodeFixture : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{

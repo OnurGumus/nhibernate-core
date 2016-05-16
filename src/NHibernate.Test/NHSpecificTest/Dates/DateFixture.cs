@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.Dates
 {
 	[TestFixture]
-	public class DateFixture : FixtureBase
+	public partial class DateFixture : FixtureBase
 	{
 		protected override IList Mappings
 		{

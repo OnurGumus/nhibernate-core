@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.NHSpecificTest.NH1323
 {
 	[Serializable]
-	public class MyClass
+	public partial class MyClass
 	{
 		public MyClass()
 		{
@@ -20,14 +20,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1323
 	}
 
 	[Serializable]
-	public class MyChild
+	public partial class MyChild
 	{
 		public virtual Guid Id { get; set; }
 		public virtual MyClass Parent { get; set; }
 	}
 
 	[Serializable]
-	public class MyComponent
+	public partial class MyComponent
 	{
 		public virtual string Something { get; set; }
 	}

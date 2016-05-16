@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Ondelete
 {
-	public class Child
+	public partial class Child
 	{
 		private string name;
 		private readonly Parent parent;

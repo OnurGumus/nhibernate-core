@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
-	public class CollectionIdMapperTests
+	public partial class CollectionIdMapperTests
 	{
 		[Test]
 		public void WhenCreateThenHasDefaultTypeAndGenerator()

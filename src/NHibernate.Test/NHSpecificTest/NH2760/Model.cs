@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2760
 {
-	public class User
+	public partial class User
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }
@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2760
 		}
 	}
 
-	public class UserGroup
+	public partial class UserGroup
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }

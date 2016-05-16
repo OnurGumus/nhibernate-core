@@ -2,7 +2,7 @@ using System;
 using NHibernate.Type;
 namespace NHibernate.Test.Interceptor
 {
-	public class PropertyInterceptor : EmptyInterceptor
+	public partial class PropertyInterceptor : EmptyInterceptor
 	{
 		public override bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types)
 		{

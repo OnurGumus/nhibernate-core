@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2907
 	/// Similar to NH-2113 but with dynamic entity
 	/// </summary>
 	[TestFixture, Ignore("Not fixed yet.")]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		[Test]
 		public void ShouldNotEagerLoadKeyManyToOneWhenOverridingGetHashCode()

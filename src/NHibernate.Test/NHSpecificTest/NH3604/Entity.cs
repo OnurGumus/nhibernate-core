@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace NHibernate.Test.NHSpecificTest.NH3604
 {
-	public class Entity
+	public partial class Entity
 	{
 		protected virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }
@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3604
 		}
 	}
 
-	public class EntityDetail
+	public partial class EntityDetail
 	{
 		// Required by NHibernate
 		protected EntityDetail()

@@ -9,7 +9,7 @@ using System.Xml;
 namespace NHibernate.Test.CfgTest
 {
 	[TestFixture]
-	public class ConfigurationSchemaFixture
+	public partial class ConfigurationSchemaFixture
 	{
 		[Test]
 		public void InvalidConfig()

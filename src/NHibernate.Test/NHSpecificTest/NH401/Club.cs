@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH401
 {
-	public class Club
+	public partial class Club
 	{
 		private int m_Id;
 		private Boolean m_Active;

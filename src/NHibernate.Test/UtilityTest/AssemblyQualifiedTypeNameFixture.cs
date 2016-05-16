@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.UtilityTest
 {
 	[TestFixture]
-	public class AssemblyQualifiedTypeNameFixture
+	public partial class AssemblyQualifiedTypeNameFixture
 	{
 		[Test]
 		public void Construct()

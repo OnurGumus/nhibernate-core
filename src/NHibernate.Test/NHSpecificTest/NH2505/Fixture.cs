@@ -8,14 +8,14 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2505
 {
-	public class MyClass
+	public partial class MyClass
 	{
 		public virtual Guid Id { get; set; }
 		public virtual bool Alive { get; set; }
 		public virtual bool? MayBeAlive { get; set; }
 		public virtual int Something { get; set; }
 	}
-	public class Fixture: TestCaseMappingByCode
+	public partial class Fixture: TestCaseMappingByCode
 	{
 		private Regex caseClause = new Regex("case",RegexOptions.IgnoreCase);
 		protected override HbmMapping GetMappings()

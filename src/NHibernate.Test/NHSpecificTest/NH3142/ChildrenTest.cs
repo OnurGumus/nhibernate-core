@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3142
 {
 	[TestFixture]
-	public class ChildrenTest : BugTestCase
+	public partial class ChildrenTest : BugTestCase
 	{
 		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
 		{

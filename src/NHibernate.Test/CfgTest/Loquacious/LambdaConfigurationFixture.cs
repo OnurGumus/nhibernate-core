@@ -14,7 +14,7 @@ using NHibernate.Exceptions;
 namespace NHibernate.Test.CfgTest.Loquacious
 {
 	[TestFixture]
-	public class LambdaConfigurationFixture
+	public partial class LambdaConfigurationFixture
 	{
 		[Test]
 		public void FullConfiguration()

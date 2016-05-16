@@ -4,7 +4,7 @@ using System.Collections;
 
 namespace NHibernate.Test.NHSpecificTest.NH1326
 {
-	public class Person
+	public partial class Person
 	{
 		private int id;
 		private int iq;

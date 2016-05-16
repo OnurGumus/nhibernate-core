@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
 {
-	public class MultiTypeEntity
+	public partial class MultiTypeEntity
 	{
 		public virtual int Id { get; set; }
 		public virtual string StringProp { get; set; }
@@ -19,7 +19,7 @@ namespace NHibernate.Test.TypesTest
 		public virtual string StringClob { get; set; }
 	}
 
-	public abstract class TypeSqlTypeFixture
+	public abstract partial class TypeSqlTypeFixture
 	{
 		protected const string TestNameSpace = "NHibernate.Test.TypesTest.";
 		protected Configuration cfg;
@@ -93,7 +93,7 @@ namespace NHibernate.Test.TypesTest
 	}
 
 	[TestFixture]
-	public class FixtureWithExplicitDefinedType : TypeSqlTypeFixture
+	public partial class FixtureWithExplicitDefinedType : TypeSqlTypeFixture
 	{
 		protected override string GetResourceName()
 		{
@@ -102,7 +102,7 @@ namespace NHibernate.Test.TypesTest
 	}
 
 	[TestFixture]
-	public class FixtureWithHeuristicDefinedType : TypeSqlTypeFixture
+	public partial class FixtureWithHeuristicDefinedType : TypeSqlTypeFixture
 	{
 		protected override string GetResourceName()
 		{
@@ -111,7 +111,7 @@ namespace NHibernate.Test.TypesTest
 	}
 
 	[TestFixture]
-	public class FixtureWithInLineDefinedType : TypeSqlTypeFixture
+	public partial class FixtureWithInLineDefinedType : TypeSqlTypeFixture
 	{
 		protected override string GetResourceName()
 		{
@@ -120,7 +120,7 @@ namespace NHibernate.Test.TypesTest
 	}
 
 	[TestFixture]
-	public class FixtureWithColumnNode : TypeSqlTypeFixture
+	public partial class FixtureWithColumnNode : TypeSqlTypeFixture
 	{
 		protected override string GetResourceName()
 		{
@@ -130,7 +130,7 @@ namespace NHibernate.Test.TypesTest
 
 
 	[TestFixture, Ignore("Not fixed yet.")]
-	public class FixtureWithSqlType : TypeSqlTypeFixture
+	public partial class FixtureWithSqlType : TypeSqlTypeFixture
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{

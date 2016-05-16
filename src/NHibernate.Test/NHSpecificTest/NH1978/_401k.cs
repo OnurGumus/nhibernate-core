@@ -5,7 +5,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1978
     /// <summary> 
     /// Product object for NHibernate mapped table 'Products'.
     /// </summary>
-    public class _401k
+    public partial class _401k
     {
         public virtual int ID { get; set; }
         public virtual string PlanName { get; set; }

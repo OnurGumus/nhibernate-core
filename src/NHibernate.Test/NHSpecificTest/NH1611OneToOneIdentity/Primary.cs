@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 {
-	public class Primary
+	public partial class Primary
 	{
 		private int id;
 		private string description;

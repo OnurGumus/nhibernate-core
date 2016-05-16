@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Author : Stephane Verlet
 	/// </summary>
-	public class DummyEntity
+	public partial class DummyEntity
 	{
 		public int Id { get; set; }
 	}

@@ -5,7 +5,7 @@ using System.Text;
 namespace NHibernate.Test.NHSpecificTest.NH995
 {
 	[Serializable]
-	public class ClassA
+	public partial class ClassA
 	{
 		private int id;
 		private string name;
@@ -36,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 	}
 
 	[Serializable]
-	public class ClassBId
+	public partial class ClassBId
 	{
 		private string code;
 		private ClassA a;
@@ -87,7 +87,7 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 	}
 
 	[Serializable]
-	public class ClassB
+	public partial class ClassB
 	{
 		private ClassBId id;
 		private string someProp;
@@ -106,7 +106,7 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 	}
 
 	[Serializable]
-	public class ClassC
+	public partial class ClassC
 	{
 		private int id;
 		private ClassB b;

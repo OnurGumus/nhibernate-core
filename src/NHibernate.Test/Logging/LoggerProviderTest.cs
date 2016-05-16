@@ -2,7 +2,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Logging
 {
-	public class LoggerProviderTest
+	public partial class LoggerProviderTest
 	{
 		[Test]
 		public void LoggerProviderCanCreateLoggers()

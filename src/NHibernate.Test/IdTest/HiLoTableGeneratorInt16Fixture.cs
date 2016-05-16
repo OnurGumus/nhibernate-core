@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.IdTest
 {
 	[TestFixture]
-	public class HiLoTableGeneratorInt16Fixture : IdFixtureBase
+	public partial class HiLoTableGeneratorInt16Fixture : IdFixtureBase
 	{
 		protected override string TypeName
 		{

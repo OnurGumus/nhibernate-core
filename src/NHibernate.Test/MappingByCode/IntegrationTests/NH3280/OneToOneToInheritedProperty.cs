@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3280
 {
 	[TestFixture]
-	public class OneToOneToInheritedProperty : TestCaseMappingByCode
+	public partial class OneToOneToInheritedProperty : TestCaseMappingByCode
 	{
 		private int _person1Id;
 		private int _person2Id;

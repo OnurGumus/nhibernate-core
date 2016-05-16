@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
 	using TestCase=NHibernate.Test.TestCase;
 
 	[TestFixture]
-    public class Fixture : TestCase
+    public partial class Fixture : TestCase
     {
 
         protected override IList Mappings

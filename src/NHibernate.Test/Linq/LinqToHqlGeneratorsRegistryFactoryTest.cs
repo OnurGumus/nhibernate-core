@@ -7,7 +7,7 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.Linq
 {
-	public class LinqToHqlGeneratorsRegistryFactoryTest
+	public partial class LinqToHqlGeneratorsRegistryFactoryTest
 	{
 		[Test]
 		public void WhenNotDefinedThenReturnDefaultRegistry()

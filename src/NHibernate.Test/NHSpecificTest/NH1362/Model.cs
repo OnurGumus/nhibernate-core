@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1362
 {
-	public class ClassA
+	public partial class ClassA
 	{
 		private Guid? _id;
 		private ClassB _b;
@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1362
 		}
 	}
 
-	public class ClassB
+	public partial class ClassB
 	{
 		private Guid? _id;
 
@@ -38,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1362
 		}
 	}
 
-	public class ClassC
+	public partial class ClassC
 	{
 		private Guid? _id;
 

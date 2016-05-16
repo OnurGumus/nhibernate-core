@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH2825
 {
-	public class Parent
+	public partial class Parent
 	{
 		public Parent()
 		{

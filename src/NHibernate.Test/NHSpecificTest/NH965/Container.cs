@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace NHibernate.Test.NHSpecificTest.NH965
 {
-    public class Container
+    public partial class Container
     {
         private int id;
         private IList elements;

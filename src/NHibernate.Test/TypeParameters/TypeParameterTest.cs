@@ -15,7 +15,7 @@ namespace NHibernate.Test.TypeParameters
 	/// Test for parameterizable types.
 	/// </summary>
 	[TestFixture]
-	public class TypeParameterTest : TestCase
+	public partial class TypeParameterTest : TestCase
 	{
 		protected override IList Mappings
 		{

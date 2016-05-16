@@ -1,6 +1,6 @@
 namespace NHibernate.Test.IdTest
 {
-	public class Car
+	public partial class Car
 	{
 		private long id;
 		private string color;

@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq.ByMethod
 {
 	[TestFixture]
-	public class CountTests : LinqTestCase
+	public partial class CountTests : LinqTestCase
 	{
 		protected override void Configure(Configuration configuration)
 		{

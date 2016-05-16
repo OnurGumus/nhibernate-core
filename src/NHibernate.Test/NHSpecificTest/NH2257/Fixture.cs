@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2257
 {
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
 		{

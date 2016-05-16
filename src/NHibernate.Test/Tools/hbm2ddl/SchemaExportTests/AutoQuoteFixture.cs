@@ -10,7 +10,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaExportTests
 {
-	public class AutoQuoteFixture
+	public partial class AutoQuoteFixture
 	{
 		[Test]
 		public void WhenCalledExplicitlyThenTakeInAccountHbm2DdlKeyWordsSetting()

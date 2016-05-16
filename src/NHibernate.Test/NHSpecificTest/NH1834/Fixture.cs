@@ -3,7 +3,7 @@
 namespace NHibernate.Test.NHSpecificTest.NH1834
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override void OnSetUp()
 		{

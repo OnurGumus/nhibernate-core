@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH2195
 {
-	public class DomainClass
+	public partial class DomainClass
 	{
 		private string stringData;
 		private int intData;

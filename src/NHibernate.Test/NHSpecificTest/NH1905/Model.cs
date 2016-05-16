@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1905
 {
-	public class Mas
+	public partial class Mas
 	{
 		private int _Id;
 
@@ -22,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1905
 	}
 
 
-	public class Det
+	public partial class Det
 	{
 		private int _Id;
 		private Mas _Mas;
@@ -40,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1905
 		}
 	}
 
-	public class El
+	public partial class El
 	{
 		private int _Id;
 		private string _Descr;

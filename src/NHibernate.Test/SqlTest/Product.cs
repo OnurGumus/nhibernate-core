@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.SqlTest
 {
-	public class Product
+	public partial class Product
 	{
 		[Serializable]
-		public class ProductIdType
+		public partial class ProductIdType
 		{
 			private string orgid;
 			private string productnumber;

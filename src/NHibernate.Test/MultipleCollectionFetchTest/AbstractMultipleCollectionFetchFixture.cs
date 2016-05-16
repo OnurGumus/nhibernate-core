@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MultipleCollectionFetchTest
 {
-	public abstract class AbstractMultipleCollectionFetchFixture : TestCase
+	public abstract partial class AbstractMultipleCollectionFetchFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1675
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		[Test]
 		public void ShouldWorkUsingDistinctAndLimits()

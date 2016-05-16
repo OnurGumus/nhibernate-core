@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Hql
 {
 	[TestFixture]
-	public class SQLFunctionTemplateTest : BaseFunctionFixture
+	public partial class SQLFunctionTemplateTest : BaseFunctionFixture
 	{
 		[Test]
 		public void Simple()

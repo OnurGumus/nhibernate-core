@@ -3,19 +3,19 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2011
 {
-    public class Order
+    public partial class Order
     {
         public virtual Guid Id { get; set; }
 
         public virtual GroupComponent GroupComponent { get; set; }
     }
 
-    public class GroupComponent
+    public partial class GroupComponent
     {
         public virtual IList<Country> Countries { get; set; }
     }
 
-    public class Country
+    public partial class Country
     {
         public virtual string CountryCode { get; set; }
     } 

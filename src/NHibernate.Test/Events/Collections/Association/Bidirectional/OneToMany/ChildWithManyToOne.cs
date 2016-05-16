@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Events.Collections.Association.Bidirectional.OneToMany
 {
-	public class ChildWithManyToOne : ChildEntity
+	public partial class ChildWithManyToOne : ChildEntity
 	{
 		private IParentWithCollection parent;
 

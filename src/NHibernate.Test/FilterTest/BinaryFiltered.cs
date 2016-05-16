@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.FilterTest
 {
-	public class BinaryFiltered
+	public partial class BinaryFiltered
 	{
 		private int id;
 		private byte[] binValue;

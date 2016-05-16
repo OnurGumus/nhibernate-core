@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.Stateless
 {
 	[TestFixture]
-	public class StatelessWithRelationsFixture : TestCase
+	public partial class StatelessWithRelationsFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

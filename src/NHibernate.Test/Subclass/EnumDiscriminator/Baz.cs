@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.Subclass.EnumDiscriminator
 {
-	public class Baz
+	public partial class Baz
 	{
 		private Int64 id;
 		private Colors color;

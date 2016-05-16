@@ -6,7 +6,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1941
 		Female,
 	}
 
-	public class Person
+	public partial class Person
 	{
 		public virtual int Id { get; set; }
 		public virtual Sex Sex { get; set; }

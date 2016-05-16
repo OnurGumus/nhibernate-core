@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.SystemTransactions
 {
 	[TestFixture]
-	public class TransactionNotificationFixture : TestCase
+	public partial class TransactionNotificationFixture : TestCase
 	{
 		protected override IList Mappings
 		{

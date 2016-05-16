@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Unconstrained
 {
 	[TestFixture]
-	public class UnconstrainedNoLazyTest : TestCase
+	public partial class UnconstrainedNoLazyTest : TestCase
 	{
 		protected override string MappingsAssembly
 		{

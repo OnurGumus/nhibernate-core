@@ -3,7 +3,7 @@ using NHibernate.Test.ProjectionFixtures;
 
 namespace NHibernate.Test.ProjectionFixtures
 {
-    public class TreeNode
+    public partial class TreeNode
     {
         public virtual string Name { get; set; }
         public virtual Key Key { get; set; }

@@ -5,7 +5,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Test.BulkManipulation
 {
-	public class BaseFixture: TestCase
+	public partial class BaseFixture: TestCase
 	{
 		private readonly IDictionary<string, IFilter> emptyfilters = new CollectionHelper.EmptyMapClass<string, IFilter>();
 

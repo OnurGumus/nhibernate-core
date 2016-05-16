@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.QueryTest
 {
 	[TestFixture]
-	public class MultipleQueriesFixture : TestCase
+	public partial class MultipleQueriesFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

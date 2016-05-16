@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 	/// mapping instead of subclass.
 	/// </summary>
 	[TestFixture]
-	public class JoinedSubclassFixture : SubclassFixture
+	public partial class JoinedSubclassFixture : SubclassFixture
 	{
 		protected override IList Mappings
 		{

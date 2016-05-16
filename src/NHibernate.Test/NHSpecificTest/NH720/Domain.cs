@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH720
 {
-	public class FooCacheProvider : ICacheProvider
+	public partial class FooCacheProvider : ICacheProvider
 	{
 		private static readonly ILog log;
 		private static Hashtable caches;
@@ -85,7 +85,7 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 		}
 	}
 
-	public class FooCache : ICache
+	public partial class FooCache : ICache
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(FooCache));
 		private string _region;
@@ -193,7 +193,7 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 		}
 	}
 
-	public class A
+	public partial class A
 	{
 		private int id;
 		private string foo;
@@ -228,7 +228,7 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 		}
 	}
 
-	public class B
+	public partial class B
 	{
 		private int id;
 		private A a;

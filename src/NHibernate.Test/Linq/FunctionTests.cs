@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class FunctionTests : LinqTestCase
+	public partial class FunctionTests : LinqTestCase
 	{
 		[Test]
 		public void LikeFunction()

@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1898
 {
 	[TestFixture]
-	public class SampleTest : BugTestCase
+	public partial class SampleTest : BugTestCase
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{

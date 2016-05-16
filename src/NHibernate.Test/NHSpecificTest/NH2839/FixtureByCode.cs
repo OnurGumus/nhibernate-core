@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2839
 		public virtual bool IsActive { get; set; }
 	}
 
-	public class MyBooleanType : IEnhancedUserType
+	public partial class MyBooleanType : IEnhancedUserType
 	{
 		public SqlType[] SqlTypes
 		{
@@ -98,7 +98,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2839
 		}
 	}
 
-	public class FixtureByCode : TestCaseMappingByCode
+	public partial class FixtureByCode : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{

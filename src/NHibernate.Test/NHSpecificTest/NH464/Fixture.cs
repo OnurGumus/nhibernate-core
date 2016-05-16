@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH464
 	/// This is a test class for composite-element with reflection optimizer
 	/// </summary>
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		public override string BugNumber
 		{

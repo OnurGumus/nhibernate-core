@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 {
-	public class MyProxyImpl: IMyProxy
+	public partial class MyProxyImpl: IMyProxy
 	{
 		[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
 		private static void Level1()

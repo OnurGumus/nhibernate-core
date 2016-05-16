@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH637
 {
-	public class Point
+	public partial class Point
 	{
 		private int x, y;
 
@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH637
 		}
 	}
 
-	public class PointHolder
+	public partial class PointHolder
 	{
 		private int id;
 		private Point point;
@@ -49,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH637
 	}
 
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		[Test]
 		public void MultiColumnBetween()

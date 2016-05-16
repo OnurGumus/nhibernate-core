@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.ExpressionTest
 {
 	[TestFixture]
-	public class RestrictionsFixture
+	public partial class RestrictionsFixture
 	{
 		[Test]
 		public void LikeShouldContainsMatch()

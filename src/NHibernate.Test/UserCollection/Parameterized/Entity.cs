@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.UserCollection.Parameterized
 {
-	public class Entity
+	public partial class Entity
 	{
 		private string name;
 		private IList<string> values = new List<string>();

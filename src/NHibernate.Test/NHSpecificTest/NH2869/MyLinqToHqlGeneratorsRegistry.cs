@@ -3,7 +3,7 @@ using NHibernate.Linq.Functions;
 
 namespace NHibernate.Test.NHSpecificTest.NH2869
 {
-	public class MyLinqToHqlGeneratorsRegistry : DefaultLinqToHqlGeneratorsRegistry
+	public partial class MyLinqToHqlGeneratorsRegistry : DefaultLinqToHqlGeneratorsRegistry
 	{
 		public MyLinqToHqlGeneratorsRegistry()
 		{

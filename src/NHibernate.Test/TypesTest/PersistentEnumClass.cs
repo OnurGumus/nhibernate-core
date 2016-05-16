@@ -2,14 +2,14 @@ using System;
 
 namespace NHibernate.Test.TypesTest
 {
-	public class PersistentEnumHolder
+	public partial class PersistentEnumHolder
 	{
 		public PersistentEnumHolder(A a, B b)
 		{
 		}
 	}
 
-	public class PersistentEnumClass
+	public partial class PersistentEnumClass
 	{
 		private int _id;
 		private A _a;

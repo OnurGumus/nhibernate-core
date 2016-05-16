@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.Join
 {
-	public class EmployeeWithCompositeKey
+	public partial class EmployeeWithCompositeKey
 	{
 		private EmployeeWithCompositeKey() { }
 
@@ -72,7 +72,7 @@ namespace NHibernate.Test.Join
 		}
 	}
 
-	public class EmployeePk
+	public partial class EmployeePk
 	{
 		public EmployeePk() { }
 

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NHibernate.Test.Join
 {
-	public class TennisPlayer
+	public partial class TennisPlayer
 	{
 		public virtual long Id { get; set; }
 		public virtual string Name { get; set; }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.GenericTest.IdBagGeneric
 {
-	public class A
+	public partial class A
 	{
 		private int? _id;
 		private string _name;

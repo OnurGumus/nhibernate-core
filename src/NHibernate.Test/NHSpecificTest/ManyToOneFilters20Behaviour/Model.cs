@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 {
-	public class Parent
+	public partial class Parent
 	{
 		public virtual Guid Id { get; set; }
 		public virtual Child Child { get; set; }
@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 		public virtual string ParentString { get; set; }
 	}
 
-	public class Child
+	public partial class Child
 	{
 		public Child()
 		{
@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 		public virtual string ChildString { get; set; }
 	}
 
-	public class Address
+	public partial class Address
 	{
 		public virtual Guid Id { get; set; }
 		public virtual Parent Parent { get; set; }

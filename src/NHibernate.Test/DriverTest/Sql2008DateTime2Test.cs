@@ -7,14 +7,14 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.DriverTest
 {
-	public class EntityForMs2008
+	public partial class EntityForMs2008
 	{
 		public virtual int Id { get; set; }
 		public virtual DateTime DateTimeProp { get; set; }
 		public virtual TimeSpan TimeSpanProp { get; set; }
 	}
 
-	public class Sql2008DateTime2Test : TestCase
+	public partial class Sql2008DateTime2Test : TestCase
 	{
 		protected override void Configure(Configuration configuration)
 		{

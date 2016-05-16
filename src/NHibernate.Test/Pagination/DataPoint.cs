@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Pagination
 {
-	public class DataPoint
+	public partial class DataPoint
 	{
 		public virtual long Id { get; set; }
 		public virtual double X { get; set; }

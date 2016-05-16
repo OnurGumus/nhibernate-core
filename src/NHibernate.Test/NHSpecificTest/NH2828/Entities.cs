@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2828
 {
-	public class Company
+	public partial class Company
 	{
 		public virtual Guid Id { get; protected set; }
 
@@ -94,7 +94,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2828
 
 	}
 
-	public class Address
+	public partial class Address
 	{
 		public virtual Guid Id { get; protected set; }
 
@@ -121,7 +121,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2828
 
 	}
 
-	public class BankAccount
+	public partial class BankAccount
 	{
 		public virtual Guid Id { get; protected set; }
 		

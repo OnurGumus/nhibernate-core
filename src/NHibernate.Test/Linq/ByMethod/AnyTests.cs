@@ -5,7 +5,7 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq.ByMethod
 {
 	[TestFixture]
-	public class AnyTests : LinqTestCase
+	public partial class AnyTests : LinqTestCase
 	{
 		[Test]
 		public void AnySublist()

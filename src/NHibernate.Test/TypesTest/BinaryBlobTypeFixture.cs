@@ -8,7 +8,7 @@ namespace NHibernate.Test.TypesTest
 	/// Summary description for BinaryBlobTypeFixture.
 	/// </summary>
 	[TestFixture]
-	public class BinaryBlobTypeFixture : TypeFixtureBase
+	public partial class BinaryBlobTypeFixture : TypeFixtureBase
 	{
 		protected override string TypeName
 		{

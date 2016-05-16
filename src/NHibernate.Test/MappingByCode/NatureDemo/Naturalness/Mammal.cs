@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.MappingByCode.NatureDemo.Naturalness
 {
-	public class Mammal : Animal
+	public partial class Mammal : Animal
 	{
 		public Mammal()
 		{

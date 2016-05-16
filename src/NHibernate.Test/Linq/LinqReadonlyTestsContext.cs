@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[SetUpFixture]
-	public class LinqReadonlyTestsContext
+	public partial class LinqReadonlyTestsContext
 	{
 		/// <summary>
 		/// Assembly to load mapping files from

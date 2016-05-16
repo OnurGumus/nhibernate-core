@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.SubclassFilterTest
 {
-	public class Person
+	public partial class Person
 	{
 		private long id;
 		private string name;

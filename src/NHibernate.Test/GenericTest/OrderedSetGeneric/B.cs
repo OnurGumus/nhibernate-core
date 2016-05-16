@@ -1,6 +1,6 @@
 namespace NHibernate.Test.GenericTest.OrderedSetGeneric
 {
-	public class B
+	public partial class B
 	{
 		public virtual int Id { get; set; }
 

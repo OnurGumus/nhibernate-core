@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH3234
 {
-	public class GridLevel
+	public partial class GridLevel
 	{
 		public Guid Id { get; set; }
 	}
 
-	public class GridWidget
+	public partial class GridWidget
 	{
 		public GridWidget()
 		{

@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.CfgTest
 {
-	public class ConfigurationAddMappingEvents
+	public partial class ConfigurationAddMappingEvents
 	{
 		private const string ProductLineMapping =
 			@"<?xml version='1.0' encoding='utf-8' ?>

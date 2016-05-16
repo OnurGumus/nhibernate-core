@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH2043
 {
-    public class A
+    public partial class A
     {
         public virtual int Id { get; set; }
         public virtual string Name { get; set; }
@@ -8,11 +8,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2043
         public virtual B B { get; set; }
     }
 
-    public class AImpl : A
+    public partial class AImpl : A
     {
     }
 
-    public class B
+    public partial class B
     {
         public virtual int Id { get; set; }
         public virtual string Name { get; set; }
@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2043
         public virtual A A { get; set; }
     }
 
-    public class BImpl : B
+    public partial class BImpl : B
     {
     }
 }

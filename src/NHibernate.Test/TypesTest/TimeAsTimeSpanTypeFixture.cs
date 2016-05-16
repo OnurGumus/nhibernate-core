@@ -8,7 +8,7 @@ namespace NHibernate.Test.TypesTest
 	/// Summary description for TimeAsTimeSpanTypeFixture.
 	/// </summary>
 	[TestFixture]
-	public class TimeAsTimeSpanTypeFixture
+	public partial class TimeAsTimeSpanTypeFixture
 	{
 		[Test]
 		public void Next()
@@ -31,7 +31,7 @@ namespace NHibernate.Test.TypesTest
 	}
 
 	[TestFixture]
-	public class TimeSpanFixture2 : TypeFixtureBase
+	public partial class TimeSpanFixture2 : TypeFixtureBase
 	{
 		protected override string TypeName
 		{

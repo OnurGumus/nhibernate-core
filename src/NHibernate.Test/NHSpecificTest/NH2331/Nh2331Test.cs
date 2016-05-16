@@ -6,14 +6,14 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2331
 {
-	public class Bar
+	public partial class Bar
 	{
 		public string Name { get; set; }
 		public double Sum { get; set; }
 	}
 
 	[TestFixture]
-	public class Nh2331Test : BugTestCase
+	public partial class Nh2331Test : BugTestCase
 	{
 		private Guid person0Id;
 		private Guid person1Id;

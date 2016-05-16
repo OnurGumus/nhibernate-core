@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Hql.Ast
 {
-	public class StateProvince
+	public partial class StateProvince
 	{
 		private long id;
 		private string name;

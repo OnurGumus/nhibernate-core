@@ -1,6 +1,6 @@
 namespace NHibernate.Test.CompositeId
 {
-	public class Product
+	public partial class Product
 	{
 		private string productId;
 		private string description;

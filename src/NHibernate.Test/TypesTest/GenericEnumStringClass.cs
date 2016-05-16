@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.TypesTest
 {
-	public class GenericEnumStringClass
+	public partial class GenericEnumStringClass
 	{
 		public virtual int Id
 		{ 

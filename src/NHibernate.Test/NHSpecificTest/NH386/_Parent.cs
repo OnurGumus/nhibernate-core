@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.NHSpecificTest.NH386
 {
 
-	public class _Parent
+	public partial class _Parent
 	{
 		public int _Id { get; set; }
 

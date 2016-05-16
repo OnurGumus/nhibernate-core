@@ -9,7 +9,7 @@ namespace NHibernate.Test.JoinedSubclass
 	/// Test the use of <c>&lt;class&gt;</c> and <c>&lt;joined-subclass&gt;</c> mappings.
 	/// </summary>
 	[TestFixture]
-	public class JoinedSubclassFixture : TestCase
+	public partial class JoinedSubclassFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

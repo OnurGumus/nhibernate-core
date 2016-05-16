@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.SubselectFetchTest
 {
 	[TestFixture]
-	public class SubselectFetchFixture : TestCase
+	public partial class SubselectFetchFixture : TestCase
 	{
 		protected override void Configure(Configuration cfg)
 		{

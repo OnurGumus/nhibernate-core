@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.NH3171
 {
-	public class Artist
+	public partial class Artist
 	{
 		public virtual string Name { get; set; }
 		public virtual Song Song { get; set; }
@@ -30,13 +30,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3171
 		}
 	}
 
-	public class Song
+	public partial class Song
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }
 	}
 
-	public class Country
+	public partial class Country
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }

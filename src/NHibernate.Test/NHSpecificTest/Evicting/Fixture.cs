@@ -5,7 +5,7 @@ using NHibernate.Stat;
 namespace NHibernate.Test.NHSpecificTest.Evicting
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		public override string BugNumber
 		{

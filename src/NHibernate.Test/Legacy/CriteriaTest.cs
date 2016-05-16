@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Legacy
 {
 	[TestFixture]
-	public class CriteriaTest : TestCase
+	public partial class CriteriaTest : TestCase
 	{
 		protected override IList Mappings
 		{

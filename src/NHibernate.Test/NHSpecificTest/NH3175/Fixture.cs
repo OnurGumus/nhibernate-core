@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3175
 {
 	[TestFixture]
-	public class Fixture : TestCaseMappingByCode
+	public partial class Fixture : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{

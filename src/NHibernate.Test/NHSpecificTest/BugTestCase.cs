@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest
 	/// Assumes all mappings are in a single file named <c>Mappings.hbm.xml</c>
 	/// in the subdirectory.
 	/// </summary>
-	public abstract class BugTestCase : TestCase
+	public abstract partial class BugTestCase : TestCase
 	{
 		protected override string MappingsAssembly
 		{

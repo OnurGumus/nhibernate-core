@@ -3,7 +3,7 @@
 namespace NHibernate.Test.NHSpecificTest.NH3372
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{

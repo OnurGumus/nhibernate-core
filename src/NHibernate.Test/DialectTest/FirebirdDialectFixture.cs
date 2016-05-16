@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.DialectTest
 {
 	[TestFixture]
-	public class FirebirdDialectFixture
+	public partial class FirebirdDialectFixture
 	{
 		readonly FirebirdDialect _dialect = new FirebirdDialect();
 

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.ExpressionTest.Projection
 {
-    public class ProjectionTestClass
+    public partial class ProjectionTestClass
     {
         private int _id;
         private double _pay;

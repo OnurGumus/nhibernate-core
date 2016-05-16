@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1642
 {
 	[TestFixture]
-	public class TrafficRuleSetDAOTest : BugTestCase
+	public partial class TrafficRuleSetDAOTest : BugTestCase
 	{
 		private class Scenario : IDisposable
 		{

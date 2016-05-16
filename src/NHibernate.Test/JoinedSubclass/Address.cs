@@ -5,7 +5,7 @@ namespace NHibernate.Test.JoinedSubclass
 	/// <summary>
 	/// An Address that is used as a <c>component</c>.
 	/// </summary>
-	public class Address
+	public partial class Address
 	{
 		private string _street;
 		private string _zip;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1882
 {
-	public class Author
+	public partial class Author
 	{
 		public Author()
 		{

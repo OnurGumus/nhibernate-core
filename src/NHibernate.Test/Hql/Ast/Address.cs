@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Hql.Ast
 {
-	public class Address
+	public partial class Address
 	{
 		private string street;
 		private string city;

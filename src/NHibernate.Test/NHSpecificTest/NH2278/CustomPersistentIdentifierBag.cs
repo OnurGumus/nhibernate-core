@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2278
 {
-	public class CustomPersistentIdentifierBag<T> : PersistentIdentifierBag<T>, ICustomList<T>
+	public partial class CustomPersistentIdentifierBag<T> : PersistentIdentifierBag<T>, ICustomList<T>
 	{
 		public CustomPersistentIdentifierBag(ISessionImplementor session)
 			: base(session)

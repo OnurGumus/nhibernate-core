@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Generatedkeys.Identity
 {
-	public class MyEntity
+	public partial class MyEntity
 	{
 		private long id;
 		private String name;

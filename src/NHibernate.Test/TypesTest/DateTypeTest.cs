@@ -6,7 +6,7 @@ using System;
 
 namespace NHibernate.Test.TypesTest
 {
-	public class DateTypeTest
+	public partial class DateTypeTest
 	{
 		[Test]
 		public void WhenNoParameterThenDefaultValueIsBaseDateValue()
@@ -31,7 +31,7 @@ namespace NHibernate.Test.TypesTest
 		}
 	}
 
-	public class DateTypeFixture : TypeFixtureBase
+	public partial class DateTypeFixture : TypeFixtureBase
 	{
 		protected override string TypeName
 		{

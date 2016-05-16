@@ -3,7 +3,7 @@ using NHibernate.Exceptions;
 
 namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 {
-	public class SqlConverter : ISQLExceptionConverter
+	public partial class SqlConverter : ISQLExceptionConverter
 	{
 		public Exception Convert(AdoExceptionContextInfo adoExceptionContextInfo)
 		{
@@ -11,5 +11,5 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 		}
 	}
 
-	public class UnitTestException : Exception{}
+	public partial class UnitTestException : Exception{}
 }

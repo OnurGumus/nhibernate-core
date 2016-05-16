@@ -9,7 +9,7 @@ namespace NHibernate.Test.UtilityTest
 	/// Tests a Sequenced Identity Map.
 	/// </summary>
 	[TestFixture]
-	public class IdentityMapSequencedFixture : IdentityMapFixture
+	public partial class IdentityMapSequencedFixture : IdentityMapFixture
 	{
 		protected override IDictionary GetIdentityMap()
 		{

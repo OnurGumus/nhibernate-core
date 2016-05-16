@@ -8,7 +8,7 @@ namespace NHibernate.Test.PropertyTest
 	/// Test the <c>nosetter.lowercase</c> access strategy.
 	/// </summary>
 	[TestFixture]
-	public class NoSetterLowerCaseFixture : NoSetterAccessorFixture
+	public partial class NoSetterLowerCaseFixture : NoSetterAccessorFixture
 	{
 		[SetUp]
 		public override void SetUp()

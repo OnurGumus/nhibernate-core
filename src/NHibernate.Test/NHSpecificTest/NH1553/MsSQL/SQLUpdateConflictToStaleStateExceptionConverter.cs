@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 	/// Exception converter to convert SQL Snapshot isolation update conflict to 
 	/// StaleObjectStateException
 	/// </summary>
-	public class SQLUpdateConflictToStaleStateExceptionConverter : ISQLExceptionConverter
+	public partial class SQLUpdateConflictToStaleStateExceptionConverter : ISQLExceptionConverter
 	{
 		public Exception Convert(AdoExceptionContextInfo exInfo)
 		{

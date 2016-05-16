@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH479
 {
-	public class Main
+	public partial class Main
 	{
 		private long id;
 		private Aggregate aggregate;
@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH479
 		}
 	}
 
-	public class Aggregate
+	public partial class Aggregate
 	{
 		private long id;
 		private Main main;

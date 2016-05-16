@@ -3,7 +3,7 @@ using System;
 namespace NHibernate.Test.ReadOnly
 {
 	[Serializable]
-	public class Owner
+	public partial class Owner
 	{
 		private long id;
 		private string name;

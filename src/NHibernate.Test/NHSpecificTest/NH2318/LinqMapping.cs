@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2318
 			throw new NotImplementedException();
 		}
 	}
-	public class TrimGenerator : BaseHqlGeneratorForMethod
+	public partial class TrimGenerator : BaseHqlGeneratorForMethod
 	{
 		public TrimGenerator()
 		{
@@ -50,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2318
 		}
 	}
 
-	public class ExtendedLinqtoHqlGeneratorsRegistry : DefaultLinqToHqlGeneratorsRegistry
+	public partial class ExtendedLinqtoHqlGeneratorsRegistry : DefaultLinqToHqlGeneratorsRegistry
 	{
 		public ExtendedLinqtoHqlGeneratorsRegistry()
 		{

@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Ondelete
 {
-	public class E
+	public partial class E
 	{
 		private int id;
 		private string description;
@@ -24,7 +24,7 @@ namespace NHibernate.Test.Ondelete
 		}
 	}
 
-	public class F : E
+	public partial class F : E
 	{
 		private string color;
 		public F()
@@ -44,7 +44,7 @@ namespace NHibernate.Test.Ondelete
 		}
 	}
 
-	public class G : F
+	public partial class G : F
 	{
 		private string size;
 		public G()

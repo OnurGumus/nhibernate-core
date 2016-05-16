@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1253
 {
-	public class Car
+	public partial class Car
 	{
 		private int _Id;
 		private string _Make;

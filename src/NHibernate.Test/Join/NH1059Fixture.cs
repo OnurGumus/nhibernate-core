@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Join
 {
 	[TestFixture]
-	public class NH1059Fixture : TestCase
+	public partial class NH1059Fixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

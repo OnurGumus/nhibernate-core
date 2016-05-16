@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.UserCollection
 {
-	public class Email
+	public partial class Email
 	{
 		private int id;
 		private string address;

@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.FileStreamSql2008
 	/// http://blogs.msdn.com/manisblog/archive/2007/10/21/filestream-data-type-sql-server-2008.aspx
 	/// </summary>
 	[TestFixture, Explicit]
-	public class Fixture : TestCase
+	public partial class Fixture : TestCase
 	{
 		protected override IList Mappings
 		{

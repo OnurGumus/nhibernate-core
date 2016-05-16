@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2386 {
     [TestFixture]
-    public class Test : BugTestCase {
+    public partial class Test : BugTestCase {
         private MemoryAppender memoryAppender;
 
         protected override bool AppliesTo(Dialect.Dialect dialect)

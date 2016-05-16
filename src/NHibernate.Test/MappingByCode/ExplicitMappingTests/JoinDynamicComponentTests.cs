@@ -8,9 +8,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
 {
-	public class JoinDynamicComponentTests
+	public partial class JoinDynamicComponentTests
 	{
-		public class MyClass
+		public partial class MyClass
 		{
 			public virtual int Code { get; set; }
 			public virtual string JoinedName { get; set; }
@@ -20,12 +20,12 @@ namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
 			public virtual IDictionary JoinedAttributes { get; set; }
 		}
 
-		public class MyOther
+		public partial class MyOther
 		{
 			public int Id { get; set; }
 		}
 
-		public class MyClassMap : ClassMapping<MyClass>
+		public partial class MyClassMap : ClassMapping<MyClass>
 		{
 			public MyClassMap()
 			{

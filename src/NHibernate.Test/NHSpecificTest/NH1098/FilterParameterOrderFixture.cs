@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1098
 {
 	[TestFixture]
-	public class FilterParameterOrderFixture : BugTestCase
+	public partial class FilterParameterOrderFixture : BugTestCase
 	{
 		protected override void OnSetUp()
 		{

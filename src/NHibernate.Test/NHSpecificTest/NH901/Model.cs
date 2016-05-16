@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH901
 {
-	public class Person
+	public partial class Person
 	{
 		protected Person() { }
 

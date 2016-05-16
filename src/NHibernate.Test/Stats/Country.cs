@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Stats
 {
-	public class Country
+	public partial class Country
 	{
 		private int id;
 		private string name;

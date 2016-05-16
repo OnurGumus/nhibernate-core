@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class NestedSelectsTests : LinqTestCase
+	public partial class NestedSelectsTests : LinqTestCase
 	{
 		[Test]
 		public void OrdersIdWithOrderLinesId()

@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 {
 	[TestFixture]
-	public class GenericMethodShouldBeProxied
+	public partial class GenericMethodShouldBeProxied
 	{
 		[Test]
 		public void CanProxyBasicGenericMethod()

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH534
 {
-	public class Base
+	public partial class Base
 	{
 		private int objectId;
 		private int versionCounter;
@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH534
 		}
 	}
 
-	public class Parent : Base
+	public partial class Parent : Base
 	{
 		private ISet<Child> children;
 
@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH534
 		}
 	}
 
-	public class Child : Base
+	public partial class Child : Base
 	{
 		private Parent owner;
 

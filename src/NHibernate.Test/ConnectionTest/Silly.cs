@@ -3,7 +3,7 @@ using System;
 namespace NHibernate.Test.ConnectionTest
 {
 	[Serializable]
-	public class Silly
+	public partial class Silly
 	{
 		private long id;
 		private string name;

@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.EngineTest
 {
 	[TestFixture]
-	public class ParameterParserFixture
+	public partial class ParameterParserFixture
 	{
 		[Test]
 		public void CanFindParameterAfterComment()

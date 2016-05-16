@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.CollectionTest
 {
-	public class A
+	public partial class A
 	{
 		private int? _id;
 		private string _name;

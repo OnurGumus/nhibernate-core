@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.LazyOneToOne
 {
-	public class Employee
+	public partial class Employee
 	{
 		protected Employee()
 		{

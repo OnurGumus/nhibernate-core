@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH593
 {
-	public class Blog
+	public partial class Blog
 	{
 		private ISet<Post> _posts;
 		private ISet<User> _users;
@@ -57,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 		}
 	}
 
-	public class Comment
+	public partial class Comment
 	{
 		private Comment()
 		{
@@ -99,7 +99,7 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 		}
 	}
 
-	public class Post
+	public partial class Post
 	{
 		private int post_id;
 		private IList<Comment> _comments;
@@ -144,7 +144,7 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 		}
 	}
 
-	public class User
+	public partial class User
 	{
 		private string _userName;
 		private int _userId;

@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.ProjectionFixtures
 {
     [TestFixture]
-    public class Fixture : TestCase
+    public partial class Fixture : TestCase
     {
         protected override System.Collections.IList Mappings
         {

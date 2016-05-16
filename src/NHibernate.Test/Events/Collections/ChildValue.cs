@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Events.Collections
 {
-	public class ChildValue: IChild
+	public partial class ChildValue: IChild
 	{
 		private string name;
 		public ChildValue() {}

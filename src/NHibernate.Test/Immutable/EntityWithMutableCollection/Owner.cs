@@ -3,7 +3,7 @@ using System;
 namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 {
 	[Serializable]
-	public class Owner
+	public partial class Owner
 	{
 		private long id;
 		private long version;

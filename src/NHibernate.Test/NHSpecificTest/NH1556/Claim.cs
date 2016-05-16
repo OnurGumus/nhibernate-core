@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH1556
 {
-   public class Claim
+   public partial class Claim
    {
       private Guid id;
       private DateTime lastFilled;

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH1039
 {
-	public class Person
+	public partial class Person
 	{
 		public Person() { }
 		public Person(string id) { this._ID = id; }

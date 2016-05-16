@@ -6,9 +6,9 @@ using NUnit.Framework;
 namespace NHibernate.Test.ReflectionOptimizerTest
 {
 	[TestFixture]
-	public class LcgFixture
+	public partial class LcgFixture
 	{
-		public class NoSetterClass
+		public partial class NoSetterClass
 		{
 			public int Property
 			{
@@ -31,7 +31,7 @@ namespace NHibernate.Test.ReflectionOptimizerTest
 			Assert.Throws<PropertyNotFoundException>(() => new ReflectionOptimizer(typeof(NoSetterClass), getters, setters));
 		}
 
-		public class NoGetterClass
+		public partial class NoGetterClass
 		{
 			public int Property
 			{

@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3110
 {
 	[TestFixture]
-	public class Fixture
+	public partial class Fixture
 	{
 		[Test]
 		public void CanSetPolymorphism()

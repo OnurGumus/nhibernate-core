@@ -8,7 +8,7 @@ using NHibernate.Criterion;
 namespace NHibernate.Test.EntityModeTest.Map.Basic
 {
 	[TestFixture]
-	public class DynamicClassFixture : TestCase
+	public partial class DynamicClassFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

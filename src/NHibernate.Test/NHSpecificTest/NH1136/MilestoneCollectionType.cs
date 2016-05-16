@@ -7,7 +7,7 @@ using NHibernate.UserTypes;
 
 namespace NHibernate.Test.NHSpecificTest.NH1136
 {
-	public class MilestoneCollectionType<TKey, TValue> : IUserCollectionType where TKey : IComparable<TKey>
+	public partial class MilestoneCollectionType<TKey, TValue> : IUserCollectionType where TKey : IComparable<TKey>
 	{
 		public IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
 		{

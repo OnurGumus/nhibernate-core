@@ -10,7 +10,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2673
 {
-	public class CachingWithTransformerTests: TestCaseMappingByCode
+	public partial class CachingWithTransformerTests: TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{

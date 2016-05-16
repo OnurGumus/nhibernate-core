@@ -12,7 +12,7 @@ namespace NHibernate.Test.ExpressionTest
 	/// Summary description for InExpressionFixture.
 	/// </summary>
 	[TestFixture]
-	public class InExpressionFixture : BaseExpressionFixture
+	public partial class InExpressionFixture : BaseExpressionFixture
 	{
 		[Test]
 		public void InSqlStringTest()

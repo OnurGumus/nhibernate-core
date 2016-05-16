@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2394
 		bool IsNice { get; set; }
 	}
 
-	public class A : IA
+	public partial class A : IA
 	{
 		public int? Id { get; set; }
 		public TypeOfA Type { get; set; }

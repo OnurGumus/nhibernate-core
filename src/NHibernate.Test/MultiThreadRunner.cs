@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace NHibernate.Test
 {
-	public class MultiThreadRunner<T>
+	public partial class MultiThreadRunner<T>
 	{
 		public delegate void ExecuteAction(T subject);
 		private readonly int numThreads;

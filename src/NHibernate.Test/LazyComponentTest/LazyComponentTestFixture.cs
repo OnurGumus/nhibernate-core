@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.LazyComponentTest
 {
 	[TestFixture]
-	public class LazyComponentTestFixture : TestCase
+	public partial class LazyComponentTestFixture : TestCase
 	{
 		protected override IList Mappings
 		{

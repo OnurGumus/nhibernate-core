@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.ReadOnly
 {
 	[TestFixture]
-	public class ReadOnlyVersionedNodes : AbstractReadOnlyTest
+	public partial class ReadOnlyVersionedNodes : AbstractReadOnlyTest
 	{
 		protected override string MappingsAssembly
 		{

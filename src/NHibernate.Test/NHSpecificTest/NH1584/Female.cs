@@ -3,7 +3,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1584
 	/// <summary>
 	/// This class assumes that all female cats have a calico coat (which is not actually true).
 	/// </summary>
-	public class Female : Cat
+	public partial class Female : Cat
 	{
 		private Calico _coat;
 

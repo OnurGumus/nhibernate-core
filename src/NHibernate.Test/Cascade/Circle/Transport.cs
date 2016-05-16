@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.Cascade.Circle
 {
-	public class Transport
+	public partial class Transport
 	{
 		private long transportId;
 		private long version;

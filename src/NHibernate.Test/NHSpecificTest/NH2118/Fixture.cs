@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2118
 {
-	public class Person
+	public partial class Person
 	{
 		public virtual int Id { get; set; }
 		public virtual string FirstName { get; set; }
@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2118
 	}
 
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override void OnSetUp()
 		{

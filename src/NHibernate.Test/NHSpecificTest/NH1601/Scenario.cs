@@ -5,7 +5,7 @@ using System.Text;
 namespace NHibernate.Test.NHSpecificTest.NH1601
 {
 
-    public class Scenario
+    public partial class Scenario
     {
 
         protected int _id;

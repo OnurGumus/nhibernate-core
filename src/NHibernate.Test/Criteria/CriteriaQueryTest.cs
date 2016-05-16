@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Criteria
 {
 	[TestFixture]
-	public class CriteriaQueryTest : TestCase
+	public partial class CriteriaQueryTest : TestCase
 	{
 		protected override string MappingsAssembly
 		{

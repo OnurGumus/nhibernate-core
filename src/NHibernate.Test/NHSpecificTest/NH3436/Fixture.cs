@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3436
 {
-	public class Fixture : TestCaseMappingByCode
+	public partial class Fixture : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{
@@ -109,7 +109,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3436
 			}
 		}
 
-		public class TestEntity
+		public partial class TestEntity
 		{
 			public virtual Guid Id { get; set; }
 		}

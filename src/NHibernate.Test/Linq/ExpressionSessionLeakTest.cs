@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
-	public class ExpressionSessionLeakTest : LinqTestCase
+	public partial class ExpressionSessionLeakTest : LinqTestCase
 	{
 		[Test]
 		public void SessionGetsCollected()

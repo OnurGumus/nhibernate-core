@@ -1,6 +1,6 @@
 namespace NHibernate.Test.ReadOnly
 {
-	public class StudentDto
+	public partial class StudentDto
 	{
 		private string studentName;
 		private string courseDescription;

@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2507
     /// Used for testing LINQ queries in NHibernate that compare enumeration values.
     /// </summary>
     [TestFixture]
-    public class Fixture : BugTestCase
+    public partial class Fixture : BugTestCase
     {
         #region BugTestCase Overrides
 

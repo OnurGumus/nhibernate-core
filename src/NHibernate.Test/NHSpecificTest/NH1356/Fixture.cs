@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1356
 {
-	public abstract class Fixture : BugTestCase
+	public abstract partial class Fixture : BugTestCase
 	{
 		[Test]
 		public void CanLoadWithGenericCompositeElement()
@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1356
 	}
 
 	[TestFixture]
-	public class FixtureWithList : Fixture
+	public partial class FixtureWithList : Fixture
 	{
 		protected override IList Mappings
 		{
@@ -57,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1356
 	}
 
 	[TestFixture]
-	public class FixtureWithBag : Fixture
+	public partial class FixtureWithBag : Fixture
 	{
 		protected override IList Mappings
 		{
@@ -71,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1356
 	}
 
 	[TestFixture]
-	public class FixtureWithSet : Fixture
+	public partial class FixtureWithSet : Fixture
 	{
 		protected override IList Mappings
 		{

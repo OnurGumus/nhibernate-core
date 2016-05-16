@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.Properties
 {
 	[TestFixture]
-	public class DynamicEntityTest : BugTestCase
+	public partial class DynamicEntityTest : BugTestCase
 	{
 		protected override void OnSetUp()
 		{

@@ -8,7 +8,7 @@ namespace NHibernate.Test.PropertyTest
 	/// Summary description for FieldCamelCaseFixture.
 	/// </summary>
 	[TestFixture]
-	public class FieldCamelCaseFixture : FieldAccessorFixture
+	public partial class FieldCamelCaseFixture : FieldAccessorFixture
 	{
 		[SetUp]
 		public override void SetUp()

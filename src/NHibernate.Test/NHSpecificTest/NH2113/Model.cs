@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH2113
 {
-	public class Loan
+	public partial class Loan
 	{
         public virtual Broker Broker{ get; set;}
         public virtual Group Group { get; set; }
@@ -30,11 +30,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2113
 	    }
 	} 
 
-    public class Group
+    public partial class Group
     {
         public virtual int Id { get; set; }
     }
-    public class Broker
+    public partial class Broker
     {
         public virtual Key Key { get; set; }
 
@@ -58,7 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2113
             return (Key != null ? Key.GetHashCode() : 0);
         }
     }
-    public class Key
+    public partial class Key
     {
         public int Id { get; set; }
         public int BankId { get; set; }

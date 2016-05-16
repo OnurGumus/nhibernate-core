@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH276.JoinedSubclass
 {
-	public class AbstractRequest
+	public partial class AbstractRequest
 	{
 		private int _requestId;
 		private Status _status;

@@ -9,7 +9,7 @@ namespace NHibernate.Test.CompositeId
 	/// Summary description for ClassWithCompositeIdFixture.
 	/// </summary>
 	[TestFixture]
-	public class ClassWithCompositeIdFixture : TestCase
+	public partial class ClassWithCompositeIdFixture : TestCase
 	{
 		private DateTime firstDateTime = new DateTime(2003, 8, 16);
 		private DateTime secondDateTime = new DateTime(2003, 8, 17);

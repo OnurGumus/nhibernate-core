@@ -6,7 +6,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH3121
 {
-	public class Report
+	public partial class Report
 	{
 		public virtual Guid Id { get; set; }
 

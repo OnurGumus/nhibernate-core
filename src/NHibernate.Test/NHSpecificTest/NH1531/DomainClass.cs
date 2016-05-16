@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH1531
 {
-	public class Parent
+	public partial class Parent
 	{
 		private readonly IList<Child> _children = new List<Child>();
 
@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1531
 		}
 	}
 
-	public class Child
+	public partial class Child
 	{
 		public int Id { get; set; }
 

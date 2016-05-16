@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH3800
 {
-	public class Project
+	public partial class Project
 	{
 		public Project()
 		{
@@ -17,14 +17,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3800
 		public virtual IList<Component> Components { get; set; }
 	}
 
-	public class Component
+	public partial class Component
 	{
 		public virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }
 		public virtual Project Project { get; set; }
 	}
 
-	public class TimeRecord
+	public partial class TimeRecord
 	{
 		public TimeRecord()
 		{
@@ -40,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3800
 
 	}
 
-	public class Tag
+	public partial class Tag
 	{
 		public virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }

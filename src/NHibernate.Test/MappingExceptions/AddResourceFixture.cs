@@ -9,7 +9,7 @@ namespace NHibernate.Test.MappingExceptions
 	/// Summary description for AddResourceFixture.
 	/// </summary>
 	[TestFixture]
-	public class AddResourceFixture
+	public partial class AddResourceFixture
 	{
 		[Test]
 		public void ResourceNotFound()

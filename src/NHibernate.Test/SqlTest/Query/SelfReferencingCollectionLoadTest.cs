@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.SqlTest.Query
 {
 	[TestFixture]
-	public class SelfReferencingCollectionLoadTest : TestCase
+	public partial class SelfReferencingCollectionLoadTest : TestCase
 	{
 		protected override IList Mappings
 		{

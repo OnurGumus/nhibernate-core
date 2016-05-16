@@ -5,7 +5,7 @@ namespace NHibernate.Test.CompositeId
 	/// <summary>
 	/// Summary description for Id.
 	/// </summary>
-	public class Id
+	public partial class Id
 	{
 		private string _keyString;
 		private short _keyShort;

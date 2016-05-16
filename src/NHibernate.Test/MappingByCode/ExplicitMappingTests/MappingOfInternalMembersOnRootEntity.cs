@@ -6,9 +6,9 @@ using NUnit.Framework;
 namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
 {
 	[TestFixture]
-	public class MappingOfInternalMembersOnRootEntity
+	public partial class MappingOfInternalMembersOnRootEntity
 	{
-		public class MyClass
+		public partial class MyClass
 		{
 			protected internal int _id;
 			protected internal int _version;

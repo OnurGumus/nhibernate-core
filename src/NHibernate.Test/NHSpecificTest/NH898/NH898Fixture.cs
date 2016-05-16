@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH898
 {
 	[TestFixture]
-	public class NH898Fixture : BugTestCase
+	public partial class NH898Fixture : BugTestCase
 	{
 		protected override IList Mappings
 		{

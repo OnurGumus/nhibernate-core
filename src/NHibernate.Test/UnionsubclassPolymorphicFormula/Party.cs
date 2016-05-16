@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NHibernate.Test.UnionsubclassPolymorphicFormula
 {
-	public abstract class Party
+	public abstract partial class Party
 	{
 		public virtual long Id { get; protected internal set; }
 		public abstract string Name { get; }

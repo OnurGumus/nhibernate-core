@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2189
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		private Guid _policy2Id;
 

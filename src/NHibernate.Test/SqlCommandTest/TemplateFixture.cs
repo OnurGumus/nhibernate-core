@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.SqlCommandTest
 {
 	[TestFixture]
-	public class TemplateFixture
+	public partial class TemplateFixture
 	{
 		private Dialect.Dialect dialect;
 		private SQLFunctionRegistry functionRegistry;

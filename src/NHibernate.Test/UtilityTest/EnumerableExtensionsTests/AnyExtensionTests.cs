@@ -6,7 +6,7 @@ using NHibernate.Util;
 namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 {
 	[TestFixture]
-	public class AnyExtensionTests
+	public partial class AnyExtensionTests
 	{
 		[Test]
 		public void WhenEmptyListThenReturnFalse()

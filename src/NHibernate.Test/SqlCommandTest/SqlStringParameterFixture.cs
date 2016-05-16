@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.SqlCommandTest
 {
 	[TestFixture]
-	public class SqlStringParameterFixture
+	public partial class SqlStringParameterFixture
 	{
 		/*
 		 * "The equals() method implements an equivalence relation: 

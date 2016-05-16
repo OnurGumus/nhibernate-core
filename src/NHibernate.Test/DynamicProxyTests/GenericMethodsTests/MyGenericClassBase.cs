@@ -1,6 +1,6 @@
 namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 {
-	public class MyGenericClassBase<TId, T2>
+	public partial class MyGenericClassBase<TId, T2>
 	{
 		public virtual TRequestedType As4<TRequestedType>() where TRequestedType : MyGenericClass<TId>
 		{

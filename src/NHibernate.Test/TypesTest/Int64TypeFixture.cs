@@ -11,7 +11,7 @@ namespace NHibernate.Test.TypesTest
 	/// Summary description for Int64TypeFixture.
 	/// </summary>
 	[TestFixture]
-	public class Int64TypeFixture: TestCase
+	public partial class Int64TypeFixture: TestCase
 	{
 		[Test]
 		public void Next()

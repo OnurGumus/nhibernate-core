@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 
 namespace NHibernate.Test.NHSpecificTest.NH1421
 {
-	public class Fixture: BugTestCase
+	public partial class Fixture: BugTestCase
 	{
 		[Test]
 		public void WhenParameterListIsEmptyArrayUsingQueryThenDoesNotTrowsNullReferenceException()

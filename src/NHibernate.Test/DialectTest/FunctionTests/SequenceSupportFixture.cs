@@ -11,7 +11,7 @@ namespace NHibernate.Test.DialectTest.FunctionTests
 	/// really implement all related methods.
 	/// </summary>
 	[TestFixture]
-	public class SequenceSupportFixture
+	public partial class SequenceSupportFixture
 	{
 		/// <summary>
 		/// Test case data source for DialectSupportingSequencesMustFullfillSequenceContract().

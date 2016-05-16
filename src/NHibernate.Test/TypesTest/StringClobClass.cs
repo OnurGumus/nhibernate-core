@@ -5,7 +5,7 @@ namespace NHibernate.Test.TypesTest
 	/// <summary>
 	/// Summary description for StringClobClass.
 	/// </summary>
-	public class StringClobClass
+	public partial class StringClobClass
 	{
 		private int _id;
 		private string _clob;

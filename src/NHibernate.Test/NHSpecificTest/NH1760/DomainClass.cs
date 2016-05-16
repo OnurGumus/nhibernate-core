@@ -2,19 +2,19 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH1760
 {
-	public class Customer
+	public partial class Customer
 	{
 		public virtual Int32 Id { get; set; }
 		public virtual String Name { get; set; }
 	}
 
-	public class TestClass
+	public partial class TestClass
 	{
 		public virtual TestClassId Id { get; set; }
 		public virtual String Value { get; set; }
 	}
 
-	public class TestClassId
+	public partial class TestClassId
 	{
 		public virtual Customer Customer { get; set; }
 		public virtual Int32 SomeInt { get; set; }

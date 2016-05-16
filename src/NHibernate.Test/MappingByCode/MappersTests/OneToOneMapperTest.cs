@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
-	public class OneToOneMapperTest
+	public partial class OneToOneMapperTest
 	{
 		private class MyClass
 		{

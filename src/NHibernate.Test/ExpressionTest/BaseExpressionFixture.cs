@@ -12,7 +12,7 @@ namespace NHibernate.Test.ExpressionTest
 	/// <summary>
 	/// Contains all of the base functionality for the ExpressionFixtures.
 	/// </summary>
-	public class BaseExpressionFixture
+	public partial class BaseExpressionFixture
 	{
 		protected ISessionFactory factory;
 		protected ISessionFactoryImplementor factoryImpl;

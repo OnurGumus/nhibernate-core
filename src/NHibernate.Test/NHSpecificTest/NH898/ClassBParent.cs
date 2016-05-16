@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH898
 {
-	public abstract class ClassBParent
+	public abstract partial class ClassBParent
 	{
 		private int id;
 		public virtual int Id

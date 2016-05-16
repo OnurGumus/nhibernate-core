@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.SqlTest.Query
 {
-	public class Item
+	public partial class Item
 	{
 		private int id;
 		private int alternativeItemId;

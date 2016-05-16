@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1291AnonExample
 {
 	[TestFixture]
-	public class NH1291AnonExampleFixture : BugTestCase
+	public partial class NH1291AnonExampleFixture : BugTestCase
 	{
 		public override string BugNumber
 		{

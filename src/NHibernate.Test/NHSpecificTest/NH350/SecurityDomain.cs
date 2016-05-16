@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH350
 {
-	public class SecurityDomain
+	public partial class SecurityDomain
 	{
 		private long m_ID = -1L;
 		private string m_Name;

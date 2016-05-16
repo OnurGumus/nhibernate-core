@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Unconstrained
 {
-	public class Employee
+	public partial class Employee
 	{
 		private string _id;
 

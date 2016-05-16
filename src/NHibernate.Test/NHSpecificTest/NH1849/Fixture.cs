@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1849
 {
-	public class CustomDialect : MsSql2005Dialect
+	public partial class CustomDialect : MsSql2005Dialect
 	{
 		public CustomDialect()
 		{
@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1849
 	}
 
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		private bool _OrignalDialectIsMsSql2005Dialect;
 

@@ -3,7 +3,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.DtcFailures
 {
-	public class Person
+	public partial class Person
 	{
 		private int id;
 

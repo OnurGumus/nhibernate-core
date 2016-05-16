@@ -5,7 +5,7 @@ using NHibernate.Cfg.Loquacious;
 
 namespace NHibernate.Test.Hql.Ast
 {
-	public class QuerySubstitutionTest: BaseFixture
+	public partial class QuerySubstitutionTest: BaseFixture
 	{
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{

@@ -7,7 +7,7 @@ namespace NHibernate.Test.UtilityTest
 	/// will have side effects on Collections/Entities.
 	/// </summary>
 	[Serializable]
-	public class NoHashCode
+	public partial class NoHashCode
 	{
 		public override int GetHashCode()
 		{

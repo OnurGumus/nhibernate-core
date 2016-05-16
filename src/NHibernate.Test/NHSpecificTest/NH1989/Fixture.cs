@@ -10,7 +10,7 @@ using NHibernate.Engine;
 namespace NHibernate.Test.NHSpecificTest.NH1989
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override bool AppliesTo(ISessionFactoryImplementor factory)
 		{

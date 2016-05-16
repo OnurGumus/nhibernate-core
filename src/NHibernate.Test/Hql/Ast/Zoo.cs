@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Hql.Ast
 {
-	public class Zoo
+	public partial class Zoo
 	{
 		private long id;
 		private string name;
@@ -96,5 +96,5 @@ namespace NHibernate.Test.Hql.Ast
 		}
 	}
 
-	public class PettingZoo : Zoo { }
+	public partial class PettingZoo : Zoo { }
 }

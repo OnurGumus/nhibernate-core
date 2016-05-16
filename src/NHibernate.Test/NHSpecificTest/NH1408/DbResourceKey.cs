@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1408
 {
-	public class DbResourceKey : Entity
+	public partial class DbResourceKey : Entity
 	{
 		private readonly object[] keys = new object[2];
 		private DbResource resource;

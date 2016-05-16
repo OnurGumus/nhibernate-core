@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Hql
 {
-	public class BaseFunctionFixture
+	public partial class BaseFunctionFixture
 	{
 		protected ISessionFactory factory;
 		protected ISessionFactoryImplementor factoryImpl;

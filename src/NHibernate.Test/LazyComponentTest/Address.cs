@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NHibernate.Test.LazyComponentTest
 {
-	public class Address
+	public partial class Address
 	{
 		public virtual string Country { get; set; }
 		public virtual string City { get; set; }

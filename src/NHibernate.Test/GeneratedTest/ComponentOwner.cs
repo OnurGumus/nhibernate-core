@@ -1,6 +1,6 @@
 namespace NHibernate.Test.GeneratedTest
 {
-	public class ComponentOwner
+	public partial class ComponentOwner
 	{
 		private long id;
 		private string name;

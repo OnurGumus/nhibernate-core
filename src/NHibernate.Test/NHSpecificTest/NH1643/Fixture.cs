@@ -5,7 +5,7 @@ using NHibernate.Stat;
 namespace NHibernate.Test.NHSpecificTest.NH1643
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		public override string BugNumber
 		{

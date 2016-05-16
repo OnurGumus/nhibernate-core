@@ -5,12 +5,12 @@ using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2569
 {
-	public class MyClass
+	public partial class MyClass
 	{
 		public virtual int Id { get; set; }
 	}
 
-	public class Fixture
+	public partial class Fixture
 	{
 		[Test]
 		public void WhenMapHiloToDifferentSchemaThanClassThenIdHasTheMappedSchema()

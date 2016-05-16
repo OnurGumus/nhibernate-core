@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq.ByMethod
 {
 	[TestFixture]
-	public class AverageTests : LinqTestCase
+	public partial class AverageTests : LinqTestCase
 	{
 		[Test]
 		public void CanGetAverageOfIntegersAsDouble()

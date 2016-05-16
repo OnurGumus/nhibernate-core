@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest
 	/// would fail.
 	/// </remarks>
 	[TestFixture]
-	public class BasicObjectFixture : TestCase
+	public partial class BasicObjectFixture : TestCase
 	{
 		protected override IList Mappings
 		{

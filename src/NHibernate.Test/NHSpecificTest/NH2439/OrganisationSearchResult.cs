@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH2439
 {
-	public class OrganisationSearchResult
+	public partial class OrganisationSearchResult
 	{
 		protected virtual Guid Id { get; set; }
 

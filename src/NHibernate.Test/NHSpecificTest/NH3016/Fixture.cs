@@ -5,7 +5,7 @@ using NHibernate.Cfg;
 namespace NHibernate.Test.NHSpecificTest.NH3016
 {
 	[TestFixture]
-	public class Fixture
+	public partial class Fixture
 	{
 		[Test]
 		public void ShouldAllowMappingComponentAsIdWithNestedClass()

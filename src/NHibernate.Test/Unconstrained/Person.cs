@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.Unconstrained
 {
-	public class Person
+	public partial class Person
 	{
 		private string _name;
 		private string _employeeId;

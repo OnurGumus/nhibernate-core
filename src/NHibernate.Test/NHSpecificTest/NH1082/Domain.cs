@@ -1,7 +1,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH1082
 {
-	public class C
+	public partial class C
 	{
 		private int id;
 		private string value;

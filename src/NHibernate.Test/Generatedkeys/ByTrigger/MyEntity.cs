@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Generatedkeys.ByTrigger
 {
-	public class MyEntity
+	public partial class MyEntity
 	{
 		public virtual int Id { get; protected set; }
 

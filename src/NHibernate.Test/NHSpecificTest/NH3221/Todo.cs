@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH3221
 {
-	public class Todo : IEquatable<Todo>
+	public partial class Todo : IEquatable<Todo>
 	{
 		protected Todo() { }
 

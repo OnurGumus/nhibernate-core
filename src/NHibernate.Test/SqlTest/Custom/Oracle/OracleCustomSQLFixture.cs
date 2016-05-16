@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.SqlTest.Custom.Oracle
 {
 	[TestFixture]
-	public class OracleCustomSQLFixture : CustomStoredProcSupportTest
+	public partial class OracleCustomSQLFixture : CustomStoredProcSupportTest
 	{
 		protected override IList Mappings
 		{

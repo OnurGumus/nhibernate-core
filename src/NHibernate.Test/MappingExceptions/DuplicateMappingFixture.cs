@@ -6,7 +6,7 @@ namespace NHibernate.Test.MappingExceptions
 {
 	//NH-674
 	[TestFixture]
-	public class DuplicateMappingFixture
+	public partial class DuplicateMappingFixture
 	{
 		[Test]
 		public void MappingTheSameClassTwiceShouldThrowException()

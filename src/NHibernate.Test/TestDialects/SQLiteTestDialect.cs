@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NHibernate.Test.TestDialects
 {
-	public class SQLiteTestDialect : TestDialect
+	public partial class SQLiteTestDialect : TestDialect
 	{
         public SQLiteTestDialect(Dialect.Dialect dialect)
             : base(dialect)

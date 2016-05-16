@@ -1,6 +1,6 @@
 ﻿namespace NHibernate.Test.NHSpecificTest.NH1508
 {
-	public class Document
+	public partial class Document
 	{
 		private int id;
 		private Person person;

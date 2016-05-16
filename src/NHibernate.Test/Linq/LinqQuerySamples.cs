@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class LinqQuerySamples : LinqTestCase
+	public partial class LinqQuerySamples : LinqTestCase
 	{
 		[Test]
 		public void GroupTwoQueriesAndSum()
@@ -1622,7 +1622,7 @@ namespace NHibernate.Test.Linq
 		}
 	}
 
-	public class ParentChildBatch<T, TKey, TSub>
+	public partial class ParentChildBatch<T, TKey, TSub>
 	{
 		public T Item { get; private set; }
 		public SubQueryBatcher<T, TKey, TSub> Batcher { get; private set; }
@@ -1634,7 +1634,7 @@ namespace NHibernate.Test.Linq
 		}
 	}
 
-	public class SubQueryBatcher<T, TKey, TSub>
+	public partial class SubQueryBatcher<T, TKey, TSub>
 	{
 		private readonly IEnumerable<T> _inputStream;
 		private readonly Func<T, TKey> _keySelector;
@@ -1705,7 +1705,7 @@ namespace NHibernate.Test.Linq
 		}
 	}
 
-	public class Name
+	public partial class Name
 	{
 		public string FirstName;
 		public string LastName;

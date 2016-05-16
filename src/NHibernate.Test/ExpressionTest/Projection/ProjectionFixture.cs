@@ -11,7 +11,7 @@ namespace NHibernate.Test.ExpressionTest.Projection
     using NHibernate.Dialect.Function;
 
 	[TestFixture]
-	public class ProjectionFixture : BaseExpressionFixture
+	public partial class ProjectionFixture : BaseExpressionFixture
 	{
 		[Test]
 		public void RowCountTest()

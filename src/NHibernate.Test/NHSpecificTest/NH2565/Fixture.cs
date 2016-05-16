@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2565
 {
-	public class Fixture: BugTestCase
+	public partial class Fixture: BugTestCase
 	{
 		private class TaskSavedScenario: IDisposable
 		{

@@ -16,7 +16,7 @@ namespace NHibernate.Test.DialectTest
 	/// Summary description for DialectFixture.
 	/// </summary>
 	[TestFixture]
-	public class DialectFixture
+	public partial class DialectFixture
 	{
 		protected Dialect.Dialect d = null;
 

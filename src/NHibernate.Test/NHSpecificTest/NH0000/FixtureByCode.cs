@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH0000
 	/// by code in the GetMappings method, and does not require the <c>Mappings.hbm.xml</c> file. Use this approach
 	/// if you prefer.
 	/// </remarks>
-	public class ByCodeFixture : TestCaseMappingByCode
+	public partial class ByCodeFixture : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{

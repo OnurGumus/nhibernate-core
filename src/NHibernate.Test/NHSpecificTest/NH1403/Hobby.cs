@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1403
 {
-	public class Hobby
+	public partial class Hobby
 	{
 		private int id;
 		private string name;

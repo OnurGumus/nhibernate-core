@@ -11,13 +11,13 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3405
 {
-	public class XmlTest
+	public partial class XmlTest
 	{
 		public virtual Int32 Id { get; set; }
 		public virtual XDocument Data { get; set; }
 	}
 
-	public class Fixture : TestCaseMappingByCode
+	public partial class Fixture : TestCaseMappingByCode
 	{
 		protected override void Configure(Configuration configuration)
 		{

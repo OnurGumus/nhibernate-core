@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1927
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
         private static readonly DateTime MAX_DATE = new DateTime(3000, 1, 1);
         private static readonly DateTime VALID_DATE = new DateTime(2000, 1, 1);

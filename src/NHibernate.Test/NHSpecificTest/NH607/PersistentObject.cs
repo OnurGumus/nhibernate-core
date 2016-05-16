@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH607
 {
-	public abstract class PersistentObject
+	public abstract partial class PersistentObject
 	{
 		private int id;
 

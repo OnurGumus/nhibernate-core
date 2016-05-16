@@ -3,7 +3,7 @@ using System.Transactions;
 
 namespace NHibernate.Test.NHSpecificTest.NH2420
 {
-	public class DummyEnlistment : IEnlistmentNotification
+	public partial class DummyEnlistment : IEnlistmentNotification
 	{
 		public static readonly Guid Id = new Guid("E2D35055-4187-4ff5-82A1-F1F161A008D0");
 

@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH266
 {
 	[TestFixture]
-	public class UserFixture : TestCase
+	public partial class UserFixture : TestCase
 	{
 		private static int activeId = 1;
 		private static int inactiveId = 2;

@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 namespace NHibernate.Test.NHSpecificTest.NH1785
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		[Test]
 		public void Bug()

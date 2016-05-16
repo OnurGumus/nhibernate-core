@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 {
 	[Serializable]
-	public class Party
+	public partial class Party
 	{
 		private long id;
 		private long version;

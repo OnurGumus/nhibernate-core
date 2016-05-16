@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2673
 {
-	public class Blog
+	public partial class Blog
 	{
 		public Blog()
 		{
@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 		public virtual ISet<Comment> Comments { get; set; }
 	}
 
-	public class Post
+	public partial class Post
 	{
 		public virtual int Id { get; protected set; }
 		public virtual string Title { get; set; }
@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 	}
 
 
-	public class Comment
+	public partial class Comment
 	{
 		public virtual int Id { get; protected set; }
 		public virtual string Title { get; set; }

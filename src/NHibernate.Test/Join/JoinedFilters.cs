@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Join
 {
 	[TestFixture]
-	public class JoinedFilters : TestCase
+	public partial class JoinedFilters : TestCase
 	{
 		protected override IList Mappings
 		{

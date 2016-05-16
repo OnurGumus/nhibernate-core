@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2703
 {
-	public class Parent
+	public partial class Parent
 	{
 		private IList<A> a = new List<A>();
 		private IList<B> b = new List<B>();
@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2703
 		}
 	}
 
-	public class A
+	public partial class A
 	{
 		private int id;
 
@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2703
 		public virtual string PropA { get; set; }
 	}
 
-	public class B
+	public partial class B
 	{
 		private int id;
 
@@ -60,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2703
 		public virtual string PropB { get; set; }
 	}
 
-	public class C
+	public partial class C
 	{
 		private int id;
 

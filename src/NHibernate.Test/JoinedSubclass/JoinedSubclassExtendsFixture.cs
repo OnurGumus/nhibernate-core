@@ -13,7 +13,7 @@ namespace NHibernate.Test.JoinedSubclass
 	/// is how the classes are mapped.
 	/// </remarks>
 	[TestFixture]
-	public class JoinedSubclassExtendsFixture : JoinedSubclassFixture
+	public partial class JoinedSubclassExtendsFixture : JoinedSubclassFixture
 	{
 		protected override IList Mappings
 		{

@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Naturalid.Immutable
 {
-	public class User
+	public partial class User
 	{
 		private int myUserId;
 		private int version;

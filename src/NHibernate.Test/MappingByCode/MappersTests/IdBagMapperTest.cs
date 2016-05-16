@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
-	public class IdBagMapperTest
+	public partial class IdBagMapperTest
 	{
 		private class Animal
 		{

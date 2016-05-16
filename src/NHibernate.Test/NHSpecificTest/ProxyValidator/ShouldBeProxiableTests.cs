@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 {
-	public class ShouldBeProxiableTests
+	public partial class ShouldBeProxiableTests
 	{
 		private class MyClass: IDisposable
 		{

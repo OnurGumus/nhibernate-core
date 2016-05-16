@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH508
 {
-	public class User
+	public partial class User
 	{
 		private int userId;
 		private string login;

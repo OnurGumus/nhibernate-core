@@ -6,7 +6,7 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Test.NHSpecificTest.NH1082
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		public override string BugNumber
 		{
@@ -70,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 
 	[TestFixture]
 	[Obsolete("Can be removed when Environment.InterceptorsBeforeTransactionCompletionIgnoreExceptions is removed.")]
-	public class OldBehaviorEnabledFixture : BugTestCase
+	public partial class OldBehaviorEnabledFixture : BugTestCase
 	{
 		public override string BugNumber
 		{

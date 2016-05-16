@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.UtilityTest
 {
 	[TestFixture]
-	public class TypeNameParserFixture
+	public partial class TypeNameParserFixture
 	{
 		private static void CheckInput(string input, string expectedType, string expectedAssembly)
 		{
@@ -195,12 +195,12 @@ namespace NHibernate.Test.UtilityTest
 			Assert.AreEqual(expectedType, tn.Type + ", " + tn.Assembly, "Type name should match");
 		}
 
-		public class MyGClass<T>
+		public partial class MyGClass<T>
 		{
 			
 		}
 
-		public class MyComplexClass<T1, T2, T3>
+		public partial class MyComplexClass<T1, T2, T3>
 		{
 
 		}
@@ -268,14 +268,14 @@ namespace NHibernate.Test.UtilityTest
 
 		private class A<T>
 		{
-			public class B { }
+			public partial class B { }
 		}
 
 		private class Aa<T>
 		{
-			public class Bb<TX, TJ, TZ>
+			public partial class Bb<TX, TJ, TZ>
 			{
-				public class C { }
+				public partial class C { }
 			}
 		}
 

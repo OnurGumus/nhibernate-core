@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest
 	/// Tests loading of collections very simply.
 	/// </summary>
 	[TestFixture]
-	public class CollectionFixture : TestCase
+	public partial class CollectionFixture : TestCase
 	{
 		protected override IList Mappings
 		{

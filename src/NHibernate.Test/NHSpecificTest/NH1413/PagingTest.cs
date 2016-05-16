@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1413
 {
 	[TestFixture]
-	public class PagingTest : BugTestCase
+	public partial class PagingTest : BugTestCase
 	{
 		[Test]
 		public void Bug()

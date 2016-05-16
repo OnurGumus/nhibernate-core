@@ -6,7 +6,7 @@ using NHibernate.UserTypes;
 namespace NHibernate.Test.SqlTest
 {
 	[Serializable]
-	public class MonetaryAmountUserType : IUserType
+	public partial class MonetaryAmountUserType : IUserType
 	{
 		private static readonly SqlType[] MySqlTypes = {SqlTypeFactory.Decimal, SqlTypeFactory.GetString(3)};
 

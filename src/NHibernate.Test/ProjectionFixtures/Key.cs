@@ -1,6 +1,6 @@
 namespace NHibernate.Test.ProjectionFixtures
 {
-    public class Key
+    public partial class Key
     {
         public virtual int Id { get; set; }
         public virtual int Area { get; set; }

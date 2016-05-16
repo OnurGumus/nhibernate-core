@@ -5,7 +5,7 @@ namespace NHibernate.Test.Subclass
 	/// <summary>
 	/// Summary description for SubclassBase.
 	/// </summary>
-	public class SubclassBase
+	public partial class SubclassBase
 	{
 		private int _id = 0;
 		private long _testLong;

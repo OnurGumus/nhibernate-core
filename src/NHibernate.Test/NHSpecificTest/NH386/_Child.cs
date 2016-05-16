@@ -5,7 +5,7 @@ using System;
 // ReSharper disable InconsistentNaming
 namespace NHibernate.Test.NHSpecificTest.NH386
 {
-	public class _Child
+	public partial class _Child
 	{
 		public int _Id { get; set; }
 	}

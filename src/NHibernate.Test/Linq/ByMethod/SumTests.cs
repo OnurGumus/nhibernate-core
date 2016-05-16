@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq.ByMethod
 {
 	[TestFixture]
-	public class SumTests : LinqTestCase
+	public partial class SumTests : LinqTestCase
 	{
 		[Test]
 		[ExpectedException]

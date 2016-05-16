@@ -7,7 +7,7 @@ using System.Text;
 namespace NHibernate.Test.NHSpecificTest.NH3666
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override void OnSetUp()
 		{

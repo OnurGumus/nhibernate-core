@@ -11,7 +11,7 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Test.Linq
 {
-	public class CustomQueryModelRewriterTests : LinqTestCase
+	public partial class CustomQueryModelRewriterTests : LinqTestCase
 	{
 		protected override void Configure(Cfg.Configuration configuration)
 		{
@@ -32,7 +32,7 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Serializable]
-		public class QueryModelRewriterFactory : IQueryModelRewriterFactory
+		public partial class QueryModelRewriterFactory : IQueryModelRewriterFactory
 		{
 			public QueryModelVisitorBase CreateVisitor(VisitorParameters parameters)
 			{
@@ -40,7 +40,7 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
-		public class CustomVisitor : QueryModelVisitorBase
+		public partial class CustomVisitor : QueryModelVisitorBase
 		{
 			public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
 			{

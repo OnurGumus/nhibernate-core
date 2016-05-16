@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.EntityModeTest.Multi
 {
-	public class Valuation
+	public partial class Valuation
 	{
 		public virtual long Id { get; set; }
 

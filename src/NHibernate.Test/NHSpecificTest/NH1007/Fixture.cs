@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1007
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		[Test]
 		public void TestIdGeneratorAttributeMappingOnIdentifier()

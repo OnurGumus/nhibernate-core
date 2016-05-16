@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 {
-	public class GetFirstImplementorTest
+	public partial class GetFirstImplementorTest
 	{
 		private interface IInterfaceNoImpl
 		{

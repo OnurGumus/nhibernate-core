@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Unionsubclass
 {
-	public class Hive
+	public partial class Hive
 	{
 		private long id;
 		private Location location;

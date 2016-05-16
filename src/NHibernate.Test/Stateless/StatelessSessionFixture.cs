@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Stateless
 {
 	[TestFixture]
-	public class StatelessSessionFixture : TestCase
+	public partial class StatelessSessionFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

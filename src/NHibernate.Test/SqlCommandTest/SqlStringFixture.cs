@@ -11,7 +11,7 @@ namespace NHibernate.Test.SqlCommandTest
 	/// Summary description for SqlStringFixture.
 	/// </summary>
 	[TestFixture]
-	public class SqlStringFixture
+	public partial class SqlStringFixture
 	{
 
 		//[Test]

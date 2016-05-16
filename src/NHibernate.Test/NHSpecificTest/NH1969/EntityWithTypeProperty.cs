@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Author : Stephane Verlet
 	/// </summary>
-	public class EntityWithTypeProperty
+	public partial class EntityWithTypeProperty
 	{
 		public int Id { get; set; }
 

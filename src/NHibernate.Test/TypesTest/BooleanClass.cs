@@ -5,7 +5,7 @@ namespace NHibernate.Test.TypesTest
 	/// <summary>
 	/// Summary description for BooleanClass.
 	/// </summary>
-	public class BooleanClass
+	public partial class BooleanClass
 	{
 		private int _id;
 		private bool _booleanValue;

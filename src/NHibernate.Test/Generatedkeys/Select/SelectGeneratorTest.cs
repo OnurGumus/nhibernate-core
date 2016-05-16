@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Generatedkeys.Select
 {
 	[TestFixture]
-	public class SelectGeneratorTest: TestCase
+	public partial class SelectGeneratorTest: TestCase
 	{
 		protected override IList Mappings
 		{

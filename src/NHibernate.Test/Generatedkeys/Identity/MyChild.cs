@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.Generatedkeys.Identity
 {
-	public class MyChild
+	public partial class MyChild
 	{
 		private long id;
 		private string name;

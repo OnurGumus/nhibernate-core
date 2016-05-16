@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest
 	/// Tests for mapping a type="Time" for a DateTime Property to a database field.
 	/// </summary>
 	[TestFixture]
-	public class BasicTimeFixture : TestCase
+	public partial class BasicTimeFixture : TestCase
 	{
 		protected override IList Mappings
 		{

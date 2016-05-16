@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
-	public class QueryTimeoutTests : LinqTestCase
+	public partial class QueryTimeoutTests : LinqTestCase
 	{
 		protected override void Configure(Configuration configuration)
 		{
@@ -70,7 +70,7 @@ namespace NHibernate.Test.Linq
 		}
 
 
-		public class TimeoutCatchingNonBatchingBatcher : NonBatchingBatcher
+		public partial class TimeoutCatchingNonBatchingBatcher : NonBatchingBatcher
 		{
 			// Is there an easier way to inspect the DbCommand instead of
 			// creating a custom batcher?
@@ -91,7 +91,7 @@ namespace NHibernate.Test.Linq
 		}
 
 
-		public class TimeoutCatchingNonBatchingBatcherFactory : IBatcherFactory
+		public partial class TimeoutCatchingNonBatchingBatcherFactory : IBatcherFactory
 		{
 			public IBatcher CreateBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
 			{

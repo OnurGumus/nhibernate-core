@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.QueryTest
 {
 	[TestFixture]
-	public class AggregateReturnTypesFixture : TestCase
+	public partial class AggregateReturnTypesFixture : TestCase
 	{
 		protected override IList Mappings
 		{

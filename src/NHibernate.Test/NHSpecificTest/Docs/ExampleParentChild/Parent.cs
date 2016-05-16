@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild
 {
-	public class Parent
+	public partial class Parent
 	{
 		private long _id;
 		private ISet<Child> _children;

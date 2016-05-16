@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
-	public class BagCollectionTests
+	public partial class BagCollectionTests
 	{
 		// match any IEnumerable
 		private class Entity

@@ -6,9 +6,9 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq.ByMethod
 {
 	[TestFixture]
-	public class DistinctTests : LinqTestCase
+	public partial class DistinctTests : LinqTestCase
 	{
-		public class OrderDto
+		public partial class OrderDto
 		{
 			public string ShipCountry { get; set; }
 			public DateTime? ShippingDate { get; set; }

@@ -10,7 +10,7 @@ using NHibernate.Criterion;
 namespace NHibernate.Test.NHSpecificTest.NH2113
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 
         [Test]

@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1963
 {
     [TestFixture]
-    public class CacheableQueryOnByteArray : BugTestCase
+    public partial class CacheableQueryOnByteArray : BugTestCase
     {
         protected override void OnSetUp()
         {

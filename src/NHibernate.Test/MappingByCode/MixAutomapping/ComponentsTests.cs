@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
-	public class ComponentsTests
+	public partial class ComponentsTests
 	{
 		// a class without Poid is a Component
 		private class AComponent

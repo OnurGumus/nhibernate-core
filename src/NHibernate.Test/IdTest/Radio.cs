@@ -1,6 +1,6 @@
 namespace NHibernate.Test.IdTest
 {
-	public class Radio
+	public partial class Radio
 	{
 		private int id;
 		private string frequency;

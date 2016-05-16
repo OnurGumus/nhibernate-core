@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Linq.ByMethod
 {
-	public class CastTests : LinqTestCase
+	public partial class CastTests : LinqTestCase
 	{
 		[Test]
 		public void CastCount()

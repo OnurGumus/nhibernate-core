@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Stats
 {
-	public class Continent
+	public partial class Continent
 	{
 		private int id;
 		private string name;

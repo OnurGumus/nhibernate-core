@@ -8,7 +8,7 @@ namespace NHibernate.Test.TypesTest
 	/// The Unit Tests for the DecimalType
 	/// </summary>
 	[TestFixture]
-	public class DecimalTypeFixture : TypeFixtureBase
+	public partial class DecimalTypeFixture : TypeFixtureBase
 	{
 		protected override string TypeName
 		{

@@ -1,6 +1,6 @@
 ﻿namespace NHibernate.Test.Criteria
 {
-	public class CourseMeeting 
+	public partial class CourseMeeting 
 	{
 		private CourseMeetingId id;
 		private Course course;

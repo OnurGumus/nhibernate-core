@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 {
 	[TestFixture]
-	public class NH1274ExportExcludeFixture
+	public partial class NH1274ExportExcludeFixture
 	{
 		[Test]
 		public void SchemaExport_Drop_CreatesDropScript()

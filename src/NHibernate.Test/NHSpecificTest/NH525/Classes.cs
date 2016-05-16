@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH525
 {
-	public abstract class AbstractBase
+	public abstract partial class AbstractBase
 	{
 		private int id;
 
@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH525
 		public abstract int AbstractMethod();
 	}
 
-	public class NonAbstract : AbstractBase
+	public partial class NonAbstract : AbstractBase
 	{
 		public const int AbstractMethodResult = 10;
 

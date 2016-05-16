@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test
 {
 	[TestFixture]
-	public class ConventionsTestCase
+	public partial class ConventionsTestCase
 	{
 		[Test]
 		public void NHibernate_should_be_cls_compliant()

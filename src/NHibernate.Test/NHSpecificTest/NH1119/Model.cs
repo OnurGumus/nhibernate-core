@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH1119
 {
-	public class TestClass
+	public partial class TestClass
 	{
 		private int _ID;
 		public virtual int ID

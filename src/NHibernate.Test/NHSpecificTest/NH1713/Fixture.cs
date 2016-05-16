@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1713
 {
 	[TestFixture, Ignore("Should be fixed in some way.")]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		/* NOTE
 		 * This test should be fixed in some way at least to support Money.

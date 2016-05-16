@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH1831
 {
-	public class DocumentType
+	public partial class DocumentType
 	{
 		Guid oid;
 		SystemAction systemAction = 0;

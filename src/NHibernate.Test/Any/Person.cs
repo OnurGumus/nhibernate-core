@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Any
 {
-	public class Person
+	public partial class Person
 	{
 		private object data;
 		private long id;

@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.UtilityTest
 {
-	public class ReflectionHelperTest
+	public partial class ReflectionHelperTest
 	{
 		private class MyClass
 		{

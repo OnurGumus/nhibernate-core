@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 {
 	[Serializable]
-	public class ContractVariation
+	public partial class ContractVariation
 	{
 		private int id;
 		private Contract contract;

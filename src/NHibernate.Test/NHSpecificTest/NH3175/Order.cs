@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH3175
 {
-	public class Order
+	public partial class Order
 	{
 		private readonly IEnumerable<OrderLine> _orderLines = new List<OrderLine>();
 		public virtual Guid Id { get; set; }
@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3175
 		}
 	}
 
-	public class OrderLine
+	public partial class OrderLine
 	{
 		public virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }

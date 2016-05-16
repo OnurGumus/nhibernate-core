@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.DriverTest
 {
 	[TestFixture]
-	public class FirebirdClientDriverFixture
+	public partial class FirebirdClientDriverFixture
 	{
 		private string _connectionString;
 		private FirebirdClientDriver _driver;
@@ -233,7 +233,7 @@ namespace NHibernate.Test.DriverTest
 
 			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
 		}
-		private IDbCommand BuildInsertWithParamsInSelectCommandWithSelectInColumnName(SqlType paramType)
+		private DbCommand BuildInsertWithParamsInSelectCommandWithSelectInColumnName(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
 				.Add("insert into table1 (col1_select_aaa) ")
@@ -245,7 +245,7 @@ namespace NHibernate.Test.DriverTest
 			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType });
 		}
 
-        private IDbCommand BuildInsertWithParamsInSelectCommandWithWhereInColumnName(SqlType paramType)
+		private DbCommand BuildInsertWithParamsInSelectCommandWithWhereInColumnName(SqlType paramType)
 		{
 			var sqlString = new SqlStringBuilder()
 				.Add("insert into table1 (col1_where_aaa) ")

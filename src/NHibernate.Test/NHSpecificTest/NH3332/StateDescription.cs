@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH3332
 {
-	public class StateDescription
+	public partial class StateDescription
 	{
 		private Culture _culture;
 		private State _state;

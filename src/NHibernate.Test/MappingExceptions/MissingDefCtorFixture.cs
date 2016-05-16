@@ -9,7 +9,7 @@ namespace NHibernate.Test.MappingExceptions
 	/// ctor is readable and understandable.
 	/// </summary>
 	[TestFixture]
-	public class MissingDefCtorFixture
+	public partial class MissingDefCtorFixture
 	{
 		[Test]
 		public void ClassMissingDefaultCtor()

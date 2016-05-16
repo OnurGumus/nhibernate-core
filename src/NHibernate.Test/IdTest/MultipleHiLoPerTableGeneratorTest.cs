@@ -5,7 +5,7 @@ namespace NHibernate.Test.IdTest
 {
 	[TestFixture]
 	[Ignore("Not supported yet")]
-	public class MultipleHiLoPerTableGeneratorTest : TestCase
+	public partial class MultipleHiLoPerTableGeneratorTest : TestCase
 	{
 		protected override string MappingsAssembly
 		{

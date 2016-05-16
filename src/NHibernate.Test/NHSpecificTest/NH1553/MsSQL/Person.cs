@@ -3,7 +3,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 	/// <summary>
 	/// A simple entity for the test.
 	/// </summary>
-	public class Person
+	public partial class Person
 	{
 		public virtual long Id { get; set; }
 

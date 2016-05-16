@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.MappingExceptions
 {
 	[TestFixture]
-	public class PropertyNotFoundExceptionFixture
+	public partial class PropertyNotFoundExceptionFixture
 	{
 		[Test]
 		public void MisspelledPropertyName()

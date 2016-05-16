@@ -23,7 +23,7 @@ namespace NHibernate.Test.Linq
 		}
 	}
 
-	public class FreetextGenerator : BaseHqlGeneratorForMethod
+	public partial class FreetextGenerator : BaseHqlGeneratorForMethod
 	{
 		public FreetextGenerator()
 		{
@@ -42,9 +42,9 @@ namespace NHibernate.Test.Linq
 	}
 
 	[TestFixture]
-	public class BooleanMethodExtensionExample : LinqTestCase
+	public partial class BooleanMethodExtensionExample : LinqTestCase
 	{
-		public class MyLinqToHqlGeneratorsRegistry : DefaultLinqToHqlGeneratorsRegistry
+		public partial class MyLinqToHqlGeneratorsRegistry : DefaultLinqToHqlGeneratorsRegistry
 		{
 			public MyLinqToHqlGeneratorsRegistry()
 			{

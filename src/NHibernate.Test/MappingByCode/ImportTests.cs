@@ -4,11 +4,11 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode
 {
-	public class Dto { }
+	public partial class Dto { }
 
-	public class Entity { }
+	public partial class Entity { }
 
-	public class ImportTest
+	public partial class ImportTest
 	{
 		[Test]
 		public void ImportClass()

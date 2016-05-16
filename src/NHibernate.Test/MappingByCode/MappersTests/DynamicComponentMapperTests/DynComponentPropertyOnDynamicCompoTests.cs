@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 {
-	public class DynComponentPropertyOnDynamicCompoTests
+	public partial class DynComponentPropertyOnDynamicCompoTests
 	{
 		private class Person
 		{

@@ -8,7 +8,7 @@ using NHibernate.Test.MappingByCode.IntegrationTests.NH3041;
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3657
 {
 	[TestFixture]
-	public class OneToOneToPropertyReferenceWithExplicitClassSet : TestCaseMappingByCode
+	public partial class OneToOneToPropertyReferenceWithExplicitClassSet : TestCaseMappingByCode
 	{
 		protected override void OnSetUp()
 		{

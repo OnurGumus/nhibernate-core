@@ -2,13 +2,13 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH2469
 {
-	public class Entity1
+	public partial class Entity1
 	{
 		public virtual Guid Id { get; set; }
 		public virtual int Foo { get; set; }
 	}
 
-	public class Entity2
+	public partial class Entity2
 	{
 		public virtual Entity1 Entity1 { get; set; }
 

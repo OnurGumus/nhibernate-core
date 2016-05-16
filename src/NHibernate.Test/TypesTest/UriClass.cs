@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.TypesTest
 {
-	public class UriClass
+	public partial class UriClass
 	{
 		public int Id { get; set; }
 		public Uri Url { get; set; }

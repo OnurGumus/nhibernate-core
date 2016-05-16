@@ -5,7 +5,7 @@ using NHibernate.Mapping;
 
 namespace NHibernate.Test.NHSpecificTest.NH1939
 {
-	public class AuxType : AbstractAuxiliaryDatabaseObject
+	public partial class AuxType : AbstractAuxiliaryDatabaseObject
 	{
 
 		override public string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH607
 {
-	public class PackageItem : PersistentObject
+	public partial class PackageItem : PersistentObject
 	{
 		private IList<PPP> ppps;
 		private Package package;

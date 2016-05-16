@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode
 {
-	public class ModelExplicitDeclarationsHolderMergeTest
+	public partial class ModelExplicitDeclarationsHolderMergeTest
 	{
 		private class ExplicitDeclarationsHolderMock: IModelExplicitDeclarationsHolder
 		{

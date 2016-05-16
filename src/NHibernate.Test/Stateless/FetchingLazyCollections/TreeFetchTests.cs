@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Stateless.FetchingLazyCollections
 {
-	public class TreeFetchTests : TestCaseMappingByCode
+	public partial class TreeFetchTests : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{

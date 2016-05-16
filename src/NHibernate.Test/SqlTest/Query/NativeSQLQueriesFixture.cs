@@ -7,7 +7,7 @@ using NHibernate.Criterion;
 namespace NHibernate.Test.SqlTest.Query
 {
 	[TestFixture]
-	public class GeneralTest : TestCase
+	public partial class GeneralTest : TestCase
 	{
 		protected const string OrganizationFetchJoinEmploymentSQL =
 			"SELECT org.ORGID as {org.id}, " +

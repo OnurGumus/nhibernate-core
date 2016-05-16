@@ -3,7 +3,7 @@
 namespace NHibernate.Test.Criteria
 {
 	[Serializable]
-	public class CourseMeetingId
+	public partial class CourseMeetingId
 	{
 		private string courseCode;
 		private string day;

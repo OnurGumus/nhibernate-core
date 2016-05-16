@@ -1,6 +1,6 @@
 namespace NHibernate.Test.TransformTests
 {
-	public class Simple
+	public partial class Simple
 	{
 		public virtual string Name { get; set; }
 	}

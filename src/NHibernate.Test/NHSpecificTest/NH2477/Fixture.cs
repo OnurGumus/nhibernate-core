@@ -7,14 +7,14 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2477
 {
-	public class Something
+	public partial class Something
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }
 	}
 
 	[TestFixture, Ignore("Not fixed yet.")]
-	public class Fixture: TestCaseMappingByCode
+	public partial class Fixture: TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{

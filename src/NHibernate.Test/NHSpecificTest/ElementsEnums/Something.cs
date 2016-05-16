@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.ElementsEnums
 		A,B,C,D,E,F
 	}
 
-	public class SimpleWithEnums
+	public partial class SimpleWithEnums
 	{
 		public virtual Something Something { get; set; }
 		public virtual IList<Something> Things { get; set; }

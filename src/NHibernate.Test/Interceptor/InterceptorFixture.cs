@@ -5,7 +5,7 @@ using NHibernate.Type;
 namespace NHibernate.Test.Interceptor
 {
 	[TestFixture]
-	public class InterceptorFixture : TestCase
+	public partial class InterceptorFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

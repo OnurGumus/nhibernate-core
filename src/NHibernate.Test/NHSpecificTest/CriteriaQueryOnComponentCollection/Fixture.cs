@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 {
 	[TestFixture]
-	public class Fixture : TestCase
+	public partial class Fixture : TestCase
 	{
 		protected override void Configure(Configuration configuration)
 		{

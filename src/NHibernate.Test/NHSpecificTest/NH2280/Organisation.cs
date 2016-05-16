@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH2280
 {
-    public class Organisation
+    public partial class Organisation
     {
         public virtual Guid OrganisationId { get; set; }
 

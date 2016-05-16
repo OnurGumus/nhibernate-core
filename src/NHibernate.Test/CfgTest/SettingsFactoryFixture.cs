@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.CfgTest
 {
 	[TestFixture]
-	public class SettingsFactoryFixture
+	public partial class SettingsFactoryFixture
 	{
 		[Test]
 		public void DefaultValueForKeyWords()

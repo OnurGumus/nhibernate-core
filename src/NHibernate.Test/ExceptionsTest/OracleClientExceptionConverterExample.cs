@@ -4,7 +4,7 @@ using NHibernate.Exceptions;
 
 namespace NHibernate.Test.ExceptionsTest
 {
-	public class OracleClientExceptionConverterExample : ISQLExceptionConverter
+	public partial class OracleClientExceptionConverterExample : ISQLExceptionConverter
 	{
 		#region ISQLExceptionConverter Members
 

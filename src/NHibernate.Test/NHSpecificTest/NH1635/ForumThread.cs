@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1635
 {
-	public class ForumThread
+	public partial class ForumThread
 	{
 		public ForumThread()
 		{

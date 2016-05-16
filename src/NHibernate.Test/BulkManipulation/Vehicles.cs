@@ -1,6 +1,6 @@
 namespace NHibernate.Test.BulkManipulation
 {
-	public class Vehicle
+	public partial class Vehicle
 	{
 		private long id;
 		private string vin;
@@ -25,19 +25,19 @@ namespace NHibernate.Test.BulkManipulation
 		}
 	}
 
-	public class Car : Vehicle
+	public partial class Car : Vehicle
 	{
 	}
 
-	public class Truck : Vehicle
+	public partial class Truck : Vehicle
 	{
 	}
 
-	public class Pickup : Truck
+	public partial class Pickup : Truck
 	{
 	}
 
-	public class SUV : Truck
+	public partial class SUV : Truck
 	{
 	}
 }

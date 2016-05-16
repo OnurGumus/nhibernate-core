@@ -5,7 +5,7 @@ namespace NHibernate.Test.TypesTest
 	/// <summary>
 	/// Summary description for ByteClass.
 	/// </summary>
-	public class ByteClass
+	public partial class ByteClass
 	{
 		private int _id;
 		private byte _byteValue;

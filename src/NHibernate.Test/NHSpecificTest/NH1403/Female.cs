@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1403
 {
-	public class Female : Person
+	public partial class Female : Person
 	{
 		public Female() {}
 

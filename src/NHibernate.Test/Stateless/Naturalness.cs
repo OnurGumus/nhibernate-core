@@ -3,25 +3,25 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Stateless
 {
-	public abstract class Animal
+	public abstract partial class Animal
 	{
 		public virtual int Id { get; protected set; }
 		public virtual string Description { get; set; }
 	}
 
-	public class Reptile: Animal
+	public partial class Reptile: Animal
 	{
 		public virtual float BodyTemperature { get; set; }
 	}
 
-	public class Human : Animal
+	public partial class Human : Animal
 	{
 		public virtual string Name { get; set; }
 		public virtual string NickName { get; set; }
 		public virtual DateTime Birthdate { get; set; }
 	}
 
-	public class Family<T> where T: Animal
+	public partial class Family<T> where T: Animal
 	{
 		private ISet<T> childs;
 

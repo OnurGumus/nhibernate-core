@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Events.PostEvents
 {
 	[TestFixture]
-	public class PostUpdateFixture : TestCase
+	public partial class PostUpdateFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

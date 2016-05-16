@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Ado
 {
-	public class VerySimple
+	public partial class VerySimple
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }

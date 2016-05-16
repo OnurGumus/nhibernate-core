@@ -5,7 +5,7 @@ namespace NHibernate.Test.CompositeId
 	/// <summary>
 	/// Summary description for ClassWithCompositeId.
 	/// </summary>
-	public class ClassWithCompositeId
+	public partial class ClassWithCompositeId
 	{
 		private Id _id;
 		private int _oneProperty;

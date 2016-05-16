@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.CacheTest
 {
 	[TestFixture]
-	public class FilterKeyFixture: TestCase
+	public partial class FilterKeyFixture: TestCase
 	{
 		protected override string MappingsAssembly
 		{

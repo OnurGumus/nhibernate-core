@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH1349
 {
-	public class Services
+	public partial class Services
 	{
 		private int id;
 		private int companyCount;

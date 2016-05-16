@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH930
 {
 	[TestFixture]
-	public class NH930Fixture
+	public partial class NH930Fixture
 	{
 		[Test]
 		public void DuplicateConstraints()

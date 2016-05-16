@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
-	public class PolymorphicPropertiesMapping
+	public partial class PolymorphicPropertiesMapping
 	{
 		const BindingFlags RootClassPropertiesBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
 	
@@ -25,7 +25,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			string Description { get;}
 		}
 
-		private abstract class BaseProduct : BaseEntity, IProduct
+		private abstract partial class BaseProduct : BaseEntity, IProduct
 		{
 			public abstract string Description { get;  }
 		}

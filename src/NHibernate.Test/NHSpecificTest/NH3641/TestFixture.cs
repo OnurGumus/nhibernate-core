@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3641
 {
-	public class TestFixture : BugTestCase
+	public partial class TestFixture : BugTestCase
 	{
 		protected override void OnSetUp()
 		{

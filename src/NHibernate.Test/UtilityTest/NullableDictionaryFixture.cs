@@ -8,7 +8,7 @@ namespace NHibernate.Test.UtilityTest
 	/// Tests for NullableDictionary.
 	/// </summary>
 	[TestFixture]
-	public class NullableDictionaryFixture
+	public partial class NullableDictionaryFixture
 	{
 		private NullableDictionary<string, string> nullableDictionary;
 

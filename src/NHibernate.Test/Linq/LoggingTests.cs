@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class LoggingTests : LinqTestCase
+	public partial class LoggingTests : LinqTestCase
 	{
 		[Test]
 		public void PageBetweenProjections()

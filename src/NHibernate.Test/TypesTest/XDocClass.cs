@@ -2,7 +2,7 @@ using System.Xml.Linq;
 
 namespace NHibernate.Test.TypesTest
 {
-	public class XDocClass
+	public partial class XDocClass
 	{
 		public int Id { get; set; }
 		public XDocument Document { get; set; }

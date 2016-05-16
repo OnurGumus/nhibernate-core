@@ -10,7 +10,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 	using Criterion;
 
 	[TestFixture]
-	public class SecondLevelCacheTest : TestCase
+	public partial class SecondLevelCacheTest : TestCase
 	{
 		protected override string MappingsAssembly
 		{

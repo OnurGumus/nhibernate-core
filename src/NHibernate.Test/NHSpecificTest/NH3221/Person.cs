@@ -4,7 +4,7 @@ using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH3221
 {
-	public class Person : EqualityAndHashCodeProvider<Person, Guid>
+	public partial class Person : EqualityAndHashCodeProvider<Person, Guid>
 	{
 		private readonly ISet<Todo> todos;
 

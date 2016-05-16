@@ -3,7 +3,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH2189
 {
-	public class Policy
+	public partial class Policy
 	{
 		public Policy()
 		{
@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 		public virtual ISet<Task> Tasks { get; protected set; }
 	}
 
-	public class Task
+	public partial class Task
 	{
 		public virtual Guid Id { get; protected set; }
 		public virtual string TaskName { get; set; }
@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 		public virtual TeamMember TeamMember { get; set; }
 	}
 
-	public class TeamMember
+	public partial class TeamMember
 	{
 		public virtual Guid Id { get; protected set; }
 		public virtual string Name { get; set; }

@@ -8,7 +8,7 @@ namespace NHibernate.Test.TypesTest
 	/// Summary description for SByteTypeFixture.
 	/// </summary>
 	[TestFixture]
-	public class SByteTypeFixture
+	public partial class SByteTypeFixture
 	{
 		[Test]
 		public void Equals()

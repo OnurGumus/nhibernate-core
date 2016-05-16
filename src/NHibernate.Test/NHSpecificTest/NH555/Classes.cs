@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH555
 		Pending = 1
 	}
 
-	public class Article
+	public partial class Article
 	{
 		private int _id;
 		private string _name;
@@ -48,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.NH555
 		#endregion
 	}
 
-	public class Customer
+	public partial class Customer
 	{
 		private int _id;
 		private string _name;
@@ -86,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH555
 		}
 	}
 
-	public class Order
+	public partial class Order
 	{
 		private int _id;
 		private DateTime _orderDate;
@@ -155,7 +155,7 @@ namespace NHibernate.Test.NHSpecificTest.NH555
 		}
 	}
 
-	public class OrderLine
+	public partial class OrderLine
 	{
 		private int _id = -1;
 		private int _articleId;

@@ -7,7 +7,7 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.CfgTest
 {
-	public class CustomBytecodeProviderTest
+	public partial class CustomBytecodeProviderTest
 	{
 		private class MyByteCodeProvider : AbstractBytecodeProvider
 		{

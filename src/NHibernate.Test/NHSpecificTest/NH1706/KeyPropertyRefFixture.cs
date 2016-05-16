@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1706
 {
 	[TestFixture]
-	public class KeyPropertyRefFixture : BugTestCase
+	public partial class KeyPropertyRefFixture : BugTestCase
 	{
 		[Test]
 		public void PropertyRefUsesOtherColumn()

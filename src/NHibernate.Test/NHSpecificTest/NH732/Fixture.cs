@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH732
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
@@ -55,7 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH732
 		}
 	}
 
-	public class CaseInsensitiveStringType : IEnhancedUserType
+	public partial class CaseInsensitiveStringType : IEnhancedUserType
 	{
 		public SqlType[] SqlTypes
 		{
@@ -138,7 +138,7 @@ namespace NHibernate.Test.NHSpecificTest.NH732
 		}
 	}
 	
-	public class User
+	public partial class User
 	{
 		string userName;
 
@@ -157,7 +157,7 @@ namespace NHibernate.Test.NHSpecificTest.NH732
 		}
 	}
 
-	public class UserToRole
+	public partial class UserToRole
 	{
 		int id;
 
@@ -192,7 +192,7 @@ namespace NHibernate.Test.NHSpecificTest.NH732
 		}
 	}
 
-	public class Role
+	public partial class Role
 	{
 		string roleName;
 		ISet<UserToRole> roleToUsers;

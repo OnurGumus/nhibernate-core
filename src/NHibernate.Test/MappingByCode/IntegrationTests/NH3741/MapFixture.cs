@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3741
 {
 	[TestFixture]
-	public class MapFixture
+	public partial class MapFixture
 	{
 		[Test]
 		public void TestMapManyToManyGenericCollectionBasedOnInterface()

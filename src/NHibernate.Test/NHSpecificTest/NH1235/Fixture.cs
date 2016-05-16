@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1235
 {
-	public class SomeClass
+	public partial class SomeClass
 	{
 		private int id;
 		private string name;
@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1235
 	}
 
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		public override string BugNumber
 		{

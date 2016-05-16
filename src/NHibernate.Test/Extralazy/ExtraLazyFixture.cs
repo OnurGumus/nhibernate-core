@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Extralazy
 {
 	[TestFixture]
-	public class ExtraLazyFixture : TestCase
+	public partial class ExtraLazyFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

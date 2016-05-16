@@ -1,6 +1,6 @@
 ﻿namespace NHibernate.Test.NHSpecificTest.NH2907
 {
-	public class Group
+	public partial class Group
 	{
 		public Group()
 		{

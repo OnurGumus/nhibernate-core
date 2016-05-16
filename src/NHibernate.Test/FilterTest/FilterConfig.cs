@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.FilterTest
 {
 	[TestFixture]
-	public class FilterConfig
+	public partial class FilterConfig
 	{
 		private string mappingCfg = "NHibernate.Test.FilterTest.FilterMapping.hbm.xml";
 

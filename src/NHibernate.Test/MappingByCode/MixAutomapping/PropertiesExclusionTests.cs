@@ -4,9 +4,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
-	public class PropertiesExclusionTests
+	public partial class PropertiesExclusionTests
 	{
-		public class MyEntity
+		public partial class MyEntity
 		{
 			private string noReadOnlyWithField = null;
 #pragma warning disable 169

@@ -6,7 +6,7 @@ using NHibernate.UserTypes;
 
 namespace NHibernate.Test.NHSpecificTest.DataReaderWrapperTest
 {
-	public class TheUserType : IUserType
+	public partial class TheUserType : IUserType
 	{
 		public SqlType[] SqlTypes
 		{

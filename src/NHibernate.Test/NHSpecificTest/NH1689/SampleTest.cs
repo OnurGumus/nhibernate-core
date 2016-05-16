@@ -5,7 +5,7 @@
 	using NUnit.Framework;
 
 	[TestFixture]
-	public class SampleTest : BugTestCase
+	public partial class SampleTest : BugTestCase
 	{
 		protected override void OnSetUp()
 		{

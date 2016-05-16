@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH2761
 {
-	public class A
+	public partial class A
 	{
 		public Int32 Id
 		{

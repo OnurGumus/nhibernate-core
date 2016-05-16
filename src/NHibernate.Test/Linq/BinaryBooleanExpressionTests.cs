@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
     [TestFixture]
-    public class BinaryBooleanExpressionTests : LinqTestCase
+    public partial class BinaryBooleanExpressionTests : LinqTestCase
     {
         [Test]
         public void TimesheetsWithEqualsTrue()

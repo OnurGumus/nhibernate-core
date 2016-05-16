@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2202
 {
-	public class Employee
+	public partial class Employee
 	{
 		private ISet<EmployeeAddress> _addresses;
 
@@ -46,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2202
 		}
 	}
 
-	public class EmployeeAddress
+	public partial class EmployeeAddress
 	{
 		public virtual Employee Employee { get; set; }
 		public virtual string Type { get; set; }

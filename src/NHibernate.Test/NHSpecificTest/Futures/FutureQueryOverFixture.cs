@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.Futures
 {
 	[TestFixture]
-	public class FutureQueryOverFixture : FutureFixture
+	public partial class FutureQueryOverFixture : FutureFixture
 	{
 
 		protected override void OnSetUp()

@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class CasingTest : LinqTestCase
+	public partial class CasingTest : LinqTestCase
 	{
 		[Test]
 		public void ToUpper()

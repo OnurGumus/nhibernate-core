@@ -1,6 +1,6 @@
 namespace NHibernate.Test
 {
-	public class RecordingInterceptor : EmptyInterceptor
+	public partial class RecordingInterceptor : EmptyInterceptor
 	{
 		public int afterTransactionBeginCalled;
 		public int afterTransactionCompletionCalled;

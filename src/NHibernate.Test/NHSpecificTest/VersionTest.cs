@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest
 {
 	[TestFixture]
-	public class VersionTest
+	public partial class VersionTest
 	{
 		[Test]
 		public void UnsavedNegativeIntOrShort()

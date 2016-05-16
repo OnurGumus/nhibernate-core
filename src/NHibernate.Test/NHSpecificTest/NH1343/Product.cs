@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1343
 {
-	public class Product
+	public partial class Product
 	{
 		protected Product() {}
 

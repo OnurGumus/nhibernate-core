@@ -3,7 +3,7 @@ using log4net;
 
 namespace NHibernate.Test.NHSpecificTest.NH1810
 {
-	public class MedicalRecord
+	public partial class MedicalRecord
 	{
 		private static readonly ILog Log = LogManager.GetLogger(typeof(Fixture));
 

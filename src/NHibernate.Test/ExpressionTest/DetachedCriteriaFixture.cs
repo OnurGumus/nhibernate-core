@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.ExpressionTest
 {
 	[TestFixture]
-	public class DetachedCriteriaFixture : TestCase
+	public partial class DetachedCriteriaFixture : TestCase
 	{
 		protected override IList Mappings
 		{

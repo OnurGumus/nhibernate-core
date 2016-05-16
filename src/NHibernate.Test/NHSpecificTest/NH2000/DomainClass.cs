@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH2000
 {
-	public class DomainClass
+	public partial class DomainClass
 	{
 		public int Id { get; set; }
 

@@ -5,7 +5,7 @@ using NHibernate.UserTypes;
 
 namespace NHibernate.Test.NHSpecificTest.NH1136
 {
-	public class TemporalAddressesType : MilestoneCollectionType<DateTime, Address>
+	public partial class TemporalAddressesType : MilestoneCollectionType<DateTime, Address>
 	{
 	}
 }

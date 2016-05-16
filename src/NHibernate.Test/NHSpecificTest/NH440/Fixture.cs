@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH440
 	///to contain all one_to_one_bug.Fruit Unit Tests
 	///</summary>
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		public override string BugNumber
 		{

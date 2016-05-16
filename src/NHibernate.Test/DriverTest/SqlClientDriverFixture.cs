@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.DriverTest
 {
-	public class MultiTypeEntity
+	public partial class MultiTypeEntity
 	{
 		public MultiTypeEntity()
 		{
@@ -26,7 +26,7 @@ namespace NHibernate.Test.DriverTest
 	}
 
 	[TestFixture]
-	public class SqlClientDriverFixture : TestCase
+	public partial class SqlClientDriverFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

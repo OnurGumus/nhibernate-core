@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH3126
 {
-	public class Item
+	public partial class Item
 	{
 		public virtual Guid Id { get; set; }
 

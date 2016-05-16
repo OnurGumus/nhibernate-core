@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test
 {
-	public class KnownBugAttribute : ExpectedExceptionAttribute
+	public partial class KnownBugAttribute : ExpectedExceptionAttribute
 	{
 		public KnownBugAttribute(string bug)
 		{

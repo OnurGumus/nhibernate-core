@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Subclass.EnumDiscriminator
 {
 	[TestFixture]
-	public class EnumDiscriminatorFixture : TestCase
+	public partial class EnumDiscriminatorFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

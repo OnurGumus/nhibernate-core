@@ -15,7 +15,7 @@ namespace NHibernate.Test.ExpressionTest
 	/// TestFixtures because all they do is override one property.
 	/// </remarks>
 	[TestFixture]
-	public class JunctionFixture : BaseExpressionFixture
+	public partial class JunctionFixture : BaseExpressionFixture
 	{
 		private Conjunction _conjunction;
 

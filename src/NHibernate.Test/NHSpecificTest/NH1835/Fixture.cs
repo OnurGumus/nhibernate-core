@@ -4,7 +4,7 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Test.NHSpecificTest.NH1835
 {
 	[TestFixture]
-	public class Fixture: BugTestCase
+	public partial class Fixture: BugTestCase
 	{
 		[Test]
 		public void ColumnTypeBinaryBlob()

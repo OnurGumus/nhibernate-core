@@ -6,9 +6,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 {
-	public class CompatibilityWithCandidatePersistentMembers
+	public partial class CompatibilityWithCandidatePersistentMembers
 	{
-		public abstract class Geo
+		public abstract partial class Geo
 		{
 			public string Descrition { get; set; }
 			protected Geo Parent { get; set; }

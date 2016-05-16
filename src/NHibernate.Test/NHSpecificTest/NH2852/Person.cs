@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH2852
 {
-	public class Person
+	public partial class Person
 	{
 		public virtual int Id { get; set; }
 
@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2852
 		public virtual Address Address { get; set; }
 	}
 
-	public class Address
+	public partial class Address
 	{
 		public virtual int Id { get; set; }
 
@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2852
 		public virtual City City { get; set; }
 	}
 
-	public class City
+	public partial class City
 	{
 		public virtual int Id { get; set; }
 

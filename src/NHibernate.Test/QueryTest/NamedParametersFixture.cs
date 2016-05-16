@@ -9,7 +9,7 @@ namespace NHibernate.Test.QueryTest
 	/// Tests functionality for named parameter queries.
 	/// </summary>
 	[TestFixture]
-	public class NamedParametersFixture : TestCase
+	public partial class NamedParametersFixture : TestCase
 	{
 		protected override IList Mappings
 		{

@@ -8,7 +8,7 @@ namespace NHibernate.Test.UtilityTest
 	/// Test cases for the <see cref="SafetyEnumerable{T}"/> class.
 	/// </summary>
 	[TestFixture]
-	public class SafetyEnumerableFixture
+	public partial class SafetyEnumerableFixture
 	{
 		[Test]
 		public void MixedCollection()
@@ -71,6 +71,6 @@ namespace NHibernate.Test.UtilityTest
 	}
 
 	public interface IAType { }
-	public class AClass : IAType { }
-	public class BClass : IAType { }
+	public partial class AClass : IAType { }
+	public partial class BClass : IAType { }
 }

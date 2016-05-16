@@ -1,6 +1,6 @@
 ﻿namespace NHibernate.Test.NHSpecificTest.NH2378
 {
-    public class TestEntity
+    public partial class TestEntity
     {
     	private string name;
         private int id;
@@ -25,7 +25,7 @@
     	}
     }
 
-	public class Person
+	public partial class Person
 	{
 		private string name;
 		private short id;

@@ -5,7 +5,7 @@ namespace NHibernate.Test.JoinedSubclass
 	/// <summary>
 	/// Summary description for Person.
 	/// </summary>
-	public class Person
+	public partial class Person
 	{
 		private int _id = 0;
 		private string _name;

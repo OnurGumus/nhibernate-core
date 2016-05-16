@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1593
 {
-	public class TestIndex
+	public partial class TestIndex
 	{
 		private int id;
 		private string name;

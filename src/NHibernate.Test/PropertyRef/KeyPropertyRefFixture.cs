@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.PropertyRef
 {
 	[TestFixture]
-	public class KeyPropertyRefFixture : TestCase
+	public partial class KeyPropertyRefFixture : TestCase
 	{
 		protected override System.Collections.IList Mappings
 		{

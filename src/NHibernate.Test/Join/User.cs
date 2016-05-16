@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.Join
 {
-	public class User : Person
+	public partial class User : Person
 	{
 #pragma warning disable 169
 		private string _Silly;

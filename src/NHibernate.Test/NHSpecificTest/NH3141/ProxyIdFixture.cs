@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3141
 {
 	[TestFixture]
-	public class ProxyIdFixture : BugTestCase
+	public partial class ProxyIdFixture : BugTestCase
 	{
 		private int id;
 

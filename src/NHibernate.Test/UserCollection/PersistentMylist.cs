@@ -5,7 +5,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Test.UserCollection
 {
-	public class PersistentMylist : PersistentGenericList<Email>
+	public partial class PersistentMylist : PersistentGenericList<Email>
 	{
 		public PersistentMylist(ISessionImplementor session, IList<Email> list) : base(session, list)
 		{

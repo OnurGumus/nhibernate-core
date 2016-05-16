@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Unionsubclass2
 {
 	[TestFixture]
-	public class UnionSubclassFixture : TestCase
+	public partial class UnionSubclassFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

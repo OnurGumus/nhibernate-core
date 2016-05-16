@@ -8,7 +8,7 @@ namespace NHibernate.Test.IdTest
 {
 
 	[TestFixture]
-	public class AssignedFixture : IdFixtureBase
+	public partial class AssignedFixture : IdFixtureBase
 	{
 
 		private string[] GetAssignedIdentifierWarnings(LogSpy ls)

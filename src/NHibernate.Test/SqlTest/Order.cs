@@ -2,10 +2,10 @@ using System;
 
 namespace NHibernate.Test.SqlTest
 {
-	public class Order
+	public partial class Order
 	{
 		[Serializable]
-		public class OrderIdType
+		public partial class OrderIdType
 		{
 			private string orgid;
 			private string ordernumber;

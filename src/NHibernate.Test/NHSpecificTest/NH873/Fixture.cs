@@ -6,7 +6,7 @@ using Environment=NHibernate.Cfg.Environment;
 namespace NHibernate.Test.NHSpecificTest.NH873
 {
 	[TestFixture]
-	public class Fixture
+	public partial class Fixture
 	{
 		[Test]
 		public void CacheDisabled()

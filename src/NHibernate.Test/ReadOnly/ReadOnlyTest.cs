@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.ReadOnly
 {
 	[TestFixture]
-	public class ReadOnlyTest : AbstractReadOnlyTest
+	public partial class ReadOnlyTest : AbstractReadOnlyTest
 	{
 		protected override IList Mappings
 		{

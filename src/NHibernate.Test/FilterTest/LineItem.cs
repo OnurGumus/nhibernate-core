@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.FilterTest
 {
-	public class LineItem
+	public partial class LineItem
 	{
 		private long id;
 		private Order order;

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.Immutable
 {
 	[Serializable]
-	public class Contract
+	public partial class Contract
 	{
 		private long id;
 		private long version;

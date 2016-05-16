@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Hql.Ast
 {
 	[TestFixture]
-	public class HqlFixture : BaseFixture
+	public partial class HqlFixture : BaseFixture
 	{
 		protected HQLQueryPlan CreateQueryPlan(string hql, bool scalar)
 		{

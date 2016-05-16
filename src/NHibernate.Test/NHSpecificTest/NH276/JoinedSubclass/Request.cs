@@ -5,7 +5,7 @@ namespace NHibernate.Test.NHSpecificTest.NH276.JoinedSubclass
 	/// <summary>
 	/// Summary description for Request.
 	/// </summary>
-	public class Request : AbstractRequest
+	public partial class Request : AbstractRequest
 	{
 		private string _extra;
 

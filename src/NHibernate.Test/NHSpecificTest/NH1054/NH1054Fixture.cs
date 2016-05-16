@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1054
 {
 	[TestFixture]
-	public class NH1054Fixture
+	public partial class NH1054Fixture
 	{
 		[Test]
 		public void SettingsTransactionFactoryReturnsConfiguredTransactionFactory()

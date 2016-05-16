@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class MathTests : LinqTestCase
+	public partial class MathTests : LinqTestCase
 	{
 		private IQueryable<OrderLine> _orderLines;
 

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH552
 {
-	public class Question
+	public partial class Question
 	{
 		private long id;
 		private ISet<Answer> answers;
@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH552
 		}
 	}
 
-	public class Answer
+	public partial class Answer
 	{
 		private long id;
 		private Question question;

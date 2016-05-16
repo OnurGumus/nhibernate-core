@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3221
 {
 	[TestFixture]
-	public class WeirdBehaviour : BugTestCase
+	public partial class WeirdBehaviour : BugTestCase
 	{
 		private Guid nicePersonId;
 

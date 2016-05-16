@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH826
 {
-	public class Entity
+	public partial class Entity
 	{
 		private int _id;
 
@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH826
 		}
 	}
 
-	public class ActivitySet : Entity
+	public partial class ActivitySet : Entity
 	{
 		private ISet<Activity> _activities = new HashSet<Activity>();
 
@@ -38,11 +38,11 @@ namespace NHibernate.Test.NHSpecificTest.NH826
 		}
 	}
 
-	public class Activity : Entity
+	public partial class Activity : Entity
 	{
 	}
 
-	public class EvaluationActivity : Activity
+	public partial class EvaluationActivity : Activity
 	{
 		private ISet<Question> _questions;
 
@@ -53,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH826
 		}
 	}
 
-	public class Question : Entity
+	public partial class Question : Entity
 	{
 	}
 }

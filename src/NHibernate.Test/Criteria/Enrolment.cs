@@ -3,7 +3,7 @@ using System;
 namespace NHibernate.Test.Criteria
 {
 	[Serializable]
-	public class Enrolment
+	public partial class Enrolment
 	{
 		private Student student;
 		private Course course;

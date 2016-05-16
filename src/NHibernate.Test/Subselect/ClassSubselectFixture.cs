@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Subselect
 {
-	public class ClassSubselectFixture: TestCase
+	public partial class ClassSubselectFixture: TestCase
 	{
 		protected override IList Mappings
 		{

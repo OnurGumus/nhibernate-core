@@ -11,7 +11,7 @@ namespace NHibernate.Test.Hql.Ast
 {
 	// This test need the new NUnit
 	//[TestFixture]
-	//public class ParsingFixture
+	//public partial class ParsingFixture
 	//{
 	//  /// <summary>
 	//  /// Key test for HQL strings -> HQL AST's - takes the query and returns a string
@@ -100,7 +100,7 @@ namespace NHibernate.Test.Hql.Ast
 	//  /// <summary>
 	//  /// Class used by Nunit 2.5 to drive the data into the HqlParse test
 	//  /// </summary>
-	//  public class QueryFactoryClass
+	//  public partial class QueryFactoryClass
 	//  {
 	//    public static IEnumerable<TestCaseData> TestCases
 	//    {

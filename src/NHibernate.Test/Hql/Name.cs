@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.Hql
 {
-	public class Name
+	public partial class Name
 	{
 
 		protected Name() { }

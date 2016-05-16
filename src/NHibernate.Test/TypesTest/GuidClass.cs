@@ -5,7 +5,7 @@ namespace NHibernate.Test.TypesTest
 	/// <summary>
 	/// Summary description for GuidClass.
 	/// </summary>
-	public class GuidClass
+	public partial class GuidClass
 	{
 		private int _id;
 		private Guid _guidValue;

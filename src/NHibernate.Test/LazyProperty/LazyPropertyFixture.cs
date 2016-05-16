@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.LazyProperty
 {
 	[TestFixture]
-	public class LazyPropertyFixture : TestCase
+	public partial class LazyPropertyFixture : TestCase
 	{
 		private string log;
 

@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 {
 	[TestFixture]
-	public class SchemaValidateFixture
+	public partial class SchemaValidateFixture
 	{
 		[Test]
 		public void ShouldVerifySameTable()

@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH2439
 {
-	public class RtoScope
+	public partial class RtoScope
 	{
 		public virtual Guid Id { get; set; }
 

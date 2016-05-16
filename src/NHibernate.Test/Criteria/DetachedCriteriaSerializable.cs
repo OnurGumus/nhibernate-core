@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Criteria
 {
 	[TestFixture]
-	public class DetachedCriteriaSerializable : TestCase
+	public partial class DetachedCriteriaSerializable : TestCase
 	{
 		protected override string MappingsAssembly
 		{

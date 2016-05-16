@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.DialectTest
 {
 	[TestFixture]
-	public class LockHintAppenderFixture
+	public partial class LockHintAppenderFixture
 	{
 		private const string MsSql2000LockHint = " with (updlock, rowlock)";
 		private MsSql2000Dialect.LockHintAppender _appender;

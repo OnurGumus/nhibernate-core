@@ -3,7 +3,7 @@
 	using System;
 	using System.Collections.Generic;
 
-	public class Parent
+	public partial class Parent
 	{
 		public Parent()
 		{
@@ -14,7 +14,7 @@
 		public virtual IList<Child> Childs { get; set; }
 	}
 
-	public class Child
+	public partial class Child
 	{
 		public virtual Guid Id { get; set; }
 	}

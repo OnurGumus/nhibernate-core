@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH1882
 {
-	public class Book
+	public partial class Book
 	{
 		public Book()
 		{

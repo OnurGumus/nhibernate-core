@@ -4,7 +4,7 @@ using NHibernate.Criterion;
 
 namespace NHibernate.Test.NHSpecificTest.NH2251
 {
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		[Test]
 		public void WhenUseFutureSkipTakeThenNotThrow()

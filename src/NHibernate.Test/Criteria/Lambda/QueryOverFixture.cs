@@ -13,7 +13,7 @@ namespace NHibernate.Test.Criteria.Lambda
 {
 
 	[TestFixture]
-	public class QueryOverFixture : LambdaFixtureBase
+	public partial class QueryOverFixture : LambdaFixtureBase
 	{
 
 		[Test]

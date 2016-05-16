@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Events.Collections.Association.Unidirectional
 {
-	public class ParentWithCollectionOfEntities : AbstractParentWithCollection
+	public partial class ParentWithCollectionOfEntities : AbstractParentWithCollection
 	{
 		public ParentWithCollectionOfEntities() {}
 

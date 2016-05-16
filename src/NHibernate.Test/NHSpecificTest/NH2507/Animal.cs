@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2507
         Female = 2
     }
 
-    public class Animal
+    public partial class Animal
     {
         public virtual int Id { get; set; }
         public virtual string Description { get; set; }
@@ -22,20 +22,20 @@ namespace NHibernate.Test.NHSpecificTest.NH2507
         public virtual string SerialNumber { get; set; }
     }
 
-    public abstract class Reptile : Animal
+    public abstract partial class Reptile : Animal
     {
         public virtual double BodyTemperature { get; set; }
     }
 
-    public class Lizard : Reptile { }
+    public partial class Lizard : Reptile { }
 
-    public abstract class Mammal : Animal
+    public abstract partial class Mammal : Animal
     {
         public virtual bool Pregnant { get; set; }
         public virtual DateTime? BirthDate { get; set; }
     }
 
-    public class Dog : Mammal { }
+    public partial class Dog : Mammal { }
 
-    public class Cat : Mammal { }
+    public partial class Cat : Mammal { }
 }

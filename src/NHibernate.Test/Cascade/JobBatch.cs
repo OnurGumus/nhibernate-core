@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Cascade
 {
-	public class JobBatch
+	public partial class JobBatch
 	{
 		private long id;
 		private DateTime batchDate;

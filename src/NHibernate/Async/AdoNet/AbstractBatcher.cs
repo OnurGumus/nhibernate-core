@@ -197,49 +197,4 @@ namespace NHibernate.AdoNet
 		public abstract Task AddToBatchAsync(IExpectation expectation);
 	}
 }
-
-namespace NHibernate.AdoNet
-{
-	/// <summary>
-	/// Manages prepared statements and batching. Class exists to enforce separation of concerns
-	/// </summary>
-	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public abstract partial class AbstractBatcher : IBatcher
-	{
-		public virtual Task<DbCommand> PrepareBatchCommandAsync(CommandType type, SqlString sql, SqlType[] parameterTypes)
-		{
-			try
-			{
-				return Task.FromResult<DbCommand>(PrepareBatchCommand(type, sql, parameterTypes));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<DbCommand>(ex);
-			}
-		}
-
-		public virtual Task<DbDataReader> ExecuteReaderAsync(DbCommand cmd)
-		{
-			try
-			{
-				return Task.FromResult<DbDataReader>(ExecuteReader(cmd));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<DbDataReader>(ex);
-			}
-		}
-
-		protected abstract Task DoExecuteBatchAsync(DbCommand ps);
-		/// <summary>
-		/// Adds the expected row count into the batch.
-		/// </summary>
-		/// <param name = "expectation">The number of rows expected to be affected by the query.</param>
-		/// <remarks>
-		/// If Batching is not supported, then this is when the Command should be executed.  If Batching
-		/// is supported then it should hold of on executing the batch until explicitly told to.
-		/// </remarks>
-		public abstract Task AddToBatchAsync(IExpectation expectation);
-	}
-}
 #endif

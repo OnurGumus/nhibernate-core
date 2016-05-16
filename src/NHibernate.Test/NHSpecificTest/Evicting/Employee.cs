@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.Evicting
 {
-    public class Employee
+    public partial class Employee
     {
         private int id;
 

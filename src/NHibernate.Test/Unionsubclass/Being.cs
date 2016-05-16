@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Unionsubclass
 {
-	public abstract class Being
+	public abstract partial class Being
 	{
 		private long id;
 		private string identity;

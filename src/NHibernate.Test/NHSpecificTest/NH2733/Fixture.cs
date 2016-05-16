@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2733
 		Expression<Func<T, bool>> Predicate { get; }
 	}
 
-	public class Specification<T>
+	public partial class Specification<T>
 	{
 		public Expression<Func<T, bool>> Predicate { get; protected set; }
 
@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2733
 	}
 
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		Item Item = null;
 

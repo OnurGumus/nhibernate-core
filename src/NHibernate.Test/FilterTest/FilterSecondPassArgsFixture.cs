@@ -7,9 +7,9 @@ using NHibernate.Cfg;
 namespace NHibernate.Test.FilterTest
 {
 	[TestFixture]
-	public class FilterSecondPassArgsFixture
+	public partial class FilterSecondPassArgsFixture
 	{
-		public class FakeFilterable: IFilterable
+		public partial class FakeFilterable: IFilterable
 		{
 			public void AddFilter(string name, string condition)
 			{

@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1574
 {
 	[TestFixture]
-	public class StatelessTest : BugTestCase
+	public partial class StatelessTest : BugTestCase
 	{
 		[Test]
 		public void StatelessManyToOne()

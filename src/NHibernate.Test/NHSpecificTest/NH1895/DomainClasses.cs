@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1895
 {
-	public class Order
+	public partial class Order
 	{
 		public Order()
 		{
@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1895
 		public IList<Detail> Details { get; set; }
 	}
 
-	public class Detail
+	public partial class Detail
 	{
 		public Guid Id { get; set; }
 		public string Name { get; set; }

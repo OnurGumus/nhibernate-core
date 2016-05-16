@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.UtilityTest
 {
-	public class PropertiesHelperTest
+	public partial class PropertiesHelperTest
 	{
 		[Test]
 		public void WhenInvalidBoolValueThenUseDefault()

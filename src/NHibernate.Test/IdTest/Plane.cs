@@ -1,6 +1,6 @@
 namespace NHibernate.Test.IdTest
 {
-	public class Plane
+	public partial class Plane
 	{
 		private long id;
 		private int nbrOfSeats;

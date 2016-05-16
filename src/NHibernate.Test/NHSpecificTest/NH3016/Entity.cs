@@ -2,10 +2,10 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH3016
 {
-	public class Entity
+	public partial class Entity
 	{
 		// nested class
-		public class Key
+		public partial class Key
 		{
 			public virtual Guid Id { get; set; }
 

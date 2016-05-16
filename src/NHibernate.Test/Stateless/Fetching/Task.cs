@@ -3,7 +3,7 @@ using System;
 
 namespace NHibernate.Test.Stateless.Fetching
 {
-	public class Task
+	public partial class Task
 	{
 		private long? id;
 		private string description;

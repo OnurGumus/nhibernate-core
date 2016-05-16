@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH473
 {
-	public class Parent
+	public partial class Parent
 	{
 		public Parent()
 		{

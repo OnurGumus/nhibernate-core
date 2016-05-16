@@ -1,6 +1,6 @@
 ﻿namespace NHibernate.Test.NHSpecificTest.NH1490
 {
-	public class Customer
+	public partial class Customer
 	{
 		private int id;
 		private string name;
@@ -37,7 +37,7 @@
 		}
 	}
 
-	public class Category
+	public partial class Category
 	{
 		private int id;
 		private string name;

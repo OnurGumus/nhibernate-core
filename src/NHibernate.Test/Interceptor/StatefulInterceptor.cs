@@ -4,7 +4,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Test.Interceptor
 {
-	public class StatefulInterceptor : EmptyInterceptor
+	public partial class StatefulInterceptor : EmptyInterceptor
 	{
 		private ISession session;
 		private readonly IList<Log> list = new List<Log>();

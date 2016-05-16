@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.NHSpecificTest.NH2278
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override void OnTearDown()
 		{

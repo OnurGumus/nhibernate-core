@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Operations
 {
-	public class NumberedNode
+	public partial class NumberedNode
 	{
 		private readonly ISet<NumberedNode> children = new HashSet<NumberedNode>();
 

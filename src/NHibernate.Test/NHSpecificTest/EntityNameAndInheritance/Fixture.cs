@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.EntityNameAndInheritance
 {
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		private int id;
 		private const string entityName = "SuperClass";

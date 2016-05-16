@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Stateless.Fetching
 {
 	[TestFixture]
-	public class StatelessSessionFetchingTest : TestCase
+	public partial class StatelessSessionFetchingTest : TestCase
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(StatelessSessionFetchingTest));
 

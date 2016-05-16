@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild
 {
 	[TestFixture]
-	public class UpdateFixture : TestCase
+	public partial class UpdateFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

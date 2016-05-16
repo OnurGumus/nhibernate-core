@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq.ByMethod
 {
 	[TestFixture]
-	public class OrderByTests : LinqTestCase
+	public partial class OrderByTests : LinqTestCase
 	{
 		protected override void Configure(Cfg.Configuration configuration)
 		{

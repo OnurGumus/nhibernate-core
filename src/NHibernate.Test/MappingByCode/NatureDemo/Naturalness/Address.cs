@@ -1,6 +1,6 @@
 namespace NHibernate.Test.MappingByCode.NatureDemo.Naturalness
 {
-	public class Address
+	public partial class Address
 	{
 		public string Street { get; set; }
 

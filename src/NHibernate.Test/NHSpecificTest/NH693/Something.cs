@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH693
 {
-	public class Something
+	public partial class Something
 	{
 		private int id;
 		private string description;

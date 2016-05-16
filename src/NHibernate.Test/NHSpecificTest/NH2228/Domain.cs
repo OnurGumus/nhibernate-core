@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2228
 {
-	public class Parent
+	public partial class Parent
 	{
 		public Parent()
 		{
@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2228
 		public virtual int Id { get; set; }
 		public virtual IList<Child> Children { get; set; }
 	}
-	public class Child
+	public partial class Child
 	{
 		public virtual int Id { get; set; }
 		public virtual Parent Parent { get; set; }

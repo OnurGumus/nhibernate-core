@@ -4,7 +4,7 @@ using NHibernate.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.NH2362
 {
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		[Test]
 		public void CanParseMultipleGroupByAndSelect()

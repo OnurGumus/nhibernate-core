@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Unionsubclass
 {
-	public class Alien : Being
+	public partial class Alien : Being
 	{
 		private string species;
 		private Hive hive;

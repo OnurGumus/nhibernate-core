@@ -5,7 +5,7 @@ namespace NHibernate.Test.PropertyTest
 	/// <summary>
 	/// Contains examples of all of the built in Naming Strategies.
 	/// </summary>
-	public class FieldClass
+	public partial class FieldClass
 	{
 		private int Id = 1;
 		private int _camelUnderscoreFoo = 2;

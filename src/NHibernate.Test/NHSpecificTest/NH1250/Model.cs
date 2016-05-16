@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1250
 {
-	public abstract class Party
+	public abstract partial class Party
 	{
 		private int id;
 		private string name;
@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1250
 		}
 	}
 
-	public class Person : Party
+	public partial class Person : Party
 	{
 		public override int ClassTypeId
 		{
@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1250
 		}
 	}
 
-	public class Company : Party
+	public partial class Company : Party
 	{
 		public override int ClassTypeId
 		{
@@ -50,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1250
 		}
 	}
 
-	public class Client
+	public partial class Client
 	{
 		private int id;
 		private Party party;
@@ -75,7 +75,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1250
 		}
 	}
 
-	public class ClassWithFormula
+	public partial class ClassWithFormula
 	{
 		private int id;
 		private string name;

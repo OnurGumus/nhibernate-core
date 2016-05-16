@@ -6,7 +6,7 @@ using System.Diagnostics;
 namespace NHibernate.Test.NHSpecificTest.NH2322
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override void Configure(Configuration configuration)
 		{

@@ -5,7 +5,7 @@ using NHibernate.DomainModel.Northwind.Entities;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class RegresstionTests : LinqTestCase
+	public partial class RegresstionTests : LinqTestCase
 	{
 		/// <summary>
 		/// http://aspzone.com/tech/nhibernate-linq-troubles/

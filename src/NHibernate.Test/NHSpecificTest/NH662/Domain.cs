@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH662
 {
-	public class Base
+	public partial class Base
 	{
 		public virtual int Id { get; set; }
 		public virtual string Description { get; set; }
@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH662
 		}
 	}
 
-	public class Derived : Base
+	public partial class Derived : Base
 	{
 		protected override void Foo()
 		{

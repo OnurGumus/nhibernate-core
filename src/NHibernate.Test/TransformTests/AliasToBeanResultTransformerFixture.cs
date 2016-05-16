@@ -7,9 +7,9 @@ using NUnit.Framework;
 namespace NHibernate.Test.TransformTests
 {
 	[TestFixture]
-	public class AliasToBeanResultTransformerFixture : TestCase
+	public partial class AliasToBeanResultTransformerFixture : TestCase
 	{
-		public class WithOutPublicParameterLessCtor
+		public partial class WithOutPublicParameterLessCtor
 		{
 			private string something;
 			protected WithOutPublicParameterLessCtor() {}
@@ -25,7 +25,7 @@ namespace NHibernate.Test.TransformTests
 			}
 		}
 
-		public class PublicParameterLessCtor
+		public partial class PublicParameterLessCtor
 		{
 			private string something;
 

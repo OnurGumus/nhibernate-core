@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
 {
-	public class XmlDocTypeFixture : TypeFixtureBase
+	public partial class XmlDocTypeFixture : TypeFixtureBase
 	{
 		protected override string TypeName
 		{

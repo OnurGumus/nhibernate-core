@@ -5,9 +5,9 @@ using NUnit.Framework;
 namespace NHibernate.Test.Bytecode
 {
 	[TestFixture]
-	public class ActivatorObjectFactoryFixture
+	public partial class ActivatorObjectFactoryFixture
 	{
-		public class WithOutPublicParameterLessCtor
+		public partial class WithOutPublicParameterLessCtor
 		{
 			public string Something { get; set; }
 			protected WithOutPublicParameterLessCtor() { }
@@ -18,7 +18,7 @@ namespace NHibernate.Test.Bytecode
 			}
 		}
 
-		public class PublicParameterLessCtor
+		public partial class PublicParameterLessCtor
 		{
 		}
 

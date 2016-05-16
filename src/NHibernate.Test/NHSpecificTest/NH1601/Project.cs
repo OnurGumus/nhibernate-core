@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1601
 {
-    public class Project
+    public partial class Project
     {
         public static bool TestAccessToList = false;
 
@@ -61,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
 
 
     }
-    public class ProjectWithOneList
+    public partial class ProjectWithOneList
     {
         public static bool TestAccessToList = false;
 

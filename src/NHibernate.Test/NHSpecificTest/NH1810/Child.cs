@@ -3,7 +3,7 @@ using log4net;
 
 namespace NHibernate.Test.NHSpecificTest.NH1810
 {
-	public class Child : IComparable<Child>
+	public partial class Child : IComparable<Child>
 	{
 		private static readonly ILog Log = LogManager.GetLogger(typeof(Fixture));
 

@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.AccessAndCorrectPropertyName
 {
 	[TestFixture]
-	public class Fixture
+	public partial class Fixture
 	{
 		private const string ns = "NHibernate.Test.NHSpecificTest.AccessAndCorrectPropertyName.";
 

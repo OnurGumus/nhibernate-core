@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3135
 {
 	[TestFixture]
-	public class MappingByCodeTest
+	public partial class MappingByCodeTest
 	{
 		[Test]
 		public void Bag_InBaseEntity_WithDifferentTables_ShouldBeMappedAccordingly()

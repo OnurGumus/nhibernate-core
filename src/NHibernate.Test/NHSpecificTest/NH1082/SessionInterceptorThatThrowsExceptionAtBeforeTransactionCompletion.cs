@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH1082
 {
-	public class SessionInterceptorThatThrowsExceptionAtBeforeTransactionCompletion : EmptyInterceptor
+	public partial class SessionInterceptorThatThrowsExceptionAtBeforeTransactionCompletion : EmptyInterceptor
 	{
 		public override void BeforeTransactionCompletion(ITransaction tx)
 		{
@@ -10,6 +10,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 		}
 	}
 
-	public class BadException : Exception
+	public partial class BadException : Exception
 	{ }
 }

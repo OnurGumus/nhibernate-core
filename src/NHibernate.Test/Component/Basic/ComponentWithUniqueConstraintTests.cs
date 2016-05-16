@@ -12,7 +12,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Component.Basic
 {
-	public class ComponentWithUniqueConstraintTests : TestCaseMappingByCode
+	public partial class ComponentWithUniqueConstraintTests : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{

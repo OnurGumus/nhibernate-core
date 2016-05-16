@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2583
 {
     [TestFixture]
-    public class InnerJoinFixture : BugTestCase
+    public partial class InnerJoinFixture : BugTestCase
     {
         [Test]
         public void OrShouldBeOuterJoin()

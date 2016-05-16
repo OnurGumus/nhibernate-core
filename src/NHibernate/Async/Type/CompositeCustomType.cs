@@ -48,7 +48,14 @@ namespace NHibernate.Type
 
 		public override Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner)
 		{
-			return userType.AssembleAsync(cached, session, owner);
+			try
+			{
+				return Task.FromResult<object>(Assemble(cached, session, owner));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 
 		public override Task<object> DeepCopyAsync(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
@@ -65,28 +72,64 @@ namespace NHibernate.Type
 
 		public override Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
 		{
-			return userType.DisassembleAsync(value, session);
+			try
+			{
+				return Task.FromResult<object>(Disassemble(value, session, owner));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 
 		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
-			return userType.NullSafeGetAsync(rs, new string[]{name}, session, owner);
+			try
+			{
+				return Task.FromResult<object>(NullSafeGet(rs, name, session, owner));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 
 		public override Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			return userType.NullSafeGetAsync(rs, names, session, owner);
+			try
+			{
+				return Task.FromResult<object>(NullSafeGet(rs, names, session, owner));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 
 		public override Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
-			return userType.NullSafeSetAsync(st, value, index, settable, session);
+			try
+			{
+				NullSafeSet(st, value, index, settable, session);
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 
-		public override async Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session)
+		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			bool[] settable = Enumerable.Repeat(true, GetColumnSpan(session.Factory)).ToArray();
-			await (userType.NullSafeSetAsync(cmd, value, index, settable, session));
+			try
+			{
+				NullSafeSet(cmd, value, index, session);
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 
 		public override Task<string> ToLoggableStringAsync(object value, ISessionFactoryImplementor factory)
@@ -108,7 +151,14 @@ namespace NHibernate.Type
 
 		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, IDictionary copiedAlready)
 		{
-			return userType.ReplaceAsync(original, current, session, owner);
+			try
+			{
+				return Task.FromResult<object>(Replace(original, current, session, owner, copiedAlready));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 
 		public override Task<bool> IsEqualAsync(object x, object y, EntityMode entityMode)

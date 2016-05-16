@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.EntityModeTest.Multi
 {
-	public class Stock
+	public partial class Stock
 	{
 		private ISet<Valuation> valuations = new HashSet<Valuation>();
 

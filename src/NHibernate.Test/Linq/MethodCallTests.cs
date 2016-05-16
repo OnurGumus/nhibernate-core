@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class MethodCallTests : LinqTestCase
+	public partial class MethodCallTests : LinqTestCase
 	{
 		[Test]
 		public void CanExecuteAny()

@@ -5,7 +5,7 @@ using NHibernate.Criterion;
 namespace NHibernate.Test.NHSpecificTest.NH2546
 {
 	[TestFixture]
-	public class SetCommandParameterSizesFalseFixture : BugTestCase
+	public partial class SetCommandParameterSizesFalseFixture : BugTestCase
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{

@@ -1,6 +1,6 @@
 ﻿namespace NHibernate.Test.Unionsubclass
 {
-	public class DatabaseKeyword : DatabaseKeywordBase
+	public partial class DatabaseKeyword : DatabaseKeywordBase
 	{
 		private string table;
 		private string create;

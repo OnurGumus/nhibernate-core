@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH276
 {
-	public class Building
+	public partial class Building
 	{
 		private int _id;
 		private string _number;

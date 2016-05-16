@@ -8,7 +8,7 @@ namespace NHibernate.Test.Stats
 	using Criterion;
 
 	[TestFixture]
-	public class SessionStatsFixture : TestCase
+	public partial class SessionStatsFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

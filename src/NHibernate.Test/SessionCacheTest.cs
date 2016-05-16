@@ -9,7 +9,7 @@ namespace NHibernate.Test
 	/// Summary description for SessionCacheTest.
 	/// </summary>
 	[TestFixture]
-	public class SessionCacheTest : TestCase
+	public partial class SessionCacheTest : TestCase
 	{
 		protected override IList Mappings
 		{

@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Stateless
 {
 	[TestFixture]
-	public class StatelessSessionQueryFixture : TestCase
+	public partial class StatelessSessionQueryFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{
@@ -23,7 +23,7 @@ namespace NHibernate.Test.Stateless
 			cfg.SetProperty(Environment.MaxFetchDepth, 1.ToString());
 		}
 
-		private class TestData
+		private partial class TestData
 		{
 			internal readonly IList list = new ArrayList();
 

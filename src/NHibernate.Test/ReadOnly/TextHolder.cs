@@ -3,7 +3,7 @@ using NHibernate.Dialect;
 
 namespace NHibernate.Test.ReadOnly
 {
-	public class TextHolder
+	public partial class TextHolder
 	{
 		/// <summary>
 		/// Return true if the dialect supports the "text" type.

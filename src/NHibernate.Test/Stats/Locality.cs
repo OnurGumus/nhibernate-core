@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Stats
 {
-	public class Locality
+	public partial class Locality
 	{
 		private long id;
 		private string name;

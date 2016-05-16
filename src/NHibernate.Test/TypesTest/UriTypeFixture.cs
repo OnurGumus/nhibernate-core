@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
 {
-	public class UriTypeFixture : TypeFixtureBase
+	public partial class UriTypeFixture : TypeFixtureBase
 	{
 		protected override string TypeName
 		{

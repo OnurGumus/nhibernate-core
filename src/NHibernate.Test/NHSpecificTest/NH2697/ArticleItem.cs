@@ -4,7 +4,7 @@ using System;
 namespace NHibernate.Test.NHSpecificTest.NH2697
 
 {
-    public class ArticleItem
+    public partial class ArticleItem
     {
 		public virtual int Articleid { get; set; }
 		public virtual Int16 IsFavorite { get; set; }

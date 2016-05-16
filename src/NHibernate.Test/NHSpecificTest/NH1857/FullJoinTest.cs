@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1857
 {
 	[TestFixture]
-	public class FullJoinTest : BugTestCase
+	public partial class FullJoinTest : BugTestCase
 	{
 		protected override void OnSetUp()
 		{

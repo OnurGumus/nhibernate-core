@@ -6,7 +6,7 @@ using System.Text;
 namespace NHibernate.Test.NHSpecificTest.NH2386
 {
     [Serializable]
-    public class ResponsibleLegalPerson  {
+    public partial class ResponsibleLegalPerson  {
         private Guid responsibleLegalPersonId;
         private Organisation organisation;
         //private DateTime startDate;

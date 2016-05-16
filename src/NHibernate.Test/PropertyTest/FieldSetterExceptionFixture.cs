@@ -9,7 +9,7 @@ namespace NHibernate.Test.PropertyTest
 	/// invalid values are passed in.
 	/// </summary>
 	[TestFixture]
-	public class FieldSetterExceptionFixture
+	public partial class FieldSetterExceptionFixture
 	{
 		protected IPropertyAccessor _accessor;
 		protected ISetter _setter;
@@ -29,7 +29,7 @@ namespace NHibernate.Test.PropertyTest
 			Assert.That(e.Message, Is.EqualTo("The type System.String can not be assigned to a field of type System.Int32 setter of NHibernate.Test.PropertyTest.FieldSetterExceptionFixture+A.Id"));
 		}
 
-		public class A
+		public partial class A
 		{
 			public int Id = 0;
 		}

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.Ondelete
 {
 	[TestFixture]
-	public class JoinedSubclassFixture : TestCase
+	public partial class JoinedSubclassFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

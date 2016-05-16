@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1706
 {
-	public class A
+	public partial class A
 	{
 		public A()
 		{
@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1706
 		public virtual ISet<B> Items { get; set; }
 	}
 
-	public class B
+	public partial class B
 	{
 		public virtual int Id { get; set; }
 

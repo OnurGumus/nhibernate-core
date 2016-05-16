@@ -6,7 +6,7 @@ namespace NHibernate.Test.NHSpecificTest.NH309
 	/// <summary>
 	/// Summary description for Node.
 	/// </summary>
-	public class Node
+	public partial class Node
 	{
 		private int _id;
 		private string _name;

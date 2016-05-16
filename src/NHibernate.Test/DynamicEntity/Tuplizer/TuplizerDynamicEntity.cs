@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.DynamicEntity.Tuplizer
 {
 	[TestFixture]
-	public class TuplizerDynamicEntity : TestCase
+	public partial class TuplizerDynamicEntity : TestCase
 	{
 		protected override string MappingsAssembly
 		{

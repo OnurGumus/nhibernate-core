@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Insertordering
 {
-	public class User
+	public partial class User
 	{
 		private ISet<Membership> memberships;
 		public User()

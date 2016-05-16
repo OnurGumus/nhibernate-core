@@ -6,9 +6,9 @@ using NHibernate.Mapping.ByCode.Conformist;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRegistrationTests
 {
-	public class ClassMappingRegistrationTest
+	public partial class ClassMappingRegistrationTest
 	{
-		public class MyClass
+		public partial class MyClass
 		{
 			public int Id { get; set; }
 			public string Something { get; set; }

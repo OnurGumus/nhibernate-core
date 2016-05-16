@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class MiscellaneousTextFixture : LinqTestCase
+	public partial class MiscellaneousTextFixture : LinqTestCase
 	{
 		[Category("WHERE")]
 		[Test(Description = "This sample uses WHERE to filter for Shippers using a Guid property.")]

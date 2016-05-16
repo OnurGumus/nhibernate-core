@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1677
 {
 	[TestFixture]
-	public class EntityModeMapCriteria : BugTestCase
+	public partial class EntityModeMapCriteria : BugTestCase
 	{
 		private const int NumberOfRecordPerEntity = 10;
 		private const string Entity1Name = "Entity1";

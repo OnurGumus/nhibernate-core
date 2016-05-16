@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.ReadOnly
 {
 	[TestFixture]
-	public class ReadOnlySessionTest : TestCase
+	public partial class ReadOnlySessionTest : TestCase
 	{
 		protected override string MappingsAssembly
 		{

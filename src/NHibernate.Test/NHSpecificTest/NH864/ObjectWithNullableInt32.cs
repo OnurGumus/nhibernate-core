@@ -3,7 +3,7 @@ using NHibernate.DomainModel.NHSpecific;
 
 namespace NHibernate.Test.NHSpecificTest.NH864
 {
-	public class ObjectWithNullableInt32
+	public partial class ObjectWithNullableInt32
 	{
 		private int id;
 		private NullableInt32 nullInt32;

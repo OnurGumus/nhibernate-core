@@ -5,7 +5,7 @@ namespace NHibernate.Test.NHSpecificTest.NH392
 	/// <summary>
 	/// This class initializes the unsaved value to -1.
 	/// </summary>
-	public class UnsavedValueMinusOne
+	public partial class UnsavedValueMinusOne
 	{
 		private int _id;
 		private string _name;

@@ -5,7 +5,7 @@ using NHibernate.Dialect;
 namespace NHibernate.Test.NHSpecificTest.NH3567
 {
 	[TestFixture]
-	public class NH3567Tests : BugTestCase
+	public partial class NH3567Tests : BugTestCase
 	{
 		protected override void OnSetUp()
 		{

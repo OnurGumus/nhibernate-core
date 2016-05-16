@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2195
 {
 	[TestFixture]
-	public class SQLiteMultiCriteriaTest : BugTestCase
+	public partial class SQLiteMultiCriteriaTest : BugTestCase
 	{
 		protected override void OnSetUp()
 		{

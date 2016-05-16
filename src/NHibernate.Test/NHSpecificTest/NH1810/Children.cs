@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 		void AddChild(Child child);
 	}
 
-	public class ChildrenBehaviour : IChildrenBehaviour
+	public partial class ChildrenBehaviour : IChildrenBehaviour
 	{
 		private readonly ISet<Child> children;
 
@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 	}
 
 	// Using a HashSet<Child> instead SortedSet<Child> all work fine.
-	public class Children : SortedSet<Child>, IChildren
+	public partial class Children : SortedSet<Child>, IChildren
 	{
 		private readonly IChildrenBehaviour behaviour;
 
@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 		}
 	}
 
-	public class PersistentChildren : PersistentGenericSet<Child>, IChildren
+	public partial class PersistentChildren : PersistentGenericSet<Child>, IChildren
 	{
 		private readonly IChildrenBehaviour behaviour;
 
@@ -86,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 		}
 	}
 
-	public class Factory : SetFactory<Child>
+	public partial class Factory : SetFactory<Child>
 	{
 		public override IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
 		{
@@ -104,7 +104,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 		}
 	}
 
-	public class SetFactory<T> : IUserCollectionType
+	public partial class SetFactory<T> : IUserCollectionType
 	{
 		public virtual IPersistentCollection Instantiate(ISessionImplementor session, ICollectionPersister persister)
 		{

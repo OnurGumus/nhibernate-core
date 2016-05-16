@@ -9,7 +9,7 @@ namespace NHibernate.Test.UtilityTest
 	/// Summary description for StringHelperFixture.
 	/// </summary>
 	[TestFixture]
-	public class StringHelperFixture
+	public partial class StringHelperFixture
 	{
 		[Test]
 		public void GetClassnameFromFQType()

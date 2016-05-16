@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.NH2736
 {
-	public class SalesOrder
+	public partial class SalesOrder
 	{
 		private IList<Item> m_Items = new List<Item>();
 
@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2736
 		}
 	}
 
-	public class Item
+	public partial class Item
 	{
 		public virtual Int32 Id { get; set; }
 		public virtual SalesOrder SalesOrder { get; set; }

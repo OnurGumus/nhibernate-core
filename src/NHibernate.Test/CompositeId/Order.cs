@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.CompositeId
 {
-	public class Order
+	public partial class Order
 	{
-		public class ID
+		public partial class ID
 		{
 			private string customerId;
 			private int orderNumber;

@@ -11,7 +11,7 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Test.GenericTest.MapGeneric
 {
 	[TestFixture]
-	public class MapGenericFixture : TestCase
+	public partial class MapGenericFixture : TestCase
 	{
 		protected override System.Collections.IList Mappings
 		{

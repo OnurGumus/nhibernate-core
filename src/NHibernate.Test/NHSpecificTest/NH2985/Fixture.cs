@@ -5,7 +5,7 @@ using System;
 namespace NHibernate.Test.NHSpecificTest.NH2985
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override void OnTearDown()
 		{

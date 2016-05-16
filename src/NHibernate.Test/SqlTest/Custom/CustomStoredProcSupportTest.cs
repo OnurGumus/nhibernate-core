@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.SqlTest.Custom
 {
-	public abstract class CustomStoredProcSupportTest : CustomSQLSupportTest
+	public abstract partial class CustomStoredProcSupportTest : CustomSQLSupportTest
 	{
 		[Test]
 		public void ScalarStoredProcedure()

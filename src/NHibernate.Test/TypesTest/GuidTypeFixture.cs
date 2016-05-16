@@ -11,7 +11,7 @@ namespace NHibernate.Test.TypesTest
 	/// The Unit Tests for the GuidType.
 	/// </summary>
 	[TestFixture]
-	public class GuidTypeFixture : TypeFixtureBase
+	public partial class GuidTypeFixture : TypeFixtureBase
 	{
 		protected override string TypeName
 		{

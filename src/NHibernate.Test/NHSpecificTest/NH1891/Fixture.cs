@@ -3,7 +3,7 @@
 namespace NHibernate.Test.NHSpecificTest.NH1891
 {
     [TestFixture]
-    public class Fixture : TestCase
+    public partial class Fixture : TestCase
     {
         protected override System.Collections.IList Mappings
         {

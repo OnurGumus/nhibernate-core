@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.GeneratedTest
 {
 	[TestFixture]
-	public class TriggerGeneratedValuesWithoutCachingTest : AbstractGeneratedPropertyTest
+	public partial class TriggerGeneratedValuesWithoutCachingTest : AbstractGeneratedPropertyTest
 	{
 		protected override IList Mappings
 		{

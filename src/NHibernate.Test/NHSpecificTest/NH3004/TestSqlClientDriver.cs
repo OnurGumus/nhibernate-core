@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3004
 	/// <summary>
 	/// A NHibernate Driver for using the SqlClient DataProvider
 	/// </summary>
-	public class TestSqlClientDriver : SqlClientDriver
+	public partial class TestSqlClientDriver : SqlClientDriver
 	{
 		bool _UseNamedPrefixInSql = true;
 		bool _UseNamedPrefixInParameter = false;

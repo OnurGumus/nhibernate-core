@@ -7,7 +7,6 @@ using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Persister.Entity;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Action
 {
@@ -27,7 +26,7 @@ namespace NHibernate.Action
 				stopwatch = Stopwatch.StartNew();
 			}
 
-			bool veto = await (PreInsertAsync());
+			bool veto = PreInsert();
 			// Don't need to lock the cache here, since if someone
 			// else inserted the same pk first, the insert would fail
 			if (!veto)
@@ -71,35 +70,6 @@ namespace NHibernate.Action
 				stopwatch.Stop();
 				factory.StatisticsImplementor.InsertEntity(Persister.EntityName, stopwatch.Elapsed);
 			}
-		}
-
-		protected override Task AfterTransactionCompletionProcessImplAsync(bool success)
-		{
-			try
-			{
-				AfterTransactionCompletionProcessImpl(success);
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
-		}
-
-		private async Task<bool> PreInsertAsync()
-		{
-			IPreInsertEventListener[] preListeners = Session.Listeners.PreInsertEventListeners;
-			bool veto = false;
-			if (preListeners.Length > 0)
-			{
-				var preEvent = new PreInsertEvent(Instance, Id, state, Persister, (IEventSource)Session);
-				foreach (IPreInsertEventListener listener in preListeners)
-				{
-					veto |= await (listener.OnPreInsertAsync(preEvent));
-				}
-			}
-
-			return veto;
 		}
 	}
 }

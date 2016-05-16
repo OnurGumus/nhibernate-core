@@ -10,7 +10,7 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Test.NHSpecificTest.NH645
 {
 	[TestFixture]
-	public class HqlFunctionWithAstHqlParser : HQLFunctionFixtureBase
+	public partial class HqlFunctionWithAstHqlParser : HQLFunctionFixtureBase
 	{
 		protected override void Configure(Configuration configuration)
 		{
@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH645
 		}
 	}
 
-	public abstract class HQLFunctionFixtureBase : TestCase
+	public abstract partial class HQLFunctionFixtureBase : TestCase
 	{
 		private bool appliesToThisDialect = true;
 
@@ -82,7 +82,7 @@ namespace NHibernate.Test.NHSpecificTest.NH645
 		}
 	}
 
-	public class CustomDialect : MsSql2005Dialect
+	public partial class CustomDialect : MsSql2005Dialect
 	{
 		public CustomDialect()
 		{

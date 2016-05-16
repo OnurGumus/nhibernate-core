@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH1863
 {
-	public class Customer
+	public partial class Customer
 	{
 		private ISet<Category> _categories = new HashSet<Category>();
 
@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1863
 		}
 	}
 
-	public class Category
+	public partial class Category
 	{
 		public virtual int Id { get; set; }
 

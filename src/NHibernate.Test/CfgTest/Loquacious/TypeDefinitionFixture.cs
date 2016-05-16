@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.CfgTest.Loquacious
 {
 	[TestFixture]
-	public class TypeDefinitionFixture
+	public partial class TypeDefinitionFixture
 	{
 		[Test]
 		public void AddTypeDef()

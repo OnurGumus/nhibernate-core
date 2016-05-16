@@ -2,7 +2,7 @@ using System.Collections;
 
 namespace NHibernate.Test.Any
 {
-	public class PropertySet
+	public partial class PropertySet
 	{
 		private IDictionary generalProperties = new Hashtable();
 		private long id;

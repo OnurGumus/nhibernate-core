@@ -4,7 +4,7 @@ using log4net;
 
 namespace NHibernate.Test.NHSpecificTest.NH548
 {
-	public class ComponentObject
+	public partial class ComponentObject
 	{
 		private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH1136
 {
-	public class Address : IEquatable<Address>
+	public partial class Address : IEquatable<Address>
 	{
 		#region Fields
 

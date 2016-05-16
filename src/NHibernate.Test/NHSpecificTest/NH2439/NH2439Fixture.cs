@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2439
 {
 	[TestFixture]
-	public class NH2439Fixture : BugTestCase
+	public partial class NH2439Fixture : BugTestCase
 	{
 		protected override void Configure(Configuration configuration)
 		{

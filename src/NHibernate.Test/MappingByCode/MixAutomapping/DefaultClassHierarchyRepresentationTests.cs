@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
-	public class DefaultClassHierarchyRepresentationTests
+	public partial class DefaultClassHierarchyRepresentationTests
 	{
 		private class MyClass
 		{

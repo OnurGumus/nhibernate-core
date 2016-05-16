@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH1714
 {
-    public class DomainClass
+    public partial class DomainClass
     {
         private byte[] byteData;
         private int id;

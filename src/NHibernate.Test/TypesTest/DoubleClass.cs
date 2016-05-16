@@ -5,7 +5,7 @@ namespace NHibernate.Test.TypesTest
 	/// <summary>
 	/// Summary description for DoubleClass.
 	/// </summary>
-	public class DoubleClass
+	public partial class DoubleClass
 	{
 		private int _id;
 		private Double _doubleValue;

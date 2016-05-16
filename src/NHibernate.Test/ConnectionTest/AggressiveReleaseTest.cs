@@ -10,7 +10,7 @@ using Environment=NHibernate.Cfg.Environment;
 namespace NHibernate.Test.ConnectionTest
 {
 	[TestFixture]
-	public class AggressiveReleaseTest : ConnectionManagementTestCase
+	public partial class AggressiveReleaseTest : ConnectionManagementTestCase
 	{
 		protected override void Configure(Configuration cfg)
 		{

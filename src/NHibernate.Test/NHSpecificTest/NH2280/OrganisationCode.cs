@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH2280
 {
-    public class OrganisationCode
+    public partial class OrganisationCode
     {
         private OrganisationCodeKey key = new OrganisationCodeKey();
 
@@ -66,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2280
     /// </summary>
     [Serializable,
      DebuggerDisplay("Organisation: {Organisation}, Code: {Code}, StartDate: {StartDate:d}")]
-    public class OrganisationCodeKey
+    public partial class OrganisationCodeKey
     {
         public string Code { get; set; }
         public DateTime StartDate { get; set; }

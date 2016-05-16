@@ -6,9 +6,9 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH851
 {
 	[TestFixture]
-	public class Fixture
+	public partial class Fixture
 	{
-		public class SomeClass
+		public partial class SomeClass
 		{
 			public SomeClass(int x)
 			{

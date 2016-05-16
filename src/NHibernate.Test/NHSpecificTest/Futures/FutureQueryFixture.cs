@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 	using System.Collections;
 
 	[TestFixture]
-	public class FutureQueryFixture : FutureFixture
+	public partial class FutureQueryFixture : FutureFixture
 	{
 		[Test]
 		public void DefaultReadOnlyTest()

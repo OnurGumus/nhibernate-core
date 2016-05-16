@@ -10,7 +10,7 @@ namespace NHibernate.Test.ExpressionTest
 	/// Summary description for NotNullExpressionFixture.
 	/// </summary>
 	[TestFixture]
-	public class NotNullExpressionFixture : BaseExpressionFixture
+	public partial class NotNullExpressionFixture : BaseExpressionFixture
 	{
 		[Test]
 		public void NotNullSqlStringTest()

@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Events.Collections.Association.Bidirectional.ManyToMany
 {
 	[TestFixture]
-	public class BidirectionalManyToManySetToSetCollectionEventFixture : AbstractAssociationCollectionEventFixture
+	public partial class BidirectionalManyToManySetToSetCollectionEventFixture : AbstractAssociationCollectionEventFixture
 	{
 		protected override IList Mappings
 		{

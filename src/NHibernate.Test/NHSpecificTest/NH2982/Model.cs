@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2982
 {
-    public class Entity
+    public partial class Entity
     {
         public virtual int Id { get; set; }
         public virtual string Name { get; set; }

@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Extralazy
 {
-	public class SessionAttribute
+	public partial class SessionAttribute
 	{
 #pragma warning disable 169
 		private long id;

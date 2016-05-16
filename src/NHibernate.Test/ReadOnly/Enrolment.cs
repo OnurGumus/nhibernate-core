@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.ReadOnly
 {
-	public class Enrolment
+	public partial class Enrolment
 	{
 		private Student student;
 		private Course course;

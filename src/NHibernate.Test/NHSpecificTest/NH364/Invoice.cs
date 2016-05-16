@@ -5,7 +5,7 @@ using System.Text;
 namespace NHibernate.Test.NHSpecificTest.NH364
 {
 	[Serializable]
-	public class Invoice
+	public partial class Invoice
 	{
 		private int _Id;
 		public virtual int Id
@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 	}
 
 	[Serializable]
-	public class InvoiceItem
+	public partial class InvoiceItem
 	{
 		public InvoiceItem() { }
 
@@ -79,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 	}
 
 	[Serializable]
-	public class Product
+	public partial class Product
 	{
 		public Product() { }
 		public Product(string name)

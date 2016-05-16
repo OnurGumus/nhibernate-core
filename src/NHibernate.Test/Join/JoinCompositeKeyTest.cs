@@ -7,7 +7,7 @@ using System.Data;
 namespace NHibernate.Test.Join
 {
 	[TestFixture]
-	public class JoinCompositeKeyTest : TestCase
+	public partial class JoinCompositeKeyTest : TestCase
 	{
 		private static ILog log = LogManager.GetLogger(typeof(JoinCompositeKeyTest));
 

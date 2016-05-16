@@ -1,6 +1,6 @@
 namespace NHibernate.Test.GeneratedTest
 {
-	public class Component
+	public partial class Component
 	{
 		private int generated;
 

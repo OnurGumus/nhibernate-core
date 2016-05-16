@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH952
 {
-	public class PhysicalItem : SellableItem
+	public partial class PhysicalItem : SellableItem
 	{
 	}
 }

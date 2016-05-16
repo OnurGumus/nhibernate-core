@@ -1,6 +1,6 @@
 ﻿namespace NHibernate.Test.Unionsubclass
 {
-	public abstract class DatabaseKeywordBase
+	public abstract partial class DatabaseKeywordBase
 	{
 		private long id;
 

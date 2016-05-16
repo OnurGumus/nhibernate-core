@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Unionsubclass2
 {
-	public class Employee:Person
+	public partial class Employee:Person
 	{
 		private string title;
 		private decimal salary;

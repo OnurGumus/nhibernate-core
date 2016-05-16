@@ -3,7 +3,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1584
 	/// <summary>
 	/// This class describes a few of the attributes possible for a &quot;Calico&quot; coat.
 	/// </summary>
-	public class Calico : CoatPattern
+	public partial class Calico : CoatPattern
 	{
 		public Calico()
 		{

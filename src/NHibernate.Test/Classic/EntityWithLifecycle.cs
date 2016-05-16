@@ -3,7 +3,7 @@ using NHibernate.Classic;
 
 namespace NHibernate.Test.Classic
 {
-	public class EntityWithLifecycle : ILifecycle
+	public partial class EntityWithLifecycle : ILifecycle
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }

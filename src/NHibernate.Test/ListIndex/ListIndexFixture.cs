@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.ListIndex
 {
 	[TestFixture]
-	public class ListIndexFixture : TestCase
+	public partial class ListIndexFixture : TestCase
 	{
 		protected override IList Mappings
 		{

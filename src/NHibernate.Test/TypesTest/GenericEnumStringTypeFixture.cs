@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	[TestFixture]
-	public class GenericEnumStringTypeFixture : TypeFixtureBase
+	public partial class GenericEnumStringTypeFixture : TypeFixtureBase
 	{
 		protected override string TypeName
 		{

@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.DynamicProxyTests
 {
-	public class InterfaceWithEqualsGethashcodeTests
+	public partial class InterfaceWithEqualsGethashcodeTests
 	{
 		public interface IMyBaseObject
 		{
@@ -15,7 +15,7 @@ namespace NHibernate.Test.DynamicProxyTests
 		{
 			string Something { get; set; }
 		}
-		public class InterceptedMethodsExposer : Proxy.DynamicProxy.IInterceptor
+		public partial class InterceptedMethodsExposer : Proxy.DynamicProxy.IInterceptor
 		{
 			private readonly List<string> interceptedMethods = new List<string>();
 			public object Intercept(InvocationInfo info)

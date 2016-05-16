@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Any
 {
 	[TestFixture]
-	public class AnyTypeTest : TestCase
+	public partial class AnyTypeTest : TestCase
 	{
 		protected override string MappingsAssembly
 		{

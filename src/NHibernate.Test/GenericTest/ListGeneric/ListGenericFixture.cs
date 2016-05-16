@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.GenericTest.ListGeneric
 {
 	[TestFixture]
-	public class ListGenericFixture : TestCase
+	public partial class ListGenericFixture : TestCase
 	{
 
 		protected override System.Collections.IList Mappings

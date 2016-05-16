@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH952
 {
-	public class Item
+	public partial class Item
 	{
 		private int uniqueId;
 

@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 {
-	public class FirstExtensionTests
+	public partial class FirstExtensionTests
 	{
 		[Test]
 		public void WhenNullThenThenThrows()

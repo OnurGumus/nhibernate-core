@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.ConnectionTest
 {
 	[TestFixture,Ignore("Not yet supported. Need AutoClosed feature.(TransactionContext)")]
-	public class ThreadLocalCurrentSessionTest : ConnectionManagementTestCase
+	public partial class ThreadLocalCurrentSessionTest : ConnectionManagementTestCase
 	{
 		protected override ISession GetSessionUnderTest()
 		{
@@ -67,7 +67,7 @@ namespace NHibernate.Test.ConnectionTest
 		}
 	}
 
-	public class TestableThreadLocalContext : ThreadLocalSessionContext
+	public partial class TestableThreadLocalContext : ThreadLocalSessionContext
 	{
 		private static TestableThreadLocalContext me;
 

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.Cascade.Circle
 {
-	public class Route
+	public partial class Route
 	{
 		private long routeId;
 		private long version;

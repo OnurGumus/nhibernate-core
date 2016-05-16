@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.IdGen.NativeGuid
 {
 	[TestFixture]
-	public class NativeGuidFixture : TestCase
+	public partial class NativeGuidFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

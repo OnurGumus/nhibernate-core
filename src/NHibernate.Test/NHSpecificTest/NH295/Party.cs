@@ -3,7 +3,7 @@ using System;
 namespace NHibernate.Test.NHSpecificTest.NH295
 {
 	[Serializable]
-	public abstract class Party
+	public abstract partial class Party
 	{
 		public const int EMPTY_ID = -1;
 

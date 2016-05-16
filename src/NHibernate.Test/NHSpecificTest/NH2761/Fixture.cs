@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2761
 {
-	public class Fixture
+	public partial class Fixture
 	{
 		[Test]
 		public void WhenMultipleConfigurationUseSameMappingsThenConstraintsHasSameNames()

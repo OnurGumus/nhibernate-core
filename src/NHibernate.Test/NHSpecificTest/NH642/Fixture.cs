@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH642
 	//<created>Fri, 9 Jun 2006 07:34:32 -0400 (EDT)</created>
 	//<component>Core</component>
 	//<link>http://nhibernate.jira.com</link>
-	public class MissingSetter
+	public partial class MissingSetter
 	{
 		public virtual int ReadOnly
 		{
@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH642
 		}
 	}
 
-	public class MissingGetter
+	public partial class MissingGetter
 	{
 		public virtual int WriteOnly
 		{
@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH642
 	}
 
 	[TestFixture]
-	public class Fixture
+	public partial class Fixture
 	{
 		private void DoTest(string name)
 		{

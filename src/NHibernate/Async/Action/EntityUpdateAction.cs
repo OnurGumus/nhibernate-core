@@ -28,7 +28,7 @@ namespace NHibernate.Action
 				stopwatch = Stopwatch.StartNew();
 			}
 
-			bool veto = await (PreUpdateAsync());
+			bool veto = PreUpdate();
 			ISessionFactoryImplementor factory = Session.Factory;
 			if (persister.IsVersionPropertyGenerated)
 			{
@@ -96,80 +96,12 @@ namespace NHibernate.Action
 				}
 			}
 
-			await (PostUpdateAsync());
+			PostUpdate();
 			if (statsEnabled && !veto)
 			{
 				stopwatch.Stop();
 				factory.StatisticsImplementor.UpdateEntity(Persister.EntityName, stopwatch.Elapsed);
 			}
-		}
-
-		protected override async Task AfterTransactionCompletionProcessImplAsync(bool success)
-		{
-			IEntityPersister persister = Persister;
-			if (persister.HasCache)
-			{
-				CacheKey ck = Session.GenerateCacheKey(Id, persister.IdentifierType, persister.RootEntityName);
-				if (success && cacheEntry != null)
-				{
-					bool put = persister.Cache.AfterUpdate(ck, cacheEntry, nextVersion, slock);
-					if (put && Session.Factory.Statistics.IsStatisticsEnabled)
-					{
-						Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
-					}
-				}
-				else
-				{
-					persister.Cache.Release(ck, slock);
-				}
-			}
-
-			if (success)
-			{
-				await (PostCommitUpdateAsync());
-			}
-		}
-
-		private async Task PostUpdateAsync()
-		{
-			IPostUpdateEventListener[] postListeners = Session.Listeners.PostUpdateEventListeners;
-			if (postListeners.Length > 0)
-			{
-				PostUpdateEvent postEvent = new PostUpdateEvent(Instance, Id, state, previousState, Persister, (IEventSource)Session);
-				foreach (IPostUpdateEventListener listener in postListeners)
-				{
-					await (listener.OnPostUpdateAsync(postEvent));
-				}
-			}
-		}
-
-		private async Task PostCommitUpdateAsync()
-		{
-			IPostUpdateEventListener[] postListeners = Session.Listeners.PostCommitUpdateEventListeners;
-			if (postListeners.Length > 0)
-			{
-				PostUpdateEvent postEvent = new PostUpdateEvent(Instance, Id, state, previousState, Persister, (IEventSource)Session);
-				foreach (IPostUpdateEventListener listener in postListeners)
-				{
-					await (listener.OnPostUpdateAsync(postEvent));
-				}
-			}
-		}
-
-		private async Task<bool> PreUpdateAsync()
-		{
-			IPreUpdateEventListener[] preListeners = Session.Listeners.PreUpdateEventListeners;
-			bool veto = false;
-			if (preListeners.Length > 0)
-			{
-				var preEvent = new PreUpdateEvent(Instance, Id, state, previousState, Persister, (IEventSource)Session);
-				foreach (IPreUpdateEventListener listener in preListeners)
-				{
-					veto |= await (listener.OnPreUpdateAsync(preEvent));
-				}
-			}
-
-			return veto;
 		}
 	}
 }

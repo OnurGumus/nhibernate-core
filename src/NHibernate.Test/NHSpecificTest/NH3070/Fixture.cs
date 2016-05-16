@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3070
 {
 	[TestFixture]
-	public class Fixture : TestCaseMappingByCode
+	public partial class Fixture : TestCaseMappingByCode
 	{
 		protected override Cfg.MappingSchema.HbmMapping GetMappings()
 		{
@@ -60,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3070
 		}
 	}
 
-	public class Employee
+	public partial class Employee
 	{
 		public virtual int Id { get; protected set; }
 		public virtual string FirstName { get; set; }

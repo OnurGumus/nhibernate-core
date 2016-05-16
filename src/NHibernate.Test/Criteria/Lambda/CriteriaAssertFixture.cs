@@ -10,7 +10,7 @@ namespace NHibernate.Test.Criteria.Lambda
 {
 
 	[TestFixture]
-	public class CriteriaAssertFixture : LambdaFixtureBase
+	public partial class CriteriaAssertFixture : LambdaFixtureBase
 	{
 
 		private void AssertCriteriaAreNotEqual(ICriteria expected, ICriteria actual)

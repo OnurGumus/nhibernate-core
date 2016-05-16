@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2313
 {
-	public class Fixture
+	public partial class Fixture
 	{
 		[Test]
 		public void WhenLoadWorngMappingThenMessageShouldContaingWrongClassName()

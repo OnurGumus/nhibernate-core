@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH3489
 {
-	public class Order
+	public partial class Order
 	{
 		public Order()
 		{

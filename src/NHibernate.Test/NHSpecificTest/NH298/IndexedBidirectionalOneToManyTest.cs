@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH298 {
 
 	[TestFixture]
-	public class IndexedBidirectionalOneToManyTest : BugTestCase {
+	public partial class IndexedBidirectionalOneToManyTest : BugTestCase {
 
 		protected override void OnSetUp() {
 			base.OnSetUp();

@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Unionsubclass
 {
-	public class Thing
+	public partial class Thing
 	{
 		private long id;
 		private string description;

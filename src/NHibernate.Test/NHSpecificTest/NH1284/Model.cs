@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1284
 {
-	public class Person
+	public partial class Person
 	{
 		private Address? _address;
 		private string _name;

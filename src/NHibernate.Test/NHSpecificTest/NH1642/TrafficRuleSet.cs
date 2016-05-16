@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1642
 {
-    public class TrafficRuleSet
+    public partial class TrafficRuleSet
     {
         public virtual int id { get; set; }
         public virtual string name { get; set; }

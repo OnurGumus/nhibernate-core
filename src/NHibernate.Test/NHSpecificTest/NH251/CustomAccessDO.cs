@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH251
 	}
 
 	// A component class
-	public class Name
+	public partial class Name
 	{
 #pragma warning disable 169
 		private string first;
@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH251
 	/// <summary>
 	/// A domain object for the test case
 	/// </summary>
-	public class CustomAccessDO : IDynamicFieldContainer
+	public partial class CustomAccessDO : IDynamicFieldContainer
 	{
 		public IDictionary dynamicFields = new Hashtable(); // may contain components
 		public int id;
@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH251
 	/// <summary>
 	/// Custom access strategy that uses IDynamicFieldContainer to get/set property values
 	/// </summary>
-	public class DictionaryAccessor : IPropertyAccessor
+	public partial class DictionaryAccessor : IPropertyAccessor
 	{
 		public IGetter GetGetter(System.Type theClass, string propertyName)
 		{
@@ -58,7 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.NH251
 			get { return false; }
 		}
 
-		public class CustomGetter : IGetter
+		public partial class CustomGetter : IGetter
 		{
 			private System.Type theClass;
 			private string propertyName;
@@ -98,7 +98,7 @@ namespace NHibernate.Test.NHSpecificTest.NH251
 // Optional operation (return null)
 		}
 
-		public class CustomSetter : ISetter
+		public partial class CustomSetter : ISetter
 		{
 			private string propertyName;
 

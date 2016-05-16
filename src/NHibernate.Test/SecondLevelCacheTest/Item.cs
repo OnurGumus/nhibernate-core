@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.SecondLevelCacheTests
 {
-	public class Item
+	public partial class Item
 	{
 		private int id;
 		private IList<Item> children = new List<Item>();

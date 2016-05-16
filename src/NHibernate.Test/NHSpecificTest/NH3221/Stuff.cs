@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH3221
 {
-	public class Stuff : IEquatable<Stuff>
+	public partial class Stuff : IEquatable<Stuff>
 	{
 		protected Stuff() { }
 

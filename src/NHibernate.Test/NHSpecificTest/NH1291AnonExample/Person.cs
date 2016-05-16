@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1291AnonExample
 {
-	public class Person
+	public partial class Person
 	{
 		private int id;
 		private int iq;

@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH496
 {
-	public class WronglyMappedClass
+	public partial class WronglyMappedClass
 	{
 		private int id;
 		private int someInt;

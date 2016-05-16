@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH364
 {
-	public class Link
+	public partial class Link
 	{
 		private int id;
 		private string name;

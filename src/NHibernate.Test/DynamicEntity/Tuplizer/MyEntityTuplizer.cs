@@ -3,7 +3,7 @@ using NHibernate.Tuple.Entity;
 
 namespace NHibernate.Test.DynamicEntity.Tuplizer
 {
-	public class MyEntityTuplizer : PocoEntityTuplizer
+	public partial class MyEntityTuplizer : PocoEntityTuplizer
 	{
 		public MyEntityTuplizer(EntityMetamodel entityMetamodel, PersistentClass mappedEntity) : base(entityMetamodel, mappedEntity) {}
 

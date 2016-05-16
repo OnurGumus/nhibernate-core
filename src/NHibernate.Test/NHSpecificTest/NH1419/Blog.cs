@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace NHibernate.Test.NHSpecificTest.NH1419
 {
 	[Serializable]
-	public class Blog
+	public partial class Blog
 	{
 		private Guid id;
 		private string name;

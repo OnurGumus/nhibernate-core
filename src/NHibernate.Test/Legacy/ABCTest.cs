@@ -11,7 +11,7 @@ namespace NHibernate.Test.Legacy
 	/// Summary description for ABCTest.
 	/// </summary>
 	[TestFixture]
-	public class ABCTest : TestCase
+	public partial class ABCTest : TestCase
 	{
 		protected override IList Mappings
 		{

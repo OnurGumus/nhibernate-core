@@ -10,7 +10,7 @@ namespace NHibernate.Test.PropertyTest
 	/// it will find the correct IGetter when a Property does not exist.
 	/// </summary>
 	[TestFixture]
-	public class FieldGetterFixture
+	public partial class FieldGetterFixture
 	{
 		private FieldGetterClass obj = new FieldGetterClass();
 
@@ -94,7 +94,7 @@ namespace NHibernate.Test.PropertyTest
 			Assert.AreEqual(2.5m, fieldGetter.Get(obj), "Get() for Decimal");
 		}
 		
-		public class FieldGetterClass
+		public partial class FieldGetterClass
 		{
 #pragma warning disable 414
 			private int Id = 7;

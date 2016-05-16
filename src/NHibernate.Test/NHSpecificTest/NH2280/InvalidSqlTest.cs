@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2280
 {
     [TestFixture]
-    public class InvalidSqlTest : BugTestCase
+    public partial class InvalidSqlTest : BugTestCase
     {
         [Test]
         public void CompositeKeyTest()

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2662
 {
-	public class Customer
+	public partial class Customer
 	{
 		public virtual Guid Id
 		{
@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2662
 		}
 	}
 
-    public class Order
+    public partial class Order
     {
         public virtual Guid Id
         {
@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2662
         }
     }
 
-    public class PizzaOrder: Order
+    public partial class PizzaOrder: Order
     {
         public virtual string PizzaName
         {

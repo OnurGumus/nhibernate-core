@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Naturalid.Mutable
 {
-	public class User
+	public partial class User
 	{
 		private long id;
 		private readonly string name;

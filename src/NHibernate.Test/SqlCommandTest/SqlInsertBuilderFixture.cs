@@ -11,7 +11,7 @@ namespace NHibernate.Test.SqlCommandTest
 	/// Tests all of the functionality of the SqlInsertBulder
 	/// </summary>
 	[TestFixture]
-	public class SqlInsertBuilderFixture
+	public partial class SqlInsertBuilderFixture
 	{
 		[Test]
 		public void InsertSqlStringTest()

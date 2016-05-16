@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1028
 {
-	public class Item
+	public partial class Item
 	{
 	    private int id;
 	    private string name;
@@ -78,7 +78,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1028
 	    }
 	}
 
-    public class Container
+    public partial class Container
     {
         private int id;
         private string name;
@@ -96,7 +96,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1028
         }
     }
 
-    public class Ship
+    public partial class Ship
     {
         private int id;
         private string name;

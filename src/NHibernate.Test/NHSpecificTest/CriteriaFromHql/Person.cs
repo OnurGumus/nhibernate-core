@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.CriteriaFromHql
 {
-	public class Person
+	public partial class Person
 	{
 		private IList<Person> children = new List<Person>();
 		private IList<Person> friends = new List<Person>();

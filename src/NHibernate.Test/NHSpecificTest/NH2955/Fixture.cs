@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2955
 	/// Linq query using SQL IN statement (Contains) with System.Linq.IGrouping&lt;TKey, TElement&gt;
 	/// </summary>
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override void OnSetUp()
 		{

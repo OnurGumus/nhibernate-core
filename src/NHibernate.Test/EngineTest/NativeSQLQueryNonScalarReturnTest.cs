@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.EngineTest
 {
 	[TestFixture]
-	public class NativeSQLQueryNonScalarReturnTest
+	public partial class NativeSQLQueryNonScalarReturnTest
 	{
 		[Test]
 		public void NativeSQLQueryCollectionReturnEqualsByAlias()

@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1069
 {
 	[TestFixture]
-	public class ImproveLazyExceptionFixture: BugTestCase
+	public partial class ImproveLazyExceptionFixture: BugTestCase
 	{
 		[Test]
 		public void LazyEntity()

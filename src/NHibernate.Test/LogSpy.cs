@@ -8,7 +8,7 @@ using log4net.Repository.Hierarchy;
 
 namespace NHibernate.Test
 {
-	public class LogSpy : IDisposable
+	public partial class LogSpy : IDisposable
 	{
 		private readonly MemoryAppender appender;
 		private readonly Logger logger;

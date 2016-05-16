@@ -3,7 +3,7 @@ using System;
 namespace NHibernate.Test.NHSpecificTest.NH1289
 {
 	[Serializable]
-	public class Product
+	public partial class Product
 	{
 		#region Fields
 		public virtual String Description

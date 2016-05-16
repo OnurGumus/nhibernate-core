@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.UtilityTest
 {
 	[TestFixture]
-	public class WeakHashtableFixture
+	public partial class WeakHashtableFixture
 	{
 		protected WeakHashtable Create()
 		{

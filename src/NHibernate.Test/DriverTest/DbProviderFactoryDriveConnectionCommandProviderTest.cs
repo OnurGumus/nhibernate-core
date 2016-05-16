@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.DriverTest
 {
-	public class DbProviderFactoryDriveConnectionCommandProviderTest
+	public partial class DbProviderFactoryDriveConnectionCommandProviderTest
 	{
 		[Test]
 		public void WhenCreatedWithNullDbFactoryThenThrows()

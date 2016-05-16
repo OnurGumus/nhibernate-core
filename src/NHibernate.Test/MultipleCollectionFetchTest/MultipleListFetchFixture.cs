@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.MultipleCollectionFetchTest
 {
 	[TestFixture]
-	public class MultipleListFetchFixture : AbstractMultipleCollectionFetchFixture
+	public partial class MultipleListFetchFixture : AbstractMultipleCollectionFetchFixture
 	{
 		protected override IList Mappings
 		{

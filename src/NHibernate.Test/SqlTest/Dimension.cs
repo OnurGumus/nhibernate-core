@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.SqlTest
 {
-	public class Dimension
+	public partial class Dimension
 	{
 		private long id;
 		private int length;

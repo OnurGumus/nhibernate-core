@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Hql.Ast
 {
-	public class KeyManyToOneKeyEntity
+	public partial class KeyManyToOneKeyEntity
 	{
 		private long id;
 		private string name;

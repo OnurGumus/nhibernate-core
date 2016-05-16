@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH687
 {
-	public class Foo
+	public partial class Foo
 	{
 		private int id;
 		private FooBar fooBar;
@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH687
 		}
 	}
 
-	public class Bar
+	public partial class Bar
 	{
 		private IList<Bar> children = new List<Bar>();
 		private IList<FooBar> fooBars = new List<FooBar>();
@@ -50,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH687
 		}
 	}
 
-	public class FooBar
+	public partial class FooBar
 	{
 		private IList<FooBar> children = new List<FooBar>();
 		private Bar bar;

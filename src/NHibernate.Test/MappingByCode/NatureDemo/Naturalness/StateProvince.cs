@@ -1,6 +1,6 @@
 namespace NHibernate.Test.MappingByCode.NatureDemo.Naturalness
 {
-	public class StateProvince
+	public partial class StateProvince
 	{
 		public virtual long Id { get; set; }
 

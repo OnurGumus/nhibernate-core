@@ -6,7 +6,7 @@
 		string Name { get; set; }
 	}
 
-	public class Person : IPerson
+	public partial class Person : IPerson
 	{
 		public object Id { get; private set; }
 

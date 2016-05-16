@@ -6,7 +6,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1252
 	/// http://nhibernate.jira.com/browse/NH-1252
 	/// </summary>
 	[TestFixture]
-	public class NH1252Fixture : BugTestCase
+	public partial class NH1252Fixture : BugTestCase
 	{
 		public override string BugNumber
 		{

@@ -12,7 +12,7 @@ namespace NHibernate.Test.Criteria.Lambda
 {
 
 	[TestFixture]
-	public class ExpressionProcessorFixture
+	public partial class ExpressionProcessorFixture
 	{
 
 		[Test]

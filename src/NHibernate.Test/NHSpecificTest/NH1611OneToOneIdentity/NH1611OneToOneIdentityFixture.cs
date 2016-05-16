@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 {
 	[TestFixture]
-	public class NH1611OneToOneIdentityFixture : BugTestCase
+	public partial class NH1611OneToOneIdentityFixture : BugTestCase
 	{
 		public override string BugNumber
 		{

@@ -11,7 +11,7 @@ namespace NHibernate.Test.ExceptionsTest
 	/// NH-1997
 	/// </summary>
 	[TestFixture]
-	public class NullQueryTest : TestCase
+	public partial class NullQueryTest : TestCase
 	{
 		#region Overrides of TestCase
 

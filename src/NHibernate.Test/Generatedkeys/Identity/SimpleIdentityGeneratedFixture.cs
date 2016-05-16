@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Generatedkeys.Identity
 {
 	[TestFixture]
-	public class SimpleIdentityGeneratedFixture : TestCase
+	public partial class SimpleIdentityGeneratedFixture : TestCase
 	{
 		// This test is to check the support of identity generator
 		// NH should choose one of the identity-style generation where the Dialect are supporting one of them

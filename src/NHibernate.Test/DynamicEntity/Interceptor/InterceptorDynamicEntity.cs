@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.DynamicEntity.Interceptor
 {
 	[TestFixture]
-	public class InterceptorDynamicEntity : TestCase
+	public partial class InterceptorDynamicEntity : TestCase
 	{
 		protected override string MappingsAssembly
 		{

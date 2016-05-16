@@ -6,22 +6,22 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 {
-	public class ClassWithComponentsTest
+	public partial class ClassWithComponentsTest
 	{
-		public class Person1
+		public partial class Person1
 		{
 			public int Id { get; set; }
 			public string Test { get; set; }
 			public Name Name { get; set; }
 			public Address Address { get; set; }
 		}
-		public class Name
+		public partial class Name
 		{
 			public string First { get; set; }
 			public string Last { get; set; }
 		}
 
-		public class Address
+		public partial class Address
 		{
 			public string Street { get; set; }
 			public int CivicNumber { get; set; }

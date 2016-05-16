@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class NullComparisonTests : LinqTestCase
+	public partial class NullComparisonTests : LinqTestCase
 	{
 		private static readonly AnotherEntity OutputSet = new AnotherEntity {Output = "output"};
 		private static readonly AnotherEntity InputSet = new AnotherEntity {Input = "input"};

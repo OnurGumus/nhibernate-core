@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.Dates
 {
-	public class AllDates
+	public partial class AllDates
 	{
 		public int Id { get; set; }
 

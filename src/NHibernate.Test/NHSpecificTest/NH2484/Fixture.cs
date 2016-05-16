@@ -8,7 +8,7 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Test.NHSpecificTest.NH2484
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
 		{

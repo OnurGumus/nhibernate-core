@@ -14,7 +14,7 @@ namespace NHibernate.Event.Default
 			{
 				await (FlushEverythingToExecutionsAsync(@event));
 				await (PerformExecutionsAsync(source));
-				await (PostFlushAsync(source));
+				PostFlush(source);
 				if (source.Factory.Statistics.IsStatisticsEnabled)
 				{
 					source.Factory.StatisticsImplementor.Flush();

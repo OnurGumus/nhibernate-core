@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 {
-	public class Person
+	public partial class Person
 	{
 		private int _id;
 		private Address _address;

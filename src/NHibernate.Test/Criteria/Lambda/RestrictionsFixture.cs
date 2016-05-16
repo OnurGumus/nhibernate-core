@@ -9,7 +9,7 @@ namespace NHibernate.Test.Criteria.Lambda
 {
 
 	[TestFixture]
-	public class RestrictionsFixture : LambdaFixtureBase
+	public partial class RestrictionsFixture : LambdaFixtureBase
 	{
 
 		[Test]

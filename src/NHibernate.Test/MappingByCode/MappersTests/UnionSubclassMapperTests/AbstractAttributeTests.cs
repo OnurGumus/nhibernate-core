@@ -5,13 +5,13 @@ using NUnit.Framework;
 namespace NHibernate.Test.MappingByCode.MappersTests.UnionSubclassMapperTests
 {
 	[TestFixture]
-	public class AbstractAttributeTests
+	public partial class AbstractAttributeTests
 	{
-		private abstract class EntityBase
+		private abstract partial class EntityBase
 		{
 		}
 
-		private abstract class Item : EntityBase
+		private abstract partial class Item : EntityBase
 		{
 		}
 

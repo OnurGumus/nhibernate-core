@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Legacy
 {
 	[TestFixture]
-	public class SimpleTest : TestCase
+	public partial class SimpleTest : TestCase
 	{
 		private DateTime testDateTime = new DateTime(2003, 8, 16);
 		private DateTime updateDateTime = new DateTime(2003, 8, 17);

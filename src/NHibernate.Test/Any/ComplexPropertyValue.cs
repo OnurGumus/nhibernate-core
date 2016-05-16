@@ -3,7 +3,7 @@ using System.Text;
 
 namespace NHibernate.Test.Any
 {
-	public class ComplexPropertyValue : IPropertyValue
+	public partial class ComplexPropertyValue : IPropertyValue
 	{
 		private long id;
 		private IDictionary subProperties = new Hashtable();

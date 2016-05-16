@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH1837
 {
-	public class Order
+	public partial class Order
 	{
 		public int Id { get; set; }
 		public DateTime Date { get; set; }

@@ -7,7 +7,7 @@ using Environment=NHibernate.Cfg.Environment;
 namespace NHibernate.Test.Bytecode.Lightweight
 {
 	[TestFixture]
-	public class BytecodeProviderFixture
+	public partial class BytecodeProviderFixture
 	{
 		[Test]
 		public void NotConfiguredProxyFactoryFactory()

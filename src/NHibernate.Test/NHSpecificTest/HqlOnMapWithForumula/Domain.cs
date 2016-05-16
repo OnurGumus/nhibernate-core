@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.HqlOnMapWithForumula
 {
-    public class A
+    public partial class A
     {
         private int id;
         private string value;
@@ -31,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.HqlOnMapWithForumula
     }
 
 
-    public class Info
+    public partial class Info
     {
     	private int rowCount;
 

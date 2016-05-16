@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class DynamicQueryTests : LinqTestCase
+	public partial class DynamicQueryTests : LinqTestCase
 	{
 		[Test]
 		public void CanQueryWithDynamicOrderBy()

@@ -7,7 +7,7 @@ namespace NHibernate.Test.PropertyTest
 	/// <summary>
 	/// Base test fixture for the NoSetter Accessors.
 	/// </summary>
-	public abstract class NoSetterAccessorFixture
+	public abstract partial class NoSetterAccessorFixture
 	{
 		protected IPropertyAccessor _accessor;
 		protected IGetter _getter;

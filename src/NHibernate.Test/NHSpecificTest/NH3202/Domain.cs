@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH3202
 {
-	public class SequencedItem
+	public partial class SequencedItem
 	{
 		public SequencedItem() { }
 		public SequencedItem(int i)

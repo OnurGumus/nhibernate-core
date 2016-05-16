@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest
 {
 	[TestFixture]
-	public class OptimisticConcurrencyFixture : TestCase
+	public partial class OptimisticConcurrencyFixture : TestCase
 	{
 		protected override IList Mappings
 		{

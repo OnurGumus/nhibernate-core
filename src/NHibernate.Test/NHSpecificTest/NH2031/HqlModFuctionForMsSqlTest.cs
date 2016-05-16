@@ -5,11 +5,11 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2031
 {
-	public class MyClass
+	public partial class MyClass
 	{
 		
 	}
-	public class HqlModFuctionForMsSqlTest : BugTestCase
+	public partial class HqlModFuctionForMsSqlTest : BugTestCase
 	{
 		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
 		{

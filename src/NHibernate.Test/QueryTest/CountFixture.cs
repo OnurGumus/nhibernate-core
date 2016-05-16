@@ -8,7 +8,7 @@ using Environment=NHibernate.Cfg.Environment;
 namespace NHibernate.Test.QueryTest
 {
 	[TestFixture]
-	public class CountFixture
+	public partial class CountFixture
 	{
 		[Test]
 		public void Default()

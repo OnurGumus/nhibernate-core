@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Any
 {
-	public class StringPropertyValue: IPropertyValue
+	public partial class StringPropertyValue: IPropertyValue
 	{
 		private long id;
 		private string value;

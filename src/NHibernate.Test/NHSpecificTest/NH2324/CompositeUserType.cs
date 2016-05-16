@@ -6,7 +6,7 @@ using NHibernate.UserTypes;
 
 namespace NHibernate.Test.NHSpecificTest.NH2324
 {
-	public class CompositeUserType : ICompositeUserType
+	public partial class CompositeUserType : ICompositeUserType
 	{
 		#region ICompositeUserType Members
 

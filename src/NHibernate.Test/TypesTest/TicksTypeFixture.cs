@@ -8,7 +8,7 @@ namespace NHibernate.Test.TypesTest
 	/// Summary description for TicksTypeFixture.
 	/// </summary>
 	[TestFixture]
-	public class TicksTypeFixture
+	public partial class TicksTypeFixture
 	{
 		[Test]
 		public void Next()

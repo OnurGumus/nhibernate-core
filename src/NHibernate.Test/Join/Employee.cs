@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Join
 {
-	public class Employee : Person
+	public partial class Employee : Person
 	{
 		public Employee()
 		{
@@ -33,7 +33,7 @@ namespace NHibernate.Test.Join
 		public virtual IList<Meeting> Meetings { get; set; }
 	}
 
-	public class Meeting
+	public partial class Meeting
 	{
 		public virtual int Id { get; set; }
 		public virtual Employee Employee { get; set; }

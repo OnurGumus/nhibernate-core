@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[TestFixture]
-	public class EnumTests : LinqTestCase
+	public partial class EnumTests : LinqTestCase
 	{
 		[Test]
 		public void CanQueryOnEnumStoredAsInt32_High_1()

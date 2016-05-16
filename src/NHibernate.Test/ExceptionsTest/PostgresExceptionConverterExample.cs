@@ -4,7 +4,7 @@ using NHibernate.Exceptions;
 
 namespace NHibernate.Test.ExceptionsTest
 {
-	public class PostgresExceptionConverterExample : ISQLExceptionConverter
+	public partial class PostgresExceptionConverterExample : ISQLExceptionConverter
 	{
 		#region ISQLExceptionConverter Members
 

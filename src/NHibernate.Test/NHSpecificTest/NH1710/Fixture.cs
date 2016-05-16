@@ -6,12 +6,12 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1710
 {
-	public class A
+	public partial class A
 	{
 		public virtual decimal? Amount { get; set; }
 	}
 
-	public abstract class BaseFixture
+	public abstract partial class BaseFixture
 	{
 		protected const string TestNameSpace = "NHibernate.Test.NHSpecificTest.NH1710.";
 		protected Configuration cfg;
@@ -55,7 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1710
 	}
 
 	[TestFixture]
-	public class FixtureWithExplicitDefinedType : BaseFixture
+	public partial class FixtureWithExplicitDefinedType : BaseFixture
 	{
 		protected override string GetResourceName()
 		{
@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1710
 	}
 
 	[TestFixture]
-	public class FixtureWithHeuristicDefinedType : BaseFixture
+	public partial class FixtureWithHeuristicDefinedType : BaseFixture
 	{
 		protected override string GetResourceName()
 		{
@@ -73,7 +73,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1710
 	}
 
 	[TestFixture]
-	public class FixtureWithInLineDefinedType : BaseFixture
+	public partial class FixtureWithInLineDefinedType : BaseFixture
 	{
 		protected override string GetResourceName()
 		{
@@ -82,7 +82,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1710
 	}
 
 	[TestFixture]
-	public class FixtureWithColumnNode : BaseFixture
+	public partial class FixtureWithColumnNode : BaseFixture
 	{
 		protected override string GetResourceName()
 		{

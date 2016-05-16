@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
-	public class RootEntityTests
+	public partial class RootEntityTests
 	{
 		private class Person
 		{

@@ -8,7 +8,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Test.NHSpecificTest.NH3237
 {
-	public class EnumUserType : IUserType
+	public partial class EnumUserType : IUserType
 	{
 		public System.Type ReturnedType
 		{

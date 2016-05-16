@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.TypesTest
 {
-	public class TimeAsTimeSpanClass
+	public partial class TimeAsTimeSpanClass
 	{
 		public int Id { get; set; }
 		public TimeSpan TimeSpanValue { get; set; }

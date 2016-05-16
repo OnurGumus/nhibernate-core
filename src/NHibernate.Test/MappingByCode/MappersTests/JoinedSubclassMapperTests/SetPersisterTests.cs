@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests.JoinedSubclassMapperTests
 {
-	public class SetPersisterTests
+	public partial class SetPersisterTests
 	{
 		private class EntitySimple
 		{

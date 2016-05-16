@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.UtilityTest
 {
 	[TestFixture]
-	public class LRUMapFixture
+	public partial class LRUMapFixture
 	{
 		[Test]
 		public void PutWithSizeLimit()

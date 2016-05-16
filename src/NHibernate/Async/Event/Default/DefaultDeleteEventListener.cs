@@ -73,7 +73,7 @@ namespace NHibernate.Event.Default
 				version = entityEntry.Version;
 			}
 
-			if (await (InvokeDeleteLifecycleAsync(source, entity, persister)))
+			if (InvokeDeleteLifecycle(source, entity, persister))
 				return;
 			await (DeleteEntityAsync(source, entity, entityEntry, @event.CascadeDeleteEnabled, persister, transientEntities));
 			if (source.Factory.Settings.IsIdentifierRollbackEnabled)
@@ -176,21 +176,6 @@ namespace NHibernate.Event.Default
 			ArrayHelper.Fill(copyability, true);
 			await (TypeHelper.DeepCopyAsync(currentState, propTypes, copyability, deletedState, session));
 			return deletedState;
-		}
-
-		protected virtual async Task<bool> InvokeDeleteLifecycleAsync(IEventSource session, object entity, IEntityPersister persister)
-		{
-			if (persister.ImplementsLifecycle(session.EntityMode))
-			{
-				log.Debug("calling onDelete()");
-				if (await (((ILifecycle)entity).OnDeleteAsync(session)) == LifecycleVeto.Veto)
-				{
-					log.Debug("deletion vetoed by onDelete()");
-					return true;
-				}
-			}
-
-			return false;
 		}
 
 		protected virtual async Task CascadeBeforeDeleteAsync(IEventSource session, IEntityPersister persister, object entity, EntityEntry entityEntry, ISet<object> transientEntities)

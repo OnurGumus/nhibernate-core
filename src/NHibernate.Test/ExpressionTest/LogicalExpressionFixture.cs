@@ -15,7 +15,7 @@ namespace NHibernate.Test.ExpressionTest
 	/// TestFixtures because all they do is override one property.
 	/// </remarks>
 	[TestFixture]
-	public class LogicalExpressionFixture : BaseExpressionFixture
+	public partial class LogicalExpressionFixture : BaseExpressionFixture
 	{
 		[Test]
 		public void LogicalSqlStringTest()

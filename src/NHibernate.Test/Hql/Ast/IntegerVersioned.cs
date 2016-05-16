@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Hql.Ast
 {
-	public class IntegerVersioned
+	public partial class IntegerVersioned
 	{
 		private long id;
 		private int version;

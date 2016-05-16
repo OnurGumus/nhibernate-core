@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3010
 {
-	public class FixtureWithNoBatcher : BugTestCase
+	public partial class FixtureWithNoBatcher : BugTestCase
 	{
 		protected override void Configure(Configuration configuration)
 		{

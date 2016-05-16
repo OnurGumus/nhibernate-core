@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MixAutomapping
 {
-	public class ArrayCollectionTests
+	public partial class ArrayCollectionTests
 	{
 		private class Entity
 		{

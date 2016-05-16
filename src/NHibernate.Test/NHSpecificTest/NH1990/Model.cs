@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1990
 {
-	public class NewsFeed
+	public partial class NewsFeed
 	{
 		public NewsFeed()
 		{
@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1990
 		public virtual IList<NewsItem> Items { get; set; }
 	}
 
-	public class NewsItem
+	public partial class NewsItem
 	{
 		public virtual Guid Id { get; set; }
 		public virtual string Title { get; set; }

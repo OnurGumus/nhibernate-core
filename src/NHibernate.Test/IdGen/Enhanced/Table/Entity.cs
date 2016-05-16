@@ -1,6 +1,6 @@
 namespace NHibernate.Test.IdGen.Enhanced.Table
 {
-	public class Entity
+	public partial class Entity
 	{
 
 #pragma warning disable 0414  // unassigned variable

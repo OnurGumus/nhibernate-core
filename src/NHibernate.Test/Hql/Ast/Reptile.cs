@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Hql.Ast
 {
-	public class Reptile: Animal
+	public partial class Reptile: Animal
 	{
 		private float bodyTemperature;
 		public virtual float BodyTemperature
@@ -10,5 +10,5 @@ namespace NHibernate.Test.Hql.Ast
 		}
 	}
 
-	public class Lizard : Reptile { }
+	public partial class Lizard : Reptile { }
 }

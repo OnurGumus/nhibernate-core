@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2288
 {
 	[TestFixture]
-	public class Fixture
+	public partial class Fixture
 	{
 		private static void CheckDialect(Configuration configuration)
 		{
@@ -69,12 +69,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2288
 		}
 	}
 
-	public class Aclass
+	public partial class Aclass
 	{
 		public int Id { get; set; }
 	}
 
-	public class Bclass
+	public partial class Bclass
 	{
 		public int Id { get; set; }
 		public ICollection Aclasses { get; set; }

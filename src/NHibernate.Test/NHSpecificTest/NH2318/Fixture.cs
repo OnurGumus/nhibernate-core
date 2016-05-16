@@ -9,7 +9,7 @@ using NHibernate.Linq.Functions;
 namespace NHibernate.Test.NHSpecificTest.NH2318
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override void Configure(Cfg.Configuration configuration)
 		{

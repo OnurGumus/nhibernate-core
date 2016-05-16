@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH887
 {
-	public class Parent
+	public partial class Parent
 	{
 		private int primaryKey;
 		private int uniqueKey;

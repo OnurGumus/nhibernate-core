@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1605
 {
 	[TestFixture]
-	public class Fixture
+	public partial class Fixture
 	{
 		[Test]
 		public void SupportTypedefInReturnScalarElements()
@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1605
 		Dublin
 	}
 
-	public class Country
+	public partial class Country
 	{
 		public virtual CapitalCities CapitalCity { get; set; }
 	}

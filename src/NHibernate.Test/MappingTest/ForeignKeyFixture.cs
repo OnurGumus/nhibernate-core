@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.MappingTest
 {
 	[TestFixture]
-	public class ForeignKeyFixture
+	public partial class ForeignKeyFixture
 	{
 		[Test]
 		public void UnmatchingColumns()

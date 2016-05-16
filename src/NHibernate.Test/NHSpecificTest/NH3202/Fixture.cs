@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3202
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override void Configure(Configuration configuration)
 		{
@@ -97,14 +97,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 		}
 	}
 
-	public class OffsetStartsAtOneTestDialect : MsSql2008Dialect
+	public partial class OffsetStartsAtOneTestDialect : MsSql2008Dialect
 	{
 		public bool ForceOffsetStartsAtOne { get; set; }
 		public override bool OffsetStartsAtOne { get { return ForceOffsetStartsAtOne; } }
 	}
 
 
-	public class OffsetTestDriver : SqlClientDriver
+	public partial class OffsetTestDriver : SqlClientDriver
 	{
 		public OffsetStartsAtOneTestDialect OffsetStartsAtOneTestDialect;
 		private int _offsetParameterIndex = 1;

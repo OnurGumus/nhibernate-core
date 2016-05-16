@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
 {
-	public class NaturalIdMapperTest
+	public partial class NaturalIdMapperTest
 	{
 		private class EntitySimpleWithNaturalId
 		{

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1217
 {
-	public class DomainBase : IDomainBase
+	public partial class DomainBase : IDomainBase
 	{
 		private Int32 _id;
 
@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1217
 	}
 
 
-	public class Root : DomainBase, IRoot
+	public partial class Root : DomainBase, IRoot
 	{
 		private String _name;
 
@@ -82,7 +82,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1217
 		#endregion
 	}
 
-	public class Node : DomainBase, INode
+	public partial class Node : DomainBase, INode
 	{
 		private ISet<IEdge> _fromEdges;
 		private String _label;
@@ -130,7 +130,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1217
 	}
 
 
-	public class Edge : DomainBase, IEdge
+	public partial class Edge : DomainBase, IEdge
 	{
 		private INode _fromNode;
 		private String _label;

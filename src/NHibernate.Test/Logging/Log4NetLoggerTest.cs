@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Logging
 {
-	public class Log4NetLoggerTest
+	public partial class Log4NetLoggerTest
 	{
 		private class LogMock: ILog
 		{

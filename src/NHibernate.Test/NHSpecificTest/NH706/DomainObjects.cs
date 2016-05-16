@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH706
 {
-	public class Parent
+	public partial class Parent
 	{
 		private int _id;
 		private string _name;
@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 		}
 	}
 
-	public class Child
+	public partial class Child
 	{
 		private int _id;
 		private string _name;
@@ -73,7 +73,7 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 		}
 	}
 
-	public class DifferentChild
+	public partial class DifferentChild
 	{
 		private int _id;
 		private string _name;
@@ -105,7 +105,7 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 		}
 	}
 
-	public class RelatedObject
+	public partial class RelatedObject
 	{
 		private int _id;
 		private string _name;
@@ -123,7 +123,7 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 		}
 	}
 
-	public class ChildComparer : IComparer<Child>
+	public partial class ChildComparer : IComparer<Child>
 	{
 		public int Compare(Child x, Child y)
 		{

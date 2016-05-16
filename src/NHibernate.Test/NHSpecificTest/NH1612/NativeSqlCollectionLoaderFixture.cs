@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1612
 {
 	[TestFixture]
-	public class NativeSqlCollectionLoaderFixture : BugTestCase
+	public partial class NativeSqlCollectionLoaderFixture : BugTestCase
 	{
 		#region Tests - <return-join>
 

@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH1773
 {
-	public class Person
+	public partial class Person
 	{
 		private string _name;
 		private int _age;
@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1773
 		}
 	}
 
-	public class Country
+	public partial class Country
 	{
 		private int _id;
 		private string _name;
@@ -52,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1773
 		}
 	}
 
-	public class PersonResult
+	public partial class PersonResult
 	{
 		private Person _person;
 		private DateTime _time;

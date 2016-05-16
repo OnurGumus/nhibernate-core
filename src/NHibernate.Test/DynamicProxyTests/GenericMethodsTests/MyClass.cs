@@ -1,6 +1,6 @@
 namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 {
-	public class MyClass
+	public partial class MyClass
 	{
 		public virtual object BasicGenericMethod<T>()
 		{

@@ -24,26 +24,30 @@ namespace NHibernate.AsyncGenerator
 
 		public TypeDeclarationSyntax Node { get; }
 
-		public Dictionary<IMethodSymbol, MethodInfo> MethodInfos { get; } = new Dictionary<IMethodSymbol, MethodInfo>();
+		public Dictionary<MethodDeclarationSyntax, MethodInfo> MethodInfos { get; } = new Dictionary<MethodDeclarationSyntax, MethodInfo>();
 
-		public Dictionary<INamedTypeSymbol, TypeInfo> TypeInfos { get; } = new Dictionary<INamedTypeSymbol, TypeInfo>();
+		public Dictionary<TypeDeclarationSyntax, TypeInfo> TypeInfos { get; } = new Dictionary<TypeDeclarationSyntax, TypeInfo>();
 
 		public MethodInfo GetMethodInfo(IMethodSymbol symbol, bool create = false)
 		{
-			if (MethodInfos.ContainsKey(symbol))
+			var location = symbol.Locations.Single(o => o.SourceTree.FilePath == Node.SyntaxTree.FilePath);
+			var memberNode = Node.DescendantNodes()
+									 .OfType<MethodDeclarationSyntax>()
+									 .First(o => o.ChildTokens().SingleOrDefault(t => t.IsKind(SyntaxKind.IdentifierToken)).Span == location.SourceSpan);
+			if (MethodInfos.ContainsKey(memberNode))
 			{
-				return MethodInfos[symbol];
+				return MethodInfos[memberNode];
 			}
 			if (!create)
 			{
 				return null;
 			}
-			var location = symbol.Locations.Single(o => o.SourceTree.FilePath == Node.SyntaxTree.FilePath);
-			var memberNode = Node.DescendantNodes()
-									 .OfType<MethodDeclarationSyntax>()
-									 .Single(o => o.ChildTokens().SingleOrDefault(t => t.IsKind(SyntaxKind.IdentifierToken)).Span == location.SourceSpan);
 			var asyncMember = new MethodInfo(this, symbol, memberNode);
-			MethodInfos.Add(symbol, asyncMember);
+			MethodInfos.Add(memberNode, asyncMember);
+			if ((MethodInfos).Keys.GroupBy(o => o.Identifier.ValueText).Any(o => o.Count() > 1))
+			{
+
+			}
 			return asyncMember;
 		}
 

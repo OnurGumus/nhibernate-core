@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1742
 {
-	public class Event
+	public partial class Event
 	{
 		private readonly IList<Description> descriptions = new List<Description>();
 
@@ -17,12 +17,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1742
 		public virtual DateTime Date { get; set; }
 	}
 
-	public class Device
+	public partial class Device
 	{
 		public virtual int ID { get; set; }
 	}
 
-	public class Description
+	public partial class Description
 	{
 		public virtual Event Event { get; set; }
 		public virtual int ID { get; set; }

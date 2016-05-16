@@ -4,7 +4,7 @@ using Iesi.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH3332
 {
-	public class State
+	public partial class State
 	{
 		private ISet<MasterEntity> _masterEntities = new HashSet<MasterEntity>();
 		private ISet<StateDescription> _stateDescriptions = new HashSet<StateDescription>();

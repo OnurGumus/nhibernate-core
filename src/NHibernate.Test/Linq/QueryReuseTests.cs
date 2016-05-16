@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
     [TestFixture]
-    public class QueryReuseTests : LinqTestCase
+    public partial class QueryReuseTests : LinqTestCase
     {
         private IQueryable<User> _query;
 

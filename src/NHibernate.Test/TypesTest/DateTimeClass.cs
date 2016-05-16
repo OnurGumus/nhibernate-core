@@ -5,7 +5,7 @@ namespace NHibernate.Test.TypesTest
 	/// <summary>
 	/// Summary description for GuidClass.
 	/// </summary>
-	public class DateTimeClass
+	public partial class DateTimeClass
 	{
 		private int _id;
 		private DateTime? _utcDateTimeValue;

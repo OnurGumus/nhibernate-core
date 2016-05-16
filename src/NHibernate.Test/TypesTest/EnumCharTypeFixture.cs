@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	[TestFixture]
-	public class EnumCharTypeFixture : TypeFixtureBase
+	public partial class EnumCharTypeFixture : TypeFixtureBase
 	{
 		protected override string TypeName
 		{

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Cascade.Circle
 {
-	public class Vehicle
+	public partial class Vehicle
 	{
 		private long vehicleId;
 		private long version;

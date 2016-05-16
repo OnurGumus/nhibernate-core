@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.NH3518
 {
-	public class ClassWithXmlMember
+	public partial class ClassWithXmlMember
     {
         private int _id;
 

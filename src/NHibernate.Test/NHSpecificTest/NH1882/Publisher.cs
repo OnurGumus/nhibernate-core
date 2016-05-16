@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1882
 {
-	public class Publisher
+	public partial class Publisher
 	{
 		public Publisher()
 		{

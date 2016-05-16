@@ -9,7 +9,7 @@ using NHibernate.Criterion;
 namespace NHibernate.Test.NHSpecificTest.NH2057
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		[Test]
 		[Description("This test fails intermittently on SQL Server ODBC. Not sure why.")]

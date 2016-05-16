@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaUpdate
 {
-	public class Version
+	public partial class Version
 	{
 		private int id;
 		private string name;

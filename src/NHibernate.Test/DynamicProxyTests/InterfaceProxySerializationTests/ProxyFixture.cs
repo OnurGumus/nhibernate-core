@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 {
 	[TestFixture]
-	public class ProxyFixture : TestCase
+	public partial class ProxyFixture : TestCase
 	{
 		protected override IList Mappings
 		{

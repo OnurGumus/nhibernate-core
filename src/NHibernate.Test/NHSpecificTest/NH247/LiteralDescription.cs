@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH247
 {
-	public class LiteralDescription
+	public partial class LiteralDescription
 	{
 		public LiteralDescription() : base()
 		{

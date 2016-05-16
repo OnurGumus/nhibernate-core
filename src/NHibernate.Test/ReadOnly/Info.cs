@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.ReadOnly
 {
-	public class Info
+	public partial class Info
 	{
 		private long id;
 		private string details;

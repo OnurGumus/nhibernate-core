@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.QueryTest
 {
 	[TestFixture]
-	public class DetachedQueryFixture : TestCase
+	public partial class DetachedQueryFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{
@@ -564,7 +564,7 @@ namespace NHibernate.Test.QueryTest
 		}
 	}
 
-	public class Foo
+	public partial class Foo
 	{
 #pragma warning disable 649
 		private int id;
@@ -629,7 +629,7 @@ namespace NHibernate.Test.QueryTest
 		}
 	}
 
-	public class NoFoo
+	public partial class NoFoo
 	{
 		private string name;
 		public string Name

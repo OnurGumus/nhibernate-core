@@ -1,6 +1,6 @@
 ﻿namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Reversed.Bidirectional
 {
-	public class Employee
+	public partial class Employee
 	{
 		public virtual long Id { get; set; }
 		public virtual string Name { get; set; }
@@ -11,7 +11,7 @@
 		}
 	}
 
-	public class EmployeeInfo
+	public partial class EmployeeInfo
 	{
 		public virtual long Id { get; set; }
 		public virtual Employee EmployeeDetails { get; set; }

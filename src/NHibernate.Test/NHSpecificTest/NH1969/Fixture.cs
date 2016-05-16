@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1969
 	/// Author : Stephane Verlet
 	/// </summary>
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override void OnSetUp()
 		{

@@ -4,7 +4,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH3142
 {
-	public class DomainParent
+	public partial class DomainParent
 	{
 		public virtual int Id1 { get; set; }
 		public virtual int Id2 { get; set; }
@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3142
 		}
 	}
 
-	public class DomainChild
+	public partial class DomainChild
 	{
 		public virtual int Id { get; set; }
 		public virtual int ParentId1 { get; set; }
@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3142
 	}
 
 	[Serializable]
-	public class DomainParentIdentifier
+	public partial class DomainParentIdentifier
 	{
 		public virtual int Id1 { get; set; }
 		public virtual int Id2 { get; set; }
@@ -54,7 +54,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3142
 		}
 	}
 
-	public class DomainParentWithComponentId
+	public partial class DomainParentWithComponentId
 	{
 		public DomainParentWithComponentId()
 		{
@@ -66,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3142
 		public virtual ICollection<DomainChildWCId> Children { get; set; }
 	}
 
-	public class DomainChildWCId
+	public partial class DomainChildWCId
 	{
 		public virtual int Id { get; set; }
 		public virtual int ParentId1 { get; set; }

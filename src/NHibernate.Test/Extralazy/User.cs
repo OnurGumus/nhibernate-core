@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Extralazy
 {
-	public class User
+	public partial class User
 	{
 		private string name;
 		private string password;

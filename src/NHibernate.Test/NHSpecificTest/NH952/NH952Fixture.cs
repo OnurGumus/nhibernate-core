@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH952
 {
 	[TestFixture]
-	public class NH952Fixture
+	public partial class NH952Fixture
 	{
 		private static readonly Assembly MyAssembly = typeof(NH952Fixture).Assembly;
 		private static readonly string MyNamespace = typeof(NH952Fixture).Namespace;

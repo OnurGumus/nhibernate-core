@@ -7,12 +7,12 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2510
 {
-	public class Image
+	public partial class Image
 	{
 		public virtual int Id { get; set; }
 		public virtual byte[] Data { get; set; }
 	}
-	public class Fixture: TestCaseMappingByCode
+	public partial class Fixture: TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{

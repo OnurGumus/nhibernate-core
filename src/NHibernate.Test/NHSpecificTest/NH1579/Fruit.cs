@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH1579
 {
-	public abstract class Fruit : Entity
+	public abstract partial class Fruit : Entity
 	{
 		public Fruit(Entity container)
 		{

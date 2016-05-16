@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Component.Basic
 {
 	[TestFixture]
-	public class ComponentTest : TestCase 
+	public partial class ComponentTest : TestCase 
 	{			
 		protected override string MappingsAssembly
 		{

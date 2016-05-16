@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.GenericTest.OrderedSetGeneric
 {
 	[TestFixture]
-	public class OrderedSetFixture : TestCase
+	public partial class OrderedSetFixture : TestCase
 	{
 		protected override IList Mappings
 		{

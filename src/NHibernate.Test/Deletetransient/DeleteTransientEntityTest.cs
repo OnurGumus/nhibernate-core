@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Deletetransient
 {
 	[TestFixture]
-	public class DeleteTransientEntityTest : TestCase
+	public partial class DeleteTransientEntityTest : TestCase
 	{
 		protected override string MappingsAssembly
 		{

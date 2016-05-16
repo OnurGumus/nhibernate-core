@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH750
 {
-	public class Drive
+	public partial class Drive
 	{
 		public Drive() : base()
 		{

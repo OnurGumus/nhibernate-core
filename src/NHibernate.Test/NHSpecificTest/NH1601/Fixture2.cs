@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1601
 {
     [TestFixture]
-    public class Fixture2 : BugTestCase
+    public partial class Fixture2 : BugTestCase
     {
         /// <summary>
         /// Loads the project and when Scenario2 and Scenario3 are set calls Count on the list assigned.

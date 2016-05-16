@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3480
 			return Id.GetHashCode();
 		}
 
-		public class Key
+		public partial class Key
 		{
 			public virtual Guid Id { get; set; }
 

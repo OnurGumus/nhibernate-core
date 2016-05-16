@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.PropertyTest
 {
 	[TestFixture]
-	public class BackFieldAccessorFixture
+	public partial class BackFieldAccessorFixture
 	{
 		[Test]
 		public void GetValue()
@@ -41,7 +41,7 @@ namespace NHibernate.Test.PropertyTest
 		}
 	}
 
-	public class MyAutoProp
+	public partial class MyAutoProp
 	{
 		public MyAutoProp() {}
 

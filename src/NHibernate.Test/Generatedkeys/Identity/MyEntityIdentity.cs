@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Generatedkeys.Identity
 {
-	public class MyEntityIdentity
+	public partial class MyEntityIdentity
 	{
 		private int id;
 		private string name;

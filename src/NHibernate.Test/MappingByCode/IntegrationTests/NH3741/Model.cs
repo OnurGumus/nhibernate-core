@@ -2,19 +2,19 @@
 
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3741
 {
-	public class ParentWithInterfaceChild
+	public partial class ParentWithInterfaceChild
 	{
 		public int Id { get; set; }
 		public List<IChild> Children { get; set; }
 	}
 
-	public class ParentWithEntityChild
+	public partial class ParentWithEntityChild
 	{
 		public int Id { get; set; }
 		public List<Child> Children { get; set; }
 	}
 
-	public class ParentWithItemChild
+	public partial class ParentWithItemChild
 	{
 		public int Id { get; set; }
 		public List<string> Children { get; set; }
@@ -26,7 +26,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3741
 		string Description { get; set; }
 	}
 
-	public class Child : IChild
+	public partial class Child : IChild
 	{
 		public int Id { get; set; }
 		public string Description { get; set; }

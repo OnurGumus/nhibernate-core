@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.VersionTest.Db
 {
-	public class Group
+	public partial class Group
 	{
 		public virtual long Id { get; set; }
 

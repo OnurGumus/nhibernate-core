@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Extralazy
 {
-	public class Group
+	public partial class Group
 	{
 		private string _name;
 		private IDictionary<string, User> _users = new Dictionary<string, User>();

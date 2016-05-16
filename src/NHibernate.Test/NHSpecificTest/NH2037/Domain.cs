@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH2037
 {
-	public class Country
+	public partial class Country
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }
@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2037
 		}
 	}
 
-	public class City
+	public partial class City
 	{
 		public virtual int Id { get; set; }
 		public virtual Country Country { get; set; }

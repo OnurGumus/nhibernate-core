@@ -9,7 +9,7 @@ namespace NHibernate.Test.TypesTest
 	/// Tests for mapping a Double Property to a database field.
 	/// </summary>
 	[TestFixture]
-	public class DoubleTypeFixture : TypeFixtureBase
+	public partial class DoubleTypeFixture : TypeFixtureBase
 	{
 		private double[] _values = new double[2];
 

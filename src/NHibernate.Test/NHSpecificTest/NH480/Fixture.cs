@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH480
 	/// This test checks that field naming strategies handle this correctly.
 	/// </remarks>
 	[TestFixture]
-	public class Fixture
+	public partial class Fixture
 	{
 		private CultureInfo currentCulture = null;
 		private CultureInfo currentUICulture = null;

@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 	/// if you prefer.
 	/// </remarks>
 	[TestFixture]
-	public class FixtureByCode : TestCaseMappingByCode
+	public partial class FixtureByCode : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{

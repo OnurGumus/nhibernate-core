@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH464
 {
-	public class PromotionWindow
+	public partial class PromotionWindow
 	{
 		private IList<DateRange> dates;
 

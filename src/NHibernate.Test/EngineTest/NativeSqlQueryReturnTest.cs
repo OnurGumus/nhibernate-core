@@ -7,7 +7,7 @@ using NHibernate.Engine.Query.Sql;
 namespace NHibernate.Test.EngineTest
 {
 	[TestFixture]
-	public class NativeSqlQueryReturnTest
+	public partial class NativeSqlQueryReturnTest
 	{
 		[Test]
 		public void AllEmbeddedTypesAreMarkedSerializable()

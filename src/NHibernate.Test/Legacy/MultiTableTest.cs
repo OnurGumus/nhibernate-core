@@ -11,7 +11,7 @@ namespace NHibernate.Test.Legacy
 	/// Summary description for MultiTableTest.
 	/// </summary>
 	[TestFixture]
-	public class MultiTableTest : TestCase
+	public partial class MultiTableTest : TestCase
 	{
 		protected override IList Mappings
 		{

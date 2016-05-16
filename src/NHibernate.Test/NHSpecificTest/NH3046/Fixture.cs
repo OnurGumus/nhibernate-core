@@ -7,7 +7,7 @@ using NHibernate.Cfg;
 namespace NHibernate.Test.NHSpecificTest.NH3046
 {
 	[TestFixture]
-	public class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		[Test, Explicit]
 		public void MemoryLeak()

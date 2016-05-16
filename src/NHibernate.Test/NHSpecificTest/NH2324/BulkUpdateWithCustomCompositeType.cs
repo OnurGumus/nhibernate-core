@@ -3,9 +3,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2324
 {
-	public class BulkUpdateWithCustomCompositeType: BugTestCase
+	public partial class BulkUpdateWithCustomCompositeType: BugTestCase
 	{
-		public class Scenario: IDisposable
+		public partial class Scenario: IDisposable
 		{
 			private readonly ISessionFactory factory;
 

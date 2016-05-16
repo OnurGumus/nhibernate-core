@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH2459
 {
-    public class TrainingComponent
+    public partial class TrainingComponent
     {
         protected TrainingComponent() {}
         public virtual Guid Id { get; set; }
@@ -13,11 +13,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2459
         public virtual string Title { get; set; }
     }
 
-    public class SkillSet : TrainingComponent {
+    public partial class SkillSet : TrainingComponent {
         
     }
 
-    public class Qualification : TrainingComponent {
+    public partial class Qualification : TrainingComponent {
         
     }
 }

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.Hql.Ast
 {
-	public class User
+	public partial class User
 	{
 		private long id;
 		private string userName;

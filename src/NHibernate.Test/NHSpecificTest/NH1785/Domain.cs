@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1785
 {
-	public class Entity1
+	public partial class Entity1
 	{
 		public virtual Guid Id { get; set; }
 		public virtual ISet<Entity2> Entities2 { get; set; }
 	}
 
-	public class Entity2Id
+	public partial class Entity2Id
 	{
 		public virtual Entity1 Entity1 { get; set; }
 		public virtual Entity3 Entity3 { get; set; }
@@ -41,18 +41,18 @@ namespace NHibernate.Test.NHSpecificTest.NH1785
 		}
 	}
 
-	public class Entity2
+	public partial class Entity2
 	{
 		public virtual Entity2Id Id { get; set; }
 	}
 
-	public class Entity3
+	public partial class Entity3
 	{
 		public virtual Guid Id { get; set; }
 		public virtual Entity4 Entity4 { get; set; }
 	}
 
-	public class Entity4
+	public partial class Entity4
 	{
 		public virtual Guid Id { get; set; }
 	}

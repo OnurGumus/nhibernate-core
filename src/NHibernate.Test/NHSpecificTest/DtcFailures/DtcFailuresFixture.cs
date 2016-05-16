@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.DtcFailures
 {
 	[TestFixture]
-	public class DtcFailuresFixture : TestCase
+	public partial class DtcFailuresFixture : TestCase
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(DtcFailuresFixture));
 
@@ -309,7 +309,7 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 			} 
 		}
 
-		public class ForceEscalationToDistributedTx : IEnlistmentNotification
+		public partial class ForceEscalationToDistributedTx : IEnlistmentNotification
 		{
 			private readonly bool shouldRollBack;
 			private readonly int thread;

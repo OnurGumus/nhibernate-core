@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3518
 {
 	[TestFixture]
-	public class XmlColumnTest : BugTestCase
+	public partial class XmlColumnTest : BugTestCase
 	{
 		protected override void OnTearDown()
 		{

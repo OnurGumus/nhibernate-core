@@ -10,7 +10,7 @@ using NHibernate.UserTypes;
 
 namespace NHibernate.Test.NHSpecificTest.NH2278
 {
-	public class CustomIdentifierBagType<T> : IUserCollectionType
+	public partial class CustomIdentifierBagType<T> : IUserCollectionType
 	{
 		#region IUserCollectionType Members
 

@@ -6,7 +6,7 @@ using System.Linq;
 namespace NHibernate.Test.NHSpecificTest.Futures
 {
 	[TestFixture]
-	public class LinqFutureFixture : FutureFixture
+	public partial class LinqFutureFixture : FutureFixture
 	{
 		[Test]
 		public void DefaultReadOnlyTest()

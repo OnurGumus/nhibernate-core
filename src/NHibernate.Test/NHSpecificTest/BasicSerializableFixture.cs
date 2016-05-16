@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest
 	/// whose type is a class that is serializable.
 	/// </summary>
 	[TestFixture]
-	public class BasicSerializableFixture : TestCase
+	public partial class BasicSerializableFixture : TestCase
 	{
 		protected override IList Mappings
 		{

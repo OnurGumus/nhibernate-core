@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 {
-	public class Adjunct
+	public partial class Adjunct
 	{
 		private int id;
 		private string adjunctDescription;

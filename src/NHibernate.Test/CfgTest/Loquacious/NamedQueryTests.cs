@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.CfgTest.Loquacious
 {
-	public class NamedQueryTests
+	public partial class NamedQueryTests
 	{
 		[Test]
 		public void AddSimpleNamedQuery()

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.VersionTest
 {
-	public class Person
+	public partial class Person
 	{
 		private string name;
 		private IList<Thing> things;

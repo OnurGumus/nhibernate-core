@@ -3,14 +3,14 @@ using System;
 namespace NHibernate.Test.NHSpecificTest.NH712
 {
 	// Class without the default constructor
-	public class Component
+	public partial class Component
 	{
 		public Component(int x)
 		{
 		}
 	}
 
-	public class Container
+	public partial class Container
 	{
 		private int id;
 		private Component component;

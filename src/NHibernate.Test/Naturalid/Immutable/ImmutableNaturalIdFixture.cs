@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Naturalid.Immutable
 {
 	[TestFixture]
-	public class ImmutableNaturalIdFixture : TestCase
+	public partial class ImmutableNaturalIdFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{

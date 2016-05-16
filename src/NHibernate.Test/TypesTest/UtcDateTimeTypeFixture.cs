@@ -7,7 +7,7 @@ namespace NHibernate.Test.TypesTest
 	/// The Unit Tests for the UtcDateTimeType.
 	/// </summary>
 	[TestFixture]
-	public class UtcDateTimeTypeFixture : TypeFixtureBase
+	public partial class UtcDateTimeTypeFixture : TypeFixtureBase
 	{
 		protected override string TypeName
 		{

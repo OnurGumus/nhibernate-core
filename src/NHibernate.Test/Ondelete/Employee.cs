@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Ondelete
 {
-	public class Employee : Person
+	public partial class Employee : Person
 	{
 		private string title;
 		private decimal salary;
