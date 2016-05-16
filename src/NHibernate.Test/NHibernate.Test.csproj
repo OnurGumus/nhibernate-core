@@ -120,6 +120,16 @@
     <Compile Include="Any\IPropertyValue.cs" />
     <Compile Include="Any\StringPropertyValue.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Async\ConnectionStringTest\NamedConnectionStringFixture.cs" />
+    <Compile Include="Async\Criteria\AddNumberProjection.cs" />
+    <Compile Include="Async\DynamicEntity\DataProxyHandler.cs" />
+    <Compile Include="Async\DynamicProxyTests\InterfaceWithEqualsGethashcodeTests.cs" />
+    <Compile Include="Async\DynamicProxyTests\PassThroughInterceptor.cs" />
+    <Compile Include="Async\IdGen\Enhanced\SourceMock.cs" />
+    <Compile Include="Async\NHSpecificTest\EntityModeToTuplizerPerf\Fixture.cs" />
+    <Compile Include="Async\NHSpecificTest\NH1054\DummyTransactionFactory.cs" />
+    <Compile Include="Async\NHSpecificTest\NH251\CustomAccessDO.cs" />
+    <Compile Include="Async\NHSpecificTest\SetFixture.cs" />
     <Compile Include="BulkManipulation\BaseFixture.cs" />
     <Compile Include="BulkManipulation\HQLBulkOperations.cs" />
     <Compile Include="BulkManipulation\SimpleClass.cs" />
