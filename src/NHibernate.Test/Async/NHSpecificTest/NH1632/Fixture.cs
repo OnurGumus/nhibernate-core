@@ -1,0 +1,176 @@
+#if NET_4_5
+using NUnit.Framework;
+using System.Threading.Tasks;
+
+namespace NHibernate.Test.NHSpecificTest.NH1632
+{
+	using System.Transactions;
+	using Cache;
+	using Cfg;
+	using Engine;
+	using Id;
+
+	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+	public partial class Fixture : BugTestCase
+	{
+		[Test]
+		public async Task When_commiting_items_in_DTC_transaction_will_add_items_to_2nd_level_cacheAsync()
+		{
+			using (var tx = new TransactionScope())
+			{
+				using (var s = sessions.OpenSession())
+				{
+					await (s.SaveAsync(new Nums{ID = 29, NumA = 1, NumB = 3}));
+				}
+
+				tx.Complete();
+			}
+
+			using (var tx = new TransactionScope())
+			{
+				using (var s = sessions.OpenSession())
+				{
+					var nums = s.Load<Nums>(29);
+					Assert.AreEqual(1, nums.NumA);
+					Assert.AreEqual(3, nums.NumB);
+				}
+
+				tx.Complete();
+			}
+
+			//closing the connection to ensure we can't really use it.
+			var connection = sessions.ConnectionProvider.GetConnection();
+			sessions.ConnectionProvider.CloseConnection(connection);
+			using (var tx = new TransactionScope())
+			{
+				using (var s = sessions.OpenSession(connection))
+				{
+					var nums = s.Load<Nums>(29);
+					Assert.AreEqual(1, nums.NumA);
+					Assert.AreEqual(3, nums.NumB);
+				}
+
+				tx.Complete();
+			}
+
+			using (var s = sessions.OpenSession())
+				using (var tx = s.BeginTransaction())
+				{
+					var nums = s.Load<Nums>(29);
+					await (s.DeleteAsync(nums));
+					await (tx.CommitAsync());
+				}
+		}
+
+		[Test]
+		public async Task When_committing_transaction_scope_will_commit_transactionAsync()
+		{
+			object id;
+			using (var tx = new TransactionScope())
+			{
+				using (ISession s = sessions.OpenSession())
+				{
+					id = await (s.SaveAsync(new Nums{NumA = 1, NumB = 2, ID = 5}));
+				}
+
+				tx.Complete();
+			}
+
+			using (ISession s = sessions.OpenSession())
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					Nums nums = await (s.GetAsync<Nums>(id));
+					Assert.IsNotNull(nums);
+					await (s.DeleteAsync(nums));
+					await (tx.CommitAsync());
+				}
+		}
+
+		[Test]
+		public async Task Will_not_save_when_flush_mode_is_neverAsync()
+		{
+			object id;
+			using (var tx = new TransactionScope())
+			{
+				using (ISession s = sessions.OpenSession())
+				{
+					s.FlushMode = FlushMode.Never;
+					id = await (s.SaveAsync(new Nums{NumA = 1, NumB = 2, ID = 5}));
+				}
+
+				tx.Complete();
+			}
+
+			using (ISession s = sessions.OpenSession())
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					Nums nums = await (s.GetAsync<Nums>(id));
+					Assert.IsNull(nums);
+					await (tx.CommitAsync());
+				}
+		}
+
+		[Test]
+		public async Task When_using_two_sessions_with_explicit_flushAsync()
+		{
+			if (!TestDialect.SupportsConcurrentTransactions)
+				Assert.Ignore(Dialect.GetType().Name + " does not support concurrent transactions.");
+			object id1, id2;
+			using (var tx = new TransactionScope())
+			{
+				using (ISession s1 = sessions.OpenSession())
+					using (ISession s2 = sessions.OpenSession())
+					{
+						id1 = await (s1.SaveAsync(new Nums{NumA = 1, NumB = 2, ID = 5}));
+						await (s1.FlushAsync());
+						id2 = await (s2.SaveAsync(new Nums{NumA = 1, NumB = 2, ID = 6}));
+						await (s2.FlushAsync());
+						tx.Complete();
+					}
+			}
+
+			using (ISession s = sessions.OpenSession())
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					Nums nums = await (s.GetAsync<Nums>(id1));
+					Assert.IsNotNull(nums);
+					await (s.DeleteAsync(nums));
+					nums = await (s.GetAsync<Nums>(id2));
+					Assert.IsNotNull(nums);
+					await (s.DeleteAsync(nums));
+					await (tx.CommitAsync());
+				}
+		}
+
+		[Test]
+		public async Task When_using_two_sessionsAsync()
+		{
+			if (!TestDialect.SupportsConcurrentTransactions)
+				Assert.Ignore(Dialect.GetType().Name + " does not support concurrent transactions.");
+			object id1, id2;
+			using (var tx = new TransactionScope())
+			{
+				using (ISession s1 = sessions.OpenSession())
+					using (ISession s2 = sessions.OpenSession())
+					{
+						id1 = await (s1.SaveAsync(new Nums{NumA = 1, NumB = 2, ID = 5}));
+						id2 = await (s2.SaveAsync(new Nums{NumA = 1, NumB = 2, ID = 6}));
+						tx.Complete();
+					}
+			}
+
+			using (ISession s = sessions.OpenSession())
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					Nums nums = await (s.GetAsync<Nums>(id1));
+					Assert.IsNotNull(nums);
+					await (s.DeleteAsync(nums));
+					nums = await (s.GetAsync<Nums>(id2));
+					Assert.IsNotNull(nums);
+					await (s.DeleteAsync(nums));
+					await (tx.CommitAsync());
+				}
+		}
+	}
+}
+#endif

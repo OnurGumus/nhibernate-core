@@ -22,6 +22,7 @@ namespace NHibernate.AsyncGenerator
 		private readonly SolutionConfiguration _solutionConfiguration;
 		private readonly string _asyncProjectFolder;
 		private HashSet<string> _ignoredProjectNames;
+		private readonly Dictionary<string, Dictionary<string, bool>> _typeNamespaceUniquness = new Dictionary<string, Dictionary<string, bool>>();
 
 		public ProjectInfo(Project project, ProjectConfiguration configuration)
 		{
@@ -40,6 +41,26 @@ namespace NHibernate.AsyncGenerator
 		internal readonly ProjectConfiguration Configuration;
 
 		public Project Project { get; }
+
+		public bool IsNameUniqueInsideNamespace(INamespaceSymbol namespaceSymbol, string name)
+		{
+			var result = true;
+			while (namespaceSymbol != null && result)
+			{
+				var namespaceName = namespaceSymbol.ToString();
+				if (!_typeNamespaceUniquness.ContainsKey(namespaceName))
+				{
+					_typeNamespaceUniquness.Add(namespaceName, new Dictionary<string, bool>());
+				}
+				if (!_typeNamespaceUniquness[namespaceName].ContainsKey(name))
+				{
+					_typeNamespaceUniquness[namespaceName].Add(name, !namespaceSymbol.ConstituentNamespaces.Any(o => o.GetMembers(name).Any()));
+				}
+				result &= _typeNamespaceUniquness[namespaceName][name];
+				namespaceSymbol = namespaceSymbol.ContainingNamespace;
+			}
+			return result;
+		}
 
 		public async Task Analyze()
 		{
@@ -230,6 +251,11 @@ namespace NHibernate.AsyncGenerator
 			if (methodSymbol == null)
 			{
 				Logger.Warn($"Symbol {symbol} is not a method and cannot be made async");
+				return new SymbolInfo();
+			}
+			if (methodSymbol.Name.EndsWith("Async"))
+			{
+				Logger.Debug($"Symbol {symbol} is already async");
 				return new SymbolInfo();
 			}
 			if (methodSymbol.MethodKind != MethodKind.Ordinary && methodSymbol.MethodKind != MethodKind.ExplicitInterfaceImplementation)

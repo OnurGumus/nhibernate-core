@@ -19,7 +19,14 @@ namespace NHibernate.AsyncGenerator.Extensions
 {
 	internal static partial class SyntaxExtensions
 	{
-		public static T AddAsync<T>(this SyntaxNode oldNode, T root, CancellationToken cancellationToken = default(CancellationToken))
+
+		public static SyntaxNode AddAsync(this SyntaxNode oldNode)
+		{
+			var nodeToModify = GetContainingMember(oldNode);
+			return nodeToModify == null ? oldNode : ConvertToAsync(nodeToModify) ?? oldNode;
+		}
+
+		public static T AddAsync<T>(this SyntaxNode oldNode, T root)
 			where T : SyntaxNode
 		{
 			var nodeToModify = GetContainingMember(oldNode);
@@ -28,7 +35,7 @@ namespace NHibernate.AsyncGenerator.Extensions
 				return null;
 			}
 
-			var modifiedNode = ConvertToAsync(nodeToModify, cancellationToken);
+			var modifiedNode = ConvertToAsync(nodeToModify);
 			if (modifiedNode == oldNode)
 			{
 				return root;
@@ -69,15 +76,15 @@ namespace NHibernate.AsyncGenerator.Extensions
 			return null;
 		}
 
-		private static SyntaxNode ConvertMethodToAsync(SyntaxNode methodNode, CancellationToken cancellationToken)
+		private static SyntaxNode ConvertMethodToAsync(SyntaxNode methodNode)
 		{
 			return AddAsyncKeyword(methodNode);
 		}
 
-		private static SyntaxNode ConvertToAsync(SyntaxNode node, CancellationToken cancellationToken)
+		private static SyntaxNode ConvertToAsync(SyntaxNode node)
 		{
 			return node.TypeSwitch(
-				(MethodDeclarationSyntax methodNode) => ConvertMethodToAsync(methodNode, cancellationToken),
+				(MethodDeclarationSyntax methodNode) => ConvertMethodToAsync(methodNode),
 				(ParenthesizedLambdaExpressionSyntax parenthesizedLambda) => ConvertParenthesizedLambdaToAsync(parenthesizedLambda),
 				(SimpleLambdaExpressionSyntax simpleLambda) => ConvertSimpleLambdaToAsync(simpleLambda),
 				(AnonymousMethodExpressionSyntax anonymousMethod) => ConvertAnonymousMethodToAsync(anonymousMethod),

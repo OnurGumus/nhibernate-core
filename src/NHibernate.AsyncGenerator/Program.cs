@@ -210,20 +210,20 @@ namespace NHibernate.AsyncGenerator
 						ScanMethodsBody = true,
 						IgnoreExternalReferences = true,
 						CanScanMethodFunc = symbol => symbol.GetAttributes().Any(a => a.AttributeClass.Name == "AsyncAttribute"))
-					},*/
+					},
 					
 					new ProjectConfiguration("NHibernate.DomainModel")
 					{
 						ScanMethodsBody = true,
 						ScanForMissingAsyncMembers = true,
 						IgnoreReferencesFromProjects = new HashSet<string> { "NHibernate" }
-					},
+					},*/
 					new ProjectConfiguration("NHibernate.Test")
 					{
 						ScanForMissingAsyncMembers = true,
 						IgnoreExternalReferences = true,
-						//ScanMethodsBody = true,
-						//CanScanMethodFunc = symbol => symbol.GetAttributes().Any(a => a.AttributeClass.Name == "TestAttribute")
+						ScanMethodsBody = true,
+						CanScanMethodFunc = symbol => symbol.GetAttributes().Any(a => a.AttributeClass.Name == "TestAttribute")
 					}
 				},
 				IgnoreProjectNames = new HashSet<string> { "NHibernate.TestDatabaseSetup" },

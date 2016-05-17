@@ -32,6 +32,10 @@ namespace NHibernate.AsyncGenerator
 
 		public bool MustBeAwaited { get; set; }
 
+		public bool WrapInsideAsyncFunction { get; set; }
+
+		public bool MakeAnonymousFunctionAsync { get; set; }
+
 		public override bool Equals(object obj)
 		{
 			var refResult = obj as MethodReferenceResult;

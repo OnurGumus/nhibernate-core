@@ -33,9 +33,80 @@ namespace NHibernate.AsyncGenerator
 
 		public HashSet<ReferenceLocation> BodyToAsyncMethodsReferences { get; } = new HashSet<ReferenceLocation>();
 
+		private void AnalyzeInvocationExpression(SyntaxNode node, SimpleNameSyntax nameNode, MethodReferenceResult result)
+		{
+			var selectClause = node.Ancestors()
+				.FirstOrDefault(o => o.IsKind(SyntaxKind.SelectClause));
+			if (selectClause != null) // await is not supported in select clause
+			{
+				result.CanBeAsync = false;
+				Logger.Warn($"Cannot await async method in a select clause:\r\n{selectClause}\r\n");
+				return;
+			}
+
+			var anonFunctionNode = node.Ancestors()
+				.OfType<AnonymousFunctionExpressionSyntax>()
+				.FirstOrDefault();
+			if (anonFunctionNode?.AsyncKeyword.IsMissing == false)
+			{
+				// Custom code
+				var docInfo = TypeInfo.NamespaceInfo.DocumentInfo;
+				var methodArgTypeInfo = ModelExtensions.GetTypeInfo(docInfo.SemanticModel, anonFunctionNode);
+				var convertedType = methodArgTypeInfo.ConvertedType;
+				if (convertedType != null && convertedType.ContainingAssembly.Name == "nunit.framework" && 
+					(
+						convertedType.Name == "TestDelegate" ||
+						convertedType.Name == "ActualValueDelegate"
+					))
+				{
+					result.MakeAnonymousFunctionAsync = true;
+					return;
+				}
+				//end
+
+				result.CanBeAsync = false;
+				Logger.Warn($"Cannot await async method in an non async anonymous function:\r\n{anonFunctionNode}\r\n");
+			}
+		}
+
+		private void AnalyzeArgumentExpression(SyntaxNode node, SimpleNameSyntax nameNode, MethodReferenceResult result)
+		{
+			result.PassedAsArgument = true;
+			var docInfo = TypeInfo.NamespaceInfo.DocumentInfo;
+			var methodArgTypeInfo = ModelExtensions.GetTypeInfo(docInfo.SemanticModel, nameNode);
+			if (methodArgTypeInfo.ConvertedType?.TypeKind != TypeKind.Delegate)
+			{
+				return;
+			}
+
+			// Custom code
+			var convertedType = methodArgTypeInfo.ConvertedType;
+			if (convertedType.ContainingAssembly.Name == "nunit.framework" && convertedType.Name == "TestDelegate")
+			{
+				result.WrapInsideAsyncFunction = true;
+				return;
+			}
+			//end
+
+			var delegateMethod = (IMethodSymbol)methodArgTypeInfo.ConvertedType.GetMembers("Invoke").First();
+
+			if (!delegateMethod.IsAsync)
+			{
+				result.CanBeAsync = false;
+				Logger.Warn($"Cannot pass an async method as parameter to a non async Delegate method:\r\n{delegateMethod}\r\n");
+			}
+			else
+			{
+				var argumentMethodSymbol = (IMethodSymbol)ModelExtensions.GetSymbolInfo(docInfo.SemanticModel, nameNode).Symbol;
+				if (!argumentMethodSymbol.ReturnType.Equals(delegateMethod.ReturnType)) // i.e IList<T> -> IEnumerable<T>
+				{
+					result.MustBeAwaited = true;
+				}
+			}
+		}
+
 		public MethodReferenceResult AnalyzeReference(ReferenceLocation reference)
 		{
-			var docInfo = TypeInfo.NamespaceInfo.DocumentInfo;
 			var nameNode = Node.DescendantNodes()
 							   .OfType<SimpleNameSyntax>()
 							   .First(
@@ -52,8 +123,55 @@ namespace NHibernate.AsyncGenerator
 			{
 				CanBeAsync = true
 			};
-			// verify how the method is used
-			var statementNode = nameNode.Ancestors().OfType<StatementSyntax>().First();
+
+			var currNode = nameNode.Parent;
+			var ascend = true;
+			while (ascend)
+			{
+				ascend = false;
+				switch (currNode.Kind())
+				{
+					case SyntaxKind.ConditionalExpression:
+						result.InsideCondition = true;
+						break;
+					case SyntaxKind.InvocationExpression:
+						AnalyzeInvocationExpression(currNode, nameNode, result);
+						break;
+					case SyntaxKind.Argument:
+						AnalyzeArgumentExpression(currNode, nameNode, result);
+						break;
+					case SyntaxKind.AddAssignmentExpression:
+						result.CanBeAsync = false;
+						Logger.Warn($"Cannot attach an async method to an event (void async is not an option as cannot be awaited):\r\n{nameNode.Parent}\r\n");
+						break;
+					case SyntaxKind.VariableDeclaration:
+						result.CanBeAsync = false;
+						Logger.Warn($"Assigning async method to a variable is not supported:\r\n{nameNode.Parent}\r\n");
+						break;
+					case SyntaxKind.CastExpression:
+						result.MustBeAwaited = true;
+						ascend = true;
+						break;
+					case SyntaxKind.ReturnStatement:
+						break;
+					// skip
+					case SyntaxKind.VariableDeclarator:
+					case SyntaxKind.EqualsValueClause:
+					case SyntaxKind.SimpleMemberAccessExpression:
+					case SyntaxKind.ArgumentList:
+						ascend = true;
+						break;
+					default:
+						throw new NotSupportedException($"Unknown node kind: {currNode.Kind()}");
+				}
+
+				if (ascend)
+				{
+					currNode = currNode.Parent;
+				}
+			}
+
+			var statementNode = currNode.AncestorsAndSelf().OfType<StatementSyntax>().First();
 			if (statementNode.IsKind(SyntaxKind.ReturnStatement))
 			{
 				result.UsedAsReturnValue = true;
@@ -72,72 +190,6 @@ namespace NHibernate.AsyncGenerator
 				{
 					result.LastStatement = true;
 				}
-			}
-
-			if (statementNode.DescendantNodes().OfType<ConditionalExpressionSyntax>().Any())
-			{
-				result.InsideCondition = true;
-			}
-
-			var invocationNode = nameNode.Ancestors().OfType<InvocationExpressionSyntax>().FirstOrDefault();
-			if (invocationNode != null) // method is invocated
-			{
-				if (invocationNode.Parent.IsKind(SyntaxKind.SelectClause)) // await is not supported in select clause
-				{
-					result.CanBeAsync = false;
-					Logger.Warn($"Cannot await async method in a select clause:\r\n{invocationNode.Parent}\r\n");
-				}
-				else
-				{
-					var anonFunctionNode = nameNode.Ancestors().OfType<AnonymousFunctionExpressionSyntax>().FirstOrDefault();
-					if (anonFunctionNode?.AsyncKeyword.IsMissing == false)
-					{
-						result.CanBeAsync = false;
-						Logger.Warn($"Cannot await async method in an non async anonymous function:\r\n{anonFunctionNode}\r\n");
-					}
-				}
-
-			}
-			else if (nameNode.Parent.IsKind(SyntaxKind.Argument)) // method is passed as an argument check if the types matches
-			{
-				var methodArgTypeInfo = ModelExtensions.GetTypeInfo(docInfo.SemanticModel, nameNode);
-				if (methodArgTypeInfo.ConvertedType?.TypeKind == TypeKind.Delegate)
-				{
-					var delegateMethod = (IMethodSymbol)methodArgTypeInfo.ConvertedType.GetMembers("Invoke").First();
-
-					if (!delegateMethod.IsAsync)
-					{
-						result.CanBeAsync = false;
-						Logger.Warn($"Cannot pass an async method as parameter to a non async Delegate method:\r\n{delegateMethod}\r\n");
-					}
-					else
-					{
-						result.PassedAsArgument = true;
-						var argumentMethodSymbol = (IMethodSymbol)ModelExtensions.GetSymbolInfo(docInfo.SemanticModel, nameNode).Symbol;
-						if (!argumentMethodSymbol.ReturnType.Equals(delegateMethod.ReturnType)) // i.e IList<T> -> IEnumerable<T>
-						{
-							result.MustBeAwaited = true;
-						}
-					}
-				}
-				else
-				{
-					throw new NotSupportedException("Unknown method usage");
-				}
-			}
-			else if (nameNode.Parent.IsKind(SyntaxKind.AddAssignmentExpression)) // method attached to an event
-			{
-				result.CanBeAsync = false;
-				Logger.Warn($"Cannot attach an async method to an event (void async is not an option as cannot be awaited):\r\n{nameNode.Parent}\r\n");
-			}
-			else if (nameNode.Parent.IsKind(SyntaxKind.EqualsValueClause)) // method assigned to a variable
-			{
-				result.CanBeAsync = false;
-				Logger.Warn($"Assigning async method to a variable is not supported:\r\n{nameNode.Parent}\r\n");
-			}
-			else
-			{
-				throw new NotSupportedException("Unknown method usage");
 			}
 			return result;
 		}

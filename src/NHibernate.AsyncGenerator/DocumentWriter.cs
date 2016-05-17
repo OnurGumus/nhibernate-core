@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.FindSymbols;
 using NHibernate.AsyncGenerator.Extensions;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
@@ -99,13 +100,13 @@ namespace NHibernate.AsyncGenerator
 			);
 		}
 
-		private MethodDeclarationSyntax RewiteMethod(MethodInfo methodInfo, MethodAnalyzeResult analyzeResult)
+		private MethodDeclarationSyntax RewiteMethod(MethodInfo methodInfo, MethodAnalyzeResult analyzeResult, bool taskConflict)
 		{
 			if (!analyzeResult.HasBody)
 			{
 				return methodInfo.Node
 								 .WithoutAttribute("Async")
-								 .ReturnAsTask(methodInfo.Symbol)
+								 .ReturnAsTask(methodInfo.Symbol, taskConflict)
 								 .WithIdentifier(Identifier(methodInfo.Node.Identifier.Value + "Async"));
 			}
 
@@ -179,6 +180,24 @@ namespace NHibernate.AsyncGenerator
 				}
 				else
 				{
+					if (referenceResult.PassedAsArgument)
+					{
+						if (referenceResult.WrapInsideAsyncFunction)
+						{
+							var argumentNode = nameNode.Ancestors().OfType<ArgumentSyntax>().First();
+							var expressionNode = argumentNode.ChildNodes().OfType<ExpressionSyntax>().First();
+							var lambdaNode = ParenthesizedLambdaExpression(
+								AwaitExpression(
+									InvocationExpression(expressionNode.ReplaceNode(nameNode,
+										nameNode.WithIdentifier(Identifier(nameNode.Identifier.Value + "Async"))))))
+								.WithAsyncKeyword(
+									Token(SyntaxKind.AsyncKeyword));
+							methodNode = methodNode
+								.ReplaceNode(expressionNode, lambdaNode);
+						}
+						continue;
+					}
+
 					var lastAwaitAnnotation = Guid.NewGuid().ToString();
 					// await method
 					var invocationNode = nameNode.Ancestors().OfType<InvocationExpressionSyntax>().First();
@@ -196,6 +215,17 @@ namespace NHibernate.AsyncGenerator
 					methodNode = methodNode.ReplaceNode(invocationNode, awaitNode);
 					awaitNode = methodNode.GetAnnotatedNodes(lastAwaitAnnotation).Single();
 					awaitsPlacements.Add(awaitNode.SpanStart, awaitLength);
+
+					if (!referenceResult.MakeAnonymousFunctionAsync) continue;
+					var functionNode = awaitNode.Ancestors().OfType<AnonymousFunctionExpressionSyntax>().First();
+					if (functionNode.AsyncKeyword.Kind() == SyntaxKind.AsyncKeyword) continue;
+					var functionAnnotation = Guid.NewGuid().ToString();
+					var asyncFunctionNode = functionNode.AddAsync().WithAdditionalAnnotations(new SyntaxAnnotation(functionAnnotation));
+					methodNode = methodNode.ReplaceNode(functionNode, asyncFunctionNode);
+					var asyncKeywordToken = methodNode.GetAnnotatedNodes(functionAnnotation)
+													  .OfType<AnonymousFunctionExpressionSyntax>().First()
+													  .AsyncKeyword;
+					awaitsPlacements.Add(asyncKeywordToken.SpanStart, asyncKeywordToken.Span.Length);
 				}
 			}
 
@@ -247,7 +277,7 @@ namespace NHibernate.AsyncGenerator
 			}
 			methodNode = methodNode
 				.WithoutAttribute("Async")
-				.ReturnAsTask(methodInfo.Symbol)
+				.ReturnAsTask(methodInfo.Symbol, taskConflict)
 				.WithIdentifier(Identifier(methodNode.Identifier.Value + "Async"));
 
 			if (analyzeResult.MustRunSynchronized || (!analyzeResult.CanSkipAsync && !analyzeResult.Yields && analyzeResult.CanBeAsnyc))
@@ -265,9 +295,16 @@ namespace NHibernate.AsyncGenerator
 			var namespaceNodes = new List<MemberDeclarationSyntax>();
 			var customTask = Configuration.Async.CustomTaskType;
 			var tasksUsed = false;
+			var taskConflict = false;
 			foreach (var namespaceInfo in DocumentInfo.Values.OrderBy(o => o.Node.SpanStart))
 			{
 				var namespaceNode = namespaceInfo.Node;
+
+				if (!DocumentInfo.ProjectInfo.IsNameUniqueInsideNamespace(namespaceInfo.Symbol, "Task"))
+				{
+					taskConflict = true;
+				}
+
 				var typeNodes = new List<MemberDeclarationSyntax>();
 				foreach (var typeInfo in namespaceInfo.Values.OrderBy(o => o.Node.SpanStart))
 				{
@@ -279,7 +316,7 @@ namespace NHibernate.AsyncGenerator
 						var methodAnalyzeResult = methodInfo.Analyze();
 						tasksUsed |= methodAnalyzeResult.CanSkipAsync || methodAnalyzeResult.IsEmpty || methodAnalyzeResult.Yields || !methodAnalyzeResult.CanBeAsnyc;
 						asyncLock |= methodAnalyzeResult.MustRunSynchronized;
-						memberNodes.Add(RewiteMethod(methodInfo, methodAnalyzeResult));
+						memberNodes.Add(RewiteMethod(methodInfo, methodAnalyzeResult, taskConflict));
 					}
 					// TODO: inifinite levels of nested types
 					foreach (var subTypeInfo in typeInfo.TypeInfos.Values.OrderBy(o => o.Node.SpanStart))
@@ -292,7 +329,7 @@ namespace NHibernate.AsyncGenerator
 							var methodAnalyzeResult = methodInfo.Analyze();
 							tasksUsed |= methodAnalyzeResult.CanSkipAsync || methodAnalyzeResult.IsEmpty || methodAnalyzeResult.Yields || !methodAnalyzeResult.CanBeAsnyc;
 							subAsyncLock |= methodAnalyzeResult.MustRunSynchronized;
-							subMemberNodes.Add(RewiteMethod(methodInfo, methodAnalyzeResult));
+							subMemberNodes.Add(RewiteMethod(methodInfo, methodAnalyzeResult, taskConflict));
 						}
 						if (subAsyncLock)
 						{
@@ -347,7 +384,9 @@ namespace NHibernate.AsyncGenerator
 						.WithMembers(List(typeNodes)));
 			}
 
-			if (rootNode.Usings.All(o => o.Name.ToString() != "System.Threading.Tasks"))
+
+
+			if (!taskConflict && rootNode.Usings.All(o => o.Name.ToString() != "System.Threading.Tasks"))
 			{
 				rootNode = rootNode.AddUsings(UsingDirective(IdentifierName("System.Threading.Tasks")));
 			}

@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1867
 		private class A
 		{
 			private string Id { get; set; }
-			public partial class B
+			public class B
 			{
 				private string OwnerId { get; set; }
 			}
@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1867
 		private class A<T>
 		{
 			private string Id { get; set; }
-			public partial class B
+			public class B
 			{
 				private string OwnerId { get; set; }
 			}

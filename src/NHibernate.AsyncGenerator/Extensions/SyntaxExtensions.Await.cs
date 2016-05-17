@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace NHibernate.AsyncGenerator.Extensions
 {
@@ -25,16 +26,16 @@ namespace NHibernate.AsyncGenerator.Extensions
 				typeDeclaration = typeDeclaration.ReplaceToken(modifier.Value, modifier.Value.WithLeadingTrivia(SyntaxTriviaList.Empty));
 			}
 
-			var attrList = SyntaxFactory.AttributeList(
-				SyntaxFactory.Token(SyntaxKind.OpenBracketToken).WithLeadingTrivia(modifier?.LeadingTrivia ?? SyntaxTriviaList.Empty),
+			var attrList = AttributeList(
+				Token(SyntaxKind.OpenBracketToken).WithLeadingTrivia(modifier?.LeadingTrivia ?? SyntaxTriviaList.Empty),
 				null,
-				SyntaxFactory.SeparatedList(
+				SeparatedList(
 					new List<AttributeSyntax>
 					{
-						SyntaxFactory.Attribute(SyntaxFactory.IdentifierName("System.CodeDom.Compiler.GeneratedCode(\"AsyncGenerator\", \"1.0.0\")"))
+						Attribute(IdentifierName("System.CodeDom.Compiler.GeneratedCode(\"AsyncGenerator\", \"1.0.0\")"))
 					}
 				),
-				SyntaxFactory.Token(SyntaxKind.CloseBracketToken)
+				Token(SyntaxKind.CloseBracketToken)
 			);
 			if (keepExisting)
 			{
@@ -42,7 +43,7 @@ namespace NHibernate.AsyncGenerator.Extensions
 					.WithAttributes(typeDeclaration.AttributeLists.Add(attrList));
 			}
 			return typeDeclaration
-				.WithAttributes(SyntaxFactory.List(new List<AttributeListSyntax> { attrList }));
+				.WithAttributes(List(new List<AttributeListSyntax> { attrList }));
 		}
 
 		public static TypeDeclarationSyntax AddPartial(this TypeDeclarationSyntax typeDeclaration)
@@ -51,13 +52,13 @@ namespace NHibernate.AsyncGenerator.Extensions
 			if (interfaceDeclaration != null && !typeDeclaration.Modifiers.Any(o => o.IsKind(SyntaxKind.PartialKeyword)))
 			{
 				return interfaceDeclaration
-					.AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
+					.AddModifiers(Token(SyntaxKind.PartialKeyword));
 			}
 			var classDeclaration = typeDeclaration as ClassDeclarationSyntax;
 			if (classDeclaration != null && !classDeclaration.Modifiers.Any(o => o.IsKind(SyntaxKind.PartialKeyword)))
 			{
 				return classDeclaration
-					.AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
+					.AddModifiers(Token(SyntaxKind.PartialKeyword));
 			}
 			return typeDeclaration;
 		}
@@ -110,31 +111,52 @@ namespace NHibernate.AsyncGenerator.Extensions
 			if (interfaceDeclaration != null)
 			{
 				return interfaceDeclaration
-					.WithAttributeLists(SyntaxFactory.List<AttributeListSyntax>());
+					.WithAttributeLists(List<AttributeListSyntax>());
 			}
 			var classDeclaration = typeDeclaration as ClassDeclarationSyntax;
 			if (classDeclaration != null)
 			{
 				return classDeclaration
-					.WithAttributeLists(SyntaxFactory.List<AttributeListSyntax>());
+					.WithAttributeLists(List<AttributeListSyntax>());
 			}
 			return typeDeclaration;
 		}
 
 		public static MethodDeclarationSyntax ReturnAsTask(
 			this MethodDeclarationSyntax methodNode,
-			IMethodSymbol methodSymbol)
+			IMethodSymbol methodSymbol, bool withFullName)
 		{
 			var leadingTrivia = methodNode.ReturnType.GetLeadingTrivia();
 			if (methodSymbol.ReturnsVoid)
 			{
+				var taskNode = IdentifierName("Task")
+					.WithLeadingTrivia(leadingTrivia);
 				return methodNode
-					.WithReturnType(SyntaxFactory.IdentifierName("Task").WithLeadingTrivia(leadingTrivia));
+					.WithReturnType(
+						withFullName
+							? QualifiedName(
+								QualifiedName(
+									QualifiedName(
+										IdentifierName("System"),
+										IdentifierName("Threading")),
+									IdentifierName("Tasks")),
+								taskNode)
+							: (TypeSyntax) taskNode);
 			}
-			return methodNode
-				.WithReturnType(SyntaxFactory.GenericName("Task")
+			var genericTaskNode = GenericName("Task")
 				.WithLeadingTrivia(leadingTrivia)
-				.AddTypeArgumentListArguments(methodNode.ReturnType.WithoutLeadingTrivia()));
+				.AddTypeArgumentListArguments(methodNode.ReturnType.WithoutLeadingTrivia());
+			return methodNode
+				.WithReturnType(
+					withFullName
+						? QualifiedName(
+							QualifiedName(
+								QualifiedName(
+									IdentifierName("System"),
+									IdentifierName("Threading")),
+								IdentifierName("Tasks")),
+							genericTaskNode)
+						: (TypeSyntax) genericTaskNode);
 		}
 
 		public static SyntaxNode AddAwait(this SyntaxNode oldNode)
@@ -148,7 +170,7 @@ namespace NHibernate.AsyncGenerator.Extensions
 			var nextToken = expression.Parent.ChildNodesAndTokens().FirstOrDefault(o => o.SpanStart >= expression.Span.End); // token can be in a new line
 			if (nextToken.IsKind(SyntaxKind.DotToken) || nextToken.IsKind(SyntaxKind.BracketedArgumentList))
 			{
-				awaitNode = SyntaxFactory.ParenthesizedExpression(awaitNode);
+				awaitNode = ParenthesizedExpression(awaitNode);
 			}
 
 			return awaitNode;
@@ -182,13 +204,13 @@ namespace NHibernate.AsyncGenerator.Extensions
 				var span = expWithTrailing.GetLocation().GetLineSpan().Span;
 				if (span.Start.Line == span.End.Line && !expWithTrailing.DescendantTrivia().Any(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia)))
 				{
-					return SyntaxFactory.AwaitExpression(SyntaxFactory.ParenthesizedExpression(expWithTrailing))
+					return AwaitExpression(ParenthesizedExpression(expWithTrailing))
 										.WithLeadingTrivia(expression.GetLeadingTrivia())
 										.WithAdditionalAnnotations(Formatter.Annotation);
 				}
 			}
 
-			return SyntaxFactory.AwaitExpression(expression.WithoutTrivia().Parenthesize())
+			return AwaitExpression(expression.WithoutTrivia().Parenthesize())
 								.WithTriviaFrom(expression)
 								.WithAdditionalAnnotations(Simplifier.Annotation, Formatter.Annotation);
 		}
