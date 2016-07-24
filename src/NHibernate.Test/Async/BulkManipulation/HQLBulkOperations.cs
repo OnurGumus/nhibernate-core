@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.BulkManipulation
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class HqlBulkOperations : BaseFixture
+	public partial class HqlBulkOperationsAsync : BaseFixtureAsync
 	{
 		[Test]
 		public async Task SimpleDeleteAsync()
@@ -21,14 +22,14 @@ namespace NHibernate.Test.BulkManipulation
 			using (var s = OpenSession())
 				using (var tx = s.BeginTransaction())
 				{
-					Assert.That(s.CreateQuery("delete from SimpleClass where Description = 'simple2'").ExecuteUpdate(), Is.EqualTo(1));
+					Assert.That(await (s.CreateQuery("delete from SimpleClass where Description = 'simple2'").ExecuteUpdateAsync()), Is.EqualTo(1));
 					await (tx.CommitAsync());
 				}
 
 			using (var s = OpenSession())
 				using (var tx = s.BeginTransaction())
 				{
-					Assert.That(s.CreateQuery("delete from SimpleClass").ExecuteUpdate(), Is.EqualTo(1));
+					Assert.That(await (s.CreateQuery("delete from SimpleClass").ExecuteUpdateAsync()), Is.EqualTo(1));
 					await (tx.CommitAsync());
 				}
 		}

@@ -2,12 +2,41 @@
 using NUnit.Framework;
 using NHibernate.Cfg;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2112
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override Task ConfigureAsync(Configuration configuration)
+		{
+			try
+			{
+				configuration.SetProperty(Environment.GenerateStatistics, "true");
+				configuration.SetProperty(Environment.BatchSize, "0");
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = OpenSession())
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					await (s.CreateSQLQuery("DELETE FROM AMapB").ExecuteUpdateAsync());
+					await (s.CreateSQLQuery("DELETE FROM TableA").ExecuteUpdateAsync());
+					await (s.CreateSQLQuery("DELETE FROM TableB").ExecuteUpdateAsync());
+					await (tx.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task TestAsync()
 		{
@@ -39,6 +68,26 @@ namespace NHibernate.Test.NHSpecificTest.NH2112
 
 			AssertUpdateCount(0);
 			AssertInsertCount(0);
+		}
+
+		protected void ClearCounts()
+		{
+			sessions.Statistics.Clear();
+		}
+
+		protected void AssertInsertCount(long expected)
+		{
+			Assert.That(sessions.Statistics.EntityInsertCount, Is.EqualTo(expected), "unexpected insert count");
+		}
+
+		protected void AssertUpdateCount(int expected)
+		{
+			Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(expected), "unexpected update count");
+		}
+
+		protected void AssertDeleteCount(int expected)
+		{
+			Assert.That(sessions.Statistics.EntityDeleteCount, Is.EqualTo(expected), "unexpected delete count");
 		}
 	}
 }

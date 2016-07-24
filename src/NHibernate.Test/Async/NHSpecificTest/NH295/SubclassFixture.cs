@@ -6,9 +6,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH295
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SubclassFixture : TestCase
+	public partial class SubclassFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecificTest.NH295.Subclass.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
 		[Test]
 		public async Task LoadByIDFailureSameSessionAsync()
 		{
@@ -20,8 +37,8 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 			s.Close();
 			s = OpenSession();
 			s.BeginTransaction();
-			Assert.IsNotNull(s.Get(typeof (User), uid1));
-			UserGroup ug = (UserGroup)s.Get(typeof (UserGroup), uid1);
+			Assert.IsNotNull(await (s.GetAsync(typeof (User), uid1)));
+			UserGroup ug = (UserGroup)await (s.GetAsync(typeof (UserGroup), uid1));
 			Assert.IsNull(ug);
 			await (s.Transaction.CommitAsync());
 			s.Close();
@@ -49,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 			//Load user with USER NAME: 
 			ICriteria criteria1 = s.CreateCriteria(typeof (User));
 			criteria1.Add(Expression.Eq("Name", "User1"));
-			Assert.AreEqual(1, criteria1.List().Count);
+			Assert.AreEqual(1, (await (criteria1.ListAsync())).Count);
 			await (s.Transaction.CommitAsync());
 			s.Close();
 			s = OpenSession();
@@ -57,7 +74,7 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 			//Load group with USER NAME: 
 			ICriteria criteria2 = s.CreateCriteria(typeof (UserGroup));
 			criteria2.Add(Expression.Eq("Name", "User1"));
-			Assert.AreEqual(0, criteria2.List().Count);
+			Assert.AreEqual(0, (await (criteria2.ListAsync())).Count);
 			await (s.Transaction.CommitAsync());
 			s.Close();
 			s = OpenSession();
@@ -65,7 +82,7 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 			//Load group with GROUP NAME
 			ICriteria criteria3 = s.CreateCriteria(typeof (UserGroup));
 			criteria3.Add(Expression.Eq("Name", "Group1"));
-			Assert.AreEqual(1, criteria3.List().Count);
+			Assert.AreEqual(1, (await (criteria3.ListAsync())).Count);
 			await (s.Transaction.CommitAsync());
 			s.Close();
 			s = OpenSession();
@@ -73,27 +90,27 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 			//Load user with GROUP NAME
 			ICriteria criteria4 = s.CreateCriteria(typeof (User));
 			criteria4.Add(Expression.Eq("Name", "Group1"));
-			Assert.AreEqual(0, criteria4.List().Count);
+			Assert.AreEqual(0, (await (criteria4.ListAsync())).Count);
 			await (s.Transaction.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			s.BeginTransaction();
 			//Load group with USER IDENTITY
-			ug1 = (UserGroup)s.Get(typeof (UserGroup), uid1);
+			ug1 = (UserGroup)await (s.GetAsync(typeof (UserGroup), uid1));
 			Assert.IsNull(ug1);
 			await (s.Transaction.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			s.BeginTransaction();
-			ui1 = (User)s.Get(typeof (User), gid1);
+			ui1 = (User)await (s.GetAsync(typeof (User), gid1));
 			Assert.IsNull(ui1);
 			await (s.Transaction.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			s.BeginTransaction();
-			Party p = (Party)s.Get(typeof (Party), uid1);
+			Party p = (Party)await (s.GetAsync(typeof (Party), uid1));
 			Assert.IsTrue(p is User);
-			p = (Party)s.Get(typeof (Party), gid1);
+			p = (Party)await (s.GetAsync(typeof (Party), gid1));
 			Assert.IsTrue(p is UserGroup);
 			await (s.Transaction.CommitAsync());
 			s.Close();
@@ -117,7 +134,7 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 					group.Users.Add(user);
 					await (s.SaveAsync(group));
 					await (s.SaveAsync(user));
-					s.CreateCriteria(typeof (Party)).List();
+					await (s.CreateCriteria(typeof (Party)).ListAsync());
 					await (s.DeleteAsync("from Party"));
 					await (t.CommitAsync());
 				}

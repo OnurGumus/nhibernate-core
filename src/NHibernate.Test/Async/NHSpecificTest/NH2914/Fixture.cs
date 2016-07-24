@@ -9,8 +9,35 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.NHSpecificTest.NH2914
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is Oracle8iDialect;
+		}
+
+		protected override async Task OnSetUpAsync()
+		{
+			using (ISession session = OpenSession())
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					var entity = new Entity{CreationTime = DateTime.Now};
+					await (session.SaveAsync(entity));
+					await (tx.CommitAsync());
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			await (base.OnTearDownAsync());
+			using (ISession session = OpenSession())
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from Entity"));
+					await (tx.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task Linq_DateTimeDotYear_WorksInOracleAsync()
 		{

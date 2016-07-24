@@ -14,9 +14,11 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.FilterTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class DynamicFilterTest : TestCase
+	public partial class DynamicFilterTestAsync : TestCaseAsync
 	{
+		private ILog log = LogManager.GetLogger(typeof (DynamicFilterTestAsync));
 		[Test]
 		public async Task SecondLevelCachedCollectionsFilteringAsync()
 		{
@@ -24,8 +26,8 @@ namespace NHibernate.Test.FilterTest
 			await (testData.PrepareAsync());
 			ISession session = OpenSession();
 			// Force a collection into the second level cache, with its non-filtered elements
-			Salesperson sp = (Salesperson)session.Load(typeof (Salesperson), testData.steveId);
-			NHibernateUtil.Initialize(sp.Orders);
+			Salesperson sp = (Salesperson)await (session.LoadAsync(typeof (Salesperson), testData.steveId));
+			await (NHibernateUtil.InitializeAsync(sp.Orders));
 			ICollectionPersister persister = ((ISessionFactoryImplementor)sessions).GetCollectionPersister(typeof (Salesperson).FullName + ".Orders");
 			Assert.IsTrue(persister.HasCache, "No cache for collection");
 			CacheKey cacheKey = new CacheKey(testData.steveId, persister.KeyType, persister.Role, EntityMode.Poco, (ISessionFactoryImplementor)sessions);
@@ -42,12 +44,12 @@ namespace NHibernate.Test.FilterTest
 			session.Close();
 			session = OpenSession();
 			session.EnableFilter("fulfilledOrders").SetParameter("asOfDate", testData.lastMonth);
-			sp = (Salesperson)session.Load(typeof (Salesperson), testData.steveId);
+			sp = (Salesperson)await (session.LoadAsync(typeof (Salesperson), testData.steveId));
 			Assert.AreEqual(1, sp.Orders.Count, "Filtered-collection not bypassing 2L-cache");
 			session.Close();
 			// Finally, make sure that the original cached version did not get over-written
 			session = OpenSession();
-			sp = (Salesperson)session.Load(typeof (Salesperson), testData.steveId);
+			sp = (Salesperson)await (session.LoadAsync(typeof (Salesperson), testData.steveId));
 			Assert.AreEqual(2, sp.Orders.Count, "Actual cached version got over-written");
 			session.Close();
 			await (testData.ReleaseAsync());
@@ -62,13 +64,13 @@ namespace NHibernate.Test.FilterTest
 			session.EnableFilter("regionlist").SetParameterList("regions", new string[]{"LA", "APAC"});
 			session.EnableFilter("fulfilledOrders").SetParameter("asOfDate", testData.lastMonth);
 			// test retreival through hql with the collection as non-eager
-			IList salespersons = session.CreateQuery("select s from Salesperson as s").List();
+			IList salespersons = await (session.CreateQuery("select s from Salesperson as s").ListAsync());
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 			Salesperson sp = (Salesperson)salespersons[0];
 			Assert.AreEqual(1, sp.Orders.Count, "Incorrect order count");
 			session.Clear();
 			// test retreival through hql with the collection join fetched
-			salespersons = session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").List();
+			salespersons = await (session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").ListAsync());
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 			sp = (Salesperson)salespersons[0];
 			Assert.AreEqual(sp.Orders.Count, 1, "Incorrect order count");
@@ -85,17 +87,17 @@ namespace NHibernate.Test.FilterTest
 			session.EnableFilter("regionlist").SetParameterList("regions", new string[]{"LA", "APAC"});
 			session.EnableFilter("fulfilledOrders").SetParameter("asOfDate", testData.lastMonth);
 			// test retreival through hql with the collection as non-eager
-			IList salespersons = session.CreateQuery("select s from Salesperson as s").SetCacheable(true).List();
+			IList salespersons = await (session.CreateQuery("select s from Salesperson as s").SetCacheable(true).ListAsync());
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 			// Try a second time, to make use of query cache
-			salespersons = session.CreateQuery("select s from Salesperson as s").SetCacheable(true).List();
+			salespersons = await (session.CreateQuery("select s from Salesperson as s").SetCacheable(true).ListAsync());
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 			session.Clear();
 			// test retreival through hql with the collection join fetched
-			salespersons = session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").SetCacheable(true).List();
+			salespersons = await (session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").SetCacheable(true).ListAsync());
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 			// A second time, to make use of query cache
-			salespersons = session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").SetCacheable(true).List();
+			salespersons = await (session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").SetCacheable(true).ListAsync());
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 			session.Close();
 			await (testData.ReleaseAsync());
@@ -114,12 +116,12 @@ namespace NHibernate.Test.FilterTest
 			session.EnableFilter("region").SetParameter("region", "APAC");
 			session.EnableFilter("effectiveDate").SetParameter("asOfDate", testData.lastMonth);
 			log.Info("HQL against Salesperson...");
-			IList results = session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").List();
+			IList results = await (session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").ListAsync());
 			Assert.IsTrue(results.Count == 1, "Incorrect filtered HQL result count [" + results.Count + "]");
 			Salesperson result = (Salesperson)results[0];
 			Assert.IsTrue(result.Orders.Count == 1, "Incorrect collectionfilter count");
 			log.Info("HQL against Product...");
-			results = session.CreateQuery("from Product as p where p.StockNumber = ?").SetInt32(0, 124).List();
+			results = await (session.CreateQuery("from Product as p where p.StockNumber = ?").SetInt32(0, 124).ListAsync());
 			Assert.IsTrue(results.Count == 1);
 			session.Close();
 			await (testData.ReleaseAsync());
@@ -139,11 +141,11 @@ namespace NHibernate.Test.FilterTest
 			session.EnableFilter("fulfilledOrders").SetParameter("asOfDate", testData.lastMonth);
 			session.EnableFilter("effectiveDate").SetParameter("asOfDate", testData.lastMonth);
 			log.Info("Criteria query against Salesperson...");
-			IList salespersons = session.CreateCriteria(typeof (Salesperson)).SetFetchMode("orders", FetchMode.Join).List();
+			IList salespersons = await (session.CreateCriteria(typeof (Salesperson)).SetFetchMode("orders", FetchMode.Join).ListAsync());
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 			Assert.AreEqual(1, ((Salesperson)salespersons[0]).Orders.Count, "Incorrect order count");
 			log.Info("Criteria query against Product...");
-			IList products = session.CreateCriteria(typeof (Product)).Add(Expression.Eq("StockNumber", 124)).List();
+			IList products = await (session.CreateCriteria(typeof (Product)).Add(Expression.Eq("StockNumber", 124)).ListAsync());
 			Assert.AreEqual(1, products.Count, "Incorrect product count");
 			session.Close();
 			await (testData.ReleaseAsync());
@@ -161,7 +163,7 @@ namespace NHibernate.Test.FilterTest
 			ISession session = OpenSession();
 			session.EnableFilter("region").SetParameter("region", "APAC");
 			log.Info("Performing get()...");
-			Salesperson salesperson = (Salesperson)session.Get(typeof (Salesperson), testData.steveId);
+			Salesperson salesperson = (Salesperson)await (session.GetAsync(typeof (Salesperson), testData.steveId));
 			Assert.IsNotNull(salesperson);
 			Assert.AreEqual(1, salesperson.Orders.Count, "Incorrect order count");
 			session.Close();
@@ -180,7 +182,7 @@ namespace NHibernate.Test.FilterTest
 			ISession session = OpenSession();
 			session.EnableFilter("seniorSalespersons").SetParameter("asOfDate", testData.lastMonth);
 			log.Info("Performing Load of Department...");
-			Department department = (Department)session.Load(typeof (Department), testData.deptId);
+			Department department = (Department)await (session.LoadAsync(typeof (Department), testData.deptId));
 			ISet<Salesperson> salespersons = department.Salespersons;
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 			session.Close();
@@ -199,7 +201,7 @@ namespace NHibernate.Test.FilterTest
 			ISession session = OpenSession();
 			session.EnableFilter("regionlist").SetParameterList("regions", new string[]{"LA", "APAC"});
 			log.Debug("Performing query of Salespersons");
-			IList salespersons = session.CreateQuery("from Salesperson").List();
+			IList salespersons = await (session.CreateQuery("from Salesperson").ListAsync());
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 			session.Close();
 			await (testData.ReleaseAsync());
@@ -226,7 +228,7 @@ namespace NHibernate.Test.FilterTest
 			await (testData.PrepareAsync());
 			ISession session = OpenSession();
 			session.EnableFilter("effectiveDate").SetParameter("asOfDate", DateTime.Today);
-			Product prod = (Product)session.Get(typeof (Product), testData.prod1Id);
+			Product prod = (Product)await (session.GetAsync(typeof (Product), testData.prod1Id));
 			//long initLoadCount = sessions.Statistics.CollectionLoadCount;
 			//long initFetchCount = sessions.Statistics.CollectionFetchCount;
 			// should already have been initialized...
@@ -264,7 +266,7 @@ namespace NHibernate.Test.FilterTest
 			ISession session = OpenSession();
 			session.EnableFilter("effectiveDate").SetParameter("asOfDate", DateTime.Today);
 			// Force the categories to not get initialized here
-			IList result = session.CreateQuery("from Product as p where p.id = :id").SetInt64("id", testData.prod1Id).List();
+			IList result = await (session.CreateQuery("from Product as p where p.id = :id").SetInt64("id", testData.prod1Id).ListAsync());
 			Assert.IsTrue(result.Count > 0, "No products returned from HQL");
 			Product prod = (Product)result[0];
 			Assert.IsNotNull(prod);
@@ -280,7 +282,7 @@ namespace NHibernate.Test.FilterTest
 			await (testData.PrepareAsync());
 			ISession session = OpenSession();
 			session.EnableFilter("effectiveDate").SetParameter("asOfDate", DateTime.Today);
-			IList result = session.CreateQuery("from Product p inner join fetch p.Categories").List();
+			IList result = await (session.CreateQuery("from Product p inner join fetch p.Categories").ListAsync());
 			Assert.IsTrue(result.Count > 0, "No products returned from HQL many-to-many filter case");
 			Product prod = (Product)result[0];
 			Assert.IsNotNull(prod);
@@ -295,7 +297,7 @@ namespace NHibernate.Test.FilterTest
 			TestData testData = new TestData(this);
 			await (testData.PrepareAsync());
 			ISession session = OpenSession();
-			Product prod = (Product)session.Get(typeof (Product), testData.prod1Id);
+			Product prod = (Product)await (session.GetAsync(typeof (Product), testData.prod1Id));
 			// TODO H3: Statistics
 			//long initLoadCount = sessions.Statistics.CollectionLoadCount;
 			//long initFetchCount = sessions.Statistics.CollectionFetchCount;
@@ -333,7 +335,7 @@ namespace NHibernate.Test.FilterTest
 			TestData testData = new TestData(this);
 			await (testData.PrepareAsync());
 			ISession session = OpenSession();
-			IList result = session.CreateCriteria(typeof (Product)).Add(Expression.Eq("id", testData.prod1Id)).List();
+			IList result = await (session.CreateCriteria(typeof (Product)).Add(Expression.Eq("id", testData.prod1Id)).ListAsync());
 			Product prod = (Product)result[0];
 			//long initLoadCount = sessions.Statistics.CollectionLoadCount;
 			//long initFetchCount = sessions.Statistics.CollectionFetchCount;
@@ -364,9 +366,39 @@ namespace NHibernate.Test.FilterTest
 			await (testData.ReleaseAsync());
 		}
 
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"FilterTest.defs.hbm.xml", "FilterTest.classes.hbm.xml", };
+			}
+		}
+
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		private partial class TestData
 		{
+			public long steveId;
+			public long deptId;
+			public long prod1Id;
+			public DateTime lastMonth;
+			public DateTime nextMonth;
+			public DateTime sixMonthsAgo;
+			public DateTime fourMonthsAgo;
+			private DynamicFilterTestAsync outer;
+			public TestData(DynamicFilterTestAsync outer)
+			{
+				this.outer = outer;
+			}
+
+			public IList<object> entitiesToCleanUp = new List<object>();
 			public async Task PrepareAsync()
 			{
 				ISession session = outer.OpenSession();

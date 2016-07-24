@@ -5,9 +5,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH704
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH704";
+			}
+		}
+
 		[Test]
 		public async Task ReAttachCatTestAsync()
 		{
@@ -19,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH704
 					await (sess.SaveAsync(c));
 					await (sess.FlushAsync());
 					sess.Clear();
-					sess.Lock(c, LockMode.None); //Exception throw here
+					await (sess.LockAsync(c, LockMode.None)); //Exception throw here
 				}
 			}
 			finally

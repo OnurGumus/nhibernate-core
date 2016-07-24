@@ -8,9 +8,36 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1837
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnSetUpAsync()
+		{
+			sessions.Statistics.IsStatisticsEnabled = true;
+			using (ISession session = this.OpenSession())
+				using (ITransaction tran = session.BeginTransaction())
+				{
+					var customer = new Customer{Name = "Fabio Maulo"};
+					var order = new Order{Date = DateTime.Now, Customer = customer};
+					customer.Orders.Add(order);
+					await (session.SaveAsync(customer));
+					await (session.SaveAsync(order));
+					await (tran.CommitAsync());
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = this.OpenSession())
+				using (ITransaction tran = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from Order"));
+					await (session.DeleteAsync("from Customer"));
+					await (tran.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task ExecutesOneQueryWithUniqueResultWithChildCriteriaNonGenericAsync()
 		{

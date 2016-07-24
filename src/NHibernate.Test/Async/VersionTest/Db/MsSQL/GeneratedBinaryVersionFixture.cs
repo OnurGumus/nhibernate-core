@@ -5,9 +5,31 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.VersionTest.Db.MsSQL
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class GeneratedBinaryVersionFixture : TestCase
+	public partial class GeneratedBinaryVersionFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"VersionTest.Db.MsSQL.SimpleVersioned.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is MsSql2000Dialect;
+		}
+
 		[Test]
 		public async System.Threading.Tasks.Task ShouldRetrieveVersionAfterFlushAsync()
 		{

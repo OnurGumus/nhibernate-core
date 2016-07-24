@@ -6,12 +6,46 @@ using NHibernate.Engine;
 using NUnit.Framework;
 using NHibernate.Criterion;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.EntityModeTest.Map.Basic
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class DynamicClassFixture : TestCase
+	public partial class DynamicClassFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"EntityModeTest.Map.Basic.ProductLine.hbm.xml"};
+			}
+		}
+
+		protected override Task ConfigureAsync(Configuration configuration)
+		{
+			try
+			{
+				configuration.SetProperty(Environment.DefaultEntityMode, EntityModeHelper.ToString(EntityMode.Map));
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		public delegate IDictionary SingleCarQueryDelegate(ISession session);
+		public delegate IList AllModelQueryDelegate(ISession session);
 		[Test]
 		public async Task ShouldWorkWithHQLAsync()
 		{
@@ -53,7 +87,7 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 				hsv["Description"] = "Holden hsv";
 				models = new List<IDictionary>{monaro, hsv};
 				cars["Models"] = models;
-				s.Save("ProductLine", cars);
+				await (s.SaveAsync("ProductLine", cars));
 				await (t.CommitAsync());
 			}
 

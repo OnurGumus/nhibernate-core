@@ -3,12 +3,19 @@ using System;
 using System.Data.Common;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1483
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override Task OnTearDownAsync()
+		{
+			return DeleteAllAsync(true);
+		}
+
 		/// <summary>
 		/// Tests that a Subclass can be loaded from second level cache as the specified 
 		/// type of baseclass
@@ -75,7 +82,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1483
 					using (DbCommand cmd = session.Connection.CreateCommand())
 					{
 						cmd.CommandText = "DELETE FROM BaseClass";
-						cmd.ExecuteNonQuery();
+						await (cmd.ExecuteNonQueryAsync());
 					}
 				}
 			}

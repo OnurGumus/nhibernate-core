@@ -4,9 +4,27 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2043
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		public partial class Namer : EmptyInterceptor
+		{
+			public override string GetEntityName(object entity)
+			{
+				if (entity.GetType().Name.EndsWith("Impl"))
+					return entity.GetType().BaseType.FullName;
+				return base.GetEntityName(entity);
+			}
+		}
+
+		protected override void BuildSessionFactory()
+		{
+			cfg.SetInterceptor(new Namer());
+			base.BuildSessionFactory();
+		}
+
 		[Test]
 		public async Task TestAsync()
 		{

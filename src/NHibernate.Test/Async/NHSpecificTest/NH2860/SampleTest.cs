@@ -4,9 +4,34 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2860
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SampleTest : BugTestCase
+	public partial class SampleTestAsync : BugTestCaseAsync
 	{
+		private int objId;
+		protected override async Task OnSetUpAsync()
+		{
+			using (var session = OpenSession())
+				using (var transaction = session.BeginTransaction())
+				{
+					var obj = new ClassA();
+					obj.Text = "Test existing object";
+					obj.Blob_Field = new byte[]{0, 0, 1, 1, 2, 2};
+					objId = (int)await (session.SaveAsync(obj));
+					await (transaction.CommitAsync());
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (var session = OpenSession())
+				using (var transaction = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from ClassA"));
+					await (transaction.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task Can_LazyPropertyCastingExceptionAsync()
 		{
@@ -25,15 +50,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2860
 					await (trans.CommitAsync());
 				}
 
-				session.Refresh(classA);
+				await (session.RefreshAsync(classA));
 				classA.Text = "updated entity";
 				using (var trans = session.BeginTransaction())
 				{
-					session.SaveOrUpdate(classA);
+					await (session.SaveOrUpdateAsync(classA));
 					await (trans.CommitAsync());
 				}
 
-				session.Refresh(classA);
+				await (session.RefreshAsync(classA));
 			}
 		}
 
@@ -45,15 +70,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2860
 			{
 				var classA = await (session.GetAsync<ClassA>(objId));
 				Assert.IsNotNull(classA);
-				session.Refresh(classA);
+				await (session.RefreshAsync(classA));
 				classA.Text = "updated entity";
 				using (var trans = session.BeginTransaction())
 				{
-					session.SaveOrUpdate(classA);
+					await (session.SaveOrUpdateAsync(classA));
 					await (trans.CommitAsync());
 				}
 
-				session.Refresh(classA);
+				await (session.RefreshAsync(classA));
 			}
 		}
 	}

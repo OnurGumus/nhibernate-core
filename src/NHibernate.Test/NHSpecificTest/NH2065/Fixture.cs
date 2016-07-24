@@ -40,28 +40,28 @@ namespace NHibernate.Test.NHSpecificTest.NH2065
         }
 
 		[Test]
-        [ExpectedException(
-            ExpectedException=typeof(HibernateException), 
-            ExpectedMessage="reassociated object has dirty collection: NHibernate.Test.NHSpecificTest.NH2065.Person.Children")]
 		public void GetGoodErrorForDirtyReassociatedCollection()
 		{
-            Person person;
-            using (var s = OpenSession())
-            using (s.BeginTransaction())
-            {
-                person = s.Get<Person>(1);
-                NHibernateUtil.Initialize(person.Children);
-                s.Transaction.Commit();
-            }
+			Assert.That(() =>
+			{
+				Person person;
+				using (var s = OpenSession())
+				using (s.BeginTransaction())
+				{
+					person = s.Get<Person>(1);
+					NHibernateUtil.Initialize(person.Children);
+					s.Transaction.Commit();
+				}
 
-            person.Children.Clear();
+				person.Children.Clear();
 
-            using (var s = OpenSession())
-            using (s.BeginTransaction())
-            {
-                s.Lock(person, LockMode.None);
-            }
-		} 
+				using (var s = OpenSession())
+				using (s.BeginTransaction())
+				{
+					s.Lock(person, LockMode.None);
+				}
+			}, Throws.TypeOf<HibernateException>().With.Message.SameAs("reassociated object has dirty collection: NHibernate.Test.NHSpecificTest.NH2065.Person.Children"));
+		}
 
 	}
 }

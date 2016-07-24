@@ -6,9 +6,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.IdGen.Enhanced.Table
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class PooledTableTest : TestCase
+	public partial class PooledTableTestAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"IdGen.Enhanced.Table.Pooled.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
 		[Test]
 		public async Task TestNormalBoundaryAsync()
 		{

@@ -6,9 +6,15 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1756
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is MsSql2000Dialect;
+		}
+
 		[Test]
 		public async Task SaveTransient_Then_Update_OkAsync()
 		{
@@ -27,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1756
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					session.CreateQuery("delete from BookNotGenerated").ExecuteUpdate();
+					await (session.CreateQuery("delete from BookNotGenerated").ExecuteUpdateAsync());
 					await (transaction.CommitAsync());
 				}
 			}
@@ -52,7 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1756
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					session.CreateQuery("delete from Book").ExecuteUpdate();
+					await (session.CreateQuery("delete from Book").ExecuteUpdateAsync());
 					await (transaction.CommitAsync());
 				}
 			}
@@ -77,7 +83,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1756
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					session.CreateQuery("delete from Book").ExecuteUpdate();
+					await (session.CreateQuery("delete from Book").ExecuteUpdateAsync());
 					await (transaction.CommitAsync());
 				}
 			}

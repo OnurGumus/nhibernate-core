@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1531
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SampleTest : BugTestCase
+	public partial class SampleTestAsync : BugTestCaseAsync
 	{
 		private async Task FillDbAsync()
 		{
@@ -43,8 +44,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1531
 				Assert.IsNotNull(p1Child);
 				parent1.DetachAllChildren();
 				parent2.AttachNewChild(p1Child);
-				session.SaveOrUpdate(parent1);
-				session.SaveOrUpdate(parent2);
+				await (session.SaveOrUpdateAsync(parent1));
+				await (session.SaveOrUpdateAsync(parent2));
 				// NHibernate.ObjectDeletedException : 
 				// deleted object would be re-saved by cascade (remove deleted object from associations)[NHibernate.Test.NHSpecificTest.NH1531.Child#0]
 				await (session.FlushAsync());
@@ -53,7 +54,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1531
 			using (ISession session = OpenSession())
 			{
 				// should exist only one child
-				var l = session.CreateQuery("from Child").List();
+				var l = await (session.CreateQuery("from Child").ListAsync());
 				Assert.That(l.Count, Is.EqualTo(1));
 			}
 

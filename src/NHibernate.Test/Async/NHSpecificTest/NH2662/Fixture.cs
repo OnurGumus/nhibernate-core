@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.NHSpecificTest.NH2662
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task WhenCastAliasInQueryOverThenDoNotThrowAsync()
@@ -38,10 +38,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2662
 					}
 
 					, Throws.Nothing);
-					Assert.That(() =>
+					Assert.That(async () =>
 					{
 						Order orderAlias = null;
-						var results = session.QueryOver<Customer>().Left.JoinAlias(o => o.Order, () => orderAlias).OrderBy(() => orderAlias.OrderDate).Asc.SelectList(list => list.Select(o => o.Id).Select(() => orderAlias.OrderDate).Select(() => ((PizzaOrder)orderAlias).PizzaName)).List<object[]>();
+						var results = await (session.QueryOver<Customer>().Left.JoinAlias(o => o.Order, () => orderAlias).OrderBy(() => orderAlias.OrderDate).Asc.SelectList(list => list.Select(o => o.Id).Select(() => orderAlias.OrderDate).Select(() => ((PizzaOrder)orderAlias).PizzaName)).ListAsync<object[]>());
 						Assert.That(results.Count, Is.EqualTo(2));
 						Assert.That(results[0][2], Is.EqualTo("Margarita"));
 					}

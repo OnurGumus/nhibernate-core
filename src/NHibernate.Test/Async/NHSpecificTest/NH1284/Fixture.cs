@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1284
 {
+	[TestFixture, Ignore("Not supported yet.")]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task EmptyValueTypeComponentAsync()
@@ -22,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1284
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					jimmy = (Person)s.Get(typeof (Person), "Jimmy Hendrix");
+					jimmy = (Person)await (s.GetAsync(typeof (Person), "Jimmy Hendrix"));
 					await (tx.CommitAsync());
 				}
 

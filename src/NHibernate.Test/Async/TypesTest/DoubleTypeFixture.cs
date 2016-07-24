@@ -7,9 +7,46 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.TypesTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class DoubleTypeFixture : TypeFixtureBase
+	public partial class DoubleTypeFixtureAsync : TypeFixtureBaseAsync
 	{
+		private double[] _values = new double[2];
+		protected override string TypeName
+		{
+			get
+			{
+				return "Double";
+			}
+		}
+
+		protected override async Task OnSetUpAsync()
+		{
+			await (base.OnSetUpAsync());
+			if (Dialect is Oracle8iDialect)
+			{
+				_values[0] = 1.5e20;
+				_values[1] = 1.2e-20;
+			}
+			else
+			{
+				_values[0] = 1.5e35;
+				_values[1] = 1.2e-35;
+			}
+		}
+
+		/// <summary>
+		/// Verify Equals will correctly determine when the property
+		/// is dirty.
+		/// </summary>
+		[Test]
+		public void Equals()
+		{
+			DoubleType type = (DoubleType)NHibernateUtil.Double;
+			Assert.IsTrue(type.IsEqual(1.5e20, 1.5e20));
+			Assert.IsFalse(type.IsEqual(1.5e20, 1.4e20));
+		}
+
 		[Test]
 		public async Task ReadWriteAsync()
 		{
@@ -21,7 +58,7 @@ namespace NHibernate.Test.TypesTest
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			basic = (DoubleClass)s.Load(typeof (DoubleClass), 1);
+			basic = (DoubleClass)await (s.LoadAsync(typeof (DoubleClass), 1));
 			Assert.AreEqual(_values[0], basic.DoubleValue);
 			await (s.DeleteAsync(basic));
 			await (s.FlushAsync());

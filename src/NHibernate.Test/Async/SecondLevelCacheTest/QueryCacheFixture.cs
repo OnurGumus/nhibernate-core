@@ -6,12 +6,43 @@ using NHibernate.Stat;
 using NUnit.Framework;
 using NHibernate.Transform;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.SecondLevelCacheTests
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ScalarQueryFixture : TestCase
+	public partial class ScalarQueryFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"SecondLevelCacheTest.Item.hbm.xml"};
+			}
+		}
+
+		protected override Task ConfigureAsync(Cfg.Configuration configuration)
+		{
+			try
+			{
+				configuration.SetProperty(Cfg.Environment.GenerateStatistics, "true");
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
 		public async Task FillDbAsync(int startId)
 		{
 			using (ISession s = OpenSession())
@@ -44,7 +75,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					s.GetNamedQuery("Stat").List();
+					await (s.GetNamedQuery("Stat").ListAsync());
 					await (tx.CommitAsync());
 				}
 
@@ -55,7 +86,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					s.GetNamedQuery("Stat").List();
+					await (s.GetNamedQuery("Stat").ListAsync());
 					await (tx.CommitAsync());
 				}
 
@@ -74,7 +105,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					resultCount = s.CreateQuery("select ai.Name, count(*) from AnotherItem ai group by ai.Name").SetCacheable(true).SetCacheRegion("Statistics").List().Count;
+					resultCount = (await (s.CreateQuery("select ai.Name, count(*) from AnotherItem ai group by ai.Name").SetCacheable(true).SetCacheRegion("Statistics").ListAsync())).Count;
 					await (tx.CommitAsync());
 				}
 
@@ -86,7 +117,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					secondResultCount = s.CreateQuery("select ai.Name, count(*) from AnotherItem ai group by ai.Name").SetCacheable(true).SetCacheRegion("Statistics").List().Count;
+					secondResultCount = (await (s.CreateQuery("select ai.Name, count(*) from AnotherItem ai group by ai.Name").SetCacheable(true).SetCacheRegion("Statistics").ListAsync())).Count;
 					await (tx.CommitAsync());
 				}
 
@@ -111,7 +142,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					result = s.CreateQuery(queryString).SetCacheable(true).List();
+					result = await (s.CreateQuery(queryString).SetCacheable(true).ListAsync());
 					Assert.That(result.Count, Is.EqualTo(1));
 					await (tx.CommitAsync());
 				}
@@ -120,7 +151,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					result = s.CreateQuery(queryString).SetCacheable(true).List();
+					result = await (s.CreateQuery(queryString).SetCacheable(true).ListAsync());
 					Assert.That(result.Count, Is.EqualTo(1));
 					await (tx.CommitAsync());
 				}
@@ -130,7 +161,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					result = s.CreateQuery(queryString).SetCacheable(true).List();
+					result = await (s.CreateQuery(queryString).SetCacheable(true).ListAsync());
 					Assert.That(result.Count, Is.EqualTo(1));
 					Assert.That(NHibernateUtil.IsInitialized(result[0]));
 					var i = (Item)result[0];
@@ -145,7 +176,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					s.CreateQuery(queryString).SetCacheable(true).List();
+					await (s.CreateQuery(queryString).SetCacheable(true).ListAsync());
 					var i = await (s.GetAsync<Item>(savedId));
 					Assert.That(i.Name, Is.EqualTo("Widget"));
 					await (s.DeleteAsync(i));
@@ -165,7 +196,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					s.CreateQuery(queryString).SetCacheable(true).List();
+					await (s.CreateQuery(queryString).SetCacheable(true).ListAsync());
 					var i = new Item{Name = "widget"};
 					savedId = await (s.SaveAsync(i));
 					await (tx.CommitAsync());
@@ -185,7 +216,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					s.CreateQuery(queryString).SetCacheable(true).List();
+					await (s.CreateQuery(queryString).SetCacheable(true).ListAsync());
 					var i = new AnotherItem{Name = "widget"};
 					savedId = await (s.SaveAsync(i));
 					await (tx.CommitAsync());
@@ -198,7 +229,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					s.CreateQuery(queryString).SetCacheable(true).List();
+					await (s.CreateQuery(queryString).SetCacheable(true).ListAsync());
 					await (tx.CommitAsync());
 				}
 
@@ -206,7 +237,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					s.CreateQuery(queryString).SetCacheable(true).List();
+					await (s.CreateQuery(queryString).SetCacheable(true).ListAsync());
 					await (tx.CommitAsync());
 				}
 
@@ -214,7 +245,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					s.CreateQuery(queryString).SetCacheable(true).SetResultTransformer(transformer).List();
+					await (s.CreateQuery(queryString).SetCacheable(true).SetResultTransformer(transformer).ListAsync());
 					await (tx.CommitAsync());
 				}
 
@@ -222,7 +253,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					s.CreateQuery(queryString).SetCacheable(true).SetResultTransformer(transformer).List();
+					await (s.CreateQuery(queryString).SetCacheable(true).SetResultTransformer(transformer).ListAsync());
 					await (tx.CommitAsync());
 				}
 
@@ -230,7 +261,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					result = s.CreateQuery(queryString).SetCacheable(true).List();
+					result = await (s.CreateQuery(queryString).SetCacheable(true).ListAsync());
 					Assert.That(result.Count, Is.EqualTo(1));
 					var i = await (s.GetAsync<AnotherItem>(savedId));
 					i.Name = "Widget";
@@ -243,7 +274,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					s.CreateQuery(queryString).SetCacheable(true).List();
+					await (s.CreateQuery(queryString).SetCacheable(true).ListAsync());
 					var i = await (s.GetAsync<AnotherItem>(savedId));
 					Assert.That(i.Name, Is.EqualTo("Widget"));
 					await (s.DeleteAsync(i));
@@ -255,6 +286,20 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			Assert.That(qs.CachePutCount, Is.EqualTo(3));
 			Assert.That(qs.ExecutionCount, Is.EqualTo(3));
 			Assert.That(es.FetchCount, Is.EqualTo(0)); //check that it was being cached
+		}
+
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		public partial class CustomTransformer : IResultTransformer
+		{
+			public object TransformTuple(object[] tuple, string[] aliases)
+			{
+				return new AnotherItem{Name = tuple[0].ToString(), Description = tuple[1].ToString()};
+			}
+
+			public IList TransformList(IList collection)
+			{
+				return collection;
+			}
 		}
 	}
 }

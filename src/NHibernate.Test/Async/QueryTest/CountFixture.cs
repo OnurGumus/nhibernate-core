@@ -9,8 +9,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.QueryTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class CountFixture
+	public partial class CountFixtureAsync
 	{
 		[Test]
 		public async Task DefaultAsync()
@@ -25,7 +26,7 @@ namespace NHibernate.Test.QueryTest
 				Assert.IsTrue(count is Int64);
 			}
 
-			sf.Close();
+			await (sf.CloseAsync());
 		}
 
 		[Test]
@@ -42,7 +43,7 @@ namespace NHibernate.Test.QueryTest
 				Assert.IsTrue(count is Int32);
 			}
 
-			sf.Close();
+			await (sf.CloseAsync());
 		}
 	}
 }

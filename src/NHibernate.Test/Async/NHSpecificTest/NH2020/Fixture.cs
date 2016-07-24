@@ -4,12 +4,45 @@ using NHibernate.Dialect;
 using NHibernate.Exceptions;
 using NHibernate.Test.ExceptionsTest;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2020
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override Task ConfigureAsync(Cfg.Configuration configuration)
+		{
+			try
+			{
+				configuration.SetProperty(Cfg.Environment.BatchSize, "10");
+				configuration.SetProperty(Cfg.Environment.SqlExceptionConverter, typeof (MSSQLExceptionConverterExample).AssemblyQualifiedName);
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
+		{
+			return dialect is MsSql2000Dialect;
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = OpenSession())
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					await (s.DeleteAsync("from One"));
+					await (s.DeleteAsync("from Many"));
+					await (tx.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task ISQLExceptionConverter_gets_called_if_batch_size_enabledAsync()
 		{
@@ -28,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2020
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					var one = s.Load<One>(oneId);
+					var one = await (s.LoadAsync<One>(oneId));
 					await (s.DeleteAsync(one));
 					Assert.That(async () => await (tx.CommitAsync()), Throws.TypeOf<ConstraintViolationException>());
 				}

@@ -8,9 +8,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Events.PostEvents
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class PostUpdateFixture : TestCase
+	public partial class PostUpdateFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"Events.PostEvents.SimpleEntity.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task ImplicitFlushAsync()
 		{
@@ -22,7 +39,7 @@ namespace NHibernate.Test.Events.PostEvents
 				{
 					using (ITransaction tx = s.BeginTransaction())
 					{
-						IList<SimpleEntity> l = s.CreateCriteria<SimpleEntity>().List<SimpleEntity>();
+						IList<SimpleEntity> l = await (s.CreateCriteria<SimpleEntity>().ListAsync<SimpleEntity>());
 						l[0].Description = "Modified";
 						await (tx.CommitAsync());
 					}
@@ -46,7 +63,7 @@ namespace NHibernate.Test.Events.PostEvents
 				{
 					using (ITransaction tx = s.BeginTransaction())
 					{
-						IList<SimpleEntity> l = s.CreateCriteria<SimpleEntity>().List<SimpleEntity>();
+						IList<SimpleEntity> l = await (s.CreateCriteria<SimpleEntity>().ListAsync<SimpleEntity>());
 						l[0].Description = "Modified";
 						await (s.UpdateAsync(l[0]));
 						await (tx.CommitAsync());
@@ -70,7 +87,7 @@ namespace NHibernate.Test.Events.PostEvents
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					IList<SimpleEntity> l = s.CreateCriteria<SimpleEntity>().List<SimpleEntity>();
+					IList<SimpleEntity> l = await (s.CreateCriteria<SimpleEntity>().ListAsync<SimpleEntity>());
 					toModify = l[0];
 					await (tx.CommitAsync());
 				}
@@ -107,7 +124,7 @@ namespace NHibernate.Test.Events.PostEvents
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					IList<SimpleEntity> l = s.CreateCriteria<SimpleEntity>().List<SimpleEntity>();
+					IList<SimpleEntity> l = await (s.CreateCriteria<SimpleEntity>().ListAsync<SimpleEntity>());
 					toModify = l[0];
 					await (tx.CommitAsync());
 				}
@@ -142,7 +159,7 @@ namespace NHibernate.Test.Events.PostEvents
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					IList<SimpleEntity> l = s.CreateCriteria<SimpleEntity>().List<SimpleEntity>();
+					IList<SimpleEntity> l = await (s.CreateCriteria<SimpleEntity>().ListAsync<SimpleEntity>());
 					toModify = l[0];
 					await (tx.CommitAsync());
 				}
@@ -154,7 +171,7 @@ namespace NHibernate.Test.Events.PostEvents
 				{
 					using (ITransaction tx = s.BeginTransaction())
 					{
-						s.Lock(toModify, LockMode.None);
+						await (s.LockAsync(toModify, LockMode.None));
 						toModify.Description = "Modified";
 						await (s.UpdateAsync(toModify));
 						await (tx.CommitAsync());
@@ -174,7 +191,7 @@ namespace NHibernate.Test.Events.PostEvents
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					s.CreateQuery("delete from SimpleEntity").ExecuteUpdate();
+					await (s.CreateQuery("delete from SimpleEntity").ExecuteUpdateAsync());
 					await (tx.CommitAsync());
 				}
 			}

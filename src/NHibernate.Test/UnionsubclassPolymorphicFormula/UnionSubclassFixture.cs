@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using System.Collections;
 
 namespace NHibernate.Test.UnionsubclassPolymorphicFormula
@@ -16,50 +17,58 @@ namespace NHibernate.Test.UnionsubclassPolymorphicFormula
 			get { return new string[] { "UnionsubclassPolymorphicFormula.Party.hbm.xml" }; }
 		}
 
-		[Test, KnownBug("NH-2354")]
+		[Test]
 		public void QueryOverPersonTest()
 		{
-			using (ISession s = OpenSession())
-			{
-				using (ITransaction t = s.BeginTransaction())
+			Assert.Throws<Exception>(
+				() =>
 				{
-					var person = new Person
+					using (ISession s = OpenSession())
 					{
-						FirstName = "Mark",
-						LastName = "Mannson"
-					};
+						using (ITransaction t = s.BeginTransaction())
+						{
+							var person = new Person
+							{
+								FirstName = "Mark",
+								LastName = "Mannson"
+							};
 
-					s.Save(person);
+							s.Save(person);
 
-					var result = s.QueryOver<Party>().Where(p => p.Name == "Mark Mannson").SingleOrDefault();
-					
-					Assert.NotNull(result);
-					s.Delete(result);
-					t.Commit();
-				}
-				
-			}
+							var result = s.QueryOver<Party>().Where(p => p.Name == "Mark Mannson").SingleOrDefault();
+
+							Assert.NotNull(result);
+							s.Delete(result);
+							t.Commit();
+						}
+
+					}
+				}, KnownBug.Issue("NH-2354"));
 		}
 
-		[Test, KnownBug("NH-2354")]
+		[Test]
 		public void QueryOverCompanyTest()
 		{
-			using (ISession s = OpenSession())
-			{
-				using (ITransaction t = s.BeginTransaction())
+			Assert.Throws<Exception>(
+				() =>
 				{
-					var company = new Company
+					using (ISession s = OpenSession())
 					{
-						CompanyName = "Limited",
-					};
+						using (ITransaction t = s.BeginTransaction())
+						{
+							var company = new Company
+							{
+								CompanyName = "Limited",
+							};
 
-					s.Save(company);
+							s.Save(company);
 
-					var result = s.QueryOver<Party>().Where(p => p.Name == "Limited").SingleOrDefault();
-					Assert.NotNull(result);
-				}
+							var result = s.QueryOver<Party>().Where(p => p.Name == "Limited").SingleOrDefault();
+							Assert.NotNull(result);
+						}
 
-			}
+					}
+				}, KnownBug.Issue("NH-2354"));
 		}
 	}
 }

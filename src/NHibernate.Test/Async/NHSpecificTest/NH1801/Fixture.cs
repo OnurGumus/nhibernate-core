@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1801
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task TestAsync()
@@ -32,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1801
 
 				using (ISession s = OpenSession())
 				{
-					IList res = s.CreateQuery("from B b, C c where b.A = c.A and b.Id = :id").SetInt32("id", 1).List();
+					IList res = await (s.CreateQuery("from B b, C c where b.A = c.A and b.Id = :id").SetInt32("id", 1).ListAsync());
 					Assert.That(res, Has.Count.EqualTo(1));
 					await (s.FlushAsync());
 				}

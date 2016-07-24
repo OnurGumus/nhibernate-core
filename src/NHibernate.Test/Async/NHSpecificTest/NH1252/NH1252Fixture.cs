@@ -4,9 +4,29 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1252
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class NH1252Fixture : BugTestCase
+	public partial class NH1252FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH1252";
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			await (base.OnTearDownAsync());
+			using (ISession s = OpenSession())
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					await (s.DeleteAsync("from SomeClass"));
+					await (tx.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task TestAsync()
 		{
@@ -30,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1252
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					s.Load<SomeClass>(savedId); // Load a proxy by the parent class
+					await (s.LoadAsync<SomeClass>(savedId)); // Load a proxy by the parent class
 					Assert.IsNull(await (s.GetAsync<SubClass2>(savedId)));
 					await (tx.CommitAsync());
 				}

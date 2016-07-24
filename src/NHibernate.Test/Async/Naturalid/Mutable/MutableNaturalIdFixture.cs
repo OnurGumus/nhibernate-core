@@ -7,12 +7,45 @@ using NHibernate.Criterion;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Naturalid.Mutable
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class MutableNaturalIdFixture : TestCase
+	public partial class MutableNaturalIdFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Naturalid.Mutable.User.hbm.xml"};
+			}
+		}
+
+		protected override Task ConfigureAsync(Configuration configuration)
+		{
+			try
+			{
+				cfg.SetProperty(Environment.UseSecondLevelCache, "true");
+				cfg.SetProperty(Environment.UseQueryCache, "true");
+				cfg.SetProperty(Environment.GenerateStatistics, "true");
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
 		[Test]
 		public async Task ReattachmentNaturalIdCheckAsync()
 		{

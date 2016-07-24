@@ -6,9 +6,49 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		private static async Task<IList<Parent>> joinGraphUsingHqlAsync(ISession s)
+		{
+			const string hql = @"select p from Parent p
+                                    join p.Child c";
+			return await (s.CreateQuery(hql).ListAsync<Parent>());
+		}
+
+		private static async Task<IList<Parent>> joinGraphUsingCriteriaAsync(ISession s)
+		{
+			return await (s.CreateCriteria(typeof (Parent)).SetFetchMode("Child", FetchMode.Join).ListAsync<Parent>());
+		}
+
+		private static Parent createParent()
+		{
+			var ret = new Parent{Child = new Child()};
+			ret.Address = new Address{Parent = ret};
+			return ret;
+		}
+
+		private static void enableFilters(ISession s)
+		{
+			IFilter f = s.EnableFilter("activeChild");
+			f.SetParameter("active", true);
+			IFilter f2 = s.EnableFilter("alwaysValid");
+			f2.SetParameter("always", true);
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					await (s.DeleteAsync("from Parent"));
+					await (tx.CommitAsync());
+				}
+			}
+		}
+
 		[Test]
 		public async Task VerifyAlwaysFilterAsync()
 		{
@@ -26,8 +66,8 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 			using (ISession s = OpenSession())
 			{
 				enableFilters(s);
-				IList<Parent> resCriteria = joinGraphUsingCriteria(s);
-				IList<Parent> resHql = joinGraphUsingHql(s);
+				IList<Parent> resCriteria = await (joinGraphUsingCriteriaAsync(s));
+				IList<Parent> resHql = await (joinGraphUsingHqlAsync(s));
 				Assert.AreEqual(0, resCriteria.Count);
 				Assert.AreEqual(0, resHql.Count);
 			}
@@ -48,8 +88,8 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 			using (ISession s = OpenSession())
 			{
 				enableFilters(s);
-				IList<Parent> resCriteria = joinGraphUsingCriteria(s);
-				IList<Parent> resHql = joinGraphUsingHql(s);
+				IList<Parent> resCriteria = await (joinGraphUsingCriteriaAsync(s));
+				IList<Parent> resHql = await (joinGraphUsingHqlAsync(s));
 				Assert.AreEqual(1, resCriteria.Count);
 				Assert.IsNotNull(resCriteria[0].Child);
 				Assert.AreEqual(1, resHql.Count);
@@ -77,10 +117,10 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 			using (ISession s = OpenSession())
 			{
 				enableFilters(s);
-				resCriteria = s.CreateCriteria(typeof (Parent), "p").CreateCriteria("Child", "c").SetFetchMode("Child", FetchMode.Join).Add(Restrictions.Eq("p.ParentString", "a")).Add(Restrictions.Eq("c.ChildString", "b")).List<Parent>();
-				resHql = s.CreateQuery(@"select p from Parent p
+				resCriteria = await (s.CreateCriteria(typeof (Parent), "p").CreateCriteria("Child", "c").SetFetchMode("Child", FetchMode.Join).Add(Restrictions.Eq("p.ParentString", "a")).Add(Restrictions.Eq("c.ChildString", "b")).ListAsync<Parent>());
+				resHql = await (s.CreateQuery(@"select p from Parent p
                                                         join fetch p.Child c
-                                                    where p.ParentString='a' and c.ChildString='b'").List<Parent>();
+                                                    where p.ParentString='a' and c.ChildString='b'").ListAsync<Parent>());
 			}
 
 			Assert.AreEqual(1, resCriteria.Count);
@@ -105,8 +145,8 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 			using (ISession s = OpenSession())
 			{
 				enableFilters(s);
-				IList<Parent> resCriteria = joinGraphUsingCriteria(s);
-				IList<Parent> resHql = joinGraphUsingHql(s);
+				IList<Parent> resCriteria = await (joinGraphUsingCriteriaAsync(s));
+				IList<Parent> resHql = await (joinGraphUsingHqlAsync(s));
 				Assert.IsNotNull(resCriteria[0].Address);
 				Assert.IsNotNull(resHql[0].Address);
 			}
@@ -130,8 +170,8 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 			{
 				IFilter f = s.EnableFilter("active");
 				f.SetParameter("active", true);
-				IList<Parent> resCriteria = joinGraphUsingCriteria(s);
-				IList<Parent> resHql = joinGraphUsingHql(s);
+				IList<Parent> resCriteria = await (joinGraphUsingCriteriaAsync(s));
+				IList<Parent> resHql = await (joinGraphUsingHqlAsync(s));
 				Assert.AreEqual(2, resCriteria[0].Children.Count);
 				Assert.AreEqual(2, resHql[0].Children.Count);
 			}
@@ -155,8 +195,8 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 			{
 				IFilter f = s.EnableFilter("active");
 				f.SetParameter("active", true);
-				IList<Parent> resCriteria = s.CreateCriteria(typeof (Parent)).SetFetchMode("Children", FetchMode.Join).List<Parent>();
-				IList<Parent> resHql = s.CreateQuery("select p from Parent p join fetch p.Children").List<Parent>();
+				IList<Parent> resCriteria = await (s.CreateCriteria(typeof (Parent)).SetFetchMode("Children", FetchMode.Join).ListAsync<Parent>());
+				IList<Parent> resHql = await (s.CreateQuery("select p from Parent p join fetch p.Children").ListAsync<Parent>());
 				Assert.AreEqual(2, resCriteria[0].Children.Count);
 				Assert.AreEqual(2, resHql[0].Children.Count);
 			}

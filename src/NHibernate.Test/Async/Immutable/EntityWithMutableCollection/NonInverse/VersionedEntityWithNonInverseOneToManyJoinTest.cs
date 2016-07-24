@@ -7,9 +7,18 @@ using NHibernate.Util;
 
 namespace NHibernate.Test.Immutable.EntityWithMutableCollection.NonInverse
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class VersionedEntityWithNonInverseOneToManyJoinTest : AbstractEntityWithOneToManyTest
+	public partial class VersionedEntityWithNonInverseOneToManyJoinTestAsync : AbstractEntityWithOneToManyTestAsync
 	{
+		protected override System.Collections.IList Mappings
+		{
+			get
+			{
+				return new string[]{"Immutable.EntityWithMutableCollection.NonInverse.ContractVariationVersionedOneToManyJoin.hbm.xml"};
+			}
+		}
+
 		[Test]
 		[Ignore("Fails. Passes in Hibernate because nullability check on Contract.Party (with JOIN mapping) is skipped due to 'check_nullability' setting not implemented by NH.")]
 		public override Task AddExistingOneToManyElementToPersistentEntityAsync()

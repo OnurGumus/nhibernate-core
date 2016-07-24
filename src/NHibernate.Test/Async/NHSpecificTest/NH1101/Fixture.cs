@@ -5,9 +5,16 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1101
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task ConfigureAsync(Cfg.Configuration configuration)
+		{
+			await (base.ConfigureAsync(configuration));
+			cfg.SetProperty(Cfg.Environment.GenerateStatistics, "true");
+		}
+
 		[Test]
 		public async Task BehaviorAsync()
 		{
@@ -37,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1101
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					a = s.Load<A>(savedId);
+					a = await (s.LoadAsync<A>(savedId));
 					IStatistics statistics = sessions.Statistics;
 					statistics.Clear();
 					Assert.IsNotNull(a.B); // an instance of B was created

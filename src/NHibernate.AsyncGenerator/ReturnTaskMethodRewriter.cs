@@ -51,6 +51,24 @@ namespace NHibernate.AsyncGenerator
 			return wrapInTryCatch ? node.WithBody(WrapInsideTryCatch(node.Body)) : node;
 		}
 
+		public override SyntaxNode VisitCatchClause(CatchClauseSyntax node)
+		{
+			// TODO: add a declaration only if there is a throws statement
+			if (node.Declaration == null)
+			{
+				node = node.WithDeclaration(
+					CatchDeclaration(IdentifierName("Exception"))
+						.WithIdentifier(
+							Identifier("x")));
+			}
+			else if (node.Declaration.Identifier.ValueText == null)
+			{
+				node = node.ReplaceNode(node.Declaration, node.Declaration.WithIdentifier(Identifier("x")));
+			}
+
+			return base.VisitCatchClause(node);
+		}
+
 		public override SyntaxNode Visit(SyntaxNode node)
 		{
 			var expression = node as ExpressionSyntax;
@@ -71,10 +89,6 @@ namespace NHibernate.AsyncGenerator
 			if (node.Expression == null)
 			{
 				var catchNode = node.Ancestors().OfType<CatchClauseSyntax>().First();
-				if (catchNode.Declaration == null)
-				{
-					throw new NotImplementedException("CatchClauseSyntax.Declaration == null");
-				}
 				return ReturnStatement(WrapInTaskFromException(IdentifierName(catchNode.Declaration.Identifier.ValueText)));
 			}
 

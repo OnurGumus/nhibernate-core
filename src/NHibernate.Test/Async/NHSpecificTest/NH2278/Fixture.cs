@@ -7,9 +7,19 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2278
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = sessions.OpenSession())
+			{
+				await (s.DeleteAsync("from CustomA"));
+				await (s.FlushAsync());
+			}
+		}
+
 		[Test]
 		public async Task CustomIdBagAsync()
 		{
@@ -19,13 +29,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2278
 			a.Items.Add("first string");
 			a.Items.Add("second string");
 			ISession s = OpenSession();
-			s.SaveOrUpdate(a);
+			await (s.SaveOrUpdateAsync(a));
 			await (s.FlushAsync());
 			s.Close();
 			Assert.That(a.Id, Is.Not.Null);
 			Assert.That(a.Items[0], Is.StringMatching("first string"));
 			s = OpenSession();
-			a = s.Load<CustomA>(a.Id);
+			a = await (s.LoadAsync<CustomA>(a.Id));
 			Assert.That(a.Items, Is.InstanceOf<CustomPersistentIdentifierBag<string>>());
 			Assert.That(a.Items[0], Is.StringMatching("first string"), "first item should be 'first string'");
 			Assert.That(a.Items[1], Is.StringMatching("second string"), "second item should be 'second string'");

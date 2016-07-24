@@ -3,12 +3,49 @@ using System.Collections;
 using NHibernate.Stat;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Ondelete
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class OnDeleteFixture : TestCase
+	public partial class OnDeleteFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Ondelete.Person.hbm.xml"};
+			}
+		}
+
+		protected override Task ConfigureAsync(Cfg.Configuration configuration)
+		{
+			try
+			{
+				cfg.SetProperty(Cfg.Environment.GenerateStatistics, "true");
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
+		{
+			return dialect.SupportsCircularCascadeDeleteConstraints;
+		}
+
 		[Test]
 		public async Task JoinedSubclassAsync()
 		{
@@ -42,7 +79,7 @@ namespace NHibernate.Test.Ondelete
 			Assert.AreEqual(2, statistics.EntityDeleteCount);
 			Assert.AreEqual(1, statistics.PrepareStatementCount);
 			t = s.BeginTransaction();
-			IList names = s.CreateQuery("select p.name from Person p").List();
+			IList names = await (s.CreateQuery("select p.name from Person p").ListAsync());
 			Assert.AreEqual(0, names.Count);
 			await (t.CommitAsync());
 			s.Close();

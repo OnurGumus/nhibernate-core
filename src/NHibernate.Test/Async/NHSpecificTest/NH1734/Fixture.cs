@@ -7,9 +7,33 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1734
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnSetUpAsync()
+		{
+			using (var session = this.OpenSession())
+				using (var tran = session.BeginTransaction())
+				{
+					var product = new Product{Amount = 3, Price = 43.2};
+					var product2 = new Product{Amount = 3, Price = 43.2};
+					await (session.SaveAsync(product));
+					await (session.SaveAsync(product2));
+					await (tran.CommitAsync());
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (var session = this.OpenSession())
+				using (var tran = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from Product"));
+					await (tran.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task ReturnsApropriateTypeWhenSumUsedWithSomeFormulaAsync()
 		{

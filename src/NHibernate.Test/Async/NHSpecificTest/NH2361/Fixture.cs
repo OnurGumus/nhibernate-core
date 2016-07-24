@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.NHSpecificTest.NH2361
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task WhenDeleteMultiTableHierarchyThenNotThrowsAsync()
@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2361
 			using (var s = OpenSession())
 				using (var tx = s.BeginTransaction())
 				{
-					s.CreateQuery("delete from Animal").ExecuteUpdate();
+					await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
 					await (tx.CommitAsync());
 				}
 		}

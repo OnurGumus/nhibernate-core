@@ -1,0 +1,73 @@
+#if NET_4_5
+using System.Collections;
+using NHibernate.Cfg;
+using NUnit.Framework;
+using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
+
+namespace NHibernate.Test.Operations
+{
+	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+	public abstract partial class AbstractOperationTestCaseAsync : TestCaseAsync
+	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"Operations.Node.hbm.xml", "Operations.Employer.hbm.xml", "Operations.OptLockEntity.hbm.xml", "Operations.OneToOne.hbm.xml", "Operations.Competition.hbm.xml"};
+			}
+		}
+
+		protected override string CacheConcurrencyStrategy
+		{
+			get
+			{
+				return null;
+			}
+		}
+
+		protected override Task ConfigureAsync(Configuration configuration)
+		{
+			try
+			{
+				configuration.SetProperty(Environment.GenerateStatistics, "true");
+				configuration.SetProperty(Environment.BatchSize, "0");
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		protected void ClearCounts()
+		{
+			sessions.Statistics.Clear();
+		}
+
+		protected void AssertInsertCount(long expected)
+		{
+			Assert.That(sessions.Statistics.EntityInsertCount, Is.EqualTo(expected), "unexpected insert count");
+		}
+
+		protected void AssertUpdateCount(int expected)
+		{
+			Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(expected), "unexpected update count");
+		}
+
+		protected void AssertDeleteCount(int expected)
+		{
+			Assert.That(sessions.Statistics.EntityDeleteCount, Is.EqualTo(expected), "unexpected delete count");
+		}
+	}
+}
+#endif

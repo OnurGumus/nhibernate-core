@@ -6,9 +6,41 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1810
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		// The problem is the same using a default sort="natural" collection for Children
+		// and there is no problem using a default HashSet.
+		// look a the implementation of Children
+		private static readonly ILog Log = LogManager.GetLogger(typeof (FixtureAsync));
+		int parentId;
+		int doctorId;
+		protected override ISession OpenSession()
+		{
+			var session = base.OpenSession();
+			session.FlushMode = FlushMode.Commit;
+			return session;
+		}
+
+		protected override async Task OnSetUpAsync()
+		{
+			using (ISession sess = OpenSession())
+				using (ITransaction tx = sess.BeginTransaction())
+				{
+					var parent = new Parent{Address = "A street, A town, A country"};
+					// If you add a child all work fine.
+					//var child = new Child {Age = 2, Parent = parent};
+					//parent.Children.AddChild(child);
+					await (sess.SaveAsync(parent));
+					var doctor = new Doctor{DoctorNumber = 123, MedicalRecord = parent.MedicalRecord};
+					await (sess.SaveAsync(doctor));
+					await (tx.CommitAsync());
+					parentId = parent.Id;
+					doctorId = doctor.Id;
+				}
+		}
+
 		[Test]
 		public async Task TestAsync()
 		{
@@ -31,6 +63,20 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 			}
 
 			Log.Debug("Exiting test");
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession sess = OpenSession())
+				using (ITransaction tx = sess.BeginTransaction())
+				{
+					await (sess.DeleteAsync("from Doctor"));
+					await (sess.DeleteAsync("from Parent"));
+					await (sess.DeleteAsync("from Child"));
+					await (sess.DeleteAsync("from MedicalRecord"));
+					await (sess.DeleteAsync("from Disease"));
+					await (tx.CommitAsync());
+				}
 		}
 	}
 }

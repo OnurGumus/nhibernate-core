@@ -15,8 +15,40 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.Component.Basic
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ComponentWithUniqueConstraintTests : TestCaseMappingByCode
+	public partial class ComponentWithUniqueConstraintTestsAsync : TestCaseMappingByCodeAsync
 	{
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ModelMapper();
+			mapper.Component<Person>(comp =>
+			{
+				comp.Property(p => p.Name);
+				comp.Property(p => p.Dob);
+				comp.Unique(true); // hbm2ddl: Generate a unique constraint in the database
+			}
+
+			);
+			mapper.Class<Employee>(cm =>
+			{
+				cm.Id(employee => employee.Id, map => map.Generator(Generators.HighLow));
+				cm.Property(employee => employee.HireDate);
+				cm.Component(person => person.Person);
+			}
+
+			);
+			return mapper.CompileMappingForAllExplicitlyAddedEntities();
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (var session = sessions.OpenSession())
+				using (var transaction = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from Employee"));
+					await (transaction.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task CanBePersistedWithUniqueValuesAsync()
 		{
@@ -47,7 +79,7 @@ namespace NHibernate.Test.Component.Basic
 				{
 					var e1 = new Employee{HireDate = DateTime.Today, Person = new Person{Name = "Bill", Dob = new DateTime(2000, 1, 1)}};
 					var e2 = new Employee{HireDate = DateTime.Today, Person = new Person{Name = "Bill", Dob = new DateTime(2000, 1, 1)}};
-					var exception = Assert.Throws<GenericADOException>(async () =>
+					var exception = Assert.ThrowsAsync<GenericADOException>(async () =>
 					{
 						await (session.SaveAsync(e1));
 						await (session.SaveAsync(e2));

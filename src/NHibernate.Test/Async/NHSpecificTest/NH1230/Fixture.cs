@@ -3,12 +3,36 @@ using NHibernate.Cfg;
 using NHibernate.Event;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1230
 {
+	[TestFixture, Ignore("TODO(Dario)This test demostrate the need of eliminate the 'bool' on pre-insert eventlisteners.")]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH1230";
+			}
+		}
+
+		protected override Task ConfigureAsync(Configuration cfg)
+		{
+			try
+			{
+				cfg.SetListener(ListenerType.PreInsert, new PreSaveDoVeto());
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
 		/// <summary>
 		/// Must be vetoed without thrown an <see cref = "AssertionFailure"/> exception.
 		/// As no identifier generation has made, the id is null and is not posible create a EntityKey instance to agregate

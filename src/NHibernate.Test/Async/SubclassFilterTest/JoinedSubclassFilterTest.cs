@@ -7,9 +7,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.SubclassFilterTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class JoinedSubclassFilterTest : TestCase
+	public partial class JoinedSubclassFilterTestAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"SubclassFilterTest.joined-subclass.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
 		[Test]
 		public async Task FiltersWithSubclassAsync()
 		{
@@ -19,10 +36,10 @@ namespace NHibernate.Test.SubclassFilterTest
 			await (PrepareTestDataAsync(s));
 			s.Clear();
 			IList results;
-			results = s.CreateQuery("from Person").List();
+			results = await (s.CreateQuery("from Person").ListAsync());
 			Assert.AreEqual(4, results.Count, "Incorrect qry result count");
 			s.Clear();
-			results = s.CreateQuery("from Employee").List();
+			results = await (s.CreateQuery("from Employee").ListAsync());
 			Assert.AreEqual(2, results.Count, "Incorrect qry result count");
 			foreach (Person p in results)
 			{
@@ -44,7 +61,7 @@ namespace NHibernate.Test.SubclassFilterTest
 			// filters into collection assocations,
 			// although we'd need some way to apply the appropriate alias in that
 			// scenario.
-			results = s.CreateQuery("from Person as p left join fetch p.Minions").List<Person>().Distinct().ToList();
+			results = (await (s.CreateQuery("from Person as p left join fetch p.Minions").ListAsync<Person>())).Distinct().ToList();
 			Assert.AreEqual(4, results.Count, "Incorrect qry result count");
 			foreach (Person p in results)
 			{
@@ -57,7 +74,7 @@ namespace NHibernate.Test.SubclassFilterTest
 			}
 
 			s.Clear();
-			results = s.CreateQuery("from Employee as p left join fetch p.Minions").List<Employee>().Distinct().ToList();
+			results = (await (s.CreateQuery("from Employee as p left join fetch p.Minions").ListAsync<Employee>())).Distinct().ToList();
 			Assert.AreEqual(2, results.Count, "Incorrect qry result count");
 			foreach (Person p in results)
 			{

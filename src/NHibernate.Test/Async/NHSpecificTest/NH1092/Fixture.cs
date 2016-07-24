@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1092
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task CountHasUniqueResultAsync()
@@ -24,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1092
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					var count = s.CreateQuery("select count(*) from SubscriberAbstract SA where SA.Username like :username").SetString("username", "u%").UniqueResult<long>();
+					var count = await (s.CreateQuery("select count(*) from SubscriberAbstract SA where SA.Username like :username").SetString("username", "u%").UniqueResultAsync<long>());
 					Assert.That(count, Is.EqualTo(5));
 					await (t.CommitAsync());
 				}
@@ -32,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1092
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					s.CreateQuery("delete from SubscriberAbstract").ExecuteUpdate();
+					await (s.CreateQuery("delete from SubscriberAbstract").ExecuteUpdateAsync());
 					await (t.CommitAsync());
 				}
 		}

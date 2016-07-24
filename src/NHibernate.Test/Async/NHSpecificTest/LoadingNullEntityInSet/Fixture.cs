@@ -10,9 +10,40 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
 	using Type;
 	using TestCase = NHibernate.Test.TestCase;
 
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : TestCase
+	public partial class FixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecificTest.LoadingNullEntityInSet.Mappings.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override void BuildSessionFactory()
+		{
+			cfg.GetCollectionMapping(typeof (Employee).FullName + ".Primaries").CollectionTable.Name = "WantedProfessions";
+			cfg.GetCollectionMapping(typeof (Employee).FullName + ".Secondaries").CollectionTable.Name = "WantedProfessions";
+			base.BuildSessionFactory();
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			cfg.GetCollectionMapping(typeof (Employee).FullName + ".Primaries").CollectionTable.Name = "WantedProfessions_DUMMY_1";
+			cfg.GetCollectionMapping(typeof (Employee).FullName + ".Secondaries").CollectionTable.Name = "WantedProfessions_DUMMY_2";
+			await (base.OnTearDownAsync());
+		}
+
 		[Test]
 		public async Task CanHandleNullEntityInListAsync()
 		{
@@ -37,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
 				ICriteria criteria = sess.CreateCriteria(typeof (Employee));
 				criteria.CreateCriteria("Primaries", JoinType.LeftOuterJoin);
 				criteria.CreateCriteria("Secondaries", JoinType.LeftOuterJoin);
-				criteria.List();
+				await (criteria.ListAsync());
 			}
 
 			using (ISession sess = OpenSession())

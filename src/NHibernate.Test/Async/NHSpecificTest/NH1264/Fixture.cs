@@ -7,9 +7,37 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1264
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : TestCase
+	public partial class FixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"NHSpecificTest.NH1264.Passenger.hbm.xml", "NHSpecificTest.NH1264.Reservation.hbm.xml", };
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			await (base.OnTearDownAsync());
+			using (ISession s = OpenSession())
+			{
+				await (s.DeleteAsync("from Reservation r"));
+				await (s.DeleteAsync("from Passenger p"));
+				await (s.FlushAsync());
+			}
+		}
+
 		[Test]
 		public async Task EagerFetchAnomalyAsync()
 		{
@@ -31,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1264
 			s = OpenSession();
 			DetachedCriteria dc = DetachedCriteria.For<Reservation>().SetFetchMode("Passengers", FetchMode.Eager);
 			dc.CreateCriteria("Passengers").Add(Property.ForName("FrequentFlyerNumber").Eq("1234"));
-			IList<Reservation> results = dc.GetExecutableCriteria(s).List<Reservation>();
+			IList<Reservation> results = await (dc.GetExecutableCriteria(s).ListAsync<Reservation>());
 			s.Close();
 			Assert.AreEqual(1, results.Count);
 			foreach (var r in results)

@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2490
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task BadSqlFromJoinLogicErrorAsync()
@@ -27,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2490
 					using (ITransaction t = s.BeginTransaction())
 					{
 						var q = s.CreateQuery("from Base");
-						Assert.That(() => q.List(), Throws.Nothing);
+						Assert.That(async () => await (q.ListAsync()), Throws.Nothing);
 					}
 			}
 			finally

@@ -11,9 +11,33 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Immutable
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ImmutableTest : TestCase
+	public partial class ImmutableTestAsync : TestCaseAsync
 	{
+		protected override async Task ConfigureAsync(Configuration configuration)
+		{
+			await (base.ConfigureAsync(configuration));
+			configuration.SetProperty(NHibernate.Cfg.Environment.GenerateStatistics, "true");
+			configuration.SetProperty(NHibernate.Cfg.Environment.BatchSize, "0");
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Immutable.ContractVariation.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task ChangeImmutableEntityProxyToModifiableAsync()
 		{
@@ -52,7 +76,7 @@ namespace NHibernate.Test.Immutable
 			try
 			{
 				Assert.That(c, Is.InstanceOf<INHibernateProxy>());
-				s.SetReadOnly(c, false);
+				await (s.SetReadOnlyAsync(c, false));
 			}
 			catch (System.InvalidOperationException)
 			{
@@ -113,7 +137,7 @@ namespace NHibernate.Test.Immutable
 			try
 			{
 				Assert.That(c, Is.InstanceOf<INHibernateProxy>());
-				s.SetReadOnly(((INHibernateProxy)c).HibernateLazyInitializer.GetImplementation(), false);
+				await (s.SetReadOnlyAsync(await (((INHibernateProxy)c).HibernateLazyInitializer.GetImplementationAsync()), false));
 			}
 			catch (System.InvalidOperationException)
 			{
@@ -280,7 +304,7 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			s.SaveOrUpdate(c);
+			await (s.SaveOrUpdateAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
@@ -324,7 +348,7 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			s.SaveOrUpdate(c);
+			await (s.SaveOrUpdateAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
@@ -336,7 +360,7 @@ namespace NHibernate.Test.Immutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 			// refresh detached
-			s.Refresh(c);
+			await (s.RefreshAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
@@ -358,7 +382,7 @@ namespace NHibernate.Test.Immutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 			// refresh updated detached
-			s.Refresh(c);
+			await (s.RefreshAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
@@ -417,11 +441,11 @@ namespace NHibernate.Test.Immutable
 			cv1 = it.Current;
 			cv1.Text = "blah blah";
 			Assert.That(s.IsReadOnly(cv1), Is.True);
-			Assert.That(s.Contains(cv2), Is.False);
+			Assert.That(await (s.ContainsAsync(cv2)), Is.False);
 			await (t.CommitAsync());
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(s.IsReadOnly(cv1), Is.True);
-			Assert.That(s.Contains(cv2), Is.False);
+			Assert.That(await (s.ContainsAsync(cv2)), Is.False);
 			s.Close();
 			AssertInsertCount(0);
 			AssertUpdateCount(0);
@@ -481,11 +505,11 @@ namespace NHibernate.Test.Immutable
 			cv1 = it.Current;
 			cv1.Text = "blah blah";
 			Assert.That(s.IsReadOnly(cv1), Is.True);
-			Assert.That(s.Contains(cv2), Is.False);
+			Assert.That(await (s.ContainsAsync(cv2)), Is.False);
 			await (t.CommitAsync());
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(s.IsReadOnly(cv1), Is.True);
-			Assert.That(s.Contains(cv2), Is.False);
+			Assert.That(await (s.ContainsAsync(cv2)), Is.False);
 			s.Close();
 			AssertInsertCount(0);
 			AssertUpdateCount(0);
@@ -677,14 +701,14 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(c), Is.True);
 			foreach (ContractVariation variation in c.Variations)
 			{
-				Assert.That(s.Contains(variation), Is.True);
+				Assert.That(await (s.ContainsAsync(variation)), Is.True);
 			}
 
 			await (t.CommitAsync());
 			Assert.That(s.IsReadOnly(c), Is.True);
 			foreach (ContractVariation variation in c.Variations)
 			{
-				Assert.That(s.Contains(variation), Is.True);
+				Assert.That(await (s.ContainsAsync(variation)), Is.True);
 				Assert.That(s.IsReadOnly(variation), Is.True);
 			}
 
@@ -734,8 +758,8 @@ namespace NHibernate.Test.Immutable
 			cv1.Text = "blah blah";
 			await (s.UpdateAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
-			Assert.That(s.Contains(cv1), Is.True);
-			Assert.That(s.Contains(cv2), Is.True);
+			Assert.That(await (s.ContainsAsync(cv1)), Is.True);
+			Assert.That(await (s.ContainsAsync(cv2)), Is.True);
 			await (t.CommitAsync());
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(s.IsReadOnly(cv1), Is.True);
@@ -1059,7 +1083,7 @@ namespace NHibernate.Test.Immutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 			cv1.Infos.Add(new Info("cv1 info"));
-			s.SaveOrUpdate(c);
+			await (s.SaveOrUpdateAsync(c));
 			await (t.CommitAsync());
 			s.Close();
 			AssertInsertCount(1);
@@ -1157,7 +1181,7 @@ namespace NHibernate.Test.Immutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 			cv1Info.Text = "new cv1 info";
-			s.SaveOrUpdate(c);
+			await (s.SaveOrUpdateAsync(c));
 			await (t.CommitAsync());
 			s.Close();
 			AssertInsertCount(0);
@@ -1451,6 +1475,26 @@ namespace NHibernate.Test.Immutable
 			s.Close();
 			AssertUpdateCount(0);
 			AssertDeleteCount(4);
+		}
+
+		protected void ClearCounts()
+		{
+			Sfi.Statistics.Clear();
+		}
+
+		protected void AssertUpdateCount(int count)
+		{
+			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(count), "unexpected update counts");
+		}
+
+		protected void AssertInsertCount(int count)
+		{
+			Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(count), "unexpected insert counts");
+		}
+
+		protected void AssertDeleteCount(int count)
+		{
+			Assert.That(Sfi.Statistics.EntityDeleteCount, Is.EqualTo(count), "unexpected delete counts");
 		}
 	}
 }

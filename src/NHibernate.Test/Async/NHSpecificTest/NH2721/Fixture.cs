@@ -7,9 +7,19 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2721
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = sessions.OpenSession())
+			{
+				await (s.DeleteAsync("from A"));
+				await (s.FlushAsync());
+			}
+		}
+
 		[Test]
 		[Ignore("Does not work because of extraneous update that sets reference to A to null.  Can be worked-around by removing not-null on reference to A.")]
 		public async Task ListRemoveInsertAsync()
@@ -26,13 +36,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2721
 			b3.A = a;
 			using (ISession s = OpenSession())
 			{
-				s.SaveOrUpdate(a);
+				await (s.SaveOrUpdateAsync(a));
 				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				a = (A)s.Load(typeof (A), a.Id);
+				a = (A)await (s.LoadAsync(typeof (A), a.Id));
 				CollectionAssert.AreEquivalent(new[]{"b1", "b2", "b3"}, a.Bs.Select(b => b.Name));
 				B removed = a.Bs[2];
 				a.Bs.Remove(removed);
@@ -41,13 +51,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2721
 				Assert.IsNotNull(a.Bs[1].A);
 				Assert.IsNotNull(a.Bs[2].A);
 				CollectionAssert.AreEquivalent(new[]{"b1", "b3", "b2"}, a.Bs.Select(b => b.Name));
-				s.SaveOrUpdate(a);
+				await (s.SaveOrUpdateAsync(a));
 				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				a = (A)s.Load(typeof (A), a.Id);
+				a = (A)await (s.LoadAsync(typeof (A), a.Id));
 				CollectionAssert.AreEquivalent(new[]{"b1", "b3", "b2"}, a.Bs.Select(b => b.Name));
 			}
 		}

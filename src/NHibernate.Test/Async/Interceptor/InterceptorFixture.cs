@@ -6,9 +6,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Interceptor
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class InterceptorFixture : TestCase
+	public partial class InterceptorFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Interceptor.User.hbm.xml", "Interceptor.Image.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task CollectionInterceptAsync()
 		{
@@ -48,6 +65,16 @@ namespace NHibernate.Test.Interceptor
 			s.Close();
 		}
 
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		private class HHH1921Interceptor : EmptyInterceptor
+		{
+			public override bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types)
+			{
+				currentState[0] = "test";
+				return true;
+			}
+		}
+
 		///
 		///Here the interceptor resets the
 		///current-state to the same thing as the current db state; this
@@ -75,6 +102,31 @@ namespace NHibernate.Test.Interceptor
 			await (s.DeleteAsync(u));
 			await (t.CommitAsync());
 			s.Close();
+		}
+
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		private class MyComponentInterceptor : EmptyInterceptor
+		{
+			readonly int checkPerm;
+			readonly string checkComment;
+			public MyComponentInterceptor(int checkPerm, string checkComment)
+			{
+				this.checkPerm = checkPerm;
+				this.checkComment = checkComment;
+			}
+
+			public override bool OnSave(object entity, object id, object[] state, string[] propertyNames, IType[] types)
+			{
+				if (state[0] == null)
+				{
+					Image.Detail detail = new Image.Detail();
+					detail.Perm1 = checkPerm;
+					detail.Comment = checkComment;
+					state[0] = detail;
+				}
+
+				return true;
+			}
 		}
 
 		[Test]
@@ -117,7 +169,7 @@ namespace NHibernate.Test.Interceptor
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IList logs = s.CreateCriteria(typeof (Log)).List();
+			IList logs = await (s.CreateCriteria(typeof (Log)).ListAsync());
 			Assert.AreEqual(2, logs.Count);
 			await (s.DeleteAsync(u));
 			await (s.DeleteAsync("from Log"));

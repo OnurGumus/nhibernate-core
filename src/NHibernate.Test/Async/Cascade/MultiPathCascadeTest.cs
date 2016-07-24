@@ -10,9 +10,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Cascade
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class MultiPathCascadeTest : TestCase
+	public partial class MultiPathCascadeTestAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"Cascade.MultiPathCascade.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task MultiPathMergeModifiedDetachedAsync()
 		{
@@ -49,7 +66,7 @@ namespace NHibernate.Test.Cascade
 			this.ModifyEntity(a);
 			s = base.OpenSession();
 			s.BeginTransaction();
-			A aLoaded = s.Load<A>(a.Id);
+			A aLoaded = await (s.LoadAsync<A>(a.Id));
 			Assert.That(aLoaded, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(s.Merge(a), Is.SameAs(aLoaded));
 			await (s.Transaction.CommitAsync());
@@ -238,6 +255,36 @@ namespace NHibernate.Test.Cascade
 			}
 
 			s.Close();
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = base.OpenSession())
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from H"));
+					await (session.DeleteAsync("from G"));
+					await (session.DeleteAsync("from A"));
+					await (transaction.CommitAsync());
+				}
+
+			await (base.OnTearDownAsync());
+		}
+
+		private void ModifyEntity(A a)
+		{
+			// create a *circular* graph in detached entity
+			a.Data = "Anthony";
+			G g = new G();
+			g.Data = "Giovanni";
+			H h = new H();
+			h.Data = "Hellen";
+			a.G = g;
+			g.A = a;
+			a.Hs.Add(h);
+			h.A = a;
+			g.Hs.Add(h);
+			h.Gs.Add(g);
 		}
 
 		private async Task VerifyModificationsAsync(long aId)

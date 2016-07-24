@@ -6,9 +6,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.IdGen.Enhanced.Sequence
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class BasicSequenceTest : TestCase
+	public partial class BasicSequenceTestAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"IdGen.Enhanced.Sequence.Basic.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
 		[Test]
 		public async Task TestNormalBoundaryAsync()
 		{

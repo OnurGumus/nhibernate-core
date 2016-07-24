@@ -6,9 +6,42 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1452
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task ConfigureAsync(Configuration configuration)
+		{
+			await (base.ConfigureAsync(configuration));
+			configuration.SetProperty(Environment.FormatSql, "false");
+		}
+
+		/// <summary>
+		/// push some data into the database
+		/// Really functions as a save test also 
+		/// </summary>
+		protected override async Task OnSetUpAsync()
+		{
+			using (var session = OpenSession())
+				using (var tran = session.BeginTransaction())
+				{
+					await (session.SaveAsync(new Product{ProductId = "XO1234", Id = 1, Name = "Some product", Description = "Very good"}));
+					await (session.SaveAsync(new Product{ProductId = "XO54321", Id = 2, Name = "Other product", Description = "Very bad"}));
+					await (tran.CommitAsync());
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			await (base.OnTearDownAsync());
+			using (var session = OpenSession())
+				using (var tran = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from Product"));
+					await (tran.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task Delete_single_recordAsync()
 		{

@@ -5,8 +5,16 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.TypesTest
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class CharClassFixture : TypeFixtureBase
+	public partial class CharClassFixtureAsync : TypeFixtureBaseAsync
 	{
+		protected override string TypeName
+		{
+			get
+			{
+				return "Char";
+			}
+		}
+
 		[Test]
 		public async Task ReadWriteAsync()
 		{

@@ -8,9 +8,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Cascade
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class RefreshFixture : TestCase
+	public partial class RefreshFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"Cascade.Job.hbm.xml", "Cascade.JobBatch.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task RefreshCascadeAsync()
 		{
@@ -24,15 +41,39 @@ namespace NHibernate.Test.Cascade
 					// write the stuff to the database; at this stage all job.status values are zero
 					await (session.PersistAsync(batch));
 					await (session.FlushAsync());
-					// behind the session's back, let's modify the statuses
-					UpdateStatuses(session);
+					await (UpdateStatusesAsync(session));
 					// Now lets refresh the persistent batch, and see if the refresh cascaded to the jobs collection elements
-					session.Refresh(batch);
+					await (session.RefreshAsync(batch));
 					foreach (Job job in batch.Jobs)
 					{
 						Assert.That(job.Status, Is.EqualTo(1), "Jobs not refreshed!");
 					}
 
+					txn.Rollback();
+				}
+			}
+		}
+
+		private async Task UpdateStatusesAsync(ISession session)
+		{
+			DbConnection conn = session.Connection;
+			DbCommand cmd = conn.CreateCommand();
+			cmd.CommandText = "UPDATE T_JOB SET JOB_STATUS = 1";
+			cmd.CommandType = CommandType.Text;
+			session.Transaction.Enlist(cmd);
+			await (cmd.ExecuteNonQueryAsync());
+		}
+
+		[Test]
+		public async Task RefreshIgnoringTransientAsync()
+		{
+			// No exception expected
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction txn = session.BeginTransaction())
+				{
+					var batch = new JobBatch(DateTime.Now);
+					await (session.RefreshAsync(batch));
 					txn.Rollback();
 				}
 			}
@@ -50,10 +91,28 @@ namespace NHibernate.Test.Cascade
 					await (session.PersistAsync(batch));
 					await (session.FlushAsync());
 					batch.CreateJob().ProcessingInstructions = "I know you can do it!";
-					session.Refresh(batch);
+					await (session.RefreshAsync(batch));
 					Assert.That(batch.Jobs.Count == 1);
 					txn.Rollback();
 				}
+			}
+		}
+
+		[Test]
+		public async Task RefreshNotIgnoringTransientByUnsavedValueAsync()
+		{
+			ISession session = OpenSession();
+			ITransaction txn = session.BeginTransaction();
+			var batch = new JobBatch{BatchDate = DateTime.Now, Id = 1};
+			try
+			{
+				await (session.RefreshAsync(batch));
+			}
+			catch (UnresolvableObjectException)
+			{
+				// as expected
+				txn.Rollback();
+				session.Close();
 			}
 		}
 	}

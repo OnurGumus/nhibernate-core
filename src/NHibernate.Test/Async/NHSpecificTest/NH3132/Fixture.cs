@@ -6,9 +6,41 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH3132
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		/// <summary>
+		/// push some data into the database
+		/// Really functions as a save test also 
+		/// </summary>
+		protected override async Task OnSetUpAsync()
+		{
+			await (base.OnSetUpAsync());
+			using (var session = OpenSession())
+			{
+				using (var tran = session.BeginTransaction())
+				{
+					Product product = new Product();
+					product.Name = "First";
+					product.Lazy = "Lazy";
+					await (session.SaveAsync(product));
+					await (tran.CommitAsync());
+				}
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			await (base.OnTearDownAsync());
+			using (var session = OpenSession())
+				using (var tran = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from Product"));
+					await (tran.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task Query_returns_correct_nameAsync()
 		{

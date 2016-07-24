@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1492
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task RetrieveEntitiesAsync()
@@ -30,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1492
 			{
 				s.EnableFilter("excludeDeletedRows").SetParameter("deleted", "Y");
 				IQuery q = s.CreateQuery("FROM ChildEntity c WHERE c.Parent.Code = :parentCode").SetParameter("parentCode", 2);
-				childs = q.List<ChildEntity>();
+				childs = await (q.ListAsync<ChildEntity>());
 			}
 
 			Assert.AreEqual(1, childs.Count);

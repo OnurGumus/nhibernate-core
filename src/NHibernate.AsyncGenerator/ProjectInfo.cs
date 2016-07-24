@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +12,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.FindSymbols;
-using Microsoft.CodeAnalysis.Shared.Extensions;
 using NHibernate.AsyncGenerator.Extensions;
 
 namespace NHibernate.AsyncGenerator
@@ -21,7 +22,9 @@ namespace NHibernate.AsyncGenerator
 		
 		private readonly SolutionConfiguration _solutionConfiguration;
 		private readonly string _asyncProjectFolder;
-		private HashSet<string> _ignoredProjectNames;
+		private IImmutableSet<string> _ignoredProjectNames;
+		private IImmutableSet<Document> _searchDocuments;
+		private IImmutableSet<Project> _searchProjects;
 		private readonly Dictionary<string, Dictionary<string, bool>> _typeNamespaceUniquness = new Dictionary<string, Dictionary<string, bool>>();
 
 		public ProjectInfo(Project project, ProjectConfiguration configuration)
@@ -34,7 +37,9 @@ namespace NHibernate.AsyncGenerator
 
 		private HashSet<ReferenceLocation> IgnoredReferenceLocation { get; } = new HashSet<ReferenceLocation>();
 
-		private HashSet<IMethodSymbol> AnalyzedSymbols { get; } = new HashSet<IMethodSymbol>();
+		private HashSet<ReferenceLocation> ScannedReferenceLocations { get; } = new HashSet<ReferenceLocation>();
+
+		private HashSet<IMethodSymbol> AnalyzedMethodSymbols { get; } = new HashSet<IMethodSymbol>();
 
 		internal SolutionInfo SolutionInfo { get; set; }
 
@@ -62,43 +67,85 @@ namespace NHibernate.AsyncGenerator
 			return result;
 		}
 
-		public async Task Analyze()
+		private void SetIgnoredProjectNames()
 		{
-			Clear();
-			IgnoredReferenceLocation.Clear();
-			AnalyzedSymbols.Clear();
-
+			if (_ignoredProjectNames != null)
+			{
+				return ;
+			}
 			// cache project names to ignore to increase performance
-			_ignoredProjectNames = new HashSet<string>(Configuration.IgnoreReferencesFromProjects);
+			var ignoredProjectNames = new HashSet<string>(Configuration.IgnoreReferencesFromProjects);
 			var ignoreProjects = SolutionInfo?.Configuration?.IgnoreProjectNames;
 			if (ignoreProjects != null)
 			{
 				foreach (var projectName in ignoreProjects)
 				{
-					_ignoredProjectNames.Add(projectName);
+					ignoredProjectNames.Add(projectName);
 				}
 			}
+			_ignoredProjectNames = ignoredProjectNames.ToImmutableHashSet();
+		}
 
-			foreach (var document in Project.Documents.Where(o => !o.FilePath.StartsWith(_asyncProjectFolder)))
+		/// <summary>
+		/// Get all documents that can be used when searching with SymbolFinder
+		/// </summary>
+		/// <returns></returns>
+		private IImmutableSet<Document> GetSearchableDocuments()
+		{
+			if (_searchDocuments == null)
+			{
+				_searchDocuments = SolutionInfo
+					.ProjectInfos
+					.Where(o => !_ignoredProjectNames.Contains(o.Project.Name))
+					.SelectMany(o => o.GetDocuments())
+					.ToImmutableHashSet();
+			}
+			return _searchDocuments;
+		}
+
+		/// <summary>
+		/// Get all projects that can be used for searching with SymbolFinder
+		/// </summary>
+		/// <returns></returns>
+		private IImmutableSet<Project> GetSearchableProjects()
+		{
+			if (_searchProjects == null)
+			{
+				_searchProjects = SolutionInfo
+					.ProjectInfos
+					.Where(o => !_ignoredProjectNames.Contains(o.Project.Name))
+					.Select(o => o.Project)
+					.ToImmutableHashSet();
+			}
+			return _searchProjects;
+		}
+
+		public IEnumerable<Document> GetDocuments()
+		{
+			return Project.Documents.Where(o => !o.FilePath.StartsWith(_asyncProjectFolder));
+		}
+
+		public async Task Analyze()
+		{
+			Clear();
+			IgnoredReferenceLocation.Clear();
+			AnalyzedMethodSymbols.Clear();
+			_ignoredProjectNames = null;
+			SetIgnoredProjectNames();
+			foreach (var document in GetDocuments())
 			{
 				await AnalyzeDocument(document).ConfigureAwait(false);
 			}
 		}
 
-		private async Task<DocumentInfo> GetOrCreateDocumentInfo(Document document)
+		public async Task PostAnalyze()
 		{
-			if (ContainsKey(document.FilePath))
+			foreach (var document in GetDocuments())
 			{
-				return this[document.FilePath];
+				await AnalyzeDocument(document).ConfigureAwait(false);
 			}
-			var info = new DocumentInfo(this, document)
-			{
-				RootNode = (CompilationUnitSyntax)await document.GetSyntaxRootAsync().ConfigureAwait(false),
-				SemanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false)
-			};
-			Add(document.FilePath, info);
-			return info;
 		}
+
 
 		private async Task<DocumentInfo> AnalyzeDocument(Document document)
 		{
@@ -106,47 +153,206 @@ namespace NHibernate.AsyncGenerator
 			{
 				throw new NotSupportedException("Multiple Project for ProjectInfo");
 			}
-
-			var docInfo = await GetOrCreateDocumentInfo(document).ConfigureAwait(false);
+			if (!Configuration.CanScanDocumentFunc(document))
+			{
+				return null;
+			}
+			var docInfo = await CreateDocumentInfo(document).ConfigureAwait(false);
 			foreach (var typeDeclaration in docInfo.RootNode
 												.DescendantNodes()
 												.OfType<TypeDeclarationSyntax>())
 			{
 				var declaredSymbol = docInfo.SemanticModel.GetDeclaredSymbol(typeDeclaration);
+				var typeInfo = docInfo.GetOrCreateTypeInfo(typeDeclaration);
+				var typeTransform = Configuration.TypeTransformationFunc?.Invoke(declaredSymbol) ?? TypeTransformation.None;
+				typeInfo.TypeTransformation = typeTransform;
+				if (typeTransform == TypeTransformation.None)
+				{
+					continue;
+				}
+
+				// if the type have to be defined as a new type then we need to find all references to that type 
+				if (typeTransform == TypeTransformation.NewType)
+				{
+					await ScanForTypeReferences(declaredSymbol).ConfigureAwait(false);
+				}
+				
 				if (Configuration.ScanForMissingAsyncMembers)
 				{
-					await ScanForMissingAsyncMembers(docInfo, declaredSymbol).ConfigureAwait(false);
+					await ScanForTypeMissingAsyncMethods(docInfo, declaredSymbol).ConfigureAwait(false);
 				}
+
 				foreach (var memberSymbol in declaredSymbol
 					.GetMembers()
+					.Where(o => o.Locations.All(l => !l.SourceTree.FilePath.StartsWith(_asyncProjectFolder)))
 					.OfType<IMethodSymbol>()
-					.Where(Configuration.CanScanMethodFunc))
+					.Where(o => !AnalyzedMethodSymbols.Contains(o.OriginalDefinition)))
 				{
-					var symbolInfo = AnalizeSymbol(memberSymbol);
+					var conversion = Configuration.MethodConversionFunc(memberSymbol);
+					if (conversion == MethodAsyncConversion.None)
+					{
+						continue;
+					}
+					var symbolInfo = AnalyzeMethodSymbol(memberSymbol, true, conversion == MethodAsyncConversion.Smart);
 					if (!symbolInfo.IsValid)
 					{
 						continue;
 					}
-					await ProcessSymbolInfo(symbolInfo).ConfigureAwait(false);
+
+					if (conversion == MethodAsyncConversion.Smart && !SmartAnalyzeMethod(docInfo, memberSymbol, symbolInfo))
+					{
+						continue;
+					}
+					await ProcessMethodSymbolInfo(symbolInfo, docInfo).ConfigureAwait(false);
 				}
 			}
 			return docInfo;
 		}
 
-		private async Task ScanForMissingAsyncMembers(DocumentInfo docInfo, INamedTypeSymbol typeSymbol)
+		private bool SmartAnalyzeMethod(DocumentInfo docInfo, IMethodSymbol memberSymbol, MethodSymbolInfo symbolInfo)
+		{
+			var methodInfo = docInfo.GetOrCreateMethodInfo(memberSymbol);
+			if (methodInfo.Missing)
+			{
+				return true;
+			}
+
+			if (methodInfo.FindAsyncCounterpartMethodsWhitinBody(MethodAsyncConterparts).Any())
+			{
+				return true;
+			}
+			return false;
+		}
+
+		private bool IsAnyParentOrSelfTypeTransformedAsNewType(INamedTypeSymbol typeSymbol)
+		{
+			if (Configuration.TypeTransformationFunc == null)
+			{
+				return false;
+			}
+			while (typeSymbol != null)
+			{
+				if (Configuration.TypeTransformationFunc(typeSymbol) == TypeTransformation.NewType)
+				{
+					return true;
+				}
+				typeSymbol = typeSymbol.ContainingType;
+			}
+			return false;
+		}
+
+		#region ScanForTypeReferences
+
+		private readonly HashSet<ISymbol> _scannedTypeReferenceSymbols = new HashSet<ISymbol>();
+		private readonly HashSet<ReferenceLocation> _scannedTypeReferenceLocations = new HashSet<ReferenceLocation>();
+
+		/// <summary>
+		/// When a type needs to be defined as a new type we need to find all references to them.
+		/// Reference can point to a variable, field, base type, argument definition
+		/// </summary>
+		/// <param name="symbol"></param>
+		/// <returns></returns>
+		private async Task ScanForTypeReferences(INamedTypeSymbol symbol)
+		{
+			if (_scannedTypeReferenceSymbols.Contains(symbol.OriginalDefinition))
+			{
+				return;
+			}
+			_scannedTypeReferenceSymbols.Add(symbol.OriginalDefinition);
+
+			// references for ctor of the type and the type itself wont have any locations
+			var references = await SymbolFinder.FindReferencesAsync(symbol, Project.Solution, GetSearchableDocuments()).ConfigureAwait(false);
+			foreach (var refLocation in references.SelectMany(o => o.Locations)
+												  .Where(o => !_scannedTypeReferenceLocations.Contains(o))
+												  .Where(o => !o.Location.SourceTree.FilePath.StartsWith(_asyncProjectFolder)))
+			{
+				_scannedTypeReferenceLocations.Add(refLocation);
+				var info = await GetOrCreateDocumentInfo(refLocation.Document).ConfigureAwait(false);
+				if (info == null)
+				{
+					continue;
+				}
+				// we need to find the type where the reference location is
+				var node = info.RootNode.DescendantNodes(descendIntoTrivia:true)
+					.First(
+						o =>
+						{
+							if (o.IsKind(SyntaxKind.GenericName))
+							{
+								return o.ChildTokens().First(t => t.IsKind(SyntaxKind.IdentifierToken)).Span ==
+									   refLocation.Location.SourceSpan;
+							}
+							return o.Span == refLocation.Location.SourceSpan;
+						});
+
+				var methodNode = node.Ancestors().OfType<MethodDeclarationSyntax>().FirstOrDefault();
+				if (methodNode != null)
+				{
+					var methodInfo = info.GetOrCreateMethodInfo(methodNode);
+					//methodInfo.Ignore = false;
+					if (methodInfo.TypeReferences.Contains(refLocation))
+					{
+						continue;
+					}
+					methodInfo.TypeReferences.Add(refLocation);
+				}
+				else
+				{
+					var type = node.Ancestors().OfType<TypeDeclarationSyntax>().FirstOrDefault();
+					if (type != null) 
+					{
+						var typeInfo = info.GetOrCreateTypeInfo(type);
+						if (typeInfo.TypeReferences.Contains(refLocation))
+						{
+							continue;
+						}
+						typeInfo.TypeReferences.Add(refLocation);
+					}
+					else // can happen when declaring a Name in a using statement
+					{
+						var namespaceNode = node.Ancestors().OfType<NamespaceDeclarationSyntax>().FirstOrDefault();
+						var namespaceInfo = info.GetNamespaceInfo(namespaceNode, true);
+						if (namespaceInfo.TypeReferences.Contains(refLocation))
+						{
+							continue;
+						}
+						namespaceInfo.TypeReferences.Add(refLocation);
+					}
+				}
+			}
+		}
+
+		#endregion
+
+		internal readonly Dictionary<IMethodSymbol, IMethodSymbol> MethodAsyncConterparts = new Dictionary<IMethodSymbol, IMethodSymbol>();
+
+		private async Task ScanForTypeMissingAsyncMethods(DocumentInfo docInfo, INamedTypeSymbol typeSymbol)
 		{
 			var members = typeSymbol.GetMembers().OfType<IMethodSymbol>().ToLookup(o => o.Name);
 			var methodInfos = new List<MethodInfo>();
 			foreach (var asyncMember in typeSymbol.AllInterfaces
 												  .SelectMany(o => o.GetMembers().OfType<IMethodSymbol>().Where(m => m.Name.EndsWith("Async"))))
 			{
-				if (typeSymbol.FindImplementationForInterfaceMember(asyncMember) != null)
+				// FindImplementationForInterfaceMember will find also the implementation of an already generated type so we need an extra check 
+				var impl = typeSymbol.FindImplementationForInterfaceMember(asyncMember);
+				if (impl != null)
+				{
+					var location = impl.Locations.SingleOrDefault();
+					if (location == null || !location.SourceTree.FilePath.StartsWith(_asyncProjectFolder))
+					{
+						continue;
+					}
+				}
+				var nonAsyncName = asyncMember.Name.Remove(asyncMember.Name.LastIndexOf("Async", StringComparison.InvariantCulture));
+				if (!members.Contains(nonAsyncName))
 				{
 					continue;
 				}
-				var nonAsyncName = asyncMember.Name.Remove(asyncMember.Name.LastIndexOf("Async", StringComparison.InvariantCulture));
 				var nonAsyncMember = members[nonAsyncName].First(o => o.HaveSameParameters(asyncMember));
-				methodInfos.Add(docInfo.GetOrCreateMethodInfo(nonAsyncMember));
+				var methodInfo = docInfo.GetOrCreateMethodInfo(nonAsyncMember);
+				methodInfo.Missing = true;
+				//methodInfo.Ignore = false;
+				methodInfos.Add(methodInfo);
 			}
 
 			// find all abstract non implemented async methods. Descend base types until we find a non abstract one.
@@ -168,7 +374,10 @@ namespace NHibernate.AsyncGenerator
 						Logger.Warn($"Abstract sync counterpart of async member {asyncMember} not found");
 						continue;
 					}
-					methodInfos.Add(docInfo.GetOrCreateMethodInfo(nonAsyncMember));
+					var methodInfo = docInfo.GetOrCreateMethodInfo(nonAsyncMember);
+					methodInfo.Missing = true;
+					//methodInfo.Ignore = false;
+					methodInfos.Add(methodInfo);
 				}
 				baseType = baseType.BaseType;
 			}
@@ -176,41 +385,44 @@ namespace NHibernate.AsyncGenerator
 			if (Configuration.ScanMethodsBody)
 			{
 				foreach (var group in methodInfos
-					.SelectMany(o => o.FindAsyncCounterpartMethodsWhitinBody())
-					.Where(o => !AnalyzedSymbols.Contains(o.MethodSymbol))
+					.SelectMany(o => o.FindAsyncCounterpartMethodsWhitinBody(MethodAsyncConterparts))
 					.GroupBy(o => o.MethodSymbol))
 				{
-					AnalyzedSymbols.Add(group.Key);
-					await GetAllReferenceLocations(
-						await SymbolFinder.FindReferencesAsync(group.Key, Project.Solution).ConfigureAwait(false), true)
-						.ConfigureAwait(false);
+					await ScanAllMethodReferenceLocations(group.Key).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private class SymbolInfo
+		private class MethodSymbolInfo
 		{
-			public HashSet<IMethodSymbol> BaseMethods { get; set; }
+			public static readonly MethodSymbolInfo Invalid = new MethodSymbolInfo();
 
-			public IMethodSymbol OverridenMethod { get; set; }
+			public HashSet<IMethodSymbol> InterfaceMethods { get; set; }
 
-			public HashSet<IMethodSymbol> Overrides { get; set; }
+			public HashSet<IMethodSymbol> OverriddenMethods { get; set; }
+
+			public IMethodSymbol BaseOverriddenMethod { get; set; }
 
 			public IMethodSymbol MethodSymbol { get; set; }
 
 			public bool IsValid { get; set; }
 		}
 
-		private Task<DocumentInfo> GetDocumentInfo(SyntaxReference syntax)
+		internal Task<DocumentInfo> GetOrCreateDocumentInfo(SyntaxReference syntax)
 		{
-			return GetDocumentInfo(Project.Solution.GetDocument(syntax.SyntaxTree));
+			return GetOrCreateDocumentInfo(Project.Solution.GetDocument(syntax.SyntaxTree));
 		}
 
-		private async Task<DocumentInfo> GetDocumentInfo(Document doc)
+		internal async Task<DocumentInfo> GetOrCreateDocumentInfo(Document doc)
 		{
+			if (!Configuration.CanScanDocumentFunc(doc))
+			{
+				return null;
+			}
+
 			if (doc.Project == Project)
 			{
-				return await GetOrCreateDocumentInfo(doc).ConfigureAwait(false);
+				return await CreateDocumentInfo(doc).ConfigureAwait(false);
 			}
 			if (Configuration.IgnoreExternalReferences || _ignoredProjectNames.Contains(doc.Project.Name))
 			{
@@ -223,7 +435,34 @@ namespace NHibernate.AsyncGenerator
 			}
 
 			var projectInfo = SolutionInfo.ProjectInfos.First(o => o.Project == doc.Project);
-			return await projectInfo.GetOrCreateDocumentInfo(doc).ConfigureAwait(false);
+			return await projectInfo.CreateDocumentInfo(doc).ConfigureAwait(false);
+		}
+
+		internal DocumentInfo GetDocumentInfo(SyntaxReference syntax)
+		{
+			return GetDocumentInfo(Project.Solution.GetDocument(syntax.SyntaxTree));
+		}
+
+		internal DocumentInfo GetDocumentInfo(Document document)
+		{
+			if (document.Project == Project)
+			{
+				return ContainsKey(document.FilePath) ? this[document.FilePath] : null;
+			}
+			var projectInfo = SolutionInfo.ProjectInfos.FirstOrDefault(o => o.Project == document.Project);
+			return projectInfo?.GetDocumentInfo(document);
+		}
+
+		private async Task<DocumentInfo> CreateDocumentInfo(Document document)
+		{
+			if (ContainsKey(document.FilePath))
+			{
+				return this[document.FilePath];
+			}
+			var info = new DocumentInfo(this, document);
+			await info.Initialize().ConfigureAwait(false);
+			Add(document.FilePath, info);
+			return info;
 		}
 
 		private bool CanProcessSyntaxReference(SyntaxReference syntax)
@@ -244,60 +483,79 @@ namespace NHibernate.AsyncGenerator
 			return SolutionInfo != null;
 		}
 
-		private SymbolInfo AnalizeSymbol(ISymbol symbol)
+		private readonly Dictionary<IMethodSymbol, MethodSymbolInfo> _cachedMethodSymbolInfos = new Dictionary<IMethodSymbol, MethodSymbolInfo>();
+
+		private MethodSymbolInfo AnalyzeMethodSymbol(IMethodSymbol methodSymbol, bool memorize = true, bool skipLog =false)
 		{
-			// check if the symbol is a method otherwise skip
-			var methodSymbol = symbol as IMethodSymbol;
-			if (methodSymbol == null)
+			if (_cachedMethodSymbolInfos.ContainsKey(methodSymbol.OriginalDefinition))
 			{
-				Logger.Warn($"Symbol {symbol} is not a method and cannot be made async");
-				return new SymbolInfo();
+				return _cachedMethodSymbolInfos[methodSymbol.OriginalDefinition];
+			}
+			if (memorize && !AnalyzedMethodSymbols.Contains(methodSymbol.OriginalDefinition))
+			{
+				AnalyzedMethodSymbols.Add(methodSymbol.OriginalDefinition);
 			}
 			if (methodSymbol.Name.EndsWith("Async"))
 			{
-				Logger.Debug($"Symbol {symbol} is already async");
-				return new SymbolInfo();
+				if (!skipLog)
+				{
+					Logger.Debug($"Symbol {methodSymbol} is already async");
+				}
+				return MethodSymbolInfo.Invalid;
 			}
 			if (methodSymbol.MethodKind != MethodKind.Ordinary && methodSymbol.MethodKind != MethodKind.ExplicitInterfaceImplementation)
 			{
-				Logger.Warn($"Method {methodSymbol} is a {methodSymbol.MethodKind} and cannot be made async");
-				return new SymbolInfo();
+				if (!skipLog)
+				{
+					Logger.Warn($"Method {methodSymbol} is a {methodSymbol.MethodKind} and cannot be made async");
+				}
+				return MethodSymbolInfo.Invalid;
 			}
 
 			if (methodSymbol.Parameters.Any(o => o.RefKind == RefKind.Out))
 			{
-				Logger.Warn($"Method {methodSymbol} has out parameters and cannot be made async");
-				return new SymbolInfo();
+				if (!skipLog)
+				{
+					Logger.Warn($"Method {methodSymbol} has out parameters and cannot be made async");
+				}
+				return MethodSymbolInfo.Invalid;
 			}
 
 			if (methodSymbol.DeclaringSyntaxReferences.SingleOrDefault() == null)
 			{
-				Logger.Warn($"Method {methodSymbol} is external and cannot be made async");
-				return new SymbolInfo();
+				if (!skipLog)
+				{
+					Logger.Warn($"Method {methodSymbol} is external and cannot be made async");
+				}
+				return MethodSymbolInfo.Invalid;
 			}
 
-			var baseMethods = new HashSet<IMethodSymbol>();
+			var interfaceMethods = new HashSet<IMethodSymbol>();
 			// check if explicitly implements external interfaces
 			if (methodSymbol.MethodKind == MethodKind.ExplicitInterfaceImplementation)
 			{
 				foreach (var interfaceMember in methodSymbol.ExplicitInterfaceImplementations)
 				{
 					var syntax = interfaceMember.DeclaringSyntaxReferences.SingleOrDefault();
-					if (syntax == null)
+					if (syntax == null || methodSymbol.ContainingAssembly.Name != interfaceMember.ContainingAssembly.Name)
 					{
 						Logger.Warn(
 							$"Method {methodSymbol} implements an external interface {interfaceMember} and cannot be made async");
-						return new SymbolInfo();
+						return MethodSymbolInfo.Invalid;
+					}
+					if (memorize && !AnalyzedMethodSymbols.Contains(interfaceMember.OriginalDefinition))
+					{
+						AnalyzedMethodSymbols.Add(interfaceMember.OriginalDefinition);
 					}
 					if (!CanProcessSyntaxReference(syntax))
 					{
 						continue;
 					}
-					baseMethods.Add(interfaceMember.OriginalDefinition);
+					interfaceMethods.Add(interfaceMember.OriginalDefinition);
 				}
 			}
 
-			// check if the method is implementing an external interface if the skip as we cannot modify externals
+			// check if the method is implementing an external interface, if true skip as we cannot modify externals
 			var type = methodSymbol.ContainingType;
 			foreach (var interfaceMember in type.AllInterfaces
 												.SelectMany(
@@ -306,17 +564,21 @@ namespace NHibernate.AsyncGenerator
 														  .OfType<IMethodSymbol>()))
 			{
 				var syntax = interfaceMember.DeclaringSyntaxReferences.SingleOrDefault();
-				if (syntax == null)
+				if (syntax == null || methodSymbol.ContainingAssembly.Name != interfaceMember.ContainingAssembly.Name)
 				{
 					Logger.Warn(
 						$"Method {methodSymbol} implements an external interface {interfaceMember} and cannot be made async");
-					return new SymbolInfo();
+					return MethodSymbolInfo.Invalid;
+				}
+				if (memorize && !AnalyzedMethodSymbols.Contains(interfaceMember.OriginalDefinition))
+				{
+					AnalyzedMethodSymbols.Add(interfaceMember.OriginalDefinition);
 				}
 				if (!CanProcessSyntaxReference(syntax))
 				{
 					continue;
 				}
-				baseMethods.Add(interfaceMember.OriginalDefinition);
+				interfaceMethods.Add(interfaceMember.OriginalDefinition);
 			}
 
 			// check if the method is overriding an external method
@@ -325,10 +587,14 @@ namespace NHibernate.AsyncGenerator
 			while (overridenMethod != null)
 			{
 				var syntax = overridenMethod.DeclaringSyntaxReferences.SingleOrDefault();
-				if (syntax == null)
+				if (syntax == null || methodSymbol.ContainingAssembly.Name != overridenMethod.ContainingAssembly.Name)
 				{
 					Logger.Warn($"Method {methodSymbol} overrides an external method {overridenMethod} and cannot be made async");
-					return new SymbolInfo();
+					return MethodSymbolInfo.Invalid;
+				}
+				if (memorize && !AnalyzedMethodSymbols.Contains(overridenMethod.OriginalDefinition))
+				{
+					AnalyzedMethodSymbols.Add(overridenMethod.OriginalDefinition);
 				}
 				if (CanProcessSyntaxReference(syntax))
 				{
@@ -346,118 +612,181 @@ namespace NHibernate.AsyncGenerator
 
 			if (_solutionConfiguration.IsSymbolValidFunc != null && !_solutionConfiguration.IsSymbolValidFunc(this, methodSymbol))
 			{
-				Logger.Warn($"Method {methodSymbol} will be ignored because of user defined function");
-				return new SymbolInfo();
+				Logger.Debug($"Method {methodSymbol} will be ignored because of user defined function");
+				_cachedMethodSymbolInfos.Add(methodSymbol.OriginalDefinition, MethodSymbolInfo.Invalid);
+				return MethodSymbolInfo.Invalid;
 			}
 
 			if (methodSymbol.ContainingType.TypeKind == TypeKind.Interface)
 			{
-				baseMethods.Add(methodSymbol);
+				interfaceMethods.Add(methodSymbol);
 			}
 			methodSymbol = methodSymbol.OriginalDefinition; // unwrap method
 
-			return new SymbolInfo
+			var result = new MethodSymbolInfo
 			{
 				IsValid = true,
 				MethodSymbol = methodSymbol,
-				BaseMethods = baseMethods,
-				OverridenMethod = overridenMethod?.OriginalDefinition,
-				Overrides = overrrides
+				InterfaceMethods = interfaceMethods,
+				BaseOverriddenMethod = overridenMethod?.OriginalDefinition,
+				OverriddenMethods = overrrides,
 			};
+			_cachedMethodSymbolInfos.Add(methodSymbol, result);
+			return result;
 		}
 
-		private async Task ProcessSymbolInfo(SymbolInfo symbolInfo, int depth = 0)
+		private readonly HashSet<MethodSymbolInfo> _processedMethodSymbolInfos = new HashSet<MethodSymbolInfo>();
+		private readonly HashSet<IMethodSymbol> _processedMethodSymbols = new HashSet<IMethodSymbol>();
+
+		private async Task ProcessMethodSymbolInfo(MethodSymbolInfo methodSymbolInfo, DocumentInfo methodDocInfo, int depth = 0)
 		{
+			if (_processedMethodSymbolInfos.Contains(methodSymbolInfo))
+			{
+				return;
+			}
+			_processedMethodSymbolInfos.Add(methodSymbolInfo);
+
+			var mainMethodInfo = methodDocInfo.GetOrCreateMethodInfo(methodSymbolInfo.MethodSymbol);
+
 			DocumentInfo docInfo;
 			SyntaxReference syntax;
-			var methodInfos = new List<MethodInfo>();
-
-			// save all overrides
-			foreach (var overide in symbolInfo.Overrides)
-			{
-				syntax = overide.DeclaringSyntaxReferences.Single();
-				docInfo = await GetDocumentInfo(syntax).ConfigureAwait(false);
-				if (docInfo != null)
-				{
-					methodInfos.Add(docInfo.GetOrCreateMethodInfo(overide));
-				}
-			}
+			var bodyScanMethodInfos = new HashSet<MethodInfo>();
+			var referenceScanMethods = new HashSet<IMethodSymbol>();
 
 			// get and save all interface implementations
-			foreach (var interfaceMethod in symbolInfo.BaseMethods)
+			foreach (var interfaceMethod in methodSymbolInfo.InterfaceMethods)
 			{
-				syntax = interfaceMethod.DeclaringSyntaxReferences.Single();
-				docInfo = await GetDocumentInfo(syntax).ConfigureAwait(false);
-				methodInfos.Add(docInfo.GetOrCreateMethodInfo(interfaceMethod));
+				if (_processedMethodSymbols.Contains(interfaceMethod))
+				{
+					continue;
+				}
+				_processedMethodSymbols.Add(interfaceMethod);
 
-				var implementations = await SymbolFinder.FindImplementationsAsync(interfaceMethod, Project.Solution).ConfigureAwait(false);
+				referenceScanMethods.Add(interfaceMethod);
+				// try to get MethodInfo
+				syntax = interfaceMethod.DeclaringSyntaxReferences.Single();
+				docInfo = await GetOrCreateDocumentInfo(syntax).ConfigureAwait(false);
+				var interfaceMethodInfo = docInfo?.GetOrCreateMethodInfo(interfaceMethod.OriginalDefinition);
+				
+
+				var implementations = await SymbolFinder.FindImplementationsAsync(interfaceMethod, Project.Solution, GetSearchableProjects()).ConfigureAwait(false);
 				foreach (var implementation in implementations.OfType<IMethodSymbol>())
 				{
 					syntax = implementation.DeclaringSyntaxReferences.Single();
-					docInfo = await GetDocumentInfo(syntax).ConfigureAwait(false);
-					if (docInfo != null)
+					docInfo = await GetOrCreateDocumentInfo(syntax).ConfigureAwait(false);
+					if (docInfo == null)
 					{
-						methodInfos.Add(docInfo.GetOrCreateMethodInfo(implementation.OriginalDefinition));
+						interfaceMethodInfo?.ExternalDependencies.Add(implementation);
+						continue;
 					}
+					var methodInfo = docInfo.GetOrCreateMethodInfo(implementation.OriginalDefinition);
+					if (interfaceMethodInfo != null)
+					{
+						methodInfo.Dependencies.Add(interfaceMethodInfo);
+						interfaceMethodInfo.Dependencies.Add(methodInfo);
+					}
+					else
+					{
+						methodInfo.ExternalDependencies.Add(interfaceMethod);
+					}
+					
+					bodyScanMethodInfos.Add(methodInfo);
 				}
 			}
 
 			// get and save all derived methods
-			if (symbolInfo.OverridenMethod != null)
+			var baseMethod = methodSymbolInfo.BaseOverriddenMethod ??
+							 (methodSymbolInfo.MethodSymbol.IsVirtual || methodSymbolInfo.MethodSymbol.IsAbstract ? methodSymbolInfo.MethodSymbol : null);
+			if (baseMethod != null && !_processedMethodSymbols.Contains(baseMethod))
 			{
-				var overrides = await SymbolFinder.FindOverridesAsync(symbolInfo.OverridenMethod, Project.Solution).ConfigureAwait(false);
-				foreach (var overide in overrides.OfType<IMethodSymbol>())
+				_processedMethodSymbols.Add(baseMethod);
+
+				referenceScanMethods.Add(baseMethod);
+				// try to get MethodInfo
+				syntax = baseMethod.DeclaringSyntaxReferences.Single();
+				docInfo = await GetOrCreateDocumentInfo(syntax).ConfigureAwait(false);
+				var baseMethodInfo = docInfo?.GetOrCreateMethodInfo(baseMethod);
+				if (baseMethodInfo != null && baseMethod.IsAbstract)
 				{
-					syntax = overide.DeclaringSyntaxReferences.Single();
-					docInfo = await GetDocumentInfo(syntax).ConfigureAwait(false);
-					if (docInfo != null)
+					bodyScanMethodInfos.Add(baseMethodInfo);
+				}
+				
+				var overrides = await SymbolFinder.FindOverridesAsync(baseMethod, Project.Solution, GetSearchableProjects()).ConfigureAwait(false);
+				foreach (var overriddenMethod in overrides.OfType<IMethodSymbol>())
+				{
+					syntax = overriddenMethod.DeclaringSyntaxReferences.Single();
+					docInfo = await GetOrCreateDocumentInfo(syntax).ConfigureAwait(false);
+					if (docInfo == null)
 					{
-						methodInfos.Add(docInfo.GetOrCreateMethodInfo(overide.OriginalDefinition));
+						baseMethodInfo?.ExternalDependencies.Add(overriddenMethod);
+						continue;
+					}
+					var methodInfo = docInfo.GetOrCreateMethodInfo(overriddenMethod.OriginalDefinition);
+					if (baseMethodInfo != null)
+					{
+						methodInfo.Dependencies.Add(baseMethodInfo);
+						baseMethodInfo.Dependencies.Add(methodInfo);
+					}
+					else
+					{
+						methodInfo.ExternalDependencies.Add(baseMethod);
+					}
+					
+					if (!overriddenMethod.IsAbstract)
+					{
+						bodyScanMethodInfos.Add(methodInfo);
 					}
 				}
-				symbolInfo.BaseMethods.Add(symbolInfo.OverridenMethod);
+			}
+
+			if (baseMethod == null && !methodSymbolInfo.InterfaceMethods.Any()) //TODO: what about hiding methods
+			{
+				referenceScanMethods.Add(methodSymbolInfo.MethodSymbol);
+				bodyScanMethodInfos.Add(mainMethodInfo);
 			}
 
 			if (Configuration.ScanMethodsBody)
 			{
-				foreach (var group in methodInfos
-					.SelectMany(o => o.FindAsyncCounterpartMethodsWhitinBody())
-					.Where(o => !AnalyzedSymbols.Contains(o.MethodSymbol))
+				foreach (var group in bodyScanMethodInfos
+					.SelectMany(o => o.FindAsyncCounterpartMethodsWhitinBody(MethodAsyncConterparts))
 					.GroupBy(o => o.MethodSymbol))
 				{
-					AnalyzedSymbols.Add(group.Key);
-					await GetAllReferenceLocations(
-						await SymbolFinder.FindReferencesAsync(group.Key, Project.Solution).ConfigureAwait(false), true)
-						.ConfigureAwait(false);
+					await ScanAllMethodReferenceLocations(group.Key).ConfigureAwait(false);
 				}
 			}
-			
-			if (symbolInfo.MethodSymbol.HidesBaseMethodsByName ||
-				symbolInfo.MethodSymbol.DeclaredAccessibility != Accessibility.Public ||
-				!symbolInfo.BaseMethods.Any())
-			{
-				symbolInfo.BaseMethods.Add(symbolInfo.MethodSymbol);
-			}
 
-			foreach (var baseMethod in symbolInfo.BaseMethods.Where(o => !AnalyzedSymbols.Contains(o)))
+			foreach (var methodToScan in referenceScanMethods)
 			{
-				AnalyzedSymbols.Add(baseMethod);
-				await GetAllReferenceLocations(
-					await SymbolFinder.FindReferencesAsync(baseMethod, Project.Solution).ConfigureAwait(false), false, depth)
-					.ConfigureAwait(false);
+				await ScanAllMethodReferenceLocations(methodToScan, depth).ConfigureAwait(false);
 			}
 		}
 
-		private async Task GetAllReferenceLocations(IEnumerable<ReferencedSymbol> references, bool bodyToAsyncMethod = false, int depth = 0)
+		#region ScanAllMethodReferenceLocations
+
+		private readonly HashSet<IMethodSymbol> _scannedMethodReferenceSymbols = new HashSet<IMethodSymbol>();
+
+		private async Task ScanAllMethodReferenceLocations(IMethodSymbol methodSymbol, int depth = 0)
 		{
+			if (_scannedMethodReferenceSymbols.Contains(methodSymbol))
+			{
+				return;
+			}
+			_scannedMethodReferenceSymbols.Add(methodSymbol);
+
+			var references =
+				await SymbolFinder.FindReferencesAsync(methodSymbol, Project.Solution, GetSearchableDocuments()).ConfigureAwait(false);
+
 			depth++;
 			foreach (var refLocation in references.SelectMany(o => o.Locations)
+				.Where(o => !IgnoredReferenceLocation.Contains(o))
+				.Where(o => !ScannedReferenceLocations.Contains(o))
 				.Where(o => !o.Location.SourceTree.FilePath.StartsWith(_asyncProjectFolder)))
 			{
 				if (IgnoredReferenceLocation.Contains(refLocation))
 				{
 					continue;
 				}
+				ScannedReferenceLocations.Add(refLocation);
 
 				if (refLocation.Document.Project != Project &&
 					(
@@ -470,49 +799,50 @@ namespace NHibernate.AsyncGenerator
 					continue;
 				}
 
-				var info = await GetDocumentInfo(refLocation.Document).ConfigureAwait(false);
-				if (info == null)
+				var docInfo = await GetOrCreateDocumentInfo(refLocation.Document).ConfigureAwait(false);
+				if (docInfo == null)
 				{
 					continue;
 				}
-				var symbol = info.GetEnclosingMethodOrPropertyOrField(refLocation);
+				var symbol = docInfo.GetEnclosingMethodOrPropertyOrField(refLocation);
 				if (symbol == null)
 				{
 					Logger.Debug($"Symbol not found for reference ${refLocation}");
 					continue;
 				}
 
-				var symbolInfo = AnalizeSymbol(symbol);
+				var refMethodSymbol = symbol as IMethodSymbol;
+				if (refMethodSymbol == null)
+				{
+					IgnoredReferenceLocation.Add(refLocation);
+					continue;
+				}
+				// dont check if the method was already analyzed as there can be many references inside one method
+				var symbolInfo = AnalyzeMethodSymbol(refMethodSymbol, false);
 				if (!symbolInfo.IsValid)
 				{
 					IgnoredReferenceLocation.Add(refLocation);
 					continue;
 				}
-
-				if (bodyToAsyncMethod)
+				// check if we already processed the reference
+				if (docInfo.ContainsReference(symbolInfo.MethodSymbol, refLocation))
 				{
-					// check if we already processed the reference
-					if (info.ContainsBodyToAsyncMethodReference(symbolInfo.MethodSymbol, refLocation))
-					{
-						continue;
-					}
-					// save the reference as it can be made async
-					info.GetOrCreateMethodInfo(symbolInfo.MethodSymbol).BodyToAsyncMethodsReferences.Add(refLocation);
+					continue;
 				}
-				else
+				// save the reference as it can be made async
+				var methodInfo = docInfo.GetOrCreateMethodInfo(symbolInfo.MethodSymbol);
+				/*
+				if (methodInfo.Ignore)
 				{
-					// check if we already processed the reference
-					if (info.ContainsReference(symbolInfo.MethodSymbol, refLocation))
-					{
-						continue;
-					}
-					// save the reference as it can be made async
-					info.GetOrCreateMethodInfo(symbolInfo.MethodSymbol).References.Add(refLocation);
+					//methodInfo.Ignore = false;
+				}*/
+				methodInfo.References.Add(refLocation);
 
-				}
-				await ProcessSymbolInfo(symbolInfo, depth).ConfigureAwait(false);
+				await ProcessMethodSymbolInfo(symbolInfo, docInfo, depth).ConfigureAwait(false);
 			}
 		}
+
+		#endregion
 
 	}
 }

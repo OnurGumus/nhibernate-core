@@ -6,9 +6,19 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH892
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		ISession session;
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH892";
+			}
+		}
+
 		[Test]
 		public async Task SelectWithWhereClauseAsync()
 		{
@@ -26,9 +36,9 @@ namespace NHibernate.Test.NHSpecificTest.NH892
 				await (session.SaveAsync(post));
 				await (session.FlushAsync());
 				session.Clear();
-				User poster = (User)session.Get(typeof (User), user1.ID);
+				User poster = (User)await (session.GetAsync(typeof (User), user1.ID));
 				string hql = "from BlogPost b where b.Poster = :poster";
-				IList list = session.CreateQuery(hql).SetParameter("poster", poster).List();
+				IList list = await (session.CreateQuery(hql).SetParameter("poster", poster).ListAsync());
 				Assert.AreEqual(1, list.Count);
 				BlogPost retrievedPost = (BlogPost)list[0];
 				Assert.AreEqual(post.ID, retrievedPost.ID);

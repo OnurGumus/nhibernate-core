@@ -5,9 +5,15 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2242
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class FormulaTest : BugTestCase
+	public partial class FormulaTestAsync : BugTestCaseAsync
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect as MsSql2005Dialect != null;
+		}
+
 		[Test]
 		public async Task FormulaOfEscapedDomainClassShouldBeRetrievedCorrectlyAsync()
 		{

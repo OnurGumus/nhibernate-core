@@ -6,9 +6,21 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2985
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = OpenSession())
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					await (s.DeleteAsync("from WebImage"));
+					await (s.DeleteAsync("from ClassA"));
+					await (tx.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task TestAsync()
 		{

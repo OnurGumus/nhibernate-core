@@ -10,9 +10,20 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH3505
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = sessions.OpenSession())
+			{
+				await (s.DeleteAsync("from Student"));
+				await (s.DeleteAsync("from Teacher"));
+				await (s.FlushAsync());
+			}
+		}
+
 		[Test]
 		public async Task StatelessSessionLazyUpdateAsync()
 		{
@@ -40,11 +51,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3505
 				var trans = ss.BeginTransaction();
 				try
 				{
-					var student = ss.Get<Student>(studentId);
+					var student = await (ss.GetAsync<Student>(studentId));
 					Assert.AreEqual(teacherId, student.Teacher.Id);
 					Assert.AreEqual("Rebelious Teenager", student.Name);
 					student.Name = "Young Protege";
-					ss.Update(student);
+					await (ss.UpdateAsync(student));
 					await (trans.CommitAsync());
 				}
 				catch

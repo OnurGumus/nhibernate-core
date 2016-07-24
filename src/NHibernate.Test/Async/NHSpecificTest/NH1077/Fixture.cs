@@ -5,9 +5,16 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1077
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// Specific to MsSql2000Dialect and MsSql2005Dialect
+			return dialect is MsSql2000Dialect;
+		}
+
 		[Test]
 		public async Task LokingAsync()
 		{
@@ -26,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1077
 					A a = await (s.GetAsync<A>(savedId));
 					using (SqlLogSpy sqlLogSpy = new SqlLogSpy())
 					{
-						s.Lock(a, LockMode.Upgrade);
+						await (s.LockAsync(a, LockMode.Upgrade));
 						string sql = sqlLogSpy.Appender.GetEvents()[0].RenderedMessage;
 						Assert.Less(0, sql.IndexOf("with (updlock"));
 					}

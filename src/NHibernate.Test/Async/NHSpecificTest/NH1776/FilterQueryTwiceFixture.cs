@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1776
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class FilterQueryTwiceFixture : BugTestCase
+	public partial class FilterQueryTwiceFixtureAsync : BugTestCaseAsync
 	{
 		// Note : in this test what is really important is the usage of the same HQL
 		// because QueryPlan
@@ -16,9 +17,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1776
 		{
 			var c = new Category{Code = "2600", Deleted = false};
 			await (SaveCategoryAsync(c));
-			// exec queries, twice, different session
-			ExecQuery();
-			ExecQuery();
+			await (ExecQueryAsync());
+			await (ExecQueryAsync());
 			// cleanup using filter
 			using (ISession s = OpenSession())
 			{
@@ -43,6 +43,16 @@ namespace NHibernate.Test.NHSpecificTest.NH1776
 			}
 		}
 
+		private async Task ExecQueryAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				s.EnableFilter("state").SetParameter("deleted", false);
+				IList<Category> result = await (s.CreateQuery("from Category where Code = :code").SetParameter("code", "2600").ListAsync<Category>());
+				Assert.That(result.Count > 0);
+			}
+		}
+
 		[Test]
 		[Description("Executing same query with and without filter and with different filter parameter value.")]
 		public async Task FilterOnOffOnAsync()
@@ -52,20 +62,20 @@ namespace NHibernate.Test.NHSpecificTest.NH1776
 			using (ISession s = OpenSession())
 			{
 				s.EnableFilter("state").SetParameter("deleted", false);
-				IList<Category> result = s.CreateQuery("from Category where Code = :code").SetParameter("code", "2600").List<Category>();
+				IList<Category> result = await (s.CreateQuery("from Category where Code = :code").SetParameter("code", "2600").ListAsync<Category>());
 				Assert.That(result.Count == 0);
 			}
 
 			using (ISession s = OpenSession())
 			{
-				IList<Category> result = s.CreateQuery("from Category where Code = :code").SetParameter("code", "2600").List<Category>();
+				IList<Category> result = await (s.CreateQuery("from Category where Code = :code").SetParameter("code", "2600").ListAsync<Category>());
 				Assert.That(result.Count > 0);
 			}
 
 			using (ISession s = OpenSession())
 			{
 				s.EnableFilter("state").SetParameter("deleted", true);
-				IList<Category> result = s.CreateQuery("from Category where Code = :code").SetParameter("code", "2600").List<Category>();
+				IList<Category> result = await (s.CreateQuery("from Category where Code = :code").SetParameter("code", "2600").ListAsync<Category>());
 				Assert.That(result.Count > 0);
 			}
 
@@ -77,7 +87,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1776
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					s.CreateQuery("delete from Category").ExecuteUpdate();
+					await (s.CreateQuery("delete from Category").ExecuteUpdateAsync());
 					await (tx.CommitAsync());
 				}
 		}
@@ -91,7 +101,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1776
 			using (ISession s = OpenSession())
 			{
 				s.EnableFilter("state").SetParameter("deleted", false);
-				IList<Category> result = s.CreateQuery("from Category where Code = :code").SetParameter("code", "2600").List<Category>();
+				IList<Category> result = await (s.CreateQuery("from Category where Code = :code").SetParameter("code", "2600").ListAsync<Category>());
 				Assert.That(result.Count == 0);
 			}
 
@@ -99,14 +109,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1776
 			{
 				s.EnableFilter("state").SetParameter("deleted", true);
 				s.EnableFilter("CodeLike").SetParameter("codepattern", "2%");
-				IList<Category> result = s.CreateQuery("from Category where Code = :code").SetParameter("code", "NotExists").List<Category>();
+				IList<Category> result = await (s.CreateQuery("from Category where Code = :code").SetParameter("code", "NotExists").ListAsync<Category>());
 				Assert.That(result.Count == 0);
 			}
 
 			using (ISession s = OpenSession())
 			{
 				s.EnableFilter("CodeLike").SetParameter("codepattern", "2%");
-				IList<Category> result = s.CreateQuery("from Category where Code = :code").SetParameter("code", "2600").List<Category>();
+				IList<Category> result = await (s.CreateQuery("from Category where Code = :code").SetParameter("code", "2600").ListAsync<Category>());
 				Assert.That(result.Count > 0);
 			}
 

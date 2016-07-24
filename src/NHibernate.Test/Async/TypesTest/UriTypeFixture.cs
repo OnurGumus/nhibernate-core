@@ -7,8 +7,16 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.TypesTest
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class UriTypeFixture : TypeFixtureBase
+	public partial class UriTypeFixtureAsync : TypeFixtureBaseAsync
 	{
+		protected override string TypeName
+		{
+			get
+			{
+				return "Uri";
+			}
+		}
+
 		[Test]
 		public async Task ReadWriteAsync()
 		{
@@ -87,6 +95,14 @@ namespace NHibernate.Test.TypesTest
 				await (s.DeleteAsync(entity));
 				await (s.FlushAsync());
 			}
+		}
+
+		[Test]
+		public void AutoDiscoverFromNetType()
+		{
+			// integration test to be 100% sure
+			var propertyType = sessions.GetEntityPersister(typeof (UriClass).FullName).GetPropertyType("AutoUri");
+			Assert.That(propertyType, Is.InstanceOf<UriType>());
 		}
 	}
 }

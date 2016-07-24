@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using NHibernate.Exceptions;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq.ByMethod
@@ -7,10 +9,13 @@ namespace NHibernate.Test.Linq.ByMethod
 	public partial class SumTests : LinqTestCase
 	{
 		[Test]
-		[ExpectedException]
 		public void EmptySumDecimal()
 		{
-			db.OrderLines.Where(ol => false).Sum(ol => ol.Discount);
+			Assert.Throws<GenericADOException>(
+				() =>
+				{
+					db.OrderLines.Where(ol => false).Sum(ol => ol.Discount);
+				});
 		}
 
 		[Test]

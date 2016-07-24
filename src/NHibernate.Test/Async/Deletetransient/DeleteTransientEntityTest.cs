@@ -5,9 +5,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Deletetransient
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class DeleteTransientEntityTest : TestCase
+	public partial class DeleteTransientEntityTestAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Deletetransient.Person.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task TransientEntityDeletionNoCascadesAsync()
 		{
@@ -63,7 +80,7 @@ namespace NHibernate.Test.Deletetransient
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			long count = s.CreateQuery("select count(*) from Address").List<long>()[0];
+			long count = (await (s.CreateQuery("select count(*) from Address").ListAsync<long>()))[0];
 			Assert.That(count, Is.EqualTo(0L), "delete not cascaded properly across transient entity");
 			await (t.CommitAsync());
 			s.Close();
@@ -89,7 +106,7 @@ namespace NHibernate.Test.Deletetransient
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			long count = s.CreateQuery("select count(*) from Address").List<long>()[0];
+			long count = (await (s.CreateQuery("select count(*) from Address").ListAsync<long>()))[0];
 			Assert.That(count, Is.EqualTo(0L), "delete not cascaded properly across transient entity");
 			await (t.CommitAsync());
 			s.Close();

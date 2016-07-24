@@ -6,9 +6,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Classic
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ValidatableFixture : TestCase
+	public partial class ValidatableFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Classic.Video.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task SaveAsync()
 		{
@@ -67,7 +84,7 @@ namespace NHibernate.Test.Classic
 			// update in the same session
 			using (ISession s = OpenSession())
 			{
-				Video vu = (Video)s.Get(typeof (Video), savedId);
+				Video vu = (Video)await (s.GetAsync(typeof (Video), savedId));
 				vu.Width = 0;
 				try
 				{

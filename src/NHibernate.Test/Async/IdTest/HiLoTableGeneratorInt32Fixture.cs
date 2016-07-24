@@ -5,9 +5,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.IdTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class HiLoTableGeneratorInt32Fixture : IdFixtureBase
+	public partial class HiLoTableGeneratorInt32FixtureAsync : IdFixtureBaseAsync
 	{
+		protected override string TypeName
+		{
+			get
+			{
+				return "HiLoInt32";
+			}
+		}
+
 		[Test]
 		public async Task ReadWriteAsync()
 		{
@@ -19,7 +28,7 @@ namespace NHibernate.Test.IdTest
 			id = b.Id;
 			s.Close();
 			s = OpenSession();
-			b = (HiLoInt32Class)s.Load(typeof (HiLoInt32Class), b.Id);
+			b = (HiLoInt32Class)await (s.LoadAsync(typeof (HiLoInt32Class), b.Id));
 			Assert.AreEqual(id, b.Id);
 			await (s.DeleteAsync(b));
 			await (s.FlushAsync());

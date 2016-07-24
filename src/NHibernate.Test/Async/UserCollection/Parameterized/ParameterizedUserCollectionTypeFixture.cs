@@ -5,9 +5,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.UserCollection.Parameterized
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ParameterizedUserCollectionTypeFixture : TestCase
+	public partial class ParameterizedUserCollectionTypeFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"UserCollection.Parameterized.Mapping.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task BasicOperationAsync()
 		{

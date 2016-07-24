@@ -6,8 +6,16 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.GeneratedTest
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public abstract partial class AbstractGeneratedPropertyTest : TestCase
+	public abstract partial class AbstractGeneratedPropertyTestAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
 		[Test]
 		public async Task GeneratedPropertyAsync()
 		{
@@ -23,7 +31,7 @@ namespace NHibernate.Test.GeneratedTest
 			byte[] bytes = entity.LastModified;
 			s = OpenSession();
 			t = s.BeginTransaction();
-			entity = (GeneratedPropertyEntity)s.Get(typeof (GeneratedPropertyEntity), entity.Id);
+			entity = (GeneratedPropertyEntity)await (s.GetAsync(typeof (GeneratedPropertyEntity), entity.Id));
 			Assert.IsTrue(NHibernateUtil.Binary.IsEqual(bytes, entity.LastModified));
 			await (t.CommitAsync());
 			s.Close();

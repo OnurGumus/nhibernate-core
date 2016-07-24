@@ -10,9 +10,42 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.DriverTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SqlServerCeDriverFixture : TestCase
+	public partial class SqlServerCeDriverFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"DriverTest.SqlServerCeEntity.hbm.xml"};
+			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is MsSqlCeDialect;
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			await (base.OnTearDownAsync());
+			using (ISession s = OpenSession())
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					await (s.DeleteAsync("from SqlServerCeEntity"));
+					await (tx.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task SaveLoadAsync()
 		{
@@ -55,7 +88,7 @@ namespace NHibernate.Test.DriverTest
 
 			using (ISession s = OpenSession())
 			{
-				IList<SqlServerCeEntity> entities = s.CreateCriteria(typeof (SqlServerCeEntity)).Add(Restrictions.Eq("StringProp", "a small string")).Add(Restrictions.Eq("BinaryProp", System.Text.ASCIIEncoding.ASCII.GetBytes("binary string"))).List<SqlServerCeEntity>();
+				IList<SqlServerCeEntity> entities = await (s.CreateCriteria(typeof (SqlServerCeEntity)).Add(Restrictions.Eq("StringProp", "a small string")).Add(Restrictions.Eq("BinaryProp", System.Text.ASCIIEncoding.ASCII.GetBytes("binary string"))).ListAsync<SqlServerCeEntity>());
 				Assert.That(entities.Count, Is.EqualTo(1));
 			}
 		}

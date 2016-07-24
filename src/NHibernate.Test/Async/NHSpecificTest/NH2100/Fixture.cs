@@ -7,8 +7,31 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.NHSpecificTest.NH2100
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : TestCaseMappingByCode
+	public partial class FixtureAsync : TestCaseMappingByCodeAsync
 	{
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ConventionModelMapper();
+			System.Type baseEntityType = typeof (DomainObject);
+			mapper.IsEntity((t, declared) => baseEntityType.IsAssignableFrom(t) && baseEntityType != t);
+			mapper.IsRootEntity((t, declared) => baseEntityType == t.BaseType);
+			mapper.Class<DomainObject>(r =>
+			{
+				r.Version(x => x.EntityVersion, map =>
+				{
+				}
+
+				);
+				r.Id(x => x.ID, map => map.Generator(Generators.Native));
+			}
+
+			);
+			mapper.Class<Class1>(r => r.IdBag(x => x.Class2List, map => map.Inverse(true), rel => rel.ManyToMany()));
+			mapper.Class<Class2>(r => r.IdBag<Class1>("_class1List", map => map.Table("Class1List"), rel => rel.ManyToMany()));
+			HbmMapping mappings = mapper.CompileMappingFor(new[]{typeof (Class1), typeof (Class2)});
+			return mappings;
+		}
+
 		[Test]
 		public async Task WhenTwoTransactionInSameSessionThenNotChangeVersionAsync()
 		{
@@ -44,8 +67,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2100
 				originalVersionC2_2 = c2_2.EntityVersion;
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					s.Refresh(c1_1); // The addition of these two Refresh calls fixes the entity version issue
-					s.Refresh(c1_2);
+					await (s.RefreshAsync(c1_1)); // The addition of these two Refresh calls fixes the entity version issue
+					await (s.RefreshAsync(c1_2));
 					var class1dto = new Class1DTO{ID = c1_1.ID, EntityVersion = c1_1.EntityVersion};
 					if (c1_1.Class2List.Count > 0)
 					{

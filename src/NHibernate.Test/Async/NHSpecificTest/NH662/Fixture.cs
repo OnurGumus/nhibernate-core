@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH662
 {
+	[TestFixture, Ignore("Not supported.")]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task UseDerivedClassAsync()
@@ -22,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH662
 			using (ISession s = OpenSession())
 				using (var tx = s.BeginTransaction())
 				{
-					d = s.Load<Derived>(savedId);
+					d = await (s.LoadAsync<Derived>(savedId));
 					Assert.That(d.Description, Is.EqualTo("something"));
 					await (tx.CommitAsync());
 				}

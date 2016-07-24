@@ -9,9 +9,15 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2484
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
+		{
+			return (dialect is Dialect.MsSql2008Dialect);
+		}
+
 		[Test]
 		public async Task TestPersistenceOfClassWithUnknownSerializableTypeAsync()
 		{
@@ -24,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2484
 			int id = -1;
 			using (ISession session = OpenSession())
 			{
-				session.SaveOrUpdate(model);
+				await (session.SaveOrUpdateAsync(model));
 				await (session.FlushAsync());
 				id = model.Id;
 				Assert.That(id, Is.GreaterThan(-1));
@@ -38,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2484
 
 			using (ISession session = OpenSession())
 			{
-				session.CreateQuery("delete from ClassWithImage").ExecuteUpdate();
+				await (session.CreateQuery("delete from ClassWithImage").ExecuteUpdateAsync());
 				await (session.FlushAsync());
 			}
 
@@ -57,7 +63,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2484
 			int id = -1;
 			using (ISession session = OpenSession())
 			{
-				session.SaveOrUpdate(model);
+				await (session.SaveOrUpdateAsync(model));
 				await (session.FlushAsync());
 				id = model.Id;
 				Assert.That(id, Is.GreaterThan(-1));
@@ -71,7 +77,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2484
 
 			using (ISession session = OpenSession())
 			{
-				session.CreateQuery("delete from ClassWithSerializableType").ExecuteUpdate();
+				await (session.CreateQuery("delete from ClassWithSerializableType").ExecuteUpdateAsync());
 				await (session.FlushAsync());
 			}
 

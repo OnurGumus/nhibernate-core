@@ -91,20 +91,24 @@ namespace NHibernate.Test.Hql.Ast
 			}
 		}
 
-		[Test, KnownBug("HHH-5574")]
+		[Test]
 		public void TestOrderByComponentDescNoSelectAliasRefFailureExpected()
 		{
-			using (ISession s = OpenSession())
-			using (ITransaction txn = s.BeginTransaction())
-			{
-				CheckTestOrderByResults(s.CreateQuery("select z.name, z.address from Zoo z order by z.address DESC, z.name DESC").List(),
-										data.Zoo1, data.Zoo2, data.Zoo4, data.Zoo3, null);
+			Assert.Throws<Exception>(
+				() =>
+				{
+					using (ISession s = OpenSession())
+					using (ITransaction txn = s.BeginTransaction())
+					{
+						CheckTestOrderByResults(s.CreateQuery("select z.name, z.address from Zoo z order by z.address DESC, z.name DESC").List(),
+												data.Zoo1, data.Zoo2, data.Zoo4, data.Zoo3, null);
 
-				CheckTestOrderByResults(s.CreateQuery("select name, address from Zoo order by address DESC, name DESC").List(),
-										data.Zoo1, data.Zoo2, data.Zoo4, data.Zoo3, null);
+						CheckTestOrderByResults(s.CreateQuery("select name, address from Zoo order by address DESC, name DESC").List(),
+												data.Zoo1, data.Zoo2, data.Zoo4, data.Zoo3, null);
 
-				txn.Commit();
-			}
+						txn.Commit();
+					}
+				}, KnownBug.Issue("HHH-5574"));
 		}
 
 		[Test]
@@ -190,17 +194,21 @@ namespace NHibernate.Test.Hql.Ast
 			}
 		}
 
-		[Test, KnownBug("HHH-5574")]
+		[Test]
 		public void TestOrderByComponentDescSelectAliasRefFailureExpected()
 		{
-			using (ISession s = OpenSession())
-			using (ITransaction txn = s.BeginTransaction())
-			{
-				CheckTestOrderByResults(s.CreateQuery("select z.name as zooName, z.address as zooAddress from Zoo z order by zooAddress DESC, zooName DESC").List(),
-										data.Zoo1, data.Zoo2, data.Zoo4, data.Zoo3, null);
+			Assert.Throws<Exception>(
+				() =>
+				{
+					using (ISession s = OpenSession())
+					using (ITransaction txn = s.BeginTransaction())
+					{
+						CheckTestOrderByResults(s.CreateQuery("select z.name as zooName, z.address as zooAddress from Zoo z order by zooAddress DESC, zooName DESC").List(),
+												data.Zoo1, data.Zoo2, data.Zoo4, data.Zoo3, null);
 
-				txn.Commit();
-			}
+						txn.Commit();
+					}
+				}, KnownBug.Issue("HHH-5574"));
 		}
 
 		[Test]

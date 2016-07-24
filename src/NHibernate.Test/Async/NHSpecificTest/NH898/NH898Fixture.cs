@@ -6,9 +6,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH898
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class NH898Fixture : BugTestCase
+	public partial class NH898FixtureAsync : BugTestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecificTest.NH898.ClassA.hbm.xml", "NHSpecificTest.NH898.ClassBParent.hbm.xml", "NHSpecificTest.NH898.ClassB.hbm.xml", "NHSpecificTest.NH898.ClassC.hbm.xml", };
+			}
+		}
+
 		[Test]
 		public async Task BugAsync()
 		{
@@ -23,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH898
 			using (ISession session = OpenSession())
 				using (ITransaction t = session.BeginTransaction())
 				{
-					IList l = session.CreateQuery("from ClassA a left join fetch a.B b").List();
+					IList l = await (session.CreateQuery("from ClassA a left join fetch a.B b").ListAsync());
 					Console.Write(l.ToString());
 					await (t.CommitAsync());
 				}

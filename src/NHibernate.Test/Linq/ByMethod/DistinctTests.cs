@@ -98,36 +98,42 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 		[Test]
-		[ExpectedException(typeof(NotSupportedException), ExpectedMessage = "Cannot use distinct on result that depends on methods for which no SQL equivalent exist.")]
 		public void DistinctOnTypeProjectionWithCustomProjectionMethodsIsBlocked1()
 		{
-			// Sort of related to NH-2645.
+			Assert.That(() =>
+			{
+				// Sort of related to NH-2645.
 
-			OrderDto[] result = db.Orders
-				.Select(x => new OrderDto
-								 {
-									 ShippingDate = Transform(x.ShippingDate),
-									 OrderDate = Transform(x.OrderDate)
-								 })
-				.Distinct()
-				.ToArray();
+				OrderDto[] result = db.Orders
+					.Select(x => new OrderDto
+					{
+						ShippingDate = Transform(x.ShippingDate),
+						OrderDate = Transform(x.OrderDate)
+					})
+					.Distinct()
+					.ToArray();
+			}, Throws.TypeOf<NotSupportedException>().With.Message.SameAs("Cannot use distinct on result that depends on methods for which no SQL equivalent exist."));
+
+			
 		}
 
 
 		[Test]
-		[ExpectedException(typeof(NotSupportedException), ExpectedMessage = "Cannot use distinct on result that depends on methods for which no SQL equivalent exist.")]
 		public void DistinctOnTypeProjectionWithCustomProjectionMethodsIsBlocked2()
 		{
-			// Sort of related to NH-2645.
-
-			OrderDto[] result = db.Orders
-				.Select(x => new OrderDto
+			Assert.That(() =>
 				{
-					ShippingDate = x.ShippingDate,
-					OrderDate = x.OrderDate.Value.AddMonths(5),  // As of 2012-01-25, AddMonths() is executed locally.
+					// Sort of related to NH-2645.
+
+					OrderDto[] result = db.Orders
+						.Select(x => new OrderDto
+						{
+							ShippingDate = x.ShippingDate,
+							OrderDate = x.OrderDate.Value.AddMonths(5),  // As of 2012-01-25, AddMonths() is executed locally.
 				})
-				.Distinct()
-				.ToArray();
+						.Distinct()
+						.ToArray();
+				}, Throws.TypeOf<NotSupportedException>().With.Message.SameAs("Cannot use distinct on result that depends on methods for which no SQL equivalent exist."));
 		}
 	}
 }

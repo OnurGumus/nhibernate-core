@@ -5,9 +5,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.SqlTest.Query
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SelfReferencingCollectionLoadTest : TestCase
+	public partial class SelfReferencingCollectionLoadTestAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"SqlTest.Query.Item.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
 		[Test]
 		public async Task LoadCollectionAsync()
 		{
@@ -26,7 +43,7 @@ namespace NHibernate.Test.SqlTest.Query
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					var item1 = (Item)session.Get(typeof (Item), 1);
+					var item1 = (Item)await (session.GetAsync(typeof (Item), 1));
 					Assert.AreEqual(2, item1.AlternativeItems.Count);
 					await (session.DeleteAsync("from Item"));
 					await (tx.CommitAsync());

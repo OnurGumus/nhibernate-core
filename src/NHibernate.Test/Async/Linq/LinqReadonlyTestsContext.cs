@@ -16,21 +16,56 @@ namespace NHibernate.Test.Linq
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class LinqReadonlyTestsContext
 	{
-		[SetUp]
+		[OneTimeSetUp]
 		public async Task CreateNorthwindDbAsync()
 		{
 			Configuration configuration = Configure();
 			string scripFileName = GetScripFileName(configuration, "LinqReadonlyCreateScript");
 			if (File.Exists(scripFileName))
 			{
-				ExecuteScriptFile(configuration, scripFileName);
+				await (ExecuteScriptFileAsync(configuration, scripFileName));
 			}
 			else
 			{
 				// may crash with NUnit2.5+ test runner
-				new SchemaExport(configuration).Create(false, true);
+				await (new SchemaExport(configuration).CreateAsync(false, true));
 				ISessionFactory sessionFactory = configuration.BuildSessionFactory();
 				await (CreateTestDataAsync(sessionFactory));
+			}
+		}
+
+		private async Task ExecuteScriptFileAsync(Configuration configuration, string scripFileName)
+		{
+			var file = new FileInfo(scripFileName);
+			string script = (await (file.OpenText().ReadToEndAsync())).Replace("GO", "");
+			var connectionProvider = ConnectionProviderFactory.NewConnectionProvider(configuration.GetDerivedProperties());
+			using (var conn = await (connectionProvider.GetConnectionAsync()))
+			{
+				if (conn.State == ConnectionState.Closed)
+				{
+					await (conn.OpenAsync());
+				}
+
+				using (var command = conn.CreateCommand())
+				{
+					command.CommandText = script;
+					await (command.ExecuteNonQueryAsync());
+				}
+			}
+		}
+
+		[OneTimeTearDown]
+		public async Task DestroyNorthwindDbAsync()
+		{
+			Configuration configuration = Configure();
+			string scripFileName = GetScripFileName(configuration, "LinqReadonlyDropScript");
+			if (File.Exists(scripFileName))
+			{
+				await (ExecuteScriptFileAsync(configuration, scripFileName));
+			}
+			else
+			{
+				await (new SchemaExport(configuration).DropAsync(false, true));
 			}
 		}
 
@@ -46,8 +81,8 @@ namespace NHibernate.Test.Linq
 			using (ISession session = sessionFactory.OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					await (NorthwindDbCreator.CreateMiscTestDataAsync(session));
-					await (NorthwindDbCreator.CreatePatientDataAsync(session));
+					NorthwindDbCreator.CreateMiscTestData(session);
+					NorthwindDbCreator.CreatePatientData(session);
 					await (tx.CommitAsync());
 				}
 		}

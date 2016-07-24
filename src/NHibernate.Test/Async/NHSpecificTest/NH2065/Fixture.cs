@@ -10,28 +10,57 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2065
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
-		[Test]
-		[ExpectedException(ExpectedException = typeof (HibernateException), ExpectedMessage = "reassociated object has dirty collection: NHibernate.Test.NHSpecificTest.NH2065.Person.Children")]
-		public async Task GetGoodErrorForDirtyReassociatedCollectionAsync()
+		protected override async Task OnSetUpAsync()
 		{
-			Person person;
 			using (var s = OpenSession())
 				using (s.BeginTransaction())
 				{
-					person = await (s.GetAsync<Person>(1));
-					NHibernateUtil.Initialize(person.Children);
+					var person = new Person{Children = new HashSet<Person>()};
+					await (s.SaveAsync(person));
+					var child = new Person();
+					await (s.SaveAsync(child));
+					person.Children.Add(child);
 					await (s.Transaction.CommitAsync());
 				}
+		}
 
-			person.Children.Clear();
+		protected override async Task OnTearDownAsync()
+		{
 			using (var s = OpenSession())
 				using (s.BeginTransaction())
 				{
-					s.Lock(person, LockMode.None);
+					await (s.DeleteAsync("from Person"));
+					await (s.Transaction.CommitAsync());
 				}
+		}
+
+		[Test]
+		public async Task GetGoodErrorForDirtyReassociatedCollectionAsync()
+		{
+			Assert.That(async () =>
+			{
+				Person person;
+				using (var s = OpenSession())
+					using (s.BeginTransaction())
+					{
+						person = await (s.GetAsync<Person>(1));
+						await (NHibernateUtil.InitializeAsync(person.Children));
+						await (s.Transaction.CommitAsync());
+					}
+
+				person.Children.Clear();
+				using (var s = OpenSession())
+					using (s.BeginTransaction())
+					{
+						await (s.LockAsync(person, LockMode.None));
+					}
+			}
+
+			, Throws.TypeOf<HibernateException>().With.Message.SameAs("reassociated object has dirty collection: NHibernate.Test.NHSpecificTest.NH2065.Person.Children"));
 		}
 	}
 }

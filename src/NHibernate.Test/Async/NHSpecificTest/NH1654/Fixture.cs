@@ -5,9 +5,23 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1654
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH1654";
+			}
+		}
+
+		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
+		{
+			return dialect is MsSql2000Dialect;
+		}
+
 		[Test]
 		public async Task TestAsync()
 		{
@@ -26,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1654
 			using (ISession sess = OpenSession())
 				using (ITransaction tx = sess.BeginTransaction())
 				{
-					var load = sess.Load<Employee>(employeeId);
+					var load = await (sess.LoadAsync<Employee>(employeeId));
 					Assert.AreEqual("John", load.FirstNameFormula);
 					await (tx.CommitAsync());
 				}

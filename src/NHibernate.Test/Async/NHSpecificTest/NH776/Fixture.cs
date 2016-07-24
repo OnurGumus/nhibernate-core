@@ -4,9 +4,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH776
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH776";
+			}
+		}
+
 		[Test]
 		public async Task ProxiedOneToOneTestAsync()
 		{
@@ -22,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH776
 
 				using (ISession session = sessions.OpenSession())
 				{
-					A loadedA = (A)session.Load(typeof (A), 1);
+					A loadedA = (A)await (session.LoadAsync(typeof (A), 1));
 					Assert.IsNull(loadedA.NotProxied);
 					Assert.IsNull(loadedA.Proxied, "one-to-one to proxied types not handling missing associated classes correctly (as null)");
 				}

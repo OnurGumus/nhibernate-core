@@ -91,21 +91,25 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(list.Single().Count, Is.EqualTo(5));
 		}
 
-		[Test, KnownBug("NH-????"), Description("I suspect that this case isn't executed correctly - the sql doesn't mention the orderlines. /Oskar 2012-01-22")]
+		[Test, Description("I suspect that this case isn't executed correctly - the sql doesn't mention the orderlines. /Oskar 2012-01-22")]
 		public void HavingCountSelectTupleKeyCountOfOrderLines()
 		{
-			var list = (from o in db.Orders
-						group o by o.OrderDate
+			Assert.Throws<AssertionException>(
+				() =>
+				{
+					var list = (from o in db.Orders
+								group o by o.OrderDate
 						into g
-						where g.Count() > 4
-						select new
-								   {
-									   g.Key,
-									   Count = g.SelectMany(x => x.OrderLines).Count()
-								   }).ToList();
+								where g.Count() > 4
+								select new
+								{
+									g.Key,
+									Count = g.SelectMany(x => x.OrderLines).Count()
+								}).ToList();
 
-			Assert.That(list.Count, Is.EqualTo(1));
-			Assert.That(list.Single().Count, Is.EqualTo(14));
+					Assert.That(list.Count, Is.EqualTo(1));
+					Assert.That(list.Single().Count, Is.EqualTo(14));
+				}, KnownBug.Issue("NH-????"));
 		}
 
 		[Test]

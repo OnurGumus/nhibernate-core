@@ -7,9 +7,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class LazyLoadBugTest : TestCase
+	public partial class LazyLoadBugTestAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecific.LazyLoadBug.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task TestLazyLoadAsync()
 		{
@@ -32,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest
 				using (ISession s2 = OpenSession())
 					using (ITransaction t2 = s2.BeginTransaction())
 					{
-						LLParent parent2 = (LLParent)s2.Load(typeof (LLParent), parentId);
+						LLParent parent2 = (LLParent)await (s2.LoadAsync(typeof (LLParent), parentId));
 						// this should throw the exception - the property setter access is not mapped correctly.
 						// Because it maintains logic to maintain the collection during the property set it should
 						// tell NHibernate to skip the setter and access the field.  If it doesn't, then throw
@@ -47,10 +56,8 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 			finally
 			{
-				// Need to delete the objects using direct SQL in this case,
-				// because of loading problems.
-				ExecuteStatement("delete from LLChild");
-				ExecuteStatement("delete from LLParent");
+				await (ExecuteStatementAsync("delete from LLChild"));
+				await (ExecuteStatementAsync("delete from LLParent"));
 			}
 		}
 
@@ -75,7 +82,7 @@ namespace NHibernate.Test.NHSpecificTest
 			using (ISession s2 = OpenSession())
 				using (ITransaction t2 = s2.BeginTransaction())
 				{
-					LLParent parent2 = (LLParent)s2.Load(typeof (LLParent), parentId);
+					LLParent parent2 = (LLParent)await (s2.LoadAsync(typeof (LLParent), parentId));
 					Assert.AreEqual(1, parent2.ChildrenNoAdd.Count);
 				}
 

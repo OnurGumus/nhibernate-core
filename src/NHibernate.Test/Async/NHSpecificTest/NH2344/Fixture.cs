@@ -6,9 +6,21 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2344
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				await (s.DeleteAsync("from Person"));
+				await (s.FlushAsync());
+			}
+
+			await (base.OnTearDownAsync());
+		}
+
 		[Test]
 		public async Task CoalesceShouldWorkAsync()
 		{

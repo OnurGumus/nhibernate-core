@@ -6,9 +6,35 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.TypeParameters
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class DefinedTypeForIdFixture : TestCase
+	public partial class DefinedTypeForIdFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"TypeParameters.EntityCustomId.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		[Test]
+		public void HasParametrizedId()
+		{
+			var pc = cfg.GetClassMapping(typeof (EntityCustomId));
+			var idMap = (SimpleValue)pc.IdentifierProperty.Value;
+			Assert.That(idMap.IdentifierGeneratorStrategy, Is.EqualTo("NHibernate.Id.TableHiLoGenerator, NHibernate"));
+			Assert.That(idMap.IdentifierGeneratorProperties["max_lo"], Is.EqualTo("99"));
+		}
+
 		[Test]
 		[Description("Ensure the parametrized generator is working.")]
 		public async Task SaveAsync()
@@ -29,7 +55,7 @@ namespace NHibernate.Test.TypeParameters
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					s.CreateQuery("delete from EntityCustomId").ExecuteUpdate();
+					await (s.CreateQuery("delete from EntityCustomId").ExecuteUpdateAsync());
 					await (t.CommitAsync());
 				}
 		}

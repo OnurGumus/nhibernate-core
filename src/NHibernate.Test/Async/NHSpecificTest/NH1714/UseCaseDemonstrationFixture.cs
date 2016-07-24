@@ -10,9 +10,24 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1714
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class UseCaseDemonstrationFixture : BugTestCase
+	public partial class UseCaseDemonstrationFixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnSetUpAsync()
+		{
+			await (base.OnSetUpAsync());
+			var listener = new IPreInsertEventListener[this.cfg.EventListeners.PreInsertEventListeners.Length + 1];
+			this.cfg.EventListeners.PreInsertEventListeners.CopyTo(listener, 0);
+			listener[listener.Length - 1] = new MyCustomEventListener();
+			this.cfg.EventListeners.PreInsertEventListeners = listener;
+		}
+
+		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
+		{
+			return dialect as MsSql2005Dialect != null;
+		}
+
 		[Test]
 		public async Task DbCommandsFromEventListenerShouldBeEnlistedInRunningTransactionAsync()
 		{
@@ -35,25 +50,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1714
 					await (tx.CommitAsync());
 				}
 			}
-		}
-	}
-
-	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class MyCustomEventListener : IPreInsertEventListener
-	{
-		public async Task<bool> OnPreInsertAsync(PreInsertEvent e)
-		{
-			if (e.Entity is DomainClass == false)
-				return false;
-			// this will join into the parent's transaction
-			using (var session = e.Session.GetSession(EntityMode.Poco))
-			{
-				//should insert log record here
-				await (session.SaveAsync(new LogClass()));
-				await (session.FlushAsync());
-			}
-
-			return false;
 		}
 	}
 }

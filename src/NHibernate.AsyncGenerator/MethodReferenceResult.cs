@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.FindSymbols;
 
@@ -10,17 +11,24 @@ namespace NHibernate.AsyncGenerator
 {
 	public class MethodReferenceResult
 	{
-		public MethodReferenceResult(ReferenceLocation reference, SimpleNameSyntax referenceNode)
+		public MethodReferenceResult(ReferenceLocation reference, SimpleNameSyntax referenceNode, IMethodSymbol symbol)
 		{
 			ReferenceLocation = reference;
 			ReferenceNode = referenceNode;
+			Symbol = symbol;
 		}
 
 		public SimpleNameSyntax ReferenceNode { get; }
 
 		public ReferenceLocation ReferenceLocation { get; }
 
+		public IMethodSymbol Symbol { get; }
+
 		public bool CanBeAsync { get; internal set; }
+
+		public bool DeclaredWithinSameType { get; internal set; }
+
+		public bool CanBeAwaited { get; internal set; } = true;
 
 		public bool UsedAsReturnValue { get; internal set; }
 

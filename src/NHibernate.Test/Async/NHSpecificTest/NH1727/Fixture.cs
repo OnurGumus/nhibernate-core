@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1727
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		/* To the commiter
          * I'm using sql2005dialect
@@ -31,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1727
 			using (ISession s = OpenSession())
 			{
 				s.EnableFilter("bEquals").SetParameter("b", b.Id);
-				s.CreateQuery(hql).SetString("name", "Sweden").SetParameterList("aValues", new[]{1, 3, 4}).List<ClassA>();
+				await (s.CreateQuery(hql).SetString("name", "Sweden").SetParameterList("aValues", new[]{1, 3, 4}).ListAsync<ClassA>());
 			}
 		}
 
@@ -52,8 +53,19 @@ namespace NHibernate.Test.NHSpecificTest.NH1727
 			using (ISession s = OpenSession())
 			{
 				s.EnableFilter("bEquals").SetParameter("b", b.Id);
-				s.CreateQuery(hql).SetString("name", "Sweden").SetParameterList("aValues", new[]{1, 3, 4}).List<ClassA>();
+				await (s.CreateQuery(hql).SetString("name", "Sweden").SetParameterList("aValues", new[]{1, 3, 4}).ListAsync<ClassA>());
 			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = OpenSession())
+				using (ITransaction t = s.BeginTransaction())
+				{
+					await (s.DeleteAsync("from ClassB"));
+					await (s.DeleteAsync("from ClassA"));
+					await (t.CommitAsync());
+				}
 		}
 	}
 }

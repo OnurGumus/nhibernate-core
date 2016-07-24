@@ -6,9 +6,26 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.VersionTest.Db
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class DbVersionFixture : TestCase
+	public partial class DbVersionFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"VersionTest.Db.User.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
 		[Test]
 		public async System.Threading.Tasks.Task CollectionVersionAsync()
 		{
@@ -44,8 +61,8 @@ namespace NHibernate.Test.VersionTest.Db
 			Assert.That(!NHibernateUtil.Timestamp.IsEqual(guyTimestamp, guy.Timestamp), "owner version not incremented");
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.DeleteAsync(s.Load<User>(guy.Id)));
-			await (s.DeleteAsync(s.Load<Group>(admin.Id)));
+			await (s.DeleteAsync(await (s.LoadAsync<User>(guy.Id))));
+			await (s.DeleteAsync(await (s.LoadAsync<Group>(admin.Id))));
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -81,8 +98,8 @@ namespace NHibernate.Test.VersionTest.Db
 			Assert.That(NHibernateUtil.Timestamp.IsEqual(guyTimestamp, guy.Timestamp), string.Format(ownerVersionWasIncremented, guyTimestamp, guy.Timestamp));
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.DeleteAsync(s.Load<User>(guy.Id)));
-			await (s.DeleteAsync(s.Load<Permission>(perm.Id)));
+			await (s.DeleteAsync(await (s.LoadAsync<User>(guy.Id))));
+			await (s.DeleteAsync(await (s.LoadAsync<Permission>(perm.Id))));
 			await (t.CommitAsync());
 			s.Close();
 		}

@@ -6,9 +6,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Subclass.EnumDiscriminator
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class EnumDiscriminatorFixture : TestCase
+	public partial class EnumDiscriminatorFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new String[]{"Subclass.EnumDiscriminator.EnumDiscriminator.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task PersistsDefaultDiscriminatorValueAsync()
 		{
@@ -22,7 +39,7 @@ namespace NHibernate.Test.Subclass.EnumDiscriminator
 
 			using (ISession s = OpenSession())
 			{
-				Baz baz = s.Load<Baz>(1L);
+				Baz baz = await (s.LoadAsync<Baz>(1L));
 				Assert.AreEqual(Colors.Green, baz.Color);
 			}
 		}
@@ -40,7 +57,7 @@ namespace NHibernate.Test.Subclass.EnumDiscriminator
 
 			using (ISession s = OpenSession())
 			{
-				Baz baz = s.Load<Baz>(1L);
+				Baz baz = await (s.LoadAsync<Baz>(1L));
 				baz.Color = Colors.Blue;
 				await (s.SaveAsync(baz));
 				await (s.FlushAsync());
@@ -48,7 +65,16 @@ namespace NHibernate.Test.Subclass.EnumDiscriminator
 
 			using (ISession s = OpenSession())
 			{
-				Bar bar = s.Load<Bar>(1L);
+				Bar bar = await (s.LoadAsync<Bar>(1L));
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				await (s.DeleteAsync("from Baz"));
+				await (s.FlushAsync());
 			}
 		}
 	}

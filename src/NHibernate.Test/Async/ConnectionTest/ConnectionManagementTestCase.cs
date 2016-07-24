@@ -7,13 +7,49 @@ using NHibernate.Util;
 namespace NHibernate.Test.ConnectionTest
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public abstract partial class ConnectionManagementTestCase : TestCase
+	public abstract partial class ConnectionManagementTestCaseAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"ConnectionTest.Silly.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected virtual void Prepare()
+		{
+		}
+
+		protected virtual void Done()
+		{
+		}
+
+		protected abstract ISession GetSessionUnderTest();
 		protected virtual Task ReleaseAsync(ISession session)
 		{
 			try
 			{
-				Release(session);
+				if (session != null && session.IsOpen)
+				{
+					try
+					{
+						session.Close();
+					}
+					catch (Exception x)
+					{
+					// Ignore
+					}
+				}
+
 				return TaskHelper.CompletedTask;
 			}
 			catch (Exception ex)

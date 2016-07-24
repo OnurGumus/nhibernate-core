@@ -8,8 +8,30 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.NHSpecificTest.NH941
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class FixtureUsingList : TestCaseMappingByCode
+	public partial class FixtureUsingListAsync : TestCaseMappingByCodeAsync
 	{
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<MyClass>(rc =>
+			{
+				rc.Id(x => x.Id, map => map.Generator(Generators.HighLow));
+				rc.List(x => x.Relateds, map =>
+				{
+					map.Key(km => km.NotNullable(true));
+					map.Cascade(Mapping.ByCode.Cascade.All);
+					map.Index(idxm => idxm.Column(colmap => colmap.NotNullable(true)));
+				}
+
+				, rel => rel.OneToMany());
+			}
+
+			);
+			mapper.Class<Related>(rc => rc.Id(x => x.Id, map => map.Generator(Generators.HighLow)));
+			HbmMapping mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
+			return mappings;
+		}
+
 		[Test]
 		public async Task WhenSaveOneThenShouldSaveManyAsync()
 		{
@@ -28,8 +50,8 @@ namespace NHibernate.Test.NHSpecificTest.NH941
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					session.CreateQuery("delete from Related").ExecuteUpdate();
-					session.CreateQuery("delete from MyClass").ExecuteUpdate();
+					await (session.CreateQuery("delete from Related").ExecuteUpdateAsync());
+					await (session.CreateQuery("delete from MyClass").ExecuteUpdateAsync());
 					await (tx.CommitAsync());
 				}
 			}

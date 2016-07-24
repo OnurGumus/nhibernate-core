@@ -4,12 +4,55 @@ using System.Collections;
 using NHibernate.Criterion;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.CompositeId
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ClassWithCompositeIdFixture : TestCase
+	public partial class ClassWithCompositeIdFixtureAsync : TestCaseAsync
 	{
+		private DateTime firstDateTime = new DateTime(2003, 8, 16);
+		private DateTime secondDateTime = new DateTime(2003, 8, 17);
+		private Id id;
+		private Id secondId;
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"CompositeId.ClassWithCompositeId.hbm.xml"};
+			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is Dialect.FirebirdDialect); // Firebird has no CommandTimeout, and locks up during the tear-down of this fixture
+		}
+
+		protected override Task OnSetUpAsync()
+		{
+			id = new Id("stringKey", 3, firstDateTime);
+			secondId = new Id("stringKey2", 5, secondDateTime);
+			return TaskHelper.CompletedTask;
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = sessions.OpenSession())
+			{
+				await (s.DeleteAsync("from ClassWithCompositeId"));
+				await (s.FlushAsync());
+			}
+		}
+
 		/// <summary>
 		/// Test the basic CRUD operations for a class with a Composite Identifier
 		/// </summary>
@@ -53,12 +96,12 @@ namespace NHibernate.Test.CompositeId
 			// verify they were inserted and test the SELECT
 			ISession s2 = OpenSession();
 			ITransaction t2 = s2.BeginTransaction();
-			ClassWithCompositeId theClass2 = (ClassWithCompositeId)s2.Load(typeof (ClassWithCompositeId), id);
+			ClassWithCompositeId theClass2 = (ClassWithCompositeId)await (s2.LoadAsync(typeof (ClassWithCompositeId), id));
 			Assert.AreEqual(id, theClass2.Id);
-			IList results2 = s2.CreateCriteria(typeof (ClassWithCompositeId)).Add(Expression.Eq("Id", secondId)).List();
+			IList results2 = await (s2.CreateCriteria(typeof (ClassWithCompositeId)).Add(Expression.Eq("Id", secondId)).ListAsync());
 			Assert.AreEqual(1, results2.Count);
 			ClassWithCompositeId theSecondClass2 = (ClassWithCompositeId)results2[0];
-			ClassWithCompositeId theClass2Copy = (ClassWithCompositeId)s2.Load(typeof (ClassWithCompositeId), id);
+			ClassWithCompositeId theClass2Copy = (ClassWithCompositeId)await (s2.LoadAsync(typeof (ClassWithCompositeId), id));
 			// verify the same results through Criteria & Load were achieved
 			Assert.AreSame(theClass2, theClass2Copy);
 			// compare them to the objects created in the first session
@@ -76,8 +119,8 @@ namespace NHibernate.Test.CompositeId
 			// lets verify the update went through
 			ISession s3 = OpenSession();
 			ITransaction t3 = s3.BeginTransaction();
-			ClassWithCompositeId theClass3 = (ClassWithCompositeId)s3.Load(typeof (ClassWithCompositeId), id);
-			ClassWithCompositeId theSecondClass3 = (ClassWithCompositeId)s3.Load(typeof (ClassWithCompositeId), secondId);
+			ClassWithCompositeId theClass3 = (ClassWithCompositeId)await (s3.LoadAsync(typeof (ClassWithCompositeId), id));
+			ClassWithCompositeId theSecondClass3 = (ClassWithCompositeId)await (s3.LoadAsync(typeof (ClassWithCompositeId), secondId));
 			// check the update properties
 			Assert.AreEqual(theClass3.OneProperty, theClass2.OneProperty);
 			Assert.AreEqual(theSecondClass3.OneProperty, theSecondClass2.OneProperty);
@@ -90,7 +133,7 @@ namespace NHibernate.Test.CompositeId
 			ISession s4 = OpenSession();
 			try
 			{
-				ClassWithCompositeId theClass4 = (ClassWithCompositeId)s4.Load(typeof (ClassWithCompositeId), id);
+				ClassWithCompositeId theClass4 = (ClassWithCompositeId)await (s4.LoadAsync(typeof (ClassWithCompositeId), id));
 			}
 			catch (ObjectNotFoundException onfe)
 			{
@@ -98,7 +141,7 @@ namespace NHibernate.Test.CompositeId
 				Assert.IsNotNull(onfe); //getting ride of 'onfe' is never used compile warning
 			}
 
-			IList results = s4.CreateCriteria(typeof (ClassWithCompositeId)).Add(Expression.Eq("Id", secondId)).List();
+			IList results = await (s4.CreateCriteria(typeof (ClassWithCompositeId)).Add(Expression.Eq("Id", secondId)).ListAsync());
 			Assert.AreEqual(0, results.Count);
 			s4.Close();
 		}
@@ -119,7 +162,7 @@ namespace NHibernate.Test.CompositeId
 			ICriteria c = s.CreateCriteria(typeof (ClassWithCompositeId));
 			c.Add(Expression.Eq("Id", id));
 			// right now just want to see if the Criteria is valid
-			IList results = c.List();
+			IList results = await (c.ListAsync());
 			Assert.AreEqual(1, results.Count);
 			s.Close();
 		}
@@ -141,7 +184,7 @@ namespace NHibernate.Test.CompositeId
 			ISession s2 = OpenSession();
 			IQuery hql = s2.CreateQuery("from ClassWithCompositeId as cwid where cwid.Id.KeyString = :keyString");
 			hql.SetString("keyString", id.KeyString);
-			IList results = hql.List();
+			IList results = await (hql.ListAsync());
 			Assert.AreEqual(1, results.Count);
 			s2.Close();
 		}

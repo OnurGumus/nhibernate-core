@@ -9,9 +9,55 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.ProjectionFixtures
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : TestCase
+	public partial class FixtureAsync : TestCaseAsync
 	{
+		protected override System.Collections.IList Mappings
+		{
+			get
+			{
+				return new string[]{"ProjectionFixtures.Mapping.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override async Task OnSetUpAsync()
+		{
+			using (var s = sessions.OpenSession())
+				using (var tx = s.BeginTransaction())
+				{
+					var root = new TreeNode{Key = new Key{Id = 1, Area = 2}, Type = NodeType.Plain};
+					var child = new TreeNode{Key = new Key{Id = 11, Area = 2}, Type = NodeType.Blue};
+					var grandchild = new TreeNode{Key = new Key{Id = 111, Area = 2}, Type = NodeType.Smart};
+					root.DirectChildren.Add(child);
+					child.Parent = root;
+					grandchild.Parent = child;
+					child.DirectChildren.Add(grandchild);
+					await (s.SaveAsync(root));
+					await (s.SaveAsync(child));
+					await (s.SaveAsync(grandchild));
+					await (tx.CommitAsync());
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (var s = sessions.OpenSession())
+				using (var tx = s.BeginTransaction())
+				{
+					await (s.DeleteAsync("from TreeNode"));
+					await (tx.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task ErrorFromDBWillGiveTheActualSQLExecutedAsync()
 		{
@@ -21,13 +67,13 @@ namespace NHibernate.Test.ProjectionFixtures
 			string expectedMessagePart0 = string.Format("could not execute query" + Environment.NewLine + "[ SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM TreeNode this_ WHERE this_.Id = {0} ]", pName);
 			string expectedMessagePart1 = string.Format(@"[SQL: SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM TreeNode this_ WHERE this_.Id = {0}]", pName);
 			DetachedCriteria projection = DetachedCriteria.For<TreeNode>("child").Add(Restrictions.Eq("child.Key.Id", 2)).SetProjection(Projections.ProjectionList().Add(Projections.Property("child.Key.Id")).Add(Projections.Count("child.Key.Area")));
-			var e = Assert.Throws<GenericADOException>(async () =>
+			var e = Assert.ThrowsAsync<GenericADOException>(async () =>
 			{
 				using (var s = sessions.OpenSession())
 					using (var tx = s.BeginTransaction())
 					{
 						var criteria = projection.GetExecutableCriteria(s);
-						criteria.List();
+						await (criteria.ListAsync());
 						await (tx.CommitAsync());
 					}
 			}
@@ -45,7 +91,7 @@ namespace NHibernate.Test.ProjectionFixtures
 				using (var tx = s.BeginTransaction())
 				{
 					var criteria = projection.GetExecutableCriteria(s);
-					var list = criteria.List();
+					var list = await (criteria.ListAsync());
 					Assert.AreEqual(1, list.Count);
 					var tuple = (object[])list[0];
 					Assert.AreEqual(11, tuple[0]);
@@ -53,6 +99,30 @@ namespace NHibernate.Test.ProjectionFixtures
 					Assert.AreEqual(1, tuple[2]);
 					await (tx.CommitAsync());
 				}
+		}
+
+		[Test]
+		public async Task LimitingResultSetOnQueryThatIsOrderedByProjectionAsync()
+		{
+			using (var s = OpenSession())
+			{
+				ICriteria criteria = s.CreateCriteria(typeof (TreeNode), "parent").Add(Restrictions.Gt("Key.Id", 0));
+				var currentAssessment = DetachedCriteria.For<TreeNode>("child").Add(Restrictions.EqProperty("Key.Id", "parent.Key.Id")).Add(Restrictions.EqProperty("Key.Area", "parent.Key.Area")).Add(Restrictions.Eq("Type", NodeType.Smart)).SetProjection(Projections.Property("Type"));
+				criteria.AddOrder(Order.Asc(Projections.SubQuery(currentAssessment))).SetMaxResults(1000);
+				await (criteria.ListAsync());
+			}
+		}
+
+		[Test]
+		public async Task QueryingWithParemetersAndParaemtersInOrderByAsync()
+		{
+			using (var s = OpenSession())
+			{
+				ICriteria criteria = s.CreateCriteria(typeof (TreeNode), "parent").Add(Restrictions.Like("Name", "ayende")).Add(Restrictions.Gt("Key.Id", 0));
+				var currentAssessment = DetachedCriteria.For<TreeNode>("child").Add(Restrictions.Eq("Type", NodeType.Smart)).SetProjection(Projections.Property("Type"));
+				criteria.AddOrder(Order.Asc(Projections.SubQuery(currentAssessment))).SetMaxResults(1000);
+				await (criteria.ListAsync());
+			}
 		}
 	}
 }

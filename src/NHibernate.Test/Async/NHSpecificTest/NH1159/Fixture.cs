@@ -8,9 +8,33 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1159
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnSetUpAsync()
+		{
+			using (ISession session = OpenSession())
+				using (ITransaction tran = session.BeginTransaction())
+				{
+					Contact c = new Contact{Id = 1, Forename = "David", Surname = "Bates", PreferredName = "Davey"};
+					await (session.SaveAsync(c));
+					await (tran.CommitAsync());
+				}
+
+			HibernateInterceptor.CallCount = 0;
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = OpenSession())
+				using (ITransaction tran = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from Contact"));
+					await (tran.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task DoesNotFlushWithCriteriaWithCommitAsync()
 		{

@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1601
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture1 : BugTestCase
+	public partial class Fixture1Async : BugTestCaseAsync
 	{
 		/// <summary>
 		/// Loads the project do not call Count on the list assigned.
@@ -64,7 +65,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
 		{
 			await (SaveProjectAsync());
 			ProjectWithOneList project = await (LoadProjectAsync());
-			RefreshProject(project);
+			await (RefreshProjectAsync(project));
 		}
 
 		public async Task<ProjectWithOneList> SaveProjectAsync()
@@ -102,6 +103,32 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
 				}
 
 			return project;
+		}
+
+		public async Task RefreshProjectAsync(ProjectWithOneList project)
+		{
+			using (ISession session = OpenSession())
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					//The project is refreshed and Scenario1, Scenario2 and Scenario3 properties can be set
+					//This will succeed when the scenario list is set and accessed during the set but only for
+					//Scenario 2 and Scenario3. It will fail if the scenario list is accessed during the set for Scenario1
+					await (session.RefreshAsync(project));
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			await (base.OnTearDownAsync());
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					await (session.DeleteAsync(" from ProjectWithOneList"));
+					await (session.DeleteAsync("from Scenario"));
+					await (tx.CommitAsync());
+				}
+			}
 		}
 	}
 }

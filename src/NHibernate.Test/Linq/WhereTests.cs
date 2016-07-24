@@ -774,7 +774,7 @@ namespace NHibernate.Test.Linq
 		}
 
 
-		private List<object[]> CanUseCompareInQueryDataSource()
+		private static List<object[]> CanUseCompareInQueryDataSource()
 		{
 			return new List<object[]>
 				{

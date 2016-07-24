@@ -5,9 +5,19 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH643
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH643";
+			}
+		}
+
+		private object parentId;
 		[Test]
 		public async Task CacheAndLazyCollectionsAsync()
 		{
@@ -15,9 +25,9 @@ namespace NHibernate.Test.NHSpecificTest.NH643
 			try
 			{
 				await (AddChildAsync());
-				CheckChildrenCount(1);
+				await (CheckChildrenCountAsync(1));
 				await (AddChildAsync());
-				CheckChildrenCount(2);
+				await (CheckChildrenCountAsync(2));
 			}
 			finally
 			{
@@ -40,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH643
 			using (ISession session = OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					await (session.DeleteAsync(session.Get(typeof (Parent), parentId)));
+					await (session.DeleteAsync(await (session.GetAsync(typeof (Parent), parentId))));
 					await (tx.CommitAsync());
 				}
 		}
@@ -50,12 +60,21 @@ namespace NHibernate.Test.NHSpecificTest.NH643
 			using (ISession session = OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					Parent parent = (Parent)session.Get(typeof (Parent), 1);
+					Parent parent = (Parent)await (session.GetAsync(typeof (Parent), 1));
 					Child child = new Child();
 					parent.AddChild(child);
-					NHibernateUtil.Initialize(parent.Children);
+					await (NHibernateUtil.InitializeAsync(parent.Children));
 					await (tx.CommitAsync());
 				}
+		}
+
+		private async Task CheckChildrenCountAsync(int count)
+		{
+			using (ISession session = OpenSession())
+			{
+				Parent parent = (Parent)await (session.GetAsync(typeof (Parent), 1));
+				Assert.AreEqual(count, parent.Children.Count);
+			}
 		}
 	}
 }

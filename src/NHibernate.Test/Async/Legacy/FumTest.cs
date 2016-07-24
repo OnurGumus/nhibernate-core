@@ -12,9 +12,19 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Legacy
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class FumTest : TestCase
+	public partial class FumTestAsync : TestCaseAsync
 	{
+		protected static short fumKeyShort = 1;
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"FooBar.hbm.xml", "Baz.hbm.xml", "Qux.hbm.xml", "Glarch.hbm.xml", "Fum.hbm.xml", "Fumm.hbm.xml", "Fo.hbm.xml", "One.hbm.xml", "Many.hbm.xml", "Immutable.hbm.xml", "Fee.hbm.xml", "Vetoer.hbm.xml", "Holder.hbm.xml", "Location.hbm.xml", "Stuff.hbm.xml", "Container.hbm.xml", "Simple.hbm.xml", "Middle.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task CriteriaCollectionAsync()
 		{
@@ -38,7 +48,7 @@ namespace NHibernate.Test.Legacy
 				Assert.IsTrue(NHibernateUtil.IsInitialized(b.MapComponent.Stringmap));
 				Assert.IsTrue(b.MapComponent.Fummap.Count == 1);
 				Assert.IsTrue(b.MapComponent.Stringmap.Count == 2);
-				int none = s.CreateCriteria(typeof (Fum)).Add(Expression.In("FumString", new string[0])).List().Count;
+				int none = (await (s.CreateCriteria(typeof (Fum)).Add(Expression.In("FumString", new string[0])).ListAsync())).Count;
 				Assert.AreEqual(0, none);
 				await (s.DeleteAsync(b));
 				await (s.FlushAsync());
@@ -67,7 +77,7 @@ namespace NHibernate.Test.Legacy
 					ICriteria baseCriteria = s.CreateCriteria(typeof (Fum)).Add(Expression.Like("FumString", "f", MatchMode.Start));
 					baseCriteria.CreateCriteria("Fo").Add(Expression.IsNotNull("FumString"));
 					baseCriteria.CreateCriteria("Friends").Add(Expression.Like("FumString", "g%"));
-					IList list = baseCriteria.List();
+					IList list = await (baseCriteria.ListAsync());
 					Assert.AreEqual(1, list.Count);
 					Assert.AreSame(fum, list[0]);
 					baseCriteria = s.CreateCriteria(typeof (Fum)).Add(Expression.Like("FumString", "f%")).SetResultTransformer(CriteriaSpecification.AliasToEntityMap);
@@ -80,11 +90,11 @@ namespace NHibernate.Test.Legacy
 					Assert.AreEqual(3, map.Count);
 					baseCriteria = s.CreateCriteria(typeof (Fum)).Add(Expression.Like("FumString", "f%")).SetResultTransformer(CriteriaSpecification.AliasToEntityMap).SetFetchMode("Friends", FetchMode.Eager);
 					baseCriteria.CreateCriteria("Fo", "fo").Add(Expression.Eq("FumString", fum.Fo.FumString));
-					map = (IDictionary)baseCriteria.List()[0];
+					map = (IDictionary)(await (baseCriteria.ListAsync()))[0];
 					Assert.AreSame(fum, map["this"]);
 					Assert.AreSame(fum.Fo, map["fo"]);
 					Assert.AreEqual(2, map.Count);
-					list = s.CreateCriteria(typeof (Fum)).CreateAlias("Friends", "fr").CreateAlias("Fo", "fo").Add(Expression.Like("FumString", "f%")).Add(Expression.IsNotNull("Fo")).Add(Expression.IsNotNull("fo.FumString")).Add(Expression.Like("fr.FumString", "g%")).Add(Expression.EqProperty("fr.id.Short", "id.Short")).List();
+					list = await (s.CreateCriteria(typeof (Fum)).CreateAlias("Friends", "fr").CreateAlias("Fo", "fo").Add(Expression.Like("FumString", "f%")).Add(Expression.IsNotNull("Fo")).Add(Expression.IsNotNull("fo.FumString")).Add(Expression.Like("fr.FumString", "g%")).Add(Expression.EqProperty("fr.id.Short", "id.Short")).ListAsync());
 					Assert.AreEqual(1, list.Count);
 					Assert.AreSame(fum, list[0]);
 					await (txn.CommitAsync());
@@ -96,7 +106,7 @@ namespace NHibernate.Test.Legacy
 					ICriteria baseCriteria = s.CreateCriteria(typeof (Fum)).Add(Expression.Like("FumString", "f%"));
 					baseCriteria.CreateCriteria("Fo").Add(Expression.IsNotNull("FumString"));
 					baseCriteria.CreateCriteria("Friends").Add(Expression.Like("FumString", "g%"));
-					Fum fum = (Fum)baseCriteria.List()[0];
+					Fum fum = (Fum)(await (baseCriteria.ListAsync()))[0];
 					Assert.AreEqual(2, fum.Friends.Count);
 					await (s.DeleteAsync(fum));
 					await (s.DeleteAsync(fum.Fo));
@@ -122,9 +132,9 @@ namespace NHibernate.Test.Legacy
 			await (s.SaveAsync(fum));
 			// not doing a flush because the Find will do an auto flush unless we tell the session a 
 			// different FlushMode
-			IList list = s.CreateQuery("select fum.Id from fum in class NHibernate.DomainModel.Fum where not fum.FumString = 'FRIEND'").List();
+			IList list = await (s.CreateQuery("select fum.Id from fum in class NHibernate.DomainModel.Fum where not fum.FumString = 'FRIEND'").ListAsync());
 			Assert.AreEqual(2, list.Count, "List Identifiers");
-			IEnumerator enumerator = s.CreateQuery("select fum.Id from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").Enumerable().GetEnumerator();
+			IEnumerator enumerator = (await (s.CreateQuery("select fum.Id from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").EnumerableAsync())).GetEnumerator();
 			int i = 0;
 			while (enumerator.MoveNext())
 			{
@@ -134,10 +144,45 @@ namespace NHibernate.Test.Legacy
 
 			Assert.AreEqual(2, i, "Number of Ids found.");
 			// clean up by deleting the 2 Fum objects that were added.
-			await (s.DeleteAsync(s.Load(typeof (Fum), list[0])));
-			await (s.DeleteAsync(s.Load(typeof (Fum), list[1])));
+			await (s.DeleteAsync(await (s.LoadAsync(typeof (Fum), list[0]))));
+			await (s.DeleteAsync(await (s.LoadAsync(typeof (Fum), list[1]))));
 			await (txn.CommitAsync());
 			s.Close();
+		}
+
+		public static FumCompositeID FumKey(String str)
+		{
+			return FumKey(str, false);
+		}
+
+		public static FumCompositeID FumKey(String str, bool aCompositeQueryTest)
+		{
+			FumCompositeID id = new FumCompositeID();
+			//			if( dialect is Dialect.MckoiDialect ) 
+			//												{
+			//													  GregorianCalendar now = new GregorianCalendar();
+			//													  GregorianCalendar cal = new GregorianCalendar( 
+			//														  now.get(java.util.Calendar.YEAR),
+			//														  now.get(java.util.Calendar.MONTH),
+			//														  now.get(java.util.Calendar.DATE) 
+			//														  );
+			//													  id.setDate( cal.getTime() );
+			//												  }
+			//			else 
+			//			{
+			id.Date = new DateTime(2004, 4, 29, 9, 0, 0, 0);
+			//				 }
+			id.String = str;
+			if (aCompositeQueryTest)
+			{
+				id.Short = fumKeyShort++;
+			}
+			else
+			{
+				id.Short = (short)12;
+			}
+
+			return id;
 		}
 
 		[Test]
@@ -148,21 +193,21 @@ namespace NHibernate.Test.Legacy
 			Fum fum = new Fum(FumKey("fum"));
 			fum.FumString = "fee fi fo";
 			await (s.SaveAsync(fum));
-			Assert.AreSame(fum, s.Load(typeof (Fum), FumKey("fum"), LockMode.Upgrade));
+			Assert.AreSame(fum, await (s.LoadAsync(typeof (Fum), FumKey("fum"), LockMode.Upgrade)));
 			//s.Flush();
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			fum = (Fum)s.Load(typeof (Fum), FumKey("fum"), LockMode.Upgrade);
+			fum = (Fum)await (s.LoadAsync(typeof (Fum), FumKey("fum"), LockMode.Upgrade));
 			Assert.IsNotNull(fum, "Load by composite key");
 			Fum fum2 = new Fum(FumKey("fi"));
 			fum2.FumString = "fee fo fi";
 			fum.Fo = fum2;
 			await (s.SaveAsync(fum2));
-			IList list = s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").List();
+			IList list = await (s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").ListAsync());
 			Assert.AreEqual(2, list.Count, "Find a List of Composite Keyed objects");
-			IList list2 = s.CreateQuery("select fum from fum in class NHibernate.DomainModel.Fum where fum.FumString='fee fi fo'").List();
+			IList list2 = await (s.CreateQuery("select fum from fum in class NHibernate.DomainModel.Fum where fum.FumString='fee fi fo'").ListAsync());
 			Assert.AreEqual(fum, (Fum)list2[0], "Find one Composite Keyed object");
 			fum.Fo = null;
 			//s.Flush();
@@ -170,7 +215,7 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IEnumerator enumerator = s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").Enumerable().GetEnumerator();
+			IEnumerator enumerator = (await (s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").EnumerableAsync())).GetEnumerator();
 			int i = 0;
 			while (enumerator.MoveNext())
 			{
@@ -198,7 +243,7 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			fumm = (Fumm)s.Load(typeof (Fumm), FumKey("fum"));
+			fumm = (Fumm)await (s.LoadAsync(typeof (Fumm), FumKey("fum")));
 			//s.delete(fumm.Fum); commented out in h2.0.3
 			await (s.DeleteAsync(fumm));
 			await (s.FlushAsync());
@@ -226,23 +271,23 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 			s = OpenSession();
 			// Try to find the Fum object "fo" that we inserted searching by the string in the id
-			IList vList = s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where fum.Id.String='fo'").List();
+			IList vList = await (s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where fum.Id.String='fo'").ListAsync());
 			Assert.AreEqual(1, vList.Count, "find by composite key query (find fo object)");
 			fum = (Fum)vList[0];
 			Assert.AreEqual("fo", fum.Id.String, "find by composite key query (check fo object)");
 			// Try to fnd the Fum object "fi" that we inserted by searching the date in the id
-			vList = s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where fum.Id.Short = ?").SetInt16(0, fiShort).List();
+			vList = await (s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where fum.Id.Short = ?").SetInt16(0, fiShort).ListAsync());
 			Assert.AreEqual(1, vList.Count, "find by composite key query (find fi object)");
 			fi = (Fum)vList[0];
 			Assert.AreEqual("fi", fi.Id.String, "find by composite key query (check fi object)");
 			// make sure we can return all of the objects by searching by the date id
-			vList = s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where fum.Id.Date <= ? and not fum.FumString='FRIEND'").SetDateTime(0, DateTime.Now).List();
+			vList = await (s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where fum.Id.Date <= ? and not fum.FumString='FRIEND'").SetDateTime(0, DateTime.Now).ListAsync());
 			Assert.AreEqual(4, vList.Count, "find by composite key query with arguments");
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			Assert.IsTrue(s.CreateQuery("select fum.Id.Short, fum.Id.Date, fum.Id.String from fum in class NHibernate.DomainModel.Fum").Enumerable().GetEnumerator().MoveNext());
-			Assert.IsTrue(s.CreateQuery("select fum.Id from fum in class NHibernate.DomainModel.Fum").Enumerable().GetEnumerator().MoveNext());
+			Assert.IsTrue((await (s.CreateQuery("select fum.Id.Short, fum.Id.Date, fum.Id.String from fum in class NHibernate.DomainModel.Fum").EnumerableAsync())).GetEnumerator().MoveNext());
+			Assert.IsTrue((await (s.CreateQuery("select fum.Id from fum in class NHibernate.DomainModel.Fum").EnumerableAsync())).GetEnumerator().MoveNext());
 			IQuery qu = s.CreateQuery("select fum.FumString, fum, fum.FumString, fum.Id.Date from fum in class NHibernate.DomainModel.Fum");
 			IType[] types = qu.ReturnTypes;
 			Assert.AreEqual(4, types.Length);
@@ -255,7 +300,7 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(types[1] is EntityType);
 			Assert.IsTrue(types[2] is StringType);
 			Assert.IsTrue(types[3] is DateTimeType);
-			IEnumerator enumer = qu.Enumerable().GetEnumerator();
+			IEnumerator enumer = (await (qu.EnumerableAsync())).GetEnumerator();
 			int j = 0;
 			while (enumer.MoveNext())
 			{
@@ -264,13 +309,13 @@ namespace NHibernate.Test.Legacy
 			}
 
 			Assert.AreEqual(8, j, "iterate on composite key");
-			fum = (Fum)s.Load(typeof (Fum), fum.Id);
-			s.CreateFilter(fum.QuxArray, "where this.Foo is null").List();
-			s.CreateFilter(fum.QuxArray, "where this.Foo.id = ?").SetString(0, "fooid");
-			IQuery f = s.CreateFilter(fum.QuxArray, "where this.Foo.id = :fooId");
+			fum = (Fum)await (s.LoadAsync(typeof (Fum), fum.Id));
+			await ((await (s.CreateFilterAsync(fum.QuxArray, "where this.Foo is null"))).ListAsync());
+			(await (s.CreateFilterAsync(fum.QuxArray, "where this.Foo.id = ?"))).SetString(0, "fooid");
+			IQuery f = await (s.CreateFilterAsync(fum.QuxArray, "where this.Foo.id = :fooId"));
 			f.SetString("fooId", "abc");
-			Assert.IsFalse(f.Enumerable().GetEnumerator().MoveNext());
-			enumer = s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").Enumerable().GetEnumerator();
+			Assert.IsFalse((await (f.EnumerableAsync())).GetEnumerator().MoveNext());
+			enumer = (await (s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").EnumerableAsync())).GetEnumerator();
 			int i = 0;
 			while (enumer.MoveNext())
 			{
@@ -281,8 +326,8 @@ namespace NHibernate.Test.Legacy
 
 			Assert.AreEqual(4, i, "iterate on composite key");
 			await (s.FlushAsync());
-			s.CreateQuery("from fu in class Fum, fo in class Fum where fu.Fo.Id.String = fo.Id.String and fo.FumString is not null").Enumerable();
-			s.CreateQuery("from Fumm f1 inner join f1.Fum f2").List();
+			await (s.CreateQuery("from fu in class Fum, fo in class Fum where fu.Fo.Id.String = fo.Id.String and fo.FumString is not null").EnumerableAsync());
+			await (s.CreateQuery("from Fumm f1 inner join f1.Fum f2").ListAsync());
 			s.Close();
 		}
 
@@ -304,7 +349,7 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			q = (Qux)s.Load(typeof (Qux), q.Key);
+			q = (Qux)await (s.LoadAsync(typeof (Qux), q.Key));
 			Assert.AreEqual(2, q.Fums.Count, "collection of fums");
 			Assert.AreEqual(1, q.MoreFums.Count, "collection of fums");
 			Assert.AreSame(q, ((Fum)q.MoreFums[0]).QuxArray[0], "unkeyed composite id collection");
@@ -336,17 +381,17 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 			s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			q = (Qux)s.Load(typeof (Qux), q.Key, LockMode.Upgrade);
-			s.Lock(q, LockMode.Upgrade);
+			q = (Qux)await (s.LoadAsync(typeof (Qux), q.Key, LockMode.Upgrade));
+			await (s.LockAsync(q, LockMode.Upgrade));
 			await (s.DeleteAsync(q));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			var list = s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").List();
+			var list = await (s.CreateQuery("from fum in class NHibernate.DomainModel.Fum where not fum.FumString='FRIEND'").ListAsync());
 			Assert.AreEqual(2, list.Count, "deleted owner");
-			s.Lock(list[0], LockMode.Upgrade);
-			s.Lock(list[1], LockMode.Upgrade);
+			await (s.LockAsync(list[0], LockMode.Upgrade));
+			await (s.LockAsync(list[1], LockMode.Upgrade));
 			foreach (object obj in list)
 			{
 				await (s.DeleteAsync(obj));
@@ -361,18 +406,18 @@ namespace NHibernate.Test.Legacy
 		{
 			ISession s = OpenSession();
 			Fo fo = Fo.NewFo();
-			s.Save(fo, FumKey("an instance of fo"));
+			await (s.SaveAsync(fo, FumKey("an instance of fo")));
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			fo = (Fo)s.Load(typeof (Fo), FumKey("an instance of fo"));
+			fo = (Fo)await (s.LoadAsync(typeof (Fo), FumKey("an instance of fo")));
 			fo.X = 5;
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			fo = (Fo)s.Load(typeof (Fo), FumKey("an instance of fo"));
+			fo = (Fo)await (s.LoadAsync(typeof (Fo), FumKey("an instance of fo")));
 			Assert.AreEqual(5, fo.X);
-			IEnumerator enumer = s.CreateQuery("from fo in class NHibernate.DomainModel.Fo where fo.id.String like 'an instance of fo'").Enumerable().GetEnumerator();
+			IEnumerator enumer = (await (s.CreateQuery("from fo in class NHibernate.DomainModel.Fo where fo.id.String like 'an instance of fo'").EnumerableAsync())).GetEnumerator();
 			Assert.IsTrue(enumer.MoveNext());
 			Assert.AreSame(fo, enumer.Current);
 			await (s.DeleteAsync(fo));
@@ -419,7 +464,7 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			d = (Outer)s.Load(typeof (Outer), did);
+			d = (Outer)await (s.LoadAsync(typeof (Outer), did));
 			Assert.AreEqual("dudu", d.Id.Master.Id.Sup.Dudu);
 			await (s.DeleteAsync(d));
 			await (s.DeleteAsync(d.Id.Master));
@@ -428,15 +473,33 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			d = (Outer)s.CreateQuery("from Outer o where o.id.DetailId=?").SetString(0, d.Id.DetailId).List()[0];
-			s.CreateQuery("from Outer o where o.Id.Master.Id.Sup.Dudu is not null").List();
-			s.CreateQuery("from Outer o where o.Id.Master.Bla = ''").List();
-			s.CreateQuery("from Outer o where o.Id.Master.Id.One = ''").List();
+			d = (Outer)(await (s.CreateQuery("from Outer o where o.id.DetailId=?").SetString(0, d.Id.DetailId).ListAsync()))[0];
+			await (s.CreateQuery("from Outer o where o.Id.Master.Id.Sup.Dudu is not null").ListAsync());
+			await (s.CreateQuery("from Outer o where o.Id.Master.Bla = ''").ListAsync());
+			await (s.CreateQuery("from Outer o where o.Id.Master.Id.One = ''").ListAsync());
 			await (s.DeleteAsync(d));
 			await (s.DeleteAsync(d.Id.Master));
 			await (s.DeleteAsync(d.Id.Master.Id.Sup));
 			await (s.FlushAsync());
 			s.Close();
+		}
+
+		[Test]
+		public async Task CompositeKeyPathExpressionsAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				await (s.CreateQuery("select fum1.Fo from fum1 in class Fum where fum1.Fo.FumString is not null").ListAsync());
+				await (s.CreateQuery("from fum1 in class Fum where fum1.Fo.FumString is not null order by fum1.Fo.FumString").ListAsync());
+				if (Dialect.SupportsSubSelects)
+				{
+					await (s.CreateQuery("from fum1 in class Fum where exists elements(fum1.Friends)").ListAsync());
+					await (s.CreateQuery("from fum1 in class Fum where size(fum1.Friends) = 0").ListAsync());
+				}
+
+				await (s.CreateQuery("select elements(fum1.Friends) from fum1 in class Fum").ListAsync());
+				await (s.CreateQuery("from fum1 in class Fum, fr in elements( fum1.Friends )").ListAsync());
+			}
 		}
 
 		[Test]
@@ -456,7 +519,7 @@ namespace NHibernate.Test.Legacy
 				simple.Date = new DateTime(2005, 1, 1);
 				simple.Name = "My UnflushedSessionSerialization Simple";
 				simple.Pay = 5000.0f;
-				s.Save(simple, 10L);
+				await (s.SaveAsync(simple, 10L));
 				// Now, try to serialize session without flushing...
 				s.Disconnect();
 				s2 = SpoofSerialization(s);
@@ -466,10 +529,10 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = s2)
 			{
 				s.Reconnect();
-				Simple simple = (Simple)s.Load(typeof (Simple), 10L);
+				Simple simple = (Simple)await (s.LoadAsync(typeof (Simple), 10L));
 				other = new Simple();
 				other.Init();
-				s.Save(other, 11L);
+				await (s.SaveAsync(other, 11L));
 				simple.Other = other;
 				await (s.FlushAsync());
 				check = simple;
@@ -480,7 +543,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = sessions.OpenSession())
 			{
 				s.FlushMode = FlushMode.Never;
-				Simple simple = (Simple)s.Get(typeof (Simple), 10L);
+				Simple simple = (Simple)await (s.GetAsync(typeof (Simple), 10L));
 				Assert.AreEqual(check.Name, simple.Name, "Not same parent instances");
 				Assert.AreEqual(check.Other.Name, other.Name, "Not same child instances");
 				simple.Name = "My updated name";
@@ -500,7 +563,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = sessions.OpenSession())
 			{
 				s.FlushMode = FlushMode.Never;
-				Simple simple = (Simple)s.Get(typeof (Simple), 10L);
+				Simple simple = (Simple)await (s.GetAsync(typeof (Simple), 10L));
 				Assert.AreEqual(check.Name, simple.Name, "Not same parent instances");
 				Assert.AreEqual(check.Other.Name, other.Name, "Not same child instances");
 				// Now, lets delete across serialization...
@@ -520,6 +583,15 @@ namespace NHibernate.Test.Legacy
 				await (s.DeleteAsync("from Simple"));
 				await (s.FlushAsync());
 			}
+		}
+
+		private ISession SpoofSerialization(ISession session)
+		{
+			BinaryFormatter formatter = new BinaryFormatter();
+			MemoryStream stream = new MemoryStream();
+			formatter.Serialize(stream, session);
+			stream.Position = 0;
+			return (ISession)formatter.Deserialize(stream);
 		}
 	}
 }

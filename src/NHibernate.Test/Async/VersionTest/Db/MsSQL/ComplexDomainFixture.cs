@@ -5,9 +5,31 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.VersionTest.Db.MsSQL
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ComplexDomainFixture : TestCase
+	public partial class ComplexDomainFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"VersionTest.Db.MsSQL.ComplexVersioned.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is MsSql2000Dialect;
+		}
+
 		[Test]
 		public async System.Threading.Tasks.Task NH1685Async()
 		{
@@ -18,8 +40,8 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 				foo.AddBar(bar);
 				await (session.SaveAsync(foo));
 				await (session.FlushAsync());
-				session.Evict(bar);
-				session.Evict(foo);
+				await (session.EvictAsync(bar));
+				await (session.EvictAsync(foo));
 				var retrievedBar = await (session.GetAsync<Bar>(bar.Id));
 				// At this point the assumption is that bar and retrievedBar should have 
 				// identical values, but represent two different POCOs. The asserts below 

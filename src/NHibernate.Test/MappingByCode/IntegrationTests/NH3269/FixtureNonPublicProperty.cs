@@ -1,4 +1,5 @@
 ﻿using NHibernate.Cfg.MappingSchema;
+using NHibernate.Exceptions;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
@@ -15,7 +16,11 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3269
 				var e1 = new Inherited1 { Name = "Bob" };
 				session.Save(e1);
 
-				Assert.That(() => { transaction.Commit(); }, Throws.Exception);
+				Assert.Throws<GenericADOException>(
+					() =>
+					{
+						transaction.Commit();
+					});
 			}
 		}
 

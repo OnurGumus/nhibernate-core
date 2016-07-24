@@ -6,9 +6,21 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH3401
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = OpenSession())
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from System.Object"));
+					await (session.FlushAsync());
+					await (transaction.CommitAsync());
+				}
+		}
+
 		[Test(Description = "NH-3401")]
 		[Ignore("Test not implemented - this can be used a base for a proper test case for NH-3401.")]
 		public async Task YesNoParameterLengthShouldBe1Async()

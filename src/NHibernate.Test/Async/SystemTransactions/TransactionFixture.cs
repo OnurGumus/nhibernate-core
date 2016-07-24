@@ -7,15 +7,24 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.SystemTransactions
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class TransactionFixture : TestCase
+	public partial class TransactionFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"WZ.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task CanUseSystemTransactionsToCommitAsync()
 		{
 			object identifier;
 			using (ISession session = sessions.OpenSession())
-				using (TransactionScope tx = new TransactionScope())
+				using (TransactionScope tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
 					W s = new W();
 					await (session.SaveAsync(s));
@@ -24,7 +33,7 @@ namespace NHibernate.Test.SystemTransactions
 				}
 
 			using (ISession session = sessions.OpenSession())
-				using (TransactionScope tx = new TransactionScope())
+				using (TransactionScope tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
 					W w = await (session.GetAsync<W>(identifier));
 					Assert.IsNotNull(w);

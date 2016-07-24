@@ -8,9 +8,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Legacy
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ABCProxyTest : TestCase
+	public partial class ABCProxyTestAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"ABCProxy.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task OptionalOneToOneInCollectionAsync()
 		{
@@ -33,7 +42,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					c2 = (C2)s.Get(typeof (C2), c2.Id);
+					c2 = (C2)await (s.GetAsync(typeof (C2), c2.Id));
 					Assert.IsTrue(c2.C1s.Count == 1);
 					await (s.DeleteAsync(c2.C1s[0]));
 					await (s.DeleteAsync(c2));
@@ -61,7 +70,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					IList list = s.CreateQuery("from B").List();
+					IList list = await (s.CreateQuery("from B").ListAsync());
 					Assert.AreEqual(2, list.Count);
 					await (t.CommitAsync());
 				}
@@ -81,8 +90,8 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					c1 = (C1)s.Get(typeof (A), c1.Id);
-					c2 = (C2)s.Get(typeof (A), c2.Id);
+					c1 = (C1)await (s.GetAsync(typeof (A), c1.Id));
+					c2 = (C2)await (s.GetAsync(typeof (A), c2.Id));
 					Assert.AreSame(c2, c1.C2);
 					Assert.AreSame(c1, c2.C1);
 					Assert.IsTrue(c1.C2s.Contains(c2));
@@ -123,7 +132,7 @@ namespace NHibernate.Test.Legacy
 				using (ITransaction t = s.BeginTransaction())
 				{
 					// Test won't run after this line because of proxy initalization problems
-					A c1a = (A)s.Load(typeof (A), c1.Id);
+					A c1a = (A)await (s.LoadAsync(typeof (A), c1.Id));
 					Assert.IsFalse(NHibernateUtil.IsInitialized(c1a));
 					Assert.IsTrue(c1a.Name.Equals("c1"));
 					await (t.CommitAsync());
@@ -132,7 +141,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					B c1b = (B)s.Load(typeof (B), c1.Id);
+					B c1b = (B)await (s.LoadAsync(typeof (B), c1.Id));
 					Assert.IsTrue((c1b.Count == 23432) && c1b.Name.Equals("c1"));
 					await (t.CommitAsync());
 				}
@@ -140,7 +149,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					c1 = (C1)s.Load(typeof (C1), c1.Id);
+					c1 = (C1)await (s.LoadAsync(typeof (C1), c1.Id));
 					Assert.IsTrue(c1.Address.Equals("foo bar") && (c1.Count == 23432) && c1.Name.Equals("c1") && c1.D.Amount > 213.3f);
 					await (t.CommitAsync());
 				}
@@ -148,24 +157,11 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					A c1a = (A)s.Load(typeof (A), c1.Id);
+					A c1a = (A)await (s.LoadAsync(typeof (A), c1.Id));
 					Assert.IsTrue(c1a.Name.Equals("c1"));
-					c1 = (C1)s.Load(typeof (C1), c1.Id);
+					c1 = (C1)await (s.LoadAsync(typeof (C1), c1.Id));
 					Assert.IsTrue(c1.Address.Equals("foo bar") && (c1.Count == 23432) && c1.Name.Equals("c1") && c1.D.Amount > 213.3f);
-					B c1b = (B)s.Load(typeof (B), c1.Id);
-					Assert.IsTrue((c1b.Count == 23432) && c1b.Name.Equals("c1"));
-					Assert.IsTrue(c1a.Name.Equals("c1"));
-					await (t.CommitAsync());
-				}
-
-			using (ISession s = OpenSession())
-				using (ITransaction t = s.BeginTransaction())
-				{
-					A c1a = (A)s.Load(typeof (A), c1.Id);
-					Assert.IsTrue(c1a.Name.Equals("c1"));
-					c1 = (C1)s.Load(typeof (C1), c1.Id, LockMode.Upgrade);
-					Assert.IsTrue(c1.Address.Equals("foo bar") && (c1.Count == 23432) && c1.Name.Equals("c1") && c1.D.Amount > 213.3f);
-					B c1b = (B)s.Load(typeof (B), c1.Id, LockMode.Upgrade);
+					B c1b = (B)await (s.LoadAsync(typeof (B), c1.Id));
 					Assert.IsTrue((c1b.Count == 23432) && c1b.Name.Equals("c1"));
 					Assert.IsTrue(c1a.Name.Equals("c1"));
 					await (t.CommitAsync());
@@ -174,9 +170,22 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					A c1a = (A)s.Load(typeof (A), c1.Id);
-					c1 = (C1)s.Load(typeof (C1), c1.Id);
-					B c1b = (B)s.Load(typeof (B), c1.Id);
+					A c1a = (A)await (s.LoadAsync(typeof (A), c1.Id));
+					Assert.IsTrue(c1a.Name.Equals("c1"));
+					c1 = (C1)await (s.LoadAsync(typeof (C1), c1.Id, LockMode.Upgrade));
+					Assert.IsTrue(c1.Address.Equals("foo bar") && (c1.Count == 23432) && c1.Name.Equals("c1") && c1.D.Amount > 213.3f);
+					B c1b = (B)await (s.LoadAsync(typeof (B), c1.Id, LockMode.Upgrade));
+					Assert.IsTrue((c1b.Count == 23432) && c1b.Name.Equals("c1"));
+					Assert.IsTrue(c1a.Name.Equals("c1"));
+					await (t.CommitAsync());
+				}
+
+			using (ISession s = OpenSession())
+				using (ITransaction t = s.BeginTransaction())
+				{
+					A c1a = (A)await (s.LoadAsync(typeof (A), c1.Id));
+					c1 = (C1)await (s.LoadAsync(typeof (C1), c1.Id));
+					B c1b = (B)await (s.LoadAsync(typeof (B), c1.Id));
 					Assert.IsTrue(c1a.Name.Equals("c1"));
 					Assert.IsTrue(c1.Address.Equals("foo bar") && (c1.Count == 23432) && c1.Name.Equals("c1") && c1.D.Amount > 213.3f);
 					Assert.IsTrue((c1b.Count == 23432) && c1b.Name.Equals("c1"));
@@ -189,8 +198,8 @@ namespace NHibernate.Test.Legacy
 				{
 					await (s.SaveAsync(new B()));
 					await (s.SaveAsync(new A()));
-					Assert.IsTrue(s.CreateQuery("from b in class B").List().Count == 1);
-					Assert.IsTrue(s.CreateQuery("from a in class A").List().Count == 2);
+					Assert.IsTrue((await (s.CreateQuery("from b in class B").ListAsync())).Count == 1);
+					Assert.IsTrue((await (s.CreateQuery("from a in class A").ListAsync())).Count == 2);
 					await (s.DeleteAsync("from a in class A"));
 					await (s.DeleteAsync(c1.D));
 					await (t.CommitAsync());
@@ -251,7 +260,7 @@ namespace NHibernate.Test.Legacy
 
 			using (ISession s = OpenSession())
 			{
-				IList l = s.CreateQuery("from E e, A a where e.Reverse = a.Forward and a = ?").SetEntity(0, a).List();
+				IList l = await ((await (s.CreateQuery("from E e, A a where e.Reverse = a.Forward and a = ?").SetEntityAsync(0, a))).ListAsync());
 				Assert.AreEqual(1, l.Count);
 			}
 
@@ -289,7 +298,7 @@ namespace NHibernate.Test.Legacy
 				using (ITransaction t = s.BeginTransaction())
 				{
 					IList l;
-					l = s.CreateQuery("from E e join fetch e.Reverse").List();
+					l = await (s.CreateQuery("from E e join fetch e.Reverse").ListAsync());
 					Assert.AreEqual(2, l.Count);
 					await (t.CommitAsync());
 				}
@@ -297,7 +306,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					IList l = s.CreateQuery("from E e").List();
+					IList l = await (s.CreateQuery("from E e").ListAsync());
 					Assert.AreEqual(2, l.Count);
 					E e = (E)l[0];
 					Assert.AreSame(e, e.Reverse.Forward);
@@ -309,8 +318,8 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					a = (A)s.Load(typeof (A), aid);
-					d2 = (E)s.Load(typeof (E), d2id);
+					a = (A)await (s.LoadAsync(typeof (A), aid));
+					d2 = (E)await (s.LoadAsync(typeof (E), d2id));
 					Assert.AreSame(a, a.Forward.Reverse);
 					Assert.AreSame(d2, d2.Reverse.Forward);
 					await (s.DeleteAsync(a));
@@ -323,7 +332,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					IList l = s.CreateQuery("from E e").List();
+					IList l = await (s.CreateQuery("from E e").ListAsync());
 					Assert.AreEqual(0, l.Count);
 					await (t.CommitAsync());
 				}

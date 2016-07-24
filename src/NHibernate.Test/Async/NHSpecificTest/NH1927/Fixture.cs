@@ -7,9 +7,43 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1927
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		private static readonly DateTime MAX_DATE = new DateTime(3000, 1, 1);
+		private static readonly DateTime VALID_DATE = new DateTime(2000, 1, 1);
+		protected override async Task OnSetUpAsync()
+		{
+			await (base.OnSetUpAsync());
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					var joe = new Customer()
+					{ValidUntil = MAX_DATE};
+					await (session.SaveAsync(joe));
+					await (tx.CommitAsync());
+				}
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from Invoice"));
+					await (session.DeleteAsync("from Customer"));
+					await (tx.CommitAsync());
+				}
+			}
+
+			await (base.OnTearDownAsync());
+		}
+
+		private delegate Customer QueryFactoryFunc(ISession session);
 		private async Task TestQueryAsync(QueryFactoryFunc queryFactoryFunc)
 		{
 			// test without filter

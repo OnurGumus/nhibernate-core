@@ -5,9 +5,35 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH3070
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : TestCaseMappingByCode
+	public partial class FixtureAsync : TestCaseMappingByCodeAsync
 	{
+		protected override Cfg.MappingSchema.HbmMapping GetMappings()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<Employee>(ca =>
+			{
+				ca.Id(x => x.Id, map =>
+				{
+					map.Column("Id");
+					map.Generator(Generators.Identity);
+				}
+
+				);
+				ca.Property(x => x.FirstName, map =>
+				{
+					map.Formula("(select 'something')");
+					map.Lazy(true);
+				}
+
+				);
+			}
+
+			);
+			return mapper.CompileMappingForAllExplicitlyAddedEntities();
+		}
+
 		[Test]
 		public async Task ProxyForEntityWithLazyPropertiesAndFormulaShouldEqualItselfAsync()
 		{
@@ -23,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3070
 
 				using (var session = OpenSession())
 				{
-					var emps = session.QueryOver<Employee>().List();
+					var emps = await (session.QueryOver<Employee>().ListAsync());
 					var emp = emps[0];
 					// THIS ASSERT WILL FAIL 
 					Assert.IsTrue(emp.Equals(emp), "Equals");

@@ -2,12 +2,37 @@
 using NHibernate.Cfg;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3512
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		private int _id;
+		protected override async Task OnSetUpAsync()
+		{
+			using (ISession session = OpenSession())
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					var employee = new Employee{Name = "Bob", Age = 33, Salary = 100};
+					await (session.SaveAsync(employee));
+					await (transaction.CommitAsync());
+					_id = employee.Id;
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = OpenSession())
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from System.Object"));
+					await (transaction.CommitAsync());
+				}
+		}
+
 		protected async Task UpdateBaseEntityAsync()
 		{
 			using (ISession session = OpenSession())
@@ -35,9 +60,20 @@ namespace NHibernate.Test.NHSpecificTest.NH3512
 		}
 	}
 
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class DynamicUpdateOn : Fixture
+	public partial class DynamicUpdateOnAsync : FixtureAsync
 	{
+		protected override Task ConfigureAsync(Configuration configuration)
+		{
+			foreach (var mapping in configuration.ClassMappings)
+			{
+				mapping.DynamicUpdate = true;
+			}
+
+			return TaskHelper.CompletedTask;
+		}
+
 		[Test]
 		public async Task ShouldChangeVersionWhenBasePropertyChangedAsync()
 		{
@@ -51,8 +87,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3512
 		}
 	}
 
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class DynamicUpdateOff : Fixture
+	public partial class DynamicUpdateOffAsync : FixtureAsync
 	{
 		[Test]
 		public async Task ShouldChangeVersionWhenBasePropertyChangedAsync()

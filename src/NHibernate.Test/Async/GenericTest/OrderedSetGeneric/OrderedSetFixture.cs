@@ -5,9 +5,39 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.GenericTest.OrderedSetGeneric
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class OrderedSetFixture : TestCase
+	public partial class OrderedSetFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"GenericTest.OrderedSetGeneric.OrderedSetFixture.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					await (s.DeleteAsync("from B"));
+					await (s.DeleteAsync("from A"));
+					await (tx.CommitAsync());
+				}
+			}
+		}
+
 		[Test]
 		public async Task OrderedSetIsInOrderAsync()
 		{

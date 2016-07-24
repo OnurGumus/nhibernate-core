@@ -5,9 +5,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH296
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH296";
+			}
+		}
+
 		[Test]
 		public async Task CRUDAsync()
 		{
@@ -23,13 +32,13 @@ namespace NHibernate.Test.NHSpecificTest.NH296
 
 			using (ISession s = OpenSession())
 			{
-				stock = (Stock)s.Get(typeof (Stock), stock.ProductPK);
+				stock = (Stock)await (s.GetAsync(typeof (Stock), stock.ProductPK));
 				Assert.IsNotNull(stock);
 			}
 
 			using (ISession s = OpenSession())
 			{
-				stock = (Stock)s.Get(typeof (Product), stock.ProductPK);
+				stock = (Stock)await (s.GetAsync(typeof (Product), stock.ProductPK));
 				Assert.IsNotNull(stock);
 				stock.Property = 10;
 				await (s.FlushAsync());

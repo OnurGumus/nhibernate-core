@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1895
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SampleTest : BugTestCase
+	public partial class SampleTestAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task SaveTestAsync()

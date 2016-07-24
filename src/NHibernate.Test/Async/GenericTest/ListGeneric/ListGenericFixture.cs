@@ -7,9 +7,35 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.GenericTest.ListGeneric
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ListGenericFixture : TestCase
+	public partial class ListGenericFixtureAsync : TestCaseAsync
 	{
+		protected override System.Collections.IList Mappings
+		{
+			get
+			{
+				return new string[]{"GenericTest.ListGeneric.ListGenericFixture.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = sessions.OpenSession())
+			{
+				await (s.DeleteAsync("from A"));
+				await (s.FlushAsync());
+			}
+		}
+
 		[Test]
 		public async Task SimpleAsync()
 		{
@@ -23,7 +49,7 @@ namespace NHibernate.Test.GenericTest.ListGeneric
 			a.Items.Add(firstB);
 			a.Items.Add(secondB);
 			ISession s = OpenSession();
-			s.SaveOrUpdate(a);
+			await (s.SaveOrUpdateAsync(a));
 			// this flush should test how NH wraps a generic collection with its
 			// own persistent collection
 			await (s.FlushAsync());
@@ -33,7 +59,7 @@ namespace NHibernate.Test.GenericTest.ListGeneric
 			Assert.IsNotNull(firstB.Id);
 			Assert.IsNotNull(secondB.Id);
 			s = OpenSession();
-			a = s.Load<A>(a.Id);
+			a = await (s.LoadAsync<A>(a.Id));
 			Assert.AreEqual("first b", a.Items[0].Name, "first item should be 'first b'");
 			Assert.AreEqual("second b", a.Items[1].Name, "second item should be 'second b'");
 			B thirdB = new B();

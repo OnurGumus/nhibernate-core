@@ -5,9 +5,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.TypesTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class StringTypeFixture : TypeFixtureBase
+	public partial class StringTypeFixtureAsync : TypeFixtureBaseAsync
 	{
+		protected override string TypeName
+		{
+			get
+			{
+				return "String";
+			}
+		}
+
 		[Test]
 		public async Task InsertNullValueAsync()
 		{

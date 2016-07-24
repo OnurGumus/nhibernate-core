@@ -10,9 +10,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH317
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : TestCase
+	public partial class FixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecificTest.NH317.Node.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task ProxySerializationAsync()
 		{
@@ -24,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH317
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			Node nodeProxy = (Node)s.Load(typeof (Node), 1);
+			Node nodeProxy = (Node)await (s.LoadAsync(typeof (Node), 1));
 			// Test if it is really a proxy
 			Assert.IsTrue(nodeProxy is INHibernateProxy);
 			s.Close();

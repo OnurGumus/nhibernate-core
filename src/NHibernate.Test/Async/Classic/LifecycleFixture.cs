@@ -3,12 +3,44 @@ using System.Collections;
 using NHibernate.Cfg;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Classic
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class LifecycleFixture : TestCase
+	public partial class LifecycleFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"Classic.EntityWithLifecycle.hbm.xml"};
+			}
+		}
+
+		protected override Task ConfigureAsync(Configuration configuration)
+		{
+			try
+			{
+				configuration.SetProperty(Environment.GenerateStatistics, "true");
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
 		[Test]
 		public async Task SaveAsync()
 		{
@@ -53,7 +85,7 @@ namespace NHibernate.Test.Classic
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					s.CreateQuery("delete from EntityWithLifecycle").ExecuteUpdate();
+					await (s.CreateQuery("delete from EntityWithLifecycle").ExecuteUpdateAsync());
 					await (tx.CommitAsync());
 				}
 		}
@@ -90,7 +122,7 @@ namespace NHibernate.Test.Classic
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					s.CreateQuery("delete from EntityWithLifecycle").ExecuteUpdate();
+					await (s.CreateQuery("delete from EntityWithLifecycle").ExecuteUpdateAsync());
 					await (tx.CommitAsync());
 				}
 		}
@@ -113,7 +145,7 @@ namespace NHibernate.Test.Classic
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					s.CreateQuery("delete from EntityWithLifecycle").ExecuteUpdate();
+					await (s.CreateQuery("delete from EntityWithLifecycle").ExecuteUpdateAsync());
 					await (tx.CommitAsync());
 				}
 		}

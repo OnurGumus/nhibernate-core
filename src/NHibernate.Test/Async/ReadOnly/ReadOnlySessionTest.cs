@@ -15,9 +15,29 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.ReadOnly
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ReadOnlySessionTest : TestCase
+	public partial class ReadOnlySessionTestAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				var mappings = new List<string>{"ReadOnly.DataPoint.hbm.xml"};
+				if (TextHolder.SupportedForDialect(Dialect))
+					mappings.Add("ReadOnly.TextHolder.hbm.xml");
+				return mappings;
+			}
+		}
+
 		[Test]
 		public async Task ReadOnlyOnProxiesAsync()
 		{
@@ -42,7 +62,7 @@ namespace NHibernate.Test.ReadOnly
 				s.BeginTransaction();
 				s.DefaultReadOnly = true;
 				Assert.That(s.DefaultReadOnly, Is.True);
-				dp = (DataPoint)s.Load<DataPoint>(dpId);
+				dp = (DataPoint)await (s.LoadAsync<DataPoint>(dpId));
 				s.DefaultReadOnly = false;
 				Assert.That(NHibernateUtil.IsInitialized(dp), Is.False, "was initialized");
 				Assert.That(s.IsReadOnly(dp), Is.True);
@@ -57,11 +77,47 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				IList list = s.CreateQuery("from DataPoint where description = 'changed'").List();
+				IList list = await (s.CreateQuery("from DataPoint where description = 'changed'").ListAsync());
 				Assert.That(list.Count, Is.EqualTo(0), "change written to database");
-				s.CreateQuery("delete from DataPoint").ExecuteUpdate();
+				await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
 				await (s.Transaction.CommitAsync());
 			}
+		}
+
+		[Test]
+		[Ignore("Scrollable result sets not supported in NHibernate")]
+		public void ReadOnlySessionDefaultQueryScroll()
+		{
+		}
+
+		[Test]
+		[Ignore("Scrollable result sets not supported in NHibernate")]
+		public void ReadOnlySessionModifiableQueryScroll()
+		{
+		}
+
+		[Test]
+		[Ignore("Scrollable result sets not supported in NHibernate")]
+		public void ModifiableSessionReadOnlyQueryScroll()
+		{
+		}
+
+		[Test]
+		[Ignore("Scrollable result sets not supported in NHibernate")]
+		public void ModifiableSessionDefaultQueryReadOnlySessionScroll()
+		{
+		}
+
+		[Test]
+		[Ignore("Scrollable result sets not supported in NHibernate")]
+		public void QueryReadOnlyScroll()
+		{
+		}
+
+		[Test]
+		[Ignore("Scrollable result sets not supported in NHibernate")]
+		public void QueryModifiableScroll()
+		{
 		}
 
 		[Test]
@@ -90,14 +146,14 @@ namespace NHibernate.Test.ReadOnly
 				using (ITransaction t = s.BeginTransaction())
 				{
 					s.DefaultReadOnly = true;
-					IEnumerable enumerable = s.CreateQuery("from DataPoint dp order by dp.X asc").Enumerable();
+					IEnumerable enumerable = await (s.CreateQuery("from DataPoint dp order by dp.X asc").EnumerableAsync());
 					s.DefaultReadOnly = false;
 					int i = 0;
 					foreach (DataPoint dp in enumerable)
 					{
 						if (++i == 50)
 						{
-							s.SetReadOnly(dp, false);
+							await (s.SetReadOnlyAsync(dp, false));
 						}
 
 						dp.Description = "done!";
@@ -111,13 +167,13 @@ namespace NHibernate.Test.ReadOnly
 				{
 					try
 					{
-						IList single = s.CreateQuery("from DataPoint where Description = 'done!'").List();
+						IList single = await (s.CreateQuery("from DataPoint where Description = 'done!'").ListAsync());
 						Assert.That(single.Count, Is.EqualTo(1));
 					}
 					finally
 					{
 						// cleanup
-						s.CreateQuery("delete from DataPoint").ExecuteUpdate();
+						await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
 					}
 
 					await (t.CommitAsync());
@@ -151,13 +207,13 @@ namespace NHibernate.Test.ReadOnly
 				using (ITransaction t = s.BeginTransaction())
 				{
 					s.DefaultReadOnly = true;
-					IEnumerable enumerable = s.CreateQuery("from DataPoint dp order by dp.X asc").SetReadOnly(false).Enumerable();
+					IEnumerable enumerable = await (s.CreateQuery("from DataPoint dp order by dp.X asc").SetReadOnly(false).EnumerableAsync());
 					int i = 0;
 					foreach (DataPoint dp in enumerable)
 					{
 						if (++i == 50)
 						{
-							s.SetReadOnly(dp, true);
+							await (s.SetReadOnlyAsync(dp, true));
 						}
 
 						dp.Description = "done!";
@@ -171,13 +227,13 @@ namespace NHibernate.Test.ReadOnly
 				{
 					try
 					{
-						IList single = s.CreateQuery("from DataPoint where Description = 'done!'").List();
+						IList single = await (s.CreateQuery("from DataPoint where Description = 'done!'").ListAsync());
 						Assert.That(single.Count, Is.EqualTo(99));
 					}
 					finally
 					{
 						// cleanup
-						s.CreateQuery("delete from DataPoint").ExecuteUpdate();
+						await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
 					}
 
 					await (t.CommitAsync());
@@ -211,13 +267,13 @@ namespace NHibernate.Test.ReadOnly
 				using (ITransaction t = s.BeginTransaction())
 				{
 					Assert.That(s.DefaultReadOnly, Is.False);
-					IEnumerable enumerable = s.CreateQuery("from DataPoint dp order by dp.X asc").SetReadOnly(true).Enumerable();
+					IEnumerable enumerable = await (s.CreateQuery("from DataPoint dp order by dp.X asc").SetReadOnly(true).EnumerableAsync());
 					int i = 0;
 					foreach (DataPoint dp in enumerable)
 					{
 						if (++i == 50)
 						{
-							s.SetReadOnly(dp, false);
+							await (s.SetReadOnlyAsync(dp, false));
 						}
 
 						dp.Description = "done!";
@@ -231,13 +287,13 @@ namespace NHibernate.Test.ReadOnly
 				{
 					try
 					{
-						IList single = s.CreateQuery("from DataPoint where Description = 'done!'").List();
+						IList single = await (s.CreateQuery("from DataPoint where Description = 'done!'").ListAsync());
 						Assert.That(single.Count, Is.EqualTo(1));
 					}
 					finally
 					{
 						// cleanup
-						s.CreateQuery("delete from DataPoint").ExecuteUpdate();
+						await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
 					}
 
 					await (t.CommitAsync());
@@ -273,14 +329,14 @@ namespace NHibernate.Test.ReadOnly
 					s.DefaultReadOnly = false;
 					IQuery query = s.CreateQuery("from DataPoint dp order by dp.X asc");
 					s.DefaultReadOnly = true;
-					IEnumerable enumerable = query.Enumerable();
+					IEnumerable enumerable = await (query.EnumerableAsync());
 					s.DefaultReadOnly = false;
 					int i = 0;
 					foreach (DataPoint dp in enumerable)
 					{
 						if (++i == 50)
 						{
-							s.SetReadOnly(dp, false);
+							await (s.SetReadOnlyAsync(dp, false));
 						}
 
 						dp.Description = "done!";
@@ -294,13 +350,13 @@ namespace NHibernate.Test.ReadOnly
 				{
 					try
 					{
-						IList single = s.CreateQuery("from DataPoint where Description = 'done!'").List();
+						IList single = await (s.CreateQuery("from DataPoint where Description = 'done!'").ListAsync());
 						Assert.That(single.Count, Is.EqualTo(1));
 					}
 					finally
 					{
 						// cleanup
-						s.CreateQuery("delete from DataPoint").ExecuteUpdate();
+						await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
 					}
 
 					await (t.CommitAsync());
@@ -358,7 +414,7 @@ namespace NHibernate.Test.ReadOnly
 					Assert.That(query.IsReadOnly, Is.True);
 					s.DefaultReadOnly = false;
 					Assert.That(s.DefaultReadOnly, Is.False);
-					IEnumerator<DataPoint> it = query.Enumerable<DataPoint>().GetEnumerator();
+					IEnumerator<DataPoint> it = (await (query.EnumerableAsync<DataPoint>())).GetEnumerator();
 					Assert.That(query.IsReadOnly, Is.True);
 					DataPoint dpLast = await (s.GetAsync<DataPoint>(lastDataPointId));
 					Assert.That(s.IsReadOnly(dpLast), Is.False);
@@ -383,7 +439,7 @@ namespace NHibernate.Test.ReadOnly
 
 						if (++i == 50)
 						{
-							s.SetReadOnly(dp, false);
+							await (s.SetReadOnlyAsync(dp, false));
 							nExpectedChanges = (dp == dpLast ? 1 : 2);
 						}
 
@@ -399,13 +455,13 @@ namespace NHibernate.Test.ReadOnly
 				{
 					try
 					{
-						IList single = s.CreateQuery("from DataPoint where Description = 'done!'").List();
+						IList single = await (s.CreateQuery("from DataPoint where Description = 'done!'").ListAsync());
 						Assert.That(single.Count, Is.EqualTo(nExpectedChanges));
 					}
 					finally
 					{
 						// cleanup
-						s.CreateQuery("delete from DataPoint").ExecuteUpdate();
+						await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
 					}
 
 					await (t.CommitAsync());
@@ -463,7 +519,7 @@ namespace NHibernate.Test.ReadOnly
 					Assert.That(query.IsReadOnly, Is.False);
 					s.DefaultReadOnly = true;
 					Assert.That(s.DefaultReadOnly, Is.True);
-					IEnumerator<DataPoint> it = query.Enumerable<DataPoint>().GetEnumerator();
+					IEnumerator<DataPoint> it = (await (query.EnumerableAsync<DataPoint>())).GetEnumerator();
 					Assert.That(query.IsReadOnly, Is.False);
 					DataPoint dpLast = await (s.GetAsync<DataPoint>(lastDataPointId));
 					Assert.That(s.IsReadOnly(dpLast), Is.True);
@@ -488,7 +544,7 @@ namespace NHibernate.Test.ReadOnly
 
 						if (++i == 50)
 						{
-							s.SetReadOnly(dp, true);
+							await (s.SetReadOnlyAsync(dp, true));
 							nExpectedChanges = (dp == dpLast ? 99 : 98);
 						}
 
@@ -504,13 +560,13 @@ namespace NHibernate.Test.ReadOnly
 				{
 					try
 					{
-						IList list = s.CreateQuery("from DataPoint where Description = 'done!'").List();
+						IList list = await (s.CreateQuery("from DataPoint where Description = 'done!'").ListAsync());
 						Assert.That(list.Count, Is.EqualTo(nExpectedChanges));
 					}
 					finally
 					{
 						// cleanup
-						s.CreateQuery("delete from DataPoint").ExecuteUpdate();
+						await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
 					}
 
 					await (t.CommitAsync());
@@ -547,13 +603,13 @@ namespace NHibernate.Test.ReadOnly
 					Assert.That(dp.Description, Is.EqualTo("original"));
 					dp.Description = "changed";
 					Assert.That(dp.Description, Is.EqualTo("changed"));
-					s.Refresh(dp);
+					await (s.RefreshAsync(dp));
 					Assert.That(s.IsReadOnly(dp), Is.True);
 					Assert.That(dp.Description, Is.EqualTo("original"));
 					dp.Description = "changed";
 					Assert.That(dp.Description, Is.EqualTo("changed"));
 					s.DefaultReadOnly = false;
-					s.Refresh(dp);
+					await (s.RefreshAsync(dp));
 					Assert.That(s.IsReadOnly(dp), Is.True);
 					Assert.That(dp.Description, Is.EqualTo("original"));
 					dp.Description = "changed";
@@ -598,20 +654,20 @@ namespace NHibernate.Test.ReadOnly
 					s.DefaultReadOnly = false;
 					dp.Description = "changed";
 					Assert.That(dp.Description, Is.EqualTo("changed"));
-					s.Refresh(dp);
+					await (s.RefreshAsync(dp));
 					Assert.That(dp.Description, Is.EqualTo("original"));
 					Assert.That(s.IsReadOnly(dp), Is.False);
 					dp.Description = "changed";
 					Assert.That(dp.Description, Is.EqualTo("changed"));
-					s.Evict(dp);
-					s.Refresh(dp);
+					await (s.EvictAsync(dp));
+					await (s.RefreshAsync(dp));
 					Assert.That(dp.Description, Is.EqualTo("original"));
 					Assert.That(s.IsReadOnly(dp), Is.False);
 					dp.Description = "changed";
 					Assert.That(dp.Description, Is.EqualTo("changed"));
 					s.DefaultReadOnly = true;
-					s.Evict(dp);
-					s.Refresh(dp);
+					await (s.EvictAsync(dp));
+					await (s.RefreshAsync(dp));
 					Assert.That(dp.Description, Is.EqualTo("original"));
 					Assert.That(s.IsReadOnly(dp), Is.True);
 					dp.Description = "changed";
@@ -653,14 +709,14 @@ namespace NHibernate.Test.ReadOnly
 				using (ITransaction t = s.BeginTransaction())
 				{
 					s.DefaultReadOnly = true;
-					dp = s.Load<DataPoint>(dp.Id);
+					dp = await (s.LoadAsync<DataPoint>(dp.Id));
 					Assert.That(s.IsReadOnly(dp), Is.True);
 					Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-					s.Refresh(dp);
+					await (s.RefreshAsync(dp));
 					Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 					Assert.That(s.IsReadOnly(dp), Is.True);
 					s.DefaultReadOnly = false;
-					s.Refresh(dp);
+					await (s.RefreshAsync(dp));
 					Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 					Assert.That(s.IsReadOnly(dp), Is.True);
 					Assert.That(dp.Description, Is.EqualTo("original"));
@@ -668,17 +724,17 @@ namespace NHibernate.Test.ReadOnly
 					dp.Description = "changed";
 					Assert.That(dp.Description, Is.EqualTo("changed"));
 					Assert.That(s.IsReadOnly(dp), Is.True);
-					Assert.That(s.IsReadOnly(((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementation()), Is.True);
-					s.Refresh(dp);
+					Assert.That(s.IsReadOnly(await (((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementationAsync())), Is.True);
+					await (s.RefreshAsync(dp));
 					Assert.That(dp.Description, Is.EqualTo("original"));
 					Assert.That(s.IsReadOnly(dp), Is.True);
-					Assert.That(s.IsReadOnly(((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementation()), Is.True);
+					Assert.That(s.IsReadOnly(await (((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementationAsync())), Is.True);
 					s.DefaultReadOnly = true;
 					dp.Description = "changed";
 					Assert.That(dp.Description, Is.EqualTo("changed"));
-					s.Refresh(dp);
+					await (s.RefreshAsync(dp));
 					Assert.That(s.IsReadOnly(dp), Is.True);
-					Assert.That(s.IsReadOnly(((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementation()), Is.True);
+					Assert.That(s.IsReadOnly(await (((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementationAsync())), Is.True);
 					Assert.That(dp.Description, Is.EqualTo("original"));
 					dp.Description = "changed";
 					await (t.CommitAsync());
@@ -719,35 +775,35 @@ namespace NHibernate.Test.ReadOnly
 				using (ITransaction t = s.BeginTransaction())
 				{
 					s.DefaultReadOnly = true;
-					dp = s.Load<DataPoint>(dp.Id);
+					dp = await (s.LoadAsync<DataPoint>(dp.Id));
 					Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 					Assert.That(s.IsReadOnly(dp), Is.True);
-					s.Evict(dp);
-					s.Refresh(dp);
+					await (s.EvictAsync(dp));
+					await (s.RefreshAsync(dp));
 					Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 					s.DefaultReadOnly = false;
 					Assert.That(s.IsReadOnly(dp), Is.True);
-					s.Evict(dp);
-					s.Refresh(dp);
+					await (s.EvictAsync(dp));
+					await (s.RefreshAsync(dp));
 					Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 					Assert.That(s.IsReadOnly(dp), Is.False);
-					Assert.That(s.IsReadOnly(((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementation()), Is.False);
+					Assert.That(s.IsReadOnly(await (((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementationAsync())), Is.False);
 					dp.Description = "changed";
 					Assert.That(dp.Description, Is.EqualTo("changed"));
 					Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
-					s.Evict(dp);
-					s.Refresh(dp);
+					await (s.EvictAsync(dp));
+					await (s.RefreshAsync(dp));
 					Assert.That(dp.Description, Is.EqualTo("original"));
 					Assert.That(s.IsReadOnly(dp), Is.False);
-					Assert.That(s.IsReadOnly(((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementation()), Is.False);
+					Assert.That(s.IsReadOnly(await (((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementationAsync())), Is.False);
 					dp.Description = "changed";
 					Assert.That(dp.Description, Is.EqualTo("changed"));
 					s.DefaultReadOnly = true;
-					s.Evict(dp);
-					s.Refresh(dp);
+					await (s.EvictAsync(dp));
+					await (s.RefreshAsync(dp));
 					Assert.That(dp.Description, Is.EqualTo("original"));
 					Assert.That(s.IsReadOnly(dp), Is.True);
-					Assert.That(s.IsReadOnly(((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementation()), Is.True);
+					Assert.That(s.IsReadOnly(await (((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementationAsync())), Is.True);
 					dp.Description = "changed";
 					Assert.That(dp.Description, Is.EqualTo("changed"));
 					await (t.CommitAsync());
@@ -799,7 +855,7 @@ namespace NHibernate.Test.ReadOnly
 			{
 				using (ITransaction t = s.BeginTransaction())
 				{
-					IList list = s.CreateQuery("from DataPoint where id=" + dp.Id).List();
+					IList list = await (s.CreateQuery("from DataPoint where id=" + dp.Id).ListAsync());
 					Assert.That(list.Count, Is.EqualTo(0));
 					await (t.CommitAsync());
 				}
@@ -841,11 +897,23 @@ namespace NHibernate.Test.ReadOnly
 			{
 				using (ITransaction t = s.BeginTransaction())
 				{
-					IList list = s.CreateQuery("from DataPoint where id=" + dp.Id).List();
+					IList list = await (s.CreateQuery("from DataPoint where id=" + dp.Id).ListAsync());
 					Assert.That(list.Count, Is.EqualTo(0));
 					await (t.CommitAsync());
 				}
 			}
+		}
+
+		[Test]
+		[Ignore("Scrollable result sets not supported in NHibernate")]
+		public void ReadOnlyModeWithExistingModifiableEntity()
+		{
+		}
+
+		[Test]
+		[Ignore("Scrollable result sets not supported in NHibernate")]
+		public void ModifiableModeWithExistingReadOnlyEntity()
+		{
 		}
 
 		[Test]
@@ -961,10 +1029,10 @@ namespace NHibernate.Test.ReadOnly
 				using (ITransaction t = s.BeginTransaction())
 				{
 					s.DefaultReadOnly = true;
-					DataPoint dpProxy = s.Load<DataPoint>(dp.Id);
+					DataPoint dpProxy = await (s.LoadAsync<DataPoint>(dp.Id));
 					Assert.That(s.IsReadOnly(dpProxy), Is.True);
 					Assert.That(NHibernateUtil.IsInitialized(dpProxy), Is.False);
-					s.Evict(dpProxy);
+					await (s.EvictAsync(dpProxy));
 					dpProxy = (DataPoint)s.Merge(dpProxy);
 					Assert.That(s.IsReadOnly(dpProxy), Is.True);
 					Assert.That(NHibernateUtil.IsInitialized(dpProxy), Is.False);
@@ -972,7 +1040,7 @@ namespace NHibernate.Test.ReadOnly
 					Assert.That(s.IsReadOnly(dpProxy), Is.True);
 					Assert.That(NHibernateUtil.IsInitialized(dpProxy), Is.True);
 					Assert.That(dpProxy.Description, Is.EqualTo("description"));
-					s.Evict(dpProxy);
+					await (s.EvictAsync(dpProxy));
 					dpProxy = (DataPoint)s.Merge(dpProxy);
 					Assert.That(s.IsReadOnly(dpProxy), Is.True);
 					Assert.That(NHibernateUtil.IsInitialized(dpProxy), Is.True);

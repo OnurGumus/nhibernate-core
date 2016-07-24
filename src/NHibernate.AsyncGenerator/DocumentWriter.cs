@@ -100,8 +100,9 @@ namespace NHibernate.AsyncGenerator
 			);
 		}
 
-		private MethodDeclarationSyntax RewiteMethod(MethodInfo methodInfo, MethodAnalyzeResult analyzeResult, bool taskConflict)
+		private MethodDeclarationSyntax RewiteMethod(MethodInfo methodInfo, MethodAnalyzeResult analyzeResult)
 		{
+			var taskConflict = !DocumentInfo.ProjectInfo.IsNameUniqueInsideNamespace(methodInfo.TypeInfo.NamespaceInfo.Symbol, "Task");
 			if (!analyzeResult.HasBody)
 			{
 				return methodInfo.Node
@@ -111,17 +112,15 @@ namespace NHibernate.AsyncGenerator
 			}
 
 			var methodNode = methodInfo.Node.WithoutTrivia(); // references have spans without trivia
-			
-			var awaitsPlacements = new Dictionary<int, int>(); // key is SpanStart and value is the length of the await
-			foreach (var referenceResult in analyzeResult.ReferenceResults
-				.Where(o => o.CanBeAsync)
-				.OrderByDescending(o => o.ReferenceLocation.Location.SourceSpan.Start))
+
+			// we first need to annotate nodes that will be modified in order to find them later on. We cannot rely on spans after the first modification as they will change
+			var typeReferencesAnnotations = new List<string>();
+			foreach (var reference in methodInfo.TypeReferences.OrderByDescending(o => o.Location.SourceSpan.Start))
 			{
-				var reference = referenceResult.ReferenceLocation;
 				var startSpan = reference.Location.SourceSpan.Start - methodInfo.Node.Span.Start;
-				var nameNode = methodNode.Body.DescendantNodes()
+				var nameNode = methodNode.DescendantNodes()
 										 .OfType<SimpleNameSyntax>()
-										 .FirstOrDefault(
+										 .First(
 											 o =>
 											 {
 												 if (!o.IsKind(SyntaxKind.GenericName))
@@ -131,29 +130,54 @@ namespace NHibernate.AsyncGenerator
 												 var token = o.ChildTokens().First(t => t.IsKind(SyntaxKind.IdentifierToken));
 												 return token.Span.Start == startSpan && token.Span.Length == reference.Location.SourceSpan.Length;
 											 });
-				if (nameNode == null) // previous awaits were placed before current, caluclate the difference
+				var annotation = Guid.NewGuid().ToString();
+				methodNode = methodNode.ReplaceNode(nameNode, nameNode.WithAdditionalAnnotations(new SyntaxAnnotation(annotation)));
+				typeReferencesAnnotations.Add(annotation);
+			}
+
+			var referenceAnnotations = new Dictionary<string, MethodReferenceResult>();
+			foreach (var referenceResult in analyzeResult.ReferenceResults
+														.Where(o => o.CanBeAsync))
+			{
+				var reference = referenceResult.ReferenceLocation;
+				var startSpan = reference.Location.SourceSpan.Start - methodInfo.Node.Span.Start;
+				var nameNode = methodNode.Body.DescendantNodes()
+											.OfType<SimpleNameSyntax>()
+											.First(
+												o =>
+												{
+													if (!o.IsKind(SyntaxKind.GenericName))
+													{
+														return o.Span.Start == startSpan && o.Span.Length == reference.Location.SourceSpan.Length;
+													}
+													var token = o.ChildTokens().First(t => t.IsKind(SyntaxKind.IdentifierToken));
+													return token.Span.Start == startSpan && token.Span.Length == reference.Location.SourceSpan.Length;
+												});
+				var annotation = Guid.NewGuid().ToString();
+				methodNode = methodNode.ReplaceNode(nameNode, nameNode.WithAdditionalAnnotations(new SyntaxAnnotation(annotation)));
+				referenceAnnotations.Add(annotation, referenceResult);
+			}
+			
+			
+
+			// modify references
+			foreach (var refAnnotation in typeReferencesAnnotations)
+			{
+				var nameNode = methodNode.GetAnnotatedNodes(refAnnotation).OfType<SimpleNameSyntax>().First();
+				methodNode = methodNode
+							.ReplaceNode(nameNode, nameNode.WithIdentifier(Identifier(nameNode.Identifier.Value + "Async")));
+			}
+
+			foreach (var pair in referenceAnnotations)
+			{
+				var nameNode = methodNode.GetAnnotatedNodes(pair.Key).OfType<SimpleNameSyntax>().First();
+				var referenceResult = pair.Value;
+				if (!referenceResult.CanBeAwaited)
 				{
-					var newStartSpan = startSpan;
-					foreach (var pair in awaitsPlacements.OrderBy(o => o.Key))
-					{
-						if (pair.Key > startSpan)
-						{
-							break;
-						}
-						newStartSpan += pair.Value;
-					}
-					nameNode = methodNode.Body.DescendantNodes()
-										 .OfType<SimpleNameSyntax>()
-										 .First(
-											 o =>
-											 {
-												 if (!o.IsKind(SyntaxKind.GenericName))
-												 {
-													 return o.Span.Start == newStartSpan && o.Span.Length == reference.Location.SourceSpan.Length;
-												 }
-												 var token = o.ChildTokens().First(t => t.IsKind(SyntaxKind.IdentifierToken));
-												 return token.Span.Start == newStartSpan && token.Span.Length == reference.Location.SourceSpan.Length;
-											 });
+					// modify only the method name
+					methodNode = methodNode
+						.ReplaceNode(nameNode, nameNode.WithIdentifier(Identifier(nameNode.Identifier.Value + "Async")));
+					continue;
 				}
 
 				if (analyzeResult.CanSkipAsync)
@@ -211,25 +235,27 @@ namespace NHibernate.AsyncGenerator
 						);
 					invocationNode = methodNode.GetAnnotatedNodes(annotation).OfType<InvocationExpressionSyntax>().Single();
 					var awaitNode = invocationNode.AddAwait().WithAdditionalAnnotations(new SyntaxAnnotation(lastAwaitAnnotation));
-					var awaitLength = awaitNode.IsKind(SyntaxKind.ParenthesizedExpression) ? 7 : 6;
 					methodNode = methodNode.ReplaceNode(invocationNode, awaitNode);
 					awaitNode = methodNode.GetAnnotatedNodes(lastAwaitAnnotation).Single();
-					awaitsPlacements.Add(awaitNode.SpanStart, awaitLength);
 
 					if (!referenceResult.MakeAnonymousFunctionAsync) continue;
 					var functionNode = awaitNode.Ancestors().OfType<AnonymousFunctionExpressionSyntax>().First();
 					if (functionNode.AsyncKeyword.Kind() == SyntaxKind.AsyncKeyword) continue;
-					var functionAnnotation = Guid.NewGuid().ToString();
-					var asyncFunctionNode = functionNode.AddAsync().WithAdditionalAnnotations(new SyntaxAnnotation(functionAnnotation));
-					methodNode = methodNode.ReplaceNode(functionNode, asyncFunctionNode);
-					var asyncKeywordToken = methodNode.GetAnnotatedNodes(functionAnnotation)
-													  .OfType<AnonymousFunctionExpressionSyntax>().First()
-													  .AsyncKeyword;
-					awaitsPlacements.Add(asyncKeywordToken.SpanStart, asyncKeywordToken.Span.Length);
+					methodNode = methodNode.ReplaceNode(functionNode, functionNode.AddAsync());
 				}
 			}
+			
+			// do not create a async method if there is no async calls inside or is not a missing member
+			if (!methodInfo.HasReferences && !methodInfo.Missing)
+			{
+				return methodNode
+					.WithLeadingTrivia(methodInfo.Node.GetLeadingTrivia())
+					.WithTrailingTrivia(methodInfo.Node.GetTrailingTrivia());
+			}
 
-			if (!analyzeResult.CanBeAsnyc && !analyzeResult.IsEmpty)
+			if (methodInfo.TypeInfo.ParentTypeInfo?.TypeTransformation != TypeTransformation.NewType && 
+				methodInfo.TypeInfo.TypeTransformation != TypeTransformation.NewType && 
+				!analyzeResult.CanBeAsnyc && !analyzeResult.IsEmpty) // forward call
 			{
 				var name = methodInfo.Node.TypeParameterList != null
 					? GenericName(methodInfo.Node.Identifier.ValueText)
@@ -289,6 +315,265 @@ namespace NHibernate.AsyncGenerator
 				.WithTrailingTrivia(methodInfo.Node.GetTrailingTrivia());
 		}
 
+		private class RewrittenNode
+		{
+			public SyntaxNode Original { get; set; }
+
+			public SyntaxNode Rewritten { get; set; }
+
+			public string Annotation { get; set; }
+
+			public MethodInfo MethodInfo { get; set; }
+		}
+
+		private class TypeInfoMetadata
+		{
+			public string NodeAnnotation { get; set; }
+
+			public List<RewrittenNode> RewrittenNodes { get; } = new List<RewrittenNode>();
+
+			public bool TaskUsed { get; set; }
+
+			public bool AsyncLockUsed { get; set; }
+		}
+
+		private class RewriteTypeResult
+		{
+			public TypeDeclarationSyntax Node { get; set; }
+
+			public bool TaskUsed { get; set; }
+
+			public bool AsyncLockUsed { get; set; }
+		}
+
+		private RewriteTypeResult RewriteType(TypeInfo rootTypeInfo, bool onlyMissingMembers = false)
+		{
+			var result = new RewriteTypeResult();
+			var rootTypeNode = rootTypeInfo.Node;
+			var startRootTypeSpan = rootTypeInfo.Node.SpanStart;
+
+			rootTypeNode = rootTypeNode.WithoutTrivia(); // references have spans without trivia
+			var leadingTrivia = rootTypeInfo.Node.GetLeadingTrivia();
+
+			// we first need to annotate nodes that will be modified in order to find them later on. We cannot rely on spans after the first modification as they will change
+			var typeInfoMetadatas = new Dictionary<TypeInfo, TypeInfoMetadata>();
+			foreach (var typeInfo in rootTypeInfo.GetDescendantTypeInfosAndSelf()
+				.Where(o => o.TypeTransformation != TypeTransformation.None)
+				.OrderByDescending(o => o.Node.SpanStart))
+			{
+				var annotation = Guid.NewGuid().ToString();
+				var metadata = new TypeInfoMetadata
+				{
+					NodeAnnotation = annotation
+				};
+
+				var typeSpanStart = typeInfo.Node.SpanStart - startRootTypeSpan;
+				var typeSpanLength = typeInfo.Node.Span.Length;
+				var node = rootTypeNode.DescendantNodesAndSelf().OfType<TypeDeclarationSyntax>()
+					.First(o => o.SpanStart == typeSpanStart && o.Span.Length == typeSpanLength);
+				rootTypeNode = rootTypeNode.ReplaceNode(node, node.WithAdditionalAnnotations(new SyntaxAnnotation(annotation)));
+
+				// process references
+				// TODO: typereferences can be changed only if the type is copied, need to find all dependencies an create new types for them
+				if (!onlyMissingMembers && rootTypeInfo.TypeTransformation == TypeTransformation.NewType)
+				{
+					foreach (var reference in typeInfo.TypeReferences)
+					{
+						var refSpanStart = reference.Location.SourceSpan.Start - startRootTypeSpan;
+						var refSpanLength = reference.Location.SourceSpan.Length;
+						if (refSpanStart < 0)
+						{
+							// cref
+							//var startSpan = reference.Location.SourceSpan.Start - rootTypeInfo.Node.GetLeadingTrivia().Span.Start;
+							//var crefNode = leadingTrivia.First(o => o.SpanStart == startSpan && o.Span.Length == refSpanLength);
+							continue;
+						}
+
+						var nameNode = rootTypeNode.DescendantNodes()
+												 .OfType<SimpleNameSyntax>()
+												 .First(
+													 o =>
+													 {
+														 if (!o.IsKind(SyntaxKind.GenericName))
+														 {
+															 return o.Span.Start == refSpanStart && o.Span.Length == refSpanLength;
+														 }
+														 var token = o.ChildTokens().First(t => t.IsKind(SyntaxKind.IdentifierToken));
+														 return token.Span.Start == refSpanStart && token.Span.Length == refSpanLength;
+													 });
+						annotation = Guid.NewGuid().ToString();
+						rootTypeNode = rootTypeNode.ReplaceNode(nameNode, nameNode.WithAdditionalAnnotations(new SyntaxAnnotation(annotation)));
+
+						metadata.RewrittenNodes.Add(new RewrittenNode
+						{
+							Annotation = annotation,
+							Original = nameNode,
+							Rewritten = nameNode.WithIdentifier(Identifier(nameNode.Identifier.ValueText + "Async"))
+						});
+					}
+				}
+				
+
+				// process methods
+				foreach (var methodInfo in typeInfo.MethodInfos.Values.Where(o => !o.Ignore))
+				{
+					var methodSpanStart = methodInfo.Node.SpanStart - startRootTypeSpan;
+					var methodSpanLength = methodInfo.Node.Span.Length;
+					var methodNode = rootTypeNode.DescendantNodes()
+											 .OfType<MethodDeclarationSyntax>()
+											 .First(o => o.SpanStart == methodSpanStart && o.Span.Length == methodSpanLength);
+					annotation = Guid.NewGuid().ToString();
+					rootTypeNode = rootTypeNode.ReplaceNode(methodNode, methodNode.WithAdditionalAnnotations(new SyntaxAnnotation(annotation)));
+
+					var methodAnalyzeResult = methodInfo.PostAnalyzeResult;
+					if (!methodAnalyzeResult.IsValid)
+					{
+						continue;
+					}
+					var removeNode = false;
+					if (typeInfo.TypeTransformation == TypeTransformation.NewType &&
+						methodAnalyzeResult.ReferenceResults.Any(o => !o.CanBeAsync && o.DeclaredWithinSameType))
+					{
+						//TODO: handle dependencies and methods from other types
+						removeNode = true;
+					}
+
+					metadata.TaskUsed |= methodAnalyzeResult.CanSkipAsync || methodAnalyzeResult.IsEmpty || methodAnalyzeResult.Yields || !methodAnalyzeResult.CanBeAsnyc;
+					result.TaskUsed |= metadata.TaskUsed;
+					metadata.AsyncLockUsed |= methodAnalyzeResult.MustRunSynchronized;
+					result.AsyncLockUsed |= metadata.AsyncLockUsed;
+					metadata.RewrittenNodes.Add(new RewrittenNode
+					{
+						Original = methodNode,
+						Rewritten = removeNode ? null : RewiteMethod(methodInfo, methodAnalyzeResult),
+						MethodInfo = methodInfo,
+						Annotation = annotation
+					});
+				}
+
+				typeInfoMetadatas.Add(typeInfo, metadata);
+			}
+
+
+			foreach (var typeInfo in rootTypeInfo.GetDescendantTypeInfosAndSelf()
+				.Where(o => o.TypeTransformation != TypeTransformation.None)
+				.OrderByDescending(o => o.Node.SpanStart))
+			{
+				var metadata = typeInfoMetadatas[typeInfo];
+				// add partial to the original file
+				//var partialTypeDeclaration = typeDeclaration.AddPartial();
+				//if (partialTypeDeclaration != typeDeclaration)
+				//{
+				//	partialTypeDeclaration = partialTypeDeclaration.NormalizeWhitespace("	");
+				//	rootChanged = true;
+
+
+				// if the root type has to be a new type then all nested types have to be new types
+				if (!onlyMissingMembers && rootTypeInfo.TypeTransformation == TypeTransformation.NewType)
+				{
+					// replace all rewritten nodes
+					foreach (var rewNode in metadata.RewrittenNodes
+						.Where(o => o.MethodInfo == null || (!o.MethodInfo.Missing && !o.MethodInfo.IsRequired))
+						.OrderByDescending(o => o.Original.SpanStart))
+					{
+						var node = rootTypeNode.GetAnnotatedNodes(rewNode.Annotation).First();
+						if (rewNode.Rewritten == null)
+						{
+							rootTypeNode = rootTypeNode.RemoveNode(node, SyntaxRemoveOptions.KeepNoTrivia);
+						}
+						else
+						{
+							rootTypeNode = rootTypeNode.ReplaceNode(node, rewNode.Rewritten);
+						}
+					}
+					// add missing members
+					var typeNode = rootTypeNode.GetAnnotatedNodes(metadata.NodeAnnotation).OfType<TypeDeclarationSyntax>().First();
+					rootTypeNode = rootTypeNode.ReplaceNode(typeNode, typeNode.WithMembers(
+						typeNode.Members.AddRange(
+							metadata.RewrittenNodes
+									.OrderBy(o => o.Original.SpanStart)
+									.Where(o => o.MethodInfo != null && o.MethodInfo.Missing)
+									.Select(o => o.Rewritten)
+									.OfType<MethodDeclarationSyntax>())));
+
+					typeNode = rootTypeNode.GetAnnotatedNodes(metadata.NodeAnnotation).OfType<TypeDeclarationSyntax>().First();
+					var identifierToken = typeNode.ChildTokens().First(o => o.IsKind(SyntaxKind.IdentifierToken));
+					rootTypeNode = rootTypeNode
+						.ReplaceNode(
+							typeNode,
+							(typeInfo.TypeTransformation == TypeTransformation.NewType
+								? typeNode.ReplaceToken(identifierToken, Identifier(identifierToken.ValueText + "Async"))
+								: typeNode)
+								.AddGeneratedCodeAttribute());
+
+					// rename all constructors
+					if (typeInfo.TypeTransformation == TypeTransformation.NewType)
+					{
+						while(true)
+						{
+							var ctorNode = rootTypeNode.DescendantNodes()
+											   .OfType<ConstructorDeclarationSyntax>()
+											   .FirstOrDefault(o => o.Identifier.ValueText == typeInfo.Symbol.Name);
+							if (ctorNode == null)
+							{
+								break;
+							}
+							rootTypeNode = rootTypeNode.ReplaceNode(ctorNode, ctorNode.WithIdentifier(Identifier(typeInfo.Symbol.Name + "Async")));
+						}
+					}
+				}
+				else
+				{
+					var typeNode = rootTypeNode.GetAnnotatedNodes(metadata.NodeAnnotation).OfType<TypeDeclarationSyntax>().First();
+					var newNodes = (onlyMissingMembers
+						? metadata.RewrittenNodes
+							.Where(o => o.MethodInfo != null && o.MethodInfo.Missing)
+							.OrderBy(o => o.Original.SpanStart)
+							.Select(o => o.Rewritten)
+						: metadata.RewrittenNodes
+							.Where(o => o.MethodInfo == null || (o.MethodInfo != null && (!o.MethodInfo.IsRequired || o.MethodInfo.Missing))) // for partials we wont have onlyMissingMembers = true 
+							.OrderBy(o => o.Original.SpanStart)
+							.Select(o => o.Rewritten))
+						.Union(typeNode.DescendantNodes().OfType<TypeDeclarationSyntax>())
+						.ToList();
+
+					if (!newNodes.Any())
+					{
+						rootTypeNode = rootTypeNode.RemoveNode(typeNode, SyntaxRemoveOptions.KeepNoTrivia);
+					}
+					else
+					{
+						var newTypeNode = typeNode
+						.AddPartial()
+						.WithMembers(List(newNodes));
+						newTypeNode = typeInfo.Symbol.Locations
+										   .Where(o => DocumentInfo.ProjectInfo.ContainsKey(o.SourceTree.FilePath))
+										   .Select(o => DocumentInfo.ProjectInfo[o.SourceTree.FilePath].GetTypeInfo(typeInfo.Symbol).Node)
+										   .Any(n => n.AttributeLists.Any(o => o.Attributes.Any(a => a.Name.ToString().EndsWith("GeneratedCode"))))
+							? newTypeNode.WithoutAttributes()
+							: newTypeNode.AddGeneratedCodeAttribute(false);
+						newTypeNode = newTypeNode.RemoveNodes(
+								newTypeNode.DescendantNodes(descendIntoTrivia: true).OfType<DirectiveTriviaSyntax>(), SyntaxRemoveOptions.KeepNoTrivia); // remove invalid #endregion
+
+						rootTypeNode = rootTypeNode
+							.ReplaceNode(typeNode, newTypeNode);
+					}
+				}
+
+				if (metadata.AsyncLockUsed)
+				{
+					var typeNode = rootTypeNode.GetAnnotatedNodes(metadata.NodeAnnotation).OfType<TypeDeclarationSyntax>().First();
+					rootTypeNode = rootTypeNode
+						.ReplaceNode(typeNode, typeNode
+							.WithMembers(typeNode.Members.Insert(0, GetAsyncLockField())));
+				}
+			}
+
+			result.Node = rootTypeNode
+				/*.WithTriviaFrom(rootTypeInfo.Node)*/;
+			return result;
+		}
+
 		public void Write()
 		{
 			var rootNode = DocumentInfo.RootNode;
@@ -296,95 +581,51 @@ namespace NHibernate.AsyncGenerator
 			var customTask = Configuration.Async.CustomTaskType;
 			var tasksUsed = false;
 			var taskConflict = false;
+			var asyncLockUsed = false;
+			// TODO: handle global namespace
 			foreach (var namespaceInfo in DocumentInfo.Values.OrderBy(o => o.Node.SpanStart))
 			{
 				var namespaceNode = namespaceInfo.Node;
 
-				if (!DocumentInfo.ProjectInfo.IsNameUniqueInsideNamespace(namespaceInfo.Symbol, "Task"))
-				{
-					taskConflict = true;
-				}
+				taskConflict |= !DocumentInfo.ProjectInfo.IsNameUniqueInsideNamespace(namespaceInfo.Symbol, "Task");
 
 				var typeNodes = new List<MemberDeclarationSyntax>();
-				foreach (var typeInfo in namespaceInfo.Values.OrderBy(o => o.Node.SpanStart))
+				foreach (var typeInfo in namespaceInfo.Values.Where(o => o.TypeTransformation != TypeTransformation.None).OrderBy(o => o.Node.SpanStart))
 				{
-					var typeNode = typeInfo.Node;
-					var asyncLock = false;
-					var memberNodes = new List<MemberDeclarationSyntax>();
-					foreach (var methodInfo in typeInfo.MethodInfos.Values.OrderBy(o => o.Node.SpanStart))
+					var rewriteResult = RewriteType(typeInfo);
+					if (rewriteResult.Node == null)
 					{
-						var methodAnalyzeResult = methodInfo.Analyze();
-						tasksUsed |= methodAnalyzeResult.CanSkipAsync || methodAnalyzeResult.IsEmpty || methodAnalyzeResult.Yields || !methodAnalyzeResult.CanBeAsnyc;
-						asyncLock |= methodAnalyzeResult.MustRunSynchronized;
-						memberNodes.Add(RewiteMethod(methodInfo, methodAnalyzeResult, taskConflict));
+						continue;
 					}
-					// TODO: inifinite levels of nested types
-					foreach (var subTypeInfo in typeInfo.TypeInfos.Values.OrderBy(o => o.Node.SpanStart))
+					tasksUsed |= rewriteResult.TaskUsed;
+					asyncLockUsed |= rewriteResult.AsyncLockUsed;
+					typeNodes.Add(rewriteResult.Node);
+					if (typeInfo.TypeTransformation == TypeTransformation.NewType && typeInfo.HasMissingMembers)
 					{
-						var subTypeNode = subTypeInfo.Node;
-						var subAsyncLock = false;
-						var subMemberNodes = new List<MemberDeclarationSyntax>();
-						foreach (var methodInfo in subTypeInfo.MethodInfos.Values.OrderBy(o => o.Node.SpanStart))
+						rewriteResult = RewriteType(typeInfo, true);
+						if (rewriteResult.Node == null)
 						{
-							var methodAnalyzeResult = methodInfo.Analyze();
-							tasksUsed |= methodAnalyzeResult.CanSkipAsync || methodAnalyzeResult.IsEmpty || methodAnalyzeResult.Yields || !methodAnalyzeResult.CanBeAsnyc;
-							subAsyncLock |= methodAnalyzeResult.MustRunSynchronized;
-							subMemberNodes.Add(RewiteMethod(methodInfo, methodAnalyzeResult, taskConflict));
+							continue;
 						}
-						if (subAsyncLock)
-						{
-							var lockNamespace = Configuration.Async.Lock.Namespace;
-							subMemberNodes.Insert(0, GetAsyncLockField());
-							if (rootNode.Usings.All(o => o.Name.ToString() != lockNamespace))
-							{
-								rootNode = rootNode.AddUsings(UsingDirective(IdentifierName(lockNamespace)));
-							}
-						}
-						subTypeNode = subTypeNode
-							.AddPartial()
-							.WithMembers(List(subMemberNodes));
-						subTypeNode = subTypeInfo.Symbol.Locations
-												.Where(o => DocumentInfo.ProjectInfo.ContainsKey(o.SourceTree.FilePath))
-												.Select(o => DocumentInfo.ProjectInfo[o.SourceTree.FilePath].GetTypeInfo(subTypeInfo.Symbol).Node)
-												.Any(n => n.AttributeLists.Any(o => o.Attributes.Any(a => a.Name.ToString().EndsWith("GeneratedCode"))))
-							? subTypeNode.WithoutAttributes()
-							: subTypeNode.AddGeneratedCodeAttribute(false);
-						memberNodes.Add(subTypeNode);
+						typeNodes.Add(rewriteResult.Node);
 					}
-
-					// add partial to the original file
-					//var partialTypeDeclaration = typeDeclaration.AddPartial();
-					//if (partialTypeDeclaration != typeDeclaration)
-					//{
-					//	partialTypeDeclaration = partialTypeDeclaration.NormalizeWhitespace("	");
-					//	rootChanged = true;
-					if (asyncLock)
-					{
-						var lockNamespace = Configuration.Async.Lock.Namespace;
-						memberNodes.Insert(0, GetAsyncLockField());
-						if (rootNode.Usings.All(o => o.Name.ToString() != lockNamespace))
-						{
-							rootNode = rootNode.AddUsings(UsingDirective(IdentifierName(lockNamespace)));
-						}
-					}
-					typeNode = typeNode
-						.AddPartial()
-						.WithMembers(List(memberNodes));
-					typeNode = typeInfo.Symbol.Locations
-									   .Where(o => DocumentInfo.ProjectInfo.ContainsKey(o.SourceTree.FilePath))
-									   .Select(o => DocumentInfo.ProjectInfo[o.SourceTree.FilePath].GetTypeInfo(typeInfo.Symbol).Node)
-									   .Any(n => n.AttributeLists.Any(o => o.Attributes.Any(a => a.Name.ToString().EndsWith("GeneratedCode"))))
-						? typeNode.WithoutAttributes()
-						: typeNode.AddGeneratedCodeAttribute(false);
-					typeNode = typeNode.RemoveNodes(
-							typeNode.DescendantNodes(descendIntoTrivia: true).OfType<DirectiveTriviaSyntax>(), SyntaxRemoveOptions.KeepNoTrivia); // remove invalid #endregion
-					typeNodes.Add(typeNode);
 				}
-				namespaceNodes.Add(namespaceNode
+				if (typeNodes.Any())
+				{
+					namespaceNodes.Add(namespaceNode
 						.WithMembers(List(typeNodes)));
+				}
+			}
+			if (!namespaceNodes.Any())
+			{
+				return;
 			}
 
-
+			var lockNamespace = Configuration.Async.Lock.Namespace;
+			if (asyncLockUsed && rootNode.Usings.All(o => o.Name.ToString() != lockNamespace))
+			{
+				rootNode = rootNode.AddUsings(UsingDirective(IdentifierName(lockNamespace)));
+			}
 
 			if (!taskConflict && rootNode.Usings.All(o => o.Name.ToString() != "System.Threading.Tasks"))
 			{
@@ -392,7 +633,14 @@ namespace NHibernate.AsyncGenerator
 			}
 			if (tasksUsed && rootNode.Usings.All(o => o.Name.ToString() != "System"))
 			{
-				rootNode = rootNode.AddUsings(UsingDirective(IdentifierName("System")));
+				rootNode = rootNode.AddUsings( // using Exception = System.Exception
+					UsingDirective(
+						QualifiedName(
+							IdentifierName("System"),
+							IdentifierName("Exception")))
+						.WithAlias(
+							NameEquals(
+								IdentifierName("Exception"))));
 			}
 			if (tasksUsed && !string.IsNullOrEmpty(customTask.Namespace) && rootNode.Usings.All(o => o.Name.ToString() != customTask.Namespace))
 			{
@@ -419,8 +667,14 @@ namespace NHibernate.AsyncGenerator
 										true)))));
 			}
 
+			rootNode = rootNode
+					.WithMembers(List(namespaceNodes));
+
+			//TODO: configurable custom rewriters
+			var rewriter = new TransactionScopeRewriter();
+			rootNode = (CompilationUnitSyntax)rewriter.VisitCompilationUnit(rootNode);
+
 			var content = rootNode
-				.WithMembers(List(namespaceNodes))
 				.NormalizeWhitespace("	")
 				.ToFullString();
 

@@ -6,9 +6,27 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Stateless.Fetching
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class StatelessSessionFetchingTest : TestCase
+	public partial class StatelessSessionFetchingTestAsync : TestCaseAsync
 	{
+		private static readonly ILog log = LogManager.GetLogger(typeof (StatelessSessionFetchingTestAsync));
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"Stateless.Fetching.Mappings.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async System.Threading.Tasks.Task DynamicFetchAsync()
 		{
@@ -49,9 +67,9 @@ namespace NHibernate.Test.Stateless.Fetching
 				using (ITransaction tx = s.BeginTransaction())
 				{
 					s.BeginTransaction();
-					s.CreateQuery("delete Task").ExecuteUpdate();
-					s.CreateQuery("delete Resource").ExecuteUpdate();
-					s.CreateQuery("delete User").ExecuteUpdate();
+					await (s.CreateQuery("delete Task").ExecuteUpdateAsync());
+					await (s.CreateQuery("delete Resource").ExecuteUpdateAsync());
+					await (s.CreateQuery("delete User").ExecuteUpdateAsync());
 					await (tx.CommitAsync());
 				}
 		}

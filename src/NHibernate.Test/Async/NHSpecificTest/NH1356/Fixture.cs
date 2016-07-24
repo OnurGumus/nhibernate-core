@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.NHSpecificTest.NH1356
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public abstract partial class Fixture : BugTestCase
+	public abstract partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task CanLoadWithGenericCompositeElementAsync()
@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1356
 
 			using (ISession session = OpenSession())
 			{
-				var person = session.CreateQuery("from Person").UniqueResult<Person>();
+				var person = await (session.CreateQuery("from Person").UniqueResultAsync<Person>());
 				Assert.IsNotNull(person);
 				Assert.IsNotNull(person.Addresses);
 				Assert.AreEqual(2, person.Addresses.Count);
@@ -40,6 +40,62 @@ namespace NHibernate.Test.NHSpecificTest.NH1356
 					await (tx.CommitAsync());
 				}
 			}
+		}
+
+		protected abstract ICollection<Address> NewCollection();
+	}
+
+	[TestFixture]
+	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+	public partial class FixtureWithListAsync : FixtureAsync
+	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"NHSpecificTest." + BugNumber + ".MappingsList.hbm.xml"};
+			}
+		}
+
+		protected override ICollection<Address> NewCollection()
+		{
+			return new List<Address>();
+		}
+	}
+
+	[TestFixture]
+	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+	public partial class FixtureWithBagAsync : FixtureAsync
+	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"NHSpecificTest." + BugNumber + ".MappingsBag.hbm.xml"};
+			}
+		}
+
+		protected override ICollection<Address> NewCollection()
+		{
+			return new List<Address>();
+		}
+	}
+
+	[TestFixture]
+	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+	public partial class FixtureWithSetAsync : FixtureAsync
+	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"NHSpecificTest." + BugNumber + ".MappingsSet.hbm.xml"};
+			}
+		}
+
+		protected override ICollection<Address> NewCollection()
+		{
+			return new HashSet<Address>();
 		}
 	}
 }

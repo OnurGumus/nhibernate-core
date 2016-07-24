@@ -6,9 +6,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH318
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : TestCase
+	public partial class FixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecificTest.NH318.Mappings.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task DeleteWithNotNullPropertySetToNullAsync()
 		{

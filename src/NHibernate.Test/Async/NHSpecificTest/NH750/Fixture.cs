@@ -5,9 +5,20 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH750
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = sessions.OpenSession())
+			{
+				await (s.DeleteAsync("from Device"));
+				await (s.DeleteAsync("from Drive"));
+				await (s.FlushAsync());
+			}
+		}
+
 		[Test]
 		public async Task DeviceOfDriveAsync()
 		{
@@ -44,8 +55,8 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			{
 				await (s.DeleteAsync(dr3));
 				await (s.FlushAsync());
-				dv1 = (Device)s.Load(typeof (Device), dvSavedId[0]);
-				dv2 = (Device)s.Load(typeof (Device), dvSavedId[1]);
+				dv1 = (Device)await (s.LoadAsync(typeof (Device), dvSavedId[0]));
+				dv2 = (Device)await (s.LoadAsync(typeof (Device), dvSavedId[1]));
 			}
 
 			Assert.AreEqual(2, dv1.Drives.Count);

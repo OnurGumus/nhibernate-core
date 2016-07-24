@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1413
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class PagingTest : BugTestCase
+	public partial class PagingTestAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task BugAsync()
@@ -30,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1413
 				ICriteria icriteria = criteria.GetExecutableCriteria(session);
 				icriteria.SetFirstResult(0);
 				icriteria.SetMaxResults(2);
-				Assert.That(2, Is.EqualTo(icriteria.List<Foo>().Count));
+				Assert.That(2, Is.EqualTo((await (icriteria.ListAsync<Foo>())).Count));
 			}
 
 			using (ISession session = OpenSession())

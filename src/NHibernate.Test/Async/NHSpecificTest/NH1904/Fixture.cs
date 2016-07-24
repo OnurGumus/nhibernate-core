@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1904
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task ExecuteQueryAsync()
@@ -23,7 +24,17 @@ namespace NHibernate.Test.NHSpecificTest.NH1904
 
 			using (ISession session = OpenSession())
 			{
-				IList<Invoice> invoices = session.CreateCriteria<Invoice>().List<Invoice>();
+				IList<Invoice> invoices = await (session.CreateCriteria<Invoice>().ListAsync<Invoice>());
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			await (base.OnTearDownAsync());
+			using (ISession session = OpenSession())
+			{
+				await (session.CreateQuery("delete from Invoice").ExecuteUpdateAsync());
+				await (session.FlushAsync());
 			}
 		}
 	}

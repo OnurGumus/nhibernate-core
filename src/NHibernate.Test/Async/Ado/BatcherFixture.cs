@@ -4,12 +4,51 @@ using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Ado
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class BatcherFixture : TestCase
+	public partial class BatcherFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"Ado.VerySimple.hbm.xml", "Ado.AlmostSimple.hbm.xml"};
+			}
+		}
+
+		protected override Task ConfigureAsync(Configuration configuration)
+		{
+			try
+			{
+				configuration.SetProperty(Environment.FormatSql, "true");
+				configuration.SetProperty(Environment.GenerateStatistics, "true");
+				configuration.SetProperty(Environment.BatchSize, "10");
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
+		{
+			return !(factory.Settings.BatcherFactory is NonBatchingBatcherFactory);
+		}
+
 		[Test]
 		[Description("The batcher should run all INSERT queries in only one roundtrip.")]
 		public async Task OneRoundTripInsertsAsync()
@@ -25,8 +64,8 @@ namespace NHibernate.Test.Ado
 			using (ISession s = sessions.OpenSession())
 				using (s.BeginTransaction())
 				{
-					s.CreateQuery("delete from VerySimple").ExecuteUpdate();
-					s.CreateQuery("delete from AlmostSimple").ExecuteUpdate();
+					await (s.CreateQuery("delete from VerySimple").ExecuteUpdateAsync());
+					await (s.CreateQuery("delete from AlmostSimple").ExecuteUpdateAsync());
 					await (s.Transaction.CommitAsync());
 				}
 		}

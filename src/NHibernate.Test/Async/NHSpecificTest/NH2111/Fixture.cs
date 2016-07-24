@@ -7,9 +7,19 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2111
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = sessions.OpenSession())
+			{
+				await (s.DeleteAsync("from A"));
+				await (s.FlushAsync());
+			}
+		}
+
 		[Test]
 		public async Task SyncRootOnLazyLoadAsync()
 		{
@@ -20,13 +30,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2111
 			a.LazyItems.Add("second string");
 			a.LazyItems.Add("third string");
 			ISession s = OpenSession();
-			s.SaveOrUpdate(a);
+			await (s.SaveOrUpdateAsync(a));
 			await (s.FlushAsync());
 			s.Close();
 			Assert.IsNotNull(((ICollection)a.LazyItems).SyncRoot);
 			Assert.AreEqual("first string", a.LazyItems[0]);
 			s = OpenSession();
-			a = (A)s.Load(typeof (A), a.Id);
+			a = (A)await (s.LoadAsync(typeof (A), a.Id));
 			Assert.IsNotNull(((ICollection)a.LazyItems).SyncRoot);
 			Assert.AreEqual("first string", a.LazyItems[0]);
 			s.Close();

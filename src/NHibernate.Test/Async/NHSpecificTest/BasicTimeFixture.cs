@@ -8,9 +8,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class BasicTimeFixture : TestCase
+	public partial class BasicTimeFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecific.BasicTime.hbm.xml"};
+			}
+		}
+
+		private void IgnoreOnMySQL()
+		{
+			if (Dialect is MySQLDialect)
+			{
+				Assert.Ignore("MySQL requires TimeSpan for type='time'");
+			}
+		}
+
 		[Test]
 		public async Task InsertAsync()
 		{
@@ -21,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			BasicTime basicLoaded = (BasicTime)s.Load(typeof (BasicTime), 1);
+			BasicTime basicLoaded = (BasicTime)await (s.LoadAsync(typeof (BasicTime), 1));
 			Assert.IsNotNull(basicLoaded);
 			Assert.IsFalse(basic == basicLoaded);
 			Assert.AreEqual(basic.TimeValue.Hour, basicLoaded.TimeValue.Hour);
@@ -42,13 +59,13 @@ namespace NHibernate.Test.NHSpecificTest
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			BasicTime basicLoaded = (BasicTime)s.Load(typeof (BasicTime), 1);
+			BasicTime basicLoaded = (BasicTime)await (s.LoadAsync(typeof (BasicTime), 1));
 			Assert.AreEqual(0, basicLoaded.TimeArray.Length);
 			basicLoaded.TimeArray = new DateTime[]{new DateTime(2000, 01, 01, 12, 1, 1), new DateTime(1500, 1, 1)};
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			basic = (BasicTime)s.Load(typeof (BasicTime), 1);
+			basic = (BasicTime)await (s.LoadAsync(typeof (BasicTime), 1));
 			// make sure the 0 index saved with values in Time
 			Assert.AreEqual(12, basic.TimeArray[0].Hour);
 			Assert.AreEqual(1, basic.TimeArray[0].Minute);
@@ -72,19 +89,27 @@ namespace NHibernate.Test.NHSpecificTest
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			basic = (BasicTime)s.Load(typeof (BasicTime), 1);
+			basic = (BasicTime)await (s.LoadAsync(typeof (BasicTime), 1));
 			basic.TimeValue = new DateTime(2000, 12, 1, 13, 1, 2);
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
 			// make sure the update went through
-			BasicTime basicLoaded = (BasicTime)s.Load(typeof (BasicTime), 1);
+			BasicTime basicLoaded = (BasicTime)await (s.LoadAsync(typeof (BasicTime), 1));
 			Assert.AreEqual(13, basicLoaded.TimeValue.Hour);
 			Assert.AreEqual(1, basicLoaded.TimeValue.Minute);
 			Assert.AreEqual(2, basicLoaded.TimeValue.Second);
 			await (s.DeleteAsync(basicLoaded));
 			await (s.FlushAsync());
 			s.Close();
+		}
+
+		private BasicTime Create(int id)
+		{
+			BasicTime basic = new BasicTime();
+			basic.Id = id;
+			basic.TimeValue = new DateTime(1753, 01, 01, 12, 00, 00, 00);
+			return basic;
 		}
 	}
 }

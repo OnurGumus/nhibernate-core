@@ -10,9 +10,16 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.CfgTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ConfigurationSerializationTests
+	public partial class ConfigurationSerializationTestsAsync
 	{
+		[Test]
+		public void Configuration_should_be_serializable()
+		{
+			NHAssert.HaveSerializableAttribute(typeof (Configuration));
+		}
+
 		[Test]
 		public async Task Basic_CRUD_should_workAsync()
 		{
@@ -31,7 +38,7 @@ namespace NHibernate.Test.CfgTest
 			cfg = formatter.Deserialize(memoryStream) as Configuration;
 			Assert.That(cfg, Is.Not.Null);
 			var export = new SchemaExport(cfg);
-			export.Execute(true, true, false);
+			await (export.ExecuteAsync(true, true, false));
 			ISessionFactory sf = cfg.BuildSessionFactory();
 			using (ISession session = sf.OpenSession())
 			{
@@ -80,7 +87,7 @@ namespace NHibernate.Test.CfgTest
 				Assert.That(p, Is.Null);
 			}
 
-			export.Drop(true, true);
+			await (export.DropAsync(true, true));
 		}
 	}
 }

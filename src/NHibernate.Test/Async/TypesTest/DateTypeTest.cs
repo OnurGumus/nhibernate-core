@@ -9,8 +9,28 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.TypesTest
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class DateTypeFixture : TypeFixtureBase
+	public partial class DateTypeFixtureAsync : TypeFixtureBaseAsync
 	{
+		protected override string TypeName
+		{
+			get
+			{
+				return "Date";
+			}
+		}
+
+		[Test]
+		public void ShouldBeDateType()
+		{
+			if (!(Dialect is MsSql2008Dialect))
+			{
+				Assert.Ignore("This test does not apply to " + Dialect);
+			}
+
+			var sqlType = Dialect.GetTypeName(NHibernateUtil.Date.SqlType);
+			Assert.That(sqlType.ToLowerInvariant(), Is.EqualTo("date"));
+		}
+
 		[Test]
 		public async Task ReadWriteNormalAsync()
 		{

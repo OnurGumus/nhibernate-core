@@ -8,8 +8,76 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.NHSpecificTest.NH3634
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ByCodeFixture : TestCaseMappingByCode
+	public partial class ByCodeFixtureAsync : TestCaseMappingByCodeAsync
 	{
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ModelMapper();
+			mapper.AddMapping<PersonMapper>();
+			mapper.AddMapping<CachedPersonMapper>();
+			return mapper.CompileMappingForAllExplicitlyAddedEntities();
+		}
+
+		protected override async Task OnSetUpAsync()
+		{
+			using (ISession session = OpenSession())
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					var bobsConnection = new Connection{Address = "test.com", ConnectionType = "http", PortName = "80"};
+					var e1 = new Person{Name = "Bob", Connection = bobsConnection};
+					await (session.SaveAsync(e1));
+					var sallysConnection = new Connection{Address = "test.com", ConnectionType = "http", };
+					var e2 = new Person{Name = "Sally", Connection = sallysConnection};
+					await (session.SaveAsync(e2));
+					var cachedNullConnection = new Connection{Address = "test.com", ConnectionType = "http", };
+					var cachedNullConnectionPerson = new CachedPerson{Name = "CachedNull", Connection = cachedNullConnection};
+					var cachedNotNullConnection = new Connection{Address = "test.com", ConnectionType = "http", PortName = "port"};
+					var cachedNotNullConnectionPerson = new CachedPerson{Name = "CachedNotNull", Connection = cachedNotNullConnection};
+					await (session.SaveAsync(cachedNullConnectionPerson));
+					await (session.SaveAsync(cachedNotNullConnectionPerson));
+					await (session.FlushAsync());
+					await (transaction.CommitAsync());
+					await (session.EvictAsync(typeof (CachedPerson)));
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = OpenSession())
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from System.Object"));
+					await (session.FlushAsync());
+					await (transaction.CommitAsync());
+				}
+		}
+
+		[Test]
+		public async Task QueryOverComponentWithANullPropertyAsync()
+		{
+			//			Broken at the time NH3634 was reported
+			//			Generates the following Rpc(exec sp_executesql)
+			//			SELECT this_.Id as Id0_0_, 
+			//				   this_.Name as Name0_0_, 
+			//				   this_.ConnectionType as Connecti3_0_0_, 
+			//				   this_.Address as Address0_0_, 
+			//				   this_.PortName as PortName0_0_ 
+			//			  FROM people this_ 
+			//			 WHERE this_.ConnectionType = @p0 
+			//			   and this_.Address = @p1 
+			//			   and this_.PortName = @p2
+			//
+			//			@p0=N'http',@p1=N'test.com',@p2=NULL
+			using (ISession session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var componentToCompare = new Connection{ConnectionType = "http", Address = "test.com", PortName = null};
+					var sally = await (session.QueryOver<Person>().Where(p => p.Connection == componentToCompare).SingleOrDefaultAsync<Person>());
+					Assert.That(sally.Name, Is.EqualTo("Sally"));
+					Assert.That(sally.Connection.PortName, Is.Null);
+				}
+		}
+
 		[Test]
 		public async Task QueryAgainstComponentWithANullPropertyUsingCriteriaAsync()
 		{
@@ -50,7 +118,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 					{
 						dbCommand.CommandText = "DELETE FROM cachedpeople";
 						tx.Enlist(dbCommand);
-						dbCommand.ExecuteNonQuery();
+						await (dbCommand.ExecuteNonQueryAsync());
 					}
 
 					await (tx.CommitAsync());
@@ -61,7 +129,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 				using (ITransaction tx = session.BeginTransaction())
 				{
 					//Cache should not return cached entity, because it no longer matches criteria
-					var cachedPeople = session.CreateCriteria<CachedPerson>().Add(Restrictions.Eq("Connection", componentToCompare)).SetCacheable(true).List<CachedPerson>();
+					var cachedPeople = await (session.CreateCriteria<CachedPerson>().Add(Restrictions.Eq("Connection", componentToCompare)).SetCacheable(true).ListAsync<CachedPerson>());
 					Assert.That(cachedPeople, Is.Empty);
 					await (tx.CommitAsync());
 				}
@@ -81,7 +149,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 					{
 						dbCommand.CommandText = "DELETE FROM cachedpeople";
 						tx.Enlist(dbCommand);
-						dbCommand.ExecuteNonQuery();
+						await (dbCommand.ExecuteNonQueryAsync());
 					}
 
 					await (tx.CommitAsync());
@@ -92,7 +160,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 				using (ITransaction tx = session.BeginTransaction())
 				{
 					//Cache should not return cached entity, because it no longer matches criteria
-					var cachedPeople = session.CreateCriteria<CachedPerson>().Add(Restrictions.Eq("Connection", componentToCompare)).SetCacheable(true).List<CachedPerson>();
+					var cachedPeople = await (session.CreateCriteria<CachedPerson>().Add(Restrictions.Eq("Connection", componentToCompare)).SetCacheable(true).ListAsync<CachedPerson>());
 					Assert.That(cachedPeople, Is.Empty);
 					await (tx.CommitAsync());
 				}
@@ -112,7 +180,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 					{
 						dbCommand.CommandText = "DELETE FROM cachedpeople";
 						tx.Enlist(dbCommand);
-						dbCommand.ExecuteNonQuery();
+						await (dbCommand.ExecuteNonQueryAsync());
 					}
 
 					await (tx.CommitAsync());
@@ -126,6 +194,27 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 					Assert.That(cached.Name, Is.EqualTo("CachedNull"));
 					Assert.That(cached.Connection.PortName, Is.Null);
 					await (tx.CommitAsync());
+				}
+		}
+
+		[Test]
+		public async Task QueryOverANullComponentPropertyAsync()
+		{
+			//          Works at the time NH3634 was reported 
+			//			Generates the following SqlBatch:			
+			//			SELECT this_.Id as Id0_0_, 
+			//				   this_.Name as Name0_0_, 
+			//				   this_.ConnectionType as Connecti3_0_0_, 
+			//				   this_.Address as Address0_0_, 
+			//				   this_.PortName as PortName0_0_ 
+			//			  FROM people this_ 
+			//			 WHERE this_.PortName is null
+			using (ISession session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var sally = await (session.QueryOver<Person>().Where(p => p.Connection.PortName == null).And(p => p.Connection.Address == "test.com").And(p => p.Connection.ConnectionType == "http").SingleOrDefaultAsync<Person>());
+					Assert.That(sally.Name, Is.EqualTo("Sally"));
+					Assert.That(sally.Connection.PortName, Is.Null);
 				}
 		}
 

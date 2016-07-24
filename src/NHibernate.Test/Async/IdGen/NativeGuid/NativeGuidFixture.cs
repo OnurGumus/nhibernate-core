@@ -5,9 +5,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.IdGen.NativeGuid
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class NativeGuidFixture : TestCase
+	public partial class NativeGuidFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"IdGen.NativeGuid.NativeGuidPoid.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task CrdAsync()
 		{

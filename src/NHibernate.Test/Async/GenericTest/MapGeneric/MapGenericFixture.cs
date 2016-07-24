@@ -12,9 +12,35 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.GenericTest.MapGeneric
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class MapGenericFixture : TestCase
+	public partial class MapGenericFixtureAsync : TestCaseAsync
 	{
+		protected override System.Collections.IList Mappings
+		{
+			get
+			{
+				return new string[]{"GenericTest.MapGeneric.MapGenericFixture.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = sessions.OpenSession())
+			{
+				await (s.DeleteAsync("from A"));
+				await (s.FlushAsync());
+			}
+		}
+
 		[Test]
 		public async Task SimpleAsync()
 		{
@@ -29,7 +55,7 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 			a.Items.Add("second", secondB);
 			using (ISession s = OpenSession())
 			{
-				s.SaveOrUpdate(a);
+				await (s.SaveOrUpdateAsync(a));
 				// this flush should test how NH wraps a generic collection with its
 				// own persistent collection
 				await (s.FlushAsync());
@@ -41,7 +67,7 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 			Assert.IsNotNull(secondB.Id);
 			using (ISession s = OpenSession())
 			{
-				a = s.Load<A>(a.Id);
+				a = await (s.LoadAsync<A>(a.Id));
 				B thirdB = new B();
 				thirdB.Name = "third B";
 				// ensuring the correct generic type was constructed
@@ -53,7 +79,7 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 			// NH-839
 			using (ISession s = OpenSession())
 			{
-				a = s.Load<A>(a.Id);
+				a = await (s.LoadAsync<A>(a.Id));
 				a.Items["second"] = a.Items["third"];
 				await (s.FlushAsync());
 			}
@@ -76,13 +102,13 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 			a.Items.Add("third", thirdB);
 			using (ISession s = OpenSession())
 			{
-				s.SaveOrUpdate(a);
+				await (s.SaveOrUpdateAsync(a));
 				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				a = s.Load<A>(a.Id);
+				a = await (s.LoadAsync<A>(a.Id));
 				IDictionary<string, B> genericDict = a.Items;
 				IEnumerable<KeyValuePair<string, B>> genericEnum = a.Items;
 				IEnumerable nonGenericEnum = a.Items;
@@ -117,7 +143,7 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 
 			using (ISession s = OpenSession())
 			{
-				a = s.Load<A>(a.Id);
+				a = await (s.LoadAsync<A>(a.Id));
 				a.SortedList.Add("abc", 10);
 				await (s.FlushAsync());
 			}
@@ -177,7 +203,7 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					a = s.Load<A>(a.Id);
+					a = await (s.LoadAsync<A>(a.Id));
 					ISessionFactoryImplementor si = (ISessionFactoryImplementor)sessions;
 					ICollectionPersister cpSortedList = si.GetCollectionPersister(typeof (A).FullName + ".SortedList");
 					ICollectionPersister cpSortedDictionary = si.GetCollectionPersister(typeof (A).FullName + ".SortedDictionary");

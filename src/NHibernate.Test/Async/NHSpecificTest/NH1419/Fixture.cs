@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1419
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Tests : BugTestCase
+	public partial class TestsAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task BugAsync()
@@ -19,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1419
 				Entry entry = new Entry();
 				entry.Subject = "Test Entry 1";
 				blog.AddEntry(entry);
-				session.SaveOrUpdate(blog);
+				await (session.SaveOrUpdateAsync(blog));
 				await (transaction.CommitAsync());
 			}
 
@@ -39,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1419
 				ITransaction transaction = session.BeginTransaction();
 				Blog blog = new Blog();
 				blog.Name = "Test Blog 1";
-				session.SaveOrUpdate(blog);
+				await (session.SaveOrUpdateAsync(blog));
 				await (transaction.CommitAsync());
 			}
 

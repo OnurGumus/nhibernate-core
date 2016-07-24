@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1549
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		/// <summary>
 		/// Verifies that an entity with a base class containing the id property 
@@ -69,6 +70,21 @@ namespace NHibernate.Test.NHSpecificTest.NH1549
 			Assert.IsFalse(NHibernateUtil.IsInitialized(restoredProductWithInheritedId.CategoryWithId));
 			//we should be able to access the id of the category outside of the session
 			Assert.AreEqual(category.Id, restoredProductWithInheritedId.CategoryWithId.Id);
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction trans = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from ProductWithId"));
+					await (session.DeleteAsync("from CategoryWithId"));
+					await (session.DeleteAsync("from ProductWithInheritedId"));
+					await (session.DeleteAsync("from CategoryWithInheritedId"));
+					await (trans.CommitAsync());
+				}
+			}
 		}
 	}
 }

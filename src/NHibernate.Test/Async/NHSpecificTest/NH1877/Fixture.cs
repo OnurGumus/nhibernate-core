@@ -8,9 +8,45 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1877
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnSetUpAsync()
+		{
+			using (var session = OpenSession())
+				using (var tran = session.BeginTransaction())
+				{
+					await (session.SaveAsync(new Person{BirthDate = new DateTime(1988, 7, 21)}));
+					await (session.SaveAsync(new Person{BirthDate = new DateTime(1987, 7, 22)}));
+					await (session.SaveAsync(new Person{BirthDate = new DateTime(1986, 7, 23)}));
+					await (session.SaveAsync(new Person{BirthDate = new DateTime(1987, 7, 24)}));
+					await (session.SaveAsync(new Person{BirthDate = new DateTime(1988, 7, 25)}));
+					await (tran.CommitAsync());
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (var session = OpenSession())
+				using (var tran = session.BeginTransaction())
+				{
+					await (session.CreateQuery("delete from Person").ExecuteUpdateAsync());
+					await (tran.CommitAsync());
+				}
+		}
+
+		[Test]
+		public async Task CanGroupByWithPropertyNameAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var crit = session.CreateCriteria(typeof (Person)).SetProjection(Projections.GroupProperty("BirthDate"), Projections.Count("Id"));
+				var result = await (crit.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(5));
+			}
+		}
+
 		[Test]
 		public async Task CanGroupByWithSqlFunctionProjectionAsync()
 		{

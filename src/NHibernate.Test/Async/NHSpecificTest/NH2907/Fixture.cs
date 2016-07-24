@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2907
 {
+	[TestFixture, Ignore("Not fixed yet.")]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task ShouldNotEagerLoadKeyManyToOneWhenOverridingGetHashCodeAsync()
@@ -19,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2907
 					await (s.SaveAsync(grp));
 					var loanId = new Dictionary<string, object>{{"Id", 1}, {"Group", grp}};
 					var loan = new Dictionary<string, object>{{"CompId", loanId}, {"Name", "money!!!"}};
-					s.Save("Loan", loan);
+					await (s.SaveAsync("Loan", loan));
 					await (tx.CommitAsync());
 				}
 
@@ -27,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2907
 			using (var s = OpenSession())
 				using (var tx = s.BeginTransaction())
 				{
-					var loan = s.CreateQuery("select l from Loan l").UniqueResult<IDictionary>();
+					var loan = await (s.CreateQuery("select l from Loan l").UniqueResultAsync<IDictionary>());
 					var compId = (IDictionary)loan["CompId"];
 					var group = compId["Group"];
 					Assert.That(@group, Is.Not.Null);
@@ -36,6 +37,16 @@ namespace NHibernate.Test.NHSpecificTest.NH2907
 				}
 
 			Assert.That(isInitialized, Is.False);
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (var s = OpenSession())
+				using (var tx = s.BeginTransaction())
+				{
+					await (s.DeleteAsync("from System.Object"));
+					await (tx.CommitAsync());
+				}
 		}
 	}
 }

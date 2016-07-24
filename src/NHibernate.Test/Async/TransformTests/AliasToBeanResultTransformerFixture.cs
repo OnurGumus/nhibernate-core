@@ -8,9 +8,77 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.TransformTests
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class AliasToBeanResultTransformerFixture : TestCase
+	public partial class AliasToBeanResultTransformerFixtureAsync : TestCaseAsync
 	{
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		public partial class WithOutPublicParameterLessCtor
+		{
+			private string something;
+			protected WithOutPublicParameterLessCtor()
+			{
+			}
+
+			public WithOutPublicParameterLessCtor(string something)
+			{
+				this.something = something;
+			}
+
+			public string Something
+			{
+				get
+				{
+					return something;
+				}
+			}
+		}
+
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		public partial class PublicParameterLessCtor
+		{
+			private string something;
+			public string Something
+			{
+				get
+				{
+					return something;
+				}
+
+				set
+				{
+					something = value;
+				}
+			}
+		}
+
+		public struct TestStruct
+		{
+			public string Something
+			{
+				get;
+				set;
+			}
+		}
+
+#region Overrides of TestCase
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"TransformTests.Simple.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+#endregion
 		[Test]
 		public async Task WorkWithOutPublicParameterLessCtorAsync()
 		{
@@ -19,7 +87,7 @@ namespace NHibernate.Test.TransformTests
 				await (SetupAsync());
 				using (ISession s = OpenSession())
 				{
-					IList<WithOutPublicParameterLessCtor> l = s.CreateSQLQuery("select s.Name as something from Simple s").SetResultTransformer(Transformers.AliasToBean<WithOutPublicParameterLessCtor>()).List<WithOutPublicParameterLessCtor>();
+					IList<WithOutPublicParameterLessCtor> l = await (s.CreateSQLQuery("select s.Name as something from Simple s").SetResultTransformer(Transformers.AliasToBean<WithOutPublicParameterLessCtor>()).ListAsync<WithOutPublicParameterLessCtor>());
 					Assert.That(l.Count, Is.EqualTo(2));
 					Assert.That(l, Has.All.Not.Null);
 				}
@@ -37,9 +105,9 @@ namespace NHibernate.Test.TransformTests
 			{
 				await (SetupAsync());
 				var queryString = "select s.Name as something from Simple s";
-				AssertAreWorking(queryString); // working for field access
+				await (AssertAreWorkingAsync(queryString)); // working for field access
 				queryString = "select s.Name as Something from Simple s";
-				AssertAreWorking(queryString); // working for property access
+				await (AssertAreWorkingAsync(queryString)); // working for property access
 			}
 			finally
 			{
@@ -56,7 +124,7 @@ namespace NHibernate.Test.TransformTests
 				IList<TestStruct> result;
 				using (ISession s = OpenSession())
 				{
-					result = s.CreateSQLQuery("select s.Name as something from Simple s").SetResultTransformer(Transformers.AliasToBean<TestStruct>()).List<TestStruct>();
+					result = await (s.CreateSQLQuery("select s.Name as something from Simple s").SetResultTransformer(Transformers.AliasToBean<TestStruct>()).ListAsync<TestStruct>());
 				}
 
 				Assert.AreEqual(2, result.Count);
@@ -64,6 +132,16 @@ namespace NHibernate.Test.TransformTests
 			finally
 			{
 				await (CleanupAsync());
+			}
+		}
+
+		private async Task AssertAreWorkingAsync(string queryString)
+		{
+			using (ISession s = OpenSession())
+			{
+				IList<PublicParameterLessCtor> l = await (s.CreateSQLQuery(queryString).SetResultTransformer(Transformers.AliasToBean<PublicParameterLessCtor>()).ListAsync<PublicParameterLessCtor>());
+				Assert.That(l.Count, Is.EqualTo(2));
+				Assert.That(l, Has.All.Not.Null);
 			}
 		}
 

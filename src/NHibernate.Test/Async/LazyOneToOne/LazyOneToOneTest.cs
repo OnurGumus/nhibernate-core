@@ -5,12 +5,57 @@ using NHibernate.Intercept;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.LazyOneToOne
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class LazyOneToOneTest : TestCase
+	public partial class LazyOneToOneTestAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"LazyOneToOne.Person.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		//protected override bool AppliesTo(Dialect.Dialect dialect)
+		//{
+		//  // this test work only with Field interception (NH-1618)
+		//  return FieldInterceptionHelper.IsInstrumented( new Person() );
+		//}
+		protected override Task ConfigureAsync(Cfg.Configuration configuration)
+		{
+			try
+			{
+				configuration.SetProperty(Environment.MaxFetchDepth, "2");
+				configuration.SetProperty(Environment.UseSecondLevelCache, "false");
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		protected override string CacheConcurrencyStrategy
+		{
+			get
+			{
+				return null;
+			}
+		}
+
 		[Test]
 		public async Task LazyAsync()
 		{
@@ -28,19 +73,19 @@ namespace NHibernate.Test.LazyOneToOne
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			p = s.CreateQuery("from Person where name='Gavin'").UniqueResult<Person>();
-			Assert.That(!NHibernateUtil.IsPropertyInitialized(p, "Employee"));
+			p = await (s.CreateQuery("from Person where name='Gavin'").UniqueResultAsync<Person>());
+			Assert.That(!await (NHibernateUtil.IsPropertyInitializedAsync(p, "Employee")));
 			Assert.That(p.Employee.Person, Is.SameAs(p));
 			Assert.That(NHibernateUtil.IsInitialized(p.Employee.Employments));
 			Assert.That(p.Employee.Employments.Count, Is.EqualTo(1));
-			p2 = s.CreateQuery("from Person where name='Emmanuel'").UniqueResult<Person>();
+			p2 = await (s.CreateQuery("from Person where name='Emmanuel'").UniqueResultAsync<Person>());
 			Assert.That(p2.Employee, Is.Null);
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.GetAsync<Person>("Gavin"));
-			Assert.That(!NHibernateUtil.IsPropertyInitialized(p, "Employee"));
+			Assert.That(!await (NHibernateUtil.IsPropertyInitializedAsync(p, "Employee")));
 			Assert.That(p.Employee.Person, Is.SameAs(p));
 			Assert.That(NHibernateUtil.IsInitialized(p.Employee.Employments));
 			Assert.That(p.Employee.Employments.Count, Is.EqualTo(1));

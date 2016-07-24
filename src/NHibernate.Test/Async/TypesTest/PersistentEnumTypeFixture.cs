@@ -6,9 +6,56 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.TypesTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class PersistentEnumTypeFixture : TypeFixtureBase
+	public partial class PersistentEnumTypeFixtureAsync : TypeFixtureBaseAsync
 	{
+		protected override string TypeName
+		{
+			get
+			{
+				return "PersistentEnum";
+			}
+		}
+
+		private PersistentEnumClass p;
+		protected override async Task OnSetUpAsync()
+		{
+			await (base.OnSetUpAsync());
+			p = new PersistentEnumClass(1, A.One, B.Two);
+		}
+
+		[Test]
+		public async Task EqualsTrueAsync()
+		{
+			IType type = NHibernateUtil.Enum(typeof (A));
+			A lhs = A.One;
+			A rhs = A.One;
+			Assert.IsTrue(await (type.IsEqualAsync(lhs, rhs, EntityMode.Poco)));
+		}
+
+		/// <summary>
+		/// Verify that even if the Enum have the same underlying value but they
+		/// are different Enums that they are not considered Equal.
+		/// </summary>
+		[Test]
+		public async Task EqualsFalseSameUnderlyingValueAsync()
+		{
+			IType type = NHibernateUtil.Enum(typeof (A));
+			A lhs = A.One;
+			B rhs = B.One;
+			Assert.IsFalse(await (type.IsEqualAsync(lhs, rhs, EntityMode.Poco)));
+		}
+
+		[Test]
+		public async Task EqualsFalseAsync()
+		{
+			IType type = NHibernateUtil.Enum(typeof (A));
+			A lhs = A.One;
+			A rhs = A.Two;
+			Assert.IsFalse(await (type.IsEqualAsync(lhs, rhs, EntityMode.Poco)));
+		}
+
 		[Test]
 		public async Task UsageInHqlSelectNewAsync()
 		{
@@ -20,7 +67,7 @@ namespace NHibernate.Test.TypesTest
 
 			using (ISession s = sessions.OpenSession())
 			{
-				s.CreateQuery("select new PersistentEnumHolder(p.A, p.B) from PersistentEnumClass p").List();
+				await (s.CreateQuery("select new PersistentEnumHolder(p.A, p.B) from PersistentEnumClass p").ListAsync());
 				await (s.DeleteAsync("from PersistentEnumClass"));
 				await (s.FlushAsync());
 			}
@@ -38,7 +85,7 @@ namespace NHibernate.Test.TypesTest
 			ISession s2 = sessions.OpenSession();
 			try
 			{
-				Assert.Throws<QueryException>(() => s2.CreateQuery("select new PersistentEnumHolder(p.id, p.A, p.B) from PersistentEnumClass p").List());
+				Assert.ThrowsAsync<QueryException>(async () => await (s2.CreateQuery("select new PersistentEnumHolder(p.id, p.A, p.B) from PersistentEnumClass p").ListAsync()));
 			}
 			finally
 			{

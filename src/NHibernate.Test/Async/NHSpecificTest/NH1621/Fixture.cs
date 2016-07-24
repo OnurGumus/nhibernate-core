@@ -4,9 +4,19 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1621
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		ISession session;
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH1621";
+			}
+		}
+
 		[Test]
 		public async Task QueryUsingReadonlyPropertyAsync()
 		{
@@ -20,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1621
 				await (session.SaveAsync(nums3));
 				await (session.FlushAsync());
 				session.Clear();
-				var nums = session.CreateQuery("from Nums b where b.Sum > 4").List<Nums>();
+				var nums = await (session.CreateQuery("from Nums b where b.Sum > 4").ListAsync<Nums>());
 				Assert.That(nums.Count, Is.EqualTo(1));
 				Assert.That(nums[0].Sum, Is.EqualTo(7));
 				await (session.DeleteAsync("from Nums"));

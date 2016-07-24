@@ -6,9 +6,35 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2651
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnSetUpAsync()
+		{
+			await (base.OnSetUpAsync());
+			using (ISession session = this.OpenSession())
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					var entity = new Model{Id = 1, SampleData = 1};
+					await (session.SaveAsync(entity));
+					var entity2 = new Model{Id = 2, SampleData = 2};
+					await (session.SaveAsync(entity2));
+					await (transaction.CommitAsync());
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			await (base.OnTearDownAsync());
+			using (ISession session = this.OpenSession())
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from System.Object"));
+					await (transaction.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task TestConditionalProjectionWithConstantAndLikeExpressionAsync()
 		{

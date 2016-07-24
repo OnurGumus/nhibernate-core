@@ -8,9 +8,24 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SnapshotIsolationUpdateConflictTest : BugTestCase
+	public partial class SnapshotIsolationUpdateConflictTestAsync : BugTestCaseAsync
 	{
+		private Person person;
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH1553.MsSQL";
+			}
+		}
+
+		private ITransaction BeginTransaction(ISession session)
+		{
+			return session.BeginTransaction(IsolationLevel.Snapshot);
+		}
+
 		private async Task<Person> LoadPersonAsync()
 		{
 			using (ISession session = OpenSession())
@@ -30,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 			{
 				using (ITransaction tr = BeginTransaction(session))
 				{
-					session.SaveOrUpdate(p);
+					await (session.SaveOrUpdateAsync(p));
 					await (session.FlushAsync());
 					await (tr.CommitAsync());
 				}
@@ -76,7 +91,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 			{
 				using (ITransaction tr1 = BeginTransaction(session1))
 				{
-					session1.SaveOrUpdate(p1);
+					await (session1.SaveOrUpdateAsync(p1));
 					await (session1.FlushAsync());
 					using (ISession session2 = OpenSession())
 					{
@@ -88,7 +103,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 							Assert.AreEqual(person.Version + 1, p1.Version);
 							try
 							{
-								session2.SaveOrUpdate(p2);
+								await (session2.SaveOrUpdateAsync(p2));
 								await (session2.FlushAsync());
 								await (tr2.CommitAsync());
 								Assert.Fail("StaleObjectStateException expected");
@@ -103,6 +118,53 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 					}
 				}
 			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is MsSql2005Dialect || dialect is MsSql2008Dialect;
+		}
+
+		private async Task SetAllowSnapshotIsolationAsync(bool on)
+		{
+			using (ISession session = OpenSession())
+			{
+				DbCommand command = session.Connection.CreateCommand();
+				command.CommandText = "ALTER DATABASE " + session.Connection.Database + " set allow_snapshot_isolation " + (on ? "on" : "off");
+				await (command.ExecuteNonQueryAsync());
+			}
+		}
+
+		protected override async Task OnSetUpAsync()
+		{
+			await (base.OnSetUpAsync());
+			await (SetAllowSnapshotIsolationAsync(true));
+			person = new Person();
+			person.IdentificationNumber = 123;
+			await (SavePersonAsync(person));
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tr = session.BeginTransaction(IsolationLevel.Serializable))
+				{
+					string hql = "from Person";
+					await (session.DeleteAsync(hql));
+					await (session.FlushAsync());
+					await (tr.CommitAsync());
+				}
+			}
+
+			await (SetAllowSnapshotIsolationAsync(false));
+			await (base.OnTearDownAsync());
+		}
+
+		protected override async Task ConfigureAsync(Configuration configuration)
+		{
+			await (base.ConfigureAsync(configuration));
+			configuration.SetProperty(Environment.SqlExceptionConverter, typeof (SQLUpdateConflictToStaleStateExceptionConverter).AssemblyQualifiedName);
 		}
 	}
 }

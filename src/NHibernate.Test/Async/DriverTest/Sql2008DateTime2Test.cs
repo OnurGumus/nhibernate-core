@@ -6,12 +6,47 @@ using NHibernate.Dialect;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.DriverTest
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Sql2008DateTime2Test : TestCase
+	public partial class Sql2008DateTime2TestAsync : TestCaseAsync
 	{
+		protected override Task ConfigureAsync(Configuration configuration)
+		{
+			try
+			{
+				configuration.SetProperty(Environment.PrepareSql, "true");
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"DriverTest.EntityForMs2008.hbm.xml"};
+			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is MsSql2008Dialect;
+		}
+
 		[Test]
 		public async Task CrudAsync()
 		{
@@ -37,7 +72,7 @@ namespace NHibernate.Test.DriverTest
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					s.CreateQuery("delete from EntityForMs2008").ExecuteUpdate();
+					await (s.CreateQuery("delete from EntityForMs2008").ExecuteUpdateAsync());
 					await (t.CommitAsync());
 				}
 		}

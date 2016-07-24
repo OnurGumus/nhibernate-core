@@ -6,9 +6,29 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class GetTest : TestCase
+	public partial class GetTestAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				// have to use classes with proxies to test difference
+				// between Get() and Load()
+				return new string[]{"ABCProxy.hbm.xml"};
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = sessions.OpenSession())
+			{
+				await (s.DeleteAsync("from A"));
+				await (s.FlushAsync());
+			}
+		}
+
 		[Test]
 		public async Task GetVsLoadAsync()
 		{
@@ -20,16 +40,16 @@ namespace NHibernate.Test.NHSpecificTest
 
 			using (ISession s = OpenSession())
 			{
-				A loadedA = (A)s.Load(typeof (A), a.Id);
+				A loadedA = (A)await (s.LoadAsync(typeof (A), a.Id));
 				Assert.IsFalse(NHibernateUtil.IsInitialized(loadedA), "Load should not initialize the object");
-				Assert.IsNotNull(s.Load(typeof (A), (a.Id + 1)), "Loading non-existent object should not return null");
+				Assert.IsNotNull(await (s.LoadAsync(typeof (A), (a.Id + 1))), "Loading non-existent object should not return null");
 			}
 
 			using (ISession s = OpenSession())
 			{
-				A gotA = (A)s.Get(typeof (A), a.Id);
+				A gotA = (A)await (s.GetAsync(typeof (A), a.Id));
 				Assert.IsTrue(NHibernateUtil.IsInitialized(gotA), "Get should initialize the object");
-				Assert.IsNull(s.Get(typeof (A), (a.Id + 1)), "Getting non-existent object should return null");
+				Assert.IsNull(await (s.GetAsync(typeof (A), (a.Id + 1))), "Getting non-existent object should return null");
 			}
 		}
 
@@ -45,14 +65,14 @@ namespace NHibernate.Test.NHSpecificTest
 
 			using (ISession s = OpenSession())
 			{
-				a = s.Get(typeof (A), a.Id) as A;
+				a = await (s.GetAsync(typeof (A), a.Id)) as A;
 				a.Name = "modified";
 				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				a = s.Get(typeof (A), a.Id) as A;
+				a = await (s.GetAsync(typeof (A), a.Id)) as A;
 				Assert.AreEqual("modified", a.Name, "the name was modified");
 			}
 		}
@@ -72,9 +92,9 @@ namespace NHibernate.Test.NHSpecificTest
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					A loadedA = (A)s.Load(typeof (A), id);
+					A loadedA = (A)await (s.LoadAsync(typeof (A), id));
 					Assert.IsFalse(NHibernateUtil.IsInitialized(loadedA));
-					A gotA = (A)s.Get(typeof (A), id);
+					A gotA = (A)await (s.GetAsync(typeof (A), id));
 					Assert.IsTrue(NHibernateUtil.IsInitialized(gotA));
 					Assert.AreSame(loadedA, gotA);
 					await (tx.CommitAsync());
@@ -83,10 +103,10 @@ namespace NHibernate.Test.NHSpecificTest
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					A loadedNonExistentA = (A)s.Load(typeof (A), -id);
+					A loadedNonExistentA = (A)await (s.LoadAsync(typeof (A), -id));
 					Assert.IsFalse(NHibernateUtil.IsInitialized(loadedNonExistentA));
 					// changed behavior because NH-1252
-					Assert.IsNull(s.Get(typeof (A), -id));
+					Assert.IsNull(await (s.GetAsync(typeof (A), -id)));
 					await (tx.CommitAsync());
 				}
 		}

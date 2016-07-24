@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH940
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class NH940Fixture : BugTestCase
+	public partial class NH940FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task BugAsync()
@@ -21,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH940
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
-			IList l = s.CreateCriteria(typeof (A)).List();
+			IList l = await (s.CreateCriteria(typeof (A)).ListAsync());
 			try
 			{
 				((A)l[0]).Execute();

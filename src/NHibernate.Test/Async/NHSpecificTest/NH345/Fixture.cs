@@ -7,9 +7,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH345
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH345";
+			}
+		}
+
 		[Test]
 		public async Task OrderByCompositePropertyAsync()
 		{
@@ -33,11 +42,11 @@ namespace NHibernate.Test.NHSpecificTest.NH345
 				await (s.SaveAsync(project1));
 				await (s.SaveAsync(project2));
 				await (s.FlushAsync());
-				IList listAsc = s.CreateQuery("select p from Project as p order by p.Client.Name asc").List();
+				IList listAsc = await (s.CreateQuery("select p from Project as p order by p.Client.Name asc").ListAsync());
 				Assert.AreEqual(2, listAsc.Count);
 				Assert.AreSame(project1, listAsc[0]);
 				Assert.AreSame(project2, listAsc[1]);
-				IList listDesc = s.CreateQuery("select p from Project as p order by p.Client.Name desc").List();
+				IList listDesc = await (s.CreateQuery("select p from Project as p order by p.Client.Name desc").ListAsync());
 				Assert.AreEqual(2, listDesc.Count);
 				Assert.AreSame(project1, listDesc[1]);
 				Assert.AreSame(project2, listDesc[0]);

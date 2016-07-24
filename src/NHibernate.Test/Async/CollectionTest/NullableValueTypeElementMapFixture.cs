@@ -6,9 +6,35 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.CollectionTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class NullableValueTypeElementMapFixture : TestCase
+	public partial class NullableValueTypeElementMapFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"CollectionTest.NullableValueTypeElementMapFixture.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (var s = sessions.OpenSession())
+			{
+				await (s.DeleteAsync("from Parent"));
+				await (s.FlushAsync());
+			}
+		}
+
 		[Test]
 		public async Task ShouldOverwriteElementValueWithNullAsync()
 		{
@@ -27,7 +53,7 @@ namespace NHibernate.Test.CollectionTest
 			using (var s = OpenSession())
 				using (var tx = s.BeginTransaction())
 				{
-					var parent = s.Load<Parent>(parentId);
+					var parent = await (s.LoadAsync<Parent>(parentId));
 					Assert.That(parent.TypedDates.Count, Is.EqualTo(1), "Should have one child on first reload");
 					Assert.That(parent.TypedDates[0], Is.Not.Null, "Should have value in map for 0 on first reload");
 					Assert.That(parent.TypedDates[0].Value, Is.EqualTo(date), "Should have same date as saved in map for 0 on first reload");
@@ -38,7 +64,7 @@ namespace NHibernate.Test.CollectionTest
 			using (var s = OpenSession())
 				using (var tx = s.BeginTransaction())
 				{
-					var parent = s.Load<Parent>(parentId);
+					var parent = await (s.LoadAsync<Parent>(parentId));
 					Assert.That(parent.TypedDates.Count, Is.EqualTo(1), "Should have one child on reload after nulling");
 					Assert.That(parent.TypedDates[0], Is.Null, "Should have null value for child on reload after nulling");
 				}
@@ -62,7 +88,7 @@ namespace NHibernate.Test.CollectionTest
 			using (var s = OpenSession())
 				using (var tx = s.BeginTransaction())
 				{
-					var parent = s.Load<Parent>(parentId);
+					var parent = await (s.LoadAsync<Parent>(parentId));
 					Assert.That(parent.TypedDates.Count, Is.EqualTo(1), "Should have 1 child after first reload");
 					Assert.That(parent.TypedDates[0], Is.Null, "Should have null value after first reload");
 					parent.TypedDates[0] = date;
@@ -72,7 +98,7 @@ namespace NHibernate.Test.CollectionTest
 			using (var s = OpenSession())
 				using (var tx = s.BeginTransaction())
 				{
-					var parent = s.Load<Parent>(parentId);
+					var parent = await (s.LoadAsync<Parent>(parentId));
 					Assert.That(parent.TypedDates.Count, Is.EqualTo(1), "Should have 1 child on reload after setting value");
 					Assert.That(parent.TypedDates[0], Is.Not.Null, "Should have child with value on reload after setting value");
 					Assert.That(parent.TypedDates[0].Value, Is.EqualTo(date));
@@ -98,7 +124,7 @@ namespace NHibernate.Test.CollectionTest
 			using (var s = OpenSession())
 				using (var tx = s.BeginTransaction())
 				{
-					var parent = s.Load<Parent>(parentId);
+					var parent = await (s.LoadAsync<Parent>(parentId));
 					Assert.That(parent.TypedDates.Count, Is.EqualTo(2));
 					Assert.That(parent.TypedDates[0], Is.Null);
 					Assert.That(parent.TypedDates[1], Is.EqualTo(date));
@@ -110,7 +136,7 @@ namespace NHibernate.Test.CollectionTest
 			using (var s = OpenSession())
 				using (var tx = s.BeginTransaction())
 				{
-					var parent = s.Load<Parent>(parentId);
+					var parent = await (s.LoadAsync<Parent>(parentId));
 					Assert.That(parent.TypedDates.Count, Is.EqualTo(2));
 					Assert.That(parent.TypedDates[1], Is.EqualTo(date));
 					Assert.That(parent.TypedDates[2], Is.Null);

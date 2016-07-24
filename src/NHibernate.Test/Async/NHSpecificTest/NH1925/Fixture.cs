@@ -5,16 +5,54 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1925
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		private const string NAME_JOE = "Joe";
+		private const string NAME_ALLEN = "Allen";
+		protected override async Task OnSetUpAsync()
+		{
+			await (base.OnSetUpAsync());
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					var joe = new Customer{Name = NAME_JOE};
+					await (session.SaveAsync(joe));
+					var allen = new Customer{Name = NAME_ALLEN};
+					await (session.SaveAsync(allen));
+					var joeInvoice0 = new Invoice{Customer = joe, Number = 0};
+					await (session.SaveAsync(joeInvoice0));
+					var allenInvoice1 = new Invoice{Customer = allen, Number = 1};
+					await (session.SaveAsync(allenInvoice1));
+					await (tx.CommitAsync());
+				}
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from Invoice"));
+					await (session.DeleteAsync("from Customer"));
+					await (tx.CommitAsync());
+				}
+			}
+
+			await (base.OnTearDownAsync());
+		}
+
 		private async Task FindJoesLatestInvoiceAsync(string hql)
 		{
 			using (ISession session = OpenSession())
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					IList list = session.CreateQuery(hql).SetString("name", NAME_JOE).List();
+					IList list = await (session.CreateQuery(hql).SetString("name", NAME_JOE).ListAsync());
 					Assert.That(list, Is.Not.Empty);
 					await (tx.CommitAsync());
 				}

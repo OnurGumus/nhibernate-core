@@ -4,9 +4,15 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH3372
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is NHibernate.Dialect.MsSql2000Dialect;
+		}
+
 		[Test]
 		public async Task CanGeneratePropertyOnInsertOfEntityWithCustomLoaderAsync()
 		{

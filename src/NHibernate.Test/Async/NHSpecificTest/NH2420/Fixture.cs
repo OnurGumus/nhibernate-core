@@ -12,15 +12,29 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2420
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH2420";
+			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return (dialect is MsSql2005Dialect);
+		}
+
 		[Test]
 		public async Task ShouldBeAbleToReleaseSuppliedConnectionAfterDistributedTransactionAsync()
 		{
 			string connectionString = cfg.GetProperty("connection.connection_string");
 			ISession s;
-			using (var ts = new TransactionScope())
+			using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				// Enlisting DummyEnlistment as a durable resource manager will start
 				// a DTC transaction
@@ -32,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 					connection = new SqlConnection(connectionString);
 				using (connection)
 				{
-					connection.Open();
+					await (connection.OpenAsync());
 					using (s = Sfi.OpenSession(connection))
 					{
 						await (s.SaveAsync(new MyTable{String = "hello!"}));
@@ -53,6 +67,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 			Assert.That(s.IsConnected, Is.False);
 			Assert.That(((ISessionImplementor)s).ConnectionManager.IsConnected, Is.False);
 			Assert.That(((ISessionImplementor)s).IsClosed, Is.True);
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				await (s.DeleteAsync("from MyTable"));
+				await (s.FlushAsync());
+			}
 		}
 	}
 }

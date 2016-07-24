@@ -8,9 +8,26 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaFromHql
 {
 	using System.Collections;
 
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : TestCase
+	public partial class FixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecificTest.CriteriaFromHql.Mappings.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
 		[Test]
 		public async Task UsingCriteriaAndHqlAsync()
 		{
@@ -19,11 +36,11 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaFromHql
 				using (ISession session = sessions.OpenSession())
 					using (ITransaction tx = session.BeginTransaction())
 					{
-						Person result = session.CreateQuery(@"
+						Person result = await (session.CreateQuery(@"
 select p from Person p 
 join fetch p.Children c 
 join fetch c.Children gc
-where p.Parent is null").UniqueResult<Person>();
+where p.Parent is null").UniqueResultAsync<Person>());
 						string hqlQuery = spy.Appender.GetEvents()[0].MessageObject.ToString();
 						Debug.WriteLine("HQL: " + hqlQuery);
 						Assertions(result);
@@ -76,6 +93,18 @@ where p.Parent is null").UniqueResult<Person>();
 
 					await (tx.CommitAsync());
 				}
+		}
+
+		private static void Assertions(Person p)
+		{
+			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Children));
+			Assert.AreEqual(2, p.Children.Count);
+			foreach (Person child in p.Children)
+			{
+				Assert.IsTrue(NHibernateUtil.IsInitialized(child));
+				Assert.IsTrue(NHibernateUtil.IsInitialized(child.Children));
+				Assert.AreEqual(3, child.Children.Count);
+			}
 		}
 	}
 }

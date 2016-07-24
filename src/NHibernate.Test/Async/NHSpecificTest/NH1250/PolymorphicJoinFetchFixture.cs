@@ -5,16 +5,30 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1250
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class PolymorphicJoinFetchFixture : BugTestCase
+	public partial class PolymorphicJoinFetchFixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH1250";
+			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is MsSql2000Dialect;
+		}
+
 		[Test]
 		public async Task FetchUsingICriteriaAsync()
 		{
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					s.CreateCriteria(typeof (Party)).SetMaxResults(10).List();
+					await (s.CreateCriteria(typeof (Party)).SetMaxResults(10).ListAsync());
 					await (tx.CommitAsync());
 				}
 		}
@@ -25,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1250
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					s.CreateQuery("from Party").SetMaxResults(10).List();
+					await (s.CreateQuery("from Party").SetMaxResults(10).ListAsync());
 					await (tx.CommitAsync());
 				}
 		}

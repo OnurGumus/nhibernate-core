@@ -6,7 +6,7 @@ using NHibernate.UserTypes;
 
 namespace NHibernate.Test.NHSpecificTest.NH2394
 {
-	class PhoneNumberUserType : ICompositeUserType
+	partial class PhoneNumberUserType : ICompositeUserType
 	{
 		public string[] PropertyNames
 		{

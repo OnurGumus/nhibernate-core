@@ -10,8 +10,93 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.NHSpecificTest.NH2905
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : TestCaseMappingByCode
+	public partial class FixtureAsync : TestCaseMappingByCodeAsync
 	{
+		private Guid _entity3Id;
+#region Test Configuration
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<Entity1>(rc =>
+			{
+				rc.Id(x => x.Id, m =>
+				{
+					m.Generator(Generators.Guid);
+					m.Column("id");
+				}
+
+				);
+				rc.ManyToOne(x => x.Entity2, m => m.Column("entity2_id"));
+			}
+
+			);
+			mapper.Class<Entity2>(rc =>
+			{
+				rc.Id(x => x.Id, m =>
+				{
+					m.Generator(Generators.Guid);
+					m.Column("id");
+				}
+
+				);
+				rc.Set(x => x.Entity3s, m =>
+				{
+					m.Inverse(true);
+					m.Key(km => km.Column("entity2_id"));
+				}
+
+				, e => e.OneToMany(m => m.Class((typeof (Entity3)))));
+			}
+
+			);
+			mapper.Class<Entity3>(rc =>
+			{
+				rc.Id(x => x.Id, m =>
+				{
+					m.Generator(Generators.Guid);
+					m.Column("id");
+				}
+
+				);
+				rc.ManyToOne(x => x.Entity2, m => m.Column("entity2_id"));
+			}
+
+			);
+			return mapper.CompileMappingForAllExplicitlyAddedEntities();
+		}
+
+		protected override async Task OnSetUpAsync()
+		{
+			using (ISession session = OpenSession())
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					var entity1 = new Entity1();
+					var entity2 = new Entity2();
+					var entity3 = new Entity3();
+					entity1.Entity2 = entity2;
+					entity2.Entity3s.Add(entity3);
+					entity3.Entity2 = entity2;
+					await (session.SaveAsync(entity1));
+					await (session.SaveAsync(entity2));
+					await (session.SaveAsync(entity3));
+					_entity3Id = entity3.Id;
+					await (tx.CommitAsync());
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = OpenSession())
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from Entity3"));
+					await (session.DeleteAsync("from Entity1"));
+					await (session.DeleteAsync("from Entity2"));
+					await (tx.CommitAsync());
+				}
+		}
+
+#endregion
 		[Test]
 		public async Task JoinOverMultipleSteps_MethodSyntax_SelectAndSelectManyAsync()
 		{

@@ -6,9 +6,15 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Hql.Ast
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class WithClauseFixture : BaseFixture
+	public partial class WithClauseFixtureAsync : BaseFixtureAsync
 	{
+		public ISession OpenNewSession()
+		{
+			return OpenSession();
+		}
+
 		[Test]
 		public async Task WithClauseFailsWithFetchAsync()
 		{
@@ -16,7 +22,7 @@ namespace NHibernate.Test.Hql.Ast
 			await (data.PrepareAsync());
 			ISession s = OpenSession();
 			ITransaction txn = s.BeginTransaction();
-			Assert.Throws<SemanticException>(() => s.CreateQuery("from Animal a inner join fetch a.offspring as o with o.bodyWeight = :someLimit").SetDouble("someLimit", 1).List(), "ad-hoc on clause allowed with fetched association");
+			Assert.ThrowsAsync<SemanticException>(async () => await (s.CreateQuery("from Animal a inner join fetch a.offspring as o with o.bodyWeight = :someLimit").SetDouble("someLimit", 1).ListAsync()), "ad-hoc on clause allowed with fetched association");
 			await (txn.CommitAsync());
 			s.Close();
 			await (data.CleanupAsync());
@@ -31,9 +37,9 @@ namespace NHibernate.Test.Hql.Ast
 			// alias relates to the Human.friends collection which the aonther Human entity.  The issue
 			// here is the way JoinSequence and Joinable (the persister) interact to generate the
 			// joins relating to the sublcass/superclass tables
-			Assert.Throws<InvalidWithClauseException>(() => s.CreateQuery("from Human h inner join h.friends as f with f.bodyWeight < :someLimit").SetDouble("someLimit", 1).List());
-			Assert.Throws<InvalidWithClauseException>(() => s.CreateQuery("from Animal a inner join a.offspring o inner join o.mother as m inner join m.father as f with o.bodyWeight > 1").List());
-			Assert.Throws<InvalidWithClauseException>(() => s.CreateQuery("from Human h inner join h.offspring o with o.mother.father = :cousin").SetEntity("cousin", s.Load<Human>(123L)).List());
+			Assert.ThrowsAsync<InvalidWithClauseException>(async () => await (s.CreateQuery("from Human h inner join h.friends as f with f.bodyWeight < :someLimit").SetDouble("someLimit", 1).ListAsync()));
+			Assert.ThrowsAsync<InvalidWithClauseException>(async () => await (s.CreateQuery("from Animal a inner join a.offspring o inner join o.mother as m inner join m.father as f with o.bodyWeight > 1").ListAsync()));
+			Assert.ThrowsAsync<InvalidWithClauseException>(async () => await ((await (s.CreateQuery("from Human h inner join h.offspring o with o.mother.father = :cousin").SetEntityAsync("cousin", await (s.LoadAsync<Human>(123L))))).ListAsync()));
 			await (txn.CommitAsync());
 			s.Close();
 		}
@@ -46,13 +52,13 @@ namespace NHibernate.Test.Hql.Ast
 			ISession s = OpenSession();
 			ITransaction txn = s.BeginTransaction();
 			// one-to-many
-			IList list = s.CreateQuery("from Human h inner join h.offspring as o with o.bodyWeight < :someLimit").SetDouble("someLimit", 1).List();
+			IList list = await (s.CreateQuery("from Human h inner join h.offspring as o with o.bodyWeight < :someLimit").SetDouble("someLimit", 1).ListAsync());
 			Assert.That(list, Is.Empty, "ad-hoc on did not take effect");
 			// many-to-one
-			list = s.CreateQuery("from Animal a inner join a.mother as m with m.bodyWeight < :someLimit").SetDouble("someLimit", 1).List();
+			list = await (s.CreateQuery("from Animal a inner join a.mother as m with m.bodyWeight < :someLimit").SetDouble("someLimit", 1).ListAsync());
 			Assert.That(list, Is.Empty, "ad-hoc on did not take effect");
 			// many-to-many
-			list = s.CreateQuery("from Human h inner join h.friends as f with f.nickName like 'bubba'").List();
+			list = await (s.CreateQuery("from Human h inner join h.friends as f with f.nickName like 'bubba'").ListAsync());
 			Assert.That(list, Is.Empty, "ad-hoc on did not take effect");
 			await (txn.CommitAsync());
 			s.Close();
@@ -62,6 +68,12 @@ namespace NHibernate.Test.Hql.Ast
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		private partial class TestData
 		{
+			private readonly WithClauseFixtureAsync tc;
+			public TestData(WithClauseFixtureAsync tc)
+			{
+				this.tc = tc;
+			}
+
 			public async Task PrepareAsync()
 			{
 				ISession session = tc.OpenNewSession();
@@ -93,14 +105,14 @@ namespace NHibernate.Test.Hql.Ast
 			{
 				ISession session = tc.OpenNewSession();
 				ITransaction txn = session.BeginTransaction();
-				session.CreateQuery("delete Animal where mother is not null").ExecuteUpdate();
-				IList humansWithFriends = session.CreateQuery("from Human h where exists(from h.friends)").List();
+				await (session.CreateQuery("delete Animal where mother is not null").ExecuteUpdateAsync());
+				IList humansWithFriends = await (session.CreateQuery("from Human h where exists(from h.friends)").ListAsync());
 				foreach (var friend in humansWithFriends)
 				{
 					await (session.DeleteAsync(friend));
 				}
 
-				session.CreateQuery("delete Animal").ExecuteUpdate();
+				await (session.CreateQuery("delete Animal").ExecuteUpdateAsync());
 				await (txn.CommitAsync());
 				session.Close();
 			}

@@ -5,9 +5,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.TypedManyToOne
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class TypedManyToOneTest : TestCase
+	public partial class TypedManyToOneTestAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"TypedManyToOne.Customer.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task TestCreateQueryAsync()
 		{
@@ -40,7 +57,7 @@ namespace NHibernate.Test.TypedManyToOne
 			using (ISession s = sessions.OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					IList results = s.CreateQuery("from Customer cust left join fetch cust.BillingAddress where cust.CustomerId='abc123'").List();
+					IList results = await (s.CreateQuery("from Customer cust left join fetch cust.BillingAddress where cust.CustomerId='abc123'").ListAsync());
 					//IList results = s.CreateQuery("from Customer cust left join fetch cust.BillingAddress left join fetch cust.ShippingAddress").List();
 					cust = (Customer)results[0];
 					Assert.That(NHibernateUtil.IsInitialized(cust.ShippingAddress), Is.False);
@@ -55,12 +72,12 @@ namespace NHibernate.Test.TypedManyToOne
 			using (ISession s = sessions.OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					s.SaveOrUpdate(cust);
+					await (s.SaveOrUpdateAsync(cust));
 					ship = cust.ShippingAddress;
 					cust.ShippingAddress = null;
-					s.Delete("ShippingAddress", ship);
+					await (s.DeleteAsync("ShippingAddress", ship));
 					await (s.FlushAsync());
-					Assert.That(s.Get("ShippingAddress", ship.AddressId), Is.Null);
+					Assert.That(await (s.GetAsync("ShippingAddress", ship.AddressId)), Is.Null);
 					await (s.DeleteAsync(cust));
 					await (t.CommitAsync());
 				}
@@ -82,7 +99,7 @@ namespace NHibernate.Test.TypedManyToOne
 			using (ISession s = sessions.OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					IList results = s.CreateQuery("from Customer cust left join fetch cust.BillingAddress where cust.CustomerId='xyz123'").List();
+					IList results = await (s.CreateQuery("from Customer cust left join fetch cust.BillingAddress where cust.CustomerId='xyz123'").ListAsync());
 					//IList results = s.CreateQuery("from Customer cust left join fetch cust.BillingAddress left join fetch cust.ShippingAddress").List();
 					cust = (Customer)results[0];
 					Assert.That(cust.ShippingAddress, Is.Null);

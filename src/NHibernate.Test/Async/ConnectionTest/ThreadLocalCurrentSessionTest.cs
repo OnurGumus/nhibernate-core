@@ -7,9 +7,24 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.ConnectionTest
 {
+	[TestFixture, Ignore("Not yet supported. Need AutoClosed feature.(TransactionContext)")]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ThreadLocalCurrentSessionTest : ConnectionManagementTestCase
+	public partial class ThreadLocalCurrentSessionTestAsync : ConnectionManagementTestCaseAsync
 	{
+		protected override ISession GetSessionUnderTest()
+		{
+			ISession session = OpenSession();
+			session.BeginTransaction();
+			return session;
+		}
+
+		protected override async Task ConfigureAsync(Configuration configuration)
+		{
+			await (base.ConfigureAsync(cfg));
+			cfg.SetProperty(Environment.CurrentSessionContextClass, typeof (TestableThreadLocalContext).AssemblyQualifiedName);
+			cfg.SetProperty(Environment.GenerateStatistics, "true");
+		}
+
 		protected override async Task ReleaseAsync(ISession session)
 		{
 			long initialCount = sessions.Statistics.SessionCloseCount;
@@ -34,6 +49,23 @@ namespace NHibernate.Test.ConnectionTest
 			session2.Close();
 			Assert.IsFalse(session2.IsOpen, "session open after closing");
 			Assert.IsFalse(TestableThreadLocalContext.IsSessionBound(session2), "session still bound after closing");
+		}
+
+		[Test]
+		public void TransactionProtection()
+		{
+			using (ISession session = OpenSession())
+			{
+				try
+				{
+					session.CreateQuery("from Silly");
+					Assert.Fail("method other than beginTransaction{} allowed");
+				}
+				catch (HibernateException)
+				{
+				// ok
+				}
+			}
 		}
 	}
 }

@@ -7,9 +7,35 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.CollectionTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class IdBagFixture : TestCase
+	public partial class IdBagFixtureAsync : TestCaseAsync
 	{
+		protected override System.Collections.IList Mappings
+		{
+			get
+			{
+				return new string[]{"CollectionTest.IdBagFixture.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = sessions.OpenSession())
+			{
+				await (s.DeleteAsync("from A"));
+				await (s.FlushAsync());
+			}
+		}
+
 		[Test]
 		public async Task SimpleAsync()
 		{
@@ -19,7 +45,7 @@ namespace NHibernate.Test.CollectionTest
 			a.Items.Add("first string");
 			a.Items.Add("second string");
 			ISession s = OpenSession();
-			s.SaveOrUpdate(a);
+			await (s.SaveOrUpdateAsync(a));
 			// this flush should test how NH wraps a generic collection with its
 			// own persistent collection
 			await (s.FlushAsync());
@@ -27,7 +53,7 @@ namespace NHibernate.Test.CollectionTest
 			Assert.IsNotNull(a.Id);
 			Assert.AreEqual("first string", (string)a.Items[0]);
 			s = OpenSession();
-			a = (A)s.Load(typeof (A), a.Id);
+			a = (A)await (s.LoadAsync(typeof (A), a.Id));
 			Assert.AreEqual("first string", (string)a.Items[0], "first item should be 'first string'");
 			Assert.AreEqual("second string", (string)a.Items[1], "second item should be 'second string'");
 			// ensuring the correct generic type was constructed

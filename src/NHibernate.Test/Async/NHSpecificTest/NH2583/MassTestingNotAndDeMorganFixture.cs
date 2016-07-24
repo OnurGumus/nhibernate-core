@@ -10,8 +10,15 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.NHSpecificTest.NH2583
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class MassTestingNotAndDeMorganFixture : AbstractMassTestingFixture
+	public partial class MassTestingNotAndDeMorganFixtureAsync : AbstractMassTestingFixtureAsync
 	{
+		protected override int TestAndAssert(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds)
+		{
+			var result = session.Query<MyBO>().Where(condition);
+			AreEqual(expectedIds, result.Select(bo => bo.Id).ToArray());
+			return expectedIds.Count();
+		}
+
 		[Test]
 		public async Task Test_NotUnequalIsTheSameAsEqualAsync()
 		{

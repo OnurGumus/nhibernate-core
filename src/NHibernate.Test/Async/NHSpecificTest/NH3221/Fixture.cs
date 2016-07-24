@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH3221
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class WeirdBehaviour : BugTestCase
+	public partial class WeirdBehaviourAsync : BugTestCaseAsync
 	{
+		private Guid nicePersonId;
 		[Test]
 		public async Task CanAddATodoAsync()
 		{
@@ -112,6 +114,24 @@ namespace NHibernate.Test.NHSpecificTest.NH3221
 			{
 				var person = await (session.GetAsync<Person>(nicePersonId));
 				Assert.AreEqual(0, person.MyStuff.Count());
+			}
+		}
+
+		protected override async Task OnSetUpAsync()
+		{
+			await (base.OnSetUpAsync());
+			Console.WriteLine("=====================BEGIN TEST");
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			Console.WriteLine("=====================END TEST");
+			await (base.OnTearDownAsync());
+			using (ISession session = OpenSession())
+			{
+				const string hql = "from System.Object";
+				await (session.DeleteAsync(hql));
+				await (session.FlushAsync());
 			}
 		}
 	}

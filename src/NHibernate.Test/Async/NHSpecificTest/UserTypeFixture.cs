@@ -9,9 +9,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class UserTypeFixture : TestCase
+	public partial class UserTypeFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecific.ClassWithNullColumns.hbm.xml"};
+			}
+		}
+
 		/// <summary>
 		/// Does a quick test to make sure that a Property specified with a NullInt32UserType 
 		/// persist to the db as a null.
@@ -31,12 +40,12 @@ namespace NHibernate.Test.NHSpecificTest
 
 			// manually read from the db
 			IConnectionProvider provider = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
-			DbConnection conn = provider.GetConnection();
+			DbConnection conn = await (provider.GetConnectionAsync());
 			DbCommand cmd = conn.CreateCommand();
 			cmd.Connection = conn;
 			cmd.CommandText = "select * from usertype";
-			DbDataReader reader = cmd.ExecuteReader();
-			while (reader.Read())
+			DbDataReader reader = await (cmd.ExecuteReaderAsync());
+			while (await (reader.ReadAsync()))
 			{
 				Assert.AreEqual(5, reader[0]);
 				Assert.AreEqual(4, reader[1]);

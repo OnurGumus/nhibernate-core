@@ -1,6 +1,8 @@
 #if NET_4_5
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1632
 {
@@ -10,13 +12,85 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 	using Engine;
 	using Id;
 
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH1632";
+			}
+		}
+
+		protected override Task ConfigureAsync(Configuration configuration)
+		{
+			try
+			{
+				configuration.SetProperty(Environment.UseSecondLevelCache, "true").SetProperty(Environment.CacheProvider, typeof (HashtableCacheProvider).AssemblyQualifiedName);
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		[Test]
+		public async Task When_using_DTC_HiLo_knows_to_create_isolated_DTC_transactionAsync()
+		{
+			object scalar1, scalar2;
+			using (var session = sessions.OpenSession())
+				using (var command = session.Connection.CreateCommand())
+				{
+					command.CommandText = "select next_hi from hibernate_unique_key";
+					scalar1 = await (command.ExecuteScalarAsync());
+				}
+
+			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+			{
+				var generator = sessions.GetIdentifierGenerator(typeof (Person).FullName);
+				Assert.That(generator, Is.InstanceOf<TableHiLoGenerator>());
+				using (var session = sessions.OpenSession())
+				{
+					var id = await (generator.GenerateAsync((ISessionImplementor)session, new Person()));
+				}
+
+				// intentionally dispose without committing
+				tx.Dispose();
+			}
+
+			using (var session = sessions.OpenSession())
+				using (var command = session.Connection.CreateCommand())
+				{
+					command.CommandText = "select next_hi from hibernate_unique_key";
+					scalar2 = await (command.ExecuteScalarAsync());
+				}
+
+			Assert.AreNotEqual(scalar1, scalar2, "HiLo must run with in its own transaction");
+		}
+
+		[Test]
+		public void Dispose_session_inside_transaction_scope()
+		{
+			ISession s;
+			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+			{
+				using (s = sessions.OpenSession())
+				{
+				}
+
+				tx.Complete();
+			}
+
+			Assert.IsFalse(s.IsOpen);
+		}
+
 		[Test]
 		public async Task When_commiting_items_in_DTC_transaction_will_add_items_to_2nd_level_cacheAsync()
 		{
-			using (var tx = new TransactionScope())
+			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				using (var s = sessions.OpenSession())
 				{
@@ -26,11 +100,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 				tx.Complete();
 			}
 
-			using (var tx = new TransactionScope())
+			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				using (var s = sessions.OpenSession())
 				{
-					var nums = s.Load<Nums>(29);
+					var nums = await (s.LoadAsync<Nums>(29));
 					Assert.AreEqual(1, nums.NumA);
 					Assert.AreEqual(3, nums.NumB);
 				}
@@ -39,13 +113,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			}
 
 			//closing the connection to ensure we can't really use it.
-			var connection = sessions.ConnectionProvider.GetConnection();
+			var connection = await (sessions.ConnectionProvider.GetConnectionAsync());
 			sessions.ConnectionProvider.CloseConnection(connection);
-			using (var tx = new TransactionScope())
+			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				using (var s = sessions.OpenSession(connection))
 				{
-					var nums = s.Load<Nums>(29);
+					var nums = await (s.LoadAsync<Nums>(29));
 					Assert.AreEqual(1, nums.NumA);
 					Assert.AreEqual(3, nums.NumB);
 				}
@@ -56,7 +130,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			using (var s = sessions.OpenSession())
 				using (var tx = s.BeginTransaction())
 				{
-					var nums = s.Load<Nums>(29);
+					var nums = await (s.LoadAsync<Nums>(29));
 					await (s.DeleteAsync(nums));
 					await (tx.CommitAsync());
 				}
@@ -66,7 +140,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 		public async Task When_committing_transaction_scope_will_commit_transactionAsync()
 		{
 			object id;
-			using (var tx = new TransactionScope())
+			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				using (ISession s = sessions.OpenSession())
 				{
@@ -90,7 +164,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 		public async Task Will_not_save_when_flush_mode_is_neverAsync()
 		{
 			object id;
-			using (var tx = new TransactionScope())
+			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				using (ISession s = sessions.OpenSession())
 				{
@@ -116,7 +190,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			if (!TestDialect.SupportsConcurrentTransactions)
 				Assert.Ignore(Dialect.GetType().Name + " does not support concurrent transactions.");
 			object id1, id2;
-			using (var tx = new TransactionScope())
+			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				using (ISession s1 = sessions.OpenSession())
 					using (ISession s2 = sessions.OpenSession())
@@ -148,7 +222,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			if (!TestDialect.SupportsConcurrentTransactions)
 				Assert.Ignore(Dialect.GetType().Name + " does not support concurrent transactions.");
 			object id1, id2;
-			using (var tx = new TransactionScope())
+			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				using (ISession s1 = sessions.OpenSession())
 					using (ISession s2 = sessions.OpenSession())

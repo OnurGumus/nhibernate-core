@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1579
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class NH1579Fixture : BugTestCase
+	public partial class NH1579FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task TestAsync()
@@ -31,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1579
 			{
 				IQuery query = session.CreateQuery("FROM Fruit f WHERE f.Container.id = :containerID");
 				query.SetGuid("containerID", cart.ID);
-				IList<Fruit> fruit = query.List<Fruit>();
+				IList<Fruit> fruit = await (query.ListAsync<Fruit>());
 				Assert.AreEqual(2, fruit.Count);
 			}
 

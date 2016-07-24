@@ -5,9 +5,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH350
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH350";
+			}
+		}
+
 		// We pass an Int32 id to Load and expect an exception, since the class
 		// uses Int64 ids.
 		[Test]
@@ -27,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH350
 			{
 				using (ISession session = OpenSession())
 				{
-					Assert.Throws<TypeMismatchException>(() => session.Load(typeof (SecurityDomain), 1));
+					Assert.ThrowsAsync<TypeMismatchException>(async () => await (session.LoadAsync(typeof (SecurityDomain), 1)));
 				}
 			}
 			finally

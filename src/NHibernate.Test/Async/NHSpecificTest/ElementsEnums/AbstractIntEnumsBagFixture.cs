@@ -6,8 +6,16 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.NHSpecificTest.ElementsEnums
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public abstract partial class AbstractIntEnumsBagFixture : TestCase
+	public abstract partial class AbstractIntEnumsBagFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
 		[Test]
 		[Description("Should load the list of enums (NH-1772)")]
 		public async Task LoadEnumsAsync()

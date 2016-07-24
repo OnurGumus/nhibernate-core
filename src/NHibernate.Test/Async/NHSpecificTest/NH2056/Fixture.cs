@@ -7,8 +7,18 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.NHSpecificTest.NH2056
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnTearDownAsync()
+		{
+			using (var s = OpenSession())
+				using (var tx = s.BeginTransaction())
+				{
+					await (s.DeleteAsync("from System.Object"));
+					await (tx.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task CanUpdateInheritedClassAsync()
 		{
@@ -21,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2056
 					address["BaseF2"] = "base2";
 					address["AddressF1"] = "addressF1";
 					address["AddressF2"] = "addressF2";
-					savedId = session.Save("Address", address);
+					savedId = await (session.SaveAsync("Address", address));
 					await (t.CommitAsync());
 				}
 
@@ -34,14 +44,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2056
 					query.SetParameter("val1", "foo");
 					query.SetParameter("val2", "bar");
 					query.SetParameter("theID", savedId);
-					query.ExecuteUpdate();
+					await (query.ExecuteUpdateAsync());
 					await (t.CommitAsync());
 				}
 
 			using (var session = sessions.OpenSession())
 				using (var t = session.BeginTransaction())
 				{
-					var updated = (IDictionary)session.Get("Address", savedId);
+					var updated = (IDictionary)await (session.GetAsync("Address", savedId));
 					Assert.That(updated["BaseF1"], Is.EqualTo("base1"));
 					Assert.That(updated["BaseF2"], Is.EqualTo("base2"));
 					Assert.That(updated["AddressF1"], Is.EqualTo("foo"));

@@ -1,0 +1,26 @@
+#if NET_4_5
+using NHibernate.Cfg;
+using NUnit.Framework;
+using System.Threading.Tasks;
+
+namespace NHibernate.Test.CfgTest
+{
+	[TestFixture]
+	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+	public partial class SchemaAutoActionFixtureAsync
+	{
+		[Test]
+		public void Equality()
+		{
+			Assert.That(SchemaAutoAction.Recreate.Equals("create-drop"));
+			Assert.That(SchemaAutoAction.Recreate == "create-drop");
+			Assert.That(SchemaAutoAction.Create.Equals("create"));
+			Assert.That(SchemaAutoAction.Create == "create");
+			Assert.That(SchemaAutoAction.Update.Equals("update"));
+			Assert.That(SchemaAutoAction.Update == "update");
+			Assert.That(SchemaAutoAction.Validate.Equals("validate"));
+			Assert.That(SchemaAutoAction.Validate == "validate");
+		}
+	}
+}
+#endif

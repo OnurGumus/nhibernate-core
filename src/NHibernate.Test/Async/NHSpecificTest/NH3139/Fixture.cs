@@ -7,9 +7,65 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH3139
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : TestCase
+	public partial class FixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecificTest.NH3139.Mappings.hbm.xml"};
+			}
+		}
+
+		/// <summary>
+		/// push some data into the database
+		/// Really functions as a save test also 
+		/// </summary>
+		protected override async Task OnSetUpAsync()
+		{
+			await (base.OnSetUpAsync());
+			using (var session = OpenSession())
+			{
+				using (var tran = session.BeginTransaction())
+				{
+					Brand brand = new Brand()
+					{Name = "Brand"};
+					await (session.SaveAsync(brand));
+					//this product has no inventory row
+					Product product = new Product();
+					product.Name = "First";
+					product.Brand = brand;
+					await (session.SaveAsync(product));
+					await (tran.CommitAsync());
+				}
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			await (base.OnTearDownAsync());
+			using (var session = OpenSession())
+			{
+				using (var tran = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from Product"));
+					await (session.DeleteAsync("from Inventory"));
+					await (session.DeleteAsync("from Brand"));
+					await (tran.CommitAsync());
+				}
+			}
+		}
+
 		[Test]
 		public async Task Inventory_is_nullAsync()
 		{

@@ -9,9 +9,38 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Cascade.Circle
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class MultiPathCircleCascadeTest : TestCase
+	public partial class MultiPathCircleCascadeTestAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"Cascade.Circle.MultiPathCircleCascade.hbm.xml"};
+			}
+		}
+
+		protected override async Task ConfigureAsync(NHibernate.Cfg.Configuration configuration)
+		{
+			await (base.ConfigureAsync(configuration));
+			configuration.SetProperty(NHibernate.Cfg.Environment.GenerateStatistics, "true");
+			configuration.SetProperty(NHibernate.Cfg.Environment.BatchSize, "0");
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is Dialect.FirebirdDialect); // Firebird has no CommandTimeout, and locks up during the tear-down of this fixture
+		}
+
 		[Test]
 		public async Task MergeEntityWithNonNullableTransientEntityAsync()
 		{
@@ -252,6 +281,96 @@ namespace NHibernate.Test.Cascade.Circle
 			transport.DeliveryNode = deliveryNode;
 			transport.TransientField = "aaaaaaaaaaaaaa";
 			return route;
+		}
+
+		private void CheckResults(Route route, bool isRouteUpdated)
+		{
+			// since merge is not cascaded to route, this method needs to
+			// know whether route is expected to be updated
+			if (isRouteUpdated)
+			{
+				Assert.That(route.Name, Is.EqualTo("new routeA"));
+			}
+
+			Assert.That(route.Nodes.Count, Is.EqualTo(2));
+			Node deliveryNode = null;
+			Node pickupNode = null;
+			foreach (Node node in route.Nodes)
+			{
+				if ("deliveryNodeB".Equals(node.Name))
+				{
+					deliveryNode = node;
+				}
+				else if ("pickupNodeB".Equals(node.Name))
+				{
+					pickupNode = node;
+				}
+				else
+				{
+					Assert.Fail("unknown node");
+				}
+			}
+
+			Assert.That(deliveryNode, Is.Not.Null);
+			Assert.That(deliveryNode.Route, Is.SameAs(route));
+			Assert.That(deliveryNode.DeliveryTransports.Count, Is.EqualTo(1));
+			Assert.That(deliveryNode.PickupTransports.Count, Is.EqualTo(0));
+			Assert.That(deliveryNode.Tour, Is.Not.Null);
+			Assert.That(deliveryNode.TransientField, Is.EqualTo("node original value"));
+			Assert.That(pickupNode, Is.Not.Null);
+			Assert.That(pickupNode.Route, Is.SameAs(route));
+			Assert.That(pickupNode.DeliveryTransports.Count, Is.EqualTo(0));
+			Assert.That(pickupNode.PickupTransports.Count, Is.EqualTo(1));
+			Assert.That(pickupNode.Tour, Is.Not.Null);
+			Assert.That(pickupNode.TransientField, Is.EqualTo("node original value"));
+			Assert.That(deliveryNode.NodeId.Equals(pickupNode.NodeId), Is.False);
+			Assert.That(deliveryNode.Tour, Is.SameAs(pickupNode.Tour));
+			Assert.That(deliveryNode.DeliveryTransports.First(), Is.SameAs(pickupNode.PickupTransports.First()));
+			Tour tour = deliveryNode.Tour;
+			Transport transport = deliveryNode.DeliveryTransports.First();
+			Assert.That(tour.Name, Is.EqualTo("tourB"));
+			Assert.That(tour.Nodes.Count, Is.EqualTo(2));
+			Assert.That(tour.Nodes.Contains(deliveryNode), Is.True);
+			Assert.That(tour.Nodes.Contains(pickupNode), Is.True);
+			Assert.That(transport.Name, Is.EqualTo("transportB"));
+			Assert.That(transport.DeliveryNode, Is.SameAs(deliveryNode));
+			Assert.That(transport.PickupNode, Is.SameAs(pickupNode));
+			Assert.That(transport.TransientField, Is.EqualTo("transport original value"));
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = base.OpenSession())
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					await (session.CreateQuery("delete from Transport").ExecuteUpdateAsync());
+					await (session.CreateQuery("delete from Node").ExecuteUpdateAsync());
+					await (session.CreateQuery("delete from Tour").ExecuteUpdateAsync());
+					await (session.CreateQuery("delete from Route").ExecuteUpdateAsync());
+					await (transaction.CommitAsync());
+				}
+
+			await (base.OnTearDownAsync());
+		}
+
+		protected void ClearCounts()
+		{
+			sessions.Statistics.Clear();
+		}
+
+		protected void AssertInsertCount(long expected)
+		{
+			Assert.That(sessions.Statistics.EntityInsertCount, Is.EqualTo(expected), "unexpected insert count");
+		}
+
+		protected void AssertUpdateCount(long expected)
+		{
+			Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(expected), "unexpected update count");
+		}
+
+		protected void AssertDeleteCount(long expected)
+		{
+			Assert.That(sessions.Statistics.EntityDeleteCount, Is.EqualTo(expected), "unexpected delete count");
 		}
 	}
 }

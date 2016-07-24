@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1760
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SampleTest : BugTestCase
+	public partial class SampleTestAsync : BugTestCaseAsync
 	{
 		private async Task FillDbAsync()
 		{
@@ -27,8 +28,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1760
 			using (ISession session = OpenSession())
 				using (var tx = session.BeginTransaction())
 				{
-					session.CreateQuery("delete from TestClass").ExecuteUpdate();
-					session.CreateQuery("delete from Customer").ExecuteUpdate();
+					await (session.CreateQuery("delete from TestClass").ExecuteUpdateAsync());
+					await (session.CreateQuery("delete from Customer").ExecuteUpdateAsync());
 					await (tx.CommitAsync());
 				}
 		}
@@ -41,14 +42,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1760
 			int criteriaCount;
 			using (ISession session = OpenSession())
 			{
-				IList<TestClass> retvalue = session.CreateQuery("Select tc from TestClass tc join tc.Id.Customer cu where cu.Name = :name").SetString("name", "Alkampfer").List<TestClass>();
+				IList<TestClass> retvalue = await (session.CreateQuery("Select tc from TestClass tc join tc.Id.Customer cu where cu.Name = :name").SetString("name", "Alkampfer").ListAsync<TestClass>());
 				hqlCount = retvalue.Count;
 			}
 
 			using (ISession session = OpenSession())
 			{
 				ICriteria c = session.CreateCriteria(typeof (TestClass)).CreateAlias("Id.Customer", "IdCust").Add(Restrictions.Eq("IdCust.Name", "Alkampfer"));
-				IList<TestClass> retvalue = c.List<TestClass>();
+				IList<TestClass> retvalue = await (c.ListAsync<TestClass>());
 				criteriaCount = retvalue.Count;
 			}
 
@@ -67,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1760
 				using (var ls = new SqlLogSpy())
 				{
 					ICriteria c = session.CreateCriteria(typeof (TestClass));
-					IList<TestClass> retvalue = c.List<TestClass>();
+					IList<TestClass> retvalue = await (c.ListAsync<TestClass>());
 					Assert.That(ls.GetWholeLog(), Is.Not.StringContaining("join"));
 					criteriaCount = retvalue.Count;
 				}

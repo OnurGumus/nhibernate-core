@@ -8,12 +8,40 @@ using NHibernate.Id;
 using NHibernate.Persister.Entity;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Hql.Ast
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class BulkManipulation : BaseFixture
+	public partial class BulkManipulationAsync : BaseFixtureAsync
 	{
+		public ISession OpenNewSession()
+		{
+			return OpenSession();
+		}
+
+#region Non-exists
+		[Test]
+		public async Task DeleteNonExistentEntityAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				Assert.ThrowsAsync<QuerySyntaxException>(async () => await (s.CreateQuery("delete NonExistentEntity").ExecuteUpdateAsync()));
+			}
+		}
+
+		[Test]
+		public async Task UpdateNonExistentEntityAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				Assert.ThrowsAsync<QuerySyntaxException>(async () => await (s.CreateQuery("update NonExistentEntity e set e.someProp = ?").ExecuteUpdateAsync()));
+			}
+		}
+
+#endregion
+#region INSERTS
 		[Test]
 		public async Task SimpleInsertAsync()
 		{
@@ -21,10 +49,10 @@ namespace NHibernate.Test.Hql.Ast
 			await (data.PrepareAsync());
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			s.CreateQuery("insert into Pickup (id, Vin, Owner) select id, Vin, Owner from Car").ExecuteUpdate();
+			await (s.CreateQuery("insert into Pickup (id, Vin, Owner) select id, Vin, Owner from Car").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			t = s.BeginTransaction();
-			s.CreateQuery("delete Vehicle").ExecuteUpdate();
+			await (s.CreateQuery("delete Vehicle").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 			await (data.CleanupAsync());
@@ -37,7 +65,7 @@ namespace NHibernate.Test.Hql.Ast
 			await (data.PrepareAsync());
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			s.CreateQuery("insert into Animal (description, bodyWeight, mother) select description, bodyWeight, mother from Human").ExecuteUpdate();
+			await (s.CreateQuery("insert into Animal (description, bodyWeight, mother) select description, bodyWeight, mother from Human").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			t = s.BeginTransaction();
 			await (t.CommitAsync());
@@ -52,10 +80,10 @@ namespace NHibernate.Test.Hql.Ast
 			await (data.PrepareAsync());
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			Assert.Throws<QueryException>(() => s.CreateQuery("insert into Pickup (Owner, Vin, id) select id, Vin, Owner from Car").ExecuteUpdate(), "mismatched types did not error");
+			Assert.ThrowsAsync<QueryException>(async () => await (s.CreateQuery("insert into Pickup (Owner, Vin, id) select id, Vin, Owner from Car").ExecuteUpdateAsync()), "mismatched types did not error");
 			await (t.CommitAsync());
 			t = s.BeginTransaction();
-			s.CreateQuery("delete Vehicle").ExecuteUpdate();
+			await (s.CreateQuery("delete Vehicle").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 			await (data.CleanupAsync());
@@ -68,12 +96,12 @@ namespace NHibernate.Test.Hql.Ast
 			await (data.PrepareAsync());
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			Assert.Throws<QueryException>(() => s.CreateQuery("insert into Human (id, bodyWeight) select id, bodyWeight from Lizard").ExecuteUpdate(), "superclass prop insertion did not error");
+			Assert.ThrowsAsync<QueryException>(async () => await (s.CreateQuery("insert into Human (id, bodyWeight) select id, bodyWeight from Lizard").ExecuteUpdateAsync()), "superclass prop insertion did not error");
 			await (t.CommitAsync());
 			t = s.BeginTransaction();
-			s.CreateQuery("delete Animal where mother is not null").ExecuteUpdate();
-			s.CreateQuery("delete Animal where father is not null").ExecuteUpdate();
-			s.CreateQuery("delete Animal").ExecuteUpdate();
+			await (s.CreateQuery("delete Animal where mother is not null").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete Animal where father is not null").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete Animal").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 			await (data.CleanupAsync());
@@ -86,11 +114,11 @@ namespace NHibernate.Test.Hql.Ast
 			await (data.PrepareAsync());
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			Assert.Throws<QueryException>(() => s.CreateQuery("insert into Joiner (name, joinedName) select vin, owner from Car").ExecuteUpdate(), "mapped-join insertion did not error");
+			Assert.ThrowsAsync<QueryException>(async () => await (s.CreateQuery("insert into Joiner (name, joinedName) select vin, owner from Car").ExecuteUpdateAsync()), "mapped-join insertion did not error");
 			await (t.CommitAsync());
 			t = s.BeginTransaction();
-			s.CreateQuery("delete Joiner").ExecuteUpdate();
-			s.CreateQuery("delete Vehicle").ExecuteUpdate();
+			await (s.CreateQuery("delete Joiner").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete Vehicle").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 			await (data.CleanupAsync());
@@ -115,7 +143,7 @@ namespace NHibernate.Test.Hql.Ast
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			int count = s.CreateQuery("insert into PettingZoo (name) select name from Zoo").ExecuteUpdate();
+			int count = await (s.CreateQuery("insert into PettingZoo (name) select name from Zoo").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 			Assert.That(count, Is.EqualTo(1), "unexpected insertion count");
@@ -128,7 +156,7 @@ namespace NHibernate.Test.Hql.Ast
 			Assert.That(zoo.Id != pz.Id);
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.CreateQuery("delete Zoo").ExecuteUpdate();
+			await (s.CreateQuery("delete Zoo").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -148,14 +176,14 @@ namespace NHibernate.Test.Hql.Ast
 			ITransaction t = s.BeginTransaction();
 			var entity = new IntegerVersioned{Name = "int-vers"};
 			await (s.SaveAsync(entity));
-			s.CreateQuery("select id, name, version from IntegerVersioned").List();
+			await (s.CreateQuery("select id, name, version from IntegerVersioned").ListAsync());
 			await (t.CommitAsync());
 			s.Close();
 			long initialId = entity.Id;
 			int initialVersion = entity.Version;
 			s = OpenSession();
 			t = s.BeginTransaction();
-			int count = s.CreateQuery("insert into IntegerVersioned ( name, Data ) select name, Data from IntegerVersioned where id = :id").SetInt64("id", entity.Id).ExecuteUpdate();
+			int count = await (s.CreateQuery("insert into IntegerVersioned ( name, Data ) select name, Data from IntegerVersioned where id = :id").SetInt64("id", entity.Id).ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 			Assert.That(count, Is.EqualTo(1), "unexpected insertion count");
@@ -167,7 +195,7 @@ namespace NHibernate.Test.Hql.Ast
 			Assert.That(created.Version, Is.EqualTo(initialVersion), "version was not seeded");
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.CreateQuery("delete IntegerVersioned").ExecuteUpdate();
+			await (s.CreateQuery("delete IntegerVersioned").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -187,14 +215,14 @@ namespace NHibernate.Test.Hql.Ast
 			ITransaction t = s.BeginTransaction();
 			var entity = new TimestampVersioned{Name = "int-vers"};
 			await (s.SaveAsync(entity));
-			s.CreateQuery("select id, name, version from TimestampVersioned").List();
+			await (s.CreateQuery("select id, name, version from TimestampVersioned").ListAsync());
 			await (t.CommitAsync());
 			s.Close();
 			long initialId = entity.Id;
 			//Date initialVersion = entity.getVersion();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			int count = s.CreateQuery("insert into TimestampVersioned ( name, Data ) select name, Data from TimestampVersioned where id = :id").SetInt64("id", entity.Id).ExecuteUpdate();
+			int count = await (s.CreateQuery("insert into TimestampVersioned ( name, Data ) select name, Data from TimestampVersioned where id = :id").SetInt64("id", entity.Id).ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 			Assert.That(count, Is.EqualTo(1), "unexpected insertion count");
@@ -206,7 +234,7 @@ namespace NHibernate.Test.Hql.Ast
 			Assert.That(created.Version, Is.GreaterThan(DateTime.Today));
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.CreateQuery("delete TimestampVersioned").ExecuteUpdate();
+			await (s.CreateQuery("delete TimestampVersioned").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -217,10 +245,30 @@ namespace NHibernate.Test.Hql.Ast
 			// this is just checking parsing and syntax...
 			ISession s = OpenSession();
 			s.BeginTransaction();
-			s.CreateQuery("insert into Animal (description, bodyWeight) select h.description, h.bodyWeight from Human h where h.mother.mother is not null").ExecuteUpdate();
-			s.CreateQuery("delete from Animal").ExecuteUpdate();
+			await (s.CreateQuery("insert into Animal (description, bodyWeight) select h.description, h.bodyWeight from Human h where h.mother.mother is not null").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
 			await (s.Transaction.CommitAsync());
 			s.Close();
+		}
+
+#endregion
+#region UPDATES
+		[Test]
+		public Task IncorrectSyntaxAsync()
+		{
+			try
+			{
+				using (ISession s = OpenSession())
+				{
+					Assert.Throws<QueryException>(() => s.CreateQuery("update Human set Human.description = 'xyz' where Human.id = 1 and Human.description is null"));
+				}
+
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 
 		[Test]
@@ -238,7 +286,7 @@ namespace NHibernate.Test.Hql.Ast
 			s = OpenSession();
 			t = s.BeginTransaction();
 			string updateQryString = "update Human h " + "set h.description = 'updated' " + "where exists (" + "      select f.id " + "      from h.friends f " + "      where f.name.last = 'Public' " + ")";
-			int count = s.CreateQuery(updateQryString).ExecuteUpdate();
+			int count = await (s.CreateQuery(updateQryString).ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1));
 			await (s.DeleteAsync(doll));
 			await (s.DeleteAsync(joe));
@@ -260,13 +308,13 @@ namespace NHibernate.Test.Hql.Ast
 			t = s.BeginTransaction();
 			// one-to-many test
 			updateQryString = "update SimpleEntityWithAssociation e set e.Name = 'updated' where " + "exists(select a.id from e.AssociatedEntities a " + "where a.Name = 'one-to-many-association')";
-			count = s.CreateQuery(updateQryString).ExecuteUpdate();
+			count = await (s.CreateQuery(updateQryString).ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1));
 			// many-to-many test
 			if (Dialect.SupportsSubqueryOnMutatingTable)
 			{
 				updateQryString = "update SimpleEntityWithAssociation e set e.Name = 'updated' where " + "exists(select a.id from e.ManyToManyAssociatedEntities a " + "where a.Name = 'many-to-many-association')";
-				count = s.CreateQuery(updateQryString).ExecuteUpdate();
+				count = await (s.CreateQuery(updateQryString).ExecuteUpdateAsync());
 				Assert.That(count, Is.EqualTo(1));
 			}
 
@@ -296,7 +344,7 @@ namespace NHibernate.Test.Hql.Ast
 				using (ITransaction t = s.BeginTransaction())
 				{
 					// Note: Update more than one column to showcase NH-3624, which involved losing some columns. /2014-07-26
-					int count = s.CreateQuery("update versioned IntegerVersioned set name = concat(name, 'upd'), Data = concat(Data, 'upd')").ExecuteUpdate();
+					int count = await (s.CreateQuery("update versioned IntegerVersioned set name = concat(name, 'upd'), Data = concat(Data, 'upd')").ExecuteUpdateAsync());
 					Assert.That(count, Is.EqualTo(1), "incorrect exec count");
 					await (t.CommitAsync());
 				}
@@ -333,14 +381,14 @@ namespace NHibernate.Test.Hql.Ast
 				using (ITransaction t = s.BeginTransaction())
 				{
 					// Note: Update more than one column to showcase NH-3624, which involved losing some columns. /2014-07-26
-					int count = s.CreateQuery("update versioned TimestampVersioned set name = concat(name, 'upd'), Data = concat(Data, 'upd')").ExecuteUpdate();
+					int count = await (s.CreateQuery("update versioned TimestampVersioned set name = concat(name, 'upd'), Data = concat(Data, 'upd')").ExecuteUpdateAsync());
 					Assert.That(count, Is.EqualTo(1), "incorrect exec count");
 					await (t.CommitAsync());
 				}
 
 				using (ITransaction t = s.BeginTransaction())
 				{
-					entity = s.Load<TimestampVersioned>(entity.Id);
+					entity = await (s.LoadAsync<TimestampVersioned>(entity.Id));
 					await (s.DeleteAsync(entity));
 					await (t.CommitAsync());
 				}
@@ -361,13 +409,13 @@ namespace NHibernate.Test.Hql.Ast
 			await (t.CommitAsync());
 			string correctName = "Steve";
 			t = s.BeginTransaction();
-			int count = s.CreateQuery("update Human set name.first = :correction where id = :id").SetString("correction", correctName).SetInt64("id", human.Id).ExecuteUpdate();
+			int count = await (s.CreateQuery("update Human set name.first = :correction where id = :id").SetString("correction", correctName).SetInt64("id", human.Id).ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "incorrect update count");
 			await (t.CommitAsync());
 			t = s.BeginTransaction();
-			s.Refresh(human);
+			await (s.RefreshAsync(human));
 			Assert.That(human.Name.First, Is.EqualTo(correctName), "Update did not execute properly");
-			s.CreateQuery("delete Human").ExecuteUpdate();
+			await (s.CreateQuery("delete Human").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -377,11 +425,11 @@ namespace NHibernate.Test.Hql.Ast
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			s.CreateQuery("update Animal a set a.mother = null where a.id = 2").ExecuteUpdate();
+			await (s.CreateQuery("update Animal a set a.mother = null where a.id = 2").ExecuteUpdateAsync());
 			if (!(Dialect is MySQLDialect))
 			{
 				// MySQL does not support (even un-correlated) subqueries against the update-mutating table
-				s.CreateQuery("update Animal a set a.mother = (from Animal where id = 1) where a.id = 2").ExecuteUpdate();
+				await (s.CreateQuery("update Animal a set a.mother = (from Animal where id = 1) where a.id = 2").ExecuteUpdateAsync());
 			}
 
 			await (t.CommitAsync());
@@ -401,10 +449,10 @@ namespace NHibernate.Test.Hql.Ast
 			await (s.FlushAsync());
 			await (t.CommitAsync());
 			t = s.BeginTransaction();
-			var e = Assert.Throws<QueryException>(() => s.CreateQuery("update Human set mother.name.initial = :initial").SetString("initial", "F").ExecuteUpdate());
+			var e = Assert.ThrowsAsync<QueryException>(async () => await (s.CreateQuery("update Human set mother.name.initial = :initial").SetString("initial", "F").ExecuteUpdateAsync()));
 			Assert.That(e.Message, Is.StringStarting("Implied join paths are not assignable in update"));
-			s.CreateQuery("delete Human where mother is not null").ExecuteUpdate();
-			s.CreateQuery("delete Human").ExecuteUpdate();
+			await (s.CreateQuery("delete Human where mother is not null").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete Human").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -416,21 +464,21 @@ namespace NHibernate.Test.Hql.Ast
 			await (data.PrepareAsync());
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			int count = s.CreateQuery("update PettingZoo set name = name").ExecuteUpdate();
+			int count = await (s.CreateQuery("update PettingZoo set name = name").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass update count");
 			t.Rollback();
 			t = s.BeginTransaction();
-			count = s.CreateQuery("update PettingZoo pz set pz.name = pz.name where pz.id = :id").SetInt64("id", data.PettingZoo.Id).ExecuteUpdate();
+			count = await (s.CreateQuery("update PettingZoo pz set pz.name = pz.name where pz.id = :id").SetInt64("id", data.PettingZoo.Id).ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass update count");
 			t.Rollback();
 			t = s.BeginTransaction();
-			count = s.CreateQuery("update Zoo as z set z.name = z.name").ExecuteUpdate();
+			count = await (s.CreateQuery("update Zoo as z set z.name = z.name").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(2), "Incorrect discrim subclass update count");
 			t.Rollback();
 			t = s.BeginTransaction();
 			// TODO : not so sure this should be allowed.  Seems to me that if they specify an alias,
 			// property-refs should be required to be qualified.
-			count = s.CreateQuery("update Zoo as z set name = name where id = :id").SetInt64("id", data.Zoo.Id).ExecuteUpdate();
+			count = await (s.CreateQuery("update Zoo as z set name = name where id = :id").SetInt64("id", data.Zoo.Id).ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass update count");
 			await (t.CommitAsync());
 			s.Close();
@@ -444,18 +492,18 @@ namespace NHibernate.Test.Hql.Ast
 			await (data.PrepareAsync());
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			int count = s.CreateQuery("update Animal set description = description where description = :desc").SetString("desc", data.Frog.Description).ExecuteUpdate();
+			int count = await (s.CreateQuery("update Animal set description = description where description = :desc").SetString("desc", data.Frog.Description).ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "Incorrect entity-updated count");
-			count = s.CreateQuery("update Animal set description = :newDesc where description = :desc").SetString("desc", data.Polliwog.Description).SetString("newDesc", "Tadpole").ExecuteUpdate();
+			count = await (s.CreateQuery("update Animal set description = :newDesc where description = :desc").SetString("desc", data.Polliwog.Description).SetString("newDesc", "Tadpole").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "Incorrect entity-updated count");
-			var tadpole = s.Load<Animal>(data.Polliwog.Id);
+			var tadpole = await (s.LoadAsync<Animal>(data.Polliwog.Id));
 			Assert.That(tadpole.Description, Is.EqualTo("Tadpole"), "Update did not take effect");
-			count = s.CreateQuery("update Animal set bodyWeight = bodyWeight + :w1 + :w2").SetDouble("w1", 1).SetDouble("w2", 2).ExecuteUpdate();
+			count = await (s.CreateQuery("update Animal set bodyWeight = bodyWeight + :w1 + :w2").SetDouble("w1", 1).SetDouble("w2", 2).ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(6), "incorrect count on 'complex' update assignment");
 			if (!(Dialect is MySQLDialect))
 			{
 				// MySQL does not support (even un-correlated) subqueries against the update-mutating table
-				s.CreateQuery("update Animal set bodyWeight = ( select max(bodyWeight) from Animal )").ExecuteUpdate();
+				await (s.CreateQuery("update Animal set bodyWeight = ( select max(bodyWeight) from Animal )").ExecuteUpdateAsync());
 			}
 
 			await (t.CommitAsync());
@@ -471,7 +519,7 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					int count = s.CreateQuery("update Animal set description = :newDesc, bodyWeight = :w1 where description = :desc").SetString("desc", data.Polliwog.Description).SetString("newDesc", "Tadpole").SetDouble("w1", 3).ExecuteUpdate();
+					int count = await (s.CreateQuery("update Animal set description = :newDesc, bodyWeight = :w1 where description = :desc").SetString("desc", data.Polliwog.Description).SetString("newDesc", "Tadpole").SetDouble("w1", 3).ExecuteUpdateAsync());
 					Assert.That(count, Is.EqualTo(1));
 					await (t.CommitAsync());
 				}
@@ -494,14 +542,14 @@ namespace NHibernate.Test.Hql.Ast
 			await (data.PrepareAsync());
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			int count = s.CreateQuery("update Mammal set description = description").ExecuteUpdate();
+			int count = await (s.CreateQuery("update Mammal set description = description").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(2), "incorrect update count against 'middle' of joined-subclass hierarchy");
-			count = s.CreateQuery("update Mammal set bodyWeight = 25").ExecuteUpdate();
+			count = await (s.CreateQuery("update Mammal set bodyWeight = 25").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(2), "incorrect update count against 'middle' of joined-subclass hierarchy");
 			if (!(Dialect is MySQLDialect))
 			{
 				// MySQL does not support (even un-correlated) subqueries against the update-mutating table
-				count = s.CreateQuery("update Mammal set bodyWeight = ( select max(bodyWeight) from Animal )").ExecuteUpdate();
+				count = await (s.CreateQuery("update Mammal set bodyWeight = ( select max(bodyWeight) from Animal )").ExecuteUpdateAsync());
 				Assert.That(count, Is.EqualTo(2), "incorrect update count against 'middle' of joined-subclass hierarchy");
 			}
 
@@ -518,15 +566,25 @@ namespace NHibernate.Test.Hql.Ast
 			// These should reach out into *all* subclass tables...
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			int count = s.CreateQuery("update Vehicle set Owner = 'Steve'").ExecuteUpdate();
+			int count = await (s.CreateQuery("update Vehicle set Owner = 'Steve'").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(4), "incorrect restricted update count");
-			count = s.CreateQuery("update Vehicle set Owner = null where Owner = 'Steve'").ExecuteUpdate();
+			count = await (s.CreateQuery("update Vehicle set Owner = null where Owner = 'Steve'").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(4), "incorrect restricted update count");
-			count = s.CreateQuery("delete Vehicle where Owner is null").ExecuteUpdate();
+			count = await (s.CreateQuery("delete Vehicle where Owner is null").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(4), "incorrect restricted update count");
 			await (t.CommitAsync());
 			s.Close();
 			await (data.CleanupAsync());
+		}
+
+		[Test]
+		public async Task WrongPropertyNameThrowQueryExceptionAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				var e = Assert.ThrowsAsync<QueryException>(async () => await (s.CreateQuery("update Vehicle set owner = null where owner = 'Steve'").ExecuteUpdateAsync()));
+				Assert.That(e.Message, Is.StringStarting("Left side of assigment should be a case sensitive property or a field"));
+			}
 		}
 
 		[Test]
@@ -536,13 +594,13 @@ namespace NHibernate.Test.Hql.Ast
 			await (data.PrepareAsync());
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			int count = s.CreateQuery("update PettingZoo set address.city = null").ExecuteUpdate();
+			int count = await (s.CreateQuery("update PettingZoo set address.city = null").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass delete count");
-			count = s.CreateQuery("delete Zoo where address.city is null").ExecuteUpdate();
+			count = await (s.CreateQuery("delete Zoo where address.city is null").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass delete count");
-			count = s.CreateQuery("update Zoo set address.city = null").ExecuteUpdate();
+			count = await (s.CreateQuery("update Zoo set address.city = null").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass delete count");
-			count = s.CreateQuery("delete Zoo where address.city is null").ExecuteUpdate();
+			count = await (s.CreateQuery("delete Zoo where address.city is null").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass delete count");
 			await (t.CommitAsync());
 			s.Close();
@@ -556,15 +614,17 @@ namespace NHibernate.Test.Hql.Ast
 			await (data.PrepareAsync());
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			int count = s.CreateQuery("update Mammal set bodyWeight = null").ExecuteUpdate();
+			int count = await (s.CreateQuery("update Mammal set bodyWeight = null").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(2), "Incorrect deletion count on joined subclass");
-			count = s.CreateQuery("delete Animal where bodyWeight = null").ExecuteUpdate();
+			count = await (s.CreateQuery("delete Animal where bodyWeight = null").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(2), "Incorrect deletion count on joined subclass");
 			await (t.CommitAsync());
 			s.Close();
 			await (data.CleanupAsync());
 		}
 
+#endregion
+#region DELETES
 		[Test]
 		public async Task DeleteWithSubqueryAsync()
 		{
@@ -589,15 +649,15 @@ namespace NHibernate.Test.Hql.Ast
 			// now try the bulk delete
 			s = OpenSession();
 			s.BeginTransaction();
-			int count = s.CreateQuery("delete SimpleEntityWithAssociation e where size(e.AssociatedEntities ) = 0 and e.Name like '%'").ExecuteUpdate();
+			int count = await (s.CreateQuery("delete SimpleEntityWithAssociation e where size(e.AssociatedEntities ) = 0 and e.Name like '%'").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
 			await (s.Transaction.CommitAsync());
 			s.Close();
 			// finally, clean up
 			s = OpenSession();
 			s.BeginTransaction();
-			s.CreateQuery("delete SimpleAssociatedEntity").ExecuteUpdate();
-			s.CreateQuery("delete SimpleEntityWithAssociation").ExecuteUpdate();
+			await (s.CreateQuery("delete SimpleAssociatedEntity").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete SimpleEntityWithAssociation").ExecuteUpdateAsync());
 			await (s.Transaction.CommitAsync());
 			s.Close();
 		}
@@ -615,20 +675,20 @@ namespace NHibernate.Test.Hql.Ast
 			await (data.PrepareAsync());
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			int count = s.CreateQuery("delete from Animal as a where a.id = :id").SetInt64("id", data.Polliwog.Id).ExecuteUpdate();
+			int count = await (s.CreateQuery("delete from Animal as a where a.id = :id").SetInt64("id", data.Polliwog.Id).ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
-			count = s.CreateQuery("delete Animal where id = :id").SetInt64("id", data.Catepillar.Id).ExecuteUpdate();
+			count = await (s.CreateQuery("delete Animal where id = :id").SetInt64("id", data.Catepillar.Id).ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
 			// HHH-873...
 			if (Dialect.SupportsSubqueryOnMutatingTable)
 			{
-				count = s.CreateQuery("delete from User u where u not in (select u from User u)").ExecuteUpdate();
+				count = await (s.CreateQuery("delete from User u where u not in (select u from User u)").ExecuteUpdateAsync());
 				Assert.That(count, Is.EqualTo(0));
 			}
 
-			count = s.CreateQuery("delete Animal a").ExecuteUpdate();
+			count = await (s.CreateQuery("delete Animal a").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(4), "Incorrect delete count");
-			IList list = s.CreateQuery("select a from Animal as a").List();
+			IList list = await (s.CreateQuery("select a from Animal as a").ListAsync());
 			Assert.That(list, Is.Empty, "table not empty");
 			await (t.CommitAsync());
 			s.Close();
@@ -642,9 +702,9 @@ namespace NHibernate.Test.Hql.Ast
 			await (data.PrepareAsync());
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			int count = s.CreateQuery("delete PettingZoo").ExecuteUpdate();
+			int count = await (s.CreateQuery("delete PettingZoo").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass delete count");
-			count = s.CreateQuery("delete Zoo").ExecuteUpdate();
+			count = await (s.CreateQuery("delete Zoo").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "Incorrect discrim subclass delete count");
 			await (t.CommitAsync());
 			s.Close();
@@ -658,11 +718,11 @@ namespace NHibernate.Test.Hql.Ast
 			await (data.PrepareAsync());
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			int count = s.CreateQuery("delete Mammal where bodyWeight > 150").ExecuteUpdate();
+			int count = await (s.CreateQuery("delete Mammal where bodyWeight > 150").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "Incorrect deletion count on joined subclass");
-			count = s.CreateQuery("delete Mammal").ExecuteUpdate();
+			count = await (s.CreateQuery("delete Mammal").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "Incorrect deletion count on joined subclass");
-			count = s.CreateQuery("delete SubMulti").ExecuteUpdate();
+			count = await (s.CreateQuery("delete SubMulti").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(0), "Incorrect deletion count on joined subclass");
 			await (t.CommitAsync());
 			s.Close();
@@ -676,7 +736,7 @@ namespace NHibernate.Test.Hql.Ast
 			await (data.PrepareAsync());
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			int count = s.CreateQuery("delete Joiner where joinedName = :joinedName").SetString("joinedName", "joined-name").ExecuteUpdate();
+			int count = await (s.CreateQuery("delete Joiner where joinedName = :joinedName").SetString("joinedName", "joined-name").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "Incorrect deletion count on joined class");
 			await (t.CommitAsync());
 			s.Close();
@@ -691,9 +751,9 @@ namespace NHibernate.Test.Hql.Ast
 			// These should reach out into *all* subclass tables...
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			int count = s.CreateQuery("delete Vehicle where Owner = :owner").SetString("owner", "Steve").ExecuteUpdate();
+			int count = await (s.CreateQuery("delete Vehicle where Owner = :owner").SetString("owner", "Steve").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "incorrect restricted update count");
-			count = s.CreateQuery("delete Vehicle").ExecuteUpdate();
+			count = await (s.CreateQuery("delete Vehicle").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(3), "incorrect update count");
 			await (t.CommitAsync());
 			s.Close();
@@ -708,9 +768,9 @@ namespace NHibernate.Test.Hql.Ast
 			// These should only affect the given table
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			int count = s.CreateQuery("delete Truck where Owner = :owner").SetString("owner", "Steve").ExecuteUpdate();
+			int count = await (s.CreateQuery("delete Truck where Owner = :owner").SetString("owner", "Steve").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "incorrect restricted update count");
-			count = s.CreateQuery("delete Truck").ExecuteUpdate();
+			count = await (s.CreateQuery("delete Truck").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(2), "incorrect update count");
 			await (t.CommitAsync());
 			s.Close();
@@ -725,9 +785,9 @@ namespace NHibernate.Test.Hql.Ast
 			// These should only affect the given table
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			int count = s.CreateQuery("delete Car where Owner = :owner").SetString("owner", "Kirsten").ExecuteUpdate();
+			int count = await (s.CreateQuery("delete Car where Owner = :owner").SetString("owner", "Kirsten").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "incorrect restricted update count");
-			count = s.CreateQuery("delete Car").ExecuteUpdate();
+			count = await (s.CreateQuery("delete Car").ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(0), "incorrect update count");
 			await (t.CommitAsync());
 			s.Close();
@@ -741,7 +801,7 @@ namespace NHibernate.Test.Hql.Ast
 			await (data.PrepareAsync());
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			int count = s.CreateQuery("delete Animal where mother = :mother").SetEntity("mother", data.Butterfly).ExecuteUpdate();
+			int count = await ((await (s.CreateQuery("delete Animal where mother = :mother").SetEntityAsync("mother", data.Butterfly))).ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1));
 			await (t.CommitAsync());
 			s.Close();
@@ -753,16 +813,29 @@ namespace NHibernate.Test.Hql.Ast
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			s.CreateQuery("delete EntityWithCrazyCompositeKey where Id.Id = 1 and Id.OtherId = 2").ExecuteUpdate();
-			s.CreateQuery("delete from EntityWithCrazyCompositeKey where Id.Id = 1 and Id.OtherId = 2").ExecuteUpdate();
-			s.CreateQuery("delete from EntityWithCrazyCompositeKey e where e.Id.Id = 1 and e.Id.OtherId = 2").ExecuteUpdate();
+			await (s.CreateQuery("delete EntityWithCrazyCompositeKey where Id.Id = 1 and Id.OtherId = 2").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from EntityWithCrazyCompositeKey where Id.Id = 1 and Id.OtherId = 2").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from EntityWithCrazyCompositeKey e where e.Id.Id = 1 and e.Id.OtherId = 2").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 		}
 
+#endregion
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		private partial class TestData
 		{
+			private readonly BulkManipulationAsync tc;
+			public Animal Polliwog;
+			public Animal Catepillar;
+			public Animal Frog;
+			public Animal Butterfly;
+			public Zoo Zoo;
+			public Zoo PettingZoo;
+			public TestData(BulkManipulationAsync tc)
+			{
+				this.tc = tc;
+			}
+
 			public async Task PrepareAsync()
 			{
 				ISession s = tc.OpenNewSession();
@@ -812,12 +885,12 @@ namespace NHibernate.Test.Hql.Ast
 				ISession s = tc.OpenNewSession();
 				ITransaction txn = s.BeginTransaction();
 				// workaround awesome HSQLDB "feature"
-				s.CreateQuery("delete from Animal where mother is not null or father is not null").ExecuteUpdate();
-				s.CreateQuery("delete from Animal").ExecuteUpdate();
-				s.CreateQuery("delete from Zoo").ExecuteUpdate();
-				s.CreateQuery("delete from Joiner").ExecuteUpdate();
-				s.CreateQuery("delete from Vehicle").ExecuteUpdate();
-				s.CreateQuery("delete from BooleanLiteralEntity").ExecuteUpdate();
+				await (s.CreateQuery("delete from Animal where mother is not null or father is not null").ExecuteUpdateAsync());
+				await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
+				await (s.CreateQuery("delete from Zoo").ExecuteUpdateAsync());
+				await (s.CreateQuery("delete from Joiner").ExecuteUpdateAsync());
+				await (s.CreateQuery("delete from Vehicle").ExecuteUpdateAsync());
+				await (s.CreateQuery("delete from BooleanLiteralEntity").ExecuteUpdateAsync());
 				await (txn.CommitAsync());
 				s.Close();
 			}

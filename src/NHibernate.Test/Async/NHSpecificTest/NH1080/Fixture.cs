@@ -7,9 +7,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1080
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH1080";
+			}
+		}
+
 		/* Bug occurs when an HQL query joins a OneToOne association (A.C), followed by a ManyToOne (A.B2) that 
            * returns null in the resultset.
            * 

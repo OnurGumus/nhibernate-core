@@ -9,9 +9,26 @@ namespace NHibernate.Test.Stats
 {
 	using Criterion;
 
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SessionStatsFixture : TestCase
+	public partial class SessionStatsFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Stats.Continent2.hbm.xml"};
+			}
+		}
+
 		private static async Task<Continent> FillDbAsync(ISession s)
 		{
 			Continent europe = new Continent();
@@ -29,6 +46,23 @@ namespace NHibernate.Test.Stats
 		{
 			await (s.DeleteAsync("from Country"));
 			await (s.DeleteAsync("from Continent"));
+		}
+
+		[Test]
+		public async Task Can_use_cached_query_that_return_no_resultsAsync()
+		{
+			Assert.IsTrue(sessions.Settings.IsQueryCacheEnabled);
+			using (ISession s = OpenSession())
+			{
+				IList list = await (s.CreateCriteria(typeof (Country)).Add(Restrictions.Eq("Name", "Narnia")).SetCacheable(true).ListAsync());
+				Assert.AreEqual(0, list.Count);
+			}
+
+			using (ISession s = OpenSession())
+			{
+				IList list = await (s.CreateCriteria(typeof (Country)).Add(Restrictions.Eq("Name", "Narnia")).SetCacheable(true).ListAsync());
+				Assert.AreEqual(0, list.Count);
+			}
 		}
 
 		[Test]
@@ -50,10 +84,10 @@ namespace NHibernate.Test.Stats
 			Assert.AreEqual(0, sessionStats.CollectionKeys.Count);
 			Assert.AreEqual(0, sessionStats.CollectionCount);
 			europe = await (s.GetAsync<Continent>(europe.Id));
-			NHibernateUtil.Initialize(europe.Countries);
+			await (NHibernateUtil.InitializeAsync(europe.Countries));
 			IEnumerator itr = europe.Countries.GetEnumerator();
 			itr.MoveNext();
-			NHibernateUtil.Initialize(itr.Current);
+			await (NHibernateUtil.InitializeAsync(itr.Current));
 			Assert.AreEqual(2, sessionStats.EntityKeys.Count);
 			Assert.AreEqual(2, sessionStats.EntityCount);
 			Assert.AreEqual(1, sessionStats.CollectionKeys.Count);

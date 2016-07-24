@@ -9,9 +9,32 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Legacy
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ABCTest : TestCase
+	public partial class ABCTestAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"ABC.hbm.xml"};
+			}
+		}
+
+		[Test]
+		public void HigherLevelIndexDefinitionInColumnTag()
+		{
+			string[] commands = cfg.GenerateSchemaCreationScript(Dialect);
+			Assert.IsTrue(ContainsCommandWithSubstring(commands, "create index indx_a_name"), "Unable to locate indx_a_name index creation");
+		}
+
+		[Test]
+		public void HigherLevelIndexDefinitionInPropertyTag()
+		{
+			string[] commands = cfg.GenerateSchemaCreationScript(Dialect);
+			Assert.IsTrue(ContainsCommandWithSubstring(commands, "create index indx_a_anothername"), "Unable to locate indx_a_anothername index creation");
+		}
+
 		[Test]
 		public async Task SubselectAsync()
 		{
@@ -36,9 +59,8 @@ namespace NHibernate.Test.Legacy
 
 			if (Dialect is FirebirdDialect)
 			{
-				// Firebird has problems deleting the map contents
-				ExecuteStatement("delete from Map");
-				ExecuteStatement("delete from A");
+				await (ExecuteStatementAsync("delete from Map"));
+				await (ExecuteStatementAsync("delete from A"));
 			}
 			else
 			{
@@ -68,30 +90,30 @@ namespace NHibernate.Test.Legacy
 			await (s.SaveAsync(c1));
 			d.Id = c1.Id;
 			await (s.SaveAsync(d));
-			Assert.IsTrue(s.CreateQuery("from c in class C2 where 1=1 or 1=1").List().Count == 0);
+			Assert.IsTrue((await (s.CreateQuery("from c in class C2 where 1=1 or 1=1").ListAsync())).Count == 0);
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c1 = (C1)s.Load(typeof (A), c1.Id);
+			c1 = (C1)await (s.LoadAsync(typeof (A), c1.Id));
 			Assert.IsTrue(c1.Address.Equals("foo bar") && (c1.Count == 23432) && c1.Name.Equals("c1") && c1.D.Amount > 213.3f);
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c1 = (C1)s.Load(typeof (B), c1.Id);
+			c1 = (C1)await (s.LoadAsync(typeof (B), c1.Id));
 			Assert.IsTrue(c1.Address.Equals("foo bar") && (c1.Count == 23432) && c1.Name.Equals("c1") && c1.D.Amount > 213.3f);
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c1 = (C1)s.Load(typeof (C1), c1.Id);
+			c1 = (C1)await (s.LoadAsync(typeof (C1), c1.Id));
 			Assert.IsTrue(c1.Address.Equals("foo bar") && (c1.Count == 23432) && c1.Name.Equals("c1") && c1.D.Amount > 213.3f);
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.CreateQuery("from b in class B").List();
+			await (s.CreateQuery("from b in class B").ListAsync());
 			await (t.CommitAsync());
 			s.Close();
 			// need to clean up the objects created by this test or Subselect() will fail
@@ -99,8 +121,8 @@ namespace NHibernate.Test.Legacy
 			// that NUnit and JUnit run their tests.
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IList aList = s.CreateQuery("from A").List();
-			IList dList = s.CreateQuery("from D").List();
+			IList aList = await (s.CreateQuery("from A").ListAsync());
+			IList dList = await (s.CreateQuery("from D").ListAsync());
 			foreach (A aToDelete in aList)
 			{
 				await (s.DeleteAsync(aToDelete));
@@ -113,6 +135,20 @@ namespace NHibernate.Test.Legacy
 
 			await (t.CommitAsync());
 			s.Close();
+		}
+
+		private static bool ContainsCommandWithSubstring(string[] commands, string subString)
+		{
+			foreach (string command in commands)
+			{
+				Console.WriteLine("Checking command : " + command);
+				if (command.IndexOf(subString) >= 0)
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 	}
 }

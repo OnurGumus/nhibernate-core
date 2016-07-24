@@ -7,9 +7,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class BasicSerializableFixture : TestCase
+	public partial class BasicSerializableFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecific.BasicSerializable.hbm.xml"};
+			}
+		}
+
 		/// <summary>
 		/// This contains portions of FumTest.CompositeIDs that deal with <c>type="Serializable"</c>
 		/// and replacements Foo.NullBlob, and Foo.Blob.
@@ -24,13 +33,13 @@ namespace NHibernate.Test.NHSpecificTest
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			ser = (BasicSerializable)s.Load(typeof (BasicSerializable), ser.Id);
+			ser = (BasicSerializable)await (s.LoadAsync(typeof (BasicSerializable), ser.Id));
 			Assert.IsNull(ser.Serial, "should have saved as null");
 			ser.Serial = ser.SerializableProperty;
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			ser = (BasicSerializable)s.Load(typeof (BasicSerializable), ser.Id);
+			ser = (BasicSerializable)await (s.LoadAsync(typeof (BasicSerializable), ser.Id));
 			Assert.IsTrue(ser.Serial is SerializableClass, "should have been a SerializableClass");
 			Assert.AreEqual(ser.SerializableProperty, ser.Serial, "SerializablePorperty and Serial should both be 5 and 'serialize me'");
 			IDictionary props = new Hashtable();
@@ -42,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			ser = (BasicSerializable)s.Load(typeof (BasicSerializable), ser.Id);
+			ser = (BasicSerializable)await (s.LoadAsync(typeof (BasicSerializable), ser.Id));
 			props = (IDictionary)ser.Serial;
 			Assert.AreEqual("bar", props["foo"]);
 			Assert.AreEqual("y", props["x"]);
@@ -51,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			ser = (BasicSerializable)s.Load(typeof (BasicSerializable), ser.Id);
+			ser = (BasicSerializable)await (s.LoadAsync(typeof (BasicSerializable), ser.Id));
 			Assert.AreEqual("modify me", ser.SerializableProperty._classString);
 			Assert.AreEqual("bar", props["foo"]);
 			Assert.AreEqual("y", props["x"]);

@@ -5,14 +5,19 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.NHSpecificTest.NH2580
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		private class MyClass
+		{
+		}
+
 		[Test]
 		public async Task WhenPersisterNotFoundShouldThrowAMoreExplicitExceptionAsync()
 		{
 			using (var s = OpenSession())
 			{
-				var exeption = Assert.Throws<HibernateException>(async () => await (s.GetAsync<MyClass>(1)));
+				var exeption = Assert.ThrowsAsync<HibernateException>(async () => await (s.GetAsync<MyClass>(1)));
 				Assert.That(exeption.Message.ToLowerInvariant(), Is.StringContaining("possible cause"));
 			}
 		}

@@ -6,9 +6,20 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1490
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override System.Collections.IList Mappings
+		{
+			get
+			{
+				if (Dialect is PostgreSQLDialect)
+					return new[]{"NHSpecificTest.NH1490.MappingsFilterAsBoolean.hbm.xml"};
+				return base.Mappings;
+			}
+		}
+
 		[Test]
 		public async Task Can_Translate_Correctly_Without_FilterAsync()
 		{
@@ -28,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1490
 			{
 				IQuery query = s.CreateQuery("from Customer c where c.Category.Name = :catName");
 				query.SetParameter("catName", "User");
-				IList<Customer> customers = query.List<Customer>();
+				IList<Customer> customers = await (query.ListAsync<Customer>());
 				Assert.That(customers.Count, Is.EqualTo(1), "Can apply condition on Customer without IFilter");
 			}
 
@@ -67,7 +78,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1490
 				// Customer is parametrized
 				IQuery query = s.CreateQuery("from Customer c where c.Name = :customerName");
 				query.SetParameter("customerName", "Somebody");
-				IList<Customer> customers = query.List<Customer>();
+				IList<Customer> customers = await (query.ListAsync<Customer>());
 				Assert.That(customers.Count, Is.EqualTo(1), "IFilter applied and Customer parametrized on Name also works");
 			}
 
@@ -106,7 +117,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1490
 				// related entity Customer.Category is parametrized
 				IQuery query = s.CreateQuery("from Customer c where c.Category.Name = :catName");
 				query.SetParameter("catName", "User");
-				IList<Customer> customers = query.List<Customer>();
+				IList<Customer> customers = await (query.ListAsync<Customer>());
 				Assert.That(customers.Count, Is.EqualTo(1), "IFIlter applied and Customer parametrized on Category.Name DOES NOT work");
 			}
 

@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2374
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class NH2374Fixture : BugTestCase
+	public partial class NH2374FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task OneToOne_with_EntityMode_MapAsync()
@@ -21,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2374
 						var parent = new Hashtable();
 						var child = new Hashtable{{"Parent", parent}};
 						parent["Child"] = child;
-						id = (int)s.Save("Parent", parent);
+						id = (int)await (s.SaveAsync("Parent", parent));
 						await (s.FlushAsync());
 						await (t.CommitAsync());
 					}
@@ -32,9 +33,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2374
 			{
 				using (ITransaction t = s.BeginTransaction())
 				{
-					var p = s.Get("Parent", id) as IDictionary;
+					var p = await (s.GetAsync("Parent", id)) as IDictionary;
 					Assert.That(p["Child"], Is.Not.Null);
-					s.Delete("Parent", p);
+					await (s.DeleteAsync("Parent", p));
 					await (t.CommitAsync());
 				}
 			}
@@ -51,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2374
 					var parent = new Hashtable();
 					var child = new Hashtable{{"Parent", parent}};
 					parent["Child"] = child;
-					id = (int)s.Save("Parent", parent);
+					id = (int)await (s.SaveAsync("Parent", parent));
 					await (s.FlushAsync());
 					await (t.CommitAsync());
 				}
@@ -61,9 +62,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2374
 			{
 				using (ITransaction t = s.BeginTransaction())
 				{
-					var p = s.Get("Parent", id) as IDictionary;
+					var p = await (s.GetAsync("Parent", id)) as IDictionary;
 					Assert.That(p["Child"], Is.Not.Null);
-					s.Delete("Parent", p);
+					await (s.DeleteAsync("Parent", p));
 					await (t.CommitAsync());
 				}
 			}

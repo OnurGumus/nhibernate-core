@@ -7,9 +7,28 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.MultipleCollectionFetchTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class MultipleBagFetchFixture : AbstractMultipleCollectionFetchFixture
+	public partial class MultipleBagFetchFixtureAsync : AbstractMultipleCollectionFetchFixtureAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"MultipleCollectionFetchTest.PersonBag.hbm.xml"};
+			}
+		}
+
+		protected override void AddToCollection(ICollection<Person> collection, Person person)
+		{
+			((List<Person>)collection).Add(person);
+		}
+
+		protected override ICollection<Person> CreateCollection()
+		{
+			return new List<Person>();
+		}
+
 		protected override async Task RunLinearJoinFetchTestAsync(Person parent)
 		{
 			try

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.Events.Collections.Association
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public abstract partial class AbstractAssociationCollectionEventFixture : AbstractCollectionEventFixture
+	public abstract partial class AbstractAssociationCollectionEventFixtureAsync : AbstractCollectionEventFixtureAsync
 	{
 		[Test]
 		public async Task DeleteParentButNotChildAsync()
@@ -17,8 +17,8 @@ namespace NHibernate.Test.Events.Collections.Association
 			listeners.Clear();
 			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
-			parent = (IParentWithCollection)s.Get(parent.GetType(), parent.Id);
-			child = (ChildEntity)s.Get(child.GetType(), child.Id);
+			parent = (IParentWithCollection)await (s.GetAsync(parent.GetType(), parent.Id));
+			child = (ChildEntity)await (s.GetAsync(child.GetType(), child.Id));
 			parent.RemoveChild(child);
 			await (s.DeleteAsync(parent));
 			await (tx.CommitAsync());

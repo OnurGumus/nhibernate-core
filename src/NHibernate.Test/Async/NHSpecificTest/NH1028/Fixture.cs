@@ -8,9 +8,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1028
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH1028";
+			}
+		}
+
 		[Test]
 		public async Task CanLoadCollectionUsingLeftOuterJoinAsync()
 		{
@@ -33,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1028
 				ICriteria criteria = s.CreateCriteria(typeof (Item));
 				criteria.CreateCriteria("Ships", "s", JoinType.InnerJoin).Add(Expression.IsNotNull("s.Id"));
 				criteria.CreateCriteria("Containers", "c", JoinType.LeftOuterJoin).Add(Expression.IsNull("c.Id"));
-				IList<Item> results = criteria.List<Item>();
+				IList<Item> results = await (criteria.ListAsync<Item>());
 				Assert.AreEqual(1, results.Count);
 				Item loadedItem = results[0];
 				Assert.AreEqual(itemName, loadedItem.Name);

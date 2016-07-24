@@ -5,9 +5,25 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1691
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		private static Component GetInitializedComponent()
+		{
+			var component = new Component();
+			var sub1 = new SubComponent();
+			var sub2 = new SubComponent();
+			component.Name = "Comp1";
+			sub1.SubName = "Sub1";
+			sub1.SubName1 = "Sub1x";
+			sub2.SubName = "Sub2";
+			sub2.SubName1 = "Sub2x";
+			sub1.Nested = sub2;
+			component.SubComponent = sub1;
+			return component;
+		}
+
 		[Test]
 		public async Task ComplexNestAsync()
 		{
@@ -34,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1691
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					var loadedNest = session.Load<Nest>(nestId);
+					var loadedNest = await (session.LoadAsync<Nest>(nestId));
 					await (transaction.CommitAsync());
 					Assert.AreEqual(2, loadedNest.ComplexComponents.Count);
 					Assert.IsNotNull(((DeepComponent)loadedNest.ComplexComponents[0]).Component.SubComponent.Nested.SubName1);
@@ -73,7 +89,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1691
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					var nest2 = session.Load<Nest>(nestId);
+					var nest2 = await (session.LoadAsync<Nest>(nestId));
 					await (transaction.CommitAsync());
 					Assert.IsNotNull(((Component)nest2.Components[0]).SubComponent.Nested.SubName);
 				}

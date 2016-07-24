@@ -6,9 +6,37 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.PropertyRef
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class KeyPropertyRefFixture : TestCase
+	public partial class KeyPropertyRefFixtureAsync : TestCaseAsync
 	{
+		protected override System.Collections.IList Mappings
+		{
+			get
+			{
+				return new string[]{"PropertyRef.KeyPropertyRef.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				await (s.DeleteAsync("from B"));
+				await (s.FlushAsync());
+				await (s.DeleteAsync("from A"));
+				await (s.FlushAsync());
+			}
+		}
+
 		[Test]
 		public async Task PropertyRefUsesOtherColumnAsync()
 		{

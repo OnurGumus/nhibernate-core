@@ -11,9 +11,42 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2500
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : TestCaseMappingByCode
+	public partial class FixtureAsync : TestCaseMappingByCodeAsync
 	{
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ConventionModelMapper();
+			mapper.BeforeMapClass += (mi, t, x) => x.Id(map => map.Generator(Generators.Guid));
+			return mapper.CompileMappingFor(new[]{typeof (Foo)});
+		}
+
+		protected override async Task OnSetUpAsync()
+		{
+			await (base.OnSetUpAsync());
+			using (ISession session = Sfi.OpenSession())
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					await (session.PersistAsync(new Foo{Name = "Banana"}));
+					await (session.PersistAsync(new Foo{Name = "Egg"}));
+					await (transaction.CommitAsync());
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = Sfi.OpenSession())
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					await (session.CreateQuery("delete from Foo").ExecuteUpdateAsync());
+					await (transaction.CommitAsync());
+				}
+
+			await (base.OnTearDownAsync());
+		}
+
+		private int count;
 		[Test]
 		public async Task TestLinqProjectionExpressionDoesntCacheParametersAsync()
 		{

@@ -1,7 +1,8 @@
+using System;
 using System.Linq;
-using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NUnit.Framework;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.Linq.ByMethod
 {
@@ -204,10 +205,15 @@ namespace NHibernate.Test.Linq.ByMethod
 			db.Orders.OrderBy(o => o.Shipper == null ? 0 : o.Shipper.ShipperId).Skip(3).Take(4).ToList();
 		}
 
-		[Test(Description = "NH-3445"), KnownBug("NH-3445")]
+		[Test(Description = "NH-3445")]
 		public void OrderByWithSelectDistinctAndTake()
 		{
-			db.Orders.Select(o => o.ShippedTo).Distinct().OrderBy(o => o).Take(1000).ToList();
+			Assert.Throws<NotSupportedException>(
+				() =>
+				{
+					db.Orders.Select(o => o.ShippedTo).Distinct().OrderBy(o => o).Take(1000).ToList();
+				}, KnownBug.Issue("NH-3445"));
+			
 		}
 	}
 }

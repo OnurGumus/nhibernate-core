@@ -6,8 +6,23 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.SqlTest.Identity
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public abstract partial class IdentityInsertWithStoredProcsTest : TestCase
+	public abstract partial class IdentityInsertWithStoredProcsTestAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override async Task ConfigureAsync(NHibernate.Cfg.Configuration configuration)
+		{
+			await (base.ConfigureAsync(configuration));
+			configuration.SetProperty(Environment.FormatSql, "false");
+		}
+
+		protected abstract string GetExpectedInsertOrgLogStatement(string orgName);
 		/// <summary>
 		/// Organization should be mappend with "identity" id strategy AND custom sql-insert (a stored proc).
 		/// The insert stored proc will return the new primary key and NH should recognize it and apply it

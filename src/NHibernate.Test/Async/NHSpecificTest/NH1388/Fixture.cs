@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1388
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task BagTestAsync()
@@ -64,6 +65,34 @@ namespace NHibernate.Test.NHSpecificTest.NH1388
 				student.Majors.Clear();
 				await (session.FlushAsync());
 				await (t.CommitAsync());
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			// clean up the database
+			using (ISession session = OpenSession())
+			{
+				session.BeginTransaction();
+				foreach (var student in await (session.CreateCriteria(typeof (Student)).ListAsync<Student>()))
+				{
+					await (session.DeleteAsync(student));
+				}
+
+				foreach (var subject in await (session.CreateCriteria(typeof (Subject)).ListAsync<Subject>()))
+				{
+					await (session.DeleteAsync(subject));
+				}
+
+				await (session.Transaction.CommitAsync());
+			}
+		}
+
+		protected override string CacheConcurrencyStrategy
+		{
+			get
+			{
+				return null;
 			}
 		}
 	}

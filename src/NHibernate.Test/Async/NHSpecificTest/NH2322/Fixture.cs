@@ -4,12 +4,40 @@ using NUnit.Framework;
 using NHibernate.Event;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2322
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override Task ConfigureAsync(Configuration configuration)
+		{
+			try
+			{
+				configuration.SetProperty(Environment.FormatSql, "false");
+				configuration.SetListener(ListenerType.PostUpdate, new PostUpdateEventListener());
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				await (s.DeleteAsync("from Person"));
+				await (s.FlushAsync());
+			}
+
+			await (base.OnTearDownAsync());
+		}
+
 		[Test]
 		public async Task ShouldNotThrowWhenCommitingATransactionAsync()
 		{

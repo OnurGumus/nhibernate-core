@@ -9,9 +9,37 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class MapFixture : TestCase
+	public partial class MapFixtureAsync : TestCaseAsync
 	{
+		private DateTime testDateTime = new DateTime(2003, 8, 16);
+		private DateTime updateDateTime = new DateTime(2003, 8, 17);
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecific.Parent.hbm.xml", "NHSpecific.Child.hbm.xml", "NHSpecific.SexType.hbm.xml", "NHSpecific.Team.hbm.xml"};
+			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is Dialect.FirebirdDialect); // Firebird has no CommandTimeout, and locks up during the tear-down of this fixture
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				await (session.DeleteAsync("from Team"));
+				await (session.DeleteAsync("from Child"));
+				await (session.DeleteAsync("from Parent"));
+				await (session.DeleteAsync("from SexType"));
+				await (session.FlushAsync());
+			}
+		}
+
 		[Test]
 		public async Task TestSelectAsync()
 		{
@@ -20,10 +48,10 @@ namespace NHibernate.Test.NHSpecificTest
 			ITransaction t = s.BeginTransaction();
 			ICriteria chiefsCriteria = s.CreateCriteria(typeof (Team));
 			chiefsCriteria.Add(Expression.Eq("Name", "Chiefs"));
-			Team chiefs = (Team)chiefsCriteria.List()[0];
+			Team chiefs = (Team)(await (chiefsCriteria.ListAsync()))[0];
 			IList<Child> players = chiefs.Players;
-			Parent parentDad = (Parent)s.Load(typeof (Parent), 1);
-			Child amyJones = (Child)s.Load(typeof (Child), 2);
+			Parent parentDad = (Parent)await (s.LoadAsync(typeof (Parent), 1));
+			Child amyJones = (Child)await (s.LoadAsync(typeof (Child), 2));
 			Child[] friends = amyJones.Friends;
 			Child childOneRef = amyJones.FirstSibling;
 			await (t.CommitAsync());
@@ -36,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest
 			await (TestInsertAsync());
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			Parent bobJones = (Parent)s.Load(typeof (Parent), 1);
+			Parent bobJones = (Parent)await (s.LoadAsync(typeof (Parent), 1));
 			ISet<Parent> friends = bobJones.AdultFriends;
 			int currentId = 0;
 			int previousId = 0;
@@ -80,10 +108,10 @@ namespace NHibernate.Test.NHSpecificTest
 			bobJones.AddFriend(charlieSmith);
 			bobJones.AddFriend(maryJones);
 			maryJones.AddFriend(cindySmith);
-			s.Save(bobJones, bobJones.Id);
-			s.Save(maryJones, maryJones.Id);
-			s.Save(charlieSmith, charlieSmith.Id);
-			s.Save(cindySmith, cindySmith.Id);
+			await (s.SaveAsync(bobJones, bobJones.Id));
+			await (s.SaveAsync(maryJones, maryJones.Id));
+			await (s.SaveAsync(charlieSmith, charlieSmith.Id));
+			await (s.SaveAsync(cindySmith, cindySmith.Id));
 			Child johnnyJones = new Child();
 			Child amyJones = new Child();
 			Child brianSmith = new Child();
@@ -124,10 +152,10 @@ namespace NHibernate.Test.NHSpecificTest
 			chiefs.Players = new List<Child>();
 			chiefs.Players.Add(johnnyJones);
 			chiefs.Players.Add(sarahSmith);
-			s.Save(johnnyJones, johnnyJones.Id);
-			s.Save(amyJones, amyJones.Id);
-			s.Save(brianSmith, brianSmith.Id);
-			s.Save(sarahSmith, sarahSmith.Id);
+			await (s.SaveAsync(johnnyJones, johnnyJones.Id));
+			await (s.SaveAsync(amyJones, amyJones.Id));
+			await (s.SaveAsync(brianSmith, brianSmith.Id));
+			await (s.SaveAsync(sarahSmith, sarahSmith.Id));
 			await (s.SaveAsync(royals));
 			await (s.SaveAsync(chiefs));
 			await (t.CommitAsync());

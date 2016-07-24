@@ -7,9 +7,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.ExpressionTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class DetachedCriteriaFixture : TestCase
+	public partial class DetachedCriteriaFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Componentizable.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task CanUseDetachedCriteriaToQueryAsync()
 		{

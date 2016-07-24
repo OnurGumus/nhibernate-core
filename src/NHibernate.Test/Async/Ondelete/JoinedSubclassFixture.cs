@@ -5,12 +5,44 @@ using NHibernate.Stat;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Ondelete
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class JoinedSubclassFixture : TestCase
+	public partial class JoinedSubclassFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Ondelete.EFGJoinedSubclass.hbm.xml"};
+			}
+		}
+
+		protected override Task ConfigureAsync(Configuration cfg)
+		{
+			try
+			{
+				cfg.SetProperty(Environment.GenerateStatistics, "true");
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
 		[Test]
 		public async Task JoinedSubclassCascadeAsync()
 		{
@@ -26,7 +58,7 @@ namespace NHibernate.Test.Ondelete
 			statistics.Clear();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IList<E> l = s.CreateQuery("from E").List<E>();
+			IList<E> l = await (s.CreateQuery("from E").ListAsync<E>());
 			statistics.Clear();
 			await (s.DeleteAsync(l[0]));
 			await (s.DeleteAsync(l[1]));

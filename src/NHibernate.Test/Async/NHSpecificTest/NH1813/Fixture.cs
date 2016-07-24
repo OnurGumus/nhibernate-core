@@ -3,12 +3,28 @@ using NHibernate.Cfg;
 using NHibernate.Exceptions;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1813
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override Task ConfigureAsync(Configuration configuration)
+		{
+			try
+			{
+				configuration.SetProperty(Environment.BatchSize, "0");
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
 		[Test]
 		public async Task ContainSQLInInsertAsync()
 		{
@@ -23,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1813
 				using (ITransaction t = s.BeginTransaction())
 				{
 					await (s.SaveAsync(new EntityWithUnique{Id = 2, Description = "algo"}));
-					var exception = Assert.Throws<GenericADOException>(async () => await t.CommitAsync());
+					var exception = Assert.ThrowsAsync<GenericADOException>(async () => await t.CommitAsync());
 					Assert.That(exception.Message, Is.StringContaining("INSERT"), "should contain SQL");
 					Assert.That(exception.Message, Is.StringContaining("#2"), "should contain id");
 				}
@@ -31,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1813
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					s.CreateQuery("delete from EntityWithUnique").ExecuteUpdate();
+					await (s.CreateQuery("delete from EntityWithUnique").ExecuteUpdateAsync());
 					await (t.CommitAsync());
 				}
 		}
@@ -52,14 +68,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1813
 				{
 					var e = await (s.GetAsync<EntityWithUnique>(2));
 					e.Description = "algo";
-					var exception = Assert.Throws<GenericADOException>(async () => await t.CommitAsync());
+					var exception = Assert.ThrowsAsync<GenericADOException>(async () => await t.CommitAsync());
 					Assert.That(exception.Message, Is.StringContaining("UPDATE"), "should contain SQL");
 				}
 
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					s.CreateQuery("delete from EntityWithUnique").ExecuteUpdate();
+					await (s.CreateQuery("delete from EntityWithUnique").ExecuteUpdateAsync());
 					await (t.CommitAsync());
 				}
 		}

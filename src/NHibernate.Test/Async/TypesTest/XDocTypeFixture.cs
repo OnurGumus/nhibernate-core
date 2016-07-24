@@ -8,9 +8,23 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.TypesTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class XDocTypeFixture : TypeFixtureBase
+	public partial class XDocTypeFixtureAsync : TypeFixtureBaseAsync
 	{
+		protected override string TypeName
+		{
+			get
+			{
+				return "XDoc";
+			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsSqlType(new SqlType(DbType.Xml));
+		}
+
 		[Test]
 		public async Task ReadWriteAsync()
 		{
@@ -62,6 +76,14 @@ namespace NHibernate.Test.TypesTest
 				await (s.DeleteAsync(docEntity));
 				await (s.FlushAsync());
 			}
+		}
+
+		[Test]
+		public void AutoDiscoverFromNetType()
+		{
+			// integration test to be 100% sure
+			var propertyType = sessions.GetEntityPersister(typeof (XDocClass).FullName).GetPropertyType("AutoDocument");
+			Assert.That(propertyType, Is.InstanceOf<XDocType>());
 		}
 	}
 }

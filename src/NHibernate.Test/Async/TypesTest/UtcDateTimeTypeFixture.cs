@@ -5,9 +5,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.TypesTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class UtcDateTimeTypeFixture : TypeFixtureBase
+	public partial class UtcDateTimeTypeFixtureAsync : TypeFixtureBaseAsync
 	{
+		protected override string TypeName
+		{
+			get
+			{
+				return "DateTime";
+			}
+		}
+
 		[Test]
 		public async Task ReadWriteAsync()
 		{
@@ -21,7 +30,7 @@ namespace NHibernate.Test.TypesTest
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			basic = (DateTimeClass)s.Load(typeof (DateTimeClass), 1);
+			basic = (DateTimeClass)await (s.LoadAsync(typeof (DateTimeClass), 1));
 			Assert.AreEqual(DateTimeKind.Utc, basic.UtcDateTimeValue.Value.Kind);
 			Assert.AreEqual(expected, basic.UtcDateTimeValue.Value);
 			await (s.DeleteAsync(basic));

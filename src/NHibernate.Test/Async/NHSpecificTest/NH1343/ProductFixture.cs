@@ -5,9 +5,20 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1343
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ProductFixture : BugTestCase
+	public partial class ProductFixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				await (session.DeleteAsync("from OrderLine"));
+				await (session.DeleteAsync("from Product"));
+				await (session.FlushAsync());
+			}
+		}
+
 		[Test]
 		public async Task ProductQueryPassesParsingButFailsAsync()
 		{
@@ -20,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1343
 				await (session.FlushAsync());
 				IQuery query = session.GetNamedQuery("GetLinesForProduct");
 				query.SetParameter("product", product1);
-				IList<OrderLine> list = query.List<OrderLine>();
+				IList<OrderLine> list = await (query.ListAsync<OrderLine>());
 				Assert.AreEqual(1, list.Count);
 			}
 		}
@@ -37,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1343
 				await (session.FlushAsync());
 				IQuery query = session.GetNamedQuery("GetLinesForProductWithAlias");
 				query.SetParameter("product", product1);
-				IList<OrderLine> list = query.List<OrderLine>();
+				IList<OrderLine> list = await (query.ListAsync<OrderLine>());
 				Assert.AreEqual(1, list.Count);
 			}
 		}

@@ -8,12 +8,43 @@ using NHibernate.Transform;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.EntityModeTest.Xml.Basic
 {
+	[TestFixture, Ignore("Not supported yet.")]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class XmlFixture : TestCase
+	public partial class XmlFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"EntityModeTest.Xml.Basic.Account.hbm.xml", "EntityModeTest.Xml.Basic.AB.hbm.xml", "EntityModeTest.Xml.Basic.Employer.hbm.xml"};
+			}
+		}
+
+		protected override Task ConfigureAsync(Configuration configuration)
+		{
+			try
+			{
+				cfg.SetProperty(Environment.DefaultEntityMode, EntityModeHelper.ToString(EntityMode.Xml));
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
 		public async Task XmlAsync()
 		{
 			string xml = @"<account id='acb123'>
@@ -44,19 +75,19 @@ namespace NHibernate.Test.EntityModeTest.Xml.Basic
 			Print(acct);
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			s.Persist("Location", loc);
+			await (s.PersistAsync("Location", loc));
 			XmlElement eLocation = cust.OwnerDocument.CreateElement("location");
 			eLocation.SetAttribute("id", "id");
 			cust.AppendChild(eLocation);
-			s.Persist("Account", acct);
+			await (s.PersistAsync("Account", acct));
 			await (t.CommitAsync());
 			s.Close();
 			Print(loc);
 			s = OpenSession();
 			t = s.BeginTransaction();
-			cust = (XmlElement)s.Get("Customer", "xyz123");
+			cust = (XmlElement)await (s.GetAsync("Customer", "xyz123"));
 			Print(cust);
-			acct = (XmlElement)s.Get("Account", "abc123");
+			acct = (XmlElement)await (s.GetAsync("Account", "abc123"));
 			Print(acct);
 			Assert.AreEqual(acct.SelectSingleNode("customer"), cust);
 			cust.SelectSingleNode("name").SelectSingleNode("first").InnerText = "Gavin A";
@@ -79,14 +110,14 @@ namespace NHibernate.Test.EntityModeTest.Xml.Basic
 			cust.InnerText = "Still the same example!";
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.SaveOrUpdate("Account", acct);
+			await (s.SaveOrUpdateAsync("Account", acct));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			cust = (XmlElement)s.Get("Customer", "xyz123");
+			cust = (XmlElement)await (s.GetAsync("Customer", "xyz123"));
 			Print(cust);
-			acct = (XmlElement)s.Get("Account", "abc123");
+			acct = (XmlElement)await (s.GetAsync("Account", "abc123"));
 			Print(acct);
 			Assert.AreEqual(acct.SelectSingleNode("customer"), cust);
 			await (t.CommitAsync());
@@ -174,11 +205,18 @@ namespace NHibernate.Test.EntityModeTest.Xml.Basic
 			// clean up
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.Delete("Account", acct);
-			s.Delete("Location", loc);
+			await (s.DeleteAsync("Account", acct));
+			await (s.DeleteAsync("Location", loc));
 			await (s.DeleteAsync("from Account"));
 			await (t.CommitAsync());
 			s.Close();
+		}
+
+		public static void Print(XmlNode elt)
+		{
+			Console.WriteLine("============");
+			Console.WriteLine(elt.OuterXml);
+			Console.WriteLine("============");
 		}
 
 		[Test]
@@ -194,7 +232,7 @@ namespace NHibernate.Test.EntityModeTest.Xml.Basic
 			XmlElement a = baseXml.DocumentElement;
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			s.Persist("A", a);
+			await (s.PersistAsync("A", a));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
@@ -202,7 +240,7 @@ namespace NHibernate.Test.EntityModeTest.Xml.Basic
 			a = (XmlElement)await (s.CreateCriteria("A").UniqueResultAsync());
 			Assert.AreEqual(a.GetElementsByTagName("b").Count, 2);
 			Print(a);
-			s.Delete("A", a);
+			await (s.DeleteAsync("A", a));
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -238,16 +276,16 @@ namespace NHibernate.Test.EntityModeTest.Xml.Basic
 			XmlElement loc = doc2.DocumentElement;
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			s.Persist("Location", loc);
+			await (s.PersistAsync("Location", loc));
 			XmlElement loc1 = cust.OwnerDocument.CreateElement("location");
 			loc1.SetAttribute("id", "id");
 			cust.AppendChild(loc1);
-			s.Persist("Account", acct);
+			await (s.PersistAsync("Account", acct));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			cust = (XmlElement)s.Get("Customer", "xyz123");
+			cust = (XmlElement)await (s.GetAsync("Customer", "xyz123"));
 			Print(cust);
 			Assert.AreEqual(2, cust.SelectSingleNode("stuff").SelectNodes("foo").Count, "Incorrect stuff-map size");
 			var stuffElement = (XmlElement)cust.SelectSingleNode("stuff").SelectNodes("foo")[0];
@@ -256,8 +294,8 @@ namespace NHibernate.Test.EntityModeTest.Xml.Basic
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.Delete("Account", acct);
-			s.Delete("Location", loc);
+			await (s.DeleteAsync("Account", acct));
+			await (s.DeleteAsync("Location", loc));
 			await (t.CommitAsync());
 			s.Close();
 		}

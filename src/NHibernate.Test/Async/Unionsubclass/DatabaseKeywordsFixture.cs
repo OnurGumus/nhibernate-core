@@ -6,9 +6,32 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Unionsubclass
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class DatabaseKeywordsFixture : TestCase
+	public partial class DatabaseKeywordsFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Unionsubclass.DatabaseKeyword.hbm.xml"};
+			}
+		}
+
+		protected override async Task ConfigureAsync(Configuration configuration)
+		{
+			await (base.ConfigureAsync(configuration));
+			configuration.SetProperty(Environment.Hbm2ddlKeyWords, "auto-quote");
+		}
+
 		[Test]
 		public async Task UnionSubClassQuotesReservedColumnNamesAsync()
 		{

@@ -5,9 +5,26 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.VersionTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class VersionFixture : TestCase
+	public partial class VersionFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"VersionTest.PersonThing.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
 		[Test]
 		public async System.Threading.Tasks.Task VersionShortCircuitFlushAsync()
 		{
@@ -20,11 +37,11 @@ namespace NHibernate.Test.VersionTest
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			Thing passp = (Thing)s.Get(typeof (Thing), "Passport");
+			Thing passp = (Thing)await (s.GetAsync(typeof (Thing), "Passport"));
 			passp.LongDescription = "blah blah blah";
-			s.CreateQuery("from Person").List();
-			s.CreateQuery("from Person").List();
-			s.CreateQuery("from Person").List();
+			await (s.CreateQuery("from Person").ListAsync());
+			await (s.CreateQuery("from Person").ListAsync());
+			await (s.CreateQuery("from Person").ListAsync());
 			await (t.CommitAsync());
 			s.Close();
 			Assert.AreEqual(passp.Version, 2);

@@ -8,9 +8,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class NH47Fixture : TestCase
+	public partial class NH47FixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecific.UnsavedType.hbm.xml"};
+			}
+		}
+
 		public async Task<TimeSpan> BatchInsertAsync(object[] objs)
 		{
 			TimeSpan tspan = TimeSpan.Zero;

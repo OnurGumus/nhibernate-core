@@ -8,9 +8,38 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH3149
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnSetUpAsync()
+		{
+			await (base.OnSetUpAsync());
+			using (var session = OpenSession())
+				using (var tx = session.BeginTransaction())
+				{
+					var entity = new NH3149Entity();
+					await (session.SaveAsync(entity));
+					await (tx.CommitAsync());
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			await (base.OnTearDownAsync());
+			using (var session = OpenSession())
+				using (var tx = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from NH3149Entity"));
+					await (tx.CommitAsync());
+				}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is MsSql2005Dialect;
+		}
+
 		[Test]
 		public async Task ShouldNotWaitForLockAsync()
 		{

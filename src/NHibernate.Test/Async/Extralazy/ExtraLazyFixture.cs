@@ -6,9 +6,34 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Extralazy
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ExtraLazyFixture : TestCase
+	public partial class ExtraLazyFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"Extralazy.UserGroup.hbm.xml"};
+			}
+		}
+
+		protected override string CacheConcurrencyStrategy
+		{
+			get
+			{
+				return null;
+			}
+		}
+
 		[Test]
 		public async Task ExtraLazyWithWhereClauseAsync()
 		{
@@ -221,7 +246,7 @@ namespace NHibernate.Test.Extralazy
 					gavin = (User)g.Users["gavin"]; // NH: put in JAVA return the previous value
 					g.Users["gavin"] = turin;
 					await (s.DeleteAsync(gavin));
-					Assert.AreEqual(0, s.CreateQuery("select count(*) from SessionAttribute").UniqueResult<long>());
+					Assert.AreEqual(0, await (s.CreateQuery("select count(*) from SessionAttribute").UniqueResultAsync<long>()));
 					await (t.CommitAsync());
 				}
 
@@ -233,10 +258,10 @@ namespace NHibernate.Test.Extralazy
 					turin = (User)g.Users["turin"];
 					smap = turin.Session;
 					Assert.AreEqual(0, smap.Count);
-					Assert.AreEqual(1L, s.CreateQuery("select count(*) from User").UniqueResult<long>());
+					Assert.AreEqual(1L, await (s.CreateQuery("select count(*) from User").UniqueResultAsync<long>()));
 					await (s.DeleteAsync(g));
 					await (s.DeleteAsync(turin));
-					Assert.AreEqual(0, s.CreateQuery("select count(*) from User").UniqueResult<long>());
+					Assert.AreEqual(0, await (s.CreateQuery("select count(*) from User").UniqueResultAsync<long>()));
 					await (t.CommitAsync());
 				}
 		}
@@ -255,7 +280,7 @@ namespace NHibernate.Test.Extralazy
 					await (s.PersistAsync(turin));
 					await (s.FlushAsync());
 					s.Clear();
-					IList results = s.GetNamedQuery("UserSessionData").SetParameter("uname", "%in").List();
+					IList results = await (s.GetNamedQuery("UserSessionData").SetParameter("uname", "%in").ListAsync());
 					Assert.AreEqual(2, results.Count);
 					// NH Different behavior : NH1612, HHH-2831
 					gavin = (User)results[0];

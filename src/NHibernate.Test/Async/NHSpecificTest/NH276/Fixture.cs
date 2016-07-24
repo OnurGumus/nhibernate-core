@@ -6,9 +6,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH276
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : TestCase
+	public partial class FixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecificTest.NH276.Mappings.hbm.xml"};
+			}
+		}
+
 		/// <summary>
 		/// Testing that the syntax of "manytoone.Id" works inside
 		/// of an ICriteria.  This was broken in the upgrade to 0.8
@@ -45,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.NH276
 			s = OpenSession();
 			ICriteria c = s.CreateCriteria(typeof (Office));
 			c.Add(Expression.Eq("Location.Id", madison.Id));
-			IList results = c.List();
+			IList results = await (c.ListAsync());
 			Assert.AreEqual(2, results.Count, "2 objects");
 			foreach (Office office in results)
 			{
@@ -54,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.NH276
 
 			c = s.CreateCriteria(typeof (Office));
 			c.Add(Expression.Eq("Location.Id", college.Id));
-			results = c.List();
+			results = await (c.ListAsync());
 			Assert.AreEqual(1, results.Count, "1 objects");
 			foreach (Office office in results)
 			{

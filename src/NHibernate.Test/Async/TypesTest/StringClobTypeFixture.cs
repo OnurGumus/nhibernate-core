@@ -5,9 +5,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.TypesTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class StringClobTypeFixture : TypeFixtureBase
+	public partial class StringClobTypeFixtureAsync : TypeFixtureBaseAsync
 	{
+		protected override string TypeName
+		{
+			get
+			{
+				return "StringClob";
+			}
+		}
+
 		[Test]
 		public async Task ReadWriteAsync()
 		{
@@ -18,7 +27,7 @@ namespace NHibernate.Test.TypesTest
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			b = (StringClobClass)s.Load(typeof (StringClobClass), b.Id);
+			b = (StringClobClass)await (s.LoadAsync(typeof (StringClobClass), b.Id));
 			Assert.AreEqual("foo/bar/baz", b.StringClob);
 			await (s.DeleteAsync(b));
 			await (s.FlushAsync());

@@ -5,42 +5,65 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.BulkManipulation
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class NativeSQLBulkOperations : TestCase
+	public partial class NativeSQLBulkOperationsAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"BulkManipulation.Vehicle.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task SimpleNativeSQLInsertAsync()
 		{
 			await (PrepareDataAsync());
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			IList l = s.CreateQuery("from Vehicle").List();
+			IList l = await (s.CreateQuery("from Vehicle").ListAsync());
 			Assert.AreEqual(4, l.Count);
 			string ssql = string.Format("insert into VEHICLE (id, TofC, Vin, Owner) select {0}, 22, Vin, Owner from VEHICLE where TofC = 10", GetNewId());
-			s.CreateSQLQuery(ssql).ExecuteUpdate();
-			l = s.CreateQuery("from Vehicle").List();
+			await (s.CreateSQLQuery(ssql).ExecuteUpdateAsync());
+			l = await (s.CreateQuery("from Vehicle").ListAsync());
 			Assert.AreEqual(5, l.Count);
 			await (t.CommitAsync());
 			t = s.BeginTransaction();
-			s.CreateSQLQuery("delete from VEHICLE where TofC = 20").ExecuteUpdate();
-			l = s.CreateQuery("from Vehicle").List();
+			await (s.CreateSQLQuery("delete from VEHICLE where TofC = 20").ExecuteUpdateAsync());
+			l = await (s.CreateQuery("from Vehicle").ListAsync());
 			Assert.AreEqual(4, l.Count);
-			Car c = s.CreateQuery("from Car c where c.Owner = 'Kirsten'").UniqueResult<Car>();
+			Car c = await (s.CreateQuery("from Car c where c.Owner = 'Kirsten'").UniqueResultAsync<Car>());
 			c.Owner = "NotKirsten";
 			IQuery sql = s.GetNamedQuery("native-delete-car").SetString(0, "Kirsten");
-			Assert.AreEqual(0, sql.ExecuteUpdate());
+			Assert.AreEqual(0, await (sql.ExecuteUpdateAsync()));
 			sql = s.GetNamedQuery("native-delete-car").SetString(0, "NotKirsten");
-			Assert.AreEqual(1, sql.ExecuteUpdate());
+			Assert.AreEqual(1, await (sql.ExecuteUpdateAsync()));
 			sql = s.CreateSQLQuery("delete from VEHICLE where (TofC = 21) and (Owner = :owner)").SetString("owner", "NotThere");
-			Assert.AreEqual(0, sql.ExecuteUpdate());
+			Assert.AreEqual(0, await (sql.ExecuteUpdateAsync()));
 			sql = s.CreateSQLQuery("delete from VEHICLE where (TofC = 21) and (Owner = :owner)").SetString("owner", "Joe");
-			Assert.AreEqual(1, sql.ExecuteUpdate());
-			s.CreateSQLQuery("delete from VEHICLE where (TofC = 22)").ExecuteUpdate();
-			l = s.CreateQuery("from Vehicle").List();
+			Assert.AreEqual(1, await (sql.ExecuteUpdateAsync()));
+			await (s.CreateSQLQuery("delete from VEHICLE where (TofC = 22)").ExecuteUpdateAsync());
+			l = await (s.CreateQuery("from Vehicle").ListAsync());
 			Assert.AreEqual(0, l.Count);
 			await (t.CommitAsync());
 			s.Close();
 			await (CleanupDataAsync());
+		}
+
+		private int customId = 0;
+		private int GetNewId()
+		{
+			return ++customId;
 		}
 
 		public async Task PrepareDataAsync()

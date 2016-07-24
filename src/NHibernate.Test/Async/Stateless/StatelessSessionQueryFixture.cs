@@ -6,51 +6,42 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Stateless
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class StatelessSessionQueryFixture : TestCase
+	public partial class StatelessSessionQueryFixtureAsync : TestCaseAsync
 	{
-		[Test]
-		public async Task CriteriaAsync()
+		protected override string MappingsAssembly
 		{
-			var testData = new TestData(sessions);
-			await (testData.createDataAsync());
-			using (IStatelessSession s = sessions.OpenStatelessSession())
+			get
 			{
-				Assert.AreEqual(1, s.CreateCriteria<Contact>().List().Count);
+				return "NHibernate.Test";
 			}
-
-			await (testData.cleanDataAsync());
 		}
 
-		[Test]
-		public async Task CriteriaWithSelectFetchModeAsync()
+		protected override IList Mappings
 		{
-			var testData = new TestData(sessions);
-			await (testData.createDataAsync());
-			using (IStatelessSession s = sessions.OpenStatelessSession())
+			get
 			{
-				Assert.AreEqual(1, s.CreateCriteria<Contact>().SetFetchMode("Org", FetchMode.Select).List().Count);
+				return new[]{"Stateless.Contact.hbm.xml"};
 			}
-
-			await (testData.cleanDataAsync());
 		}
 
-		[Test]
-		public async Task HqlAsync()
+		protected override async Task ConfigureAsync(Configuration configuration)
 		{
-			var testData = new TestData(sessions);
-			await (testData.createDataAsync());
-			using (IStatelessSession s = sessions.OpenStatelessSession())
-			{
-				Assert.AreEqual(1, s.CreateQuery("from Contact c join fetch c.Org join fetch c.Org.Country").List<Contact>().Count);
-			}
-
-			await (testData.cleanDataAsync());
+			await (base.ConfigureAsync(configuration));
+			cfg.SetProperty(Environment.MaxFetchDepth, 1.ToString());
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		private partial class TestData
 		{
+			internal readonly IList list = new ArrayList();
+			private readonly ISessionFactory sessions;
+			public TestData(ISessionFactory sessions)
+			{
+				this.sessions = sessions;
+			}
+
 			public virtual async Task createDataAsync()
 			{
 				using (ISession session = sessions.OpenSession())
@@ -88,6 +79,45 @@ namespace NHibernate.Test.Stateless
 					}
 				}
 			}
+		}
+
+		[Test]
+		public async Task CriteriaAsync()
+		{
+			var testData = new TestData(sessions);
+			await (testData.createDataAsync());
+			using (IStatelessSession s = sessions.OpenStatelessSession())
+			{
+				Assert.AreEqual(1, (await (s.CreateCriteria<Contact>().ListAsync())).Count);
+			}
+
+			await (testData.cleanDataAsync());
+		}
+
+		[Test]
+		public async Task CriteriaWithSelectFetchModeAsync()
+		{
+			var testData = new TestData(sessions);
+			await (testData.createDataAsync());
+			using (IStatelessSession s = sessions.OpenStatelessSession())
+			{
+				Assert.AreEqual(1, (await (s.CreateCriteria<Contact>().SetFetchMode("Org", FetchMode.Select).ListAsync())).Count);
+			}
+
+			await (testData.cleanDataAsync());
+		}
+
+		[Test]
+		public async Task HqlAsync()
+		{
+			var testData = new TestData(sessions);
+			await (testData.createDataAsync());
+			using (IStatelessSession s = sessions.OpenStatelessSession())
+			{
+				Assert.AreEqual(1, (await (s.CreateQuery("from Contact c join fetch c.Org join fetch c.Org.Country").ListAsync<Contact>())).Count);
+			}
+
+			await (testData.cleanDataAsync());
 		}
 	}
 }

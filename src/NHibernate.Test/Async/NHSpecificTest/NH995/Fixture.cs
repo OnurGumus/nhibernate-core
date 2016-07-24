@@ -5,9 +5,30 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH995
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH995";
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = OpenSession())
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					await (s.DeleteAsync("from ClassC"));
+					await (s.DeleteAsync("from ClassB"));
+					await (s.DeleteAsync("from ClassA"));
+					await (tx.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task TestAsync()
 		{
@@ -51,9 +72,9 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 				{
 					using (SqlLogSpy sqlLogSpy = new SqlLogSpy())
 					{
-						IList<ClassC> c_list = s.CreateCriteria(typeof (ClassC)).List<ClassC>();
+						IList<ClassC> c_list = await (s.CreateCriteria(typeof (ClassC)).ListAsync<ClassC>());
 						// make sure we initialize B
-						NHibernateUtil.Initialize(c_list[0].B);
+						await (NHibernateUtil.InitializeAsync(c_list[0].B));
 						Assert.AreEqual(1, sqlLogSpy.Appender.GetEvents().Length, "Only one SQL should have been issued");
 					}
 

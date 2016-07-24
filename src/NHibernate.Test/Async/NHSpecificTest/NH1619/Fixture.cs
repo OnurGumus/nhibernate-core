@@ -6,9 +6,23 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1619
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH1619";
+			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is PostgreSQLDialect;
+		}
+
 		[Test]
 		public async Task SavingAndRetrievingAsync()
 		{
@@ -18,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1619
 				{
 					await (s.SaveAsync(entity));
 					await (tx.CommitAsync());
-					Assert.AreEqual(true, s.CreateQuery("from Dude").UniqueResult<Dude>().BooleanValue);
+					Assert.AreEqual(true, (await (s.CreateQuery("from Dude").UniqueResultAsync<Dude>())).BooleanValue);
 				}
 
 			using (ISession s = OpenSession())
@@ -27,6 +41,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1619
 					await (s.DeleteAsync(entity));
 					await (tx.CommitAsync());
 				}
+		}
+
+		[Test]
+		public void UsingBooleanPostgreSQLType()
+		{
+			Assert.AreEqual("boolean", Dialect.GetTypeName(SqlTypeFactory.Boolean));
 		}
 	}
 }

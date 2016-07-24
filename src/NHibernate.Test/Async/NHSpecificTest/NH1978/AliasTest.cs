@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1978
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class AliasTest : BugTestCase
+	public partial class AliasTestAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task ShouldReturnPlanFromEmployeeAsync()
@@ -17,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1978
 					var plan = new _401k{PlanName = "test"};
 					await (s.SaveAsync(plan));
 					await (s.FlushAsync());
-					s.Refresh(plan);
+					await (s.RefreshAsync(plan));
 					var emp = new Employee{EmpName = "name", PlanParent = plan};
 					await (s.SaveAsync(emp));
 					trans.Rollback();

@@ -4,12 +4,29 @@ using System.Collections;
 using NHibernate.Driver;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1507
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
+		{
+			return !(factory.ConnectionProvider.Driver is OracleManagedDataClientDriver);
+		}
+
+		protected override Task OnSetUpAsync()
+		{
+			return CreateDataAsync();
+		}
+
+		protected override Task OnTearDownAsync()
+		{
+			return CleanupDataAsync();
+		}
+
 		private async Task CreateDataAsync()
 		{
 			//Employee
@@ -47,6 +64,29 @@ namespace NHibernate.Test.NHSpecificTest.NH1507
 					await (session.DeleteAsync("from Order oo where oo.ShipCountry = 'Deadville'"));
 					await (tx.CommitAsync());
 				}
+			}
+		}
+
+		[Test]
+		public async Task ExplicitJoinAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				//explicit join
+				IList results = await (session.CreateQuery("select count(*) from Order as entity join entity.Employee ee " + "where ee.PostalCode='66666' or entity.ShipCountry='Deadville'").ListAsync());
+				//Debug.Assert(list[0].Equals(191), "Wrong number of orders, returned: " + list[0].ToString());
+				Assert.AreEqual(2, results[0]);
+			}
+		}
+
+		[Test]
+		public async Task ImplicitJoinFailingTestAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				//implicit join
+				IList results = await (session.CreateQuery("select count(*) from Order as entity " + "where entity.Employee.PostalCode='66666' or entity.ShipCountry='Deadville'").ListAsync());
+				Assert.AreEqual(2, results[0]);
 			}
 		}
 	}

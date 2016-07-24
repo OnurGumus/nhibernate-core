@@ -10,8 +10,16 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.NHSpecificTest.NH2583
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class MassTestingOrderByFixture : AbstractMassTestingFixture
+	public partial class MassTestingOrderByFixtureAsync : AbstractMassTestingFixtureAsync
 	{
+		protected override int TestAndAssert(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds)
+		{
+			IQueryable<MyBO> result = session.Query<MyBO>().Where(condition).OrderByDescending(bo => bo.BO1.I1 ?? bo.BO1.Id);
+			var forceDBRun = result.ToList();
+			AreEqual(expectedIds, forceDBRun.Select(bo => bo.Id).ToArray());
+			return expectedIds.Count();
+		}
+
 		// Condition pattern: (A && B) && (C || D) ORDER BY F
 		[Test]
 		public async Task Test_xyP_in_F____xy_OJAsync()

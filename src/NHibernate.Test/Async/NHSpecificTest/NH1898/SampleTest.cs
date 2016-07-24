@@ -5,9 +5,15 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1898
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SampleTest : BugTestCase
+	public partial class SampleTestAsync : BugTestCaseAsync
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect as MsSql2005Dialect != null;
+		}
+
 		[Test]
 		public async Task TypeOfParametersShouldBeSetCorrectlyAsync()
 		{
@@ -25,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1898
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					session.GetNamedQuery("replaceQuery").SetString("old", "oldValue").SetString("new", "newValue").ExecuteUpdate();
+					await (session.GetNamedQuery("replaceQuery").SetString("old", "oldValue").SetString("new", "newValue").ExecuteUpdateAsync());
 					await (tx.CommitAsync());
 				}
 

@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1405
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task BugAsync()
@@ -21,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1405
 						DbCommand cmd = session.Connection.CreateCommand();
 						cmd.CommandText = sql;
 						tx.Enlist(cmd);
-						cmd.ExecuteNonQuery();
+						await (cmd.ExecuteNonQueryAsync());
 					}
 
 					await (tx.CommitAsync());
@@ -31,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1405
 				using (ITransaction tx = session.BeginTransaction())
 				{
 					IQuery query = session.CreateQuery("from Column");
-					IList<Column> columns = query.List<Column>();
+					IList<Column> columns = await (query.ListAsync<Column>());
 					Assert.AreEqual(3, columns.Count);
 					foreach (Column column in columns)
 					{
@@ -48,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1405
 					DbCommand cmd = session.Connection.CreateCommand();
 					cmd.CommandText = "DELETE FROM PPDM_COLUMN";
 					tx.Enlist(cmd);
-					cmd.ExecuteNonQuery();
+					await (cmd.ExecuteNonQueryAsync());
 					await (tx.CommitAsync());
 				}
 		}

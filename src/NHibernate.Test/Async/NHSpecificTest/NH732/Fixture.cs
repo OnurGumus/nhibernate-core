@@ -10,9 +10,15 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH732
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is MsSql2000Dialect;
+		}
+
 		[Test]
 		public async Task CaseInsensitiveIdAsync()
 		{
@@ -29,8 +35,8 @@ namespace NHibernate.Test.NHSpecificTest.NH732
 
 			using (ISession session = OpenSession())
 			{
-				User user = (User)session.Load(typeof (User), "DOMAIN\\USER");
-				Role role = (Role)session.Load(typeof (Role), "Admins");
+				User user = (User)await (session.LoadAsync(typeof (User), "DOMAIN\\USER"));
+				Role role = (Role)await (session.LoadAsync(typeof (Role), "Admins"));
 				UserToRole userToRole = new UserToRole();
 				userToRole.User = user;
 				userToRole.Role = role;

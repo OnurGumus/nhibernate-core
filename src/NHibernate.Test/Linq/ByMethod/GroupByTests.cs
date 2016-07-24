@@ -278,29 +278,33 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(result.Count, Is.EqualTo(62));
 		}
 
-		[Test, KnownBug("NH-3025")]
+		[Test]
 		public void SelectTupleKeyCountOfOrderLines()
 		{
-			var list = (from o in db.Orders.ToList()
-						group o by o.OrderDate
+			Assert.Throws<AssertionException>(
+				() =>
+				{
+					var list = (from o in db.Orders.ToList()
+								group o by o.OrderDate
 						into g
-						select new
-									{
-										g.Key,
-										Count = g.SelectMany(x => x.OrderLines).Count()
-									}).ToList();
+								select new
+								{
+									g.Key,
+									Count = g.SelectMany(x => x.OrderLines).Count()
+								}).ToList();
 
-			var query = (from o in db.Orders
-						group o by o.OrderDate
-						into g
-						select new
-									{
-										g.Key,
-										Count = g.SelectMany(x => x.OrderLines).Count()
-									}).ToList();
+					var query = (from o in db.Orders
+								 group o by o.OrderDate
+								into g
+								 select new
+								 {
+									 g.Key,
+									 Count = g.SelectMany(x => x.OrderLines).Count()
+								 }).ToList();
 
-			Assert.That(query.Count, Is.EqualTo(481));
-			Assert.That(query, Is.EquivalentTo(list));
+					Assert.That(query.Count, Is.EqualTo(481));
+					Assert.That(query, Is.EquivalentTo(list));
+				}, KnownBug.Issue("NH-3025"));
 		}
 
 		[Test]
@@ -344,12 +348,16 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(results.Count, Is.EqualTo(10));
 		}
 
-		[Test, KnownBug("NH-????")]
+		[Test]
 		public void GroupByAndAll()
 		{
-			//NH-2566
-			var namesAreNotEmpty = db.Users.GroupBy(p => p.Name).Select(g => g.Key).All(name => name.Length > 0);
-			Assert.That(namesAreNotEmpty, Is.True);
+			Assert.Throws<ArgumentException>(
+				() =>
+				{
+					//NH-2566
+					var namesAreNotEmpty = db.Users.GroupBy(p => p.Name).Select(g => g.Key).All(name => name.Length > 0);
+					Assert.That(namesAreNotEmpty, Is.True);
+				}, KnownBug.Issue("NH-2566"));
 		}
 
 		[Test]
@@ -800,13 +808,17 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 
-		[Test(Description = "NH-3446"), KnownBug("NH-3446", "NHibernate.HibernateException")]
+		[Test(Description = "NH-3446")]
 		public void GroupByOrderByKeySelectToClass()
 		{
-			db.Products.GroupBy(x => x.Supplier.CompanyName)
-				.OrderBy(x => x.Key)
-				.Select(x => new GroupInfo {Key = x.Key, ItemCount = x.Count(), HasSubgroups = false, Items = x})
-				.ToList();
+			Assert.Throws<HibernateException>(
+				() =>
+				{
+					db.Products.GroupBy(x => x.Supplier.CompanyName)
+					  .OrderBy(x => x.Key)
+					  .Select(x => new GroupInfo {Key = x.Key, ItemCount = x.Count(), HasSubgroups = false, Items = x})
+					  .ToList();
+				}, KnownBug.Issue("NH-3446"));
 		}
 
 

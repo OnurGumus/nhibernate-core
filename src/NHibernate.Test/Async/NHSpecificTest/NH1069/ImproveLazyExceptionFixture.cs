@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1069
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ImproveLazyExceptionFixture : BugTestCase
+	public partial class ImproveLazyExceptionFixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task LazyEntityAsync()
@@ -15,14 +16,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1069
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					s.Save(new LazyE(), 1);
+					await (s.SaveAsync(new LazyE(), 1));
 					await (t.CommitAsync());
 				}
 
 			LazyE le;
 			using (ISession s = OpenSession())
 			{
-				le = s.Load<LazyE>(savedId);
+				le = await (s.LoadAsync<LazyE>(savedId));
 			}
 
 			string n;
@@ -35,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1069
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					s.CreateQuery("delete from LazyE").ExecuteUpdate();
+					await (s.CreateQuery("delete from LazyE").ExecuteUpdateAsync());
 					await (t.CommitAsync());
 				}
 		}
@@ -47,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1069
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					s.Save(new LazyE(), savedId);
+					await (s.SaveAsync(new LazyE(), savedId));
 					await (t.CommitAsync());
 				}
 
@@ -66,7 +67,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1069
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					s.CreateQuery("delete from LazyE").ExecuteUpdate();
+					await (s.CreateQuery("delete from LazyE").ExecuteUpdateAsync());
 					await (t.CommitAsync());
 				}
 		}

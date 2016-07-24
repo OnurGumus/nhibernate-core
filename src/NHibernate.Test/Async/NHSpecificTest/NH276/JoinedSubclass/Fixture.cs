@@ -6,9 +6,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH276.JoinedSubclass
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : TestCase
+	public partial class FixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecificTest.NH276.JoinedSubclass.Mappings.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task ManyToOneIdPropertiesAsync()
 		{
@@ -32,12 +49,12 @@ namespace NHibernate.Test.NHSpecificTest.NH276.JoinedSubclass
 			ICriteria c = s.CreateCriteria(typeof (Request));
 			c.Add(Expression.Eq("Status.StatusId", 1));
 			c.Add(Expression.Eq("Office.OrganizationId", 1));
-			IList list = c.List();
+			IList list = await (c.ListAsync());
 			Assert.AreEqual(0, list.Count, "should contain no results");
 			c = s.CreateCriteria(typeof (Request));
 			c.Add(Expression.Eq("Status.StatusId", 4));
 			c.Add(Expression.Eq("Office.OrganizationId", 5));
-			list = c.List();
+			list = await (c.ListAsync());
 			Assert.AreEqual(1, list.Count, "one matching result");
 			r = list[0] as Request;
 			await (s.DeleteAsync(r));

@@ -7,12 +7,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1694
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is MsSql2005Dialect;
+		}
+
 		private async Task FillDbAsync()
 		{
-			base.OnSetUp();
+			await (base.OnSetUpAsync());
 			using (ISession session = OpenSession())
 			{
 				using (ITransaction tran = session.BeginTransaction())
@@ -34,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1694
 
 		private async Task CleanupAsync()
 		{
-			base.OnTearDown();
+			await (base.OnTearDownAsync());
 			using (ISession session = OpenSession())
 			{
 				using (ITransaction tran = session.BeginTransaction())
@@ -58,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1694
 					crit.AddOrder(Order.Desc("OrderStatus"));
 					crit.AddOrder(Order.Asc("Id"));
 					crit.SetMaxResults(10);
-					IList<User> list = crit.List<User>();
+					IList<User> list = await (crit.ListAsync<User>());
 					Assert.That(list.Count, Is.EqualTo(2));
 					Assert.That(list[0].OrderStatus, Is.EqualTo(2));
 					Assert.That(list[1].OrderStatus, Is.EqualTo(1));

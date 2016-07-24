@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2093
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task NHibernateProxyHelperReturnsCorrectTypeAsync()
@@ -24,15 +25,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2093
 
 				using (var s = OpenSession())
 				{
-					var person = s.Load<Person>(1);
-					var type = NHibernateProxyHelper.GuessClass(person);
+					var person = await (s.LoadAsync<Person>(1));
+					var type = await (NHibernateProxyHelper.GuessClassAsync(person));
 					Assert.AreEqual(type, typeof (Person));
 				}
 
 				using (var s = OpenSession())
 				{
 					var person = await (s.GetAsync<Person>(1));
-					var type = NHibernateProxyHelper.GuessClass(person);
+					var type = await (NHibernateProxyHelper.GuessClassAsync(person));
 					Assert.AreEqual(type, typeof (Person));
 				}
 			}
@@ -64,7 +65,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2093
 				using (var s = OpenSession())
 				{
 					var person = await (s.GetAsync<Person>(1));
-					var list = s.CreateQuery("from Employee where Person = :p").SetEntity("p", person).List<Employee>();
+					var list = await ((await (s.CreateQuery("from Employee where Person = :p").SetEntityAsync("p", person))).ListAsync<Employee>());
 					Assert.AreEqual(list.Count, 1);
 				}
 			}

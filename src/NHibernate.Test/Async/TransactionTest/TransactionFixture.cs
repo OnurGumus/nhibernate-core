@@ -4,12 +4,23 @@ using System.Collections;
 using System.Data.Common;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.TransactionTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class TransactionFixture : TestCase
+	public partial class TransactionFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			// The mapping is only actually needed in one test
+			get
+			{
+				return new string[]{"Simple.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task SecondTransactionShouldntBeCommittedAsync()
 		{
@@ -35,7 +46,41 @@ namespace NHibernate.Test.TransactionTest
 			{
 				ITransaction t = s.BeginTransaction();
 				t.Dispose();
-				Assert.Throws<ObjectDisposedException>(async () => await (t.CommitAsync()));
+				Assert.ThrowsAsync<ObjectDisposedException>(async () => await (t.CommitAsync()));
+			}
+		}
+
+		[Test]
+		public Task RollbackAfterDisposeThrowsExceptionAsync()
+		{
+			try
+			{
+				using (ISession s = OpenSession())
+				{
+					ITransaction t = s.BeginTransaction();
+					t.Dispose();
+					Assert.Throws<ObjectDisposedException>(() => t.Rollback());
+				}
+
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		[Test]
+		public void EnlistAfterDisposeDoesNotThrowException()
+		{
+			using (ISession s = OpenSession())
+			{
+				ITransaction t = s.BeginTransaction();
+				using (DbCommand cmd = s.Connection.CreateCommand())
+				{
+					t.Dispose();
+					t.Enlist(cmd);
+				}
 			}
 		}
 
@@ -48,19 +93,19 @@ namespace NHibernate.Test.TransactionTest
 				{
 				}
 
-				s.CreateQuery("from Simple").List();
+				await (s.CreateQuery("from Simple").ListAsync());
 				using (ITransaction t = s.BeginTransaction())
 				{
 					await (t.CommitAsync());
 				}
 
-				s.CreateQuery("from Simple").List();
+				await (s.CreateQuery("from Simple").ListAsync());
 				using (ITransaction t = s.BeginTransaction())
 				{
 					t.Rollback();
 				}
 
-				s.CreateQuery("from Simple").List();
+				await (s.CreateQuery("from Simple").ListAsync());
 			}
 		}
 

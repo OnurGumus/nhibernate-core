@@ -7,9 +7,28 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.JoinedSubclass
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class JoinedSubclassFixture : TestCase
+	public partial class JoinedSubclassFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"JoinedSubclass.JoinedSubclass.hbm.xml"};
+			}
+		}
+
+		private DateTime testDateTime = new DateTime(2003, 8, 16);
+		private DateTime updateDateTime = new DateTime(2003, 8, 17);
 		[Test]
 		public async Task TestJoinedSubclassAsync()
 		{
@@ -36,13 +55,13 @@ namespace NHibernate.Test.JoinedSubclass
 			await (s.SaveAsync(mom));
 			await (s.SaveAsync(mark));
 			await (s.SaveAsync(joe));
-			Assert.AreEqual(3, s.CreateQuery("from Person").List().Count);
+			Assert.AreEqual(3, (await (s.CreateQuery("from Person").ListAsync())).Count);
 			IQuery query = s.CreateQuery("from Customer");
-			IList results = query.List();
+			IList results = await (query.ListAsync());
 			Assert.AreEqual(1, results.Count);
 			Assert.IsTrue(results[0] is Customer, "should be a customer");
 			s.Clear();
-			IList customers = s.CreateQuery("from Customer c left join fetch c.Salesperson").List();
+			IList customers = await (s.CreateQuery("from Customer c left join fetch c.Salesperson").ListAsync());
 			foreach (Customer c in customers)
 			{
 				// when proxies is working this is important
@@ -52,7 +71,7 @@ namespace NHibernate.Test.JoinedSubclass
 
 			Assert.AreEqual(1, customers.Count);
 			s.Clear();
-			customers = s.CreateQuery("from Customer").List();
+			customers = await (s.CreateQuery("from Customer").ListAsync());
 			foreach (Customer c in customers)
 			{
 				Assert.IsFalse(NHibernateUtil.IsInitialized(c.Salesperson));
@@ -61,14 +80,14 @@ namespace NHibernate.Test.JoinedSubclass
 
 			Assert.AreEqual(1, customers.Count);
 			s.Clear();
-			mark = (Employee)s.Load(typeof (Employee), mark.Id);
-			joe = (Customer)s.Load(typeof (Customer), joe.Id);
+			mark = (Employee)await (s.LoadAsync(typeof (Employee), mark.Id));
+			joe = (Customer)await (s.LoadAsync(typeof (Customer), joe.Id));
 			mark.Address.Zip = "30306";
-			Assert.AreEqual(1, s.CreateQuery("from Person p where p.Address.Zip = '30306'").List().Count);
+			Assert.AreEqual(1, (await (s.CreateQuery("from Person p where p.Address.Zip = '30306'").ListAsync())).Count);
 			await (s.DeleteAsync(mom));
 			await (s.DeleteAsync(joe));
 			await (s.DeleteAsync(mark));
-			Assert.AreEqual(0, s.CreateQuery("from Person").List().Count);
+			Assert.AreEqual(0, (await (s.CreateQuery("from Person").ListAsync())).Count);
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -96,14 +115,14 @@ namespace NHibernate.Test.JoinedSubclass
 			s.Close();
 			// get a proxied - initialized version of manager
 			s = OpenSession();
-			pointyhair = (Employee)s.Load(typeof (Employee), pointyhair.Id);
-			NHibernateUtil.Initialize(pointyhair);
+			pointyhair = (Employee)await (s.LoadAsync(typeof (Employee), pointyhair.Id));
+			await (NHibernateUtil.InitializeAsync(pointyhair));
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
 			IQuery q = s.CreateQuery("from Employee as e where e.Manager = :theMgr");
 			q.SetParameter("theMgr", pointyhair);
-			IList results = q.List();
+			IList results = await (q.ListAsync());
 			Assert.AreEqual(1, results.Count, "should only return 1 employee.");
 			dilbert = (Employee)results[0];
 			Assert.AreEqual("dilbert", dilbert.Name, "should have been dilbert returned.");
@@ -162,12 +181,12 @@ namespace NHibernate.Test.JoinedSubclass
 			s = OpenSession();
 			t = s.BeginTransaction();
 			// perform a load based on the base class
-			Person empAsPerson = (Person)s.CreateQuery("from Person as p where p.id = ?").SetInt32(0, empId).List()[0];
-			person = (Person)s.Load(typeof (Person), personId);
+			Person empAsPerson = (Person)(await (s.CreateQuery("from Person as p where p.id = ?").SetInt32(0, empId).ListAsync()))[0];
+			person = (Person)await (s.LoadAsync(typeof (Person), personId));
 			// the object with id=2 was loaded using the base class - lets make sure it actually loaded
 			// the subclass
 			Assert.AreEqual(typeof (Employee), empAsPerson.GetType(), "even though person was queried, should have returned correct subclass.");
-			emp = (Employee)s.Load(typeof (Employee), empId);
+			emp = (Employee)await (s.LoadAsync(typeof (Employee), empId));
 			// lets update the objects
 			person.Name = "Did it get updated";
 			person.Sex = 'M';
@@ -185,7 +204,7 @@ namespace NHibernate.Test.JoinedSubclass
 			// lets test the Criteria interface for subclassing
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IList results = s.CreateCriteria(typeof (Person)).Add(Expression.In("Name", new string[]{"Did it get updated", "Updated Employee String"})).List();
+			IList results = await (s.CreateCriteria(typeof (Person)).Add(Expression.In("Name", new string[]{"Did it get updated", "Updated Employee String"})).ListAsync());
 			Assert.AreEqual(2, results.Count);
 			person = null;
 			emp = null;

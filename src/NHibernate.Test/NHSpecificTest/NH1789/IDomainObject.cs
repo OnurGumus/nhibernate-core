@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Domain Object
 	/// </summary>
-	public interface IDomainObject
+	public partial interface IDomainObject
 	{
 		/// <summary>
 		/// Database unique ID for this object. This ID shouldn't have any business meaning.

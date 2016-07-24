@@ -6,9 +6,33 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.IdTest
 {
+	[TestFixture]
+	[Ignore("Not supported yet")]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class UseIdentifierRollbackTest : TestCase
+	public partial class UseIdentifierRollbackTestAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"IdTest.Product.hbm.xml"};
+			}
+		}
+
+		protected override async Task ConfigureAsync(Configuration configuration)
+		{
+			cfg.SetProperty(Environment.UseIdentifierRollBack, "true");
+			await (base.ConfigureAsync(configuration));
+		}
+
 		public async Task SimpleRollbackAsync()
 		{
 			ISession session = OpenSession();

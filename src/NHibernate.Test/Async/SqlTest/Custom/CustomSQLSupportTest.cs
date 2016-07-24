@@ -7,8 +7,22 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.SqlTest.Custom
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public abstract partial class CustomSQLSupportTest : TestCase
+	public abstract partial class CustomSQLSupportTestAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected static object GetFirstItem(IEnumerable it)
+		{
+			IEnumerator en = it.GetEnumerator();
+			return en.MoveNext() ? en.Current : null;
+		}
+
 		[Test]
 		public async Task HandSQLAsync()
 		{
@@ -35,12 +49,12 @@ namespace NHibernate.Test.SqlTest.Custom
 			sessions.Evict(typeof (Employment));
 			s = OpenSession();
 			t = s.BeginTransaction();
-			jboss = (Organization)s.Get(typeof (Organization), orgId);
+			jboss = (Organization)await (s.GetAsync(typeof (Organization), orgId));
 			Assert.AreEqual(jboss.Employments.Count, 2);
 			emp = (Employment)GetFirstItem(jboss.Employments);
 			gavin = emp.Employee;
 			Assert.AreEqual(gavin.Name, "GAVIN");
-			Assert.AreEqual(s.GetCurrentLockMode(gavin), LockMode.Upgrade);
+			Assert.AreEqual(await (s.GetCurrentLockModeAsync(gavin)), LockMode.Upgrade);
 			emp.EndDate = DateTime.Today;
 			Employment emp3 = new Employment(gavin, jboss, "US");
 			await (s.SaveAsync(emp3));
@@ -48,7 +62,7 @@ namespace NHibernate.Test.SqlTest.Custom
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IEnumerator iter = s.GetNamedQuery("allOrganizationsWithEmployees").List().GetEnumerator();
+			IEnumerator iter = (await (s.GetNamedQuery("allOrganizationsWithEmployees").ListAsync())).GetEnumerator();
 			Assert.IsTrue(iter.MoveNext());
 			Organization o = (Organization)iter.Current;
 			Assert.AreEqual(o.Employments.Count, 3);

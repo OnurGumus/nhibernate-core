@@ -16,9 +16,19 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.ReadOnly
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ReadOnlyProxyTest : AbstractReadOnlyTest
+	public partial class ReadOnlyProxyTestAsync : AbstractReadOnlyTestAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"ReadOnly.DataPoint.hbm.xml", //"ReadOnly.TextHolder.hbm.xml"
+				};
+			}
+		}
+
 		[Test]
 		public async Task ReadOnlyViaSessionDoesNotInitAsync()
 		{
@@ -26,21 +36,21 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			s.SetReadOnly(dp, true);
-			CheckReadOnly(s, dp, true);
+			await (s.SetReadOnlyAsync(dp, true));
+			await (CheckReadOnlyAsync(s, dp, true));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			s.SetReadOnly(dp, false);
-			CheckReadOnly(s, dp, false);
+			await (s.SetReadOnlyAsync(dp, false));
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 			await (s.FlushAsync());
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 			await (s.Transaction.CommitAsync());
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 			s.Close();
 			s = OpenSession();
@@ -62,22 +72,22 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			ILazyInitializer dpLI = ((INHibernateProxy)dp).HibernateLazyInitializer;
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 			dpLI.ReadOnly = true;
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, true));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 			dpLI.ReadOnly = false;
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 			await (s.FlushAsync());
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 			await (s.Transaction.CommitAsync());
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 			s.Close();
 			s = OpenSession();
@@ -99,43 +109,43 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			NHibernateUtil.Initialize(dp);
+			await (NHibernateUtil.InitializeAsync(dp));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			await (s.Transaction.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			dp = s.Load<DataPoint>(dpOrig.Id);
+			dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
-			s.SetReadOnly(dp, true);
-			CheckReadOnly(s, dp, true);
+			await (s.SetReadOnlyAsync(dp, true));
+			await (CheckReadOnlyAsync(s, dp, true));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			NHibernateUtil.Initialize(dp);
+			await (NHibernateUtil.InitializeAsync(dp));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, true));
 			await (s.Transaction.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			dp = s.Load<DataPoint>(dpOrig.Id);
+			dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
-			s.SetReadOnly(dp, true);
-			CheckReadOnly(s, dp, true);
+			await (s.SetReadOnlyAsync(dp, true));
+			await (CheckReadOnlyAsync(s, dp, true));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			s.SetReadOnly(dp, false);
-			CheckReadOnly(s, dp, false);
+			await (s.SetReadOnlyAsync(dp, false));
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			NHibernateUtil.Initialize(dp);
+			await (NHibernateUtil.InitializeAsync(dp));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			await (s.Transaction.CommitAsync());
 			s.Close();
 			s = OpenSession();
@@ -157,45 +167,45 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			ILazyInitializer dpLI = ((INHibernateProxy)dp).HibernateLazyInitializer;
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(dpLI.IsUninitialized);
-			NHibernateUtil.Initialize(dp);
+			await (NHibernateUtil.InitializeAsync(dp));
 			Assert.That(dpLI.IsUninitialized, Is.False);
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			await (s.Transaction.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			dp = s.Load<DataPoint>(dpOrig.Id);
+			dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			dpLI = ((INHibernateProxy)dp).HibernateLazyInitializer;
 			dpLI.ReadOnly = true;
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, true));
 			Assert.That(dpLI.IsUninitialized);
-			NHibernateUtil.Initialize(dp);
+			await (NHibernateUtil.InitializeAsync(dp));
 			Assert.That(dpLI.IsUninitialized, Is.False);
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, true));
 			await (s.Transaction.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			dp = s.Load<DataPoint>(dpOrig.Id);
+			dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			dpLI = ((INHibernateProxy)dp).HibernateLazyInitializer;
 			dpLI.ReadOnly = true;
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, true));
 			Assert.That(dpLI.IsUninitialized);
 			dpLI.ReadOnly = false;
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(dpLI.IsUninitialized);
-			NHibernateUtil.Initialize(dp);
+			await (NHibernateUtil.InitializeAsync(dp));
 			Assert.That(dpLI.IsUninitialized, Is.False);
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			await (s.Transaction.CommitAsync());
 			s.Close();
 			s = OpenSession();
@@ -217,13 +227,13 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
-			s.SetReadOnly(dp, true);
+			await (s.SetReadOnlyAsync(dp, true));
 			dp.Description = "changed";
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
 			Assert.That(dp.Description, Is.EqualTo("changed"));
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, true));
 			await (s.FlushAsync());
 			await (s.Transaction.CommitAsync());
 			s.Close();
@@ -246,13 +256,13 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			dp.Description = "changed";
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
 			Assert.That(dp.Description, Is.EqualTo("changed"));
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			await (s.FlushAsync());
 			await (s.Transaction.CommitAsync());
 			s.Close();
@@ -275,18 +285,18 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			CheckReadOnly(s, dp, false);
-			s.SetReadOnly(dp, true);
+			await (CheckReadOnlyAsync(s, dp, false));
+			await (s.SetReadOnlyAsync(dp, true));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, true));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			DataPoint dpFromQuery = s.CreateQuery("from DataPoint where id = " + dpOrig.Id).SetReadOnly(false).UniqueResult<DataPoint>();
+			DataPoint dpFromQuery = await (s.CreateQuery("from DataPoint where id = " + dpOrig.Id).SetReadOnly(false).UniqueResultAsync<DataPoint>());
 			Assert.That(NHibernateUtil.IsInitialized(dpFromQuery), Is.True);
 			Assert.That(dpFromQuery, Is.SameAs(dp));
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, true));
 			dp.Description = "changed";
 			Assert.That(dp.Description, Is.EqualTo("changed"));
 			await (s.FlushAsync());
@@ -311,16 +321,16 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			CheckReadOnly(s, dp, false);
-			s.SetReadOnly(dp, true);
-			CheckReadOnly(s, dp, true);
-			DataPoint dpFromQuery = s.CreateQuery("from DataPoint where Id = " + dpOrig.Id).SetReadOnly(true).UniqueResult<DataPoint>();
+			await (CheckReadOnlyAsync(s, dp, false));
+			await (s.SetReadOnlyAsync(dp, true));
+			await (CheckReadOnlyAsync(s, dp, true));
+			DataPoint dpFromQuery = await (s.CreateQuery("from DataPoint where Id = " + dpOrig.Id).SetReadOnly(true).UniqueResultAsync<DataPoint>());
 			Assert.That(NHibernateUtil.IsInitialized(dpFromQuery), Is.True);
 			Assert.That(dpFromQuery, Is.SameAs(dp));
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, true));
 			dp.Description = "changed";
 			Assert.That(dp.Description, Is.EqualTo("changed"));
 			await (s.FlushAsync());
@@ -345,14 +355,14 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			CheckReadOnly(s, dp, false);
-			DataPoint dpFromQuery = s.CreateQuery("from DataPoint where Id = " + dpOrig.Id).SetReadOnly(false).UniqueResult<DataPoint>();
+			await (CheckReadOnlyAsync(s, dp, false));
+			DataPoint dpFromQuery = await (s.CreateQuery("from DataPoint where Id = " + dpOrig.Id).SetReadOnly(false).UniqueResultAsync<DataPoint>());
 			Assert.That(NHibernateUtil.IsInitialized(dpFromQuery), Is.True);
 			Assert.That(dpFromQuery, Is.SameAs(dp));
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			dp.Description = "changed";
 			Assert.That(dp.Description, Is.EqualTo("changed"));
 			await (s.FlushAsync());
@@ -377,14 +387,14 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			DataPoint dpFromQuery = s.CreateQuery("from DataPoint where id=" + dpOrig.Id).SetReadOnly(true).UniqueResult<DataPoint>();
+			DataPoint dpFromQuery = await (s.CreateQuery("from DataPoint where id=" + dpOrig.Id).SetReadOnly(true).UniqueResultAsync<DataPoint>());
 			Assert.That(NHibernateUtil.IsInitialized(dpFromQuery), Is.True);
 			Assert.That(dpFromQuery, Is.SameAs(dp));
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			dp.Description = "changed";
 			Assert.That(dp.Description, Is.EqualTo("changed"));
 			await (s.FlushAsync());
@@ -409,17 +419,17 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			ILazyInitializer dpLI = ((INHibernateProxy)dp).HibernateLazyInitializer;
 			Assert.That(dpLI.IsUninitialized);
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			dpLI.ReadOnly = true;
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, true));
 			dp.Description = "changed";
 			Assert.That(dpLI.IsUninitialized, Is.False);
 			Assert.That(dp.Description, Is.EqualTo("changed"));
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, true));
 			await (s.FlushAsync());
 			await (s.Transaction.CommitAsync());
 			s.Close();
@@ -442,16 +452,16 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			ILazyInitializer dpLI = ((INHibernateProxy)dp).HibernateLazyInitializer;
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(dpLI.IsUninitialized);
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			dp.Description = "changed";
 			Assert.That(dpLI.IsUninitialized, Is.False);
 			Assert.That(dp.Description, Is.EqualTo("changed"));
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			await (s.FlushAsync());
 			await (s.Transaction.CommitAsync());
 			s.Close();
@@ -474,17 +484,17 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			ILazyInitializer dpLI = ((INHibernateProxy)dp).HibernateLazyInitializer;
 			Assert.That(dpLI.IsUninitialized);
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			dp.Description = "changed";
 			Assert.That(dpLI.IsUninitialized, Is.False);
 			Assert.That(dp.Description, Is.EqualTo("changed"));
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			dpLI.ReadOnly = true;
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, true));
 			await (s.FlushAsync());
 			await (s.Transaction.CommitAsync());
 			s.Close();
@@ -507,15 +517,15 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			ILazyInitializer dpLI = ((INHibernateProxy)dp).HibernateLazyInitializer;
 			Assert.That(dpLI.IsUninitialized);
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			dp.Description = "changed";
 			Assert.That(dpLI.IsUninitialized, Is.False);
 			Assert.That(dp.Description, Is.EqualTo("changed"));
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			await (s.FlushAsync());
 			await (s.Transaction.CommitAsync());
 			s.Close();
@@ -539,17 +549,17 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			dp.Description = "changed";
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
 			Assert.That(dp.Description, Is.EqualTo("changed"));
-			s.SetReadOnly(dp, true);
-			CheckReadOnly(s, dp, true);
-			s.SetReadOnly(dp, false);
-			CheckReadOnly(s, dp, false);
+			await (s.SetReadOnlyAsync(dp, true));
+			await (CheckReadOnlyAsync(s, dp, true));
+			await (s.SetReadOnlyAsync(dp, false));
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(dp.Description, Is.EqualTo("changed"));
 			await (s.FlushAsync());
 			await (s.Transaction.CommitAsync());
@@ -586,17 +596,17 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			CheckReadOnly(s, dp, false);
-			s.SetReadOnly(dp, true);
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, false));
+			await (s.SetReadOnlyAsync(dp, true));
+			await (CheckReadOnlyAsync(s, dp, true));
 			dp.Description = "changed";
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
 			Assert.That(dp.Description, Is.EqualTo("changed"));
-			s.SetReadOnly(dp, false);
-			CheckReadOnly(s, dp, false);
+			await (s.SetReadOnlyAsync(dp, false));
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(dp.Description, Is.EqualTo("changed"));
 			await (s.FlushAsync());
 			await (s.Transaction.CommitAsync());
@@ -632,19 +642,19 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			CheckReadOnly(s, dp, false);
-			s.SetReadOnly(dp, true);
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, false));
+			await (s.SetReadOnlyAsync(dp, true));
+			await (CheckReadOnlyAsync(s, dp, true));
 			dp.Description = "changed";
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
 			Assert.That(dp.Description, Is.EqualTo("changed"));
-			s.Evict(dp);
-			Assert.That(s.Contains(dp), Is.False);
+			await (s.EvictAsync(dp));
+			Assert.That(await (s.ContainsAsync(dp)), Is.False);
 			await (s.UpdateAsync(dp));
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(dp.Description, Is.EqualTo("changed"));
 			await (s.FlushAsync());
 			await (s.Transaction.CommitAsync());
@@ -668,13 +678,13 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
-			CheckReadOnly(s, dp, false);
-			s.SetReadOnly(dp, true);
-			CheckReadOnly(s, dp, true);
-			s.SetReadOnly(dp, false);
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
+			await (s.SetReadOnlyAsync(dp, true));
+			await (CheckReadOnlyAsync(s, dp, true));
+			await (s.SetReadOnlyAsync(dp, false));
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 			dp.Description = "changed";
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
@@ -701,17 +711,17 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
-			CheckReadOnly(s, dp, false);
-			s.SetReadOnly(dp, true);
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, false));
+			await (s.SetReadOnlyAsync(dp, true));
+			await (CheckReadOnlyAsync(s, dp, true));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			NHibernateUtil.Initialize(dp);
+			await (NHibernateUtil.InitializeAsync(dp));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
-			CheckReadOnly(s, dp, true);
-			s.SetReadOnly(dp, false);
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, true));
+			await (s.SetReadOnlyAsync(dp, false));
+			await (CheckReadOnlyAsync(s, dp, false));
 			dp.Description = "changed";
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
 			Assert.That(dp.Description, Is.EqualTo("changed"));
@@ -737,16 +747,16 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
-			CheckReadOnly(s, dp, false);
-			s.SetReadOnly(dp, true);
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, false));
+			await (s.SetReadOnlyAsync(dp, true));
+			await (CheckReadOnlyAsync(s, dp, true));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 			dp.Description = "changed";
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
 			Assert.That(dp.Description, Is.EqualTo("changed"));
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, true));
 			await (s.UpdateAsync(dp));
 			await (s.FlushAsync());
 			await (s.Transaction.CommitAsync());
@@ -770,11 +780,11 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
-			CheckReadOnly(s, dp, false);
-			s.SetReadOnly(dp, true);
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, false));
+			await (s.SetReadOnlyAsync(dp, true));
+			await (CheckReadOnlyAsync(s, dp, true));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 			await (s.DeleteAsync(dp));
 			await (s.FlushAsync());
@@ -795,23 +805,23 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			ITransaction t = s.BeginTransaction();
-			dp = s.Load<DataPoint>(dp.Id);
-			s.SetReadOnly(dp, true);
+			dp = await (s.LoadAsync<DataPoint>(dp.Id));
+			await (s.SetReadOnlyAsync(dp, true));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			s.Refresh(dp);
+			await (s.RefreshAsync(dp));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 			Assert.That(dp.Description, Is.EqualTo("original"));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
 			dp.Description = "changed";
 			Assert.That(dp.Description, Is.EqualTo("changed"));
 			Assert.That(s.IsReadOnly(dp), Is.True);
-			Assert.That(s.IsReadOnly(((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementation()), Is.True);
-			s.Refresh(dp);
+			Assert.That(s.IsReadOnly(await (((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementationAsync())), Is.True);
+			await (s.RefreshAsync(dp));
 			Assert.That(dp.Description, Is.EqualTo("original"));
 			dp.Description = "changed";
 			Assert.That(dp.Description, Is.EqualTo("changed"));
 			Assert.That(s.IsReadOnly(dp), Is.True);
-			Assert.That(s.IsReadOnly(((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementation()), Is.True);
+			Assert.That(s.IsReadOnly(await (((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementationAsync())), Is.True);
 			await (t.CommitAsync());
 			s.Clear();
 			t = s.BeginTransaction();
@@ -829,7 +839,7 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			ITransaction t = s.BeginTransaction();
-			INHibernateProxy dpProxy = (INHibernateProxy)s.Load<DataPoint>(dp.Id);
+			INHibernateProxy dpProxy = (INHibernateProxy)await (s.LoadAsync<DataPoint>(dp.Id));
 			Assert.That(NHibernateUtil.IsInitialized(dpProxy), Is.False);
 			await (t.CommitAsync());
 			s.Close();
@@ -841,7 +851,7 @@ namespace NHibernate.Test.ReadOnly
 			await (s.FlushAsync());
 			try
 			{
-				s.Refresh(dp);
+				await (s.RefreshAsync(dp));
 				Assert.Fail("should have thrown UnresolvableObjectException");
 			}
 			catch (UnresolvableObjectException)
@@ -857,7 +867,7 @@ namespace NHibernate.Test.ReadOnly
 			s = OpenSession();
 			t = s.BeginTransaction();
 			s.CacheMode = CacheMode.Ignore;
-			DataPoint dpProxyInit = s.Load<DataPoint>(dp.Id);
+			DataPoint dpProxyInit = await (s.LoadAsync<DataPoint>(dp.Id));
 			Assert.That(dp.Description, Is.EqualTo("original"));
 			await (s.DeleteAsync(dpProxyInit));
 			await (t.CommitAsync());
@@ -868,7 +878,7 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(NHibernateUtil.IsInitialized(dpProxyInit), Is.True);
 			try
 			{
-				s.Refresh(dpProxyInit);
+				await (s.RefreshAsync(dpProxyInit));
 				Assert.Fail("should have thrown UnresolvableObjectException");
 			}
 			catch (UnresolvableObjectException)
@@ -886,9 +896,9 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(dpProxyInit, Is.InstanceOf<INHibernateProxy>());
 			try
 			{
-				s.Refresh(dpProxy);
+				await (s.RefreshAsync(dpProxy));
 				Assert.That(NHibernateUtil.IsInitialized(dpProxy), Is.False);
-				NHibernateUtil.Initialize(dpProxy);
+				await (NHibernateUtil.InitializeAsync(dpProxy));
 				Assert.Fail("should have thrown UnresolvableObjectException");
 			}
 			catch (UnresolvableObjectException)
@@ -909,21 +919,21 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			ITransaction t = s.BeginTransaction();
-			dp = s.Load<DataPoint>(dp.Id);
+			dp = await (s.LoadAsync<DataPoint>(dp.Id));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 			Assert.That(s.IsReadOnly(dp), Is.False);
-			s.SetReadOnly(dp, true);
+			await (s.SetReadOnlyAsync(dp, true));
 			Assert.That(s.IsReadOnly(dp), Is.True);
-			s.Evict(dp);
-			s.Refresh(dp);
+			await (s.EvictAsync(dp));
+			await (s.RefreshAsync(dp));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 			Assert.That(s.IsReadOnly(dp), Is.False);
 			dp.Description = "changed";
 			Assert.That(dp.Description, Is.EqualTo("changed"));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
-			s.SetReadOnly(dp, true);
-			s.Evict(dp);
-			s.Refresh(dp);
+			await (s.SetReadOnlyAsync(dp, true));
+			await (s.EvictAsync(dp));
+			await (s.RefreshAsync(dp));
 			Assert.That(dp.Description, Is.EqualTo("original"));
 			Assert.That(s.IsReadOnly(dp), Is.False);
 			await (t.CommitAsync());
@@ -943,11 +953,11 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			NHibernateUtil.Initialize(dp);
+			await (NHibernateUtil.InitializeAsync(dp));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
 			await (s.Transaction.CommitAsync());
 			s.Close();
@@ -956,17 +966,17 @@ namespace NHibernate.Test.ReadOnly
 			s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dpLoaded = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dpLoaded = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dpLoaded, Is.InstanceOf<INHibernateProxy>());
-			CheckReadOnly(s, dpLoaded, false);
-			s.SetReadOnly(dpLoaded, true);
-			CheckReadOnly(s, dpLoaded, true);
+			await (CheckReadOnlyAsync(s, dpLoaded, false));
+			await (s.SetReadOnlyAsync(dpLoaded, true));
+			await (CheckReadOnlyAsync(s, dpLoaded, true));
 			Assert.That(NHibernateUtil.IsInitialized(dpLoaded), Is.False);
 			DataPoint dpMerged = (DataPoint)s.Merge(dp);
 			Assert.That(dpMerged, Is.SameAs(dpLoaded));
 			Assert.That(NHibernateUtil.IsInitialized(dpLoaded), Is.True);
 			Assert.That(dpLoaded.Description, Is.EqualTo("changed"));
-			CheckReadOnly(s, dpLoaded, true);
+			await (CheckReadOnlyAsync(s, dpLoaded, true));
 			await (s.FlushAsync());
 			await (s.Transaction.CommitAsync());
 			s.Close();
@@ -989,11 +999,11 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			NHibernateUtil.Initialize(dp);
+			await (NHibernateUtil.InitializeAsync(dp));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
 			await (s.Transaction.CommitAsync());
 			s.Close();
@@ -1002,18 +1012,18 @@ namespace NHibernate.Test.ReadOnly
 			s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dpLoaded = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dpLoaded = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dpLoaded, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(NHibernateUtil.IsInitialized(dpLoaded), Is.False);
-			NHibernateUtil.Initialize(dpLoaded);
+			await (NHibernateUtil.InitializeAsync(dpLoaded));
 			Assert.That(NHibernateUtil.IsInitialized(dpLoaded), Is.True);
-			CheckReadOnly(s, dpLoaded, false);
-			s.SetReadOnly(dpLoaded, true);
-			CheckReadOnly(s, dpLoaded, true);
+			await (CheckReadOnlyAsync(s, dpLoaded, false));
+			await (s.SetReadOnlyAsync(dpLoaded, true));
+			await (CheckReadOnlyAsync(s, dpLoaded, true));
 			DataPoint dpMerged = (DataPoint)s.Merge(dp);
 			Assert.That(dpMerged, Is.SameAs(dpLoaded));
 			Assert.That(dpLoaded.Description, Is.EqualTo("changed"));
-			CheckReadOnly(s, dpLoaded, true);
+			await (CheckReadOnlyAsync(s, dpLoaded, true));
 			await (s.FlushAsync());
 			await (s.Transaction.CommitAsync());
 			s.Close();
@@ -1036,31 +1046,31 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			NHibernateUtil.Initialize(dp);
+			await (NHibernateUtil.InitializeAsync(dp));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
 			await (s.Transaction.CommitAsync());
 			s.Close();
 			// modify detached proxy target
-			DataPoint dpEntity = (DataPoint)((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementation();
+			DataPoint dpEntity = (DataPoint)await (((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementationAsync());
 			dpEntity.Description = "changed";
 			s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dpLoaded = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dpLoaded = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dpLoaded, Is.InstanceOf<INHibernateProxy>());
-			CheckReadOnly(s, dpLoaded, false);
-			s.SetReadOnly(dpLoaded, true);
-			CheckReadOnly(s, dpLoaded, true);
+			await (CheckReadOnlyAsync(s, dpLoaded, false));
+			await (s.SetReadOnlyAsync(dpLoaded, true));
+			await (CheckReadOnlyAsync(s, dpLoaded, true));
 			Assert.That(NHibernateUtil.IsInitialized(dpLoaded), Is.False);
 			DataPoint dpMerged = (DataPoint)s.Merge(dpEntity);
 			Assert.That(dpMerged, Is.SameAs(dpLoaded));
 			Assert.That(NHibernateUtil.IsInitialized(dpLoaded), Is.True);
 			Assert.That(dpLoaded.Description, Is.EqualTo("changed"));
-			CheckReadOnly(s, dpLoaded, true);
+			await (CheckReadOnlyAsync(s, dpLoaded, true));
 			await (s.FlushAsync());
 			await (s.Transaction.CommitAsync());
 			s.Close();
@@ -1083,32 +1093,32 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			NHibernateUtil.Initialize(dp);
+			await (NHibernateUtil.InitializeAsync(dp));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
 			await (s.Transaction.CommitAsync());
 			s.Close();
 			// modify detached proxy target
-			DataPoint dpEntity = (DataPoint)((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementation();
+			DataPoint dpEntity = (DataPoint)await (((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementationAsync());
 			dpEntity.Description = "changed";
 			s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dpLoaded = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dpLoaded = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dpLoaded, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(NHibernateUtil.IsInitialized(dpLoaded), Is.False);
-			NHibernateUtil.Initialize(dpLoaded);
+			await (NHibernateUtil.InitializeAsync(dpLoaded));
 			Assert.That(NHibernateUtil.IsInitialized(dpLoaded), Is.True);
-			CheckReadOnly(s, dpLoaded, false);
-			s.SetReadOnly(dpLoaded, true);
-			CheckReadOnly(s, dpLoaded, true);
+			await (CheckReadOnlyAsync(s, dpLoaded, false));
+			await (s.SetReadOnlyAsync(dpLoaded, true));
+			await (CheckReadOnlyAsync(s, dpLoaded, true));
 			DataPoint dpMerged = (DataPoint)s.Merge(dpEntity);
 			Assert.That(dpMerged, Is.SameAs(dpLoaded));
 			Assert.That(dpLoaded.Description, Is.EqualTo("changed"));
-			CheckReadOnly(s, dpLoaded, true);
+			await (CheckReadOnlyAsync(s, dpLoaded, true));
 			await (s.FlushAsync());
 			await (s.Transaction.CommitAsync());
 			s.Close();
@@ -1131,11 +1141,11 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			NHibernateUtil.Initialize(dp);
+			await (NHibernateUtil.InitializeAsync(dp));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
 			await (s.Transaction.CommitAsync());
 			s.Close();
@@ -1147,7 +1157,7 @@ namespace NHibernate.Test.ReadOnly
 			DataPoint dpEntity = await (s.GetAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dpEntity, Is.Not.InstanceOf<INHibernateProxy>());
 			Assert.That(s.IsReadOnly(dpEntity), Is.False);
-			s.SetReadOnly(dpEntity, true);
+			await (s.SetReadOnlyAsync(dpEntity, true));
 			Assert.That(s.IsReadOnly(dpEntity), Is.True);
 			DataPoint dpMerged = (DataPoint)s.Merge(dp);
 			Assert.That(dpMerged, Is.SameAs(dpEntity));
@@ -1175,21 +1185,21 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			CheckReadOnly(s, dp, false);
-			s.SetReadOnly(dp, true);
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, false));
+			await (s.SetReadOnlyAsync(dp, true));
+			await (CheckReadOnlyAsync(s, dp, true));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 			dp.Description = "changed";
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
 			Assert.That(dp.Description, Is.EqualTo("changed"));
 			await (s.FlushAsync());
 			await (s.Transaction.CommitAsync());
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, true));
 			s.BeginTransaction();
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, true));
 			dp.Description = "changed again";
 			Assert.That(dp.Description, Is.EqualTo("changed again"));
 			await (s.FlushAsync());
@@ -1214,21 +1224,21 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			dp.Description = "changed";
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
 			Assert.That(dp.Description, Is.EqualTo("changed"));
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			await (s.FlushAsync());
 			await (s.Transaction.CommitAsync());
-			CheckReadOnly(s, dp, false);
-			s.SetReadOnly(dp, true);
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, false));
+			await (s.SetReadOnlyAsync(dp, true));
+			await (CheckReadOnlyAsync(s, dp, true));
 			s.BeginTransaction();
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, true));
 			dp.Description = "changed again";
 			Assert.That(dp.Description, Is.EqualTo("changed again"));
 			await (s.FlushAsync());
@@ -1253,27 +1263,27 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			CheckReadOnly(s, dp, false);
-			s.SetReadOnly(dp, true);
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, false));
+			await (s.SetReadOnlyAsync(dp, true));
+			await (CheckReadOnlyAsync(s, dp, true));
 			dp.Description = "changed";
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
 			Assert.That(dp.Description, Is.EqualTo("changed"));
-			CheckReadOnly(s, dp, true);
+			await (CheckReadOnlyAsync(s, dp, true));
 			await (s.FlushAsync());
 			await (s.Transaction.CommitAsync());
-			CheckReadOnly(s, dp, true);
-			s.SetReadOnly(dp, false);
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, true));
+			await (s.SetReadOnlyAsync(dp, false));
+			await (CheckReadOnlyAsync(s, dp, false));
 			s.BeginTransaction();
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			Assert.That(dp.Description, Is.EqualTo("changed"));
-			s.Refresh(dp);
+			await (s.RefreshAsync(dp));
 			Assert.That(dp.Description, Is.EqualTo(dpOrig.Description));
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			dp.Description = "changed again";
 			Assert.That(dp.Description, Is.EqualTo("changed again"));
 			await (s.FlushAsync());
@@ -1298,10 +1308,10 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			await (s.Transaction.CommitAsync());
 			s.Close();
 			try
@@ -1331,12 +1341,12 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			await (s.Transaction.CommitAsync());
-			Assert.That(s.Contains(dp), Is.True);
+			Assert.That(await (s.ContainsAsync(dp)), Is.True);
 			s.Close();
 			Assert.That(((INHibernateProxy)dp).HibernateLazyInitializer.Session, Is.Null);
 			try
@@ -1366,13 +1376,13 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			CheckReadOnly(s, dp, false);
-			Assert.That(s.Contains(dp), Is.True);
-			s.Evict(dp);
-			Assert.That(s.Contains(dp), Is.False);
+			await (CheckReadOnlyAsync(s, dp, false));
+			Assert.That(await (s.ContainsAsync(dp)), Is.True);
+			await (s.EvictAsync(dp));
+			Assert.That(await (s.ContainsAsync(dp)), Is.False);
 			Assert.That(((INHibernateProxy)dp).HibernateLazyInitializer.Session, Is.Null);
 			try
 			{
@@ -1399,12 +1409,12 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			CheckReadOnly(s, dp, false);
-			s.Evict(dp);
-			Assert.That(s.Contains(dp), Is.False);
+			await (CheckReadOnlyAsync(s, dp, false));
+			await (s.EvictAsync(dp));
+			Assert.That(await (s.ContainsAsync(dp)), Is.False);
 			Assert.That(((INHibernateProxy)dp).HibernateLazyInitializer.Session, Is.Null);
 			try
 			{
@@ -1432,15 +1442,15 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			await (s.Transaction.CommitAsync());
 			s.Close();
 			try
 			{
-				s.SetReadOnly(dp, true);
+				await (s.SetReadOnlyAsync(dp, true));
 				Assert.Fail("should have failed because session was closed");
 			}
 			catch (ObjectDisposedException) // SessionException in Hibernate
@@ -1465,12 +1475,12 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			await (s.Transaction.CommitAsync());
-			Assert.That(s.Contains(dp), Is.True);
+			Assert.That(await (s.ContainsAsync(dp)), Is.True);
 			s.Close();
 			Assert.That(((INHibernateProxy)dp).HibernateLazyInitializer.Session, Is.Null);
 			try
@@ -1500,18 +1510,18 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			CheckReadOnly(s, dp, false);
+			await (CheckReadOnlyAsync(s, dp, false));
 			await (s.Transaction.CommitAsync());
-			Assert.That(s.Contains(dp), Is.True);
+			Assert.That(await (s.ContainsAsync(dp)), Is.True);
 			s.Close();
 			Assert.That(((INHibernateProxy)dp).HibernateLazyInitializer.Session, Is.Null);
 			Assert.That(((ISessionImplementor)s).IsClosed, Is.True);
 			try
 			{
-				((INHibernateProxy)dp).HibernateLazyInitializer.SetSession((ISessionImplementor)s);
+				await (((INHibernateProxy)dp).HibernateLazyInitializer.SetSessionAsync((ISessionImplementor)s));
 				Assert.Fail("should have failed because session was closed");
 			}
 			catch (ObjectDisposedException) // SessionException in Hibernate
@@ -1536,17 +1546,17 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			CheckReadOnly(s, dp, false);
-			Assert.That(s.Contains(dp), Is.True);
-			s.Evict(dp);
-			Assert.That(s.Contains(dp), Is.False);
+			await (CheckReadOnlyAsync(s, dp, false));
+			Assert.That(await (s.ContainsAsync(dp)), Is.True);
+			await (s.EvictAsync(dp));
+			Assert.That(await (s.ContainsAsync(dp)), Is.False);
 			Assert.That(((INHibernateProxy)dp).HibernateLazyInitializer.Session, Is.Null);
 			try
 			{
-				s.SetReadOnly(dp, true);
+				await (s.SetReadOnlyAsync(dp, true));
 				Assert.Fail("should have failed because proxy was detached");
 			}
 			catch (TransientObjectException)
@@ -1569,12 +1579,12 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.CacheMode = CacheMode.Ignore;
 			s.BeginTransaction();
-			DataPoint dp = s.Load<DataPoint>(dpOrig.Id);
+			DataPoint dp = await (s.LoadAsync<DataPoint>(dpOrig.Id));
 			Assert.That(dp, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-			CheckReadOnly(s, dp, false);
-			s.Evict(dp);
-			Assert.That(s.Contains(dp), Is.False);
+			await (CheckReadOnlyAsync(s, dp, false));
+			await (s.EvictAsync(dp));
+			Assert.That(await (s.ContainsAsync(dp)), Is.False);
 			Assert.That(((INHibernateProxy)dp).HibernateLazyInitializer.Session, Is.Null);
 			try
 			{
@@ -1613,6 +1623,20 @@ namespace NHibernate.Test.ReadOnly
 			}
 
 			return dp;
+		}
+
+		private async Task CheckReadOnlyAsync(ISession s, object proxy, bool expectedReadOnly)
+		{
+			Assert.That(proxy, Is.InstanceOf<INHibernateProxy>());
+			ILazyInitializer li = ((INHibernateProxy)proxy).HibernateLazyInitializer;
+			Assert.That(s, Is.SameAs(li.Session));
+			Assert.That(s.IsReadOnly(proxy), Is.EqualTo(expectedReadOnly));
+			Assert.That(li.ReadOnly, Is.EqualTo(expectedReadOnly));
+			Assert.That(NHibernateUtil.IsInitialized(proxy), Is.Not.EqualTo(li.IsUninitialized));
+			if (NHibernateUtil.IsInitialized(proxy))
+			{
+				Assert.That(s.IsReadOnly(await (li.GetImplementationAsync())), Is.EqualTo(expectedReadOnly));
+			}
 		}
 	}
 }

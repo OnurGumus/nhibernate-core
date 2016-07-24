@@ -6,9 +6,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH309
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : TestCase
+	public partial class FixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecificTest.NH309.Node.hbm.xml", "NHSpecificTest.NH309.Menu.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task RemoveNodeFromNodesCollectionAsync()
 		{
@@ -37,9 +54,9 @@ namespace NHibernate.Test.NHSpecificTest.NH309
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			rootNode = (Node)s.Load(typeof (Node), 1);
-			Node nodeToBeRemoved = (Node)s.Load(typeof (Node), 3); // childNode 2 with Id 3
-			Menu menu2 = (Menu)s.Load(typeof (Menu), 1);
+			rootNode = (Node)await (s.LoadAsync(typeof (Node), 1));
+			Node nodeToBeRemoved = (Node)await (s.LoadAsync(typeof (Node), 3)); // childNode 2 with Id 3
+			Menu menu2 = (Menu)await (s.LoadAsync(typeof (Menu), 1));
 			int nodePostion = menu2.Nodes.IndexOf(nodeToBeRemoved);
 			Assert.AreEqual(2, nodePostion, "Test IndexOf");
 			menu2.Nodes.Remove(nodeToBeRemoved);

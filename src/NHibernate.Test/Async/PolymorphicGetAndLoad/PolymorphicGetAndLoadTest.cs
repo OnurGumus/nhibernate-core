@@ -9,8 +9,92 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.PolymorphicGetAndLoad
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class PolymorphicGetAndLoadTest : TestCase
+	public partial class PolymorphicGetAndLoadTestAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"PolymorphicGetAndLoad.Mappings.hbm.xml"};
+			}
+		}
+
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		public partial class ScenarioWithA : IDisposable
+		{
+			private readonly ISessionFactory factory;
+			private readonly A a;
+			public ScenarioWithA(ISessionFactory factory)
+			{
+				this.factory = factory;
+				a = new A{Name = "Patrick"};
+				using (var s = factory.OpenSession())
+				{
+					s.Save(a);
+					s.Flush();
+				}
+			}
+
+			public A A
+			{
+				get
+				{
+					return a;
+				}
+			}
+
+			public void Dispose()
+			{
+				using (var s = factory.OpenSession())
+				{
+					s.Delete(a);
+					s.Flush();
+				}
+			}
+		}
+
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		public partial class ScenarioWithB : IDisposable
+		{
+			private readonly ISessionFactory factory;
+			private readonly B b;
+			public ScenarioWithB(ISessionFactory factory)
+			{
+				this.factory = factory;
+				b = new B{Name = "Patrick", Occupation = "hincha pelotas (en el buen sentido), but good candidate to be committer."};
+				using (var s = factory.OpenSession())
+				{
+					s.Save(b);
+					s.Flush();
+				}
+			}
+
+			public B B
+			{
+				get
+				{
+					return b;
+				}
+			}
+
+			public void Dispose()
+			{
+				using (var s = factory.OpenSession())
+				{
+					s.Delete(b);
+					s.Flush();
+				}
+			}
+		}
+
 		[Test]
 		public async Task WhenSaveDeleteBaseClassCastedToInterfaceThenNotThrowsAsync()
 		{
@@ -38,6 +122,18 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 		}
 
 		[Test]
+		public async Task WhenLoadBaseClassUsingInterfaceThenNotThrowsAsync()
+		{
+			using (var scenario = new ScenarioWithA(Sfi))
+			{
+				using (var s = OpenSession())
+				{
+					Assert.That(async () => await (s.LoadAsync<INamed>(scenario.A.Id)), Throws.Nothing);
+				}
+			}
+		}
+
+		[Test]
 		public async Task WhenGetBaseClassUsingInterfaceThenNotThrowsAsync()
 		{
 			using (var scenario = new ScenarioWithA(Sfi))
@@ -45,6 +141,56 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 				using (var s = OpenSession())
 				{
 					Assert.That(async () => await (s.GetAsync<INamed>(scenario.A.Id)), Throws.Nothing);
+				}
+			}
+		}
+
+		[Test]
+		public async Task WhenLoadInheritedClassUsingInterfaceThenNotThrowsAsync()
+		{
+			using (var scenario = new ScenarioWithB(Sfi))
+			{
+				using (var s = OpenSession())
+				{
+					Assert.That(async () => await (s.LoadAsync<INamed>(scenario.B.Id)), Throws.Nothing);
+				}
+			}
+		}
+
+		[Test]
+		public async Task WhenLoadInheritedClassUsingInterfaceThenShouldAllowNarrowingProxyAsync()
+		{
+			using (var scenario = new ScenarioWithB(Sfi))
+			{
+				using (var s = OpenSession())
+				{
+					INamed loadedEntity = null;
+					Assert.That(async () => loadedEntity = await (s.LoadAsync<INamed>(scenario.B.Id)), Throws.Nothing);
+					Assert.That(NHibernateProxyHelper.GetClassWithoutInitializingProxy(loadedEntity), Is.EqualTo(typeof (A)));
+					var narrowedProxy = await (s.LoadAsync<B>(scenario.B.Id));
+					Assert.That(NHibernateProxyHelper.GetClassWithoutInitializingProxy(narrowedProxy), Is.EqualTo(typeof (B)));
+					var firstLoadedImpl = await (((INHibernateProxy)loadedEntity).HibernateLazyInitializer.GetImplementationAsync((ISessionImplementor)s));
+					var secondLoadedImpl = await (((INHibernateProxy)narrowedProxy).HibernateLazyInitializer.GetImplementationAsync((ISessionImplementor)s));
+					Assert.That(firstLoadedImpl, Is.SameAs(secondLoadedImpl));
+				}
+			}
+		}
+
+		[Test]
+		public async Task WhenLoadInterfaceThenShouldAllowNarrowingProxyAsync()
+		{
+			using (var scenario = new ScenarioWithB(Sfi))
+			{
+				using (var s = OpenSession())
+				{
+					INamed loadedEntity = null;
+					Assert.That(async () => loadedEntity = await (s.LoadAsync<INamed>(scenario.B.Id)), Throws.Nothing);
+					Assert.That(NHibernateProxyHelper.GetClassWithoutInitializingProxy(loadedEntity), Is.EqualTo(typeof (A)));
+					var narrowedProxy = await (s.LoadAsync<IOccuped>(scenario.B.Id));
+					Assert.That(NHibernateProxyHelper.GetClassWithoutInitializingProxy(narrowedProxy), Is.EqualTo(typeof (B)));
+					var firstLoadedImpl = await (((INHibernateProxy)loadedEntity).HibernateLazyInitializer.GetImplementationAsync((ISessionImplementor)s));
+					var secondLoadedImpl = await (((INHibernateProxy)narrowedProxy).HibernateLazyInitializer.GetImplementationAsync((ISessionImplementor)s));
+					Assert.That(firstLoadedImpl, Is.SameAs(secondLoadedImpl));
 				}
 			}
 		}
@@ -60,6 +206,15 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 					Assert.That(async () => loadedEntity = await (s.GetAsync<INamed>(scenario.B.Id)), Throws.Nothing);
 					Assert.That(loadedEntity, Is.TypeOf<B>());
 				}
+			}
+		}
+
+		[Test]
+		public async Task WhenLoadClassUsingInterfaceOfMultippleHierarchyThenThrowsAsync()
+		{
+			using (var s = OpenSession())
+			{
+				Assert.That(async () => await (s.LoadAsync<IMultiGraphNamed>(1)), Throws.TypeOf<HibernateException>().And.Message.ContainsSubstring("Ambiguous").And.Message.ContainsSubstring("GraphA").And.Message.ContainsSubstring("GraphB").And.Message.ContainsSubstring("IMultiGraphNamed"));
 			}
 		}
 

@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1920
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task Can_Query_Without_Collection_Size_ConditionAsync()
@@ -15,8 +16,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1920
 			using (ISession sess = OpenSession())
 				using (ITransaction tx = sess.BeginTransaction())
 				{
-					sess.SaveOrUpdate(new Customer()
-					{IsDeleted = false});
+					await (sess.SaveOrUpdateAsync(new Customer()
+					{IsDeleted = false}));
 					await (tx.CommitAsync());
 				}
 
@@ -24,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1920
 				using (ITransaction tx = sess.BeginTransaction())
 				{
 					sess.EnableFilter("state").SetParameter("deleted", false);
-					var result = sess.CreateQuery("from Customer c join c.Orders o where c.id > :cid").SetParameter("cid", 0).List();
+					var result = await (sess.CreateQuery("from Customer c join c.Orders o where c.id > :cid").SetParameter("cid", 0).ListAsync());
 					Assert.That(result.Count == 0);
 					await (tx.CommitAsync());
 				}
@@ -43,8 +44,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1920
 			using (ISession sess = OpenSession())
 				using (ITransaction tx = sess.BeginTransaction())
 				{
-					sess.SaveOrUpdate(new Customer()
-					{IsDeleted = false});
+					await (sess.SaveOrUpdateAsync(new Customer()
+					{IsDeleted = false}));
 					await (tx.CommitAsync());
 				}
 
@@ -52,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1920
 				using (ITransaction tx = sess.BeginTransaction())
 				{
 					sess.EnableFilter("state").SetParameter("deleted", false);
-					var result = sess.CreateQuery("from Customer c join c.Orders o where c.id > :cid and c.Orders.size > 0").SetParameter("cid", 0).List();
+					var result = await (sess.CreateQuery("from Customer c join c.Orders o where c.id > :cid and c.Orders.size > 0").SetParameter("cid", 0).ListAsync());
 					Assert.That(result.Count == 0);
 					await (tx.CommitAsync());
 				}

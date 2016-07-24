@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH706
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task BugAsync()
@@ -55,8 +56,8 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 			int dcId = 0;
 			using (ISession session = OpenSession())
 			{
-				Parent loadedParent = (Parent)session.Get(typeof (Parent), parent.ID);
-				NHibernateUtil.Initialize(loadedParent.DifferentChildren);
+				Parent loadedParent = (Parent)await (session.GetAsync(typeof (Parent), parent.ID));
+				await (NHibernateUtil.InitializeAsync(loadedParent.DifferentChildren));
 				foreach (DifferentChild dc in loadedParent.DifferentChildren)
 				{
 					dcId = dc.ID;
@@ -66,7 +67,7 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 
 			using (ISession session = OpenSession())
 			{
-				DifferentChild dc = (DifferentChild)session.Get(typeof (DifferentChild), dcId);
+				DifferentChild dc = (DifferentChild)await (session.GetAsync(typeof (DifferentChild), dcId));
 			}
 
 			using (ISession session = OpenSession())

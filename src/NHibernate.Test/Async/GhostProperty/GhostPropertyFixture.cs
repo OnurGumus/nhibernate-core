@@ -5,12 +5,83 @@ using NHibernate.Cfg.Loquacious;
 using NHibernate.Tuple.Entity;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.GhostProperty
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class GhostPropertyFixture : TestCase
+	public partial class GhostPropertyFixtureAsync : TestCaseAsync
 	{
+		private string log;
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"GhostProperty.Mappings.hbm.xml"};
+			}
+		}
+
+		protected override Task ConfigureAsync(Cfg.Configuration configuration)
+		{
+			try
+			{
+				configuration.DataBaseIntegration(x => x.LogFormattedSql = false);
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		protected override async Task OnSetUpAsync()
+		{
+			using (var s = OpenSession())
+				using (var tx = s.BeginTransaction())
+				{
+					var wireTransfer = new WireTransfer{Id = 1};
+					await (s.PersistAsync(wireTransfer));
+					await (s.PersistAsync(new Order{Id = 1, Payment = wireTransfer}));
+					await (tx.CommitAsync());
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (var s = OpenSession())
+				using (var tx = s.BeginTransaction())
+				{
+					await (s.DeleteAsync("from Order"));
+					await (s.DeleteAsync("from Payment"));
+					await (tx.CommitAsync());
+				}
+		}
+
+		protected override void BuildSessionFactory()
+		{
+			using (var logSpy = new LogSpy(typeof (EntityMetamodel)))
+			{
+				base.BuildSessionFactory();
+				log = logSpy.GetWholeLog();
+			}
+		}
+
+		[Test]
+		public void ShouldGenerateErrorForNonAutoPropGhostProp()
+		{
+			Assert.IsTrue(log.Contains("NHibernate.Test.GhostProperty.Order.Payment is not an auto property, which may result in uninitialized property access"));
+		}
+
 		[Test]
 		public async Task CanGetActualValueFromLazyManyToOneAsync()
 		{
@@ -27,7 +98,7 @@ namespace NHibernate.Test.GhostProperty
 			using (ISession s = OpenSession())
 			{
 				var order = await (s.GetAsync<Order>(1));
-				Assert.IsFalse(NHibernateUtil.IsPropertyInitialized(order, "Payment"));
+				Assert.IsFalse(await (NHibernateUtil.IsPropertyInitializedAsync(order, "Payment")));
 			}
 		}
 
@@ -37,7 +108,7 @@ namespace NHibernate.Test.GhostProperty
 			using (ISession s = OpenSession())
 			{
 				var order = await (s.GetAsync<Order>(1));
-				Assert.AreSame(order.Payment, s.Load<Payment>(1));
+				Assert.AreSame(order.Payment, await (s.LoadAsync<Payment>(1)));
 			}
 		}
 
@@ -46,7 +117,7 @@ namespace NHibernate.Test.GhostProperty
 		{
 			using (ISession s = OpenSession())
 			{
-				var payment = s.Load<Payment>(1);
+				var payment = await (s.LoadAsync<Payment>(1));
 				var order = await (s.GetAsync<Order>(1));
 				Assert.AreSame(order.Payment, payment);
 			}
@@ -66,10 +137,10 @@ namespace NHibernate.Test.GhostProperty
 					Assert.That(logMessage, Is.Not.StringContaining("FROM Payment"));
 				}
 
-				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "Payment"), Is.False);
+				Assert.That(await (NHibernateUtil.IsPropertyInitializedAsync(order, "Payment")), Is.False);
 				// trigger on-access lazy load 
 				var x = order.Payment;
-				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "Payment"), Is.True);
+				Assert.That(await (NHibernateUtil.IsPropertyInitializedAsync(order, "Payment")), Is.True);
 			}
 		}
 
@@ -87,8 +158,8 @@ namespace NHibernate.Test.GhostProperty
 					Assert.That(logMessage, Is.StringContaining("NoLazyProperty"));
 				}
 
-				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "NoLazyProperty"), Is.True);
-				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "ALazyProperty"), Is.False);
+				Assert.That(await (NHibernateUtil.IsPropertyInitializedAsync(order, "NoLazyProperty")), Is.True);
+				Assert.That(await (NHibernateUtil.IsPropertyInitializedAsync(order, "ALazyProperty")), Is.False);
 				using (var ls = new SqlLogSpy())
 				{
 					var x = order.ALazyProperty;
@@ -96,7 +167,7 @@ namespace NHibernate.Test.GhostProperty
 					Assert.That(logMessage, Is.StringContaining("ALazyProperty"));
 				}
 
-				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "ALazyProperty"), Is.True);
+				Assert.That(await (NHibernateUtil.IsPropertyInitializedAsync(order, "ALazyProperty")), Is.True);
 			}
 		}
 	}

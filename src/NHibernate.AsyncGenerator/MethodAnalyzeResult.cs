@@ -8,6 +8,8 @@ namespace NHibernate.AsyncGenerator
 {
 	public class MethodAnalyzeResult
 	{
+		public bool IsValid { get; set; } = true;
+
 		public HashSet<MethodReferenceResult> ReferenceResults { get; } = new HashSet<MethodReferenceResult>();
 
 		public bool CanBeCompletelyAsync => CanBeAsnyc && ReferenceResults.All(o => o.CanBeAsync);

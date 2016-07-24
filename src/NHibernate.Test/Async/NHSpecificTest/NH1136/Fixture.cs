@@ -5,9 +5,30 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1136
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH1136";
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				await (s.DeleteAsync("from Address"));
+				await (s.DeleteAsync("from Person"));
+				await (s.FlushAsync());
+			}
+
+			await (base.OnTearDownAsync());
+		}
+
 		[Test]
 		public async Task TestAsync()
 		{
@@ -31,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1136
 
 			using (ISession s = OpenSession())
 			{
-				var person1 = s.Load<Person>(id);
+				var person1 = await (s.LoadAsync<Person>(id));
 				person1.RegisterChangeOfAddress(new DateTime(2008, 3, 23), new Address("8", "SS7 1TT"));
 				await (s.SaveAsync(person1));
 				await (s.FlushAsync());

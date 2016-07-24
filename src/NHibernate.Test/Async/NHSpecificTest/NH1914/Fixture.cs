@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1914
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task CascadeInsertAssignedAsync()
@@ -34,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1914
 			using (ISession s = OpenSession())
 			{
 				ITransaction t = s.BeginTransaction();
-				IDS _IDSRead = s.Load<IDS>(_IDS.Identifier);
+				IDS _IDSRead = await (s.LoadAsync<IDS>(_IDS.Identifier));
 				Assert.IsNotNull(_IDSRead);
 				Assert.IsNotNull(_IDSRead.CRSPLUTs);
 				Assert.IsNotNull(_IDSRead.CRSPLUTs["a"]);

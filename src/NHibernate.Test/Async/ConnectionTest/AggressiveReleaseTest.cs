@@ -11,9 +11,39 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.ConnectionTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class AggressiveReleaseTest : ConnectionManagementTestCase
+	public partial class AggressiveReleaseTestAsync : ConnectionManagementTestCaseAsync
 	{
+		protected override async Task ConfigureAsync(Configuration cfg)
+		{
+			await (base.ConfigureAsync(cfg));
+			cfg.SetProperty(Environment.ReleaseConnections, "after_transaction");
+			//cfg.SetProperty(Environment.ConnectionProvider, typeof(DummyConnectionProvider).AssemblyQualifiedName);
+			//cfg.SetProperty(Environment.GenerateStatistics, "true");
+			cfg.SetProperty(Environment.BatchSize, "0");
+		}
+
+		protected override ISession GetSessionUnderTest()
+		{
+			return OpenSession();
+		}
+
+		protected void Reconnect(ISession session)
+		{
+			session.Reconnect();
+		}
+
+		protected override void Prepare()
+		{
+		//DummyTransactionManager.INSTANCE.Begin();
+		}
+
+		protected override void Done()
+		{
+		//DummyTransactionManager.INSTANCE.Commit();
+		}
+
 		// Some additional tests specifically for the aggressive-Release functionality...
 		[Test]
 		public async Task SerializationOnAfterStatementAggressiveReleaseAsync()
@@ -44,7 +74,7 @@ namespace NHibernate.Test.ConnectionTest
 			// both scroll() and iterate() cause the batcher to hold on
 			// to resources, which should make aggresive-Release not Release
 			// the connection (and thus cause serialization to fail)
-			IEnumerable en = s.CreateQuery("from Silly").Enumerable();
+			IEnumerable en = await (s.CreateQuery("from Silly").EnumerableAsync());
 			try
 			{
 				SerializationHelper.Serialize(s);
@@ -73,14 +103,14 @@ namespace NHibernate.Test.ConnectionTest
 			Silly silly = new Silly("silly");
 			await (s.SaveAsync(silly));
 			await (s.FlushAsync());
-			IEnumerable en = s.CreateQuery("from Silly").Enumerable();
+			IEnumerable en = await (s.CreateQuery("from Silly").EnumerableAsync());
 			IEnumerator itr = en.GetEnumerator();
 			Assert.IsTrue(itr.MoveNext());
 			Silly silly2 = (Silly)itr.Current;
 			Assert.AreEqual(silly, silly2);
 			NHibernateUtil.Close(itr);
-			itr = s.CreateQuery("from Silly").Enumerable().GetEnumerator();
-			IEnumerator itr2 = s.CreateQuery("from Silly where name = 'silly'").Enumerable().GetEnumerator();
+			itr = (await (s.CreateQuery("from Silly").EnumerableAsync())).GetEnumerator();
+			IEnumerator itr2 = (await (s.CreateQuery("from Silly where name = 'silly'").EnumerableAsync())).GetEnumerator();
 			Assert.IsTrue(itr.MoveNext());
 			Assert.AreEqual(silly, itr.Current);
 			Assert.IsTrue(itr2.MoveNext());
@@ -123,7 +153,7 @@ namespace NHibernate.Test.ConnectionTest
 		public async Task SuppliedConnectionAsync()
 		{
 			Prepare();
-			DbConnection originalConnection = sessions.ConnectionProvider.GetConnection();
+			DbConnection originalConnection = await (sessions.ConnectionProvider.GetConnectionAsync());
 			ISession session = sessions.OpenSession(originalConnection);
 			Silly silly = new Silly("silly");
 			await (session.SaveAsync(silly));

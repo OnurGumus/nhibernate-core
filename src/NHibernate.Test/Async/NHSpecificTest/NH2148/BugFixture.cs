@@ -5,8 +5,28 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.NHSpecificTest.NH2148
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class BugFixture : BugTestCase
+	public partial class BugFixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnSetUpAsync()
+		{
+			using (var s = OpenSession())
+				using (var tx = s.BeginTransaction())
+				{
+					await (s.PersistAsync(new Book{Id = 1, ALotOfText = "a lot of text ..."}));
+					await (tx.CommitAsync());
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (var s = OpenSession())
+				using (var tx = s.BeginTransaction())
+				{
+					Assert.That(await (s.CreateSQLQuery("delete from Book").ExecuteUpdateAsync()), Is.EqualTo(1));
+					await (tx.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task CanCallLazyPropertyEntityMethodAsync()
 		{

@@ -9,9 +9,35 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Stateless
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class StatelessSessionFixture : TestCase
+	public partial class StatelessSessionFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"Stateless.Document.hbm.xml"};
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				await (s.DeleteAsync("from Document"));
+				await (s.DeleteAsync("from Paper"));
+			}
+		}
+
 		[Test]
 		public async Task CreateUpdateReadDeleteAsync()
 		{
@@ -23,7 +49,7 @@ namespace NHibernate.Test.Stateless
 				using (tx = ss.BeginTransaction())
 				{
 					doc = new Document("blah blah blah", "Blahs");
-					ss.Insert(doc);
+					await (ss.InsertAsync(doc));
 					Assert.IsNotNull(doc.LastModified);
 					initVersion = doc.LastModified;
 					Assert.IsTrue(initVersion.HasValue);
@@ -34,7 +60,7 @@ namespace NHibernate.Test.Stateless
 				using (tx = ss.BeginTransaction())
 				{
 					doc.Text = "blah blah blah .... blah";
-					ss.Update(doc);
+					await (ss.UpdateAsync(doc));
 					Assert.IsTrue(doc.LastModified.HasValue);
 					Assert.AreNotEqual(initVersion, doc.LastModified);
 					await (tx.CommitAsync());
@@ -43,11 +69,11 @@ namespace NHibernate.Test.Stateless
 				using (tx = ss.BeginTransaction())
 				{
 					doc.Text = "blah blah blah .... blah blay";
-					ss.Update(doc);
+					await (ss.UpdateAsync(doc));
 					await (tx.CommitAsync());
 				}
 
-				var doc2 = ss.Get<Document>("Blahs");
+				var doc2 = await (ss.GetAsync<Document>("Blahs"));
 				Assert.AreEqual("Blahs", doc2.Name);
 				Assert.AreEqual(doc.Text, doc2.Text);
 				doc2 = (Document)await (ss.CreateQuery("from Document where text is not null").UniqueResultAsync());
@@ -64,7 +90,7 @@ namespace NHibernate.Test.Stateless
 				Assert.AreEqual(doc.Text, doc2.Text);
 				using (tx = ss.BeginTransaction())
 				{
-					ss.Delete(doc);
+					await (ss.DeleteAsync(doc));
 					await (tx.CommitAsync());
 				}
 			}
@@ -76,20 +102,20 @@ namespace NHibernate.Test.Stateless
 			IStatelessSession ss = sessions.OpenStatelessSession();
 			ITransaction tx = ss.BeginTransaction();
 			var doc = new Document("blah blah blah", "Blahs");
-			ss.Insert(doc);
+			await (ss.InsertAsync(doc));
 			var paper = new Paper{Color = "White"};
-			ss.Insert(paper);
+			await (ss.InsertAsync(paper));
 			await (tx.CommitAsync());
 			tx = ss.BeginTransaction();
-			int count = ss.CreateQuery("update Document set Name = :newName where Name = :oldName").SetString("newName", "Foos").SetString("oldName", "Blahs").ExecuteUpdate();
+			int count = await (ss.CreateQuery("update Document set Name = :newName where Name = :oldName").SetString("newName", "Foos").SetString("oldName", "Blahs").ExecuteUpdateAsync());
 			Assert.AreEqual(1, count, "hql-delete on stateless session");
-			count = ss.CreateQuery("update Paper set Color = :newColor").SetString("newColor", "Goldenrod").ExecuteUpdate();
+			count = await (ss.CreateQuery("update Paper set Color = :newColor").SetString("newColor", "Goldenrod").ExecuteUpdateAsync());
 			Assert.AreEqual(1, count, "hql-delete on stateless session");
 			await (tx.CommitAsync());
 			tx = ss.BeginTransaction();
-			count = ss.CreateQuery("delete Document").ExecuteUpdate();
+			count = await (ss.CreateQuery("delete Document").ExecuteUpdateAsync());
 			Assert.AreEqual(1, count, "hql-delete on stateless session");
-			count = ss.CreateQuery("delete Paper").ExecuteUpdate();
+			count = await (ss.CreateQuery("delete Paper").ExecuteUpdateAsync());
 			Assert.AreEqual(1, count, "hql-delete on stateless session");
 			await (tx.CommitAsync());
 			ss.Close();
@@ -105,14 +131,14 @@ namespace NHibernate.Test.Stateless
 				using (tx = ss.BeginTransaction())
 				{
 					paper = new Paper{Color = "White"};
-					ss.Insert(paper);
+					await (ss.InsertAsync(paper));
 					Assert.IsTrue(paper.Id != 0);
 					await (tx.CommitAsync());
 				}
 
 				using (tx = ss.BeginTransaction())
 				{
-					ss.Delete(ss.Get<Paper>(paper.Id));
+					await (ss.DeleteAsync(await (ss.GetAsync<Paper>(paper.Id))));
 					await (tx.CommitAsync());
 				}
 			}
@@ -127,7 +153,7 @@ namespace NHibernate.Test.Stateless
 				using (ITransaction tx = ss.BeginTransaction())
 				{
 					paper = new Paper{Color = "whtie"};
-					ss.Insert(paper);
+					await (ss.InsertAsync(paper));
 					await (tx.CommitAsync());
 				}
 			}
@@ -136,9 +162,9 @@ namespace NHibernate.Test.Stateless
 			{
 				using (ITransaction tx = ss.BeginTransaction())
 				{
-					var p2 = ss.Get<Paper>(paper.Id);
+					var p2 = await (ss.GetAsync<Paper>(paper.Id));
 					p2.Color = "White";
-					ss.Update(p2);
+					await (ss.UpdateAsync(p2));
 					await (tx.CommitAsync());
 				}
 			}
@@ -148,11 +174,60 @@ namespace NHibernate.Test.Stateless
 				using (ITransaction tx = ss.BeginTransaction())
 				{
 					Assert.AreEqual("whtie", paper.Color);
-					ss.Refresh(paper);
+					await (ss.RefreshAsync(paper));
 					Assert.AreEqual("White", paper.Color);
-					ss.Delete(paper);
+					await (ss.DeleteAsync(paper));
 					await (tx.CommitAsync());
 				}
+			}
+		}
+
+		[Test]
+		public void WhenSetTheBatchSizeThenSetTheBatchSizeOfTheBatcher()
+		{
+			if (!Dialect.SupportsSqlBatches)
+				Assert.Ignore("Dialect does not support sql batches.");
+			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			{
+				ss.SetBatchSize(37);
+				var impl = (ISessionImplementor)ss;
+				Assert.That(impl.Batcher.BatchSize, Is.EqualTo(37));
+			}
+		}
+
+		[Test]
+		public void CanGetImplementor()
+		{
+			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			{
+				Assert.That(ss.GetSessionImplementation(), Is.SameAs(ss));
+			}
+		}
+
+		[Test]
+		public async Task HavingDetachedCriteriaThenCanGetExecutableCriteriaFromStatelessSessionAsync()
+		{
+			var dc = DetachedCriteria.For<Paper>();
+			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			{
+				ICriteria criteria = null;
+				Assert.That(() => criteria = dc.GetExecutableCriteria(ss), Throws.Nothing);
+				Assert.That(async () => await (criteria.ListAsync()), Throws.Nothing);
+			}
+		}
+
+		[Test]
+		public void DisposingClosedStatelessSessionShouldNotCauseSessionException()
+		{
+			try
+			{
+				IStatelessSession ss = sessions.OpenStatelessSession();
+				ss.Close();
+				ss.Dispose();
+			}
+			catch (SessionException)
+			{
+				Assert.Fail();
 			}
 		}
 	}

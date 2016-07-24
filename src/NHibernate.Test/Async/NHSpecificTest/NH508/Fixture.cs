@@ -5,9 +5,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH508
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH508";
+			}
+		}
+
 		[Test]
 		public async Task BugAsync()
 		{
@@ -35,8 +44,8 @@ namespace NHibernate.Test.NHSpecificTest.NH508
 			using (ISession session = sessions.OpenSession())
 				using (ITransaction tran = session.BeginTransaction())
 				{
-					User reloadedFriend = (User)session.Load(typeof (User), friend1.UserId);
-					User reloadedUser = (User)session.Load(typeof (User), userId);
+					User reloadedFriend = (User)await (session.LoadAsync(typeof (User), friend1.UserId));
+					User reloadedUser = (User)await (session.LoadAsync(typeof (User), userId));
 					reloadedUser.FriendList.Remove(reloadedFriend);
 					await (tran.CommitAsync());
 				}
@@ -44,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH508
 			using (ISession session = sessions.OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					User admin = (User)session.Get(typeof (User), userId);
+					User admin = (User)await (session.GetAsync(typeof (User), userId));
 					Assert.IsFalse(admin.FriendList.Contains(friend1));
 					Assert.IsTrue(admin.FriendList.Contains(friend2));
 					Assert.IsTrue(admin.FriendList.Contains(friend3));

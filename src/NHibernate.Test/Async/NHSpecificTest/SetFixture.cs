@@ -154,5 +154,38 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 	}
+
+	[TestFixture]
+	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+	public partial class SetFixtureAsync : TestCaseAsync
+	{
+		[Test]
+		public async Task DisassembleAndAssembleAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				ISessionImplementor si = (ISessionImplementor)s;
+				var set = new PersistentGenericSet<int>(si, new HashSet<int>());
+				set.Add(10);
+				set.Add(20);
+				CollectionPersisterStub collectionPersister = new CollectionPersisterStub();
+				collectionPersister.ElementType = NHibernateUtil.Int32;
+				object disassembled = await (set.DisassembleAsync(collectionPersister));
+				var assembledSet = new PersistentGenericSet<int>(si);
+				await (assembledSet.InitializeFromCacheAsync(collectionPersister, disassembled, null));
+				Assert.AreEqual(2, assembledSet.Count);
+				Assert.IsTrue(assembledSet.Contains(10));
+				Assert.IsTrue(assembledSet.Contains(20));
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new List<string>();
+			}
+		}
+	}
 }
 #endif

@@ -4,12 +4,38 @@ using NHibernate.Dialect;
 using NHibernate.Util;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
 
 namespace NHibernate.Test.NHSpecificTest.NH1713
 {
+	[TestFixture, Ignore("Should be fixed in some way.")]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		/* NOTE
+		 * This test should be fixed in some way at least to support Money.
+		 * So far it is only a demostration that using 
+		 * <property name="prepare_sql">false</property>
+		 * we should do some additional work for INSERT+UPDATE
+		 */
+		protected override Task ConfigureAsync(Configuration configuration)
+		{
+			try
+			{
+				configuration.SetProperty(Environment.PrepareSql, "true");
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is MsSql2000Dialect;
+		}
+
 		[Test]
 		public async Task Can_Save_Money_ColumnAsync()
 		{
@@ -56,9 +82,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1713
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					var item2 = s.Load<A>(savedId);
+					var item2 = await (s.LoadAsync<A>(savedId));
 					item2.Amount = item2.Amount - 1.5m;
-					s.SaveOrUpdate(item2);
+					await (s.SaveOrUpdateAsync(item2));
 					await (tx.CommitAsync());
 				}
 			}

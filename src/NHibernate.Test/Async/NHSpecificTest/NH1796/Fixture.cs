@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1796
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task MergeAsync()
@@ -31,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1796
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					s.CreateQuery("delete from Entity").ExecuteUpdate();
+					await (s.CreateQuery("delete from Entity").ExecuteUpdateAsync());
 					await (t.CommitAsync());
 				}
 		}
@@ -43,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1796
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					s.SaveOrUpdate(entity);
+					await (s.SaveOrUpdateAsync(entity));
 					await (t.CommitAsync());
 				}
 
@@ -52,14 +53,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1796
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					s.SaveOrUpdate(entity);
+					await (s.SaveOrUpdateAsync(entity));
 					await (t.CommitAsync());
 				}
 
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					s.CreateQuery("delete from Entity").ExecuteUpdate();
+					await (s.CreateQuery("delete from Entity").ExecuteUpdateAsync());
 					await (t.CommitAsync());
 				}
 		}

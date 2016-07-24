@@ -5,9 +5,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1324
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH1324";
+			}
+		}
+
 		[Test]
 		public async Task CanUseUniqueResultWithNullableType_ReturnNull_CriteriaAsync()
 		{
@@ -76,7 +85,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1324
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					int ? result = s.CreateQuery("select p.IQ from Person p").UniqueResult<int ? >();
+					int ? result = await (s.CreateQuery("select p.IQ from Person p").UniqueResultAsync<int ? >());
 					Assert.IsNull(result);
 					await (tx.CommitAsync());
 				}
@@ -103,7 +112,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1324
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					int ? result = s.CreateQuery("select p.IQ from Person p").UniqueResult<int ? >();
+					int ? result = await (s.CreateQuery("select p.IQ from Person p").UniqueResultAsync<int ? >());
 					Assert.AreEqual(4, result);
 					await (tx.CommitAsync());
 				}

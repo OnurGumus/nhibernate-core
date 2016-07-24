@@ -5,9 +5,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH734
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH734";
+			}
+		}
+
 		[TestAttribute]
 		public async Task LimitProblemAsync()
 		{
@@ -19,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH734
 				try
 				{
 					session.BeginTransaction();
-					IList result = criteria.List();
+					IList result = await (criteria.ListAsync());
 					await (session.Transaction.CommitAsync());
 				}
 				catch

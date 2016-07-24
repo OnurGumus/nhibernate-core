@@ -10,15 +10,16 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2057
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		[Description("This test fails intermittently on SQL Server ODBC. Not sure why.")]
 		public async Task WillCloseWhenUsingDTCAsync()
 		{
 			SessionImpl s;
-			using (var tx = new TransactionScope())
+			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				using (s = (SessionImpl)OpenSession())
 				{

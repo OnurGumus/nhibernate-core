@@ -12,9 +12,26 @@ namespace NHibernate.Test.NHSpecificTest.ListsWithHoles
 {
 	using System.Collections;
 
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : TestCase
+	public partial class FixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecificTest.ListsWithHoles.Mappings.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
 		[Test]
 		public async Task CanHandleHolesInListAsync()
 		{

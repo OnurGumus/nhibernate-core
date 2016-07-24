@@ -7,9 +7,28 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Subclass
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SubclassFixture : TestCase
+	public partial class SubclassFixtureAsync : TestCaseAsync
 	{
+		private DateTime testDateTime = new DateTime(2003, 8, 16);
+		private DateTime updateDateTime = new DateTime(2003, 8, 17);
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Subclass.Subclass.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task TestCRUDAsync()
 		{
@@ -35,8 +54,8 @@ namespace NHibernate.Test.Subclass
 			ISession s2 = OpenSession();
 			ITransaction t2 = s2.BeginTransaction();
 			// perform a load based on the base class
-			SubclassBase base2 = (SubclassBase)s2.Load(typeof (SubclassBase), baseId);
-			SubclassBase oneBase2 = (SubclassBase)s2.Load(typeof (SubclassBase), oneId);
+			SubclassBase base2 = (SubclassBase)await (s2.LoadAsync(typeof (SubclassBase), baseId));
+			SubclassBase oneBase2 = (SubclassBase)await (s2.LoadAsync(typeof (SubclassBase), oneId));
 			// do some quick checks to make sure s2 loaded an object with the same data as s2 saved.
 			SubclassAssert.AreEqual(base1, base2);
 			// the object with id=2 was loaded using the base class - lets make sure it actually loaded
@@ -57,7 +76,7 @@ namespace NHibernate.Test.Subclass
 			// lets test the Criteria interface for subclassing
 			ISession s3 = OpenSession();
 			ITransaction t3 = s3.BeginTransaction();
-			IList results3 = s3.CreateCriteria(typeof (SubclassBase)).Add(Expression.In("TestString", new string[]{"Did it get updated", "Updated SubclassOne String"})).List();
+			IList results3 = await (s3.CreateCriteria(typeof (SubclassBase)).Add(Expression.In("TestString", new string[]{"Did it get updated", "Updated SubclassOne String"})).ListAsync());
 			Assert.AreEqual(2, results3.Count);
 			SubclassBase base3 = null;
 			SubclassOne one3 = null;
@@ -100,10 +119,10 @@ namespace NHibernate.Test.Subclass
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
-			IList list = s.CreateQuery("from SubclassBase as sb where sb.class=SubclassBase").List();
+			IList list = await (s.CreateQuery("from SubclassBase as sb where sb.class=SubclassBase").ListAsync());
 			Assert.AreEqual(1, list.Count);
 			Assert.AreEqual(typeof (SubclassBase), list[0].GetType(), "should be base");
-			list = s.CreateQuery("from SubclassBase as sb where sb.class=SubclassOne").List();
+			list = await (s.CreateQuery("from SubclassBase as sb where sb.class=SubclassOne").ListAsync());
 			Assert.AreEqual(1, list.Count);
 			Assert.AreEqual(typeof (SubclassOne), list[0].GetType(), "should be one");
 			s.Close();

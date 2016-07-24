@@ -6,9 +6,54 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.QueryTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class AggregateReturnTypesFixture : TestCase
+	public partial class AggregateReturnTypesFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"QueryTest.Aggregated.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override async Task OnSetUpAsync()
+		{
+			using (ISession s = OpenSession())
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					Aggregated agg = new Aggregated();
+					agg.AByte = 10;
+					agg.AShort = 20;
+					agg.AnInt = 30;
+					agg.ALong = 40;
+					agg.AFloat = 50.5f;
+					agg.ADouble = 60.6;
+					agg.ADecimal = 70.707m;
+					await (s.SaveAsync(agg));
+					await (tx.CommitAsync());
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = OpenSession())
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					await (s.DeleteAsync("from Aggregated"));
+					await (tx.CommitAsync());
+				}
+		}
+
 		private async Task<System.Type> AggregateTypeAsync(string expr)
 		{
 			using (ISession s = OpenSession())

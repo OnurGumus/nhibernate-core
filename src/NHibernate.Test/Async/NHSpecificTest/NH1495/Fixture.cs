@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1495
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task CreateTestAsync()
@@ -25,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1495
 
 			using (ISession session = OpenSession())
 			{
-				var person = (IPerson)session.Load(typeof (Person), id); //to work with the proxy
+				var person = (IPerson)await (session.LoadAsync(typeof (Person), id)); //to work with the proxy
 				Assert.IsNotNull(person);
 				Assert.AreEqual("Nelo", person.Name);
 				using (ITransaction trans = session.BeginTransaction())

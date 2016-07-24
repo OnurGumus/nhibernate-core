@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
 
@@ -21,31 +22,39 @@ namespace NHibernate.Test.NHSpecificTest.NH2692
 			}
 		}
 
-		[Test, KnownBug("NH-2692")]
+		[Test]
 		public void QueryingChildrenComponents()
 		{
-			using (var session = OpenSession())
-			using (session.BeginTransaction())
-			{
-				var result = session.Query<Parent>()
-									.SelectMany(x => x.ChildComponents)
-									.ToList();
+			Assert.Throws<Exception>(
+				() =>
+				{
+					using (var session = OpenSession())
+					using (session.BeginTransaction())
+					{
+						var result = session.Query<Parent>()
+											.SelectMany(x => x.ChildComponents)
+											.ToList();
 
-				Assert.That(result, Has.Count.EqualTo(1));
-			}
+						Assert.That(result, Has.Count.EqualTo(1));
+					}
+				}, KnownBug.Issue("NH-2692"));
 		}
 
-		[Test, KnownBug("NH-2692")]
+		[Test]
 		public void QueryingChildrenComponentsHql()
 		{
-			using (var session = OpenSession())
-			using (session.BeginTransaction())
-			{
-				var result = session.CreateQuery("select c from Parent as p join p.ChildComponents as c")
-									.List<ChildComponent>();
+			Assert.Throws<Exception>(
+				() =>
+				{
+					using (var session = OpenSession())
+					using (session.BeginTransaction())
+					{
+						var result = session.CreateQuery("select c from Parent as p join p.ChildComponents as c")
+											.List<ChildComponent>();
 
-				Assert.That(result, Has.Count.EqualTo(1));
-			}
+						Assert.That(result, Has.Count.EqualTo(1));
+					}
+				}, KnownBug.Issue("NH-2692"));
 		}
 
 		protected override void OnSetUp()

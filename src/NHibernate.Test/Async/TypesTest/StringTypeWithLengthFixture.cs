@@ -9,14 +9,37 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.TypesTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class StringTypeWithLengthFixture : TypeFixtureBase
+	public partial class StringTypeWithLengthFixtureAsync : TypeFixtureBaseAsync
 	{
+		protected override string TypeName
+		{
+			get
+			{
+				return "String";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{String.Format("TypesTest.{0}ClassWithLength.hbm.xml", TypeName)};
+			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// this test only works where the driver has set an explicit length on the DbParameter
+			return dialect is MsSql2008Dialect;
+		}
+
 		[Test]
 		public async Task NhThrowsOnTooLongAsync()
 		{
 			int maxStringLength = 4000;
-			PropertyValueException ex = Assert.Throws<PropertyValueException>(async () =>
+			PropertyValueException ex = Assert.ThrowsAsync<PropertyValueException>(async () =>
 			{
 				using (ISession s = OpenSession())
 				{
@@ -67,7 +90,7 @@ namespace NHibernate.Test.TypesTest
 					{Id = 1, StringValue = "AAAAAAAAAB"}));
 					await (s.SaveAsync(new StringClass()
 					{Id = 2, StringValue = "BAAAAAAAAA"}));
-					var aaItems = s.CreateCriteria<StringClass>().Add(Restrictions.Like("StringValue", "%AAAAAAAAA%")).List();
+					var aaItems = await (s.CreateCriteria<StringClass>().Add(Restrictions.Like("StringValue", "%AAAAAAAAA%")).ListAsync());
 					Assert.That(aaItems.Count, Is.EqualTo(2));
 				}
 		}
@@ -84,7 +107,7 @@ namespace NHibernate.Test.TypesTest
 					{Id = 1, StringValue = "AAAAAAAAAB"}));
 					await (s.SaveAsync(new StringClass()
 					{Id = 2, StringValue = "BAAAAAAAAA"}));
-					var aaItems = s.CreateQuery("from StringClass s where s.StringValue like :likeValue").SetParameter("likeValue", "%AAAAAAAAA%").List();
+					var aaItems = await (s.CreateQuery("from StringClass s where s.StringValue like :likeValue").SetParameter("likeValue", "%AAAAAAAAA%").ListAsync());
 					Assert.That(aaItems.Count, Is.EqualTo(2));
 				}
 		}

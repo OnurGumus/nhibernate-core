@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.FindSymbols;
 
 namespace NHibernate.AsyncGenerator
 {
@@ -24,7 +25,22 @@ namespace NHibernate.AsyncGenerator
 
 		public NamespaceDeclarationSyntax Node { get; }
 
-		//public Dictionary<TypeDeclarationSyntax, TypeInfo> TypeInfos { get; } = new Dictionary<TypeDeclarationSyntax, TypeInfo>();
+		/// <summary>
+		/// Type references that need to be renamed
+		/// </summary>
+		public HashSet<ReferenceLocation> TypeReferences { get; } = new HashSet<ReferenceLocation>();
+
+		public TypeInfo GetTypeInfo(TypeDeclarationSyntax node, bool create = false)
+		{
+			var typeSymbol = DocumentInfo.SemanticModel.GetDeclaredSymbol(node);
+			return GetTypeInfo(typeSymbol, create);
+		}
+
+		public TypeInfo GetTypeInfo(MethodDeclarationSyntax node, bool create = false)
+		{
+			var typeSymbol = DocumentInfo.SemanticModel.GetDeclaredSymbol(node).ContainingType;
+			return GetTypeInfo(typeSymbol, create);
+		}
 
 		public TypeInfo GetTypeInfo(IMethodSymbol symbol, bool create = false)
 		{
@@ -40,12 +56,13 @@ namespace NHibernate.AsyncGenerator
 				type = type.ContainingType;
 			}
 			TypeInfo currentDocType = null;
-			var path = Node.SyntaxTree.FilePath;
+			var path = DocumentInfo.Path;
 			while (nestedTypes.Count > 0)
 			{
 				var typeSymbol = nestedTypes.Pop().OriginalDefinition;
 				var location = typeSymbol.Locations.Single(o => o.SourceTree.FilePath == path);
-				var node = Node.DescendantNodes()
+				var namespaceNode = Node ?? (SyntaxNode) DocumentInfo.RootNode; // global namespace
+				var node = namespaceNode.DescendantNodes()
 							   .OfType<TypeDeclarationSyntax>()
 							   .First(o => o.ChildTokens().First(t => t.IsKind(SyntaxKind.IdentifierToken)).Span == location.SourceSpan);
 
@@ -59,9 +76,9 @@ namespace NHibernate.AsyncGenerator
 					return null;
 				}
 
-				var docType = new TypeInfo(this, typeSymbol, node);
+				var docType = new TypeInfo(this, currentDocType, typeSymbol, node);
 				(currentDocType?.TypeInfos ?? this).Add(node, docType);
-				if ((currentDocType?.TypeInfos ?? this).Keys.GroupBy(o => o.Identifier.ValueText).Any(o => o.Count() > 1))
+				if ((currentDocType?.TypeInfos ?? this).Keys.GroupBy(o => o.Identifier.ValueText).Any(o => o.Count() > 1)) //TODO REMOVE
 				{
 
 				}

@@ -5,9 +5,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.ListIndex
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SimpleOneToManyTest : TestCase
+	public partial class SimpleOneToManyTestAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"ListIndex.SimpleOneToMany.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
 		[Test]
 		public async Task ShouldIncludeTheListIdxInsertingAsync()
 		{
@@ -17,14 +34,14 @@ namespace NHibernate.Test.ListIndex
 					var galery = new Galery();
 					galery.Images.Add(new Image{Path = "image01.jpg"});
 					await (s.PersistAsync(galery));
-					Assert.DoesNotThrow(async () => await tx.CommitAsync());
+					Assert.DoesNotThrowAsync(async () => await tx.CommitAsync());
 				}
 
 			using (var s = OpenSession())
 				using (var tx = s.BeginTransaction())
 				{
-					s.CreateQuery("delete from Image").ExecuteUpdate();
-					s.CreateQuery("delete from Galery").ExecuteUpdate();
+					await (s.CreateQuery("delete from Image").ExecuteUpdateAsync());
+					await (s.CreateQuery("delete from Galery").ExecuteUpdateAsync());
 					await (tx.CommitAsync());
 				}
 		}

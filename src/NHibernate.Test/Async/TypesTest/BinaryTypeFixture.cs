@@ -10,9 +10,33 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.TypesTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class BinaryTypeFixture : TypeFixtureBase
+	public partial class BinaryTypeFixtureAsync : TypeFixtureBaseAsync
 	{
+		protected override string TypeName
+		{
+			get
+			{
+				return "Binary";
+			}
+		}
+
+		/// <summary>
+		/// Verify Equals will correctly determine when the property
+		/// is dirty.
+		/// </summary>
+		[Test]
+		public void Equals()
+		{
+			BinaryType type = (BinaryType)NHibernateUtil.Binary;
+			byte[] expected = Encoding.UTF8.GetBytes("ghij1`23%$");
+			byte[] expectedClone = Encoding.UTF8.GetBytes("ghij1`23%$");
+			Assert.IsTrue(type.IsEqual(expected, expected));
+			Assert.IsTrue(type.IsEqual(expected, expectedClone));
+			Assert.IsFalse(type.IsEqual(expected, GetByteArray(15)));
+		}
+
 		/// <summary>
 		/// Certain drivers (ie - Oracle) don't handle writing and reading null byte[] 
 		/// to and from the db consistently.  Verify if this driver does.
@@ -31,7 +55,7 @@ namespace NHibernate.Test.TypesTest
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			BinaryClass bcBinaryLoaded = (BinaryClass)s.Load(typeof (BinaryClass), 1);
+			BinaryClass bcBinaryLoaded = (BinaryClass)await (s.LoadAsync(typeof (BinaryClass), 1));
 			Assert.IsNotNull(bcBinaryLoaded);
 			Assert.AreEqual(null, bcBinaryLoaded.DefaultSize, "A property mapped as type=\"Byte[]\" with a null byte[] value was not saved & loaded as null");
 			Assert.AreEqual(null, bcBinaryLoaded.WithSize, "A property mapped as type=\"Byte[](length)\" with null byte[] value was not saved & loaded as null");
@@ -63,7 +87,7 @@ namespace NHibernate.Test.TypesTest
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			BinaryClass bcBinaryLoaded = (BinaryClass)s.Load(typeof (BinaryClass), 1);
+			BinaryClass bcBinaryLoaded = (BinaryClass)await (s.LoadAsync(typeof (BinaryClass), 1));
 			Assert.IsNotNull(bcBinaryLoaded);
 			Assert.AreEqual(0, bcBinaryLoaded.DefaultSize.Length, "A property mapped as type=\"Byte[]\" with a byte[0] value was not saved & loaded as byte[0]");
 			Assert.AreEqual(0, bcBinaryLoaded.WithSize.Length, "A property mapped as type=\"Byte[](length)\" with a byte[0] value was not saved & loaded as byte[0]");
@@ -88,14 +112,30 @@ namespace NHibernate.Test.TypesTest
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			bcBinary = (BinaryClass)s.Load(typeof (BinaryClass), 1);
-			// make sure what was saved was expected
-			ObjectAssert.AreEqual(expected.DefaultSize, bcBinary.DefaultSize);
-			ObjectAssert.AreEqual(expected.WithSize, bcBinary.WithSize);
-			Assert.IsFalse(s.IsDirty(), "The session is dirty: an Update will be raised on commit, See NH-1246");
+			bcBinary = (BinaryClass)await (s.LoadAsync(typeof (BinaryClass), 1));
+			ObjectAssertAsync.AreEqual(expected.DefaultSize, bcBinary.DefaultSize);
+			ObjectAssertAsync.AreEqual(expected.WithSize, bcBinary.WithSize);
+			Assert.IsFalse(await (s.IsDirtyAsync()), "The session is dirty: an Update will be raised on commit, See NH-1246");
 			await (s.DeleteAsync(bcBinary));
 			await (t.CommitAsync());
 			s.Close();
+		}
+
+		private BinaryClass Create(int id)
+		{
+			BinaryClass bcBinary = new BinaryClass();
+			bcBinary.Id = id;
+			bcBinary.DefaultSize = GetByteArray(5);
+			bcBinary.WithSize = GetByteArray(10);
+			return bcBinary;
+		}
+
+		private byte[] GetByteArray(int value)
+		{
+			BinaryFormatter bf = new BinaryFormatter();
+			MemoryStream stream = new MemoryStream();
+			bf.Serialize(stream, value);
+			return stream.ToArray();
 		}
 	}
 }

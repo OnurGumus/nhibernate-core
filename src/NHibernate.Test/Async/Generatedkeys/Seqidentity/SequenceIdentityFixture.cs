@@ -5,9 +5,31 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Generatedkeys.Seqidentity
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SequenceIdentityFixture : TestCase
+	public partial class SequenceIdentityFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"Generatedkeys.Seqidentity.MyEntity.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect.SupportsSequences && !(dialect is Dialect.MsSql2012Dialect);
+		}
+
 		[Test]
 		public async Task SequenceIdentityGeneratorAsync()
 		{

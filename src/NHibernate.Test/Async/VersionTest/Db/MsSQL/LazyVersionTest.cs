@@ -5,9 +5,31 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.VersionTest.Db.MsSQL
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class LazyVersionTest : TestCase
+	public partial class LazyVersionTestAsync : TestCaseAsync
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is MsSql2000Dialect;
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"VersionTest.Db.MsSQL.ProductWithVersionAndLazyProperty.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
 		[Test(Description = "NH-3589")]
 		public async System.Threading.Tasks.Task CanUseVersionOnEntityWithLazyPropertyAsync()
 		{

@@ -6,8 +6,13 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.NHSpecificTest.NH2257
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
+		{
+			return (dialect is NHibernate.Dialect.InformixDialect1000);
+		}
+
 		[Test]
 		public async Task InformixUsingDuplicateParametersAsync()
 		{
@@ -16,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2257
 				{
 					await (session.SaveAsync(new Foo()
 					{Name = "aa"}));
-					var list = session.CreateQuery("from Foo f where f.Name = :p1 and not f.Name <> :p1").SetParameter("p1", "aa").List<Foo>();
+					var list = await (session.CreateQuery("from Foo f where f.Name = :p1 and not f.Name <> :p1").SetParameter("p1", "aa").ListAsync<Foo>());
 					Assert.That(list.Count, Is.EqualTo(1));
 				}
 		}

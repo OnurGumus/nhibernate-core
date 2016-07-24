@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH3046
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test, Explicit]
 		public async Task MemoryLeakAsync()
@@ -46,6 +47,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3046
 						session.Clear();
 					}
 				}
+		}
+
+		protected override string CacheConcurrencyStrategy
+		{
+			get
+			{
+				return null;
+			}
 		}
 	}
 }

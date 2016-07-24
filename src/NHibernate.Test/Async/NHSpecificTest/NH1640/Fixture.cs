@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1640
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task FetchJoinShouldNotReturnProxyTestAsync()
@@ -23,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1640
 
 			using (IStatelessSession session = sessions.OpenStatelessSession())
 			{
-				var parent = session.CreateQuery("from Entity p join fetch p.Child where p.Id=:pId").SetInt32("pId", savedId).UniqueResult<Entity>();
+				var parent = await (session.CreateQuery("from Entity p join fetch p.Child where p.Id=:pId").SetInt32("pId", savedId).UniqueResultAsync<Entity>());
 				Assert.That(parent.Child, Is.TypeOf(typeof (Entity)));
 			}
 

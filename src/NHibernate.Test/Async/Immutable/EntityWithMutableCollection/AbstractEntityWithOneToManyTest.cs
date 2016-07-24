@@ -7,15 +7,84 @@ using NHibernate.Impl;
 using NHibernate.Criterion;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 {
-	/// <summary>
-	/// Hibernate tests ported from trunk revision 19910 (July 8, 2010)
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public abstract partial class AbstractEntityWithOneToManyTest : TestCase
+	public abstract partial class AbstractEntityWithOneToManyTestAsync : TestCaseAsync
 	{
+		private bool isContractPartiesInverse;
+		private bool isContractPartiesBidirectional;
+		private bool isContractVariationsBidirectional;
+		private bool isContractVersioned;
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override Task ConfigureAsync(NHibernate.Cfg.Configuration configuration)
+		{
+			try
+			{
+				configuration.SetProperty(NHibernate.Cfg.Environment.GenerateStatistics, "true");
+				configuration.SetProperty(NHibernate.Cfg.Environment.BatchSize, "0");
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		protected virtual bool CheckUpdateCountsAfterAddingExistingElement()
+		{
+			return true;
+		}
+
+		protected virtual bool CheckUpdateCountsAfterRemovingElementWithoutDelete()
+		{
+			return true;
+		}
+
+		protected override Task OnSetUpAsync()
+		{
+			try
+			{
+				isContractPartiesInverse = sessions.GetCollectionPersister(typeof (Contract).FullName + ".Parties").IsInverse;
+				try
+				{
+					sessions.GetEntityPersister(typeof (Party).FullName).GetPropertyType("Contract");
+					isContractPartiesBidirectional = true;
+				}
+				catch (QueryException x)
+				{
+					isContractPartiesBidirectional = false;
+				}
+
+				try
+				{
+					sessions.GetEntityPersister(typeof (ContractVariation).FullName).GetPropertyType("Contract");
+					isContractVariationsBidirectional = true;
+				}
+				catch (QueryException x)
+				{
+					isContractVariationsBidirectional = false;
+				}
+
+				isContractVersioned = sessions.GetEntityPersister(typeof (Contract).FullName).IsVersioned;
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
 		[Test]
 		public virtual async Task UpdatePropertyAsync()
 		{
@@ -1073,12 +1142,32 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
-			s.CreateQuery("delete from Party").ExecuteUpdate();
+			await (s.CreateQuery("delete from Party").ExecuteUpdateAsync());
 			await (s.DeleteAsync(c));
 			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			Assert.That(await (s.CreateCriteria<Party>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
+		}
+
+		protected void ClearCounts()
+		{
+			Sfi.Statistics.Clear();
+		}
+
+		protected void AssertUpdateCount(int count)
+		{
+			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(count), "unexpected update counts");
+		}
+
+		protected void AssertInsertCount(int count)
+		{
+			Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(count), "unexpected insert count");
+		}
+
+		protected void AssertDeleteCount(int count)
+		{
+			Assert.That(Sfi.Statistics.EntityDeleteCount, Is.EqualTo(count), "unexpected delete counts");
 		}
 	}
 }

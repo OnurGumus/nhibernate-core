@@ -13,9 +13,37 @@ namespace NHibernate.Test.Join
 {
 	using NHibernate.Test.Subclass;
 
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class JoinTest : TestCase
+	public partial class JoinTestAsync : TestCaseAsync
 	{
+		private static ILog log = LogManager.GetLogger(typeof (JoinTestAsync));
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Join.Person.hbm.xml", "Subclass.Subclass.hbm.xml"};
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = OpenSession())
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					await (s.DeleteAsync("from Person"));
+					await (tx.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task TestSequentialSelectsAsync()
 		{
@@ -51,12 +79,12 @@ namespace NHibernate.Test.Join
 					s.Clear();
 					// Copied from H3.  Don't really know what it is testing
 					//Assert.AreEqual(0, s.CreateQuery("from System.Serializable").List().Count);
-					Assert.AreEqual(3, s.CreateQuery("from Person").List().Count);
-					Assert.AreEqual(1, s.CreateQuery("from Person p where p.class is null").List().Count);
-					Assert.AreEqual(1, s.CreateQuery("from Person p where p.class = Customer").List().Count);
-					Assert.AreEqual(1, s.CreateQuery("from Customer c").List().Count);
+					Assert.AreEqual(3, (await (s.CreateQuery("from Person").ListAsync())).Count);
+					Assert.AreEqual(1, (await (s.CreateQuery("from Person p where p.class is null").ListAsync())).Count);
+					Assert.AreEqual(1, (await (s.CreateQuery("from Person p where p.class = Customer").ListAsync())).Count);
+					Assert.AreEqual(1, (await (s.CreateQuery("from Customer c").ListAsync())).Count);
 					s.Clear();
-					IList customers = s.CreateQuery("from Customer c left join fetch c.Salesperson").List();
+					IList customers = await (s.CreateQuery("from Customer c left join fetch c.Salesperson").ListAsync());
 					foreach (Customer c in customers)
 					{
 						Assert.IsTrue(NHibernateUtil.IsInitialized(c.Salesperson));
@@ -65,12 +93,12 @@ namespace NHibernate.Test.Join
 
 					Assert.AreEqual(1, customers.Count);
 					s.Clear();
-					mark = (Employee)s.Get(typeof (Employee), mark.Id);
-					joe = (Customer)s.Get(typeof (Customer), joe.Id);
+					mark = (Employee)await (s.GetAsync(typeof (Employee), mark.Id));
+					joe = (Customer)await (s.GetAsync(typeof (Customer), joe.Id));
 					mark.Zip = "30306";
 					await (s.FlushAsync());
 					s.Clear();
-					Assert.AreEqual(1, s.CreateQuery("from Person p where p.Zip = '30306'").List().Count);
+					Assert.AreEqual(1, (await (s.CreateQuery("from Person p where p.Zip = '30306'").ListAsync())).Count);
 					await (tx.CommitAsync());
 				}
 		}
@@ -87,18 +115,17 @@ namespace NHibernate.Test.Join
 					jesus.Sex = 'M';
 					await (s.SaveAsync(jesus));
 					//objectsNeedDeleting.Add(jesus);
-					Assert.AreEqual(1, s.CreateQuery("from Person").List().Count);
-					Assert.AreEqual(0, s.CreateQuery("from Person p where p.class is null").List().Count);
-					Assert.AreEqual(1, s.CreateQuery("from Person p where p.class = User").List().Count);
-					Assert.AreEqual(1, s.CreateQuery("from User u").List().Count);
+					Assert.AreEqual(1, (await (s.CreateQuery("from Person").ListAsync())).Count);
+					Assert.AreEqual(0, (await (s.CreateQuery("from Person p where p.class is null").ListAsync())).Count);
+					Assert.AreEqual(1, (await (s.CreateQuery("from Person p where p.class = User").ListAsync())).Count);
+					Assert.AreEqual(1, (await (s.CreateQuery("from User u").ListAsync())).Count);
 					s.Clear();
-					// Remove the optional row from the join table and requery the User obj
-					ExecuteStatement(s, tx, "delete from t_user");
+					await (ExecuteStatementAsync(s, tx, "delete from t_user"));
 					s.Clear();
 					// Clean up the test data
 					await (s.DeleteAsync(jesus));
 					await (s.FlushAsync());
-					Assert.AreEqual(0, s.CreateQuery("from Person").List().Count);
+					Assert.AreEqual(0, (await (s.CreateQuery("from Person").ListAsync())).Count);
 					await (tx.CommitAsync());
 				}
 		}
@@ -120,7 +147,7 @@ namespace NHibernate.Test.Join
 					tx.Enlist(cmd);
 					cmd.CommandText = "select count(*) from phone where phone_id = " + p.Id.ToString();
 					cmd.CommandType = CommandType.Text;
-					Int64 count = Convert.ToInt64(cmd.ExecuteScalar());
+					Int64 count = Convert.ToInt64(await (cmd.ExecuteScalarAsync()));
 					Assert.AreEqual(0, count);
 					await (tx.CommitAsync());
 				}
@@ -134,7 +161,7 @@ namespace NHibernate.Test.Join
 			s.Clear();
 			if (stuffName != null)
 			{
-				int count = ExecuteStatement(s, tx, string.Format("insert into inversed_stuff (stuff_id, StuffName) values ({0}, '{1}')", p.Id, stuffName));
+				int count = await (ExecuteStatementAsync(s, tx, string.Format("insert into inversed_stuff (stuff_id, StuffName) values ({0}, '{1}')", p.Id, stuffName)));
 				Assert.AreEqual(1, count, "Insert statement failed.");
 			}
 
@@ -149,10 +176,10 @@ namespace NHibernate.Test.Join
 				{
 					string stuffName = "name of the stuff";
 					Person p = await (PreparePersonWithInverseJoinAsync(s, tx, "John", stuffName));
-					Person result = (Person)s.Get(typeof (Person), p.Id);
+					Person result = (Person)await (s.GetAsync(typeof (Person), p.Id));
 					Assert.IsNotNull(result);
 					Assert.AreEqual(stuffName, result.StuffName);
-					ExecuteStatement(s, tx, "delete from inversed_stuff");
+					await (ExecuteStatementAsync(s, tx, "delete from inversed_stuff"));
 					await (tx.CommitAsync());
 				}
 		}
@@ -165,14 +192,14 @@ namespace NHibernate.Test.Join
 				{
 					string stuffName = "name of the stuff";
 					Person p = await (PreparePersonWithInverseJoinAsync(s, tx, "John", stuffName));
-					Person personToUpdate = (Person)s.Get(typeof (Person), p.Id);
+					Person personToUpdate = (Person)await (s.GetAsync(typeof (Person), p.Id));
 					Assert.IsNotNull(personToUpdate);
 					personToUpdate.StuffName = "new stuff name";
 					await (s.FlushAsync());
 					s.Clear();
-					Person loaded = (Person)s.Get(typeof (Person), p.Id);
+					Person loaded = (Person)await (s.GetAsync(typeof (Person), p.Id));
 					Assert.AreEqual(stuffName, loaded.StuffName, "StuffName should not have been updated");
-					ExecuteStatement(s, tx, "delete from inversed_stuff");
+					await (ExecuteStatementAsync(s, tx, "delete from inversed_stuff"));
 					await (tx.CommitAsync());
 				}
 		}
@@ -188,7 +215,7 @@ namespace NHibernate.Test.Join
 					await (s.SaveAsync(p));
 					await (s.FlushAsync());
 					s.Clear();
-					Person result = (Person)s.Get(typeof (Person), p.Id);
+					Person result = (Person)await (s.GetAsync(typeof (Person), p.Id));
 					Assert.IsNotNull(result);
 					Assert.IsNull(result.StuffName);
 					await (tx.CommitAsync());
@@ -209,17 +236,55 @@ namespace NHibernate.Test.Join
 					tx.Enlist(cmd);
 					cmd.CommandText = string.Format("select count(stuff_id) from inversed_stuff where stuff_id = {0}", personId);
 					cmd.CommandType = CommandType.Text;
-					Int64 count = Convert.ToInt64(cmd.ExecuteScalar());
+					Int64 count = Convert.ToInt64(await (cmd.ExecuteScalarAsync()));
 					Assert.AreEqual(1, count, "Row from an inverse <join> was deleted.");
 					DbCommand cmd2 = s.Connection.CreateCommand();
 					tx.Enlist(cmd2);
 					cmd2.CommandText = string.Format("select StuffName from inversed_stuff where stuff_id = {0}", personId);
 					cmd2.CommandType = CommandType.Text;
-					string retrievedStuffName = (string)cmd2.ExecuteScalar();
+					string retrievedStuffName = (string)await (cmd2.ExecuteScalarAsync());
 					Assert.AreEqual(stuffName, retrievedStuffName, "Retrieved inverse <join> does not match");
-					ExecuteStatement(s, tx, "delete from inversed_stuff");
+					await (ExecuteStatementAsync(s, tx, "delete from inversed_stuff"));
 					await (tx.CommitAsync());
 				}
+		}
+
+		private Person CreatePerson(string name)
+		{
+			Person p = new Person();
+			p.Name = name;
+			p.Sex = 'M';
+			p.Address = "123 Some Street";
+			p.Zip = "12345";
+			p.Country = "Canada";
+			p.HomePhone = "555-1234";
+			p.BusinessPhone = "555-4321";
+			p.OthersPhones = new HashSet<string>{"555-9876", "555-6789"};
+			return p;
+		}
+
+		protected bool PersonsAreEqual(Person x, Person y)
+		{
+			if (!string.Equals(x.Name, y.Name))
+				return false;
+			if (x.Sex != y.Sex)
+				return false;
+			if (!string.Equals(x.Address, y.Address))
+				return false;
+			if (!string.Equals(x.Zip, y.Zip))
+				return false;
+			if (!string.Equals(x.Country, y.Country))
+				return false;
+			if (!string.Equals(x.HomePhone, y.HomePhone))
+				return false;
+			if (!string.Equals(x.BusinessPhone, y.BusinessPhone))
+				return false;
+			if (x.OthersPhones.Count != y.OthersPhones.Count)
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		private async Task<Person[]> CreateAndInsertPersonsAsync(ISession s, int count)
@@ -247,7 +312,7 @@ namespace NHibernate.Test.Join
 					await (s.SaveAsync(john));
 					await (s.FlushAsync());
 					s.Clear();
-					Person p = (Person)s.Get(typeof (Person), john.Id);
+					Person p = (Person)await (s.GetAsync(typeof (Person), john.Id));
 					Assert.IsTrue(PersonsAreEqual(john, p));
 					await (tx.CommitAsync());
 				}
@@ -261,7 +326,7 @@ namespace NHibernate.Test.Join
 				{
 					Person[] people = await (CreateAndInsertPersonsAsync(s, 3));
 					ICriteria criteria = s.CreateCriteria(typeof (Person)).Add(Expression.Eq("Name", people[1].Name));
-					IList list = criteria.List();
+					IList list = await (criteria.ListAsync());
 					Assert.AreEqual(1, list.Count);
 					Assert.IsTrue(PersonsAreEqual(people[1], (Person)list[0]));
 					await (tx.CommitAsync());
@@ -276,11 +341,28 @@ namespace NHibernate.Test.Join
 				{
 					Person[] people = await (CreateAndInsertPersonsAsync(s, 3));
 					IQuery query = s.CreateQuery("from Person p where p.Name = :name").SetParameter("name", people[1].Name);
-					IList list = query.List();
+					IList list = await (query.ListAsync());
 					Assert.AreEqual(1, list.Count);
 					Assert.IsTrue(PersonsAreEqual(people[1], (Person)list[0]));
 					await (tx.CommitAsync());
 				}
+		}
+
+		private Employee CreateEmployee(string name, string title)
+		{
+			Employee p = new Employee();
+			p.Name = name;
+			p.Sex = 'M';
+			p.Address = "123 Some Street";
+			p.Zip = "12345";
+			p.Country = "Canada";
+			p.HomePhone = "555-1234";
+			p.BusinessPhone = "555-4321";
+			p.Title = title;
+			p.Salary = 100;
+			p.Meetings.Add(new Meeting{Employee = p, Description = "salary definition"});
+			p.Meetings.Add(new Meeting{Employee = p, Description = "targets definition"});
+			return p;
 		}
 
 		private async Task<Employee[]> CreateAndInsertEmployeesAsync(ISession s, int count)
@@ -308,7 +390,7 @@ namespace NHibernate.Test.Join
 					await (s.SaveAsync(jack));
 					await (s.FlushAsync());
 					s.Clear();
-					IList list = s.CreateQuery("from Employee p where p.Id = :id").SetParameter("id", jack.Id).List();
+					IList list = await (s.CreateQuery("from Employee p where p.Id = :id").SetParameter("id", jack.Id).ListAsync());
 					Assert.AreEqual(1, list.Count);
 					Assert.IsTrue(list[0] is Employee);
 					Assert.IsTrue(EmployeesAreEqual(jack, (Employee)list[0]));
@@ -333,10 +415,34 @@ namespace NHibernate.Test.Join
 					s.Clear();
 					await (s.DeleteAsync("from Person"));
 					await (s.FlushAsync());
-					IList list = s.CreateQuery("from Person").List();
+					IList list = await (s.CreateQuery("from Person").ListAsync());
 					Assert.AreEqual(0, list.Count);
 					await (tx.CommitAsync());
 				}
+		}
+
+		private bool EmployeesAreEqual(Employee x, Employee y)
+		{
+			if (!PersonsAreEqual(x, y))
+				return false;
+			if (!string.Equals(x.Title, y.Title))
+				return false;
+			if (x.Salary != y.Salary)
+				return false;
+			if (x.Meetings.Count != y.Meetings.Count)
+				return false;
+			if (x.Manager != null && y.Manager != null)
+			{
+				return x.Manager.Id == y.Manager.Id;
+			}
+			else if (x.Manager != null || y.Manager != null)
+			{
+				return false;
+			}
+			else // x.Manager and y.Manager are both null
+			{
+				return true;
+			}
 		}
 
 		[Test]
@@ -346,7 +452,7 @@ namespace NHibernate.Test.Join
 				using (ITransaction tx = s.BeginTransaction())
 				{
 					Employee[] employees = await (CreateAndInsertEmployeesAsync(s, 3));
-					Employee emp0 = (Employee)s.Get(typeof (Employee), employees[0].Id);
+					Employee emp0 = (Employee)await (s.GetAsync(typeof (Employee), employees[0].Id));
 					Assert.IsNotNull(emp0);
 					emp0.Address = "Address";
 					emp0.BusinessPhone = "BusinessPhone";
@@ -357,13 +463,13 @@ namespace NHibernate.Test.Join
 					emp0.Salary = 20000;
 					emp0.Title = "Title";
 					emp0.Zip = "Zip";
-					NHibernateUtil.Initialize(emp0.Meetings);
-					NHibernateUtil.Initialize(emp0.OthersPhones);
+					await (NHibernateUtil.InitializeAsync(emp0.Meetings));
+					await (NHibernateUtil.InitializeAsync(emp0.OthersPhones));
 					emp0.Meetings.Add(new Meeting{Employee = emp0, Description = "vacation def"});
 					// Not updating emp0.Sex because it is marked update=false in the mapping file.
 					await (s.FlushAsync());
 					s.Clear();
-					Employee emp0updated = (Employee)s.Get(typeof (Employee), employees[0].Id);
+					Employee emp0updated = (Employee)await (s.GetAsync(typeof (Employee), employees[0].Id));
 					Assert.IsTrue(EmployeesAreEqual(emp0, emp0updated));
 					await (tx.CommitAsync());
 				}
@@ -380,7 +486,7 @@ namespace NHibernate.Test.Join
 					await (s.SaveAsync(one));
 					await (s.FlushAsync());
 					s.Clear();
-					SubclassOne result = (SubclassOne)s.Get(typeof (SubclassBase), one.Id);
+					SubclassOne result = (SubclassOne)await (s.GetAsync(typeof (SubclassBase), one.Id));
 					Assert.IsNotNull(result);
 					Assert.IsTrue(result is SubclassOne);
 					await (s.DeleteAsync(result));
@@ -395,7 +501,7 @@ namespace NHibernate.Test.Join
 				using (ITransaction tx = s.BeginTransaction())
 				{
 					Employee[] employees = await (CreateAndInsertEmployeesAsync(s, 1));
-					Employee emp0 = (Employee)s.Get(typeof (Person), employees[0].Id);
+					Employee emp0 = (Employee)await (s.GetAsync(typeof (Person), employees[0].Id));
 					Assert.IsNotNull(emp0);
 					Assert.IsTrue(emp0 is Employee);
 					await (tx.CommitAsync());

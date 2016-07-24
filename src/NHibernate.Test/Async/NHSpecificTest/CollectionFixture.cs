@@ -7,9 +7,27 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class CollectionFixture : TestCase
+	public partial class CollectionFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecific.LazyLoadBug.hbm.xml"};
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				await (session.DeleteAsync("from LLParent"));
+				await (session.FlushAsync());
+			}
+		}
+
 		[Test]
 		public async Task TestLoadParentFirstAsync()
 		{
@@ -31,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest
 			using (ISession s2 = OpenSession())
 				using (ITransaction t2 = s2.BeginTransaction())
 				{
-					LLParent parent2 = (LLParent)s2.Load(typeof (LLParent), parentId);
+					LLParent parent2 = (LLParent)await (s2.LoadAsync(typeof (LLParent), parentId));
 					Assert.AreEqual(1, parent2.ChildrenNoAdd.Count);
 				}
 		}
@@ -59,7 +77,7 @@ namespace NHibernate.Test.NHSpecificTest
 			using (ISession s2 = OpenSession())
 				using (ITransaction t2 = s2.BeginTransaction())
 				{
-					LLChildNoAdd child2 = (LLChildNoAdd)s2.Load(typeof (LLChildNoAdd), childId);
+					LLChildNoAdd child2 = (LLChildNoAdd)await (s2.LoadAsync(typeof (LLChildNoAdd), childId));
 					Assert.AreEqual(parentId, (int)s2.GetIdentifier(child2.Parent));
 				}
 		}

@@ -99,6 +99,30 @@ namespace NHibernate.AsyncGenerator
 			}
 		}
 
+		public void PostAnalyze()
+		{
+			foreach (var projectInfo in ProjectInfos)
+			{
+				foreach (var pair in projectInfo.Where(o => o.Value.Any()))
+				{
+					foreach (var namespaceInfo in pair.Value.Values)
+					{
+						foreach (var rootTypeInfo in namespaceInfo.Values.Where(o => o.TypeTransformation != TypeTransformation.None))
+						{
+							foreach (var typeInfo in rootTypeInfo.GetDescendantTypeInfosAndSelf()
+																 .Where(o => o.TypeTransformation != TypeTransformation.None))
+							{
+								foreach (var methodInfo in typeInfo.MethodInfos.Values.Where(o => !o.Ignore))
+								{
+									methodInfo.PostAnalyze();
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
 		public void Write(WriterConfiguration configuration)
 		{
 			foreach (var projectInfo in ProjectInfos)
@@ -145,6 +169,23 @@ namespace NHibernate.AsyncGenerator
 		public HashSet<string> TestAttributeNames { get; set; } = new HashSet<string>();
 	}
 
+	public enum TypeTransformation
+	{
+		None = 0,
+		Partial = 1,
+		NewType = 2
+	}
+
+	public enum MethodAsyncConversion
+	{
+		None = 0,
+		ToAsync = 1,
+		/// <summary>
+		/// Will convert to async only if there is invoked at least one method that has an async counterpart
+		/// </summary>
+		Smart = 3
+	}
+
 	public class ProjectConfiguration
 	{
 		//public static readonly ProjectConfiguration Default = new ProjectConfiguration();
@@ -161,10 +202,17 @@ namespace NHibernate.AsyncGenerator
 		/// </summary>
 		public string Name { get; }
 
+		public Func<IMethodSymbol, MethodAsyncConversion> MethodConversionFunc { get; set; } = m => MethodAsyncConversion.None;
+
 		/// <summary>
-		/// Predicate for method selection
+		/// Predicate for document selection
 		/// </summary>
-		public Func<IMethodSymbol, bool> CanScanMethodFunc { get; set; } = m => false;
+		public Func<Document, bool> CanScanDocumentFunc { get; set; } = m => true;
+
+		/// <summary>
+		/// A custom method that will be called when for a method there is not an async counterpart with same parameters
+		/// </summary>
+		public Func<IMethodSymbol, IMethodSymbol> FindAsyncCounterpart { get; set; } = null;
 
 		/// <summary>
 		/// When enabled it will search all invocation expressions inside a method body and tries to find a async counterpart
@@ -185,6 +233,11 @@ namespace NHibernate.AsyncGenerator
 		/// When enabled it will scan each type in project for non implemented async members that have a sync counterpart
 		/// </summary>
 		public bool ScanForMissingAsyncMembers { get; set; }
+
+		/// <summary>
+		/// Define how types will be converted to async. Default all types will be generated as partial
+		/// </summary>
+		public Func<INamedTypeSymbol, TypeTransformation> TypeTransformationFunc { get; set; }
 
 		/// <summary>
 		/// Name of the folder where all async partial classes will be stored
@@ -223,32 +276,86 @@ namespace NHibernate.AsyncGenerator
 						ScanForMissingAsyncMembers = true,
 						IgnoreExternalReferences = true,
 						ScanMethodsBody = true,
-						CanScanMethodFunc = symbol => symbol.GetAttributes().Any(a => a.AttributeClass.Name == "TestAttribute")
+						MethodConversionFunc = symbol =>
+						{
+							if (symbol.GetAttributes().Any(a => a.AttributeClass.Name == "TestAttribute"))
+							{
+								return MethodAsyncConversion.ToAsync;
+							}
+							return MethodAsyncConversion.Smart;
+							//symbol.ContainingType?.ContainingType?.GetAttributes().Any(a => a.AttributeClass.Name == "TestFixtureAttribute") == true
+						},
+						/*
+						CanScanTypeFunc = symbol =>
+						{
+							if (symbol.Name == "TestCase" || symbol.BaseType?.Name == "TestCase")
+							{
+								return true;
+							}
+							return false;
+						},*/
+
+
+						//CanScanDocumentFunc = doc =>
+						//{
+						//	//return doc.FilePath.EndsWith(@"Interceptor\StatefulInterceptor.cs");
+						//	return doc.FilePath.EndsWith(@"NHSpecificTest\NH1882\TestCollectionInitializingDuringFlush.cs"); //||
+						//	//doc.FilePath.EndsWith(@"TestCase.cs");
+						//},
+						FindAsyncCounterpart = symbol =>
+						{
+							if (symbol.ContainingAssembly.Name != "nunit.framework" && symbol.ContainingType.Name != "Assert")
+							{
+								return null;
+							}
+							var delegateNames = new HashSet<string> {"AsyncTestDelegate", "TestDelegate"};
+							Func<IParameterSymbol, IParameterSymbol, bool> paramCompareFunc = (p1, p2) =>
+							{
+								return p1.Type.Equals(p2.Type) || (delegateNames.Contains(p1.Type.Name) && delegateNames.Contains(p2.Type.Name));
+							};
+							return symbol.ContainingType.GetMembers(symbol.Name + "Async")
+										  .OfType<IMethodSymbol>()
+										  .Where(o => o.TypeParameters.Length == symbol.TypeParameters.Length)
+										  .FirstOrDefault(o => o.HaveSameParameters(symbol, paramCompareFunc));
+						},
+						TypeTransformationFunc = type =>
+						{
+								if (type.GetAttributes().Any(o => o.AttributeClass.Name == "TestFixtureAttribute") || type.Name == "TestCase")
+								{
+									return TypeTransformation.NewType;
+								}
+								var baseType = type.BaseType;
+								while (baseType != null)
+								{
+									if (baseType.Name == "TestCase")
+									{
+										return TypeTransformation.NewType;
+									}
+									baseType = baseType.BaseType;
+								}
+								return TypeTransformation.Partial;
+							}
 					}
 				},
 				IgnoreProjectNames = new HashSet<string> { "NHibernate.TestDatabaseSetup" },
 				TestAttributeNames = new HashSet<string>{ "TestAttribute" },
+
 				IsSymbolValidFunc = (projectInfo, methodSymbol) =>
 				{
-					if(methodSymbol.ContainingAssembly.Name != "NHibernate.Test")
+					if (methodSymbol.ContainingType.Name == "NorthwindDbCreator")
 					{
-						return true;
+						return false;
 					}
-					return !new[]
-					{
-						"TestFixtureSetUp",
-						"TestFixtureTearDown",
-						"OnSetUp",
-						"OnTearDown",
-						"AppliesTo",
-						"Configure"
-					}.Contains(methodSymbol.Name) /*|| methodSymbol.ContainingType.Name == "NorthwindDbCreator"*/;
+					return true;
 				}
 			};
 
 			var solutionInfo = new SolutionInfo(solutionConfig);
+			//solutionInfo.Open().ConfigureAwait(false).GetAwaiter().GetResult();
+			//solutionInfo.Analyze().ConfigureAwait(false).GetAwaiter().GetResult();
 			AsyncContext.Run(() => solutionInfo.Open());
 			AsyncContext.Run(() => solutionInfo.Analyze());
+			solutionInfo.PostAnalyze();
 
 			var configuration = new WriterConfiguration
 			{

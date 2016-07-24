@@ -4,12 +4,46 @@ using NHibernate.Cfg;
 using NHibernate.Criterion;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Naturalid.Immutable
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ImmutableNaturalIdFixture : TestCase
+	public partial class ImmutableNaturalIdFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Naturalid.Immutable.User.hbm.xml"};
+			}
+		}
+
+		protected override Task ConfigureAsync(Configuration configuration)
+		{
+			try
+			{
+				cfg.SetProperty(Environment.UseSecondLevelCache, "true");
+				cfg.SetProperty(Environment.UseQueryCache, "true");
+				cfg.SetProperty(Environment.GenerateStatistics, "true");
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
 		[Test]
 		public async Task UpdateAsync()
 		{

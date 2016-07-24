@@ -6,9 +6,40 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.TypesTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class TimeSpanFixture2 : TypeFixtureBase
+	public partial class TimeAsTimeSpanTypeFixtureAsync
 	{
+		[Test]
+		public async Task NextAsync()
+		{
+			var type = (TimeAsTimeSpanType)NHibernateUtil.TimeAsTimeSpan;
+			object current = new TimeSpan(DateTime.Now.Ticks - 5);
+			object next = await (type.NextAsync(current, null));
+			Assert.IsTrue(next is TimeSpan, "Next should be TimeSpan");
+			Assert.IsTrue((TimeSpan)next > (TimeSpan)current, "next should be greater than current (could be equal depending on how quickly this occurs)");
+		}
+
+		[Test]
+		public async Task SeedAsync()
+		{
+			var type = (TimeAsTimeSpanType)NHibernateUtil.TimeAsTimeSpan;
+			Assert.IsTrue(await (type.SeedAsync(null)) is TimeSpan, "seed should be TimeSpan");
+		}
+	}
+
+	[TestFixture]
+	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+	public partial class TimeSpanFixture2Async : TypeFixtureBaseAsync
+	{
+		protected override string TypeName
+		{
+			get
+			{
+				return "TimeAsTimeSpan";
+			}
+		}
+
 		[Test]
 		public async Task SavingAndRetrievingAsync()
 		{
@@ -25,7 +56,7 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					entityReturned = s.CreateQuery("from TimeAsTimeSpanClass").UniqueResult<TimeAsTimeSpanClass>();
+					entityReturned = await (s.CreateQuery("from TimeAsTimeSpanClass").UniqueResultAsync<TimeAsTimeSpanClass>());
 					Assert.AreEqual(ticks, entityReturned.TimeSpanValue);
 					Assert.AreEqual(entityReturned.TimeSpanValue.Hours, ticks.Hours);
 					Assert.AreEqual(entityReturned.TimeSpanValue.Minutes, ticks.Minutes);

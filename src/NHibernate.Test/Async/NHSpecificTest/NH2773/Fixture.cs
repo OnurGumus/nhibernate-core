@@ -8,8 +8,39 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.NHSpecificTest.NH2773
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		private Guid _entityGuid;
+		protected override async Task OnSetUpAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					var entity = new MyEntity();
+					var entity2 = new MyEntity();
+					entity.OtherEntity = entity2;
+					await (session.SaveAsync(entity));
+					await (session.SaveAsync(entity2));
+					_entityGuid = entity.Id;
+					await (tx.CommitAsync());
+				}
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			await (base.OnTearDownAsync());
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from MyEntity"));
+					await (tx.CommitAsync());
+				}
+			}
+		}
+
 		[Test]
 		public async Task DeserializedSession_ProxyType_ShouldBeEqualToOriginalProxyTypeAsync()
 		{

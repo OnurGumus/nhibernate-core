@@ -8,9 +8,56 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.SqlTest.Query
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class GeneralTest : TestCase
+	public partial class GeneralTestAsync : TestCaseAsync
 	{
+		protected const string OrganizationFetchJoinEmploymentSQL = "SELECT org.ORGID as {org.id}, " + "        org.NAME as {org.name}, " + "        emp.EMPLOYER as {emp.key}, " + "        emp.EMPID as {emp.element}, " + "        {emp.element.*}  " + "FROM ORGANIZATION org " + "    LEFT OUTER JOIN EMPLOYMENT emp ON org.ORGID = emp.EMPLOYER";
+		protected const string OrganizationJoinEmploymentSQL = "SELECT org.ORGID as {org.id}, " + "        org.NAME as {org.name}, " + "        {emp.*}  " + "FROM ORGANIZATION org " + "    LEFT OUTER JOIN EMPLOYMENT emp ON org.ORGID = emp.EMPLOYER";
+		protected const string EmploymentSQL = "SELECT * FROM EMPLOYMENT";
+		protected string EmploymentSQLMixedScalarEntity = "SELECT e.*, e.employer as employerid  FROM EMPLOYMENT e";
+		protected const string OrgEmpRegionSQL = "select {org.*}, {emp.*}, emp.REGIONCODE " + "from ORGANIZATION org " + "     left outer join EMPLOYMENT emp on org.ORGID = emp.EMPLOYER";
+		protected string OrgEmpPersonSQL = "select {org.*}, {emp.*}, {pers.*} " + "from ORGANIZATION org " + "    join EMPLOYMENT emp on org.ORGID = emp.EMPLOYER " + "    join PERSON pers on pers.PERID = emp.EMPLOYEE ";
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"SqlTest.Query.NativeSQLQueries.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		[Test]
+		public async Task FailOnNoAddEntityOrScalarAsync()
+		{
+			// Note: this passes, but for the wrong reason.
+			//      there is actually an exception thrown, but it is the database
+			//      throwing a sql exception because the SQL gets passed
+			//      "un-processed"...
+			ISession s = OpenSession();
+			try
+			{
+				string sql = "select {org.*} " + "from organization org";
+				await (s.CreateSQLQuery(sql).ListAsync());
+				Assert.Fail("Should throw an exception since no AddEntity nor AddScalar has been performed.");
+			}
+			catch (HibernateException)
+			{
+			// expected behavior
+			}
+			finally
+			{
+				s.Close();
+			}
+		}
+
 		[Test]
 		public async Task SQLQueryInterfaceAsync()
 		{
@@ -24,15 +71,15 @@ namespace NHibernate.Test.SqlTest.Query
 			await (s.SaveAsync(jboss));
 			await (s.SaveAsync(gavin));
 			await (s.SaveAsync(emp));
-			IList l = s.CreateSQLQuery(OrgEmpRegionSQL).AddEntity("org", typeof (Organization)).AddJoin("emp", "org.employments").AddScalar("regionCode", NHibernateUtil.String).List();
+			IList l = await (s.CreateSQLQuery(OrgEmpRegionSQL).AddEntity("org", typeof (Organization)).AddJoin("emp", "org.employments").AddScalar("regionCode", NHibernateUtil.String).ListAsync());
 			Assert.AreEqual(2, l.Count);
-			l = s.CreateSQLQuery(OrgEmpPersonSQL).AddEntity("org", typeof (Organization)).AddJoin("emp", "org.employments").AddJoin("pers", "emp.employee").List();
+			l = await (s.CreateSQLQuery(OrgEmpPersonSQL).AddEntity("org", typeof (Organization)).AddJoin("emp", "org.employments").AddJoin("pers", "emp.employee").ListAsync());
 			Assert.AreEqual(l.Count, 1);
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			l = s.CreateSQLQuery("select {org.*}, {emp.*} " + "from ORGANIZATION org " + "     left outer join EMPLOYMENT emp on org.ORGID = emp.EMPLOYER, ORGANIZATION org2").AddEntity("org", typeof (Organization)).AddJoin("emp", "org.employments").SetResultTransformer(new DistinctRootEntityResultTransformer()).List();
+			l = await (s.CreateSQLQuery("select {org.*}, {emp.*} " + "from ORGANIZATION org " + "     left outer join EMPLOYMENT emp on org.ORGID = emp.EMPLOYER, ORGANIZATION org2").AddEntity("org", typeof (Organization)).AddJoin("emp", "org.employments").SetResultTransformer(new DistinctRootEntityResultTransformer()).ListAsync());
 			Assert.AreEqual(l.Count, 2);
 			await (t.CommitAsync());
 			s.Close();
@@ -59,9 +106,9 @@ namespace NHibernate.Test.SqlTest.Query
 			await (s.SaveAsync(jboss));
 			await (s.SaveAsync(gavin));
 			await (s.SaveAsync(emp));
-			IList l = s.CreateSQLQuery(OrgEmpRegionSQL).SetResultSetMapping("org-emp-regionCode").List();
+			IList l = await (s.CreateSQLQuery(OrgEmpRegionSQL).SetResultSetMapping("org-emp-regionCode").ListAsync());
 			Assert.AreEqual(l.Count, 2);
-			l = s.CreateSQLQuery(OrgEmpPersonSQL).SetResultSetMapping("org-emp-person").List();
+			l = await (s.CreateSQLQuery(OrgEmpPersonSQL).SetResultSetMapping("org-emp-person").ListAsync());
 			Assert.AreEqual(l.Count, 1);
 			await (s.DeleteAsync(emp));
 			await (s.DeleteAsync(gavin));
@@ -81,10 +128,10 @@ namespace NHibernate.Test.SqlTest.Query
 			object idIfa = await (s.SaveAsync(ifa));
 			object idJBoss = await (s.SaveAsync(jboss));
 			await (s.FlushAsync());
-			IList result = s.GetNamedQuery("orgNamesOnly").List();
+			IList result = await (s.GetNamedQuery("orgNamesOnly").ListAsync());
 			Assert.IsTrue(result.Contains("IFA"));
 			Assert.IsTrue(result.Contains("JBoss"));
-			result = s.GetNamedQuery("orgNamesOnly").SetResultTransformer(CriteriaSpecification.AliasToEntityMap).List();
+			result = await (s.GetNamedQuery("orgNamesOnly").SetResultTransformer(CriteriaSpecification.AliasToEntityMap).ListAsync());
 			IDictionary m = (IDictionary)result[0];
 			Assert.AreEqual(2, result.Count);
 			Assert.AreEqual(1, m.Count);
@@ -93,7 +140,7 @@ namespace NHibernate.Test.SqlTest.Query
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IEnumerator iter = s.GetNamedQuery("orgNamesAndOrgs").List().GetEnumerator();
+			IEnumerator iter = (await (s.GetNamedQuery("orgNamesAndOrgs").ListAsync())).GetEnumerator();
 			iter.MoveNext();
 			object[] o = (object[])iter.Current;
 			Assert.AreEqual(o[0], "IFA");
@@ -107,7 +154,7 @@ namespace NHibernate.Test.SqlTest.Query
 			s = OpenSession();
 			t = s.BeginTransaction();
 			// test that the ordering of the results is truly based on the order in which they were defined
-			iter = s.GetNamedQuery("orgsAndOrgNames").List().GetEnumerator();
+			iter = (await (s.GetNamedQuery("orgsAndOrgNames").ListAsync())).GetEnumerator();
 			iter.MoveNext();
 			object[] row = (object[])iter.Current;
 			Assert.AreEqual(typeof (Organization), row[0].GetType(), "expecting non-scalar result first");
@@ -125,7 +172,7 @@ namespace NHibernate.Test.SqlTest.Query
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			iter = s.GetNamedQuery("orgIdsAndOrgNames").List().GetEnumerator();
+			iter = (await (s.GetNamedQuery("orgIdsAndOrgNames").ListAsync())).GetEnumerator();
 			iter.MoveNext();
 			o = (object[])iter.Current;
 			Assert.AreEqual(o[1], "IFA");
@@ -158,7 +205,7 @@ namespace NHibernate.Test.SqlTest.Query
 			s = OpenSession();
 			t = s.BeginTransaction();
 			IQuery namedQuery = s.GetNamedQuery("AllEmploymentAsMapped");
-			IList list = namedQuery.List();
+			IList list = await (namedQuery.ListAsync());
 			Assert.AreEqual(1, list.Count);
 			Employment emp2 = (Employment)list[0];
 			Assert.AreEqual(emp2.EmploymentId, emp.EmploymentId);
@@ -170,7 +217,7 @@ namespace NHibernate.Test.SqlTest.Query
 			t = s.BeginTransaction();
 			IQuery sqlQuery = s.GetNamedQuery("EmploymentAndPerson");
 			sqlQuery.SetResultTransformer(CriteriaSpecification.AliasToEntityMap);
-			list = sqlQuery.List();
+			list = await (sqlQuery.ListAsync());
 			Assert.AreEqual(1, list.Count);
 			object res = list[0];
 			AssertClassAssignability(res.GetType(), typeof (IDictionary));
@@ -182,7 +229,7 @@ namespace NHibernate.Test.SqlTest.Query
 			t = s.BeginTransaction();
 			sqlQuery = s.GetNamedQuery("organizationreturnproperty");
 			sqlQuery.SetResultTransformer(CriteriaSpecification.AliasToEntityMap);
-			list = sqlQuery.List();
+			list = await (sqlQuery.ListAsync());
 			Assert.AreEqual(2, list.Count);
 			m = (IDictionary)list[0];
 			Assert.IsTrue(m.Contains("org"));
@@ -195,7 +242,7 @@ namespace NHibernate.Test.SqlTest.Query
 			s = OpenSession();
 			t = s.BeginTransaction();
 			namedQuery = s.GetNamedQuery("EmploymentAndPerson");
-			list = namedQuery.List();
+			list = await (namedQuery.ListAsync());
 			Assert.AreEqual(1, list.Count);
 			object[] objs = (object[])list[0];
 			Assert.AreEqual(2, objs.Length);
@@ -236,19 +283,19 @@ namespace NHibernate.Test.SqlTest.Query
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			Product p = (Product)s.CreateQuery("from Product p join fetch p.orders").List()[0];
+			Product p = (Product)(await (s.CreateQuery("from Product p join fetch p.orders").ListAsync()))[0];
 			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Orders));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			object[] o = (object[])s.CreateSQLQuery("select\r\n" + "        product.orgid as {product.id.orgid}," + "        product.productnumber as {product.id.productnumber}," + "        {prod_orders}.orgid as orgid3_1_,\r\n" + "        {prod_orders}.ordernumber as ordernum2_3_1_,\r\n" + "        product.name as {product.name}," + "        {prod_orders.element.*}," + /*"        orders.PROD_NO as PROD4_3_1_,\r\n" +
+			object[] o = (object[])(await (s.CreateSQLQuery("select\r\n" + "        product.orgid as {product.id.orgid}," + "        product.productnumber as {product.id.productnumber}," + "        {prod_orders}.orgid as orgid3_1_,\r\n" + "        {prod_orders}.ordernumber as ordernum2_3_1_,\r\n" + "        product.name as {product.name}," + "        {prod_orders.element.*}," + /*"        orders.PROD_NO as PROD4_3_1_,\r\n" +
 				"        orders.person as person3_1_,\r\n" +
 				"        orders.PROD_ORGID as PROD3_0__,\r\n" +
 				"        orders.PROD_NO as PROD4_0__,\r\n" +
 				"        orders.orgid as orgid0__,\r\n" +
 				"        orders.ordernumber as ordernum2_0__ \r\n" +*/
-			"    from\r\n" + "        Product product \r\n" + "    inner join\r\n" + "        TBL_ORDER {prod_orders} \r\n" + "            on product.orgid={prod_orders}.PROD_ORGID \r\n" + "            and product.productnumber={prod_orders}.PROD_NO").AddEntity("product", typeof (Product)).AddJoin("prod_orders", "product.orders").List()[0];
+			"    from\r\n" + "        Product product \r\n" + "    inner join\r\n" + "        TBL_ORDER {prod_orders} \r\n" + "            on product.orgid={prod_orders}.PROD_ORGID \r\n" + "            and product.productnumber={prod_orders}.PROD_NO").AddEntity("product", typeof (Product)).AddJoin("prod_orders", "product.orders").ListAsync()))[0];
 			p = (Product)o[0];
 			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Orders));
 			IEnumerator en = p.Orders.GetEnumerator();
@@ -275,23 +322,23 @@ namespace NHibernate.Test.SqlTest.Query
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IList list = s.CreateSQLQuery(EmploymentSQL).AddEntity(typeof (Employment).FullName).List();
+			IList list = await (s.CreateSQLQuery(EmploymentSQL).AddEntity(typeof (Employment).FullName).ListAsync());
 			Assert.AreEqual(1, list.Count);
 			Employment emp2 = (Employment)list[0];
 			Assert.AreEqual(emp2.EmploymentId, emp.EmploymentId);
 			Assert.AreEqual(emp2.StartDate.Date, emp.StartDate.Date);
 			Assert.AreEqual(emp2.EndDate, emp.EndDate);
 			s.Clear();
-			list = s.CreateSQLQuery(EmploymentSQL).AddEntity(typeof (Employment).FullName).SetResultTransformer(CriteriaSpecification.AliasToEntityMap).List();
+			list = await (s.CreateSQLQuery(EmploymentSQL).AddEntity(typeof (Employment).FullName).SetResultTransformer(CriteriaSpecification.AliasToEntityMap).ListAsync());
 			Assert.AreEqual(1, list.Count);
 			IDictionary m = (IDictionary)list[0];
 			Assert.IsTrue(m.Contains("Employment"));
 			Assert.AreEqual(1, m.Count);
-			list = s.CreateSQLQuery(EmploymentSQL).List();
+			list = await (s.CreateSQLQuery(EmploymentSQL).ListAsync());
 			Assert.AreEqual(1, list.Count);
 			object[] o = (object[])list[0];
 			Assert.AreEqual(8, o.Length);
-			list = s.CreateSQLQuery(EmploymentSQL).SetResultTransformer(CriteriaSpecification.AliasToEntityMap).List();
+			list = await (s.CreateSQLQuery(EmploymentSQL).SetResultTransformer(CriteriaSpecification.AliasToEntityMap).ListAsync());
 			Assert.AreEqual(1, list.Count);
 			m = (IDictionary)list[0];
 			Assert.IsTrue(m.Contains("EMPID") || m.Contains("empid"));
@@ -300,7 +347,7 @@ namespace NHibernate.Test.SqlTest.Query
 			Assert.AreEqual(8, m.Count);
 			// TODO H3: H3.2 can guess the return column type so they can use just addScalar("employerid"),
 			// but NHibernate currently can't do it.
-			list = s.CreateSQLQuery(EmploymentSQLMixedScalarEntity).AddScalar("employerid", NHibernateUtil.Int64).AddEntity(typeof (Employment)).List();
+			list = await (s.CreateSQLQuery(EmploymentSQLMixedScalarEntity).AddScalar("employerid", NHibernateUtil.Int64).AddEntity(typeof (Employment)).ListAsync());
 			Assert.AreEqual(1, list.Count);
 			o = (object[])list[0];
 			Assert.AreEqual(2, o.Length);
@@ -308,21 +355,21 @@ namespace NHibernate.Test.SqlTest.Query
 			AssertClassAssignability(o[1].GetType(), typeof (Employment));
 			IQuery queryWithCollection = s.GetNamedQuery("organizationEmploymentsExplicitAliases");
 			queryWithCollection.SetInt64("id", jboss.Id);
-			list = queryWithCollection.List();
+			list = await (queryWithCollection.ListAsync());
 			Assert.AreEqual(list.Count, 1);
 			s.Clear();
-			list = s.CreateSQLQuery(OrganizationJoinEmploymentSQL).AddEntity("org", typeof (Organization)).AddJoin("emp", "org.employments").List();
+			list = await (s.CreateSQLQuery(OrganizationJoinEmploymentSQL).AddEntity("org", typeof (Organization)).AddJoin("emp", "org.employments").ListAsync());
 			Assert.AreEqual(2, list.Count);
 			s.Clear();
-			list = s.CreateSQLQuery(OrganizationFetchJoinEmploymentSQL).AddEntity("org", typeof (Organization)).AddJoin("emp", "org.employments").List();
+			list = await (s.CreateSQLQuery(OrganizationFetchJoinEmploymentSQL).AddEntity("org", typeof (Organization)).AddJoin("emp", "org.employments").ListAsync());
 			Assert.AreEqual(2, list.Count);
 			s.Clear();
 			// TODO : why twice?
-			s.GetNamedQuery("organizationreturnproperty").List();
-			list = s.GetNamedQuery("organizationreturnproperty").List();
+			await (s.GetNamedQuery("organizationreturnproperty").ListAsync());
+			list = await (s.GetNamedQuery("organizationreturnproperty").ListAsync());
 			Assert.AreEqual(2, list.Count);
 			s.Clear();
-			list = s.GetNamedQuery("organizationautodetect").List();
+			list = await (s.GetNamedQuery("organizationautodetect").ListAsync());
 			Assert.AreEqual(2, list.Count);
 			await (t.CommitAsync());
 			s.Close();
@@ -339,7 +386,7 @@ namespace NHibernate.Test.SqlTest.Query
 			Dimension dim = new Dimension(3, int.MaxValue);
 			await (s.SaveAsync(dim));
 			//		s.Flush();
-			s.CreateSQLQuery("select d_len * d_width as surface, d_len * d_width * 10 as volume from Dimension").List();
+			await (s.CreateSQLQuery("select d_len * d_width as surface, d_len * d_width * 10 as volume from Dimension").ListAsync());
 			await (s.DeleteAsync(dim));
 			await (t.CommitAsync());
 			s.Close();
@@ -374,10 +421,68 @@ namespace NHibernate.Test.SqlTest.Query
 			await (s.SaveAsync(speech));
 			await (s.FlushAsync());
 			s.Clear();
-			IList l = s.CreateSQLQuery("select name, id, flength, name as scalarName from Speech").SetResultSetMapping("speech").List();
+			IList l = await (s.CreateSQLQuery("select name, id, flength, name as scalarName from Speech").SetResultSetMapping("speech").ListAsync());
 			Assert.AreEqual(l.Count, 1);
 			t.Rollback();
 			s.Close();
+		}
+
+		[Test]
+		public async Task ParameterListAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				IList l = await (s.CreateSQLQuery("select id from Speech where id in (:idList)").AddScalar("id", NHibernateUtil.Int32).SetParameterList("idList", new int[]{0, 1, 2, 3}, NHibernateUtil.Int32).ListAsync());
+			}
+		}
+
+		private double ExtractDoubleValue(object value)
+		{
+			if (value is double)
+			{
+				return (double)value;
+			}
+			else if (value is decimal)
+			{
+				return (double)(decimal)value;
+			}
+			else
+			{
+				return double.Parse(value.ToString());
+			}
+		}
+
+		public static void AssertClassAssignability(System.Type source, System.Type target)
+		{
+			Assert.IsTrue(target.IsAssignableFrom(source), "Classes were not assignment-compatible : source<" + source.FullName + "> target<" + target.FullName + ">");
+		}
+
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		class TestResultSetTransformer : IResultTransformer
+		{
+			public bool TransformTupleCalled
+			{
+				get;
+				set;
+			}
+
+			public bool TransformListCalled
+			{
+				get;
+				set;
+			}
+
+			public object TransformTuple(object[] tuple, string[] aliases)
+			{
+				this.TransformTupleCalled = true;
+				return tuple;
+			}
+
+			public IList TransformList(IList collection)
+			{
+				this.TransformListCalled = true;
+				return collection;
+			}
 		}
 
 		[Test]
@@ -390,7 +495,7 @@ namespace NHibernate.Test.SqlTest.Query
 					await (s.SaveAsync(new Person("Ricardo")));
 					await (s.FlushAsync());
 					var transformer = new TestResultSetTransformer();
-					var l = s.CreateSQLQuery("select Name from Person").SetResultTransformer(transformer).Future<object[]>();
+					var l = await (s.CreateSQLQuery("select Name from Person").SetResultTransformer(transformer).FutureAsync<object[]>());
 					Assert.AreEqual(l.Count(), 1);
 					Assert.AreEqual("Ricardo", l.ElementAt(0)[0]);
 					Assert.IsTrue(transformer.TransformListCalled);
@@ -408,7 +513,7 @@ namespace NHibernate.Test.SqlTest.Query
 					await (s.SaveAsync(new Person("Ricardo")));
 					await (s.FlushAsync());
 					var transformer = new TestResultSetTransformer();
-					var l = s.CreateSQLQuery("select Name from Person").SetResultTransformer(transformer).FutureValue<object[]>();
+					var l = await (s.CreateSQLQuery("select Name from Person").SetResultTransformer(transformer).FutureValueAsync<object[]>());
 					var v = l.Value;
 					Assert.AreEqual("Ricardo", v[0]);
 					Assert.IsTrue(transformer.TransformListCalled);
@@ -425,7 +530,7 @@ namespace NHibernate.Test.SqlTest.Query
 				{
 					await (s.SaveAsync(new Person("Ricardo")));
 					await (s.FlushAsync());
-					var l = s.CreateSQLQuery("select Name from Person").Future<string>();
+					var l = await (s.CreateSQLQuery("select Name from Person").FutureAsync<string>());
 					Assert.AreEqual(l.Count(), 1);
 					Assert.AreEqual("Ricardo", l.ElementAt(0));
 				}
@@ -440,7 +545,7 @@ namespace NHibernate.Test.SqlTest.Query
 				{
 					await (s.SaveAsync(new Person("Ricardo")));
 					await (s.FlushAsync());
-					var l = s.CreateSQLQuery("select Name from Person").FutureValue<string>();
+					var l = await (s.CreateSQLQuery("select Name from Person").FutureValueAsync<string>());
 					var v = l.Value;
 					Assert.AreEqual("Ricardo", v);
 				}

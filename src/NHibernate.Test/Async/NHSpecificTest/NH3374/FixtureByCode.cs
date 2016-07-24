@@ -8,9 +8,72 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH3374
 {
+	[Ignore("Not fixed yet.")]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ByCodeFixture : TestCaseMappingByCode
+	public partial class ByCodeFixtureAsync : TestCaseMappingByCodeAsync
 	{
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<Document>(rc =>
+			{
+				rc.Id(x => x.Id, idMapper => idMapper.Generator(Generators.Identity));
+				rc.ManyToOne(x => x.Blob, m =>
+				{
+					m.Cascade(Mapping.ByCode.Cascade.All);
+				}
+
+				);
+				rc.Property(x => x.Name);
+			}
+
+			);
+			mapper.Class<Blob>(map =>
+			{
+				map.Id(x => x.Id, idMapper => idMapper.Generator(Generators.Identity));
+				map.Property(x => x.Bytes, y =>
+				{
+					y.Column(x =>
+					{
+						x.SqlType("varbinary(max)");
+						x.Length(int.MaxValue);
+					}
+
+					);
+					y.Lazy(true);
+				}
+
+				);
+			}
+
+			);
+			return mapper.CompileMappingForAllExplicitlyAddedEntities();
+		}
+
+		protected override async Task OnSetUpAsync()
+		{
+			using (ISession session = OpenSession())
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					var e1 = new Document{Name = "Bob"};
+					e1.Blob = new Blob{Bytes = new byte[]{1, 2, 3}};
+					await (session.SaveAsync(e1));
+					await (session.FlushAsync());
+					await (transaction.CommitAsync());
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = OpenSession())
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from System.Object"));
+					await (session.FlushAsync());
+					await (transaction.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task TestNoTargetExceptionAsync()
 		{
@@ -31,7 +94,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3374
 				using (session.BeginTransaction())
 				{
 					var blob = await (session.GetAsync<Blob>(1));
-					NHibernateUtil.Initialize(blob.Bytes);
+					await (NHibernateUtil.InitializeAsync(blob.Bytes));
 					return blob;
 				}
 		}

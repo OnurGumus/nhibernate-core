@@ -5,12 +5,71 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Join
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class JoinCompositeKeyTest : TestCase
+	public partial class JoinCompositeKeyTestAsync : TestCaseAsync
 	{
+		private static ILog log = LogManager.GetLogger(typeof (JoinCompositeKeyTestAsync));
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Join.CompositeKey.hbm.xml"};
+			}
+		}
+
+		ISession s;
+		protected override Task OnSetUpAsync()
+		{
+			try
+			{
+				s = OpenSession();
+				objectsNeedDeleting.Clear();
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			await (s.FlushAsync());
+			s.Clear();
+			try
+			{
+				// Delete the objects in reverse order because it is
+				// less likely to violate foreign key constraints.
+				for (int i = objectsNeedDeleting.Count - 1; i >= 0; i--)
+				{
+					await (s.DeleteAsync(objectsNeedDeleting[i]));
+				}
+
+				await (s.FlushAsync());
+			}
+			finally
+			{
+				//t.Commit();
+				s.Close();
+			}
+
+			s = null;
+		}
+
+		private IList objectsNeedDeleting = new ArrayList();
 		[Test]
 		public async Task SimpleSaveAndRetrieveAsync()
 		{

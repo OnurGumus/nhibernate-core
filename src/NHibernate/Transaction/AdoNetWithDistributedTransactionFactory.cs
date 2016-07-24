@@ -112,7 +112,7 @@ namespace NHibernate.Transaction
 				{
 					try
 					{
-						using (var tx = new TransactionScope(AmbientTransation))
+						using (var tx = new TransactionScope(AmbientTransation, TransactionScopeAsyncFlowOption.Enabled))
 						{
 							sessionImplementor.BeforeTransactionCompletion(null);
 							if (sessionImplementor.FlushMode != FlushMode.Never && sessionImplementor.ConnectionManager.IsConnected)

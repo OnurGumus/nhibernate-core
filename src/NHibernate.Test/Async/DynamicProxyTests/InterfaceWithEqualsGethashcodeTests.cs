@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using NHibernate.Proxy.DynamicProxy;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Test.DynamicProxyTests

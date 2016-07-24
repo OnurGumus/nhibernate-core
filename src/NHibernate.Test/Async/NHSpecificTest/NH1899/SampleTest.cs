@@ -6,9 +6,36 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1899
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SampleTest : BugTestCase
+	public partial class SampleTestAsync : BugTestCaseAsync
 	{
+		protected override async Task OnSetUpAsync()
+		{
+			await (base.OnSetUpAsync());
+			using (ISession session = OpenSession())
+			{
+				Parent entity = new Parent();
+				entity.Id = 1;
+				entity.Relations = new Dictionary<Key, Value>();
+				entity.Relations.Add(Key.One, Value.ValOne);
+				entity.Relations.Add(Key.Two, Value.ValTwo);
+				await (session.SaveAsync(entity));
+				await (session.FlushAsync());
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			await (base.OnTearDownAsync());
+			using (ISession session = OpenSession())
+			{
+				string hql = "from System.Object";
+				await (session.DeleteAsync(hql));
+				await (session.FlushAsync());
+			}
+		}
+
 		[Test]
 		public async Task ShouldNotThrowOnMergeAsync()
 		{

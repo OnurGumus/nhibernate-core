@@ -9,9 +9,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Legacy
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ParentChildTest : TestCase
+	public partial class ParentChildTestAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"FooBar.hbm.xml", "Baz.hbm.xml", "Qux.hbm.xml", "Glarch.hbm.xml", "Fum.hbm.xml", "Fumm.hbm.xml", "Fo.hbm.xml", "One.hbm.xml", "Many.hbm.xml", "Immutable.hbm.xml", "Fee.hbm.xml", "Vetoer.hbm.xml", "Holder.hbm.xml", "ParentChild.hbm.xml", "Simple.hbm.xml", "Container.hbm.xml", "Circular.hbm.xml", "Stuff.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task ReplicateAsync()
 		{
@@ -29,11 +38,11 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			s.Replicate(baz, ReplicationMode.Overwrite);
+			await (s.ReplicateAsync(baz, ReplicationMode.Overwrite));
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			s.Replicate(baz, ReplicationMode.Ignore);
+			await (s.ReplicateAsync(baz, ReplicationMode.Ignore));
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
@@ -53,7 +62,7 @@ namespace NHibernate.Test.Legacy
 				using (t = s.BeginTransaction())
 				{
 					id = await (s.SaveAsync(new Parent()));
-					Assert.AreEqual(1, s.CreateQuery("from Parent p left join fetch p.Child").List().Count);
+					Assert.AreEqual(1, (await (s.CreateQuery("from Parent p left join fetch p.Child").ListAsync())).Count);
 					await (t.CommitAsync());
 					s.Close();
 				}
@@ -63,8 +72,8 @@ namespace NHibernate.Test.Legacy
 				{
 					Parent p = (Parent)await (s.CreateQuery("from Parent p left join fetch p.Child").UniqueResultAsync());
 					Assert.IsNull(p.Child);
-					s.CreateQuery("from Parent p join p.Child c where c.X > 0").List();
-					s.CreateQuery("from Child c join c.Parent p where p.X > 0").List();
+					await (s.CreateQuery("from Parent p join p.Child c where c.X > 0").ListAsync());
+					await (s.CreateQuery("from Child c join c.Parent p where p.X > 0").ListAsync());
 					await (t.CommitAsync());
 					s.Close();
 				}
@@ -72,7 +81,7 @@ namespace NHibernate.Test.Legacy
 			using (s = OpenSession())
 				using (t = s.BeginTransaction())
 				{
-					await (s.DeleteAsync(s.Get(typeof (Parent), id)));
+					await (s.DeleteAsync(await (s.GetAsync(typeof (Parent), id))));
 					await (t.CommitAsync());
 					s.Close();
 				}
@@ -93,11 +102,11 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			foo = (FooProxy)s.Load(typeof (Foo), id);
-			foo2 = (FooProxy)s.Load(typeof (Foo), id2);
+			foo = (FooProxy)await (s.LoadAsync(typeof (Foo), id));
+			foo2 = (FooProxy)await (s.LoadAsync(typeof (Foo), id2));
 			Assert.IsFalse(NHibernateUtil.IsInitialized(foo));
-			NHibernateUtil.Initialize(foo2);
-			NHibernateUtil.Initialize(foo);
+			await (NHibernateUtil.InitializeAsync(foo2));
+			await (NHibernateUtil.InitializeAsync(foo));
 			Assert.AreEqual(3, foo.Component.ImportantDates.Length);
 			Assert.AreEqual(3, foo2.Component.ImportantDates.Length);
 			await (t.CommitAsync());
@@ -109,8 +118,8 @@ namespace NHibernate.Test.Legacy
 			foo2.Dependent.Key = null;
 			foo2.Component.Subcomponent.Fee.Key = null;
 			Assert.IsFalse(foo2.Key.Equals(id));
-			s.Save(foo, "xyzid");
-			s.Update(foo2, id); //intentionally id, not id2!
+			await (s.SaveAsync(foo, "xyzid"));
+			await (s.UpdateAsync(foo2, id)); //intentionally id, not id2!
 			Assert.AreEqual(id, foo2.Key);
 			Assert.AreEqual(1234567, foo2.Int);
 			Assert.AreEqual("xyzid", foo.Key);
@@ -118,12 +127,12 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			foo = (FooProxy)s.Load(typeof (Foo), id);
+			foo = (FooProxy)await (s.LoadAsync(typeof (Foo), id));
 			Assert.AreEqual(1234567, foo.Int);
 			Assert.AreEqual(3, foo.Component.ImportantDates.Length);
 			await (s.DeleteAsync(foo));
-			await (s.DeleteAsync(s.Get(typeof (Foo), id2)));
-			await (s.DeleteAsync(s.Get(typeof (Foo), "xyzid")));
+			await (s.DeleteAsync(await (s.GetAsync(typeof (Foo), id2))));
+			await (s.DeleteAsync(await (s.GetAsync(typeof (Foo), "xyzid"))));
 			Assert.AreEqual(3, await (s.DeleteAsync("from System.Object")));
 			await (t.CommitAsync());
 			s.Close();
@@ -131,12 +140,12 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			t = s.BeginTransaction();
 			foo.Component.Glarch = null; //no id property!
-			s.Replicate(foo, ReplicationMode.Overwrite);
+			await (s.ReplicateAsync(foo, ReplicationMode.Overwrite));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			Foo refoo = (Foo)s.Get(typeof (Foo), id);
+			Foo refoo = (Foo)await (s.GetAsync(typeof (Foo), id));
 			Assert.AreEqual(feekey, refoo.Dependent.Key);
 			await (s.DeleteAsync(refoo));
 			await (t.CommitAsync());
@@ -174,10 +183,10 @@ namespace NHibernate.Test.Legacy
 			crit.CreateCriteria("TopGlarchez").Add(Expression.IsNotNull("Name")).CreateCriteria("ProxyArray").Add(Expression.EqProperty("Name", "Name")).Add(Expression.Eq("Name", "g2")).Add(Expression.Gt("X", -666));
 			crit.CreateCriteria("FooSet").Add(Expression.IsNull("Null")).Add(Expression.Eq("String", "a string")).Add(Expression.Lt("Integer", -665));
 			crit.CreateCriteria("FooArray").Add(Expression.Eq("String", "a string")).SetLockMode(lockMode);
-			IList list = crit.List();
+			IList list = await (crit.ListAsync());
 			Assert.AreEqual(2, list.Count);
-			s.CreateCriteria(typeof (Glarch)).SetLockMode(LockMode.Upgrade).List();
-			s.CreateCriteria(typeof (Glarch)).SetLockMode(CriteriaSpecification.RootAlias, LockMode.Upgrade).List();
+			await (s.CreateCriteria(typeof (Glarch)).SetLockMode(LockMode.Upgrade).ListAsync());
+			await (s.CreateCriteria(typeof (Glarch)).SetLockMode(CriteriaSpecification.RootAlias, LockMode.Upgrade).ListAsync());
 			g2.Name = null;
 			await (t.CommitAsync());
 			s.Close();
@@ -186,7 +195,7 @@ namespace NHibernate.Test.Legacy
 			crit = s.CreateCriteria(typeof (Baz)).SetLockMode(lockMode);
 			crit.CreateCriteria("TopGlarchez").Add(Expression.Gt("X", -666));
 			crit.CreateCriteria("FooSet").Add(Expression.IsNull("Null"));
-			list = crit.List();
+			list = await (crit.ListAsync());
 			Assert.AreEqual(4, list.Count);
 			baz = (Baz)await (crit.UniqueResultAsync());
 			Assert.IsTrue(NHibernateUtil.IsInitialized(baz.TopGlarchez)); //cos it is nonlazy
@@ -197,9 +206,9 @@ namespace NHibernate.Test.Legacy
 			//	.Add( Expression.eq("fooSet.foo.component.glarch.name", "xxx") )
 			//	.list();
 			//assertTrue( list.size()==0 );
-			list = s.CreateCriteria(typeof (Baz)).CreateCriteria("FooSet").CreateCriteria("TheFoo").CreateCriteria("Component.Glarch").Add(Expression.Eq("Name", "xxx")).List();
+			list = await (s.CreateCriteria(typeof (Baz)).CreateCriteria("FooSet").CreateCriteria("TheFoo").CreateCriteria("Component.Glarch").Add(Expression.Eq("Name", "xxx")).ListAsync());
 			Assert.AreEqual(0, list.Count);
-			list = s.CreateCriteria(typeof (Baz)).CreateAlias("FooSet", "foo").CreateAlias("foo.TheFoo", "foo2").SetLockMode("foo2", lockMode).Add(Expression.IsNull("foo2.Component.Glarch")).CreateCriteria("foo2.Component.Glarch").Add(Expression.Eq("Name", "xxx")).List();
+			list = await (s.CreateCriteria(typeof (Baz)).CreateAlias("FooSet", "foo").CreateAlias("foo.TheFoo", "foo2").SetLockMode("foo2", lockMode).Add(Expression.IsNull("foo2.Component.Glarch")).CreateCriteria("foo2.Component.Glarch").Add(Expression.Eq("Name", "xxx")).ListAsync());
 			Assert.AreEqual(0, list.Count);
 			await (t.CommitAsync());
 			s.Close();
@@ -208,14 +217,14 @@ namespace NHibernate.Test.Legacy
 			crit = s.CreateCriteria(typeof (Baz));
 			crit.CreateCriteria("TopGlarchez").Add(Expression.IsNotNull("Name"));
 			crit.CreateCriteria("FooSet").Add(Expression.IsNull("Null"));
-			list = crit.List();
+			list = await (crit.ListAsync());
 			Assert.AreEqual(2, list.Count);
 			baz = (Baz)await (crit.UniqueResultAsync());
 			Assert.IsTrue(NHibernateUtil.IsInitialized(baz.TopGlarchez)); //cos it is nonlazy
 			Assert.IsFalse(NHibernateUtil.IsInitialized(baz.FooSet));
 			await (s.DeleteAsync("from Glarch g"));
-			await (s.DeleteAsync(s.Get(typeof (Foo), foo1.Key)));
-			await (s.DeleteAsync(s.Get(typeof (Foo), foo2.Key)));
+			await (s.DeleteAsync(await (s.GetAsync(typeof (Foo), foo1.Key))));
+			await (s.DeleteAsync(await (s.GetAsync(typeof (Foo), foo2.Key))));
 			await (s.DeleteAsync(baz));
 			await (t.CommitAsync());
 			s.Close();
@@ -241,13 +250,13 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			Assert.AreEqual(1, s.CreateCriteria(typeof (Part)).List().Count);
+			Assert.AreEqual(1, (await (s.CreateCriteria(typeof (Part)).ListAsync())).Count);
 			//there is a where condition on Part mapping
-			Assert.AreEqual(1, s.CreateCriteria(typeof (Part)).Add(Expression.Eq("Id", p1.Id)).List().Count);
-			Assert.AreEqual(1, s.CreateQuery("from Part").List().Count);
-			Assert.AreEqual(2, s.CreateQuery("from Baz baz join baz.Parts").List().Count);
+			Assert.AreEqual(1, (await (s.CreateCriteria(typeof (Part)).Add(Expression.Eq("Id", p1.Id)).ListAsync())).Count);
+			Assert.AreEqual(1, (await (s.CreateQuery("from Part").ListAsync())).Count);
+			Assert.AreEqual(2, (await (s.CreateQuery("from Baz baz join baz.Parts").ListAsync())).Count);
 			baz = (Baz)await (s.CreateCriteria(typeof (Baz)).UniqueResultAsync());
-			Assert.AreEqual(2, s.CreateFilter(baz.Parts, "").List().Count);
+			Assert.AreEqual(2, (await ((await (s.CreateFilterAsync(baz.Parts, ""))).ListAsync())).Count);
 			//assertTrue( baz.getParts().size()==1 );
 			await (s.DeleteAsync("from Part"));
 			await (s.DeleteAsync(baz));
@@ -267,9 +276,9 @@ namespace NHibernate.Test.Legacy
 			s2.Count = 2;
 			Simple s3 = new Simple();
 			s3.Count = 3;
-			s.Save(s1, (long)1);
-			s.Save(s2, (long)2);
-			s.Save(s3, (long)3);
+			await (s.SaveAsync(s1, (long)1));
+			await (s.SaveAsync(s2, (long)2));
+			await (s.SaveAsync(s3, (long)3));
 			Container c = new Container();
 			IList<Simple> l = new List<Simple>();
 			l.Add(s1);
@@ -282,22 +291,22 @@ namespace NHibernate.Test.Legacy
 			l.Add(s2);
 			c.ManyToMany = l;
 			await (s.SaveAsync(c));
-			Assert.AreEqual(1, s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.OneToMany[2] = s").List().Count);
-			Assert.AreEqual(1, s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.ManyToMany[2] = s").List().Count);
-			Assert.AreEqual(1, s.CreateQuery("select c from c in class ContainerX, s in class Simple where s = c.OneToMany[2]").List().Count);
-			Assert.AreEqual(1, s.CreateQuery("select c from c in class ContainerX, s in class Simple where s = c.ManyToMany[2]").List().Count);
-			Assert.AreEqual(1, s.CreateQuery("select c from c in class ContainerX where c.OneToMany[0].Name = 's'").List().Count);
-			Assert.AreEqual(1, s.CreateQuery("select c from c in class ContainerX where c.ManyToMany[0].Name = 's'").List().Count);
-			Assert.AreEqual(1, s.CreateQuery("select c from c in class ContainerX where 's' = c.OneToMany[2 - 2].Name").List().Count);
-			Assert.AreEqual(1, s.CreateQuery("select c from c in class ContainerX where 's' = c.ManyToMany[(3+1)/4-1].Name").List().Count);
+			Assert.AreEqual(1, (await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.OneToMany[2] = s").ListAsync())).Count);
+			Assert.AreEqual(1, (await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.ManyToMany[2] = s").ListAsync())).Count);
+			Assert.AreEqual(1, (await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where s = c.OneToMany[2]").ListAsync())).Count);
+			Assert.AreEqual(1, (await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where s = c.ManyToMany[2]").ListAsync())).Count);
+			Assert.AreEqual(1, (await (s.CreateQuery("select c from c in class ContainerX where c.OneToMany[0].Name = 's'").ListAsync())).Count);
+			Assert.AreEqual(1, (await (s.CreateQuery("select c from c in class ContainerX where c.ManyToMany[0].Name = 's'").ListAsync())).Count);
+			Assert.AreEqual(1, (await (s.CreateQuery("select c from c in class ContainerX where 's' = c.OneToMany[2 - 2].Name").ListAsync())).Count);
+			Assert.AreEqual(1, (await (s.CreateQuery("select c from c in class ContainerX where 's' = c.ManyToMany[(3+1)/4-1].Name").ListAsync())).Count);
 			if (Dialect.SupportsSubSelects)
 			{
-				Assert.AreEqual(1, s.CreateQuery("select c from c in class ContainerX where c.ManyToMany[ c.ManyToMany.maxIndex ].Count = 2").List().Count);
-				Assert.AreEqual(1, s.CreateQuery("select c from c in class ContainerX where c.ManyToMany[ maxindex(c.ManyToMany) ].Count = 2").List().Count);
+				Assert.AreEqual(1, (await (s.CreateQuery("select c from c in class ContainerX where c.ManyToMany[ c.ManyToMany.maxIndex ].Count = 2").ListAsync())).Count);
+				Assert.AreEqual(1, (await (s.CreateQuery("select c from c in class ContainerX where c.ManyToMany[ maxindex(c.ManyToMany) ].Count = 2").ListAsync())).Count);
 			}
 
-			Assert.AreEqual(1, s.CreateQuery("select c from c in class ContainerX where c.OneToMany[ c.ManyToMany[0].Count ].Name = 's'").List().Count);
-			Assert.AreEqual(1, s.CreateQuery("select c from c in class ContainerX where c.ManyToMany[ c.OneToMany[0].Count ].Name = 's'").List().Count);
+			Assert.AreEqual(1, (await (s.CreateQuery("select c from c in class ContainerX where c.OneToMany[ c.ManyToMany[0].Count ].Name = 's'").ListAsync())).Count);
+			Assert.AreEqual(1, (await (s.CreateQuery("select c from c in class ContainerX where c.ManyToMany[ c.OneToMany[0].Count ].Name = 's'").ListAsync())).Count);
 			await (s.DeleteAsync(c));
 			await (s.DeleteAsync(s1));
 			await (s.DeleteAsync(s2));
@@ -322,7 +331,7 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Child)s.Load(typeof (Child), c.Id);
+			c = (Child)await (s.LoadAsync(typeof (Child), c.Id));
 			p = c.Parent;
 			Assert.IsNotNull(p, "1-1 parent");
 			c.Count = 32;
@@ -331,16 +340,16 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Child)s.Load(typeof (Child), c.Id);
+			c = (Child)await (s.LoadAsync(typeof (Child), c.Id));
 			p = c.Parent;
 			Assert.AreEqual(66, p.Count, "1-1 update");
 			Assert.AreEqual(32, c.Count, "1-1 update");
-			Assert.AreEqual(1, s.CreateQuery("from c in class NHibernate.DomainModel.Child where c.Parent.Count=66").List().Count, "1-1 query");
-			Assert.AreEqual(2, ((object[])s.CreateQuery("from Parent p join p.Child c where p.Count=66").List()[0]).Length, "1-1 query");
-			s.CreateQuery("select c, c.Parent from c in class NHibernate.DomainModel.Child order by c.Parent.Count").List();
-			s.CreateQuery("select c, c.Parent from c in class NHibernate.DomainModel.Child where c.Parent.Count=66 order by c.Parent.Count").List();
-			s.CreateQuery("select c, c.Parent, c.Parent.Count from c in class NHibernate.DomainModel.Child order by c.Parent.Count").Enumerable();
-			Assert.AreEqual(1, s.CreateQuery("FROM p in CLASS NHibernate.DomainModel.Parent WHERE p.Count=?").SetInt32(0, 66).List().Count, "1-1 query");
+			Assert.AreEqual(1, (await (s.CreateQuery("from c in class NHibernate.DomainModel.Child where c.Parent.Count=66").ListAsync())).Count, "1-1 query");
+			Assert.AreEqual(2, ((object[])(await (s.CreateQuery("from Parent p join p.Child c where p.Count=66").ListAsync()))[0]).Length, "1-1 query");
+			await (s.CreateQuery("select c, c.Parent from c in class NHibernate.DomainModel.Child order by c.Parent.Count").ListAsync());
+			await (s.CreateQuery("select c, c.Parent from c in class NHibernate.DomainModel.Child where c.Parent.Count=66 order by c.Parent.Count").ListAsync());
+			await (s.CreateQuery("select c, c.Parent, c.Parent.Count from c in class NHibernate.DomainModel.Child order by c.Parent.Count").EnumerableAsync());
+			Assert.AreEqual(1, (await (s.CreateQuery("FROM p in CLASS NHibernate.DomainModel.Parent WHERE p.Count=?").SetInt32(0, 66).ListAsync())).Count, "1-1 query");
 			await (s.DeleteAsync(c));
 			await (s.DeleteAsync(p));
 			await (t.CommitAsync());
@@ -358,14 +367,14 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			p = (Parent)s.Load(typeof (Parent), p.Id);
+			p = (Parent)await (s.LoadAsync(typeof (Parent), p.Id));
 			Assert.IsNull(p.Child);
 			p.Count = 66;
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			p = (Parent)s.Load(typeof (Parent), p.Id);
+			p = (Parent)await (s.LoadAsync(typeof (Parent), p.Id));
 			Assert.AreEqual(66, p.Count, "null 1-1 update");
 			Assert.IsNull(p.Child);
 			await (s.DeleteAsync(p));
@@ -393,13 +402,13 @@ namespace NHibernate.Test.Legacy
 			c.ManyToMany.Add(s1);
 			c.ManyToMany.Add(s2);
 			object cid = await (s.SaveAsync(c));
-			s.Save(s1, (long)12);
-			s.Save(s2, (long)-1);
+			await (s.SaveAsync(s1, (long)12));
+			await (s.SaveAsync(s2, (long)-1));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Container)s.Load(typeof (Container), cid);
+			c = (Container)await (s.LoadAsync(typeof (Container), cid));
 			Assert.AreEqual(1, c.Bag.Count);
 			Assert.AreEqual(2, c.ManyToMany.Count);
 			foreach (object obj in c.Bag)
@@ -416,10 +425,10 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Container)s.Load(typeof (Container), cid);
+			c = (Container)await (s.LoadAsync(typeof (Container), cid));
 			Assert.AreEqual(0, c.Bag.Count);
 			Assert.AreEqual(1, c.ManyToMany.Count);
-			c1 = (Contained)s.Load(typeof (Contained), c1.Id);
+			c1 = (Contained)await (s.LoadAsync(typeof (Contained), c1.Id));
 			Assert.AreEqual(0, c1.Bag.Count);
 			Assert.AreEqual(1, await (s.DeleteAsync("from c in class ContainerX")));
 			Assert.AreEqual(1, await (s.DeleteAsync("from c in class Contained")));
@@ -438,8 +447,8 @@ namespace NHibernate.Test.Legacy
 			x.Count = 123;
 			Simple y = new Simple();
 			y.Count = 456;
-			s.Save(x, (long)1);
-			s.Save(y, (long)0);
+			await (s.SaveAsync(x, (long)1));
+			await (s.SaveAsync(y, (long)0));
 			IList<Simple> o2m = new List<Simple>();
 			o2m.Add(x);
 			o2m.Add(null);
@@ -476,7 +485,7 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Container)s.Load(typeof (Container), c.Id);
+			c = (Container)await (s.LoadAsync(typeof (Container), c.Id));
 			ccic = (Container.ContainerInnerClass)c.Components[2];
 			Assert.AreEqual(ccic.One, ccic.Many.One);
 			Assert.AreEqual(3, c.Components.Count);
@@ -502,7 +511,7 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Container)s.Load(typeof (Container), c.Id);
+			c = (Container)await (s.LoadAsync(typeof (Container), c.Id));
 			Assert.AreEqual(1, c.Components.Count); //WAS: 2 - h2.0.3 comment
 			Assert.AreEqual(2, c.Composites.Count);
 			Assert.AreEqual(2, c.OneToMany.Count);
@@ -517,7 +526,7 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Container)s.Load(typeof (Container), c.Id);
+			c = (Container)await (s.LoadAsync(typeof (Container), c.Id));
 			Assert.AreEqual(1, c.Components.Count); //WAS: 2 -> h2.0.3 comment
 			Assert.AreEqual(2, c.Composites.Count);
 			Assert.AreEqual("a different name", ((Container.ContainerInnerClass)c.Components[0]).Name);
@@ -543,7 +552,7 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Container)s.Load(typeof (Container), c.Id);
+			c = (Container)await (s.LoadAsync(typeof (Container), c.Id));
 			Assert.AreEqual(0, c.Components.Count);
 			Assert.AreEqual(0, c.Composites.Count);
 			Assert.AreEqual(0, c.OneToMany.Count);
@@ -567,7 +576,7 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			foreach (Container obj in s.CreateQuery("from c in class ContainerX").Enumerable())
+			foreach (Container obj in await (s.CreateQuery("from c in class ContainerX").EnumerableAsync()))
 			{
 				c = obj;
 				break;
@@ -596,7 +605,7 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			foreach (Container obj in s.CreateQuery("from c in class ContainerX").Enumerable())
+			foreach (Container obj in await (s.CreateQuery("from c in class ContainerX").EnumerableAsync()))
 			{
 				c = obj;
 			}
@@ -637,13 +646,13 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Container)s.CreateQuery("from c in class ContainerX").List()[0];
+			c = (Container)(await (s.CreateQuery("from c in class ContainerX").ListAsync()))[0];
 			Assert.AreEqual(1, c.LazyBag.Count);
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Container)s.CreateQuery("from c in class ContainerX").List()[0];
+			c = (Container)(await (s.CreateQuery("from c in class ContainerX").ListAsync()))[0];
 			Contained c3 = new Contained();
 			// commented out in h2.0.3 also
 			//c.Bag.Add(c3);
@@ -654,7 +663,7 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Container)s.CreateQuery("from c in class ContainerX").List()[0];
+			c = (Container)(await (s.CreateQuery("from c in class ContainerX").ListAsync()))[0];
 			Contained c4 = new Contained();
 			c.LazyBag.Add(c4);
 			c4.LazyBag.Add(c);
@@ -668,7 +677,7 @@ namespace NHibernate.Test.Legacy
 			// twice and throw off the count by 1 (or by however many additions were 
 			// made before the flush
 			s = OpenSession();
-			c = (Container)s.CreateQuery("from c in class ContainerX").List()[0];
+			c = (Container)(await (s.CreateQuery("from c in class ContainerX").ListAsync()))[0];
 			Contained c5 = new Contained();
 			c.LazyBag.Add(c5);
 			c5.LazyBag.Add(c);
@@ -679,7 +688,7 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Container)s.CreateQuery("from c in class ContainerX").List()[0];
+			c = (Container)(await (s.CreateQuery("from c in class ContainerX").ListAsync()))[0];
 			int j = 0;
 			foreach (object obj in c.Bag)
 			{
@@ -701,9 +710,9 @@ namespace NHibernate.Test.Legacy
 			}
 
 			Assert.AreEqual(2, j);
-			await (s.DeleteAsync(s.Load(typeof (Contained), c5.Id)));
-			await (s.DeleteAsync(s.Load(typeof (Contained), c4.Id)));
-			await (s.DeleteAsync(s.Load(typeof (Contained), c3.Id)));
+			await (s.DeleteAsync(await (s.LoadAsync(typeof (Contained), c5.Id))));
+			await (s.DeleteAsync(await (s.LoadAsync(typeof (Contained), c4.Id))));
+			await (s.DeleteAsync(await (s.LoadAsync(typeof (Contained), c3.Id))));
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -724,25 +733,25 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Circular)s.Load(typeof (Circular), id);
+			c = (Circular)await (s.LoadAsync(typeof (Circular), id));
 			c.Other.Other.Clazz = typeof (Foo);
 			await (t.CommitAsync());
 			s.Close();
 			c.Other.Clazz = typeof (Qux);
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.SaveOrUpdate(c);
+			await (s.SaveOrUpdateAsync(c));
 			await (t.CommitAsync());
 			s.Close();
 			c.Other.Other.Clazz = typeof (Bar);
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.SaveOrUpdate(c);
+			await (s.SaveOrUpdateAsync(c));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Circular)s.Load(typeof (Circular), id);
+			c = (Circular)await (s.LoadAsync(typeof (Circular), id));
 			Assert.AreEqual(typeof (Bar), c.Other.Other.Clazz);
 			Assert.AreEqual(typeof (Qux), c.Other.Clazz);
 			Assert.AreEqual(c, c.Other.Other.Other);
@@ -774,61 +783,61 @@ namespace NHibernate.Test.Legacy
 			s3.Count = 3;
 			Simple s4 = new Simple();
 			s4.Count = 4;
-			s.Save(s1, (long)1);
-			s.Save(s2, (long)2);
-			s.Save(s3, (long)3);
-			s.Save(s4, (long)4);
-			Assert.AreEqual(LockMode.Write, s.GetCurrentLockMode(s1));
+			await (s.SaveAsync(s1, (long)1));
+			await (s.SaveAsync(s2, (long)2));
+			await (s.SaveAsync(s3, (long)3));
+			await (s.SaveAsync(s4, (long)4));
+			Assert.AreEqual(LockMode.Write, await (s.GetCurrentLockModeAsync(s1)));
 			await (tx.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			tx = s.BeginTransaction();
-			s1 = (Simple)s.Load(typeof (Simple), (long)1, LockMode.None);
-			Assert.AreEqual(LockMode.Read, s.GetCurrentLockMode(s1));
-			s2 = (Simple)s.Load(typeof (Simple), (long)2, LockMode.Read);
-			Assert.AreEqual(LockMode.Read, s.GetCurrentLockMode(s2));
-			s3 = (Simple)s.Load(typeof (Simple), (long)3, LockMode.Upgrade);
-			Assert.AreEqual(LockMode.Upgrade, s.GetCurrentLockMode(s3));
-			s4 = (Simple)s.Load(typeof (Simple), (long)4, LockMode.UpgradeNoWait);
-			Assert.AreEqual(LockMode.UpgradeNoWait, s.GetCurrentLockMode(s4));
-			s1 = (Simple)s.Load(typeof (Simple), (long)1, LockMode.Upgrade); //upgrade
-			Assert.AreEqual(LockMode.Upgrade, s.GetCurrentLockMode(s1));
-			s2 = (Simple)s.Load(typeof (Simple), (long)2, LockMode.None);
-			Assert.AreEqual(LockMode.Read, s.GetCurrentLockMode(s2));
-			s3 = (Simple)s.Load(typeof (Simple), (long)3, LockMode.Read);
-			Assert.AreEqual(LockMode.Upgrade, s.GetCurrentLockMode(s3));
-			s4 = (Simple)s.Load(typeof (Simple), (long)4, LockMode.Upgrade);
-			Assert.AreEqual(LockMode.UpgradeNoWait, s.GetCurrentLockMode(s4));
-			s.Lock(s2, LockMode.Upgrade); //upgrade
-			Assert.AreEqual(LockMode.Upgrade, s.GetCurrentLockMode(s2));
-			s.Lock(s3, LockMode.Upgrade);
-			Assert.AreEqual(LockMode.Upgrade, s.GetCurrentLockMode(s3));
-			s.Lock(s1, LockMode.UpgradeNoWait);
-			s.Lock(s4, LockMode.None);
-			Assert.AreEqual(LockMode.UpgradeNoWait, s.GetCurrentLockMode(s4));
+			s1 = (Simple)await (s.LoadAsync(typeof (Simple), (long)1, LockMode.None));
+			Assert.AreEqual(LockMode.Read, await (s.GetCurrentLockModeAsync(s1)));
+			s2 = (Simple)await (s.LoadAsync(typeof (Simple), (long)2, LockMode.Read));
+			Assert.AreEqual(LockMode.Read, await (s.GetCurrentLockModeAsync(s2)));
+			s3 = (Simple)await (s.LoadAsync(typeof (Simple), (long)3, LockMode.Upgrade));
+			Assert.AreEqual(LockMode.Upgrade, await (s.GetCurrentLockModeAsync(s3)));
+			s4 = (Simple)await (s.LoadAsync(typeof (Simple), (long)4, LockMode.UpgradeNoWait));
+			Assert.AreEqual(LockMode.UpgradeNoWait, await (s.GetCurrentLockModeAsync(s4)));
+			s1 = (Simple)await (s.LoadAsync(typeof (Simple), (long)1, LockMode.Upgrade)); //upgrade
+			Assert.AreEqual(LockMode.Upgrade, await (s.GetCurrentLockModeAsync(s1)));
+			s2 = (Simple)await (s.LoadAsync(typeof (Simple), (long)2, LockMode.None));
+			Assert.AreEqual(LockMode.Read, await (s.GetCurrentLockModeAsync(s2)));
+			s3 = (Simple)await (s.LoadAsync(typeof (Simple), (long)3, LockMode.Read));
+			Assert.AreEqual(LockMode.Upgrade, await (s.GetCurrentLockModeAsync(s3)));
+			s4 = (Simple)await (s.LoadAsync(typeof (Simple), (long)4, LockMode.Upgrade));
+			Assert.AreEqual(LockMode.UpgradeNoWait, await (s.GetCurrentLockModeAsync(s4)));
+			await (s.LockAsync(s2, LockMode.Upgrade)); //upgrade
+			Assert.AreEqual(LockMode.Upgrade, await (s.GetCurrentLockModeAsync(s2)));
+			await (s.LockAsync(s3, LockMode.Upgrade));
+			Assert.AreEqual(LockMode.Upgrade, await (s.GetCurrentLockModeAsync(s3)));
+			await (s.LockAsync(s1, LockMode.UpgradeNoWait));
+			await (s.LockAsync(s4, LockMode.None));
+			Assert.AreEqual(LockMode.UpgradeNoWait, await (s.GetCurrentLockModeAsync(s4)));
 			await (tx.CommitAsync());
 			tx = s.BeginTransaction();
-			Assert.AreEqual(LockMode.None, s.GetCurrentLockMode(s3));
-			Assert.AreEqual(LockMode.None, s.GetCurrentLockMode(s1));
-			Assert.AreEqual(LockMode.None, s.GetCurrentLockMode(s2));
-			Assert.AreEqual(LockMode.None, s.GetCurrentLockMode(s4));
-			s.Lock(s1, LockMode.Read); //upgrade
-			Assert.AreEqual(LockMode.Read, s.GetCurrentLockMode(s1));
-			s.Lock(s2, LockMode.Upgrade); //upgrade
-			Assert.AreEqual(LockMode.Upgrade, s.GetCurrentLockMode(s2));
-			s.Lock(s3, LockMode.UpgradeNoWait); //upgrade
-			Assert.AreEqual(LockMode.UpgradeNoWait, s.GetCurrentLockMode(s3));
-			s.Lock(s4, LockMode.None);
-			Assert.AreEqual(LockMode.None, s.GetCurrentLockMode(s4));
+			Assert.AreEqual(LockMode.None, await (s.GetCurrentLockModeAsync(s3)));
+			Assert.AreEqual(LockMode.None, await (s.GetCurrentLockModeAsync(s1)));
+			Assert.AreEqual(LockMode.None, await (s.GetCurrentLockModeAsync(s2)));
+			Assert.AreEqual(LockMode.None, await (s.GetCurrentLockModeAsync(s4)));
+			await (s.LockAsync(s1, LockMode.Read)); //upgrade
+			Assert.AreEqual(LockMode.Read, await (s.GetCurrentLockModeAsync(s1)));
+			await (s.LockAsync(s2, LockMode.Upgrade)); //upgrade
+			Assert.AreEqual(LockMode.Upgrade, await (s.GetCurrentLockModeAsync(s2)));
+			await (s.LockAsync(s3, LockMode.UpgradeNoWait)); //upgrade
+			Assert.AreEqual(LockMode.UpgradeNoWait, await (s.GetCurrentLockModeAsync(s3)));
+			await (s.LockAsync(s4, LockMode.None));
+			Assert.AreEqual(LockMode.None, await (s.GetCurrentLockModeAsync(s4)));
 			s4.Name = "s4";
 			await (s.FlushAsync());
-			Assert.AreEqual(LockMode.Write, s.GetCurrentLockMode(s4));
+			Assert.AreEqual(LockMode.Write, await (s.GetCurrentLockModeAsync(s4)));
 			await (tx.CommitAsync());
 			tx = s.BeginTransaction();
-			Assert.AreEqual(LockMode.None, s.GetCurrentLockMode(s3));
-			Assert.AreEqual(LockMode.None, s.GetCurrentLockMode(s1));
-			Assert.AreEqual(LockMode.None, s.GetCurrentLockMode(s2));
-			Assert.AreEqual(LockMode.None, s.GetCurrentLockMode(s4));
+			Assert.AreEqual(LockMode.None, await (s.GetCurrentLockModeAsync(s3)));
+			Assert.AreEqual(LockMode.None, await (s.GetCurrentLockModeAsync(s1)));
+			Assert.AreEqual(LockMode.None, await (s.GetCurrentLockModeAsync(s2)));
+			Assert.AreEqual(LockMode.None, await (s.GetCurrentLockModeAsync(s4)));
 			await (s.DeleteAsync(s1));
 			await (s.DeleteAsync(s2));
 			await (s.DeleteAsync(s3));
@@ -849,7 +858,7 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			g = (Parent)s.Load(typeof (Parent), g.Id);
+			g = (Parent)await (s.LoadAsync(typeof (Parent), g.Id));
 			Assert.IsNotNull(g.Any);
 			Assert.IsTrue(g.Any is FooProxy);
 			await (s.DeleteAsync(g.Any));

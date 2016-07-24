@@ -11,12 +11,57 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Insertordering
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class InsertOrderingFixture : TestCase
+	public partial class InsertOrderingFixtureAsync : TestCaseAsync
 	{
+		const int batchSize = 10;
+		const int instancesPerEach = 12;
+		const int typesOfEntities = 3;
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"Insertordering.Mapping.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect.SupportsSqlBatches;
+		}
+
+		protected override Task ConfigureAsync(Configuration configuration)
+		{
+			try
+			{
+				configuration.DataBaseIntegration(x =>
+				{
+					x.BatchSize = batchSize;
+					x.OrderInserts = true;
+					x.Batcher<StatsBatcherFactory>();
+				}
+
+				);
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
 		[Test]
 		public async Task BatchOrderingAsync()
 		{
@@ -41,7 +86,7 @@ namespace NHibernate.Test.Insertordering
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				IList users = s.CreateQuery("from User u left join fetch u.Memberships m left join fetch m.Group").List();
+				IList users = await (s.CreateQuery("from User u left join fetch u.Memberships m left join fetch m.Group").ListAsync());
 				foreach (object user in users)
 				{
 					await (s.DeleteAsync(user));
@@ -50,6 +95,78 @@ namespace NHibernate.Test.Insertordering
 				await (s.Transaction.CommitAsync());
 			}
 		}
+
+#region Nested type: StatsBatcher
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		public partial class StatsBatcher : SqlClientBatchingBatcher
+		{
+			private static string batchSQL;
+			private static IList<int> batchSizes = new List<int>();
+			private static int currentBatch = -1;
+			public StatsBatcher(ConnectionManager connectionManager, IInterceptor interceptor): base (connectionManager, interceptor)
+			{
+			}
+
+			public static IList<int> BatchSizes
+			{
+				get
+				{
+					return batchSizes;
+				}
+			}
+
+			public static void Reset()
+			{
+				batchSizes = new List<int>();
+				currentBatch = -1;
+				batchSQL = null;
+			}
+
+			public override DbCommand PrepareBatchCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
+			{
+				DbCommand result = base.PrepareBatchCommand(type, sql, parameterTypes);
+				string sqlstring = sql.ToString();
+				if (batchSQL == null || !sqlstring.Equals(batchSQL))
+				{
+					currentBatch++;
+					batchSQL = sqlstring;
+					batchSizes.Insert(currentBatch, 0);
+					Console.WriteLine("--------------------------------------------------------");
+					Console.WriteLine("Preparing statement [" + batchSQL + "]");
+				}
+
+				return result;
+			}
+
+			public override void AddToBatch(IExpectation expectation)
+			{
+				batchSizes[currentBatch]++;
+				Console.WriteLine("Adding to batch [" + batchSQL + "]");
+				base.AddToBatch(expectation);
+			}
+
+			protected override void DoExecuteBatch(DbCommand ps)
+			{
+				Console.WriteLine("executing batch [" + batchSQL + "]");
+				Console.WriteLine("--------------------------------------------------------");
+				batchSQL = null;
+				base.DoExecuteBatch(ps);
+			}
+		}
+
+#endregion
+#region Nested type: StatsBatcherFactory
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		public partial class StatsBatcherFactory : IBatcherFactory
+		{
+#region IBatcherFactory Members
+			public IBatcher CreateBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
+			{
+				return new StatsBatcher(connectionManager, interceptor);
+			}
+#endregion
+		}
+#endregion
 	}
 }
 #endif

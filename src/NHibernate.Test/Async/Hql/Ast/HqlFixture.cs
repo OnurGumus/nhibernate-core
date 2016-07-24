@@ -12,9 +12,69 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Hql.Ast
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class HqlFixture : BaseFixture
+	public partial class HqlFixtureAsync : BaseFixtureAsync
 	{
+		protected HQLQueryPlan CreateQueryPlan(string hql, bool scalar)
+		{
+			return new QueryExpressionPlan(new StringQueryExpression(hql), scalar, new CollectionHelper.EmptyMapClass<string, IFilter>(), sessions);
+		}
+
+		protected HQLQueryPlan CreateQueryPlan(string hql)
+		{
+			return CreateQueryPlan(hql, false);
+		}
+
+		private static void Check(ReturnMetadata returnMetadata, bool expectingEmptyTypes, bool expectingEmptyAliases)
+		{
+			Assert.IsNotNull(returnMetadata, "null return metadata");
+			Assert.IsNotNull(returnMetadata, "null return metadata - types");
+			Assert.AreEqual(1, returnMetadata.ReturnTypes.Length, "unexpected return size");
+			if (expectingEmptyTypes)
+			{
+				Assert.IsNull(returnMetadata.ReturnTypes[0], "non-empty types");
+			}
+			else
+			{
+				Assert.IsNotNull(returnMetadata.ReturnTypes[0], "empty types");
+			}
+
+			if (expectingEmptyAliases)
+			{
+				Assert.IsNull(returnMetadata.ReturnAliases, "non-empty aliases");
+			}
+			else
+			{
+				Assert.IsNotNull(returnMetadata.ReturnAliases, "empty aliases");
+				Assert.IsNotNull(returnMetadata.ReturnAliases[0], "empty aliases");
+			}
+		}
+
+		[Test]
+		public void ReturnMetadata()
+		{
+			HQLQueryPlan plan;
+			plan = CreateQueryPlan("from Animal a");
+			Check(plan.ReturnMetadata, false, true);
+			plan = CreateQueryPlan("select a as animal from Animal a");
+			Check(plan.ReturnMetadata, false, false);
+			plan = CreateQueryPlan("from System.Object");
+			Check(plan.ReturnMetadata, true, true);
+			plan = CreateQueryPlan("select o as entity from System.Object o");
+			Check(plan.ReturnMetadata, true, false);
+		}
+
+		[Test]
+		public async Task OrderByPropertiesImplicitlySpecifiedInTheSelectAsync()
+		{
+			// NH-2035 
+			using (ISession s = OpenSession())
+			{
+				await (s.CreateQuery("select distinct z from Animal a join a.zoo as z order by z.name").ListAsync());
+			}
+		}
+
 		[Test]
 		public async Task CaseClauseInSelectAsync()
 		{
@@ -28,11 +88,11 @@ namespace NHibernate.Test.Hql.Ast
 
 			using (ISession s = OpenSession())
 			{
-				var l = s.CreateQuery("select a.id, case when a.description = 'Polliwog' then 2 else 0 end from Animal a").List();
+				var l = await (s.CreateQuery("select a.id, case when a.description = 'Polliwog' then 2 else 0 end from Animal a").ListAsync());
 				var element = (IList)l[0];
 				Assert.That(element[1], Is.EqualTo(2));
 				// work with alias
-				l = s.CreateQuery("select a.id, case when a.description = 'Polliwog' then 2 else 0 end as value from Animal a").List();
+				l = await (s.CreateQuery("select a.id, case when a.description = 'Polliwog' then 2 else 0 end as value from Animal a").ListAsync());
 				element = (IList)l[0];
 				Assert.That(element[1], Is.EqualTo(2));
 			}
@@ -40,7 +100,7 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 				using (s.BeginTransaction())
 				{
-					s.CreateQuery("delete from Animal").ExecuteUpdate();
+					await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
 					await (s.Transaction.CommitAsync());
 				}
 		}
@@ -68,7 +128,7 @@ namespace NHibernate.Test.Hql.Ast
 				using (ISession s = OpenSession())
 					using (s.BeginTransaction())
 					{
-						s.CreateQuery("delete from Animal").ExecuteUpdate();
+						await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
 						await (s.Transaction.CommitAsync());
 					}
 			}
@@ -97,7 +157,7 @@ namespace NHibernate.Test.Hql.Ast
 				using (ISession s = OpenSession())
 					using (s.BeginTransaction())
 					{
-						s.CreateQuery("delete from Animal").ExecuteUpdate();
+						await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
 						await (s.Transaction.CommitAsync());
 					}
 			}
@@ -126,7 +186,7 @@ namespace NHibernate.Test.Hql.Ast
 				using (ISession s = OpenSession())
 					using (s.BeginTransaction())
 					{
-						s.CreateQuery("delete from Animal").ExecuteUpdate();
+						await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
 						await (s.Transaction.CommitAsync());
 					}
 			}
@@ -155,7 +215,7 @@ namespace NHibernate.Test.Hql.Ast
 				using (ISession s = OpenSession())
 					using (s.BeginTransaction())
 					{
-						s.CreateQuery("delete from Animal").ExecuteUpdate();
+						await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
 						await (s.Transaction.CommitAsync());
 					}
 			}
@@ -174,16 +234,45 @@ namespace NHibernate.Test.Hql.Ast
 
 			using (ISession s = OpenSession())
 			{
-				var l = s.CreateQuery("select sum(a.intValue * a.bodyWeight) from Animal a group by a.id").List();
+				var l = await (s.CreateQuery("select sum(a.intValue * a.bodyWeight) from Animal a group by a.id").ListAsync());
 				Assert.That(l[0], Is.InstanceOf<Double>());
 			}
 
 			using (ISession s = OpenSession())
 				using (s.BeginTransaction())
 				{
-					s.CreateQuery("delete from Animal").ExecuteUpdate();
+					await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
 					await (s.Transaction.CommitAsync());
 				}
+		}
+
+		[Test]
+		public async Task CanParseMaxLongAsync()
+		{
+			// NH-1833
+			using (ISession s = OpenSession())
+			{
+				await (s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = {0}", long.MaxValue)).ListAsync());
+				await (s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = {0}L", long.MaxValue)).ListAsync());
+				await (s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = 123L")).ListAsync());
+				await (s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = 123")).ListAsync());
+				await (s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = {0}", int.MaxValue + 1L)).ListAsync());
+			}
+		}
+
+		[Test]
+		public async Task InvalidJoinOnPropertyAsync()
+		{
+			// NH-1915
+			using (ISession s = OpenSession())
+			{
+				Assert.ThrowsAsync<InvalidPathException>(async () =>
+				{
+					await (s.CreateQuery("from Zoo z inner join fetch z.classification").ListAsync());
+				}
+
+				, "Incorrect path not caught during parsing");
+			}
 		}
 
 		[Test]
@@ -201,10 +290,10 @@ namespace NHibernate.Test.Hql.Ast
 					await (s.SaveAsync(new Animal()
 					{Description = "cat3", BodyWeight = 2.7f}));
 					// act
-					s.CreateQuery("insert into Animal (description, bodyWeight) select a.description, :weight from Animal a where a.bodyWeight < :weight").SetParameter<float>("weight", 5.7f).ExecuteUpdate();
+					await (s.CreateQuery("insert into Animal (description, bodyWeight) select a.description, :weight from Animal a where a.bodyWeight < :weight").SetParameter<float>("weight", 5.7f).ExecuteUpdateAsync());
 					// assert
 					Assert.AreEqual(3, await (s.CreateCriteria<Animal>().SetProjection(Projections.RowCount()).Add(Restrictions.Gt("bodyWeight", 5.5f)).UniqueResultAsync<int>()));
-					s.CreateQuery("delete from Animal").ExecuteUpdate();
+					await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
 					await (s.Transaction.CommitAsync());
 				}
 			}
@@ -218,10 +307,10 @@ namespace NHibernate.Test.Hql.Ast
 				{
 					await (s.SaveAsync(new Animal{Description = "cat1", BodyWeight = 1}));
 					// NH-2290: Unary minus before parentheses wasn't handled correctly (this query returned 0).
-					int actual = s.CreateQuery("select -(1+1) from Animal as h").List<int>().Single();
+					int actual = (await (s.CreateQuery("select -(1+1) from Animal as h").ListAsync<int>())).Single();
 					Assert.That(actual, Is.EqualTo(-2));
 					// This was the workaround, which of course should still work.
-					int actualWorkaround = s.CreateQuery("select -1*(1+1) from Animal as h").List<int>().Single();
+					int actualWorkaround = (await (s.CreateQuery("select -1*(1+1) from Animal as h").ListAsync<int>())).Single();
 					Assert.That(actualWorkaround, Is.EqualTo(-2));
 				}
 		}

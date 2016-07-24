@@ -6,9 +6,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.UserCollection
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class UserCollectionTypeTest : TestCase
+	public partial class UserCollectionTypeTestAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"UserCollection.UserPermissions.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task BasicOperationAsync()
 		{

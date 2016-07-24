@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH3126
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class InvalidCastWithGenericDictionaryOnCascadeTest : BugTestCase
+	public partial class InvalidCastWithGenericDictionaryOnCascadeTestAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task TestAsync()
@@ -34,6 +35,16 @@ namespace NHibernate.Test.NHSpecificTest.NH3126
 				var savedItem = await (session.GetAsync<Item>(item.Id));
 				Assert.AreEqual(1, savedItem.PropertyValues.Count);
 				Assert.AreEqual("Value 1", savedItem.PropertyValues[property.Id].Value);
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			await (base.OnTearDownAsync());
+			using (var session = OpenSession())
+			{
+				await (session.DeleteAsync("from System.Object"));
+				await (session.FlushAsync());
 			}
 		}
 	}

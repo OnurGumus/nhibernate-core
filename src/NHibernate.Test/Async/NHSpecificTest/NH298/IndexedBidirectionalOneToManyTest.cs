@@ -9,9 +9,35 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH298
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class IndexedBidirectionalOneToManyTest : BugTestCase
+	public partial class IndexedBidirectionalOneToManyTestAsync : BugTestCaseAsync
 	{
+		protected override async Task OnSetUpAsync()
+		{
+			await (base.OnSetUpAsync());
+			using (ISession session = this.OpenSession())
+			{
+				Category root = new Category(1, "Root", null);
+				root.SubCategories.Add(new Category(2, "First", root));
+				root.SubCategories.Add(new Category(3, "Second", root));
+				root.SubCategories.Add(new Category(4, "Third", root));
+				await (session.SaveAsync(root));
+				await (session.FlushAsync());
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			await (base.OnTearDownAsync());
+			using (ISession session = this.OpenSession())
+			{
+				await (session.DeleteAsync("from System.Object"));
+				//session.CreateSQLQuery( "delete from Category" ).List();
+				await (session.FlushAsync());
+			}
+		}
+
 		[Test]
 		public async Task SubItemMovesCorrectlyAsync()
 		{

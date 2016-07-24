@@ -10,9 +10,23 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH3037
 {
+	[TestFixture, Explicit("This is a performance test and may take a while.")]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ByCodeFixture : TestCaseMappingByCode
+	public partial class ByCodeFixtureAsync : TestCaseMappingByCodeAsync
 	{
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<Entity>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.Assigned));
+				rc.Property(x => x.Name);
+			}
+
+			);
+			return mapper.CompileMappingForAllExplicitlyAddedEntities();
+		}
+
 		[TestCase(10)]
 		[TestCase(100)]
 		[TestCase(1000)]

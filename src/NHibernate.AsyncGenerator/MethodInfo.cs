@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,9 +30,71 @@ namespace NHibernate.AsyncGenerator
 
 		public MethodDeclarationSyntax Node { get; }
 
+		public bool Missing { get; set; }
+
+		public HashSet<MethodInfo> Dependencies { get; } = new HashSet<MethodInfo>();
+
+		public HashSet<IMethodSymbol> ExternalDependencies { get; } = new HashSet<IMethodSymbol>();
+
+		/// <summary>
+		/// When true the method will be ignored when generating async members
+		/// </summary>
+		public bool Ignore
+		{
+			get
+			{
+				return !Missing && !References.Any() && !TypeReferences.Any() && GetAllDependencies().All(o => !o.References.Any());
+			}
+		}
+
+		public bool HasReferences
+		{
+			get
+			{
+				return References.Any() || GetAllDependencies().Any(o => o.References.Any());
+			}
+		}
+
+		public bool IsRequired
+		{
+			get { return ExternalDependencies.Any() || GetAllDependencies().Any(o => o.ExternalDependencies.Any())/* || Dependencies.Any(o => o.Ignore)*/; }
+		}
+
+		public bool Candidate { get; set; }
+
+		public IMethodSymbol OverridenMethod { get; set; }
+
+		/// <summary>
+		/// references that need to be async
+		/// </summary>
 		public HashSet<ReferenceLocation> References { get; } = new HashSet<ReferenceLocation>();
 
-		public HashSet<ReferenceLocation> BodyToAsyncMethodsReferences { get; } = new HashSet<ReferenceLocation>();
+		/// <summary>
+		/// Type references that need to be renamed
+		/// </summary>
+		public HashSet<ReferenceLocation> TypeReferences { get; } = new HashSet<ReferenceLocation>();
+
+		//public HashSet<ReferenceLocation> BodyToAsyncMethodsReferences { get; } = new HashSet<ReferenceLocation>();
+
+		public IEnumerable<MethodInfo> GetAllDependencies()
+		{
+			var deps = new HashSet<MethodInfo>();
+			var depsQueue = new Queue<MethodInfo>(Dependencies);
+			while (depsQueue.Count > 0)
+			{
+				var dependency = depsQueue.Dequeue();
+				if (deps.Contains(dependency))
+				{
+					continue;
+				}
+				deps.Add(dependency);
+				yield return dependency;
+				foreach (var subDependency in dependency.Dependencies.Where(o => !deps.Contains(o)))
+				{
+					depsQueue.Enqueue(subDependency);
+				}
+			}
+		}
 
 		private void AnalyzeInvocationExpression(SyntaxNode node, SimpleNameSyntax nameNode, MethodReferenceResult result)
 		{
@@ -43,6 +106,34 @@ namespace NHibernate.AsyncGenerator
 				Logger.Warn($"Cannot await async method in a select clause:\r\n{selectClause}\r\n");
 				return;
 			}
+			var docInfo = TypeInfo.NamespaceInfo.DocumentInfo;
+
+			var methodSymbol = (IMethodSymbol)docInfo.SemanticModel.GetSymbolInfo(nameNode).Symbol;
+			var asyncMethodSymbol = docInfo.ProjectInfo.MethodAsyncConterparts[methodSymbol.OriginalDefinition];
+
+			if (asyncMethodSymbol != null && (asyncMethodSymbol.ReturnsVoid || asyncMethodSymbol.ReturnType.Name != "Task"))
+			{
+				result.CanBeAwaited = false;
+				//Logger.Warn($"Cannot await method that is either void or do not return a Task:\r\n{methodSymbol}\r\n");
+
+				// check if the invocation expression takes any func as a parameter, we will allow to rename the method only if there is an awaitable invocation
+				var delegateParams = methodSymbol.Parameters
+												 .Select((o, i) => new {o.Type, Index = i})
+												 .Where(o => o.Type.TypeKind == TypeKind.Delegate)
+												 .ToList();
+				var invocationNode = (InvocationExpressionSyntax) node;
+				var delegateParamNodes = invocationNode.ArgumentList.Arguments
+											   .Select((o, i) => new {o.Expression, Index = i})
+											   .Where(o => delegateParams.Any(p => p.Index == o.Index))
+											   .Where(o => References.Any(r => o.Expression.Span.Contains(r.Location.SourceSpan)))
+											   .ToList();
+				if (!delegateParamNodes.Any())
+				{
+					result.CanBeAsync = false;
+					Logger.Warn($"Cannot convert method to async as it is either void or do not return a Task and has not any parameters that can be async:\r\n{methodSymbol}\r\n");
+				}
+				return;
+			}
 
 			var anonFunctionNode = node.Ancestors()
 				.OfType<AnonymousFunctionExpressionSyntax>()
@@ -50,7 +141,7 @@ namespace NHibernate.AsyncGenerator
 			if (anonFunctionNode?.AsyncKeyword.IsMissing == false)
 			{
 				// Custom code
-				var docInfo = TypeInfo.NamespaceInfo.DocumentInfo;
+				
 				var methodArgTypeInfo = ModelExtensions.GetTypeInfo(docInfo.SemanticModel, anonFunctionNode);
 				var convertedType = methodArgTypeInfo.ConvertedType;
 				if (convertedType != null && convertedType.ContainingAssembly.Name == "nunit.framework" && 
@@ -105,7 +196,7 @@ namespace NHibernate.AsyncGenerator
 			}
 		}
 
-		public MethodReferenceResult AnalyzeReference(ReferenceLocation reference)
+		public MethodReferenceResult AnalyzeMethodReference(ReferenceLocation reference)
 		{
 			var nameNode = Node.DescendantNodes()
 							   .OfType<SimpleNameSyntax>()
@@ -119,9 +210,12 @@ namespace NHibernate.AsyncGenerator
 									   }
 									   return o.Span == reference.Location.SourceSpan;
 								   });
-			var result = new MethodReferenceResult(reference, nameNode)
+			var docInfo = TypeInfo.NamespaceInfo.DocumentInfo;
+			var methodSymbol = (IMethodSymbol) docInfo.SemanticModel.GetSymbolInfo(nameNode).Symbol;
+			var result = new MethodReferenceResult(reference, nameNode, methodSymbol)
 			{
-				CanBeAsync = true
+				CanBeAsync = true,
+				DeclaredWithinSameType = TypeInfo.Symbol.GetFullName() == methodSymbol.ContainingType.GetFullName()
 			};
 
 			var currNode = nameNode.Parent;
@@ -159,6 +253,7 @@ namespace NHibernate.AsyncGenerator
 					case SyntaxKind.EqualsValueClause:
 					case SyntaxKind.SimpleMemberAccessExpression:
 					case SyntaxKind.ArgumentList:
+					case SyntaxKind.ObjectCreationExpression:
 						ascend = true;
 						break;
 					default:
@@ -194,7 +289,7 @@ namespace NHibernate.AsyncGenerator
 			return result;
 		}
 
-		public List<AsyncCounterpartMethod> FindAsyncCounterpartMethodsWhitinBody()
+		public List<AsyncCounterpartMethod> FindAsyncCounterpartMethodsWhitinBody(Dictionary<IMethodSymbol, IMethodSymbol> methodAsyncConterparts = null)
 		{
 			var result = new List<AsyncCounterpartMethod>();
 			if (Node.Body == null)
@@ -206,65 +301,96 @@ namespace NHibernate.AsyncGenerator
 			foreach (var invocation in Node.Body.DescendantNodes()
 										   .OfType<InvocationExpressionSyntax>())
 			{
-				var methodInfo = ModelExtensions.GetSymbolInfo(semanticModel, invocation.Expression).Symbol as IMethodSymbol;
-				if (methodInfo == null)
+				var methodSymbol = ModelExtensions.GetSymbolInfo(semanticModel, invocation.Expression).Symbol as IMethodSymbol;
+				if (methodSymbol == null)
 				{
 					continue;
 				}
-				var type = methodInfo.ContainingType;
-				var asyncMethodInfo = type.GetMembers(methodInfo.Name + "Async")
-										  .OfType<IMethodSymbol>()
-										  .FirstOrDefault(o => o.HaveSameParameters(methodInfo));
-				if (asyncMethodInfo == null)
+				IMethodSymbol asyncMethodSymbol;
+				if (methodAsyncConterparts != null && methodAsyncConterparts.ContainsKey(methodSymbol.OriginalDefinition) )
+				{
+					asyncMethodSymbol = methodAsyncConterparts[methodSymbol.OriginalDefinition];
+				}
+				else
+				{
+					var type = methodSymbol.ContainingType;
+					asyncMethodSymbol = type.GetMembers(methodSymbol.Name + "Async")
+											  .OfType<IMethodSymbol>()
+											  .FirstOrDefault(o => o.HaveSameParameters(methodSymbol));
+					if (asyncMethodSymbol == null)
+					{
+						var config = TypeInfo.NamespaceInfo.DocumentInfo.ProjectInfo.Configuration;
+						asyncMethodSymbol = config.FindAsyncCounterpart?.Invoke(methodSymbol);
+					}
+					methodAsyncConterparts?.Add(methodSymbol.OriginalDefinition, asyncMethodSymbol?.OriginalDefinition);
+				}
+				if (asyncMethodSymbol == null)
 				{
 					continue;
 				}
+
 				result.Add(new AsyncCounterpartMethod
 				{
-					MethodSymbol = methodInfo,
-					AsyncMethodSymbol = asyncMethodInfo,
+					MethodSymbol = methodSymbol.OriginalDefinition,
+					AsyncMethodSymbol = asyncMethodSymbol.OriginalDefinition,
 					MethodNode = invocation.Expression
 				});
 			}
 			return result;
 		}
 
+		public MethodAnalyzeResult PostAnalyzeResult { get; private set; }
+
 		// check if all the references can be converted to async
-		public MethodAnalyzeResult Analyze()
+		public void PostAnalyze()
 		{
 			if (Node.Body == null)
 			{
-				return new MethodAnalyzeResult();
+				PostAnalyzeResult = new MethodAnalyzeResult();
+				return;
 			}
-			var result = new MethodAnalyzeResult
+			PostAnalyzeResult = new MethodAnalyzeResult
 			{
 				HasBody = true
 			};
 
 			foreach (var reference in References)
 			{
-				result.ReferenceResults.Add(AnalyzeReference(reference));
+				PostAnalyzeResult.ReferenceResults.Add(AnalyzeMethodReference(reference));
 			}
-
-			foreach (var reference in BodyToAsyncMethodsReferences)
+			/*
+			if (Candidate)
 			{
-				result.ReferenceResults.Add(AnalyzeReference(reference));
-			}
+				var syntax = OverridenMethod.DeclaringSyntaxReferences.Single();
+				var docInfo = TypeInfo.NamespaceInfo.DocumentInfo.ProjectInfo.GetDocumentInfo(syntax);
+				if (docInfo == null)
+				{
+					result.IsValid = false;
+					return result;
+				}
+				var methodInfo = docInfo.GetMethodInfo(OverridenMethod);
+				if (methodInfo == null)
+				{
+					result.IsValid = false;
+					return result;
+				}
+			}*/
+
 
 			var counter = new MethodStatementsCounterVisitior();
 			counter.Visit(Node.Body);
 
 			if (counter.TotalYields > 0)
 			{
-				result.Yields = true;
+				PostAnalyzeResult.Yields = true;
 			}
 			if (counter.TotalStatements == 0)
 			{
-				result.IsEmpty = true;
+				PostAnalyzeResult.IsEmpty = true;
 			}
-			if (result.ReferenceResults.Any(o => o.CanBeAsync))
+			if (PostAnalyzeResult.ReferenceResults.Any(o => o.CanBeAsync))
 			{
-				result.CanBeAsnyc = true;
+				PostAnalyzeResult.CanBeAsnyc = true;
 			}
 
 			var solutionConfig = TypeInfo.NamespaceInfo.DocumentInfo.ProjectInfo.SolutionInfo.Configuration;
@@ -272,7 +398,7 @@ namespace NHibernate.AsyncGenerator
 					.SelectMany(o => o.Attributes.Where(a => a.Name.ToString() == "MethodImpl"))
 					.Any(o => o.ArgumentList.Arguments.Any(a => a.Expression.ToString() == "MethodImplOptions.Synchronized")))
 			{
-				result.MustRunSynchronized = true;
+				PostAnalyzeResult.MustRunSynchronized = true;
 			}
 			else if (counter.InvocationExpressions.Count == 1 && Symbol.GetAttributes()
 				.All(o => !solutionConfig.TestAttributeNames.Contains(o.AttributeClass.Name)))
@@ -281,25 +407,24 @@ namespace NHibernate.AsyncGenerator
 				if (Symbol.ReturnsVoid)
 				{
 					// if there is only one await and it is the last statement to be executed we can just forward the task
-					if (result.ReferenceResults.All(o => o.LastStatement) &&
+					if (PostAnalyzeResult.ReferenceResults.All(o => o.LastStatement) &&
 						invocation.Parent.IsKind(SyntaxKind.ExpressionStatement) &&
 						counter.TotalStatements == 1)
 					{
-						result.CanSkipAsync = true;
+						PostAnalyzeResult.CanSkipAsync = true;
 					}
 				}
 				else
 				{
 					// if there is only one await and it is used as a reutorn value we can just forward the task
-					if (result.ReferenceResults.All(o => o.UsedAsReturnValue) &&
+					if (PostAnalyzeResult.ReferenceResults.All(o => o.UsedAsReturnValue) &&
 						invocation.IsReturned() &&
 						counter.TotalStatements == 1)
 					{
-						result.CanSkipAsync = true;
+						PostAnalyzeResult.CanSkipAsync = true;
 					}
 				}
 			}
-			return result;
 		}
 	}
 }

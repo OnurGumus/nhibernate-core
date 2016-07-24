@@ -5,9 +5,27 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.IdTest
 {
+	[TestFixture]
+	[Ignore("Not supported yet")]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class MultipleHiLoPerTableGeneratorTest : TestCase
+	public partial class MultipleHiLoPerTableGeneratorTestAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"IdTest.Car.hbm.xml", "IdTest.Plane.hbm.xml", "IdTest.Radio.hbm.xml"};
+			}
+		}
+
 		public async Task DistinctIdAsync()
 		{
 			ISession s = OpenSession();

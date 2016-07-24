@@ -7,12 +7,51 @@ using NHibernate.Dialect;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Pagination
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class PaginationFixture : TestCase
+	public partial class PaginationFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"Pagination.DataPoint.hbm.xml"};
+			}
+		}
+
+		protected override Task ConfigureAsync(Configuration configuration)
+		{
+			try
+			{
+				cfg.SetProperty(Environment.DefaultBatchFetchSize, "20");
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		protected override string CacheConcurrencyStrategy
+		{
+			get
+			{
+				return null;
+			}
+		}
+
 		[Test]
 		public async Task PagTestAsync()
 		{
@@ -32,13 +71,13 @@ namespace NHibernate.Test.Pagination
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					int size = s.CreateSQLQuery("select Id, xval, yval, Description from DataPoint order by xval, yval").AddEntity(typeof (DataPoint)).SetMaxResults(5).List().Count;
+					int size = (await (s.CreateSQLQuery("select Id, xval, yval, Description from DataPoint order by xval, yval").AddEntity(typeof (DataPoint)).SetMaxResults(5).ListAsync())).Count;
 					Assert.That(size, Is.EqualTo(5));
-					size = s.CreateQuery("from DataPoint dp order by dp.X, dp.Y").SetFirstResult(5).SetMaxResults(2).List().Count;
+					size = (await (s.CreateQuery("from DataPoint dp order by dp.X, dp.Y").SetFirstResult(5).SetMaxResults(2).ListAsync())).Count;
 					Assert.That(size, Is.EqualTo(2));
-					size = s.CreateCriteria(typeof (DataPoint)).AddOrder(Order.Asc("X")).AddOrder(Order.Asc("Y")).SetFirstResult(8).List().Count;
+					size = (await (s.CreateCriteria(typeof (DataPoint)).AddOrder(Order.Asc("X")).AddOrder(Order.Asc("Y")).SetFirstResult(8).ListAsync())).Count;
 					Assert.That(size, Is.EqualTo(2));
-					size = s.CreateCriteria(typeof (DataPoint)).AddOrder(Order.Asc("X")).AddOrder(Order.Asc("Y")).SetMaxResults(10).SetFirstResult(8).List().Count;
+					size = (await (s.CreateCriteria(typeof (DataPoint)).AddOrder(Order.Asc("X")).AddOrder(Order.Asc("Y")).SetMaxResults(10).SetFirstResult(8).ListAsync())).Count;
 					Assert.That(size, Is.EqualTo(2));
 					await (t.CommitAsync());
 				}
@@ -75,7 +114,7 @@ See: https://docs.oracle.com/database/121/SQLRF/statements_10002.htm#BABHFGAA");
 
 			using (ISession s = OpenSession())
 			{
-				var points = s.CreateCriteria<DataPoint>().Add(Restrictions.Gt("X", 4.1d)).AddOrder(Order.Asc("X")).SetLockMode(LockMode.Upgrade).SetFirstResult(1).SetMaxResults(2).List<DataPoint>();
+				var points = await (s.CreateCriteria<DataPoint>().Add(Restrictions.Gt("X", 4.1d)).AddOrder(Order.Asc("X")).SetLockMode(LockMode.Upgrade).SetFirstResult(1).SetMaxResults(2).ListAsync<DataPoint>());
 				Assert.That(points.Count, Is.EqualTo(2));
 				Assert.That(points[0].X, Is.EqualTo(6d));
 				Assert.That(points[1].X, Is.EqualTo(7d));
@@ -84,7 +123,7 @@ See: https://docs.oracle.com/database/121/SQLRF/statements_10002.htm#BABHFGAA");
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					s.CreateQuery("delete from DataPoint").ExecuteUpdate();
+					await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
 					await (t.CommitAsync());
 				}
 		}

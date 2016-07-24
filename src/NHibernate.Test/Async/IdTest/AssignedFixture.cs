@@ -8,9 +8,39 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.IdTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class AssignedFixture : IdFixtureBase
+	public partial class AssignedFixtureAsync : IdFixtureBaseAsync
 	{
+		private string[] GetAssignedIdentifierWarnings(LogSpy ls)
+		{
+			List<string> warnings = new List<string>();
+			foreach (string logEntry in ls.GetWholeLog().Split('\n'))
+				if (logEntry.Contains("Unable to determine if") && logEntry.Contains("is transient or detached"))
+					warnings.Add(logEntry);
+			return warnings.ToArray();
+		}
+
+		protected override string TypeName
+		{
+			get
+			{
+				return "Assigned";
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			await (base.OnTearDownAsync());
+			using (ISession s = OpenSession())
+				using (ITransaction t = s.BeginTransaction())
+				{
+					await (s.CreateQuery("delete from Child").ExecuteUpdateAsync());
+					await (s.CreateQuery("delete from Parent").ExecuteUpdateAsync());
+					await (t.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task SaveOrUpdate_SaveAsync()
 		{
@@ -20,9 +50,9 @@ namespace NHibernate.Test.IdTest
 					ITransaction t = s.BeginTransaction();
 					Parent parent = new Parent()
 					{Id = "parent", Children = new List<Child>(), };
-					s.SaveOrUpdate(parent);
+					await (s.SaveOrUpdateAsync(parent));
 					await (t.CommitAsync());
-					long actual = s.CreateQuery("select count(p) from Parent p").UniqueResult<long>();
+					long actual = await (s.CreateQuery("select count(p) from Parent p").UniqueResultAsync<long>());
 					Assert.That(actual, Is.EqualTo(1));
 					string[] warnings = GetAssignedIdentifierWarnings(ls);
 					Assert.That(warnings.Length, Is.EqualTo(1));
@@ -41,7 +71,7 @@ namespace NHibernate.Test.IdTest
 					{Id = "parent", Children = new List<Child>(), };
 					await (s.SaveAsync(parent));
 					await (t.CommitAsync());
-					long actual = s.CreateQuery("select count(p) from Parent p").UniqueResult<long>();
+					long actual = await (s.CreateQuery("select count(p) from Parent p").UniqueResultAsync<long>());
 					Assert.That(actual, Is.EqualTo(1));
 					string[] warnings = GetAssignedIdentifierWarnings(ls);
 					Assert.That(warnings.Length, Is.EqualTo(0));
@@ -65,7 +95,7 @@ namespace NHibernate.Test.IdTest
 					ITransaction t = s.BeginTransaction();
 					Parent parent = new Parent()
 					{Id = "parent", Name = "after", };
-					s.SaveOrUpdate(parent);
+					await (s.SaveOrUpdateAsync(parent));
 					await (t.CommitAsync());
 					string[] warnings = GetAssignedIdentifierWarnings(ls);
 					Assert.That(warnings.Length, Is.EqualTo(1));
@@ -74,7 +104,7 @@ namespace NHibernate.Test.IdTest
 
 			using (ISession s = OpenSession())
 			{
-				Parent parent = s.CreateQuery("from Parent").UniqueResult<Parent>();
+				Parent parent = await (s.CreateQuery("from Parent").UniqueResultAsync<Parent>());
 				Assert.That(parent.Name, Is.EqualTo("after"));
 			}
 		}
@@ -104,7 +134,7 @@ namespace NHibernate.Test.IdTest
 
 			using (ISession s = OpenSession())
 			{
-				Parent parent = s.CreateQuery("from Parent").UniqueResult<Parent>();
+				Parent parent = await (s.CreateQuery("from Parent").UniqueResultAsync<Parent>());
 				Assert.That(parent.Name, Is.EqualTo("after"));
 			}
 		}
@@ -132,7 +162,7 @@ namespace NHibernate.Test.IdTest
 					{Id = "transientChild", Parent = parent});
 					await (s.SaveAsync(parent));
 					await (t.CommitAsync());
-					long actual = s.CreateQuery("select count(c) from Child c").UniqueResult<long>();
+					long actual = await (s.CreateQuery("select count(c) from Child c").UniqueResultAsync<long>());
 					Assert.That(actual, Is.EqualTo(2));
 					string[] warnings = GetAssignedIdentifierWarnings(ls);
 					Assert.That(warnings.Length, Is.EqualTo(2));
@@ -159,7 +189,7 @@ namespace NHibernate.Test.IdTest
 					Parent parent = new Parent()
 					{Id = "parent", Children = new List<Child>(), };
 					await (s.SaveAsync(parent));
-					Child child1 = s.Load<Child>("persistedChild");
+					Child child1 = await (s.LoadAsync<Child>("persistedChild"));
 					child1.Parent = parent;
 					parent.Children.Add(child1);
 					Child child2 = new Child()
@@ -167,7 +197,7 @@ namespace NHibernate.Test.IdTest
 					await (s.SaveAsync(child2));
 					parent.Children.Add(child2);
 					await (t.CommitAsync());
-					long actual = s.CreateQuery("select count(c) from Child c").UniqueResult<long>();
+					long actual = await (s.CreateQuery("select count(c) from Child c").UniqueResultAsync<long>());
 					Assert.That(actual, Is.EqualTo(2));
 					string[] warnings = GetAssignedIdentifierWarnings(ls);
 					Assert.That(warnings.Length, Is.EqualTo(0));

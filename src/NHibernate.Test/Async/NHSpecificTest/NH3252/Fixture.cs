@@ -9,9 +9,15 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH3252
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override bool AppliesTo(ISessionFactoryImplementor factory)
+		{
+			return factory.ConnectionProvider.Driver is SqlClientDriver;
+		}
+
 		[Test]
 		public async Task VerifyThatWeCanSaveAndLoadAsync()
 		{
@@ -27,6 +33,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3252
 				{
 					var note = session.Query<Note>().First();
 					Assert.AreEqual(9000, note.Text.Length);
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (var session = OpenSession())
+				using (var transaction = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from System.Object"));
+					await (session.FlushAsync());
+					await (transaction.CommitAsync());
 				}
 		}
 	}

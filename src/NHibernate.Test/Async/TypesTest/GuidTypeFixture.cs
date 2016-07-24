@@ -9,9 +9,33 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.TypesTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class GuidTypeFixture : TypeFixtureBase
+	public partial class GuidTypeFixtureAsync : TypeFixtureBaseAsync
 	{
+		protected override string TypeName
+		{
+			get
+			{
+				return "Guid";
+			}
+		}
+
+		/// <summary>
+		/// Verify Equals will correctly determine when the property
+		/// is dirty.
+		/// </summary>
+		[Test]
+		public void Equals()
+		{
+			GuidType type = (GuidType)NHibernateUtil.Guid;
+			Guid lhs = new Guid("{01234567-abcd-abcd-abcd-0123456789ab}");
+			Guid rhs = new Guid("{01234567-abcd-abcd-abcd-0123456789ab}");
+			Assert.IsTrue(type.IsEqual(lhs, rhs));
+			rhs = new Guid("{11234567-abcd-abcd-abcd-0123456789ab}");
+			Assert.IsFalse(type.IsEqual(lhs, rhs));
+		}
+
 		[Test]
 		public async Task ReadWriteAsync()
 		{
@@ -24,7 +48,7 @@ namespace NHibernate.Test.TypesTest
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			basic = (GuidClass)s.Load(typeof (GuidClass), 1);
+			basic = (GuidClass)await (s.LoadAsync(typeof (GuidClass), 1));
 			Assert.AreEqual(val, basic.GuidValue);
 			await (s.DeleteAsync(basic));
 			await (s.FlushAsync());
@@ -53,6 +77,26 @@ namespace NHibernate.Test.TypesTest
 				await (s.DeleteAsync(basic));
 				await (s.FlushAsync());
 			}
+		}
+
+		[Test]
+		public async Task GetGuidWorksWhenUnderlyingTypeIsRepresentedByStringAsync()
+		{
+			GuidType type = (GuidType)NHibernateUtil.Guid;
+			Guid value = Guid.NewGuid();
+			DataTable data = new DataTable("test");
+			data.Columns.Add("guid", typeof (Guid));
+			data.Columns.Add("varchar", typeof (string));
+			DataRow row = data.NewRow();
+			row["guid"] = value;
+			row["varchar"] = value.ToString();
+			data.Rows.Add(row);
+			DbDataReader reader = data.CreateDataReader();
+			await (reader.ReadAsync());
+			Assert.AreEqual(value, type.Get(reader, "guid"));
+			Assert.AreEqual(value, type.Get(reader, 0));
+			Assert.AreEqual(value, type.Get(reader, "varchar"));
+			Assert.AreEqual(value, type.Get(reader, 1));
 		}
 	}
 }

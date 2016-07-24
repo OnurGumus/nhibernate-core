@@ -8,9 +8,48 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Criteria
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ProjectionsTest : TestCase
+	public partial class ProjectionsTestAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Criteria.Enrolment.hbm.xml", "Criteria.Animal.hbm.xml", "Criteria.MaterialResource.hbm.xml"};
+			}
+		}
+
+		protected override async Task OnSetUpAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				ITransaction t = session.BeginTransaction();
+				Student gavin = new Student();
+				gavin.Name = "ayende";
+				gavin.StudentNumber = 27;
+				await (session.SaveAsync(gavin));
+				await (t.CommitAsync());
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				await (session.DeleteAsync("from System.Object"));
+				await (session.FlushAsync());
+			}
+		}
+
 		[Test]
 		public async Task UsingSqlFunctions_ConcatAsync()
 		{
@@ -55,6 +94,186 @@ namespace NHibernate.Test.Criteria
 				Assert.AreEqual("yes", result);
 				result = await (session.CreateCriteria(typeof (Student)).SetProjection(Projections.Conditional(Expression.Eq("id", 42L), Projections.Constant("yes"), Projections.Constant("no"))).UniqueResultAsync<string>());
 				Assert.AreEqual("no", result);
+			}
+		}
+
+		[Test]
+		public async Task UseInWithProjectionAsync()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = await (session.CreateCriteria(typeof (Student)).Add(Expression.In(Projections.Id(), new object[]{27})).ListAsync<Student>());
+				Assert.AreEqual(27L, list[0].StudentNumber);
+			}
+		}
+
+		[Test]
+		public async Task UseLikeWithProjectionAsync()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = await (session.CreateCriteria(typeof (Student)).Add(Expression.Like(Projections.Property("Name"), "aye", MatchMode.Start)).ListAsync<Student>());
+				Assert.AreEqual(27L, list[0].StudentNumber);
+			}
+		}
+
+		[Test]
+		public async Task UseInsensitiveLikeWithProjectionAsync()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = await (session.CreateCriteria(typeof (Student)).Add(Expression.InsensitiveLike(Projections.Property("Name"), "AYE", MatchMode.Start)).ListAsync<Student>());
+				Assert.AreEqual(27L, list[0].StudentNumber);
+			}
+		}
+
+		[Test]
+		public async Task UseIdEqWithProjectionAsync()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = await (session.CreateCriteria(typeof (Student)).Add(Expression.IdEq(Projections.Id())).ListAsync<Student>());
+				Assert.AreEqual(27L, list[0].StudentNumber);
+			}
+		}
+
+		[Test]
+		public async Task UseEqWithProjectionAsync()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = await (session.CreateCriteria(typeof (Student)).Add(Expression.Eq(Projections.Id(), 27L)).ListAsync<Student>());
+				Assert.AreEqual(27L, list[0].StudentNumber);
+			}
+		}
+
+		[Test]
+		public async Task UseGtWithProjectionAsync()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = await (session.CreateCriteria(typeof (Student)).Add(Expression.Gt(Projections.Id(), 2L)).ListAsync<Student>());
+				Assert.AreEqual(27L, list[0].StudentNumber);
+			}
+		}
+
+		[Test]
+		public async Task UseLtWithProjectionAsync()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = await (session.CreateCriteria(typeof (Student)).Add(Expression.Lt(Projections.Id(), 200L)).ListAsync<Student>());
+				Assert.AreEqual(27L, list[0].StudentNumber);
+			}
+		}
+
+		[Test]
+		public async Task UseLeWithProjectionAsync()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = await (session.CreateCriteria(typeof (Student)).Add(Expression.Le(Projections.Id(), 27L)).ListAsync<Student>());
+				Assert.AreEqual(27L, list[0].StudentNumber);
+			}
+		}
+
+		[Test]
+		public async Task UseGeWithProjectionAsync()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = await (session.CreateCriteria(typeof (Student)).Add(Expression.Ge(Projections.Id(), 27L)).ListAsync<Student>());
+				Assert.AreEqual(27L, list[0].StudentNumber);
+			}
+		}
+
+		[Test]
+		public async Task UseBetweenWithProjectionAsync()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = await (session.CreateCriteria(typeof (Student)).Add(Expression.Between(Projections.Id(), 10L, 28L)).ListAsync<Student>());
+				Assert.AreEqual(27L, list[0].StudentNumber);
+			}
+		}
+
+		[Test]
+		public async Task UseIsNullWithProjectionAsync()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = await (session.CreateCriteria(typeof (Student)).Add(Expression.IsNull(Projections.Id())).ListAsync<Student>());
+				Assert.AreEqual(0, list.Count);
+			}
+		}
+
+		[Test]
+		public async Task UseIsNotNullWithProjectionAsync()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = await (session.CreateCriteria(typeof (Student)).Add(Expression.IsNotNull(Projections.Id())).ListAsync<Student>());
+				Assert.AreEqual(1, list.Count);
+			}
+		}
+
+		[Test]
+		public async Task UseEqPropertyWithProjectionAsync()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = await (session.CreateCriteria(typeof (Student)).Add(Expression.EqProperty(Projections.Id(), Projections.Id())).ListAsync<Student>());
+				Assert.AreEqual(1, list.Count);
+			}
+		}
+
+		[Test]
+		public async Task UseGePropertyWithProjectionAsync()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = await (session.CreateCriteria(typeof (Student)).Add(Expression.GeProperty(Projections.Id(), Projections.Id())).ListAsync<Student>());
+				Assert.AreEqual(1, list.Count);
+			}
+		}
+
+		[Test]
+		public async Task UseGtPropertyWithProjectionAsync()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = await (session.CreateCriteria(typeof (Student)).Add(Expression.GtProperty(Projections.Id(), Projections.Id())).ListAsync<Student>());
+				Assert.AreEqual(0, list.Count);
+			}
+		}
+
+		[Test]
+		public async Task UseLtPropertyWithProjectionAsync()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = await (session.CreateCriteria(typeof (Student)).Add(Expression.LtProperty(Projections.Id(), Projections.Id())).ListAsync<Student>());
+				Assert.AreEqual(0, list.Count);
+			}
+		}
+
+		[Test]
+		public async Task UseLePropertyWithProjectionAsync()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = await (session.CreateCriteria(typeof (Student)).Add(Expression.LeProperty(Projections.Id(), Projections.Id())).ListAsync<Student>());
+				Assert.AreEqual(1, list.Count);
+			}
+		}
+
+		[Test]
+		public async Task UseNotEqPropertyWithProjectionAsync()
+		{
+			using (ISession session = sessions.OpenSession())
+			{
+				IList<Student> list = await (session.CreateCriteria(typeof (Student)).Add(Expression.NotEqProperty("id", Projections.Id())).ListAsync<Student>());
+				Assert.AreEqual(0, list.Count);
 			}
 		}
 	}

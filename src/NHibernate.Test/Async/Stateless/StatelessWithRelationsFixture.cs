@@ -6,9 +6,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Stateless
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class StatelessWithRelationsFixture : TestCase
+	public partial class StatelessWithRelationsFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"Stateless.Naturalness.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task ShouldWorkLoadingComplexEntitiesAsync()
 		{
@@ -22,7 +39,7 @@ namespace NHibernate.Test.Stateless
 					var rc1 = new Reptile{Description = "Crocodile"};
 					var rc2 = new Reptile{Description = "Crocodile"};
 					var rfamily = new Family<Reptile>{Father = rf, Mother = rm, Childs = new HashSet<Reptile>{rc1, rc2}};
-					s.Save("ReptilesFamily", rfamily);
+					await (s.SaveAsync("ReptilesFamily", rfamily));
 					await (tx.CommitAsync());
 				}
 
@@ -35,20 +52,20 @@ namespace NHibernate.Test.Stateless
 					var hm = new Human{Description = "Flinstone", Name = humanMother};
 					var hc1 = new Human{Description = "Flinstone", Name = "Pebbles"};
 					var hfamily = new Family<Human>{Father = hf, Mother = hm, Childs = new HashSet<Human>{hc1}};
-					s.Save("HumanFamily", hfamily);
+					await (s.SaveAsync("HumanFamily", hfamily));
 					await (tx.CommitAsync());
 				}
 
 			using (IStatelessSession s = sessions.OpenStatelessSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					IList<Family<Human>> hf = s.CreateQuery("from HumanFamily").List<Family<Human>>();
+					IList<Family<Human>> hf = await (s.CreateQuery("from HumanFamily").ListAsync<Family<Human>>());
 					Assert.That(hf.Count, Is.EqualTo(1));
 					Assert.That(hf[0].Father.Name, Is.EqualTo(humanFather));
 					Assert.That(hf[0].Mother.Name, Is.EqualTo(humanMother));
 					Assert.That(NHibernateUtil.IsInitialized(hf[0].Childs), Is.True, "No lazy collection should be initialized");
 					//Assert.That(hf[0].Childs, Is.Null, "Collections should be ignored by stateless session.");
-					IList<Family<Reptile>> rf = s.CreateQuery("from ReptilesFamily").List<Family<Reptile>>();
+					IList<Family<Reptile>> rf = await (s.CreateQuery("from ReptilesFamily").ListAsync<Family<Reptile>>());
 					Assert.That(rf.Count, Is.EqualTo(1));
 					Assert.That(rf[0].Father.Description, Is.EqualTo(crocodileFather));
 					Assert.That(rf[0].Mother.Description, Is.EqualTo(crocodileMother));

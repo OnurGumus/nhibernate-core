@@ -11,8 +11,47 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.Events.Collections
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public abstract partial class AbstractCollectionEventFixture : TestCase
+	public abstract partial class AbstractCollectionEventFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		public abstract IParentWithCollection CreateParent(string name);
+		public abstract ICollection<IChild> CreateCollection();
+		protected override async Task OnTearDownAsync()
+		{
+			IParentWithCollection dummyParent = CreateParent("dummyParent");
+			dummyParent.NewChildren(CreateCollection());
+			IChild dummyChild = dummyParent.AddChild("dummyChild");
+			using (ISession s = OpenSession())
+			{
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					IList children = await (s.CreateCriteria(dummyChild.GetType()).ListAsync());
+					IList parents = await (s.CreateCriteria(dummyParent.GetType()).ListAsync());
+					foreach (IParentWithCollection parent in parents)
+					{
+						parent.ClearChildren();
+						await (s.DeleteAsync(parent));
+					}
+
+					foreach (IChild child in children)
+					{
+						await (s.DeleteAsync(child));
+					}
+
+					await (tx.CommitAsync());
+				}
+			}
+
+			await (base.OnTearDownAsync());
+		}
+
 		[Test]
 		public async Task SaveParentEmptyChildrenAsync()
 		{
@@ -28,7 +67,7 @@ namespace NHibernate.Test.Events.Collections
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					parent = (IParentWithCollection)s.Get(parent.GetType(), parent.Id);
+					parent = (IParentWithCollection)await (s.GetAsync(parent.GetType(), parent.Id));
 					await (tx.CommitAsync());
 				}
 			}
@@ -64,7 +103,7 @@ namespace NHibernate.Test.Events.Collections
 			Assert.That(parent.Children, Is.Null);
 			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
-			parent = (IParentWithCollection)s.Get(parent.GetType(), parent.Id);
+			parent = (IParentWithCollection)await (s.GetAsync(parent.GetType(), parent.Id));
 			Assert.That(parent.Children, Is.Not.Null);
 			ChildWithBidirectionalManyToMany newChild = parent.AddChild("new") as ChildWithBidirectionalManyToMany;
 			await (tx.CommitAsync());
@@ -95,7 +134,7 @@ namespace NHibernate.Test.Events.Collections
 			Assert.That(parent.Children.Count, Is.EqualTo(0));
 			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
-			parent = (IParentWithCollection)s.Get(parent.GetType(), parent.Id);
+			parent = (IParentWithCollection)await (s.GetAsync(parent.GetType(), parent.Id));
 			ChildWithBidirectionalManyToMany newChild = parent.AddChild("new") as ChildWithBidirectionalManyToMany;
 			await (tx.CommitAsync());
 			s.Close();
@@ -125,7 +164,7 @@ namespace NHibernate.Test.Events.Collections
 			listeners.Clear();
 			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
-			parent = (IParentWithCollection)s.Get(parent.GetType(), parent.Id);
+			parent = (IParentWithCollection)await (s.GetAsync(parent.GetType(), parent.Id));
 			ChildWithBidirectionalManyToMany newChild = parent.AddChild("new2") as ChildWithBidirectionalManyToMany;
 			await (tx.CommitAsync());
 			s.Close();
@@ -157,11 +196,11 @@ namespace NHibernate.Test.Events.Collections
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					parent = (IParentWithCollection)s.Get(parent.GetType(), parent.Id);
+					parent = (IParentWithCollection)await (s.GetAsync(parent.GetType(), parent.Id));
 					IEntity e = child as IEntity;
 					if (e != null)
 					{
-						child = (IChild)s.Get(child.GetType(), e.Id);
+						child = (IChild)await (s.GetAsync(child.GetType(), e.Id));
 					}
 
 					parent.AddChild(child);
@@ -207,7 +246,7 @@ namespace NHibernate.Test.Events.Collections
 			Assert.That(parent.Children, Is.Null);
 			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
-			parent = (IParentWithCollection)s.Get(parent.GetType(), parent.Id);
+			parent = (IParentWithCollection)await (s.GetAsync(parent.GetType(), parent.Id));
 			ICollection<IChild> collectionOrig = parent.Children;
 			parent.NewChildren(CreateCollection());
 			ChildWithBidirectionalManyToMany newChild = parent.AddChild("new") as ChildWithBidirectionalManyToMany;
@@ -241,7 +280,7 @@ namespace NHibernate.Test.Events.Collections
 			Assert.That(parent.Children.Count, Is.EqualTo(0));
 			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
-			parent = (IParentWithCollection)s.Get(parent.GetType(), parent.Id);
+			parent = (IParentWithCollection)await (s.GetAsync(parent.GetType(), parent.Id));
 			ICollection<IChild> oldCollection = parent.Children;
 			parent.NewChildren(CreateCollection());
 			ChildWithBidirectionalManyToMany newChild = parent.AddChild("new") as ChildWithBidirectionalManyToMany;
@@ -276,11 +315,11 @@ namespace NHibernate.Test.Events.Collections
 			Assert.That(parent.Children.Count, Is.EqualTo(1));
 			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
-			parent = (IParentWithCollection)s.Get(parent.GetType(), parent.Id);
+			parent = (IParentWithCollection)await (s.GetAsync(parent.GetType(), parent.Id));
 			IEntity e = child as IEntity;
 			if (e != null)
 			{
-				child = (IChild)s.Get(child.GetType(), e.Id);
+				child = (IChild)await (s.GetAsync(child.GetType(), e.Id));
 			}
 
 			ICollection<IChild> oldCollection = parent.Children;
@@ -328,12 +367,12 @@ namespace NHibernate.Test.Events.Collections
 			Assert.That(parent.Children.Count, Is.EqualTo(1));
 			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
-			parent = (IParentWithCollection)s.Get(parent.GetType(), parent.Id);
+			parent = (IParentWithCollection)await (s.GetAsync(parent.GetType(), parent.Id));
 			IEntity e = oldChild as IEntity;
 			ChildWithBidirectionalManyToMany oldChildWithManyToMany = null;
 			if (e != null)
 			{
-				oldChildWithManyToMany = s.Get(oldChild.GetType(), e.Id) as ChildWithBidirectionalManyToMany;
+				oldChildWithManyToMany = await (s.GetAsync(oldChild.GetType(), e.Id)) as ChildWithBidirectionalManyToMany;
 			}
 
 			ICollection<IChild> oldCollection = parent.Children;
@@ -380,11 +419,11 @@ namespace NHibernate.Test.Events.Collections
 			listeners.Clear();
 			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
-			parent = (IParentWithCollection)s.Get(parent.GetType(), parent.Id);
+			parent = (IParentWithCollection)await (s.GetAsync(parent.GetType(), parent.Id));
 			IEntity e = child as IEntity;
 			if (e != null)
 			{
-				child = (IChild)s.Get(child.GetType(), e.Id);
+				child = (IChild)await (s.GetAsync(child.GetType(), e.Id));
 			}
 
 			parent.RemoveChild(child);
@@ -426,11 +465,11 @@ namespace NHibernate.Test.Events.Collections
 			listeners.Clear();
 			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
-			parent = (IParentWithCollection)s.Get(parent.GetType(), parent.Id);
+			parent = (IParentWithCollection)await (s.GetAsync(parent.GetType(), parent.Id));
 			IEntity e = child as IEntity;
 			if (e != null)
 			{
-				child = (IChild)s.Get(child.GetType(), e.Id);
+				child = (IChild)await (s.GetAsync(child.GetType(), e.Id));
 			}
 
 			parent.ClearChildren();
@@ -472,18 +511,18 @@ namespace NHibernate.Test.Events.Collections
 			listeners.Clear();
 			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
-			parent = (IParentWithCollection)s.Get(parent.GetType(), parent.Id);
+			parent = (IParentWithCollection)await (s.GetAsync(parent.GetType(), parent.Id));
 			parent.AddChild("new");
 			await (tx.CommitAsync());
 			s.Close();
 			listeners.Clear();
 			s = OpenSession();
 			tx = s.BeginTransaction();
-			parent = (IParentWithCollection)s.Get(parent.GetType(), parent.Id);
+			parent = (IParentWithCollection)await (s.GetAsync(parent.GetType(), parent.Id));
 			IEntity e = oldChild as IEntity;
 			if (e != null)
 			{
-				oldChild = (IChild)s.Get(oldChild.GetType(), e.Id);
+				oldChild = (IChild)await (s.GetAsync(oldChild.GetType(), e.Id));
 			}
 
 			parent.RemoveChild(oldChild);
@@ -523,7 +562,7 @@ namespace NHibernate.Test.Events.Collections
 			listeners.Clear();
 			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
-			parent = (IParentWithCollection)s.Get(parent.GetType(), parent.Id);
+			parent = (IParentWithCollection)await (s.GetAsync(parent.GetType(), parent.Id));
 			await (s.DeleteAsync(parent));
 			await (tx.CommitAsync());
 			s.Close();
@@ -542,7 +581,7 @@ namespace NHibernate.Test.Events.Collections
 			listeners.Clear();
 			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
-			parent = (IParentWithCollection)s.Get(parent.GetType(), parent.Id);
+			parent = (IParentWithCollection)await (s.GetAsync(parent.GetType(), parent.Id));
 			await (s.DeleteAsync(parent));
 			await (tx.CommitAsync());
 			s.Close();
@@ -562,11 +601,11 @@ namespace NHibernate.Test.Events.Collections
 			listeners.Clear();
 			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
-			parent = (IParentWithCollection)s.Get(parent.GetType(), parent.Id);
+			parent = (IParentWithCollection)await (s.GetAsync(parent.GetType(), parent.Id));
 			IEntity e = child as IEntity;
 			if (e != null)
 			{
-				child = (IChild)s.Get(child.GetType(), e.Id);
+				child = (IChild)await (s.GetAsync(child.GetType(), e.Id));
 			}
 
 			parent.RemoveChild(child);
@@ -607,12 +646,12 @@ namespace NHibernate.Test.Events.Collections
 			listeners.Clear();
 			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
-			parent = (IParentWithCollection)s.Get(parent.GetType(), parent.Id);
-			otherParent = (IParentWithCollection)s.Get(otherParent.GetType(), otherParent.Id);
+			parent = (IParentWithCollection)await (s.GetAsync(parent.GetType(), parent.Id));
+			otherParent = (IParentWithCollection)await (s.GetAsync(otherParent.GetType(), otherParent.Id));
 			IEntity e = child as IEntity;
 			if (e != null)
 			{
-				child = (IChild)s.Get(child.GetType(), e.Id);
+				child = (IChild)await (s.GetAsync(child.GetType(), e.Id));
 			}
 
 			parent.RemoveChild(child);
@@ -659,12 +698,12 @@ namespace NHibernate.Test.Events.Collections
 			listeners.Clear();
 			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
-			parent = (IParentWithCollection)s.Get(parent.GetType(), parent.Id);
-			otherParent = (IParentWithCollection)s.Get(otherParent.GetType(), otherParent.Id);
+			parent = (IParentWithCollection)await (s.GetAsync(parent.GetType(), parent.Id));
+			otherParent = (IParentWithCollection)await (s.GetAsync(otherParent.GetType(), otherParent.Id));
 			IEntity e = child as IEntity;
 			if (e != null)
 			{
-				child = (IChild)s.Get(child.GetType(), e.Id);
+				child = (IChild)await (s.GetAsync(child.GetType(), e.Id));
 			}
 
 			otherParent.AddAllChildren(parent.Children);
@@ -710,8 +749,8 @@ namespace NHibernate.Test.Events.Collections
 			listeners.Clear();
 			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
-			parent = (IParentWithCollection)s.Get(parent.GetType(), parent.Id);
-			otherParent = (IParentWithCollection)s.Get(otherParent.GetType(), otherParent.Id);
+			parent = (IParentWithCollection)await (s.GetAsync(parent.GetType(), parent.Id));
+			otherParent = (IParentWithCollection)await (s.GetAsync(otherParent.GetType(), otherParent.Id));
 			ICollection<IChild> otherCollectionOrig = otherParent.Children;
 			otherParent.NewChildren(parent.Children);
 			parent.NewChildren(null);
@@ -765,9 +804,9 @@ namespace NHibernate.Test.Events.Collections
 			listeners.Clear();
 			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
-			parent = (IParentWithCollection)s.Get(parent.GetType(), parent.Id);
-			otherParent = (IParentWithCollection)s.Get(otherParent.GetType(), otherParent.Id);
-			otherOtherParent = (IParentWithCollection)s.Get(otherOtherParent.GetType(), otherOtherParent.Id);
+			parent = (IParentWithCollection)await (s.GetAsync(parent.GetType(), parent.Id));
+			otherParent = (IParentWithCollection)await (s.GetAsync(otherParent.GetType(), otherParent.Id));
+			otherOtherParent = (IParentWithCollection)await (s.GetAsync(otherOtherParent.GetType(), otherOtherParent.Id));
 			ICollection<IChild> otherCollectionOrig = otherParent.Children;
 			ICollection<IChild> otherOtherCollectionOrig = otherOtherParent.Children;
 			otherParent.NewChildren(parent.Children);
@@ -832,6 +871,18 @@ namespace NHibernate.Test.Events.Collections
 			CheckNumberOfResults(listeners, index);
 		}
 
+		protected IChild GetFirstChild(ICollection<IChild> children)
+		{
+			IChild result = null;
+			IEnumerator<IChild> en = children.GetEnumerator();
+			if (en.MoveNext())
+			{
+				result = en.Current;
+			}
+
+			return result;
+		}
+
 		protected async Task<IParentWithCollection> CreateParentWithNullChildrenAsync(string parentName)
 		{
 			using (ISession s = OpenSession())
@@ -875,6 +926,31 @@ namespace NHibernate.Test.Events.Collections
 					return parent;
 				}
 			}
+		}
+
+		protected void CheckResult(CollectionListeners listeners, CollectionListeners.IListener listenerExpected, IParentWithCollection parent, int index)
+		{
+			CheckResult(listeners, listenerExpected, parent, parent.Children, index);
+		}
+
+		protected void CheckResult(CollectionListeners listeners, CollectionListeners.IListener listenerExpected, IEntity ownerExpected, object collExpected, int index)
+		{
+			Assert.That(listeners.ListenersCalled[index], Is.SameAs(listenerExpected));
+			Assert.That(listeners.Events[index].AffectedOwnerOrNull, Is.SameAs(ownerExpected));
+			Assert.That(listeners.Events[index].AffectedOwnerIdOrNull, Is.EqualTo(ownerExpected.Id));
+			Assert.That(listeners.Events[index].GetAffectedOwnerEntityName(), Is.EqualTo(ownerExpected.GetType().FullName));
+			Assert.That(listeners.Events[index].Collection, Is.SameAs(collExpected));
+		}
+
+		protected void CheckNumberOfResults(CollectionListeners listeners, int nEventsExpected)
+		{
+			Assert.That(listeners.ListenersCalled.Count, Is.EqualTo(nEventsExpected));
+			Assert.That(listeners.Events.Count, Is.EqualTo(nEventsExpected));
+		}
+
+		protected void CheckResult(CollectionListeners listeners, CollectionListeners.IListener listenerExpected, ChildWithBidirectionalManyToMany child, int index)
+		{
+			CheckResult(listeners, listenerExpected, child, child.Parents, index);
 		}
 	}
 }

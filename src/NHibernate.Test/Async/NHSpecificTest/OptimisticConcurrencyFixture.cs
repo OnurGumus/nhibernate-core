@@ -9,9 +9,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class OptimisticConcurrencyFixture : TestCase
+	public partial class OptimisticConcurrencyFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Multi.hbm.xml", "NHSpecific.Optimistic.hbm.xml"};
+			}
+		}
+
 		// NH-768
 		[Test]
 		public async Task DeleteOptimisticAsync()
@@ -43,13 +52,13 @@ namespace NHibernate.Test.NHSpecificTest
 					await (session.FlushAsync());
 					using (ISession concurrentSession = OpenSession())
 					{
-						Top sameTop = (Top)concurrentSession.Get(typeof (Top), top.Id);
+						Top sameTop = (Top)await (concurrentSession.GetAsync(typeof (Top), top.Id));
 						sameTop.Name = "another name";
 						await (concurrentSession.FlushAsync());
 					}
 
 					top.Name = "new name";
-					Assert.Throws<StaleObjectStateException>(async () => await (session.FlushAsync()));
+					Assert.ThrowsAsync<StaleObjectStateException>(async () => await (session.FlushAsync()));
 				}
 			}
 			finally
@@ -75,13 +84,13 @@ namespace NHibernate.Test.NHSpecificTest
 					await (session.FlushAsync());
 					using (ISession concurrentSession = OpenSession())
 					{
-						Optimistic sameOptimistic = (Optimistic)concurrentSession.Get(typeof (Optimistic), optimistic.Id);
+						Optimistic sameOptimistic = (Optimistic)await (concurrentSession.GetAsync(typeof (Optimistic), optimistic.Id));
 						sameOptimistic.String = "another string";
 						await (concurrentSession.FlushAsync());
 					}
 
 					optimistic.String = "new string";
-					Assert.Throws<StaleObjectStateException>(async () => await (session.FlushAsync()));
+					Assert.ThrowsAsync<StaleObjectStateException>(async () => await (session.FlushAsync()));
 				}
 			}
 			finally

@@ -5,12 +5,37 @@ using NHibernate.Criterion;
 using NHibernate.Dialect.Function;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1313
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH1313";
+			}
+		}
+
+		protected override Task ConfigureAsync(Configuration configuration)
+		{
+			try
+			{
+				Dialect.Dialect d = Dialect;
+				ISQLFunction toReRegister = d.Functions["current_timestamp"];
+				configuration.AddSqlFunction("MyCurrentTime", toReRegister);
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
 		[Test]
 		public async Task BugAsync()
 		{

@@ -8,9 +8,31 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.DriverTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SqlClientDriverFixture : TestCase
+	public partial class SqlClientDriverFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"DriverTest.MultiTypeEntity.hbm.xml"};
+			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is MsSql2008Dialect;
+		}
+
 		[Test]
 		public async Task CrudAsync()
 		{
@@ -41,7 +63,7 @@ namespace NHibernate.Test.DriverTest
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					s.CreateQuery("delete from MultiTypeEntity").ExecuteUpdate();
+					await (s.CreateQuery("delete from MultiTypeEntity").ExecuteUpdateAsync());
 					await (t.CommitAsync());
 				}
 		}
@@ -55,7 +77,7 @@ namespace NHibernate.Test.DriverTest
 				using (ITransaction t = s.BeginTransaction())
 				{
 					// clear the existing plan cache
-					s.CreateSQLQuery("DBCC FREEPROCCACHE").ExecuteUpdate();
+					await (s.CreateSQLQuery("DBCC FREEPROCCACHE").ExecuteUpdateAsync());
 					await (t.CommitAsync());
 				}
 
@@ -63,7 +85,7 @@ namespace NHibernate.Test.DriverTest
 				using (ITransaction t = s.BeginTransaction())
 				{
 					var countPlansCommand = s.CreateSQLQuery("SELECT COUNT(*) FROM sys.dm_exec_cached_plans");
-					var beforeCount = countPlansCommand.UniqueResult<int>();
+					var beforeCount = await (countPlansCommand.UniqueResultAsync<int>());
 					var insertCount = 10;
 					for (var i = 0; i < insertCount; i++)
 					{
@@ -72,7 +94,7 @@ namespace NHibernate.Test.DriverTest
 						await (s.FlushAsync());
 					}
 
-					var afterCount = countPlansCommand.UniqueResult<int>();
+					var afterCount = await (countPlansCommand.UniqueResultAsync<int>());
 					Assert.That(afterCount - beforeCount, Is.LessThan(insertCount - 1), string.Format("Excessive query plans created: before={0} after={1}", beforeCount, afterCount));
 					t.Rollback();
 				}

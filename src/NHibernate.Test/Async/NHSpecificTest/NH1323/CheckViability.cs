@@ -6,9 +6,59 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1323
 {
+	[Explicit("Demonstration of not viability")]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class CheckViability : BugTestCase
+	public partial class CheckViabilityAsync : BugTestCaseAsync
 	{
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		public partial class FullInitializedRetrievedEntity : IDisposable
+		{
+			private readonly ISessionFactory factory;
+			private readonly MyClass entity;
+			public FullInitializedRetrievedEntity(ISessionFactory factory)
+			{
+				this.factory = factory;
+				object savedId;
+				using (var session = factory.OpenSession())
+					using (session.BeginTransaction())
+					{
+						var entity = new MyClass();
+						entity.Children.Add(new MyChild{Parent = entity});
+						entity.Components.Add(new MyComponent{Something = "something"});
+						entity.Elements.Add("somethingelse");
+						savedId = session.Save(entity);
+						session.Transaction.Commit();
+					}
+
+				using (var session = factory.OpenSession())
+					using (session.BeginTransaction())
+					{
+						entity = session.Get<MyClass>(savedId);
+						NHibernateUtil.Initialize(entity.Children);
+						NHibernateUtil.Initialize(entity.Components);
+						NHibernateUtil.Initialize(entity.Elements);
+						session.Transaction.Commit();
+					}
+			}
+
+			public MyClass Entity
+			{
+				get
+				{
+					return entity;
+				}
+			}
+
+			public void Dispose()
+			{
+				using (var s = factory.OpenSession())
+				{
+					s.Delete("from MyClass");
+					s.Flush();
+				}
+			}
+		}
+
 		[Test]
 		public async Task WhenReassociateCollectionUsingMergeThenReassingOwnerAsync()
 		{
@@ -42,7 +92,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1323
 					using (session.BeginTransaction())
 					{
 						// When I reassociate the collections the Owner is null
-						session.Lock(scenario.Entity, LockMode.None);
+						await (session.LockAsync(scenario.Entity, LockMode.None));
 						// If I change something in each collection, there is no problems
 						scenario.Entity.Children.Add(new MyChild{Parent = scenario.Entity});
 						scenario.Entity.Components.Add(new MyComponent{Something = "something"});
@@ -108,7 +158,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1323
 						scenario.Entity.Components.Add(new MyComponent{Something = "something"});
 						scenario.Entity.Elements.Add("somethingelse");
 						// When I reassociate the collections the Owner is null
-						session.SaveOrUpdate(scenario.Entity);
+						await (session.SaveOrUpdateAsync(scenario.Entity));
 						await (session.Transaction.CommitAsync());
 					}
 

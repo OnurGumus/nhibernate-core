@@ -9,9 +9,50 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.GenericTest.EnumGeneric
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class EnumGenericFixture : TestCase
+	public partial class EnumGenericFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new String[]{"GenericTest.EnumGeneric.EnumGenericFixture.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		[Test]
+		public void MapsToEnum()
+		{
+			using (ISession s = OpenSession())
+			{
+				A a = new A();
+				SessionImpl impl = (SessionImpl)s;
+				IEntityPersister persister = impl.GetEntityPersister(typeof (A).FullName, a);
+				int index = -1;
+				for (int i = 0; i < persister.PropertyNames.Length; i++)
+				{
+					if (persister.PropertyNames[i] == "NullableValue")
+					{
+						index = i;
+						break;
+					}
+				}
+
+				if (index == -1)
+					Assert.Fail("Property NullableValue not found.");
+				Assert.That(persister.PropertyTypes[index], Is.AssignableTo<PersistentEnumType>());
+			}
+		}
+
 		[Test]
 		public async Task PersistsAsync()
 		{
@@ -25,7 +66,7 @@ namespace NHibernate.Test.GenericTest.EnumGeneric
 			//Verify initial null
 			using (ISession s = OpenSession())
 			{
-				A a2 = s.Load<A>(a1.Id);
+				A a2 = await (s.LoadAsync<A>(a1.Id));
 				Assert.IsNull(a2.NullableValue);
 				a2.NullableValue = B.Value3;
 				await (s.SaveAsync(a2));
@@ -35,7 +76,7 @@ namespace NHibernate.Test.GenericTest.EnumGeneric
 			//Verify set to non-null
 			using (ISession s = OpenSession())
 			{
-				A a3 = s.Load<A>(a1.Id);
+				A a3 = await (s.LoadAsync<A>(a1.Id));
 				Assert.AreEqual(B.Value3, a3.NullableValue);
 				a3.NullableValue = null;
 				await (s.SaveAsync(a3));
@@ -45,7 +86,7 @@ namespace NHibernate.Test.GenericTest.EnumGeneric
 			//Verify set to null
 			using (ISession s = OpenSession())
 			{
-				A a4 = s.Load<A>(a1.Id);
+				A a4 = await (s.LoadAsync<A>(a1.Id));
 				Assert.IsNull(a4.NullableValue);
 				await (s.DeleteAsync(a4));
 				await (s.FlushAsync());

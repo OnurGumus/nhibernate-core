@@ -1,6 +1,8 @@
 #if NET_4_5
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1850
 {
@@ -8,9 +10,42 @@ namespace NHibernate.Test.NHSpecificTest.NH1850
 	using AdoNet;
 	using Environment = NHibernate.Cfg.Environment;
 
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override Task ConfigureAsync(NHibernate.Cfg.Configuration configuration)
+		{
+			try
+			{
+				configuration.SetProperty(Environment.BatchSize, "1");
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect.SupportsSqlBatches;
+		}
+
+		[Test]
+		public async Task CanGetQueryDurationForDeleteAsync()
+		{
+			using (LogSpy spy = new LogSpy(typeof (AbstractBatcher)))
+				using (ISession session = OpenSession())
+					using (ITransaction tx = session.BeginTransaction())
+					{
+						await (session.CreateQuery("delete Customer").ExecuteUpdateAsync());
+						var wholeLog = spy.GetWholeLog();
+						Assert.That(wholeLog.Contains("ExecuteNonQuery took"), Is.True);
+						tx.Rollback();
+					}
+		}
+
 		[Test]
 		public async Task CanGetQueryDurationForBatchAsync()
 		{
@@ -36,6 +71,21 @@ namespace NHibernate.Test.NHSpecificTest.NH1850
 						}
 
 						Assert.AreEqual(3, batches);
+						tx.Rollback();
+					}
+		}
+
+		[Test]
+		public async Task CanGetQueryDurationForSelectAsync()
+		{
+			using (LogSpy spy = new LogSpy(typeof (AbstractBatcher)))
+				using (ISession session = OpenSession())
+					using (ITransaction tx = session.BeginTransaction())
+					{
+						await (session.CreateQuery("from Customer").ListAsync());
+						var wholeLog = spy.GetWholeLog();
+						Assert.That(wholeLog.Contains("ExecuteReader took"), Is.True);
+						Assert.That(wholeLog.Contains("DataReader was closed after"), Is.True);
 						tx.Rollback();
 					}
 		}

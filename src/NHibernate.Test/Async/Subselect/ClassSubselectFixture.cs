@@ -6,8 +6,24 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.Subselect
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ClassSubselectFixture : TestCase
+	public partial class ClassSubselectFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"Subselect.Beings.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
 		[Test]
 		public async Task EntitySubselectAsync()
 		{
@@ -24,7 +40,7 @@ namespace NHibernate.Test.Subselect
 			await (s.SaveAsync(gavin));
 			await (s.SaveAsync(x23y4));
 			await (s.FlushAsync());
-			var beings = s.CreateQuery("from Being").List<Being>();
+			var beings = await (s.CreateQuery("from Being").ListAsync<Being>());
 			Assert.That(beings, Has.Count.GreaterThan(0));
 			foreach (var being in beings)
 			{
@@ -43,11 +59,11 @@ namespace NHibernate.Test.Subselect
 			//test the <synchronized> tag:
 			gavin = await (s.GetAsync<Human>(gavin.Id));
 			gavin.Address = "Atlanta, GA";
-			gav = s.CreateQuery("from Being b where b.Location like '%GA%'").UniqueResult<Being>();
+			gav = await (s.CreateQuery("from Being b where b.Location like '%GA%'").UniqueResultAsync<Being>());
 			Assert.That(gav.Location, Is.EqualTo(gavin.Address));
 			await (s.DeleteAsync(gavin));
 			await (s.DeleteAsync(x23y4));
-			Assert.That(s.CreateQuery("from Being").List<Being>(), Is.Empty);
+			Assert.That(await (s.CreateQuery("from Being").ListAsync<Being>()), Is.Empty);
 			await (t.CommitAsync());
 			s.Close();
 		}

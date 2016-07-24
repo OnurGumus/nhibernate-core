@@ -5,9 +5,19 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH372
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected bool isDynamic;
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH372";
+			}
+		}
+
 		private async Task ComponentFieldNotInserted_GenericAsync(System.Type type)
 		{
 			int id;
@@ -24,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			using (ISession session = OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					BaseParent p = (BaseParent)session.Get(type, id);
+					BaseParent p = (BaseParent)await (session.GetAsync(type, id));
 					Assert.AreEqual(0, p.Component.FieldNotInserted, "Field should not have been inserted.");
 					await (tx.CommitAsync());
 				}
@@ -62,7 +72,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			using (ISession session = OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					BaseParent p = (BaseParent)session.Get(type, id);
+					BaseParent p = (BaseParent)await (session.GetAsync(type, id));
 					Assert.AreEqual(fieldInitialValue, p.Component.FieldNotUpdated, String.Format("Field should have initial inserted value of {0}.", fieldInitialValue));
 					p.Component.FieldNotUpdated = fieldNewValue;
 					p.Component.NormalField = 10;
@@ -72,7 +82,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			using (ISession session = OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					BaseParent p = (BaseParent)session.Get(type, id);
+					BaseParent p = (BaseParent)await (session.GetAsync(type, id));
 					Assert.AreEqual(fieldInitialValue, p.Component.FieldNotUpdated, "Field should not have been updated.");
 					await (tx.CommitAsync());
 				}
@@ -108,7 +118,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			using (ISession session = OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					BaseParent p = (BaseParent)session.Get(type, id);
+					BaseParent p = (BaseParent)await (session.GetAsync(type, id));
 					Assert.AreEqual(0, p.Component.SubComponent.FieldNotInserted, "Field should not have been inserted.");
 					await (tx.CommitAsync());
 				}
@@ -146,7 +156,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			using (ISession session = OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					BaseParent p = (BaseParent)session.Get(type, id);
+					BaseParent p = (BaseParent)await (session.GetAsync(type, id));
 					Assert.AreEqual(fieldInitialValue, p.Component.SubComponent.FieldNotUpdated, String.Format("Field should have initial inserted value of {0}.", fieldInitialValue));
 					p.Component.SubComponent.FieldNotUpdated = fieldNewValue;
 					p.Component.SubComponent.NormalField = 10;
@@ -156,7 +166,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			using (ISession session = OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					BaseParent p = (BaseParent)session.Get(type, id);
+					BaseParent p = (BaseParent)await (session.GetAsync(type, id));
 					Assert.AreEqual(fieldInitialValue, p.Component.SubComponent.FieldNotUpdated, "Field should not have been updated.");
 					await (tx.CommitAsync());
 				}
@@ -174,6 +184,24 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 		{
 			isDynamic = false;
 			await (SubComponentFieldNotUpdated_GenericAsync(typeof (DynamicParent)));
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = OpenSession())
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					if (isDynamic)
+					{
+						await (session.DeleteAsync("from DynamicParent"));
+					}
+					else
+					{
+						await (session.DeleteAsync("from Parent"));
+					}
+
+					await (tx.CommitAsync());
+				}
 		}
 	}
 }

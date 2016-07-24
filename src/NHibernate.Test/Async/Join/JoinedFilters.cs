@@ -9,9 +9,36 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Join
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class JoinedFilters : TestCase
+	public partial class JoinedFiltersAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"Join.TennisPlayer.hbm.xml", "Join.Person.hbm.xml"};
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = OpenSession())
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					await (s.DeleteAsync("from TennisPlayer"));
+					await (tx.CommitAsync());
+				}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
 		[Test]
 		public async Task FilterOnPrimaryTableAsync()
 		{
@@ -20,7 +47,7 @@ namespace NHibernate.Test.Join
 				{
 					s.EnableFilter("NameFilter").SetParameter("name", "Nadal");
 					await (CreatePlayersAsync(s));
-					IList<TennisPlayer> people = s.CreateCriteria<TennisPlayer>().List<TennisPlayer>();
+					IList<TennisPlayer> people = await (s.CreateCriteria<TennisPlayer>().ListAsync<TennisPlayer>());
 					Assert.AreEqual(1, people.Count);
 					Assert.AreEqual("Nadal", people[0].Name);
 					await (tx.CommitAsync());
@@ -35,7 +62,7 @@ namespace NHibernate.Test.Join
 				{
 					s.EnableFilter("MakeFilter").SetParameter("make", "Babolat");
 					await (CreatePlayersAsync(s));
-					IList<TennisPlayer> people = s.CreateCriteria<TennisPlayer>().List<TennisPlayer>();
+					IList<TennisPlayer> people = await (s.CreateCriteria<TennisPlayer>().ListAsync<TennisPlayer>());
 					Assert.AreEqual(1, people.Count);
 					Assert.AreEqual("Babolat", people[0].RacquetMake);
 					await (tx.CommitAsync());
@@ -50,7 +77,7 @@ namespace NHibernate.Test.Join
 				{
 					s.EnableFilter("ModelFilter").SetParameter("model", "AeroPro Drive");
 					await (CreatePlayersAsync(s));
-					IList<TennisPlayer> people = s.CreateCriteria<TennisPlayer>().List<TennisPlayer>();
+					IList<TennisPlayer> people = await (s.CreateCriteria<TennisPlayer>().ListAsync<TennisPlayer>());
 					Assert.AreEqual(1, people.Count);
 					Assert.AreEqual("AeroPro Drive", people[0].RacquetModel);
 					await (tx.CommitAsync());

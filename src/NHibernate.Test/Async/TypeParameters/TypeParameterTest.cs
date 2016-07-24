@@ -11,9 +11,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.TypeParameters
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class TypeParameterTest : TestCase
+	public partial class TypeParameterTestAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new String[]{"TypeParameters.Typedef.hbm.xml", "TypeParameters.Widget.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
 		[Test]
 		public async Task SaveAsync()
 		{
@@ -33,8 +50,8 @@ namespace NHibernate.Test.TypeParameters
 			statement.Connection = connection;
 			t.Enlist(statement);
 			((DbParameter)statement.Parameters[0]).Value = id;
-			DbDataReader reader = statement.ExecuteReader();
-			Assert.IsTrue(reader.Read(), "A row should have been returned");
+			DbDataReader reader = await (statement.ExecuteReaderAsync());
+			Assert.IsTrue(await (reader.ReadAsync()), "A row should have been returned");
 			Assert.IsTrue(reader.GetValue(reader.GetOrdinal("VALUE_ONE")) == DBNull.Value, "Default value should have been mapped to null");
 			Assert.IsTrue(reader.GetValue(reader.GetOrdinal("VALUE_TWO")) == DBNull.Value, "Default value should have been mapped to null");
 			Assert.AreEqual(Convert.ToInt32(reader.GetValue(reader.GetOrdinal("VALUE_THREE"))), 5, "Non-Default value should not be changed");

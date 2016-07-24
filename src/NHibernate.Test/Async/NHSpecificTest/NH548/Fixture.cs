@@ -6,9 +6,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH548
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH548";
+			}
+		}
+
 		[Test]
 		public async Task ParentPropertyOnCacheHitAsync()
 		{
@@ -33,14 +42,14 @@ namespace NHibernate.Test.NHSpecificTest.NH548
 			MainObject getMain;
 			using (ISession session = OpenSession())
 			{
-				getMain = (MainObject)session.Get(main.GetType(), main.ID);
+				getMain = (MainObject)await (session.GetAsync(main.GetType(), main.ID));
 				session.Clear();
 				Assert.IsNotNull(getMain.Component.Parent, "component parent null (cache miss)");
 			}
 
 			using (ISession session = OpenSession())
 			{
-				getMain = (MainObject)session.Get(main.GetType(), main.ID);
+				getMain = (MainObject)await (session.GetAsync(main.GetType(), main.ID));
 				Assert.IsNotNull(getMain.Component.Parent, "component parent null (cache hit)");
 				await (session.DeleteAsync(getMain));
 				await (session.FlushAsync());

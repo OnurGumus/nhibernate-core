@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH958
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class NH958Fixture : BugTestCase
+	public partial class NH958FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task MergeWithAny1Async()
@@ -22,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH958
 						person.AddHobby(new Hobby("Hobby_" + i.ToString()));
 					}
 
-					session.SaveOrUpdate(person);
+					await (session.SaveOrUpdateAsync(person));
 					await (transaction.CommitAsync());
 				}
 

@@ -5,15 +5,32 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH3234
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		private async Task EvictAsync(ISession session, GridWidget widget)
+		{
+			await (session.EvictAsync(widget));
+			sessions.Evict(widget.GetType());
+		}
+
 		private static async Task SaveAsync(ISession session, GridWidget widget)
 		{
-			if (widget.Id != Guid.Empty && !session.Contains(widget))
+			if (widget.Id != Guid.Empty && !await (session.ContainsAsync(widget)))
 				widget = session.Merge(widget);
-			session.SaveOrUpdate(widget);
+			await (session.SaveOrUpdateAsync(widget));
 			await (session.FlushAsync());
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (var session = OpenSession())
+				using (var tx = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from System.Object"));
+					await (tx.CommitAsync());
+				}
 		}
 
 		[Test]
@@ -23,10 +40,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3234
 			{
 				var widget = new GridWidget{Levels = {new GridLevel(), new GridLevel()}, };
 				await (SaveAsync(session, widget));
-				Evict(session, widget);
+				await (EvictAsync(session, widget));
 				widget.Levels.Add(new GridLevel());
 				await (SaveAsync(session, widget));
-				Evict(session, widget);
+				await (EvictAsync(session, widget));
 				var loaded = await (session.GetAsync<GridWidget>(widget.Id));
 				Assert.That(loaded.Levels.Count, Is.EqualTo(3));
 			}
@@ -39,11 +56,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3234
 			{
 				var widget = new GridWidget{Levels = {new GridLevel(), new GridLevel()}, };
 				await (SaveAsync(session, widget));
-				Evict(session, widget);
+				await (EvictAsync(session, widget));
 				widget.Levels.Clear();
 				widget.Levels.Add(new GridLevel());
 				await (SaveAsync(session, widget));
-				Evict(session, widget);
+				await (EvictAsync(session, widget));
 				var loaded = await (session.GetAsync<GridWidget>(widget.Id));
 				Assert.That(loaded.Levels.Count, Is.EqualTo(1));
 			}

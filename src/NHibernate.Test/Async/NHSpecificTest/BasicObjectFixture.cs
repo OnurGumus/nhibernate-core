@@ -7,9 +7,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class BasicObjectFixture : TestCase
+	public partial class BasicObjectFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecific.BasicObject.hbm.xml"};
+			}
+		}
+
 		/// <summary>
 		/// This is the replacement for ParentChildTest.ObjectType() and FooBarTest.ObjectType()
 		/// </summary>
@@ -31,14 +40,14 @@ namespace NHibernate.Test.NHSpecificTest
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			bo = (BasicObject)s.Load(typeof (BasicObject), bo.Id);
+			bo = (BasicObject)await (s.LoadAsync(typeof (BasicObject), bo.Id));
 			Assert.IsNotNull(bo.AnyWithProxy, "AnyWithProxy should not be null");
 			Assert.IsTrue(bo.AnyWithProxy is IBasicObjectProxy, "AnyWithProxy should have been a IBasicObjectProxy instance");
 			Assert.AreEqual(anyProxy.Id, ((IBasicObjectProxy)bo.AnyWithProxy).Id);
 			Assert.IsNotNull(bo.Any, "any should not be null");
 			Assert.IsTrue(bo.Any is BasicObjectRef, "any should have been a BasicObjectRef instance");
 			Assert.AreEqual(any.Id, ((BasicObjectRef)bo.Any).Id);
-			any = (BasicObjectRef)s.Load(typeof (BasicObjectRef), any.Id);
+			any = (BasicObjectRef)await (s.LoadAsync(typeof (BasicObjectRef), any.Id));
 			Assert.AreSame(any, bo.Any, "any loaded and ref by BasicObject should be the same");
 			await (s.DeleteAsync(bo.Any));
 			await (s.DeleteAsync(bo.AnyWithProxy));

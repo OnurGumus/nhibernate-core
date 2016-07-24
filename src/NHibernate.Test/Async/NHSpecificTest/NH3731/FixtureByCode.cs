@@ -11,8 +11,66 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.NHSpecificTest.NH3731
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ByCodeFixture : TestCaseMappingByCode
+	public partial class ByCodeFixtureAsync : TestCaseMappingByCodeAsync
 	{
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<Parent>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+				rc.List(x => x.ChildrenList, c => c.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans), x => x.OneToMany());
+				rc.Map(x => x.ChildrenMap, c => c.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans), x => x.OneToMany());
+			}
+
+			);
+			mapper.Class<ListChild>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+			}
+
+			);
+			mapper.Class<MapChild>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+				rc.Property(x => x.Name);
+			}
+
+			);
+			return mapper.CompileMappingForAllExplicitlyAddedEntities();
+		}
+
+		protected override async Task OnSetUpAsync()
+		{
+			using (ISession session = OpenSession())
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					var p = new Parent{Name = "Parent"};
+					p.ChildrenList.Add(new ListChild{Name = "ListChild 1"});
+					p.ChildrenList.Add(new ListChild{Name = "ListChild 2"});
+					p.ChildrenList.Add(new ListChild{Name = "ListChild 3"});
+					p.ChildrenMap.Add("first", new MapChild{Name = "MapChild 1"});
+					p.ChildrenMap.Add("second", new MapChild{Name = "MapChild 2"});
+					p.ChildrenMap.Add("third", new MapChild{Name = "MapChild 3"});
+					await (session.SaveAsync(p));
+					await (session.FlushAsync());
+					await (transaction.CommitAsync());
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = OpenSession())
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from System.Object"));
+					await (session.FlushAsync());
+					await (transaction.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task Serializing_Session_After_Reordering_ChildrenList_Should_WorkAsync()
 		{

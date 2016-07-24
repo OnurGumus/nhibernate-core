@@ -1,43 +1,71 @@
 #if NET_4_5
+using System;
 using NUnit.Framework;
 using System.Collections;
 using System.Threading.Tasks;
 
 namespace NHibernate.Test.UnionsubclassPolymorphicFormula
 {
+	[TestFixture, Explicit]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class UnionSubclassFixture : TestCase
+	public partial class UnionSubclassFixtureAsync : TestCaseAsync
 	{
-		[Test, KnownBug("NH-2354")]
-		public async Task QueryOverPersonTestAsync()
+		protected override string MappingsAssembly
 		{
-			using (ISession s = OpenSession())
+			get
 			{
-				using (ITransaction t = s.BeginTransaction())
-				{
-					var person = new Person{FirstName = "Mark", LastName = "Mannson"};
-					await (s.SaveAsync(person));
-					var result = s.QueryOver<Party>().Where(p => p.Name == "Mark Mannson").SingleOrDefault();
-					Assert.NotNull(result);
-					await (s.DeleteAsync(result));
-					await (t.CommitAsync());
-				}
+				return "NHibernate.Test";
 			}
 		}
 
-		[Test, KnownBug("NH-2354")]
-		public async Task QueryOverCompanyTestAsync()
+		protected override IList Mappings
 		{
-			using (ISession s = OpenSession())
+			get
 			{
-				using (ITransaction t = s.BeginTransaction())
+				return new string[]{"UnionsubclassPolymorphicFormula.Party.hbm.xml"};
+			}
+		}
+
+		[Test]
+		public async Task QueryOverPersonTestAsync()
+		{
+			Assert.ThrowsAsync<Exception>(async () =>
+			{
+				using (ISession s = OpenSession())
 				{
-					var company = new Company{CompanyName = "Limited", };
-					await (s.SaveAsync(company));
-					var result = s.QueryOver<Party>().Where(p => p.Name == "Limited").SingleOrDefault();
-					Assert.NotNull(result);
+					using (ITransaction t = s.BeginTransaction())
+					{
+						var person = new Person{FirstName = "Mark", LastName = "Mannson"};
+						await (s.SaveAsync(person));
+						var result = await (s.QueryOver<Party>().Where(p => p.Name == "Mark Mannson").SingleOrDefaultAsync());
+						Assert.NotNull(result);
+						await (s.DeleteAsync(result));
+						await (t.CommitAsync());
+					}
 				}
 			}
+
+			, KnownBug.Issue("NH-2354"));
+		}
+
+		[Test]
+		public async Task QueryOverCompanyTestAsync()
+		{
+			Assert.ThrowsAsync<Exception>(async () =>
+			{
+				using (ISession s = OpenSession())
+				{
+					using (ITransaction t = s.BeginTransaction())
+					{
+						var company = new Company{CompanyName = "Limited", };
+						await (s.SaveAsync(company));
+						var result = await (s.QueryOver<Party>().Where(p => p.Name == "Limited").SingleOrDefaultAsync());
+						Assert.NotNull(result);
+					}
+				}
+			}
+
+			, KnownBug.Issue("NH-2354"));
 		}
 	}
 }

@@ -4,9 +4,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH364
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH364";
+			}
+		}
+
 		[Test]
 		public async Task IdBagIdentityAsync()
 		{
@@ -26,6 +35,10 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 			}
 		}
 
+		Product product1;
+		Product product2;
+		Product product3;
+		Invoice inv;
 		private async Task IdBagWithCompositeElementThatContainsAManyToOne_SetupAsync()
 		{
 			using (ISession s = OpenSession())

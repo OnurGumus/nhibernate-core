@@ -7,9 +7,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class NodeFixture : TestCase
+	public partial class NodeFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecific.Node.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task InsertNodesAsync()
 		{
@@ -39,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest
 			// verify these nodes were actually saved and can be queried correctly.
 			ISession s2 = OpenSession();
 			ITransaction t2 = s2.BeginTransaction();
-			Node startNode2 = (Node)s2.CreateCriteria(typeof (Node)).Add(Expression.Eq("Id", "start")).List()[0];
+			Node startNode2 = (Node)(await (s2.CreateCriteria(typeof (Node)).Add(Expression.Eq("Id", "start")).ListAsync()))[0];
 			Assert.AreEqual(1, startNode2.DestinationNodes.Count, "Start Node goes to 1 Node");
 			Assert.AreEqual(0, startNode2.PreviousNodes.Count, "Start Node has no previous Nodes");
 			Assert.IsTrue(startNode2.DestinationNodes.Contains(levelOneNode), "The DestinationNodes contain the LevelOneNode");
@@ -62,8 +71,8 @@ namespace NHibernate.Test.NHSpecificTest
 			s2.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			levelThreeNode = (Node)s.Load(typeof (Node), "3");
-			endNode = (Node)s.Load(typeof (Node), "end");
+			levelThreeNode = (Node)await (s.LoadAsync(typeof (Node), "3"));
+			endNode = (Node)await (s.LoadAsync(typeof (Node), "end"));
 			Node levelFourOneNode = new Node("4-1");
 			Node levelFourTwoNode = new Node("4-2");
 			levelThreeNode.RemoveDestinationNode(endNode);
@@ -77,8 +86,8 @@ namespace NHibernate.Test.NHSpecificTest
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			levelThreeNode = (Node)s.Load(typeof (Node), "3");
-			endNode = (Node)s.Load(typeof (Node), "end");
+			levelThreeNode = (Node)await (s.LoadAsync(typeof (Node), "3"));
+			endNode = (Node)await (s.LoadAsync(typeof (Node), "end"));
 			Assert.AreEqual(2, levelThreeNode.DestinationNodes.Count, "should be attached to the 2 level 4 nodes");
 			foreach (Node node in levelThreeNode.DestinationNodes)
 			{

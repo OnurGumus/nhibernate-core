@@ -17,13 +17,59 @@ using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.DtcFailures
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class DtcFailuresFixture : TestCase
+	public partial class DtcFailuresFixtureAsync : TestCaseAsync
 	{
+		private static readonly ILog log = LogManager.GetLogger(typeof (DtcFailuresFixtureAsync));
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"NHSpecificTest.DtcFailures.Mappings.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.GetTestDialect(dialect).SupportsDistributedTransactions;
+		}
+
+		protected override async Task CreateSchemaAsync()
+		{
+			// Copied from Configure method.
+			Configuration config = new Configuration();
+			if (TestConfigurationHelper.hibernateConfigFile != null)
+				config.Configure(TestConfigurationHelper.hibernateConfigFile);
+			// Our override so we can set nullability on database column without NHibernate knowing about it.
+			config.BeforeBindMapping += BeforeBindMapping;
+			// Copied from AddMappings methods.
+			Assembly assembly = Assembly.Load(MappingsAssembly);
+			foreach (string file in Mappings)
+				config.AddResource(MappingsAssembly + "." + file, assembly);
+			// Copied from CreateSchema method, but we use our own config.
+			await (new SchemaExport(config).CreateAsync(false, true));
+		}
+
+		private void BeforeBindMapping(object sender, BindMappingEventArgs e)
+		{
+			HbmProperty prop = e.Mapping.RootClasses[0].Properties.OfType<HbmProperty>().Single(p => p.Name == "NotNullData");
+			prop.notnull = true;
+			prop.notnullSpecified = true;
+		}
+
 		[Test]
 		public async Task WillNotCrashOnDtcPrepareFailureAsync()
 		{
-			var tx = new TransactionScope();
+			var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 			using (ISession s = sessions.OpenSession())
 			{
 				await (s.SaveAsync(new Person{NotNullData = null})); // Cause a SQL not null constraint violation.
@@ -50,7 +96,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 		{
 			if (Dialect is FirebirdDialect)
 				Assert.Ignore("Firebird driver does not support distributed transactions");
-			var tx = new TransactionScope();
+			var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 			using (ISession s = sessions.OpenSession())
 			{
 				new ForceEscalationToDistributedTx(true); //will rollback tx
@@ -77,7 +123,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 				Assert.Ignore("Firebird driver does not support distributed transactions");
 			try
 			{
-				using (var txscope = new TransactionScope())
+				using (var txscope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
 					using (ISession s = sessions.OpenSession())
 					{
@@ -106,7 +152,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 				Assert.Ignore("Firebird driver does not support distributed transactions");
 			try
 			{
-				using (var txscope = new TransactionScope())
+				using (var txscope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
 					using (ISession s = sessions.OpenSession())
 					{
@@ -136,7 +182,7 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 		public async Task TransactionInsertLoadWithRollBackTaskAsync()
 		{
 			object savedId;
-			using (var txscope = new TransactionScope())
+			using (var txscope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				using (ISession s = sessions.OpenSession())
 				{
@@ -149,7 +195,7 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 
 			try
 			{
-				using (var txscope = new TransactionScope())
+				using (var txscope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
 					using (ISession s = sessions.OpenSession())
 					{
@@ -172,7 +218,7 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 			}
 			finally
 			{
-				using (var txscope = new TransactionScope())
+				using (var txscope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
 					using (ISession s = sessions.OpenSession())
 					{
@@ -185,25 +231,12 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 			}
 		}
 
-		[Test, Explicit]
-		public Task MultiThreadedTransactionAsync()
-		{
-			try
-			{
-				MultiThreadedTransaction();
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
-		}
-
+		private int totalCall;
 		[Test]
 		public async Task CanDeleteItemInDtcAsync()
 		{
 			object id;
-			using (var tx = new TransactionScope())
+			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				using (ISession s = sessions.OpenSession())
 				{
@@ -213,7 +246,7 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 				}
 			}
 
-			using (var tx = new TransactionScope())
+			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				using (ISession s = sessions.OpenSession())
 				{
@@ -228,7 +261,7 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 		[Description("Open/Close a session inside a TransactionScope fails.")]
 		public async Task NH1744Async()
 		{
-			using (var tx = new TransactionScope())
+			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				using (ISession s = sessions.OpenSession())
 				{
@@ -240,6 +273,52 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 					await (s.FlushAsync());
 				}
 			//and I always leave the transaction disposed without calling tx.Complete(), I let the database server to rollback all actions in this test. 
+			}
+		}
+
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		public partial class ForceEscalationToDistributedTx : IEnlistmentNotification
+		{
+			private readonly bool shouldRollBack;
+			private readonly int thread;
+			public ForceEscalationToDistributedTx(bool shouldRollBack)
+			{
+				this.shouldRollBack = shouldRollBack;
+				thread = Thread.CurrentThread.ManagedThreadId;
+				System.Transactions.Transaction.Current.EnlistDurable(Guid.NewGuid(), this, EnlistmentOptions.None);
+			}
+
+			public ForceEscalationToDistributedTx(): this (false)
+			{
+			}
+
+			public void Prepare(PreparingEnlistment preparingEnlistment)
+			{
+				Assert.AreNotEqual(thread, Thread.CurrentThread.ManagedThreadId);
+				if (shouldRollBack)
+				{
+					log.Debug(">>>>Force Rollback<<<<<");
+					preparingEnlistment.ForceRollback();
+				}
+				else
+				{
+					preparingEnlistment.Prepared();
+				}
+			}
+
+			public void Commit(Enlistment enlistment)
+			{
+				enlistment.Done();
+			}
+
+			public void Rollback(Enlistment enlistment)
+			{
+				enlistment.Done();
+			}
+
+			public void InDoubt(Enlistment enlistment)
+			{
+				enlistment.Done();
 			}
 		}
 	}

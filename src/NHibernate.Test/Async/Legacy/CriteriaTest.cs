@@ -9,9 +9,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Legacy
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class CriteriaTest : TestCase
+	public partial class CriteriaTestAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Simple.hbm.xml", "MasterDetail.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task SimpleSelectTestAsync()
 		{
@@ -31,15 +40,15 @@ namespace NHibernate.Test.Legacy
 			using (ISession s1 = OpenSession())
 				using (ITransaction t1 = s1.BeginTransaction())
 				{
-					s1.Save(notSimple1, notSimple1Key);
-					s1.Save(simple1, simple1Key);
+					await (s1.SaveAsync(notSimple1, notSimple1Key));
+					await (s1.SaveAsync(simple1, simple1Key));
 					await (t1.CommitAsync());
 				}
 
 			using (ISession s2 = OpenSession())
 				using (ITransaction t2 = s2.BeginTransaction())
 				{
-					IList results2 = s2.CreateCriteria(typeof (Simple)).Add(Expression.Eq("Address", "Street 12")).List();
+					IList results2 = await (s2.CreateCriteria(typeof (Simple)).Add(Expression.Eq("Address", "Street 12")).ListAsync());
 					Assert.AreEqual(1, results2.Count);
 					Simple simple2 = (Simple)results2[0];
 					Assert.IsNotNull(simple2, "Unable to load object");
@@ -65,23 +74,32 @@ namespace NHibernate.Test.Legacy
 			s2.Date = new DateTime(2006, 01, 01);
 			using (ISession s = OpenSession())
 			{
-				s.Save(s1, 1L);
-				s.Save(s2, 2L);
+				await (s.SaveAsync(s1, 1L));
+				await (s.SaveAsync(s2, 2L));
 				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				IList results = s.CreateCriteria(typeof (Simple)).Add(Expression.Gt("Date", new DateTime(2005, 01, 01))).AddOrder(Order.Asc("Date")).List();
+				IList results = await (s.CreateCriteria(typeof (Simple)).Add(Expression.Gt("Date", new DateTime(2005, 01, 01))).AddOrder(Order.Asc("Date")).ListAsync());
 				Assert.AreEqual(1, results.Count, "one gt from 2005");
 				Simple simple = (Simple)results[0];
 				Assert.IsTrue(simple.Date > new DateTime(2005, 01, 01), "should have returned dates after 2005");
-				results = s.CreateCriteria(typeof (Simple)).Add(Expression.Lt("Date", new DateTime(2005, 01, 01))).AddOrder(Order.Asc("Date")).List();
+				results = await (s.CreateCriteria(typeof (Simple)).Add(Expression.Lt("Date", new DateTime(2005, 01, 01))).AddOrder(Order.Asc("Date")).ListAsync());
 				Assert.AreEqual(1, results.Count, "one lt than 2005");
 				simple = (Simple)results[0];
 				Assert.IsTrue(simple.Date < new DateTime(2005, 01, 01), "should be less than 2005");
 				await (s.DeleteAsync("from Simple"));
 				await (s.FlushAsync());
+			}
+		}
+
+		[Test]
+		public async Task CriteriaTypeMismatchAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				Assert.ThrowsAsync<QueryException>(async () => await (s.CreateCriteria(typeof (Master)).Add(Expression.Like("Details", "SomeString")).ListAsync()));
 			}
 		}
 
@@ -92,9 +110,18 @@ namespace NHibernate.Test.Legacy
 			{
 				Master master = new Master();
 				await (s.SaveAsync(master));
-				s.CreateCriteria(typeof (Detail)).Add(Expression.Eq("Master", master)).List();
+				await (s.CreateCriteria(typeof (Detail)).Add(Expression.Eq("Master", master)).ListAsync());
 				await (s.DeleteAsync(master));
 				await (s.FlushAsync());
+			}
+		}
+
+		[Test]
+		public async Task CriteriaCompositePropertyAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				Assert.ThrowsAsync<QueryException>(async () => await (s.CreateCriteria(typeof (Master)).Add(Expression.Eq("Details.I", 10)).ListAsync()));
 			}
 		}
 
@@ -105,10 +132,25 @@ namespace NHibernate.Test.Legacy
 			{
 				await (s.SaveAsync(new Master()));
 				await (s.FlushAsync());
-				Assert.AreEqual(1, s.CreateCriteria(typeof (Master)).CreateAlias("Details", "detail", JoinType.LeftOuterJoin).SetFetchMode("Details", FetchMode.Join).List().Count);
+				Assert.AreEqual(1, (await (s.CreateCriteria(typeof (Master)).CreateAlias("Details", "detail", JoinType.LeftOuterJoin).SetFetchMode("Details", FetchMode.Join).ListAsync())).Count);
 				await (s.DeleteAsync("from Master"));
 				await (s.FlushAsync());
 			}
+		}
+
+		[Test]
+		public void Criteria_can_get_query_entity_type()
+		{
+			using (ISession s = OpenSession())
+			{
+				Assert.AreEqual(typeof (Master), s.CreateCriteria(typeof (Master)).GetRootEntityTypeIfAvailable());
+			}
+		}
+
+		[Test]
+		public void DetachedCriteria_can_get_query_entity_type()
+		{
+			Assert.AreEqual(typeof (Master), DetachedCriteria.For<Master>().GetRootEntityTypeIfAvailable());
 		}
 	}
 }

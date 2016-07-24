@@ -10,8 +10,30 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.Stateless.FetchingLazyCollections
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class TreeFetchTests : TestCaseMappingByCode
+	public partial class TreeFetchTestsAsync : TestCaseMappingByCodeAsync
 	{
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ModelMapper();
+			mapper.BeforeMapClass += (mi, t, cm) => cm.Id(im => im.Generator(Generators.HighLow));
+			mapper.Class<TreeNode>(mc =>
+			{
+				mc.Id(x => x.Id);
+				mc.Property(x => x.Content);
+				mc.Set(x => x.Children, cam =>
+				{
+					cam.Key(km => km.Column("parentId"));
+					cam.Cascade(Mapping.ByCode.Cascade.All);
+				}
+
+				, rel => rel.OneToMany());
+			}
+
+			);
+			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
+			return mappings;
+		}
+
 		[Test]
 		public async Task FetchMultipleHierarchiesAsync()
 		{

@@ -5,9 +5,34 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Any
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class AnyTypeTest : TestCase
+	public partial class AnyTypeTestAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Any.Person.hbm.xml"};
+			}
+		}
+
+		protected override string CacheConcurrencyStrategy
+		{
+			get
+			{
+				return null;
+			}
+		}
+
 		[Test]
 		public async Task FlushProcessingAsync()
 		{
@@ -17,13 +42,13 @@ namespace NHibernate.Test.Any
 			Person person = new Person();
 			Address address = new Address();
 			person.Data = address;
-			session.SaveOrUpdate(person);
-			session.SaveOrUpdate(address);
+			await (session.SaveOrUpdateAsync(person));
+			await (session.SaveOrUpdateAsync(address));
 			await (session.Transaction.CommitAsync());
 			session.Close();
 			session = OpenSession();
 			session.BeginTransaction();
-			person = (Person)session.Load(typeof (Person), person.Id);
+			person = (Person)await (session.LoadAsync(typeof (Person), person.Id));
 			person.Name = "makingpersondirty";
 			await (session.Transaction.CommitAsync());
 			session.Close();

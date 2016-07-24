@@ -7,9 +7,19 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2279
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = sessions.OpenSession())
+			{
+				await (s.DeleteAsync("from A"));
+				await (s.FlushAsync());
+			}
+		}
+
 		[Test]
 		public async Task IdBagIndexTrackingAsync()
 		{
@@ -19,11 +29,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2279
 			a.Items.Add("b");
 			a.Items.Add("c");
 			ISession s = OpenSession();
-			s.SaveOrUpdate(a);
+			await (s.SaveOrUpdateAsync(a));
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			a = (A)s.Load(typeof (A), a.Id);
+			a = (A)await (s.LoadAsync(typeof (A), a.Id));
 			CollectionAssert.AreEquivalent(new[]{"a", "b", "c"}, a.Items);
 			// Add and remove a "transient" item.
 			a.Items.Add("d");
@@ -37,20 +47,20 @@ namespace NHibernate.Test.NHSpecificTest.NH2279
 			a.Items.Add("g");
 			a.Items.Insert(3, "h");
 			// Save and then see if we get what we expect.
-			s.SaveOrUpdate(a);
+			await (s.SaveOrUpdateAsync(a));
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			a = (A)s.Load(typeof (A), a.Id);
+			a = (A)await (s.LoadAsync(typeof (A), a.Id));
 			CollectionAssert.AreEquivalent(new[]{"c", "e", "f", "g", "h"}, a.Items);
 			// Test changing a value by index directly.
 			a.Items[2] = "i";
 			string[] expected = a.Items.Cast<string>().ToArray();
-			s.SaveOrUpdate(a);
+			await (s.SaveOrUpdateAsync(a));
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			a = (A)s.Load(typeof (A), a.Id);
+			a = (A)await (s.LoadAsync(typeof (A), a.Id));
 			CollectionAssert.AreEquivalent(expected, a.Items);
 			await (s.FlushAsync());
 			s.Close();
@@ -108,7 +118,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2279
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			IList<A> results = s.CreateQuery("from A a join fetch a.Bs b join fetch b.Cs").List<A>().Distinct().ToList();
+			IList<A> results = (await (s.CreateQuery("from A a join fetch a.Bs b join fetch b.Cs").ListAsync<A>())).Distinct().ToList();
 			Assert.That(results, Has.Count.EqualTo(2));
 			A ta1 = results.Single(a => a.Name == "a1");
 			A ta2 = results.Single(a => a.Name == "a2");

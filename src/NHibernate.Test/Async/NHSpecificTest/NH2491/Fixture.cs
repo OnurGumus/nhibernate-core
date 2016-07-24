@@ -5,8 +5,18 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.NHSpecificTest.NH2491
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnTearDownAsync()
+		{
+			using (var s = OpenSession())
+				using (var tx = s.BeginTransaction())
+				{
+					await (s.DeleteAsync("from System.Object"));
+					await (tx.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task InheritanceSameColumnNameAsync()
 		{
@@ -24,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2491
 			using (var session = OpenSession())
 				using (var transaction = session.BeginTransaction())
 				{
-					var referencing = session.CreateQuery("from ReferencingClass").UniqueResult<ReferencingClass>();
+					var referencing = await (session.CreateQuery("from ReferencingClass").UniqueResultAsync<ReferencingClass>());
 					// accessing a property of the base class to activate lazy loading
 					// this line crashes because it tries to find the base class by
 					// the wrong column name.

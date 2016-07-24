@@ -5,12 +5,31 @@ using NHibernate.Cfg;
 using NHibernate.Driver;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1144
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		private Configuration configuration;
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH1144";
+			}
+		}
+
+		protected override Task ConfigureAsync(Configuration configuration)
+		{
+			this.configuration = configuration;
+			this.configuration.Properties[Environment.BatchSize] = "10";
+			return TaskHelper.CompletedTask;
+		}
+
 		[Test]
 		public async Task CanSaveInSingleBatchAsync()
 		{

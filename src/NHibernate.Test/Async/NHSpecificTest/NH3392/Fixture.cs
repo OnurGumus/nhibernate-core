@@ -6,9 +6,24 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH3392
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = OpenSession())
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from Kid"));
+					await (session.DeleteAsync("from FriendOfTheFamily"));
+					await (session.DeleteAsync("from Dad"));
+					await (session.DeleteAsync("from Mum"));
+					await (session.FlushAsync());
+					await (transaction.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task ExpandSubCollectionWithEmbeddedCompositeIDAsync()
 		{

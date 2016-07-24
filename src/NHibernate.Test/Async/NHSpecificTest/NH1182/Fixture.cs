@@ -3,12 +3,28 @@ using System.Collections.Generic;
 using NHibernate.Cfg;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1182
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override Task ConfigureAsync(Configuration configuration)
+		{
+			try
+			{
+				configuration.SetProperty(Environment.FormatSql, "false");
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
 		[Test]
 		public async Task DeleteWithoutUpdateVersionAsync()
 		{
@@ -37,8 +53,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1182
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					s.CreateQuery("delete from ObjectB").ExecuteUpdate();
-					s.CreateQuery("delete from ObjectA").ExecuteUpdate();
+					await (s.CreateQuery("delete from ObjectB").ExecuteUpdateAsync());
+					await (s.CreateQuery("delete from ObjectA").ExecuteUpdateAsync());
 					await (t.CommitAsync());
 				}
 		}

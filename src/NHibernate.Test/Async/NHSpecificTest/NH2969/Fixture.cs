@@ -4,9 +4,41 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2969
 {
+	[TestFixture, Ignore("Not fixed yet.")]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnSetUpAsync()
+		{
+			using (var session = OpenSession())
+				using (var transaction = session.BeginTransaction())
+				{
+					var john = new Person{ID = 1, Name = "John"};
+					var garfield = new DomesticCat{ID = 2, Name = "Garfield", Owner = john};
+					await (session.SaveAsync(john));
+					await (session.SaveAsync(garfield));
+					var alice = new Person{ID = 3, Name = "Alice"};
+					var bubbles = new Goldfish{ID = 4, Name = "Bubbles", Owner = alice};
+					await (session.SaveAsync(alice));
+					await (session.SaveAsync(bubbles));
+					var pirate = new Person{ID = 5, Name = "Pirate"};
+					var parrot = new Parrot{ID = 6, Name = "Parrot", Pirate = pirate};
+					await (session.SaveAsync(pirate));
+					await (session.SaveAsync(parrot));
+					await (transaction.CommitAsync());
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (var session = OpenSession())
+				using (var transaction = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from System.Object"));
+					await (transaction.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task CanGetDomesticCatAsync()
 		{

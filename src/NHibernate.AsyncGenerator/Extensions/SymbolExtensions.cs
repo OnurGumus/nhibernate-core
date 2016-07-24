@@ -355,7 +355,7 @@ namespace NHibernate.AsyncGenerator.Extensions
 			return symbol?.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T;
 		}
 
-		public static bool HaveSameParameters(this IMethodSymbol m1, IMethodSymbol m2)
+		public static bool HaveSameParameters(this IMethodSymbol m1, IMethodSymbol m2, Func<IParameterSymbol, IParameterSymbol, bool> paramCompareFunc = null)
 		{
 			if (m1.Parameters.Length != m2.Parameters.Length)
 			{
@@ -364,9 +364,19 @@ namespace NHibernate.AsyncGenerator.Extensions
 
 			for (var i = 0; i < m1.Parameters.Length; i++)
 			{
-				if (!m1.Parameters[i].Type.Equals(m2.Parameters[i].Type))
+				if (paramCompareFunc != null)
 				{
-					return false;
+					if (!paramCompareFunc(m1.Parameters[i], m2.Parameters[i]))
+					{
+						return false;
+					}
+				}
+				else
+				{
+					if (!m1.Parameters[i].Type.Equals(m2.Parameters[i].Type))
+					{
+						return false;
+					}
 				}
 			}
 			return true;
@@ -401,6 +411,29 @@ namespace NHibernate.AsyncGenerator.Extensions
 			while (containingType != null);
 			return false;
 		}
+
+		public static string GetFullName(this INamedTypeSymbol type)
+		{
+			return $"{type}, {type.ContainingAssembly.Name}";
+		}
+
+		public static bool IsSubclassOf(this INamedTypeSymbol type, INamedTypeSymbol fromType)
+		{
+			return type.AllInterfaces.Any(o => o == fromType) || type.GetAllBaseTypes().Any(o => o == fromType);
+		}
+
+		public static List<INamedTypeSymbol> GetAllBaseTypes(this INamedTypeSymbol type)
+		{
+			var bases = new List<INamedTypeSymbol>();
+			var currType = type.BaseType;
+			while (currType != null)
+			{
+				bases.Add(currType);
+				currType = currType.BaseType;
+			}
+			return bases;
+		}
+
 
 		public static async Task<ISymbol> FindApplicableAlias(this ITypeSymbol type, int position, SemanticModel semanticModel, CancellationToken cancellationToken)
 		{

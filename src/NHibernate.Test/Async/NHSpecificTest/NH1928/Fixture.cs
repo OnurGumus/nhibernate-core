@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1928
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task SqlCommentAtBeginningOfLineAsync()
@@ -22,7 +23,7 @@ where
     Name = 'Joe'
     and Age > 50
 ");
-					Assert.DoesNotThrow(() => query.List());
+					Assert.DoesNotThrowAsync(async () => await (query.ListAsync()));
 					await (tx.CommitAsync());
 				}
 		}
@@ -41,7 +42,7 @@ where
     Name = 'Joe'
     and Age > 50
 -- this is a comment");
-					Assert.DoesNotThrow(() => query.List());
+					Assert.DoesNotThrowAsync(async () => await (query.ListAsync()));
 					await (tx.CommitAsync());
 				}
 		}
@@ -61,7 +62,7 @@ where
     Name = 'Joe'
     and Age > 50
 ");
-					Assert.DoesNotThrow(() => query.List());
+					Assert.DoesNotThrowAsync(async () => await (query.ListAsync()));
 					await (tx.CommitAsync());
 				}
 		}

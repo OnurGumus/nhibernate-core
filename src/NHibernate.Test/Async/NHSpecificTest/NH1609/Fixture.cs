@@ -7,9 +7,15 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1609
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
+		{
+			return factory.ConnectionProvider.Driver.SupportsMultipleQueries;
+		}
+
 		[Test]
 		public async Task TestAsync()
 		{
@@ -30,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1609
 					// the final query selects the first element (using SetFirstResult and SetMaxResults) for each EntityB where B.A.Id = a1.Id and B.C.Id = c.Id
 					// the problem is that the paged query uses parameters @p0 and @p1 instead of @p2 and @p3
 					multi.Add(session.CreateCriteria(typeof (EntityB)).Add(Restrictions.Eq("A.Id", a1.Id)).Add(Restrictions.Eq("C.Id", c.Id)).SetFirstResult(0).SetMaxResults(1));
-					IList results = multi.List();
+					IList results = await (multi.ListAsync());
 					Assert.AreEqual(1, ((IList)results[0]).Count);
 					Assert.AreEqual(1, ((IList)results[1]).Count);
 					Assert.AreEqual(1, ((IList)results[2]).Count);

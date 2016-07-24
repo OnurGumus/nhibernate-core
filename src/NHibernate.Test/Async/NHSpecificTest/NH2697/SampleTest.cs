@@ -9,9 +9,66 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2697
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SampleTest : BugTestCase
+	public partial class SampleTestAsync : BugTestCaseAsync
 	{
+		protected override async Task OnSetUpAsync()
+		{
+			await (base.OnSetUpAsync());
+			using (ISession session = this.OpenSession())
+			{
+				ArticleGroupItem agrp_1 = new ArticleGroupItem();
+				agrp_1.Name = "Article group 1";
+				await (session.SaveAsync(agrp_1));
+				ArticleGroupItem agrp_2 = new ArticleGroupItem();
+				agrp_2.Name = "Article group 2";
+				await (session.SaveAsync(agrp_2));
+				await (session.FlushAsync());
+				ArticleItem article_1 = new ArticleItem();
+				article_1.Articlegroup = agrp_1;
+				article_1.Name = "Article 1 grp 1";
+				article_1.IsFavorite = 0;
+				await (session.SaveAsync("Article", article_1));
+				ArticleItem article_2 = new ArticleItem();
+				article_2.Articlegroup = agrp_1;
+				article_2.Name = "Article 2 grp 1";
+				article_2.IsFavorite = 1;
+				await (session.SaveAsync("Article", article_2));
+				ArticleItem article_3 = new ArticleItem();
+				article_3.Articlegroup = agrp_2;
+				article_3.Name = "Article 1 grp 2";
+				article_3.IsFavorite = 0;
+				await (session.SaveAsync("Article", article_3));
+				await (session.FlushAsync());
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			await (base.OnTearDownAsync());
+			using (ISession session = this.OpenSession())
+			{
+				IList<ArticleItem> list = await (session.CreateCriteria("Article").ListAsync<ArticleItem>());
+				foreach (ArticleItem item in list)
+					await (session.DeleteAsync("Article", item));
+				await (session.FlushAsync());
+			}
+
+			//Articles where not removed (!?)
+			//using (ISession session = this.OpenSession()) {
+			//    string hql = "from Article";
+			//    session.Delete(hql);
+			//    session.Flush();
+			//}
+			using (ISession session = this.OpenSession())
+			{
+				string hql = "from ArticleGroupItem";
+				await (session.DeleteAsync(hql));
+				await (session.FlushAsync());
+			}
+		}
+
 		[Test]
 		public async Task Can_GetListOfArticleGroupsAsync()
 		{
@@ -29,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 			HQL = "from ArticleGroupItem";
 			using (ISession session = this.OpenSession())
 			{
-				result = session.CreateQuery(HQL).List<ArticleGroupItem>();
+				result = await (session.CreateQuery(HQL).ListAsync<ArticleGroupItem>());
 			}
 
 			Assert.That(result.Count, Is.GreaterThan(0));
@@ -46,7 +103,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 				ArticleItem item = new ArticleItem();
 				item.Name = "Test article";
 				item.IsFavorite = 0;
-				session.Save("Article", item);
+				await (session.SaveAsync("Article", item));
 				await (session.FlushAsync());
 			}
 
@@ -54,7 +111,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 			HQL = "from Article";
 			using (ISession session = this.OpenSession())
 			{
-				result = session.CreateQuery(HQL).List<ArticleItem>();
+				result = await (session.CreateQuery(HQL).ListAsync<ArticleItem>());
 			}
 
 			Assert.That(result.Count, Is.GreaterThan(0));
@@ -70,9 +127,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 			HQL = "update Article a set a.IsFavorite= :Fav";
 			using (ISession session = this.OpenSession())
 			{
-				session.CreateQuery(HQL).SetInt16("Fav", isFavValue) //Exception !!
+				await (session.CreateQuery(HQL).SetInt16("Fav", isFavValue) //Exception !!
 				//.SetParameter("Fav", isFavValue) //Exception also !!
-				.ExecuteUpdate();
+				.ExecuteUpdateAsync());
 				await (session.FlushAsync());
 			}
 
@@ -80,7 +137,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 			HQL = "from Article a where a.IsFavorite=1";
 			using (ISession session = this.OpenSession())
 			{
-				result = session.CreateQuery(HQL).List<ArticleItem>();
+				result = await (session.CreateQuery(HQL).ListAsync<ArticleItem>());
 			}
 
 			Assert.That(result.Count, Is.GreaterThan(0));

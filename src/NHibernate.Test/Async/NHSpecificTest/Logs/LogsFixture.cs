@@ -15,9 +15,26 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 	using log4net.Layout;
 	using log4net.Repository.Hierarchy;
 
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class LogsFixture : TestCase
+	public partial class LogsFixtureAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"NHSpecificTest.Logs.Mappings.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
 		[Test]
 		public async Task WillGetSessionIdFromSessionLogsAsync()
 		{
@@ -30,6 +47,44 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 					var loggingEvent = spy.Events[0];
 					Assert.That(loggingEvent.Contains(sessionId.ToString()), Is.True);
 				}
+		}
+
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		public partial class SessionIdCapturer
+		{
+			public override string ToString()
+			{
+				return SessionIdLoggingContext.SessionId.ToString();
+			}
+		}
+
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		public partial class TextLogSpy : IDisposable
+		{
+			private readonly TextWriterAppender appender;
+			private readonly Logger loggerImpl;
+			private readonly StringBuilder stringBuilder;
+			public TextLogSpy(string loggerName, string pattern)
+			{
+				stringBuilder = new StringBuilder();
+				appender = new TextWriterAppender{Layout = new PatternLayout(pattern), Threshold = Level.All, Writer = new StringWriter(stringBuilder)};
+				loggerImpl = (Logger)LogManager.GetLogger(loggerName).Logger;
+				loggerImpl.AddAppender(appender);
+				loggerImpl.Level = Level.All;
+			}
+
+			public string[] Events
+			{
+				get
+				{
+					return stringBuilder.ToString().Split(new[]{Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
+				}
+			}
+
+			public void Dispose()
+			{
+				loggerImpl.RemoveAppender(appender);
+			}
 		}
 	}
 }

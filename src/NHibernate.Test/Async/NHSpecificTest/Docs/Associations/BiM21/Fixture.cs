@@ -6,9 +6,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : TestCase
+	public partial class FixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecificTest.Docs.Associations.BiM21.Mappings.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task TestCorrectUseAsync()
 		{
@@ -40,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 				Address flinstoneWay = new Address();
 				fred.Address = flinstoneWay;
 				wilma.Address = flinstoneWay;
-				Assert.Throws<PropertyValueException>(async () => await (session.SaveAsync(fred)));
+				Assert.ThrowsAsync<PropertyValueException>(async () => await (session.SaveAsync(fred)));
 			}
 		}
 	}

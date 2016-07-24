@@ -6,9 +6,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class UpdateFixture : TestCase
+	public partial class UpdateFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"NHSpecificTest.Docs.ExampleParentChild.Mappings.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task UpdateAsync()
 		{
@@ -21,8 +38,8 @@ namespace NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild
 			await (session1.FlushAsync());
 			session1.Close();
 			ISession session2 = OpenSession();
-			Parent parent = session2.Load(typeof (Parent), pId) as Parent;
-			Child child = session2.Load(typeof (Child), cId) as Child;
+			Parent parent = await (session2.LoadAsync(typeof (Parent), pId)) as Parent;
+			Child child = await (session2.LoadAsync(typeof (Child), cId)) as Child;
 			session2.Close();
 			parent.AddChild(child);
 			Child newChild = new Child();

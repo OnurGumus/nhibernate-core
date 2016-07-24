@@ -6,9 +6,37 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Generatedkeys.Identity
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class IdentityGeneratedKeysTest : TestCase
+	public partial class IdentityGeneratedKeysTestAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Generatedkeys.Identity.MyEntity.hbm.xml"};
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect.SupportsIdentityColumns;
+		}
+
+		protected override async Task ConfigureAsync(Configuration configuration)
+		{
+			await (base.ConfigureAsync(configuration));
+			configuration.SetProperty(Environment.GenerateStatistics, "true");
+		}
+
 		[Test]
 		public async Task IdentityColumnGeneratedIdsAsync()
 		{

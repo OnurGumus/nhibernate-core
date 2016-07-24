@@ -7,9 +7,18 @@ using NHibernate.Util;
 
 namespace NHibernate.Test.Immutable.EntityWithMutableCollection.Inverse
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class EntityWithInverseOneToManyJoinTest : AbstractEntityWithOneToManyTest
+	public partial class EntityWithInverseOneToManyJoinTestAsync : AbstractEntityWithOneToManyTestAsync
 	{
+		protected override System.Collections.IList Mappings
+		{
+			get
+			{
+				return new string[]{"Immutable.EntityWithMutableCollection.Inverse.ContractVariationOneToManyJoin.hbm.xml"};
+			}
+		}
+
 		[Test]
 		[Ignore("known to fail with inverse collection")]
 		public override Task AddExistingOneToManyElementToPersistentEntityAsync()

@@ -5,9 +5,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH392
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH392";
+			}
+		}
+
 		[Test]
 		public async Task UnsavedMinusOneNoNullReferenceExceptionAsync()
 		{
@@ -20,13 +29,22 @@ namespace NHibernate.Test.NHSpecificTest.NH392
 				ITransaction tran = s.BeginTransaction();
 				try
 				{
-					s.SaveOrUpdate(uvmo);
+					await (s.SaveOrUpdateAsync(uvmo));
 					await (tran.CommitAsync());
 				}
 				catch
 				{
 					tran.Rollback();
 				}
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = sessions.OpenSession())
+			{
+				await (s.DeleteAsync("from UnsavedValueMinusOne"));
+				await (s.FlushAsync());
 			}
 		}
 	}

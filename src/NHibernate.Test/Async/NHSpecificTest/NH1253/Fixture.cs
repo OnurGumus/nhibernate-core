@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1253
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		// The test only check that there are no lost parameter set (no exception)
 		[Test]
@@ -20,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1253
 					var q = s.CreateQuery("from Car c where c.Make in (:param1) or c.Model in (:param11)");
 					q.SetParameterList("param11", new string[]{"Model1", "Model2"});
 					q.SetParameterList("param1", new string[]{"Make1", "Make2"});
-					var cars = q.List<Car>();
+					var cars = await (q.ListAsync<Car>());
 					await (tx.CommitAsync());
 				}
 		}
@@ -34,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1253
 					var q = s.CreateQuery("from Car c where c.Make in (:param1) or c.Model in (:param11)");
 					q.SetParameterList("param1", new string[]{"Model1", "Model2"});
 					q.SetParameterList("param11", new string[]{"Make1", "Make2"});
-					var cars = q.List<Car>();
+					var cars = await (q.ListAsync<Car>());
 					await (tx.CommitAsync());
 				}
 		}
@@ -49,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1253
 					var q = s.CreateQuery("from Car c where c.Id in (:foo) or c.Id = :foobar");
 					q.SetParameterList("foo", new long[]{1, 2});
 					q.SetInt64("foobar", 3);
-					var cars = q.List<Car>();
+					var cars = await (q.ListAsync<Car>());
 					await (tx.CommitAsync());
 				}
 		}
@@ -63,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1253
 					var q = s.CreateQuery("from Car c where c.Make in (:param11) or c.Model in (:param1)");
 					q.SetParameterList("param11", new string[]{"One", "Two"});
 					q.SetParameterList("param1", new string[]{"One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve"});
-					var cars = q.List();
+					var cars = await (q.ListAsync());
 					await (tx.CommitAsync());
 				}
 		}
@@ -77,7 +78,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1253
 			using (var s = OpenSession())
 				using (var tx = s.BeginTransaction())
 				{
-					var results = s.CreateMultiQuery().Add("from Car c where c.Make in (:param1) or c.Model in (:param11)").Add("from Car c where c.Make in (:param1) or c.Model in (:param11)").SetParameterList("param11", new string[]{"Model1", "Model2"}).SetParameterList("param1", new string[]{"Make1", "Make2"}).List();
+					var results = await (s.CreateMultiQuery().Add("from Car c where c.Make in (:param1) or c.Model in (:param11)").Add("from Car c where c.Make in (:param1) or c.Model in (:param11)").SetParameterList("param11", new string[]{"Model1", "Model2"}).SetParameterList("param1", new string[]{"Make1", "Make2"}).ListAsync());
 					await (tx.CommitAsync());
 				}
 		}

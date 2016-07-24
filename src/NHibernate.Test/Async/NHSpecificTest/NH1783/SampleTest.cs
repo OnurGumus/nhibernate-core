@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1783
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SampleTest : BugTestCase
+	public partial class SampleTestAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task DatePropertyShouldBeStoredWithoutTimePartAsync()
@@ -22,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1783
 			using (ISession session = OpenSession())
 			{
 				// upload the result using DateTime type to verify it does not have the time-part.
-				var l = session.CreateSQLQuery("SELECT BirthDate AS bd FROM DomainClass").AddScalar("bd", NHibernateUtil.DateTime).List();
+				var l = await (session.CreateSQLQuery("SELECT BirthDate AS bd FROM DomainClass").AddScalar("bd", NHibernateUtil.DateTime).ListAsync());
 				var actual = (DateTime)l[0];
 				var expected = new DateTime(1950, 2, 13);
 				Assert.That(actual, Is.EqualTo(expected));
@@ -31,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1783
 			using (ISession session = OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					session.CreateQuery("delete from DomainClass").ExecuteUpdate();
+					await (session.CreateQuery("delete from DomainClass").ExecuteUpdateAsync());
 					await (tx.CommitAsync());
 				}
 		}

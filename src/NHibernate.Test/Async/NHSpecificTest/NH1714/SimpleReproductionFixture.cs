@@ -6,9 +6,15 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1714
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SimpleReproductionFixture : BugTestCase
+	public partial class SimpleReproductionFixtureAsync : BugTestCaseAsync
 	{
+		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
+		{
+			return dialect as MsSql2005Dialect != null;
+		}
+
 		[Test]
 		public async Task DbCommandsFromEventListenerShouldBeEnlistedInRunningTransactionAsync()
 		{

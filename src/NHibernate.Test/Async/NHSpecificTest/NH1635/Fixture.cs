@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1635
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		private async Task CreateTestContextAsync()
 		{
@@ -38,6 +39,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1635
 				await (session.DeleteAsync("from ForumThread"));
 				await (session.FlushAsync());
 			}
+		}
+
+		protected override async Task CreateSchemaAsync()
+		{
+			var script = new StringBuilder();
+			await (new SchemaExport(cfg).CreateAsync(sl => script.Append(sl), true));
+			Assert.That(script.ToString(), Is.Not.StringContaining("LatestMessage"));
 		}
 
 		[Test]

@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1488
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task WorkButAsync()
@@ -24,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1488
 
 			using (ISession s = OpenSession())
 			{
-				IList result = s.CreateQuery("select c.Name, cat.Name from CustomerNoSmart c left outer join c.Category cat").List();
+				IList result = await (s.CreateQuery("select c.Name, cat.Name from CustomerNoSmart c left outer join c.Category cat").ListAsync());
 				Assert.That(result.Count, Is.EqualTo(2));
 			}
 
@@ -53,7 +54,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1488
 
 			using (ISession s = OpenSession())
 			{
-				IList result = s.CreateQuery("select c.Name, cat.Name from Customer c left outer join c.Category cat").List();
+				IList result = await (s.CreateQuery("select c.Name, cat.Name from Customer c left outer join c.Category cat").ListAsync());
 				Assert.That(result.Count, Is.EqualTo(2), "should return Customers, on left outer join, even empty Category");
 			}
 

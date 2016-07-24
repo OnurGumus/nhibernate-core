@@ -12,9 +12,31 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.Dates
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class DateTimeOffsetFixture : FixtureBase
+	public partial class DateTimeOffsetFixtureAsync : FixtureBaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"NHSpecificTest.Dates.Mappings.DateTimeOffset.hbm.xml"};
+			}
+		}
+
+		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
+		{
+			// Cannot handle DbType.DateTimeOffset via ODBC.
+			if (factory.ConnectionProvider.Driver is OdbcDriver)
+				return false;
+			return base.AppliesTo(factory);
+		}
+
+		protected override DbType? AppliesTo()
+		{
+			return DbType.DateTimeOffset;
+		}
+
 		[Test]
 		public async Task SavingAndRetrievingTestAsync()
 		{
@@ -30,17 +52,81 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					var datesRecovered = s.CreateQuery("from AllDates").UniqueResult<AllDates>();
+					var datesRecovered = await (s.CreateQuery("from AllDates").UniqueResultAsync<AllDates>());
 					Assert.That(datesRecovered.Sql_datetimeoffset, Is.EqualTo(NowOS));
 				}
 
 			using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					var datesRecovered = s.CreateQuery("from AllDates").UniqueResult<AllDates>();
+					var datesRecovered = await (s.CreateQuery("from AllDates").UniqueResultAsync<AllDates>());
 					await (s.DeleteAsync(datesRecovered));
 					await (tx.CommitAsync());
 				}
+		}
+
+		[Test]
+		public void WhenEqualTicksThenShouldMatchIsEqual()
+		{
+			var type = new DateTimeOffsetType();
+			var now = DateTimeOffset.Now;
+			Assert.That(type.IsEqual(new DateTimeOffset(now.Ticks, now.Offset), new DateTimeOffset(now.Ticks, now.Offset)), Is.True);
+		}
+
+		[Test]
+		public void WhenNotEqualTicksThenShouldNotMatchIsEqual()
+		{
+			var type = new DateTimeOffsetType();
+			var now = DateTimeOffset.Now;
+			Assert.That(type.IsEqual(new DateTimeOffset(now.Ticks - 1, now.Offset), new DateTimeOffset(now.Ticks, now.Offset)), Is.False);
+		}
+
+		[Test]
+		public async Task HashCodeShouldHaveSameBehaviorOfNetTypeAsync()
+		{
+			var type = new DateTimeOffsetType();
+			var now = DateTimeOffset.Now;
+			var exactClone = new DateTimeOffset(now.Ticks, now.Offset);
+			Assert.That((now.GetHashCode() == exactClone.GetHashCode()), Is.EqualTo(now.GetHashCode() == await (type.GetHashCodeAsync(exactClone, EntityMode.Poco))));
+		}
+
+		[Test]
+		public async Task NextAsync()
+		{
+			var type = NHibernateUtil.DateTimeOffset;
+			var current = DateTimeOffset.Now.AddTicks(-1);
+			object next = await (type.NextAsync(current, null));
+			Assert.That(next, Is.TypeOf<DateTimeOffset>().And.Property("Ticks").GreaterThan(current.Ticks));
+		}
+
+		[Test]
+		public async Task SeedAsync()
+		{
+			var type = NHibernateUtil.DateTimeOffset;
+			Assert.That(await (type.SeedAsync(null)), Is.TypeOf<DateTimeOffset>());
+		}
+
+		[Test(Description = "NH-3842")]
+		public void DefaultValueDoesNotThrowException()
+		{
+			var type = NHibernateUtil.DateTimeOffset;
+			Assert.That(() => type.DefaultValue, Throws.Nothing);
+		}
+
+		[Test(Description = "NH-3842")]
+		public void CanBinarySerialize()
+		{
+			var type = NHibernateUtil.DateTimeOffset;
+			var formatter = new BinaryFormatter();
+			Assert.That(() => formatter.Serialize(Stream.Null, type), Throws.Nothing);
+		}
+
+		[Test(Description = "NH-3842")]
+		public void CanXmlSerialize()
+		{
+			var type = NHibernateUtil.DateTimeOffset;
+			var formatter = new XmlSerializer(typeof (DateTimeOffsetType));
+			Assert.That(() => formatter.Serialize(Stream.Null, type), Throws.Nothing);
 		}
 	}
 }

@@ -9,8 +9,25 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.NHSpecificTest.NH901
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public abstract partial class FixtureBase : TestCase
+	public abstract partial class FixtureBaseAsync : TestCaseAsync
 	{
+		private new ISession OpenSession(IInterceptor interceptor)
+		{
+			lastOpenedSession = sessions.OpenSession(interceptor);
+			return lastOpenedSession;
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			await (base.OnTearDownAsync());
+			using (ISession s = OpenSession())
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					await (s.DeleteAsync("from Person"));
+					await (tx.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task EmptyValueTypeComponentAsync()
 		{
@@ -75,6 +92,68 @@ namespace NHibernate.Test.NHSpecificTest.NH901
 				}
 
 			Assert.IsFalse(interceptor.entityWasDeemedDirty);
+		}
+	}
+
+	[TestFixture]
+	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+	public partial class FixtureAsync : FixtureBaseAsync
+	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"NHSpecificTest.NH901.Mappings.hbm.xml"};
+			}
+		}
+	}
+
+	[TestFixture]
+	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+	public partial class FixtureByCodeAsync : FixtureBaseAsync
+	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[0];
+			}
+		}
+
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return null;
+			}
+		}
+
+		protected override void AddMappings(Configuration configuration)
+		{
+			var mapper = new ModelMapper();
+			mapper.Class<Person>(rc =>
+			{
+				rc.Table("NH901_Person");
+				rc.Id(x => x.Name, m => m.Generator(Generators.Assigned));
+				rc.Component(x => x.Address, cm =>
+				{
+					cm.Property(x => x.City);
+					cm.Property(x => x.Street);
+				}
+
+				);
+			}
+
+			);
+			configuration.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
 		}
 	}
 }

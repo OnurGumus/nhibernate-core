@@ -6,18 +6,87 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.LazyProperty
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class LazyPropertyFixture : TestCase
+	public partial class LazyPropertyFixtureAsync : TestCaseAsync
 	{
+		private string log;
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"LazyProperty.Mappings.hbm.xml"};
+			}
+		}
+
+		protected override void BuildSessionFactory()
+		{
+			using (var logSpy = new LogSpy(typeof (EntityMetamodel)))
+			{
+				base.BuildSessionFactory();
+				log = logSpy.GetWholeLog();
+			}
+		}
+
+		protected override async Task OnSetUpAsync()
+		{
+			using (var s = OpenSession())
+				using (var tx = s.BeginTransaction())
+				{
+					await (s.PersistAsync(new Book{Name = "some name", Id = 1, ALotOfText = "a lot of text ..."}));
+					await (tx.CommitAsync());
+				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (var s = OpenSession())
+				using (var tx = s.BeginTransaction())
+				{
+					Assert.That(await (s.CreateSQLQuery("delete from Book").ExecuteUpdateAsync()), Is.EqualTo(1));
+					await (tx.CommitAsync());
+				}
+		}
+
+		[Test]
+		public async Task PropertyLoadedNotInitializedAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				var book = await (s.LoadAsync<Book>(1));
+				Assert.That(await (NHibernateUtil.IsPropertyInitializedAsync(book, "Id")), Is.False);
+				Assert.That(await (NHibernateUtil.IsPropertyInitializedAsync(book, "Name")), Is.False);
+				Assert.That(await (NHibernateUtil.IsPropertyInitializedAsync(book, "ALotOfText")), Is.False);
+				await (NHibernateUtil.InitializeAsync(book));
+				Assert.That(await (NHibernateUtil.IsPropertyInitializedAsync(book, "Id")), Is.True);
+				Assert.That(await (NHibernateUtil.IsPropertyInitializedAsync(book, "Name")), Is.True);
+				Assert.That(await (NHibernateUtil.IsPropertyInitializedAsync(book, "ALotOfText")), Is.False);
+			}
+		}
+
+		[Test]
+		public void ShouldGenerateErrorForNonAutoPropLazyProp()
+		{
+			Assert.IsTrue(log.Contains("NHibernate.Test.LazyProperty.Book.ALotOfText is not an auto property, which may result in uninitialized property access"));
+		}
+
 		[Test]
 		public async Task PropertyLoadedNotInitializedWhenUsingGetAsync()
 		{
 			using (ISession s = OpenSession())
 			{
 				var book = await (s.GetAsync<Book>(1));
-				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Id"), Is.True);
-				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Name"), Is.True);
-				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
+				Assert.That(await (NHibernateUtil.IsPropertyInitializedAsync(book, "Id")), Is.True);
+				Assert.That(await (NHibernateUtil.IsPropertyInitializedAsync(book, "Name")), Is.True);
+				Assert.That(await (NHibernateUtil.IsPropertyInitializedAsync(book, "ALotOfText")), Is.False);
 			}
 		}
 
@@ -28,7 +97,7 @@ namespace NHibernate.Test.LazyProperty
 			{
 				var book = await (s.GetAsync<Book>(1));
 				Assert.That(book.ALotOfText, Is.EqualTo("a lot of text ..."));
-				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.True);
+				Assert.That(await (NHibernateUtil.IsPropertyInitializedAsync(book, "ALotOfText")), Is.True);
 			}
 		}
 
@@ -39,7 +108,7 @@ namespace NHibernate.Test.LazyProperty
 			{
 				var book = await (s.GetAsync<Book>(1));
 				Assert.That(book.Name, Is.EqualTo("some name"));
-				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
+				Assert.That(await (NHibernateUtil.IsPropertyInitializedAsync(book, "ALotOfText")), Is.False);
 			}
 		}
 
@@ -67,7 +136,7 @@ namespace NHibernate.Test.LazyProperty
 				{
 					book = await (s.GetAsync<Book>(1));
 					book.Name += "updated";
-					Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
+					Assert.That(await (NHibernateUtil.IsPropertyInitializedAsync(book, "ALotOfText")), Is.False);
 					await (trans.CommitAsync());
 				}
 

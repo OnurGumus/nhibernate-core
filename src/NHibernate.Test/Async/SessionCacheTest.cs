@@ -7,9 +7,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SessionCacheTest : TestCase
+	public partial class SessionCacheTestAsync : TestCaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Simple.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task MakeCollectionTransientAsync()
 		{
@@ -21,17 +30,17 @@ namespace NHibernate.Test
 				s.Date = DateTime.Now;
 				s.Name = "dummy collection name " + i;
 				s.Pay = i * 1279L;
-				fixture.Save(s, i);
+				await (fixture.SaveAsync(s, i));
 			}
 
 			await (fixture.FlushAsync());
-			IList list = fixture.CreateCriteria(typeof (Simple)).List();
+			IList list = await (fixture.CreateCriteria(typeof (Simple)).ListAsync());
 			Assert.IsNotNull(list);
 			Assert.IsTrue(list.Count == 5);
-			Assert.IsTrue(fixture.Contains(list[2]));
+			Assert.IsTrue(await (fixture.ContainsAsync(list[2])));
 			fixture.Clear();
 			Assert.IsTrue(list.Count == 5);
-			Assert.IsFalse(fixture.Contains(list[2]));
+			Assert.IsFalse(await (fixture.ContainsAsync(list[2])));
 			await (fixture.FlushAsync());
 			Assert.IsTrue(list.Count == 5);
 			await (fixture.DeleteAsync("from System.Object o"));
@@ -46,7 +55,7 @@ namespace NHibernate.Test
 			// First, prime the fixture session to think the entity does not exist
 			try
 			{
-				fixture.Load(typeof (Simple), -1L);
+				await (fixture.LoadAsync(typeof (Simple), -1L));
 			}
 			catch (ObjectNotFoundException)
 			{
@@ -63,7 +72,7 @@ namespace NHibernate.Test
 				oneSimple.Address = "SessionCacheTest.LoadAfterNotExists";
 				oneSimple.Date = DateTime.Now;
 				oneSimple.Pay = 1000000f;
-				anotherSession.Save(oneSimple, -1L);
+				await (anotherSession.SaveAsync(oneSimple, -1L));
 				await (anotherSession.FlushAsync());
 			}
 			finally
@@ -74,7 +83,7 @@ namespace NHibernate.Test
 			// Verify that the original session is still unable to see the new entry...
 			try
 			{
-				fixture.Load(typeof (Simple), -1L);
+				await (fixture.LoadAsync(typeof (Simple), -1L));
 			}
 			catch (ObjectNotFoundException)
 			{
@@ -85,7 +94,7 @@ namespace NHibernate.Test
 			string failedMessage = "Unable to load entity with id = -1.";
 			try
 			{
-				Simple dummy = fixture.Load(typeof (Simple), -1L) as Simple;
+				Simple dummy = await (fixture.LoadAsync(typeof (Simple), -1L)) as Simple;
 				Assert.IsNotNull(dummy, failedMessage);
 				await (fixture.DeleteAsync(dummy));
 				await (fixture.FlushAsync());
@@ -97,6 +106,20 @@ namespace NHibernate.Test
 			finally
 			{
 				QuietlyClose(fixture);
+			}
+		}
+
+		private void QuietlyClose(ISession session)
+		{
+			if (session != null)
+			{
+				try
+				{
+					session.Close();
+				}
+				catch
+				{
+				}
 			}
 		}
 	}

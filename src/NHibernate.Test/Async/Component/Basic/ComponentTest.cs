@@ -13,9 +13,60 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Component.Basic
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ComponentTest : TestCase
+	public partial class ComponentTestAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override System.Collections.IList Mappings
+		{
+			get
+			{
+				return new string[]{};
+			}
+		}
+
+		protected override async Task ConfigureAsync(Configuration configuration)
+		{
+			if (Dialect.Functions.ContainsKey("year"))
+			{
+				using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("NHibernate.Test.Component.Basic.User.hbm.xml"))
+				{
+					using (StreamReader reader = new StreamReader(stream))
+					{
+						string mapping = await (reader.ReadToEndAsync());
+						IList args = new ArrayList();
+						args.Add("dob");
+						// We don't have a session factory yet... is there some way to get one sooner?
+						string replacement = Dialect.Functions["year"].Render(args, null).ToString().Replace("\"", "&quot;");
+						mapping = mapping.Replace("year(dob)", replacement);
+						configuration.AddXml(mapping);
+						configuration.SetProperty(Cfg.Environment.GenerateStatistics, "true");
+					}
+				}
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = sessions.OpenSession())
+				using (ITransaction t = s.BeginTransaction())
+				{
+					await (s.DeleteAsync("from User"));
+					await (s.DeleteAsync("from Employee"));
+					await (t.CommitAsync());
+				}
+
+			await (base.OnTearDownAsync());
+		}
+
 		[Test]
 		public async Task TestUpdateFalseAsync()
 		{
@@ -37,7 +88,7 @@ namespace NHibernate.Test.Component.Basic
 			using (ISession s = sessions.OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					u = (User)s.Get(typeof (User), "gavin");
+					u = (User)await (s.GetAsync(typeof (User), "gavin"));
 					Assert.That(u.Person.Name, Is.EqualTo("Gavin King"));
 					await (s.DeleteAsync(u));
 					await (t.CommitAsync());
@@ -64,7 +115,7 @@ namespace NHibernate.Test.Component.Basic
 			using (ISession s = sessions.OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					u = (User)s.Get(typeof (User), "gavin");
+					u = (User)await (s.GetAsync(typeof (User), "gavin"));
 					Assert.That(u.Person.Address, Is.EqualTo("Phipps Place"));
 					Assert.That(u.Person.PreviousAddress, Is.EqualTo("Karbarook Ave"));
 					Assert.That(u.Person.Yob, Is.EqualTo(u.Person.Dob.Year));
@@ -75,7 +126,7 @@ namespace NHibernate.Test.Component.Basic
 			using (ISession s = sessions.OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					u = (User)s.Get(typeof (User), "gavin");
+					u = (User)await (s.GetAsync(typeof (User), "gavin"));
 					Assert.That(u.Person.Address, Is.EqualTo("Phipps Place"));
 					Assert.That(u.Person.PreviousAddress, Is.EqualTo("Karbarook Ave"));
 					Assert.That(u.Password, Is.EqualTo("$ecret"));
@@ -157,9 +208,9 @@ namespace NHibernate.Test.Component.Basic
 					emp.Person.Name = "steve";
 					emp.Person.Dob = new DateTime(1999, 12, 31);
 					await (s.SaveAsync(emp));
-					s.CreateQuery("from Employee e where e.Person = :p and 1=1 and 2=2").SetParameter("p", emp.Person).List();
-					s.CreateQuery("from Employee e where :p = e.Person").SetParameter("p", emp.Person).List();
-					s.CreateQuery("from Employee e where e.Person = ('steve', current_timestamp)").List();
+					await (s.CreateQuery("from Employee e where e.Person = :p and 1=1 and 2=2").SetParameter("p", emp.Person).ListAsync());
+					await (s.CreateQuery("from Employee e where :p = e.Person").SetParameter("p", emp.Person).ListAsync());
+					await (s.CreateQuery("from Employee e where e.Person = ('steve', current_timestamp)").ListAsync());
 					await (s.DeleteAsync(emp));
 					await (t.CommitAsync());
 					s.Close();
@@ -172,12 +223,12 @@ namespace NHibernate.Test.Component.Basic
 			using (ISession s = sessions.OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					s.CreateQuery("from User u where u.Person.Yob = 1999").List();
-					s.CreateCriteria(typeof (User)).Add(Property.ForName("Person.Yob").Between(1999, 2002)).List();
+					await (s.CreateQuery("from User u where u.Person.Yob = 1999").ListAsync());
+					await (s.CreateCriteria(typeof (User)).Add(Property.ForName("Person.Yob").Between(1999, 2002)).ListAsync());
 					if (Dialect.SupportsRowValueConstructorSyntax)
 					{
-						s.CreateQuery("from User u where u.Person = ('gavin', :dob, 'Peachtree Rd', 'Karbarook Ave', 1974, 'Peachtree Rd')").SetDateTime("dob", new DateTime(1974, 3, 25)).List();
-						s.CreateQuery("from User where Person = ('gavin', :dob, 'Peachtree Rd', 'Karbarook Ave', 1974, 'Peachtree Rd')").SetDateTime("dob", new DateTime(1974, 3, 25)).List();
+						await (s.CreateQuery("from User u where u.Person = ('gavin', :dob, 'Peachtree Rd', 'Karbarook Ave', 1974, 'Peachtree Rd')").SetDateTime("dob", new DateTime(1974, 3, 25)).ListAsync());
+						await (s.CreateQuery("from User where Person = ('gavin', :dob, 'Peachtree Rd', 'Karbarook Ave', 1974, 'Peachtree Rd')").SetDateTime("dob", new DateTime(1974, 3, 25)).ListAsync());
 					}
 
 					await (t.CommitAsync());
@@ -191,7 +242,7 @@ namespace NHibernate.Test.Component.Basic
 			using (ISession s = sessions.OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					s.GetNamedQuery("userNameIn").SetParameterList("nameList", new object[]{"1ovthafew", "turin", "xam"}).List();
+					await (s.GetNamedQuery("userNameIn").SetParameterList("nameList", new object[]{"1ovthafew", "turin", "xam"}).ListAsync());
 					await (t.CommitAsync());
 					s.Close();
 				}
@@ -218,7 +269,7 @@ namespace NHibernate.Test.Component.Basic
 			using (ISession s = sessions.OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					emp = (Employee)s.Get(typeof (Employee), emp.Id);
+					emp = (Employee)await (s.GetAsync(typeof (Employee), emp.Id));
 					await (t.CommitAsync());
 					s.Close();
 				}
@@ -238,7 +289,7 @@ namespace NHibernate.Test.Component.Basic
 			using (ISession s = sessions.OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					emp = (Employee)s.Get(typeof (Employee), emp.Id);
+					emp = (Employee)await (s.GetAsync(typeof (Employee), emp.Id));
 					await (t.CommitAsync());
 					s.Close();
 				}
@@ -258,8 +309,8 @@ namespace NHibernate.Test.Component.Basic
 			using (ISession s = sessions.OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					emp = (Employee)s.Get(typeof (Employee), emp.Id);
-					NHibernateUtil.Initialize(emp.DirectReports);
+					emp = (Employee)await (s.GetAsync(typeof (Employee), emp.Id));
+					await (NHibernateUtil.InitializeAsync(emp.DirectReports));
 					await (t.CommitAsync());
 					s.Close();
 				}
@@ -282,8 +333,8 @@ namespace NHibernate.Test.Component.Basic
 			using (ISession s = sessions.OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					emp = (Employee)s.Get(typeof (Employee), emp.Id);
-					NHibernateUtil.Initialize(emp.DirectReports);
+					emp = (Employee)await (s.GetAsync(typeof (Employee), emp.Id));
+					await (NHibernateUtil.InitializeAsync(emp.DirectReports));
 					await (t.CommitAsync());
 					s.Close();
 				}
@@ -307,8 +358,8 @@ namespace NHibernate.Test.Component.Basic
 			using (ISession s = sessions.OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					emp = (Employee)s.Get(typeof (Employee), emp.Id);
-					NHibernateUtil.Initialize(emp.DirectReports);
+					emp = (Employee)await (s.GetAsync(typeof (Employee), emp.Id));
+					await (NHibernateUtil.InitializeAsync(emp.DirectReports));
 					await (t.CommitAsync());
 					s.Close();
 				}
@@ -332,8 +383,8 @@ namespace NHibernate.Test.Component.Basic
 			using (ISession s = sessions.OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					emp = (Employee)s.Get(typeof (Employee), emp.Id);
-					NHibernateUtil.Initialize(emp.DirectReports);
+					emp = (Employee)await (s.GetAsync(typeof (Employee), emp.Id));
+					await (NHibernateUtil.InitializeAsync(emp.DirectReports));
 					await (t.CommitAsync());
 					s.Close();
 				}

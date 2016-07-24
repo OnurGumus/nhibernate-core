@@ -6,9 +6,21 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2951
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = OpenSession())
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from System.Object"));
+					await (session.FlushAsync());
+					await (transaction.CommitAsync());
+				}
+		}
+
 		[Test]
 		[Ignore("Not working.")]
 		public async Task UpdateWithSubqueryToJoinedSubclassAsync()
@@ -29,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2951
 				{
 					// Using (select c.Id ...) works.
 					string hql = "update Invoice i set i.Customer = (select c from Customer c where c.Name = 'Bob')";
-					int result = session.CreateQuery(hql).ExecuteUpdate();
+					int result = await (session.CreateQuery(hql).ExecuteUpdateAsync());
 					Assert.AreEqual(1, result);
 				}
 		}

@@ -6,9 +6,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Unconstrained
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SimplyManyToOneIgnoreTest : TestCase
+	public partial class SimplyManyToOneIgnoreTestAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Unconstrained.Simply.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task UnconstrainedAsync()
 		{
@@ -27,7 +44,7 @@ namespace NHibernate.Test.Unconstrained
 			{
 				using (ITransaction t = s.BeginTransaction())
 				{
-					SimplyB sb = (SimplyB)s.Get(typeof (SimplyB), 100);
+					SimplyB sb = (SimplyB)await (s.GetAsync(typeof (SimplyB), 100));
 					Assert.IsNotNull(sb);
 					await (s.DeleteAsync(sb));
 					await (t.CommitAsync());
@@ -37,7 +54,7 @@ namespace NHibernate.Test.Unconstrained
 				// the cached version of SimplyA with its B being not null.
 				using (ITransaction t = s.BeginTransaction())
 				{
-					SimplyA sa = (SimplyA)s.Get(typeof (SimplyA), "ralph");
+					SimplyA sa = (SimplyA)await (s.GetAsync(typeof (SimplyA), "ralph"));
 					Assert.IsNull(sa.SimplyB);
 					await (s.DeleteAsync(sa));
 					await (t.CommitAsync());

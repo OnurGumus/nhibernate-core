@@ -8,9 +8,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Unconstrained
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class UnconstrainedNoLazyTest : TestCase
+	public partial class UnconstrainedNoLazyTestAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Unconstrained.PersonNoLazy.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task UnconstrainedNoCacheAsync()
 		{
@@ -24,7 +41,7 @@ namespace NHibernate.Test.Unconstrained
 			sessions.Evict(typeof (Person));
 			session = OpenSession();
 			tx = session.BeginTransaction();
-			p = (Person)session.Get(typeof (Person), "gavin");
+			p = (Person)await (session.GetAsync(typeof (Person), "gavin"));
 			Assert.IsNull(p.Employee);
 			p.Employee = new Employee("123456");
 			await (tx.CommitAsync());
@@ -32,7 +49,7 @@ namespace NHibernate.Test.Unconstrained
 			sessions.Evict(typeof (Person));
 			session = OpenSession();
 			tx = session.BeginTransaction();
-			p = (Person)session.Get(typeof (Person), "gavin");
+			p = (Person)await (session.GetAsync(typeof (Person), "gavin"));
 			Assert.IsNotNull(p.Employee);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Employee));
 			await (session.DeleteAsync(p));
@@ -85,7 +102,7 @@ namespace NHibernate.Test.Unconstrained
 			log.Info("Loading Person#gavin and associating it with a new Employee#123456");
 			session = OpenSession();
 			tx = session.BeginTransaction();
-			p = (Person)session.Get(typeof (Person), "gavin");
+			p = (Person)await (session.GetAsync(typeof (Person), "gavin"));
 			Assert.IsNull(p.Employee);
 			p.Employee = new Employee("123456");
 			await (tx.CommitAsync());
@@ -93,7 +110,7 @@ namespace NHibernate.Test.Unconstrained
 			log.Info("Reloading Person#gavin and checking that its Employee is not null");
 			session = OpenSession();
 			tx = session.BeginTransaction();
-			p = (Person)session.Get(typeof (Person), "gavin");
+			p = (Person)await (session.GetAsync(typeof (Person), "gavin"));
 			Assert.IsNotNull(p.Employee);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Employee));
 			Assert.IsNotNull(p.Employee.Id);
@@ -120,7 +137,7 @@ namespace NHibernate.Test.Unconstrained
 			session.Close();
 			session = OpenSession();
 			session.BeginTransaction();
-			p = (Person)session.Load(typeof (Person), "gavin");
+			p = (Person)await (session.LoadAsync(typeof (Person), "gavin"));
 			// Should be null, not Employee#456123
 			Assert.IsNull(p.Employee);
 			await (session.DeleteAsync(p));

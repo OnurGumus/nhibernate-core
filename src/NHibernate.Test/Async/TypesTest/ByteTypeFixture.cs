@@ -6,9 +6,30 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.TypesTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ByteTypeFixture : TypeFixtureBase
+	public partial class ByteTypeFixtureAsync : TypeFixtureBaseAsync
 	{
+		protected override string TypeName
+		{
+			get
+			{
+				return "Byte";
+			}
+		}
+
+		/// <summary>
+		/// Verify Equals will correctly determine when the property
+		/// is dirty.
+		/// </summary>
+		[Test]
+		public void Equals()
+		{
+			ByteType type = (ByteType)NHibernateUtil.Byte;
+			Assert.IsTrue(type.IsEqual((byte)5, (byte)5));
+			Assert.IsFalse(type.IsEqual((byte)5, (byte)6));
+		}
+
 		[Test]
 		public async Task ReadWriteAsync()
 		{
@@ -20,7 +41,7 @@ namespace NHibernate.Test.TypesTest
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			basic = (ByteClass)s.Load(typeof (ByteClass), 1);
+			basic = (ByteClass)await (s.LoadAsync(typeof (ByteClass), 1));
 			Assert.AreEqual((byte)43, basic.ByteValue);
 			await (s.DeleteAsync(basic));
 			await (s.FlushAsync());

@@ -9,9 +9,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.Cascade.Circle
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class CascadeMergeToChildBeforeParentTest : TestCase
+	public partial class CascadeMergeToChildBeforeParentTestAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"Cascade.Circle.CascadeMergeToChildBeforeParent.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task MergeAsync()
 		{
@@ -174,6 +191,22 @@ namespace NHibernate.Test.Cascade.Circle
 					Route mergedRoute = (Route)session.Merge(route);
 					await (transaction.CommitAsync());
 				}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = base.OpenSession())
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					await (session.CreateQuery("delete from Transport").ExecuteUpdateAsync());
+					await (session.CreateQuery("delete from Vehicle").ExecuteUpdateAsync());
+					await (session.CreateQuery("delete from Node").ExecuteUpdateAsync());
+					await (session.CreateQuery("delete from Route").ExecuteUpdateAsync());
+					await (session.CreateQuery("delete from Tour").ExecuteUpdateAsync());
+					await (transaction.CommitAsync());
+				}
+
+			await (base.OnTearDownAsync());
 		}
 	}
 }

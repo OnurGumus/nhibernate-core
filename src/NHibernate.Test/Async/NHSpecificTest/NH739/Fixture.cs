@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH739
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task BugAsync()
@@ -22,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH739
 
 			using (ISession sess = OpenSession())
 			{
-				Cat c = (Cat)sess.Get(typeof (Cat), catId);
+				Cat c = (Cat)await (sess.GetAsync(typeof (Cat), catId));
 				Cat kitten = new Cat();
 				c.Children.Add(kitten);
 				kitten.Mother = c;

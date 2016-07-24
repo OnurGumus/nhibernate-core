@@ -4,12 +4,40 @@ using NHibernate.Cfg;
 using NHibernate.Event;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1332
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		private static readonly ILog log = LogManager.GetLogger(typeof (FixtureAsync));
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH1332";
+			}
+		}
+
+		protected override Task ConfigureAsync(Configuration configuration)
+		{
+			try
+			{
+				configuration.SetProperty(Environment.UseSecondLevelCache, "false");
+				configuration.SetProperty(Environment.UseQueryCache, "false");
+				configuration.SetProperty(Environment.CacheProvider, null);
+				configuration.SetListener(ListenerType.PostCommitDelete, new PostCommitDelete());
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
 		[Test]
 		public async Task BugAsync()
 		{
@@ -33,6 +61,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1332
 				Assert.AreEqual(1, ls.Appender.GetEvents().Length);
 				string logs = ls.Appender.GetEvents()[0].RenderedMessage;
 				Assert.Greater(logs.IndexOf("PostCommitDelete fired."), -1);
+			}
+		}
+
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		public partial class PostCommitDelete : IPostDeleteEventListener
+		{
+			public void OnPostDelete(PostDeleteEvent @event)
+			{
+				log.Debug("PostCommitDelete fired.");
 			}
 		}
 	}

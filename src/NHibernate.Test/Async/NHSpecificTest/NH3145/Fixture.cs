@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH3145
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task QueryWithLazyBaseClassShouldNotThrowNoPersisterForErrorAsync()
@@ -29,10 +30,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3145
 				using (var s = OpenSession())
 					using (var t = s.BeginTransaction())
 					{
-						var root = s.CreateQuery("from Root").UniqueResult<Root>();
-						NHibernateUtil.Initialize(root.Base);
-						var q = s.CreateQuery("from Derived d where d = ?").SetEntity(0, root.Base);
-						q.List();
+						var root = await (s.CreateQuery("from Root").UniqueResultAsync<Root>());
+						await (NHibernateUtil.InitializeAsync(root.Base));
+						var q = await (s.CreateQuery("from Derived d where d = ?").SetEntityAsync(0, root.Base));
+						await (q.ListAsync());
 					}
 			}
 			finally

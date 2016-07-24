@@ -16,9 +16,26 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.ReadOnly
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ReadOnlySessionLazyNonLazyTest : AbstractReadOnlyTest
+	public partial class ReadOnlySessionLazyNonLazyTestAsync : AbstractReadOnlyTestAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"ReadOnly.DataPoint.hbm.xml"};
+			}
+		}
+
 		[Test]
 		public async Task ExistingModifiableAfterSetSessionReadOnlyAsync()
 		{
@@ -31,31 +48,31 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
 			await (s.SaveAsync(cOrig));
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = true;
 			Assert.That(s.DefaultReadOnly, Is.True);
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			t = s.BeginTransaction();
 			Assert.That(s.DefaultReadOnly, Is.True);
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
-			Container c = s.Load<Container>(cOrig.Id);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
+			Container c = await (s.LoadAsync<Container>(cOrig.Id));
 			Assert.That(cOrig, Is.SameAs(c));
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			c = await (s.GetAsync<Container>(cOrig.Id));
 			Assert.That(cOrig, Is.SameAs(c));
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
-			s.Refresh(cOrig);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
+			await (s.RefreshAsync(cOrig));
 			Assert.That(cOrig, Is.SameAs(c));
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			// NH-specific: The following line is required to evict DataPoint(Id=1) from the Container.LazyDataPoint collection.
 			// This behaviour would seem to be necessary 'by design', as a comment in EvictCascadingAction states, "evicts don't
 			// cascade to uninitialized collections".
 			// If LazyDataPoint(Id=1) is not evicted, it has a status of Loaded, not ReadOnly, and causes the test to fail further
 			// down.
 			// Another way to get this test to pass is s.Clear().
-			NHibernateUtil.Initialize(cOrig.LazyDataPoints);
-			s.Evict(cOrig);
+			await (NHibernateUtil.InitializeAsync(cOrig.LazyDataPoints));
+			await (s.EvictAsync(cOrig));
 			c = await (s.GetAsync<Container>(cOrig.Id));
 			Assert.That(cOrig, Is.Not.SameAs(c));
 			expectedInitializedObjects = new HashSet<object>(new object[]{c, c.NonLazyInfo, //c.NoProxyOwner,
@@ -64,30 +81,28 @@ namespace NHibernate.Test.ReadOnly
 			c.ProxyInfo, c.NonLazyInfo, //c.NoProxyOwner,
 			c.ProxyOwner, c.NonLazyOwner, //c.getLazyDataPoints(),
 			c.NonLazyJoinDataPoints.First(), c.NonLazySelectDataPoints.First()});
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
 			//			NHibernateUtil.Initialize(c.NoProxyInfo);
 			//			expectedInitializedObjects.Add(c.NoProxyInfo);
 			//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			Assert.That(NHibernateUtil.IsInitialized(c.ProxyInfo), Is.False);
-			NHibernateUtil.Initialize(c.ProxyInfo);
+			await (NHibernateUtil.InitializeAsync(c.ProxyInfo));
 			expectedInitializedObjects.Add(c.ProxyInfo);
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			Assert.That(NHibernateUtil.IsInitialized(c.LazyDataPoints), Is.False);
-			NHibernateUtil.Initialize(c.LazyDataPoints);
+			await (NHibernateUtil.InitializeAsync(c.LazyDataPoints));
 			expectedInitializedObjects.Add(c.LazyDataPoints.First());
 			expectedReadOnlyObjects.Add(c.LazyDataPoints.First());
-			// The following check fails if the NH-specific change (above) is not made. More specifically it fails
-			// when asserting that the c.LazyDataPoints.First() is ReadOnly
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.CreateQuery("delete from DataPoint").ExecuteUpdate();
-			s.CreateQuery("delete from Container").ExecuteUpdate();
-			s.CreateQuery("delete from Info").ExecuteUpdate();
-			s.CreateQuery("delete from Owner").ExecuteUpdate();
+			await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Container").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Info").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Owner").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -104,10 +119,10 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
 			await (s.SaveAsync(cOrig));
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = true;
 			Assert.That(s.DefaultReadOnly, Is.True);
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
@@ -121,30 +136,29 @@ namespace NHibernate.Test.ReadOnly
 			c.ProxyInfo, c.NonLazyInfo, //c.NoProxyOwner,
 			c.ProxyOwner, c.NonLazyOwner, //c.getLazyDataPoints(),
 			c.NonLazyJoinDataPoints.First(), c.NonLazySelectDataPoints.First()});
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = false;
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
 			//			NHibernateUtil.Initialize(c.NoProxyInfo);
 			//			expectedInitializedObjects.Add(c.NoProxyInfo);
 			//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			Assert.That(NHibernateUtil.IsInitialized(c.ProxyInfo), Is.False);
-			NHibernateUtil.Initialize(c.ProxyInfo);
+			await (NHibernateUtil.InitializeAsync(c.ProxyInfo));
 			expectedInitializedObjects.Add(c.ProxyInfo);
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			Assert.That(NHibernateUtil.IsInitialized(c.LazyDataPoints), Is.False);
-			NHibernateUtil.Initialize(c.LazyDataPoints);
+			await (NHibernateUtil.InitializeAsync(c.LazyDataPoints));
 			expectedInitializedObjects.Add(c.LazyDataPoints.First());
-			//expectedReadOnlyObjects.Add(c.LazyDataPoints.First());
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.CreateQuery("delete from DataPoint").ExecuteUpdate();
-			s.CreateQuery("delete from Container").ExecuteUpdate();
-			s.CreateQuery("delete from Info").ExecuteUpdate();
-			s.CreateQuery("delete from Owner").ExecuteUpdate();
+			await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Container").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Info").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Owner").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -162,10 +176,10 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
 			await (s.SaveAsync(cOrig));
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = true;
 			Assert.That(s.DefaultReadOnly, Is.True);
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
@@ -179,31 +193,31 @@ namespace NHibernate.Test.ReadOnly
 			c.ProxyInfo, c.NonLazyInfo, //c.NoProxyOwner,
 			c.ProxyOwner, c.NonLazyOwner, //c.getLazyDataPoints(),
 			c.NonLazyJoinDataPoints.First(), c.NonLazySelectDataPoints.First()});
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = false;
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
 			//			NHibernateUtil.Initialize(c.NoProxyInfo);
 			//			expectedInitializedObjects.Add(c.NoProxyInfo);
 			//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			Assert.That(NHibernateUtil.IsInitialized(c.ProxyInfo), Is.False);
-			NHibernateUtil.Initialize(c.ProxyInfo);
+			await (NHibernateUtil.InitializeAsync(c.ProxyInfo));
 			expectedInitializedObjects.Add(c.ProxyInfo);
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			DataPoint lazyDataPoint = await (s.GetAsync<DataPoint>(lazyDataPointOrig.Id));
 			Assert.That(NHibernateUtil.IsInitialized(c.LazyDataPoints), Is.False);
-			NHibernateUtil.Initialize(c.LazyDataPoints);
+			await (NHibernateUtil.InitializeAsync(c.LazyDataPoints));
 			Assert.That(lazyDataPoint, Is.SameAs(c.LazyDataPoints.First()));
 			expectedInitializedObjects.Add(c.LazyDataPoints.First());
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.CreateQuery("delete from DataPoint").ExecuteUpdate();
-			s.CreateQuery("delete from Container").ExecuteUpdate();
-			s.CreateQuery("delete from Info").ExecuteUpdate();
-			s.CreateQuery("delete from Owner").ExecuteUpdate();
+			await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Container").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Info").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Owner").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -221,10 +235,10 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
 			await (s.SaveAsync(cOrig));
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = true;
 			Assert.That(s.DefaultReadOnly, Is.True);
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
@@ -238,34 +252,34 @@ namespace NHibernate.Test.ReadOnly
 			c.ProxyInfo, c.NonLazyInfo, //c.NoProxyOwner,
 			c.ProxyOwner, c.NonLazyOwner, //c.getLazyDataPoints(),
 			c.NonLazyJoinDataPoints.First(), c.NonLazySelectDataPoints.First()});
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = false;
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
 			//			NHibernateUtil.Initialize(c.NoProxyInfo);
 			//			expectedInitializedObjects.Add(c.NoProxyInfo);
 			//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			Assert.That(NHibernateUtil.IsInitialized(c.ProxyInfo), Is.False);
-			NHibernateUtil.Initialize(c.ProxyInfo);
+			await (NHibernateUtil.InitializeAsync(c.ProxyInfo));
 			expectedInitializedObjects.Add(c.ProxyInfo);
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = true;
 			DataPoint lazyDataPoint = await (s.GetAsync<DataPoint>(lazyDataPointOrig.Id));
 			s.DefaultReadOnly = false;
 			Assert.That(NHibernateUtil.IsInitialized(c.LazyDataPoints), Is.False);
-			NHibernateUtil.Initialize(c.LazyDataPoints);
+			await (NHibernateUtil.InitializeAsync(c.LazyDataPoints));
 			Assert.That(lazyDataPoint, Is.SameAs(c.LazyDataPoints.First()));
 			expectedInitializedObjects.Add(c.LazyDataPoints.First());
 			expectedReadOnlyObjects.Add(lazyDataPoint);
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.CreateQuery("delete from DataPoint").ExecuteUpdate();
-			s.CreateQuery("delete from Container").ExecuteUpdate();
-			s.CreateQuery("delete from Info").ExecuteUpdate();
-			s.CreateQuery("delete from Owner").ExecuteUpdate();
+			await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Container").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Info").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Owner").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -283,10 +297,10 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
 			await (s.SaveAsync(cOrig));
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = true;
 			Assert.That(s.DefaultReadOnly, Is.True);
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
@@ -300,31 +314,31 @@ namespace NHibernate.Test.ReadOnly
 			c.ProxyInfo, c.NonLazyInfo, //c.NoProxyOwner,
 			c.ProxyOwner, c.NonLazyOwner, //c.getLazyDataPoints(),
 			c.NonLazyJoinDataPoints.First(), c.NonLazySelectDataPoints.First()});
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = false;
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
 			//			NHibernateUtil.Initialize(c.NoProxyInfo);
 			//			expectedInitializedObjects.Add(c.NoProxyInfo);
 			//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			Assert.That(NHibernateUtil.IsInitialized(c.ProxyInfo), Is.False);
-			NHibernateUtil.Initialize(c.ProxyInfo);
+			await (NHibernateUtil.InitializeAsync(c.ProxyInfo));
 			expectedInitializedObjects.Add(c.ProxyInfo);
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
-			DataPoint lazyDataPoint = s.Load<DataPoint>(lazyDataPointOrig.Id);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
+			DataPoint lazyDataPoint = await (s.LoadAsync<DataPoint>(lazyDataPointOrig.Id));
 			Assert.That(NHibernateUtil.IsInitialized(c.LazyDataPoints), Is.False);
-			NHibernateUtil.Initialize(c.LazyDataPoints);
+			await (NHibernateUtil.InitializeAsync(c.LazyDataPoints));
 			Assert.That(lazyDataPoint, Is.SameAs(c.LazyDataPoints.First()));
 			expectedInitializedObjects.Add(c.LazyDataPoints.First());
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.CreateQuery("delete from DataPoint").ExecuteUpdate();
-			s.CreateQuery("delete from Container").ExecuteUpdate();
-			s.CreateQuery("delete from Info").ExecuteUpdate();
-			s.CreateQuery("delete from Owner").ExecuteUpdate();
+			await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Container").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Info").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Owner").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -342,10 +356,10 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
 			await (s.SaveAsync(cOrig));
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = true;
 			Assert.That(s.DefaultReadOnly, Is.True);
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
@@ -359,34 +373,34 @@ namespace NHibernate.Test.ReadOnly
 			c.ProxyInfo, c.NonLazyInfo, //c.NoProxyOwner,
 			c.ProxyOwner, c.NonLazyOwner, //c.getLazyDataPoints(),
 			c.NonLazyJoinDataPoints.First(), c.NonLazySelectDataPoints.First()});
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = false;
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
 			//			NHibernateUtil.Initialize(c.NoProxyInfo);
 			//			expectedInitializedObjects.Add(c.NoProxyInfo);
 			//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			Assert.That(NHibernateUtil.IsInitialized(c.ProxyInfo), Is.False);
-			NHibernateUtil.Initialize(c.ProxyInfo);
+			await (NHibernateUtil.InitializeAsync(c.ProxyInfo));
 			expectedInitializedObjects.Add(c.ProxyInfo);
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = true;
-			DataPoint lazyDataPoint = s.Load<DataPoint>(lazyDataPointOrig.Id);
+			DataPoint lazyDataPoint = await (s.LoadAsync<DataPoint>(lazyDataPointOrig.Id));
 			s.DefaultReadOnly = false;
 			Assert.That(NHibernateUtil.IsInitialized(c.LazyDataPoints), Is.False);
-			NHibernateUtil.Initialize(c.LazyDataPoints);
+			await (NHibernateUtil.InitializeAsync(c.LazyDataPoints));
 			Assert.That(lazyDataPoint, Is.SameAs(c.LazyDataPoints.First()));
 			expectedInitializedObjects.Add(c.LazyDataPoints.First());
 			expectedReadOnlyObjects.Add(lazyDataPoint);
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.CreateQuery("delete from DataPoint").ExecuteUpdate();
-			s.CreateQuery("delete from Container").ExecuteUpdate();
-			s.CreateQuery("delete from Info").ExecuteUpdate();
-			s.CreateQuery("delete from Owner").ExecuteUpdate();
+			await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Container").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Info").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Owner").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -403,44 +417,43 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
 			await (s.SaveAsync(cOrig));
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = true;
 			Assert.That(s.DefaultReadOnly, Is.True);
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
 			Assert.That(s.DefaultReadOnly, Is.False);
-			Container c = s.CreateQuery("from Container where id=" + cOrig.Id).SetReadOnly(true).UniqueResult<Container>();
+			Container c = await (s.CreateQuery("from Container where id=" + cOrig.Id).SetReadOnly(true).UniqueResultAsync<Container>());
 			expectedInitializedObjects = new HashSet<object>(new object[]{c, c.NonLazyInfo, //c.NoProxyOwner,
 			c.ProxyOwner, c.NonLazyOwner, c.NonLazyJoinDataPoints.First(), c.NonLazySelectDataPoints.First()});
 			expectedReadOnlyObjects = new HashSet<object>(new object[]{c, //c.NoProxyInfo,
 			c.ProxyInfo, c.NonLazyInfo, //c.NoProxyOwner,
 			c.ProxyOwner, c.NonLazyOwner, //c.getLazyDataPoints(),
 			c.NonLazyJoinDataPoints.First(), c.NonLazySelectDataPoints.First()});
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
 			//			NHibernateUtil.Initialize(c.NoProxyInfo);
 			//			expectedInitializedObjects.Add(c.NoProxyInfo);
 			//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			Assert.That(NHibernateUtil.IsInitialized(c.ProxyInfo), Is.False);
-			NHibernateUtil.Initialize(c.ProxyInfo);
+			await (NHibernateUtil.InitializeAsync(c.ProxyInfo));
 			expectedInitializedObjects.Add(c.ProxyInfo);
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			Assert.That(NHibernateUtil.IsInitialized(c.LazyDataPoints), Is.False);
-			NHibernateUtil.Initialize(c.LazyDataPoints);
+			await (NHibernateUtil.InitializeAsync(c.LazyDataPoints));
 			expectedInitializedObjects.Add(c.LazyDataPoints.First());
-			//expectedReadOnlyObjects.Add(c.LazyDataPoints.First());
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.CreateQuery("delete from DataPoint").ExecuteUpdate();
-			s.CreateQuery("delete from Container").ExecuteUpdate();
-			s.CreateQuery("delete from Info").ExecuteUpdate();
-			s.CreateQuery("delete from Owner").ExecuteUpdate();
+			await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Container").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Info").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Owner").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -457,42 +470,42 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
 			await (s.SaveAsync(cOrig));
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = true;
 			Assert.That(s.DefaultReadOnly, Is.True);
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
 			s.DefaultReadOnly = true;
 			Assert.That(s.DefaultReadOnly, Is.True);
-			Container c = s.CreateQuery("from Container where id=" + cOrig.Id).SetReadOnly(false).UniqueResult<Container>();
+			Container c = await (s.CreateQuery("from Container where id=" + cOrig.Id).SetReadOnly(false).UniqueResultAsync<Container>());
 			expectedInitializedObjects = new HashSet<object>(new object[]{c, c.NonLazyInfo, //c.NoProxyOwner,
 			c.ProxyOwner, c.NonLazyOwner, c.NonLazyJoinDataPoints.First(), c.NonLazySelectDataPoints.First()});
 			expectedReadOnlyObjects = new HashSet<object>();
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
 			//			NHibernateUtil.Initialize(c.NoProxyInfo);
 			//			expectedInitializedObjects.Add(c.NoProxyInfo);
 			//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			Assert.That(NHibernateUtil.IsInitialized(c.ProxyInfo), Is.False);
-			NHibernateUtil.Initialize(c.ProxyInfo);
+			await (NHibernateUtil.InitializeAsync(c.ProxyInfo));
 			expectedInitializedObjects.Add(c.ProxyInfo);
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			Assert.That(NHibernateUtil.IsInitialized(c.LazyDataPoints), Is.False);
-			NHibernateUtil.Initialize(c.LazyDataPoints);
+			await (NHibernateUtil.InitializeAsync(c.LazyDataPoints));
 			expectedInitializedObjects.Add(c.LazyDataPoints.First());
 			expectedReadOnlyObjects.Add(c.LazyDataPoints.First());
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.CreateQuery("delete from DataPoint").ExecuteUpdate();
-			s.CreateQuery("delete from Container").ExecuteUpdate();
-			s.CreateQuery("delete from Info").ExecuteUpdate();
-			s.CreateQuery("delete from Owner").ExecuteUpdate();
+			await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Container").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Info").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Owner").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -509,45 +522,45 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
 			await (s.SaveAsync(cOrig));
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = true;
 			Assert.That(s.DefaultReadOnly, Is.True);
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
 			s.DefaultReadOnly = true;
 			Assert.That(s.DefaultReadOnly, Is.True);
-			Container c = s.CreateQuery("from Container where id=" + cOrig.Id).UniqueResult<Container>();
+			Container c = await (s.CreateQuery("from Container where id=" + cOrig.Id).UniqueResultAsync<Container>());
 			expectedInitializedObjects = new HashSet<object>(new object[]{c, c.NonLazyInfo, //c.NoProxyOwner,
 			c.ProxyOwner, c.NonLazyOwner, c.NonLazyJoinDataPoints.First(), c.NonLazySelectDataPoints.First()});
 			expectedReadOnlyObjects = new HashSet<object>(new object[]{c, //c.NoProxyInfo,
 			c.ProxyInfo, c.NonLazyInfo, //c.NoProxyOwner,
 			c.ProxyOwner, c.NonLazyOwner, //c.getLazyDataPoints(),
 			c.NonLazyJoinDataPoints.First(), c.NonLazySelectDataPoints.First()});
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
 			//			NHibernateUtil.Initialize(c.NoProxyInfo);
 			//			expectedInitializedObjects.Add(c.NoProxyInfo);
 			//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			Assert.That(NHibernateUtil.IsInitialized(c.ProxyInfo), Is.False);
-			NHibernateUtil.Initialize(c.ProxyInfo);
+			await (NHibernateUtil.InitializeAsync(c.ProxyInfo));
 			expectedInitializedObjects.Add(c.ProxyInfo);
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			Assert.That(NHibernateUtil.IsInitialized(c.LazyDataPoints), Is.False);
-			NHibernateUtil.Initialize(c.LazyDataPoints);
+			await (NHibernateUtil.InitializeAsync(c.LazyDataPoints));
 			expectedInitializedObjects.Add(c.LazyDataPoints.First());
 			expectedReadOnlyObjects.Add(c.LazyDataPoints.First());
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.CreateQuery("delete from DataPoint").ExecuteUpdate();
-			s.CreateQuery("delete from Container").ExecuteUpdate();
-			s.CreateQuery("delete from Info").ExecuteUpdate();
-			s.CreateQuery("delete from Owner").ExecuteUpdate();
+			await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Container").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Info").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Owner").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -564,41 +577,40 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
 			await (s.SaveAsync(cOrig));
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = true;
 			Assert.That(s.DefaultReadOnly, Is.True);
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
 			Assert.That(s.DefaultReadOnly, Is.False);
-			Container c = s.CreateQuery("from Container where id=" + cOrig.Id).UniqueResult<Container>();
+			Container c = await (s.CreateQuery("from Container where id=" + cOrig.Id).UniqueResultAsync<Container>());
 			expectedInitializedObjects = new HashSet<object>(new object[]{c, c.NonLazyInfo, //c.NoProxyOwner,
 			c.ProxyOwner, c.NonLazyOwner, c.NonLazyJoinDataPoints.First(), c.NonLazySelectDataPoints.First()});
 			expectedReadOnlyObjects = new HashSet<object>();
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
 			//			NHibernateUtil.Initialize(c.NoProxyInfo);
 			//			expectedInitializedObjects.Add(c.NoProxyInfo);
 			//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			Assert.That(NHibernateUtil.IsInitialized(c.ProxyInfo), Is.False);
-			NHibernateUtil.Initialize(c.ProxyInfo);
+			await (NHibernateUtil.InitializeAsync(c.ProxyInfo));
 			expectedInitializedObjects.Add(c.ProxyInfo);
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			Assert.That(NHibernateUtil.IsInitialized(c.LazyDataPoints), Is.False);
-			NHibernateUtil.Initialize(c.LazyDataPoints);
+			await (NHibernateUtil.InitializeAsync(c.LazyDataPoints));
 			expectedInitializedObjects.Add(c.LazyDataPoints.First());
-			//expectedReadOnlyObjects.Add(c.LazyDataPoints.First());
-			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.CreateQuery("delete from DataPoint").ExecuteUpdate();
-			s.CreateQuery("delete from Container").ExecuteUpdate();
-			s.CreateQuery("delete from Info").ExecuteUpdate();
-			s.CreateQuery("delete from Owner").ExecuteUpdate();
+			await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Container").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Info").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Owner").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -615,25 +627,25 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
 			await (s.SaveAsync(cOrig));
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = true;
 			Assert.That(s.DefaultReadOnly, Is.True);
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
 			Assert.That(s.DefaultReadOnly, Is.False);
-			DataPoint dp = s.CreateQuery("select c.LazyDataPoints from Container c join c.LazyDataPoints where c.Id=" + cOrig.Id).SetReadOnly(true).UniqueResult<DataPoint>();
+			DataPoint dp = await (s.CreateQuery("select c.LazyDataPoints from Container c join c.LazyDataPoints where c.Id=" + cOrig.Id).SetReadOnly(true).UniqueResultAsync<DataPoint>());
 			Assert.That(s.IsReadOnly(dp), Is.True);
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.CreateQuery("delete from DataPoint").ExecuteUpdate();
-			s.CreateQuery("delete from Container").ExecuteUpdate();
-			s.CreateQuery("delete from Info").ExecuteUpdate();
-			s.CreateQuery("delete from Owner").ExecuteUpdate();
+			await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Container").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Info").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Owner").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -650,10 +662,10 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
 			await (s.SaveAsync(cOrig));
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = true;
 			Assert.That(s.DefaultReadOnly, Is.True);
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
@@ -668,23 +680,23 @@ namespace NHibernate.Test.ReadOnly
 			c.ProxyInfo, c.NonLazyInfo, //c.NoProxyOwner,
 			c.ProxyOwner, c.NonLazyOwner, //c.getLazyDataPoints(),
 			c.NonLazyJoinDataPoints.First(), c.NonLazySelectDataPoints.First()});
-			IList list = s.CreateFilter(c.LazyDataPoints, "").SetMaxResults(1).SetReadOnly(false).List();
+			IList list = await ((await (s.CreateFilterAsync(c.LazyDataPoints, ""))).SetMaxResults(1).SetReadOnly(false).ListAsync());
 			Assert.That(list.Count, Is.EqualTo(1));
 			Assert.That(s.IsReadOnly(list[0]), Is.False);
-			list = s.CreateFilter(c.NonLazyJoinDataPoints, "").SetMaxResults(1).SetReadOnly(false).List();
+			list = await ((await (s.CreateFilterAsync(c.NonLazyJoinDataPoints, ""))).SetMaxResults(1).SetReadOnly(false).ListAsync());
 			Assert.That(list.Count, Is.EqualTo(1));
 			Assert.That(s.IsReadOnly(list[0]), Is.True);
-			list = s.CreateFilter(c.NonLazySelectDataPoints, "").SetMaxResults(1).SetReadOnly(false).List();
+			list = await ((await (s.CreateFilterAsync(c.NonLazySelectDataPoints, ""))).SetMaxResults(1).SetReadOnly(false).ListAsync());
 			Assert.That(list.Count, Is.EqualTo(1));
 			Assert.That(s.IsReadOnly(list[0]), Is.True);
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.CreateQuery("delete from DataPoint").ExecuteUpdate();
-			s.CreateQuery("delete from Container").ExecuteUpdate();
-			s.CreateQuery("delete from Info").ExecuteUpdate();
-			s.CreateQuery("delete from Owner").ExecuteUpdate();
+			await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Container").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Info").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Owner").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -701,10 +713,10 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
 			await (s.SaveAsync(cOrig));
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = true;
 			Assert.That(s.DefaultReadOnly, Is.True);
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
@@ -715,23 +727,23 @@ namespace NHibernate.Test.ReadOnly
 			expectedInitializedObjects = new HashSet<object>(new object[]{c, c.NonLazyInfo, //c.NoProxyOwner,
 			c.ProxyOwner, c.NonLazyOwner, c.NonLazyJoinDataPoints.First(), c.NonLazySelectDataPoints.First()});
 			expectedReadOnlyObjects = new HashSet<object>();
-			IList list = s.CreateFilter(c.LazyDataPoints, "").SetMaxResults(1).SetReadOnly(true).List();
+			IList list = await ((await (s.CreateFilterAsync(c.LazyDataPoints, ""))).SetMaxResults(1).SetReadOnly(true).ListAsync());
 			Assert.That(list.Count, Is.EqualTo(1));
 			Assert.That(s.IsReadOnly(list[0]), Is.True);
-			list = s.CreateFilter(c.NonLazyJoinDataPoints, "").SetMaxResults(1).SetReadOnly(true).List();
+			list = await ((await (s.CreateFilterAsync(c.NonLazyJoinDataPoints, ""))).SetMaxResults(1).SetReadOnly(true).ListAsync());
 			Assert.That(list.Count, Is.EqualTo(1));
 			Assert.That(s.IsReadOnly(list[0]), Is.False);
-			list = s.CreateFilter(c.NonLazySelectDataPoints, "").SetMaxResults(1).SetReadOnly(true).List();
+			list = await ((await (s.CreateFilterAsync(c.NonLazySelectDataPoints, ""))).SetMaxResults(1).SetReadOnly(true).ListAsync());
 			Assert.That(list.Count, Is.EqualTo(1));
 			Assert.That(s.IsReadOnly(list[0]), Is.False);
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.CreateQuery("delete from DataPoint").ExecuteUpdate();
-			s.CreateQuery("delete from Container").ExecuteUpdate();
-			s.CreateQuery("delete from Info").ExecuteUpdate();
-			s.CreateQuery("delete from Owner").ExecuteUpdate();
+			await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Container").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Info").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Owner").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -748,10 +760,10 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
 			await (s.SaveAsync(cOrig));
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = true;
 			Assert.That(s.DefaultReadOnly, Is.True);
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
@@ -766,23 +778,23 @@ namespace NHibernate.Test.ReadOnly
 			c.ProxyInfo, c.NonLazyInfo, //c.NoProxyOwner,
 			c.ProxyOwner, c.NonLazyOwner, //c.getLazyDataPoints(),
 			c.NonLazyJoinDataPoints.First(), c.NonLazySelectDataPoints.First()});
-			IList list = s.CreateFilter(c.LazyDataPoints, "").SetMaxResults(1).List();
+			IList list = await ((await (s.CreateFilterAsync(c.LazyDataPoints, ""))).SetMaxResults(1).ListAsync());
 			Assert.That(list.Count, Is.EqualTo(1));
 			Assert.That(s.IsReadOnly(list[0]), Is.True);
-			list = s.CreateFilter(c.NonLazyJoinDataPoints, "").SetMaxResults(1).List();
+			list = await ((await (s.CreateFilterAsync(c.NonLazyJoinDataPoints, ""))).SetMaxResults(1).ListAsync());
 			Assert.That(list.Count, Is.EqualTo(1));
 			Assert.That(s.IsReadOnly(list[0]), Is.True);
-			list = s.CreateFilter(c.NonLazySelectDataPoints, "").SetMaxResults(1).List();
+			list = await ((await (s.CreateFilterAsync(c.NonLazySelectDataPoints, ""))).SetMaxResults(1).ListAsync());
 			Assert.That(list.Count, Is.EqualTo(1));
 			Assert.That(s.IsReadOnly(list[0]), Is.True);
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.CreateQuery("delete from DataPoint").ExecuteUpdate();
-			s.CreateQuery("delete from Container").ExecuteUpdate();
-			s.CreateQuery("delete from Info").ExecuteUpdate();
-			s.CreateQuery("delete from Owner").ExecuteUpdate();
+			await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Container").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Info").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Owner").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
 		}
@@ -799,10 +811,10 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
 			await (s.SaveAsync(cOrig));
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			s.DefaultReadOnly = true;
 			Assert.That(s.DefaultReadOnly, Is.True);
-			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			await (CheckContainerAsync(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s));
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
@@ -813,25 +825,78 @@ namespace NHibernate.Test.ReadOnly
 			expectedInitializedObjects = new HashSet<object>(new object[]{c, c.NonLazyInfo, //c.NoProxyOwner,
 			c.ProxyOwner, c.NonLazyOwner, c.NonLazyJoinDataPoints.First(), c.NonLazySelectDataPoints.First()});
 			expectedReadOnlyObjects = new HashSet<object>();
-			IList list = s.CreateFilter(c.LazyDataPoints, "").SetMaxResults(1).List();
+			IList list = await ((await (s.CreateFilterAsync(c.LazyDataPoints, ""))).SetMaxResults(1).ListAsync());
 			Assert.That(list.Count, Is.EqualTo(1));
 			Assert.That(s.IsReadOnly(list[0]), Is.False);
-			list = s.CreateFilter(c.NonLazyJoinDataPoints, "").SetMaxResults(1).List();
+			list = await ((await (s.CreateFilterAsync(c.NonLazyJoinDataPoints, ""))).SetMaxResults(1).ListAsync());
 			Assert.That(list.Count, Is.EqualTo(1));
 			Assert.That(s.IsReadOnly(list[0]), Is.False);
-			list = s.CreateFilter(c.NonLazySelectDataPoints, "").SetMaxResults(1).List();
+			list = await ((await (s.CreateFilterAsync(c.NonLazySelectDataPoints, ""))).SetMaxResults(1).ListAsync());
 			Assert.That(list.Count, Is.EqualTo(1));
 			Assert.That(s.IsReadOnly(list[0]), Is.False);
 			await (t.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.CreateQuery("delete from DataPoint").ExecuteUpdate();
-			s.CreateQuery("delete from Container").ExecuteUpdate();
-			s.CreateQuery("delete from Info").ExecuteUpdate();
-			s.CreateQuery("delete from Owner").ExecuteUpdate();
+			await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Container").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Info").ExecuteUpdateAsync());
+			await (s.CreateQuery("delete from Owner").ExecuteUpdateAsync());
 			await (t.CommitAsync());
 			s.Close();
+		}
+
+		private Container CreateContainer()
+		{
+			Container c = new Container("container");
+			//c.NoProxyInfo = new Info("no-proxy info");
+			c.ProxyInfo = new Info("proxy info");
+			c.NonLazyInfo = new Info("non-lazy info");
+			//c.NoProxyOwner = new Owner("no-proxy owner");
+			c.ProxyOwner = new Owner("proxy owner");
+			c.NonLazyOwner = new Owner("non-lazy owner");
+			c.LazyDataPoints.Add(new DataPoint(1M, 1M, "lazy data point"));
+			c.NonLazyJoinDataPoints.Add(new DataPoint(2M, 2M, "non-lazy join data point"));
+			c.NonLazySelectDataPoints.Add(new DataPoint(3M, 3M, "non-lazy select data point"));
+			return c;
+		}
+
+		private async Task CheckContainerAsync(Container c, ISet<object> expectedInitializedObjects, ISet<object> expectedReadOnlyObjects, ISession s)
+		{
+			await (CheckObjectAsync(c, expectedInitializedObjects, expectedReadOnlyObjects, s));
+			if (!expectedInitializedObjects.Contains(c))
+			{
+				return;
+			}
+
+			await (CheckObjectAsync(c.ProxyInfo, expectedInitializedObjects, expectedReadOnlyObjects, s));
+			await (CheckObjectAsync(c.NonLazyInfo, expectedInitializedObjects, expectedReadOnlyObjects, s));
+			await (CheckObjectAsync(c.ProxyOwner, expectedInitializedObjects, expectedReadOnlyObjects, s));
+			await (CheckObjectAsync(c.NonLazyOwner, expectedInitializedObjects, expectedReadOnlyObjects, s));
+			if (NHibernateUtil.IsInitialized(c.LazyDataPoints))
+			{
+				foreach (DataPoint dp in c.LazyDataPoints)
+					await (CheckObjectAsync(dp, expectedInitializedObjects, expectedReadOnlyObjects, s));
+				foreach (DataPoint dp in c.NonLazyJoinDataPoints)
+					await (CheckObjectAsync(dp, expectedInitializedObjects, expectedReadOnlyObjects, s));
+				foreach (DataPoint dp in c.NonLazySelectDataPoints)
+					await (CheckObjectAsync(dp, expectedInitializedObjects, expectedReadOnlyObjects, s));
+			}
+		}
+
+		private async Task CheckObjectAsync(object entityOrProxy, ISet<object> expectedInitializedObjects, ISet<object> expectedReadOnlyObjects, ISession s)
+		{
+			bool isExpectedToBeInitialized = expectedInitializedObjects.Contains(entityOrProxy);
+			bool isExpectedToBeReadOnly = expectedReadOnlyObjects.Contains(entityOrProxy);
+			ISessionImplementor si = (ISessionImplementor)s;
+			Assert.That(NHibernateUtil.IsInitialized(entityOrProxy), Is.EqualTo(isExpectedToBeInitialized));
+			Assert.That(s.IsReadOnly(entityOrProxy), Is.EqualTo(isExpectedToBeReadOnly));
+			if (NHibernateUtil.IsInitialized(entityOrProxy))
+			{
+				object entity = entityOrProxy is INHibernateProxy ? await (((INHibernateProxy)entityOrProxy).HibernateLazyInitializer.GetImplementationAsync(si)) : entityOrProxy;
+				Assert.That(entity, Is.Not.Null);
+				Assert.That(s.IsReadOnly(entity), Is.EqualTo(isExpectedToBeReadOnly));
+			}
 		}
 	}
 }

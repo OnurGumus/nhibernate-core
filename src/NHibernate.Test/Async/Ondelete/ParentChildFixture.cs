@@ -5,12 +5,44 @@ using NHibernate.Cfg;
 using NHibernate.Stat;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Ondelete
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class ParentChildFixture : TestCase
+	public partial class ParentChildFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Ondelete.ParentChild.hbm.xml"};
+			}
+		}
+
+		protected override Task ConfigureAsync(Configuration cfg)
+		{
+			try
+			{
+				cfg.SetProperty(Environment.GenerateStatistics, "true");
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
 		[Test]
 		public async Task ParentChildCascadeAsync()
 		{
@@ -30,7 +62,7 @@ namespace NHibernate.Test.Ondelete
 			statistics.Clear();
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IList<Parent> l = s.CreateQuery("from Parent").List<Parent>();
+			IList<Parent> l = await (s.CreateQuery("from Parent").ListAsync<Parent>());
 			p = l[0];
 			q = l[1];
 			statistics.Clear();
@@ -40,7 +72,7 @@ namespace NHibernate.Test.Ondelete
 			Assert.AreEqual(2, statistics.PrepareStatementCount);
 			Assert.AreEqual(6, statistics.EntityDeleteCount);
 			t = s.BeginTransaction();
-			IList names = s.CreateQuery("from Parent p").List();
+			IList names = await (s.CreateQuery("from Parent p").ListAsync());
 			Assert.AreEqual(0, names.Count);
 			await (t.CommitAsync());
 			s.Close();

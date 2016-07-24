@@ -8,9 +8,20 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1293
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override System.Collections.IList Mappings
+		{
+			get
+			{
+				if (Dialect is PostgreSQLDialect)
+					return new[]{"NHSpecificTest.NH1293.MappingsFilterAsBoolean.hbm.xml"};
+				return base.Mappings;
+			}
+		}
+
 		[Test]
 		public async Task Criteria_Does_Not_Equal_To_HQLAsync()
 		{
@@ -39,12 +50,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1293
 				// with HQL, Category.IsActive=true filter applied, result count=2
 				IQuery hqlQuery = s.CreateQuery("from Customer c join c.Category cat where cat.Name = ?");
 				hqlQuery.SetParameter(0, "User"); // note using positional parameters because of NH-1490
-				IList<Customer> hqlResult = hqlQuery.List<Customer>();
+				IList<Customer> hqlResult = await (hqlQuery.ListAsync<Customer>());
 				Console.WriteLine(hqlResult.Count);
 				// with ICriteria, no Category.IsActive filter applied, result count=1
 				ICriteria criteria = s.CreateCriteria(typeof (Customer), "cust").CreateCriteria("Category", "cat");
 				criteria.Add(Restrictions.Eq("cat.Name", "User"));
-				IList<Customer> criteriaResult = criteria.List<Customer>();
+				IList<Customer> criteriaResult = await (criteria.ListAsync<Customer>());
 				Console.WriteLine(criteriaResult.Count);
 				Assert.That(hqlResult.Count == criteriaResult.Count);
 			}

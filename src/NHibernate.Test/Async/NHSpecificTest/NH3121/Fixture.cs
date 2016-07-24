@@ -10,9 +10,15 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH3121
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return dialect is MsSql2000Dialect; // All MS dialects.
+		}
+
 		// Some notes:
 		// Mappings for all three properties use either unspecified length (defaulting to 8000 bytes)
 		// or a length specified to a value smaller than 8001 bytes. This is since for larger values
@@ -30,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3121
 			var reportImage = new Byte[reportSize];
 			random.NextBytes(reportImage);
 			var report = new Report{UnsizedArray = reportImage};
-			var ex = Assert.Throws<PropertyValueException>(async () => await (PersistReportAsync(report)));
+			var ex = Assert.ThrowsAsync<PropertyValueException>(async () => await (PersistReportAsync(report)));
 			Assert.That(ex.Message, Is.StringContaining("Report.UnsizedArray"));
 			Assert.That(ex.InnerException, Is.TypeOf<HibernateException>());
 			Assert.That(ex.InnerException.Message, Is.EqualTo("The length of the byte[] value exceeds the length configured in the mapping/parameter."));
@@ -43,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3121
 			var stream = assembly.GetManifestResourceStream("NHibernate.Test.NHSpecificTest.NH2484.food-photo.jpg");
 			var image = Bitmap.FromStream(stream);
 			var report = new Report{Image = image};
-			var ex = Assert.Throws<PropertyValueException>(async () => await (PersistReportAsync(report)));
+			var ex = Assert.ThrowsAsync<PropertyValueException>(async () => await (PersistReportAsync(report)));
 			Assert.That(ex.Message, Is.StringContaining("Report.Image"));
 			Assert.That(ex.InnerException, Is.TypeOf<HibernateException>());
 			Assert.That(ex.InnerException.Message, Is.EqualTo("The length of the byte[] value exceeds the length configured in the mapping/parameter."));
@@ -56,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3121
 			var stream = assembly.GetManifestResourceStream("NHibernate.Test.NHSpecificTest.NH2484.food-photo.jpg");
 			var image = Bitmap.FromStream(stream);
 			var report = new Report{SerializableImage = image};
-			var ex = Assert.Throws<PropertyValueException>(async () => await (PersistReportAsync(report)));
+			var ex = Assert.ThrowsAsync<PropertyValueException>(async () => await (PersistReportAsync(report)));
 			Assert.That(ex.Message, Is.StringContaining("Report.SerializableImage"));
 			Assert.That(ex.InnerException, Is.TypeOf<HibernateException>());
 			Assert.That(ex.InnerException.Message, Is.EqualTo("The length of the byte[] value exceeds the length configured in the mapping/parameter."));

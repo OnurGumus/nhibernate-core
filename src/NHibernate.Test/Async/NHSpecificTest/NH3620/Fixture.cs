@@ -3,12 +3,24 @@ using System;
 using NHibernate.Driver;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3620
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
+		{
+			return (factory.ConnectionProvider.Driver is OracleManagedDataClientDriver);
+		}
+
+		protected override Task OnTearDownAsync()
+		{
+			return CleanupDataAsync();
+		}
+
 		[Test]
 		public async Task Should_insert_two_blobs_and_a_dateAsync()
 		{

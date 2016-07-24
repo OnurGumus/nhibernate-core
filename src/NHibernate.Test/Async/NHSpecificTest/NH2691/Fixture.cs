@@ -9,8 +9,17 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.NHSpecificTest.NH2691
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : TestCaseMappingByCode
+	public partial class FixtureAsync : TestCaseMappingByCodeAsync
 	{
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ConventionModelMapper();
+			mapper.IsTablePerClass((type, declared) => false);
+			mapper.IsTablePerClassHierarchy((type, declared) => true);
+			var mappings = mapper.CompileMappingFor(new[]{typeof (Animal), typeof (Reptile), typeof (Mammal), typeof (Lizard), typeof (Dog), typeof (Cat)});
+			return mappings;
+		}
+
 		[Test]
 		public async Task WhenUseCountWithOrderThenCutTheOrderAsync()
 		{

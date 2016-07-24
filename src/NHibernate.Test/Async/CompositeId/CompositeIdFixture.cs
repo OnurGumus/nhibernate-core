@@ -6,9 +6,34 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.CompositeId
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class CompositeIdFixture : TestCase
+	public partial class CompositeIdFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"CompositeId.Customer.hbm.xml", "CompositeId.Order.hbm.xml", "CompositeId.LineItem.hbm.xml", "CompositeId.Product.hbm.xml"};
+			}
+		}
+
+		protected override string CacheConcurrencyStrategy
+		{
+			get
+			{
+				return null;
+			}
+		}
+
 		[Test]
 		public async Task CompositeIdsAsync()
 		{
@@ -53,27 +78,27 @@ namespace NHibernate.Test.CompositeId
 			using (s = OpenSession())
 			{
 				t = s.BeginTransaction();
-				s.CreateQuery("from Customer c left join fetch c.Orders o left join fetch o.LineItems li left join fetch li.Product p").List();
+				await (s.CreateQuery("from Customer c left join fetch c.Orders o left join fetch o.LineItems li left join fetch li.Product p").ListAsync());
 				await (t.CommitAsync());
 			}
 
 			using (s = OpenSession())
 			{
 				t = s.BeginTransaction();
-				s.CreateQuery("from Order o left join fetch o.LineItems li left join fetch li.Product p").List();
+				await (s.CreateQuery("from Order o left join fetch o.LineItems li left join fetch li.Product p").ListAsync());
 				await (t.CommitAsync());
 			}
 
 			using (s = OpenSession())
 			{
 				t = s.BeginTransaction();
-				IEnumerable iter = s.CreateQuery("select o.id, li.id from Order o join o.LineItems li").List();
+				IEnumerable iter = await (s.CreateQuery("select o.id, li.id from Order o join o.LineItems li").ListAsync());
 				foreach (object[] stuff in iter)
 				{
 					Assert.AreEqual(2, stuff.Length);
 				}
 
-				iter = s.CreateQuery("from Order o join o.LineItems li").Enumerable();
+				iter = await (s.CreateQuery("from Order o join o.LineItems li").EnumerableAsync());
 				foreach (object[] stuff in iter)
 				{
 					Assert.AreEqual(2, stuff.Length);
@@ -91,7 +116,7 @@ namespace NHibernate.Test.CompositeId
 				await (s.FlushAsync());
 				LineItem li2 = new LineItem(o2, p2);
 				li2.Quantity = 5;
-				IList bigOrders = s.CreateQuery("from Order o where o.Total>10.0").List();
+				IList bigOrders = await (s.CreateQuery("from Order o where o.Total>10.0").ListAsync());
 				Assert.AreEqual(1, bigOrders.Count);
 				await (t.CommitAsync());
 			}
@@ -231,7 +256,7 @@ namespace NHibernate.Test.CompositeId
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			s.CreateQuery("from LineItem ol where ol.Order.Id.CustomerId = 'C111'").List();
+			await (s.CreateQuery("from LineItem ol where ol.Order.Id.CustomerId = 'C111'").ListAsync());
 			await (t.CommitAsync());
 			s.Close();
 		}

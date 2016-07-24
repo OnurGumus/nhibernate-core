@@ -5,8 +5,18 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.NHSpecificTest.NH2341
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnTearDownAsync()
+		{
+			using (var s = OpenSession())
+				using (var tx = s.BeginTransaction())
+				{
+					await (s.DeleteAsync("from System.Object"));
+					await (tx.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task WhenSaveInstanceOfConcreteInheritedThenNotThrowsAsync()
 		{

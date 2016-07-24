@@ -7,9 +7,23 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.Dates
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class DateTime2Fixture : FixtureBase
+	public partial class DateTime2FixtureAsync : FixtureBaseAsync
 	{
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"NHSpecificTest.Dates.Mappings.DateTime2.hbm.xml"};
+			}
+		}
+
+		protected override DbType? AppliesTo()
+		{
+			return DbType.DateTime2;
+		}
+
 		[Test]
 		public async Task SavingAndRetrievingTestAsync()
 		{

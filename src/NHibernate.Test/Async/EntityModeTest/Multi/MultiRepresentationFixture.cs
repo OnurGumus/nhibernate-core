@@ -8,9 +8,73 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.EntityModeTest.Multi
 {
+	[TestFixture, Ignore("Not supported yet.")]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class MultiRepresentationFixture : TestCase
+	public partial class MultiRepresentationFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new[]{"EntityModeTest.Multi.Stock.hbm.xml", "EntityModeTest.Multi.Valuation.hbm.xml"};
+			}
+		}
+
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		private partial class TestData
+		{
+			private readonly ISessionFactory sessions;
+			public long stockId;
+			public TestData(ISessionFactory factory)
+			{
+				sessions = factory;
+			}
+
+			public async Task CreateAsync()
+			{
+				ISession session = sessions.OpenSession();
+				session.BeginTransaction();
+				var stock = new Stock{TradeSymbol = "NHForge"};
+				var valuation = new Valuation{Stock = stock, ValuationDate = DateTime.Now, Value = 200.0D};
+				stock.CurrentValuation = valuation;
+				stock.Valuations.Add(valuation);
+				await (session.SaveAsync(stock));
+				await (session.SaveAsync(valuation));
+				await (session.Transaction.CommitAsync());
+				session.Close();
+				stockId = stock.Id;
+			}
+
+			public async Task DestroyAsync()
+			{
+				ISession session = sessions.OpenSession();
+				session.BeginTransaction();
+				IList<Stock> stocks = await (session.CreateQuery("from Stock").ListAsync<Stock>());
+				foreach (Stock stock in stocks)
+				{
+					stock.CurrentValuation = null;
+					await (session.FlushAsync());
+					foreach (Valuation valuation in stock.Valuations)
+					{
+						await (session.DeleteAsync(valuation));
+					}
+
+					await (session.DeleteAsync(stock));
+				}
+
+				await (session.Transaction.CommitAsync());
+				session.Close();
+			}
+		}
+
 		[Test]
 		public async Task PocoRetreivalAsync()
 		{
@@ -33,7 +97,7 @@ namespace NHibernate.Test.EntityModeTest.Multi
 			ISession session = OpenSession();
 			ITransaction txn = session.BeginTransaction();
 			ISession xml = session.GetSession(EntityMode.Xml);
-			IList result = xml.CreateQuery("from Stock").List();
+			IList result = await (xml.CreateQuery("from Stock").ListAsync());
 			Assert.That(result.Count, Is.EqualTo(1L));
 			var element = (XmlElement)result[0];
 			Assert.That(element.Attributes["id"], Is.EqualTo(testData.stockId));
@@ -53,7 +117,7 @@ namespace NHibernate.Test.EntityModeTest.Multi
 			ISession session = OpenSession();
 			ITransaction txn = session.BeginTransaction();
 			ISession xml = session.GetSession(EntityMode.Xml);
-			object rtn = xml.Get(typeof (Stock).FullName, testData.stockId);
+			object rtn = await (xml.GetAsync(typeof (Stock).FullName, testData.stockId));
 			var element = (XmlElement)rtn;
 			Assert.That(element.Attributes["id"], Is.EqualTo(testData.stockId));
 			Console.WriteLine("**** XML: ****************************************************");
@@ -92,7 +156,7 @@ namespace NHibernate.Test.EntityModeTest.Multi
 			XmlElement value = domDoc.CreateElement("value");
 			tradeSymbol.InnerText = "121.00";
 			val.AppendChild(value);
-			xml.Save(typeof (Stock).FullName, stock);
+			await (xml.SaveAsync(typeof (Stock).FullName, stock));
 			await (xml.FlushAsync());
 			txn.Rollback();
 			pojos.Close();
@@ -100,46 +164,6 @@ namespace NHibernate.Test.EntityModeTest.Multi
 			Assert.That(!xml.IsOpen);
 			//prettyPrint( stock );
 			await (testData.DestroyAsync());
-		}
-
-		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		private partial class TestData
-		{
-			public async Task CreateAsync()
-			{
-				ISession session = sessions.OpenSession();
-				session.BeginTransaction();
-				var stock = new Stock{TradeSymbol = "NHForge"};
-				var valuation = new Valuation{Stock = stock, ValuationDate = DateTime.Now, Value = 200.0D};
-				stock.CurrentValuation = valuation;
-				stock.Valuations.Add(valuation);
-				await (session.SaveAsync(stock));
-				await (session.SaveAsync(valuation));
-				await (session.Transaction.CommitAsync());
-				session.Close();
-				stockId = stock.Id;
-			}
-
-			public async Task DestroyAsync()
-			{
-				ISession session = sessions.OpenSession();
-				session.BeginTransaction();
-				IList<Stock> stocks = session.CreateQuery("from Stock").List<Stock>();
-				foreach (Stock stock in stocks)
-				{
-					stock.CurrentValuation = null;
-					await (session.FlushAsync());
-					foreach (Valuation valuation in stock.Valuations)
-					{
-						await (session.DeleteAsync(valuation));
-					}
-
-					await (session.DeleteAsync(stock));
-				}
-
-				await (session.Transaction.CommitAsync());
-				session.Close();
-			}
 		}
 	}
 }

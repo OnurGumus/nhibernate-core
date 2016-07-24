@@ -5,9 +5,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH467
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH467";
+			}
+		}
+
 		[Test]
 		public async Task WhereClauseInManyToOneNavigationAsync()
 		{
@@ -29,11 +38,11 @@ namespace NHibernate.Test.NHSpecificTest.NH467
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					Employee loaded = (Employee)s.Get(typeof (Employee), employee.Id);
+					Employee loaded = (Employee)await (s.GetAsync(typeof (Employee), employee.Id));
 					Assert.IsNotNull(loaded.User);
 					try
 					{
-						NHibernateUtil.Initialize(loaded.User);
+						await (NHibernateUtil.InitializeAsync(loaded.User));
 						Assert.Fail("Should not have initialized");
 					}
 					catch (ObjectNotFoundException)

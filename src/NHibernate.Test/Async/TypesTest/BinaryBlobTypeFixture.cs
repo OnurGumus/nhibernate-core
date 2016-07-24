@@ -6,9 +6,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.TypesTest
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class BinaryBlobTypeFixture : TypeFixtureBase
+	public partial class BinaryBlobTypeFixtureAsync : TypeFixtureBaseAsync
 	{
+		protected override string TypeName
+		{
+			get
+			{
+				return "BinaryBlob";
+			}
+		}
+
 		[Test]
 		public async Task ReadWriteAsync()
 		{
@@ -19,8 +28,8 @@ namespace NHibernate.Test.TypesTest
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			b = (BinaryBlobClass)s.Load(typeof (BinaryBlobClass), b.Id);
-			ObjectAssert.AreEqual(UnicodeEncoding.UTF8.GetBytes("foo/bar/baz"), b.BinaryBlob);
+			b = (BinaryBlobClass)await (s.LoadAsync(typeof (BinaryBlobClass), b.Id));
+			ObjectAssertAsync.AreEqual(UnicodeEncoding.UTF8.GetBytes("foo/bar/baz"), b.BinaryBlob);
 			await (s.DeleteAsync(b));
 			await (s.FlushAsync());
 			s.Close();
@@ -36,8 +45,8 @@ namespace NHibernate.Test.TypesTest
 			await (s.FlushAsync());
 			s.Close();
 			s = OpenSession();
-			b = (BinaryBlobClass)s.Load(typeof (BinaryBlobClass), b.Id);
-			ObjectAssert.AreEqual(UnicodeEncoding.UTF8.GetBytes(new string ('T', 10000)), b.BinaryBlob);
+			b = (BinaryBlobClass)await (s.LoadAsync(typeof (BinaryBlobClass), b.Id));
+			ObjectAssertAsync.AreEqual(UnicodeEncoding.UTF8.GetBytes(new string ('T', 10000)), b.BinaryBlob);
 			await (s.DeleteAsync(b));
 			await (s.FlushAsync());
 			s.Close();

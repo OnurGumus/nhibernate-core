@@ -7,16 +7,32 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1985
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class SampleTest : BugTestCase
+	public partial class SampleTestAsync : BugTestCaseAsync
 	{
+		protected override async Task OnSetUpAsync()
+		{
+			await (base.OnSetUpAsync());
+			if (0 == await (ExecuteStatementAsync("INSERT INTO DomainClass (Id, Label) VALUES (1, 'TEST record');")))
+			{
+				throw new ApplicationException("Insertion of test record failed.");
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			await (base.OnTearDownAsync());
+			await (ExecuteStatementAsync("DELETE FROM DomainClass WHERE Id=1;"));
+		}
+
 		[Test]
 		[Ignore("It is valid to be delete immutable entities")]
 		public async Task AttemptToDeleteImmutableObjectShouldThrowAsync()
 		{
 			using (ISession session = OpenSession())
 			{
-				Assert.Throws<HibernateException>(async () =>
+				Assert.ThrowsAsync<HibernateException>(async () =>
 				{
 					using (ITransaction trans = session.BeginTransaction())
 					{
@@ -31,13 +47,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1985
 
 			using (IConnectionProvider prov = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties))
 			{
-				DbConnection conn = prov.GetConnection();
+				DbConnection conn = await (prov.GetConnectionAsync());
 				try
 				{
 					using (DbCommand comm = conn.CreateCommand())
 					{
 						comm.CommandText = "SELECT Id FROM DomainClass WHERE Id=1 AND Label='TEST record'";
-						object result = comm.ExecuteScalar();
+						object result = await (comm.ExecuteScalarAsync());
 						Assert.That(result != null, "Immutable object has been deleted!");
 					}
 				}
@@ -53,7 +69,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1985
 		{
 			using (ISession session = OpenSession())
 			{
-				Assert.DoesNotThrow(async () =>
+				Assert.DoesNotThrowAsync(async () =>
 				{
 					using (ITransaction trans = session.BeginTransaction())
 					{
@@ -68,13 +84,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1985
 
 			using (IConnectionProvider prov = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties))
 			{
-				DbConnection conn = prov.GetConnection();
+				DbConnection conn = await (prov.GetConnectionAsync());
 				try
 				{
 					using (DbCommand comm = conn.CreateCommand())
 					{
 						comm.CommandText = "SELECT Id FROM DomainClass WHERE Id=1 AND Label='TEST record'";
-						object result = comm.ExecuteScalar();
+						object result = await (comm.ExecuteScalarAsync());
 						Assert.That(result == null, "Immutable object has not been deleted!");
 					}
 				}

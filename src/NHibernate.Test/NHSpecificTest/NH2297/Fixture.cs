@@ -9,34 +9,28 @@ namespace NHibernate.Test.NHSpecificTest.NH2297
 	[TestFixture]
 	public partial class Fixture // Purposefully doesn't inherit from BugTestCase
 	{
-		[TestCase(".MappingsNames.hbm.xml",
-			ExpectedException = typeof (InvalidOperationException),
-			ExpectedMessage =
-				"ICompositeUserType NHibernate.Test.NHSpecificTest.NH2297.InvalidNamesCustomCompositeUserType returned a null value for 'PropertyNames'."
-			)]
-		[TestCase(".MappingsTypes.hbm.xml",
-			ExpectedException = typeof (InvalidOperationException),
-			ExpectedMessage =
-				"ICompositeUserType NHibernate.Test.NHSpecificTest.NH2297.InvalidTypesCustomCompositeUserType returned a null value for 'PropertyTypes'."
-			)]
+		[TestCase(".MappingsNames.hbm.xml")]
 		public void InvalidCustomCompositeUserTypeThrowsMeaningfulException(string mappingFile)
 		{
-			var cfg = new Configuration();
+			Assert.That(() =>
+			{
+				var cfg = new Configuration();
 
-			if (TestConfigurationHelper.hibernateConfigFile != null)
-				cfg.Configure(TestConfigurationHelper.hibernateConfigFile);
+				if (TestConfigurationHelper.hibernateConfigFile != null)
+					cfg.Configure(TestConfigurationHelper.hibernateConfigFile);
 
-			const string MappingsAssembly = "NHibernate.Test";
+				const string MappingsAssembly = "NHibernate.Test";
 
-			Assembly assembly = Assembly.Load(MappingsAssembly);
+				Assembly assembly = Assembly.Load(MappingsAssembly);
 
-			string ns = GetType().Namespace;
-			string bugNumber = ns.Substring(ns.LastIndexOf('.') + 1);
+				string ns = GetType().Namespace;
+				string bugNumber = ns.Substring(ns.LastIndexOf('.') + 1);
 
-			cfg.AddResource(MappingsAssembly + "." + "NHSpecificTest." + bugNumber + mappingFile, assembly);
+				cfg.AddResource(MappingsAssembly + "." + "NHSpecificTest." + bugNumber + mappingFile, assembly);
 
-			// build session factory creates the invalid custom type mapper, and throws the exception
-			cfg.BuildSessionFactory();
+				// build session factory creates the invalid custom type mapper, and throws the exception
+				cfg.BuildSessionFactory();
+			}, Throws.TypeOf<InvalidOperationException>().With.Message.SameAs("ICompositeUserType NHibernate.Test.NHSpecificTest.NH2297.InvalidNamesCustomCompositeUserType returned a null value for 'PropertyNames'."));
 		}
 	}
 }

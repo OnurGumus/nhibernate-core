@@ -6,9 +6,22 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.EntityNameAndCompositeId
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					await (s.CreateSQLQuery("delete from Person").ExecuteUpdateAsync());
+					await (tx.CommitAsync());
+				}
+			}
+		}
+
 		[Test]
 		public async Task CanPersistAndReadAsync()
 		{
@@ -17,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.EntityNameAndCompositeId
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					id = s.Save("Person", new Dictionary<string, object>{{"OuterId", new Dictionary<string, int>{{"InnerId", 1}}}, {"Data", "hello"}});
+					id = await (s.SaveAsync("Person", new Dictionary<string, object>{{"OuterId", new Dictionary<string, int>{{"InnerId", 1}}}, {"Data", "hello"}}));
 					await (tx.CommitAsync());
 				}
 			}
@@ -26,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.EntityNameAndCompositeId
 			{
 				using (s.BeginTransaction())
 				{
-					var p = (IDictionary)s.Get("Person", id);
+					var p = (IDictionary)await (s.GetAsync("Person", id));
 					Assert.AreEqual("hello", p["Data"]);
 				}
 			}

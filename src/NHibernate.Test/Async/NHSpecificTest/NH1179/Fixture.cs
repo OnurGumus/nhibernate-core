@@ -5,9 +5,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1179
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH1179";
+			}
+		}
+
 		[Test]
 		public async Task ApplyFilterExplicitJoinAsync()
 		{
@@ -29,12 +38,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1179
 			{
 				s.EnableFilter("RelatedClass_Valued").SetParameter("forValue", 2);
 				IQuery q = s.CreateQuery("select mc.Description, count(mc.Id) from MainClass mc join mc.Related r group by mc.Description order by mc.Description");
-				IList l = q.List();
+				IList l = await (q.ListAsync());
 				Assert.AreEqual(2, l.Count);
 				Assert.AreEqual(1, (l[0] as IList)[1]);
 				Assert.AreEqual(2, (l[1] as IList)[1]);
 				s.DisableFilter("RelatedClass_Valued");
-				l = q.List();
+				l = await (q.ListAsync());
 				Assert.AreEqual(2, l.Count);
 				Assert.AreEqual(2, (l[0] as IList)[1]);
 				Assert.AreEqual(3, (l[1] as IList)[1]);

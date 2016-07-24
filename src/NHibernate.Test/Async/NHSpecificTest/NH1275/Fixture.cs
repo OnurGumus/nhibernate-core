@@ -4,9 +4,23 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1275
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH1275";
+			}
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !string.IsNullOrEmpty(dialect.ForUpdateString);
+		}
+
 		[Test]
 		public async Task RetrievingAsync()
 		{
@@ -24,14 +38,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1275
 				{
 					using (SqlLogSpy sqlLogSpy = new SqlLogSpy())
 					{
-						s.Get<A>(savedId, LockMode.Upgrade);
+						await (s.GetAsync<A>(savedId, LockMode.Upgrade));
 						string sql = sqlLogSpy.Appender.GetEvents()[0].RenderedMessage;
 						Assert.Less(0, sql.IndexOf(Dialect.ForUpdateString));
 					}
 
 					using (SqlLogSpy sqlLogSpy = new SqlLogSpy())
 					{
-						s.CreateQuery("from A a where a.Id= :pid").SetLockMode("a", LockMode.Upgrade).SetParameter("pid", savedId).UniqueResult<A>();
+						await (s.CreateQuery("from A a where a.Id= :pid").SetLockMode("a", LockMode.Upgrade).SetParameter("pid", savedId).UniqueResultAsync<A>());
 						string sql = sqlLogSpy.Appender.GetEvents()[0].RenderedMessage;
 						Assert.Less(0, sql.IndexOf(Dialect.ForUpdateString));
 					}
@@ -65,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1275
 					A a = await (s.GetAsync<A>(savedId));
 					using (SqlLogSpy sqlLogSpy = new SqlLogSpy())
 					{
-						s.Lock(a, LockMode.Upgrade);
+						await (s.LockAsync(a, LockMode.Upgrade));
 						string sql = sqlLogSpy.Appender.GetEvents()[0].RenderedMessage;
 						Assert.Less(0, sql.IndexOf(Dialect.ForUpdateString));
 					}

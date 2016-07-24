@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1706
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class KeyPropertyRefFixture : BugTestCase
+	public partial class KeyPropertyRefFixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task PropertyRefUsesOtherColumnAsync()

@@ -5,12 +5,44 @@ using NHibernate.Criterion;
 using NHibernate.Stat;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Stats
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class StatsFixture : TestCase
+	public partial class StatsFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected override IList Mappings
+		{
+			get
+			{
+				return new string[]{"Stats.Continent.hbm.xml"};
+			}
+		}
+
+		protected override Task ConfigureAsync(Cfg.Configuration configuration)
+		{
+			try
+			{
+				configuration.SetProperty(Cfg.Environment.GenerateStatistics, "true");
+				return TaskHelper.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
+		}
+
 		private static async Task<Continent> FillDbAsync(ISession s)
 		{
 			Continent europe = new Continent();
@@ -61,7 +93,7 @@ namespace NHibernate.Test.Stats
 			tx = s.BeginTransaction();
 			Assert.AreEqual(0, stats.CollectionLoadCount);
 			Assert.AreEqual(0, stats.CollectionFetchCount);
-			europe2 = s.CreateQuery("from Continent a join fetch a.Countries where a.id = " + europe.Id).UniqueResult<Continent>();
+			europe2 = await (s.CreateQuery("from Continent a join fetch a.Countries where a.id = " + europe.Id).UniqueResultAsync<Continent>());
 			Assert.AreEqual(1, stats.CollectionLoadCount);
 			Assert.AreEqual(0, stats.CollectionFetchCount, "collection should be loaded in the same query as its parent");
 			await (tx.CommitAsync());
@@ -86,7 +118,7 @@ namespace NHibernate.Test.Stats
 			Assert.AreEqual(0, stats.CollectionFetchCount, "Should do direct load, not indirect second load when lazy false and JOIN");
 			await (tx.CommitAsync());
 			s.Close();
-			sf.Close();
+			await (sf.CloseAsync());
 			coll = cfg.GetCollectionMapping("NHibernate.Test.Stats.Continent.Countries");
 			coll.FetchMode = FetchMode.Select;
 			coll.IsLazy = false;
@@ -128,7 +160,7 @@ namespace NHibernate.Test.Stats
 			s = OpenSession();
 			tx = s.BeginTransaction();
 			string continents = "from Continent";
-			int results = s.CreateQuery(continents).List().Count;
+			int results = (await (s.CreateQuery(continents).ListAsync())).Count;
 			QueryStatistics continentStats = stats.GetQueryStatistics(continents);
 			Assert.IsNotNull(continentStats, "stats were null");
 			Assert.AreEqual(1, continentStats.ExecutionCount, "unexpected execution count");
@@ -136,7 +168,7 @@ namespace NHibernate.Test.Stats
 			var maxTime = continentStats.ExecutionMaxTime;
 			Assert.AreEqual(maxTime, stats.QueryExecutionMaxTime);
 			Assert.AreEqual(continents, stats.QueryExecutionMaxTimeQueryString);
-			IEnumerable itr = s.CreateQuery(continents).Enumerable();
+			IEnumerable itr = await (s.CreateQuery(continents).EnumerableAsync());
 			// Enumerable() should increment the execution count
 			Assert.AreEqual(2, continentStats.ExecutionCount, "unexpected execution count");
 			// but should not effect the cumulative row count
@@ -150,7 +182,7 @@ namespace NHibernate.Test.Stats
 			s = OpenSession();
 			tx = s.BeginTransaction();
 			string localities = "from Locality";
-			results = s.CreateQuery(localities).List().Count;
+			results = (await (s.CreateQuery(localities).ListAsync())).Count;
 			QueryStatistics localityStats = stats.GetQueryStatistics(localities);
 			Assert.IsNotNull(localityStats, "stats were null");
 			// ...one for each split query
@@ -167,7 +199,7 @@ namespace NHibernate.Test.Stats
 			s = OpenSession();
 			tx = s.BeginTransaction();
 			string sql = "select Id, Name from Country";
-			results = s.CreateSQLQuery(sql).AddEntity(typeof (Country)).List().Count;
+			results = (await (s.CreateSQLQuery(sql).AddEntity(typeof (Country)).ListAsync())).Count;
 			QueryStatistics sqlStats = stats.GetQueryStatistics(sql);
 			Assert.IsNotNull(sqlStats, "sql stats were null");
 			Assert.AreEqual(1, sqlStats.ExecutionCount, "unexpected execution count");
@@ -198,14 +230,14 @@ namespace NHibernate.Test.Stats
 			stats.Clear();
 			using (ISession s = OpenSession())
 			{
-				var r = s.CreateCriteria<Country>().List();
+				var r = await (s.CreateCriteria<Country>().ListAsync());
 			}
 
 			Assert.AreEqual(1, stats.QueryExecutionCount);
 			stats.Clear();
 			using (ISession s = OpenSession())
 			{
-				var r = s.CreateQuery("from Country").List();
+				var r = await (s.CreateQuery("from Country").ListAsync());
 			}
 
 			Assert.AreEqual(1, stats.QueryExecutionCount);
@@ -215,14 +247,14 @@ namespace NHibernate.Test.Stats
 			{
 				using (var s = OpenSession())
 				{
-					var r = s.CreateMultiQuery().Add("from Country").Add("from Continent").List();
+					var r = await (s.CreateMultiQuery().Add("from Country").Add("from Continent").ListAsync());
 				}
 
 				Assert.AreEqual(1, stats.QueryExecutionCount);
 				stats.Clear();
 				using (var s = OpenSession())
 				{
-					var r = s.CreateMultiCriteria().Add(DetachedCriteria.For<Country>()).Add(DetachedCriteria.For<Continent>()).List();
+					var r = await (s.CreateMultiCriteria().Add(DetachedCriteria.For<Country>()).Add(DetachedCriteria.For<Continent>()).ListAsync());
 				}
 
 				Assert.AreEqual(1, stats.QueryExecutionCount);

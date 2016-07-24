@@ -5,9 +5,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH401
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH401";
+			}
+		}
+
 		[Test]
 		public async Task MergeAsync()
 		{
@@ -21,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH401
 
 			Clubmember mem = new Clubmember();
 			ISession sess2 = OpenSession();
-			mem.Club = (Club)sess2.Get(typeof (Club), clubId);
+			mem.Club = (Club)await (sess2.GetAsync(typeof (Club), clubId));
 			sess2.Close();
 			ISession sess = OpenSession();
 			mem.Expirydate = DateTime.Now.AddYears(1);

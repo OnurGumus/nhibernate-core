@@ -4,9 +4,23 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2808
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = OpenSession())
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from System.Object"));
+					await (session.FlushAsync());
+					await (transaction.CommitAsync());
+				}
+
+			await (base.OnTearDownAsync());
+		}
+
 		[Test]
 		public async Task CheckExistanceOfEntityAsync()
 		{
@@ -15,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2808
 				using (ITransaction transaction = session.BeginTransaction())
 				{
 					var a = new Entity{Name = "A"};
-					session.Save("Entity1", a, 1);
+					await (session.SaveAsync("Entity1", a, 1));
 					await (transaction.CommitAsync());
 				}
 
@@ -23,9 +37,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2808
 			using (ISession session = OpenSession())
 				using (session.BeginTransaction())
 				{
-					var a = session.Get("Entity1", 1);
+					var a = await (session.GetAsync("Entity1", 1));
 					Assert.IsNotNull(a);
-					a = session.Get("Entity2", 1);
+					a = await (session.GetAsync("Entity2", 1));
 					Assert.IsNull(a);
 				}
 		}
@@ -38,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2808
 				using (ITransaction transaction = session.BeginTransaction())
 				{
 					var a = new Entity{Name = "A"};
-					session.Save("Entity1", a, 1);
+					await (session.SaveAsync("Entity1", a, 1));
 					await (transaction.CommitAsync());
 				}
 
@@ -46,9 +60,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2808
 			using (ISession session = OpenSession())
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					var a = (Entity)session.Get("Entity1", 1);
+					var a = (Entity)await (session.GetAsync("Entity1", 1));
 					a.Name = "A'";
-					session.Update("Entity1", a, 1);
+					await (session.UpdateAsync("Entity1", a, 1));
 					await (transaction.CommitAsync());
 				}
 
@@ -56,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2808
 			using (ISession session = OpenSession())
 				using (session.BeginTransaction())
 				{
-					var a = (Entity)session.Get("Entity1", 1);
+					var a = (Entity)await (session.GetAsync("Entity1", 1));
 					Assert.AreEqual("A'", a.Name);
 				}
 		}
@@ -69,7 +83,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2808
 				using (ITransaction transaction = session.BeginTransaction())
 				{
 					var a = new Entity{Name = "A"};
-					session.Save("Entity1", a, 1);
+					await (session.SaveAsync("Entity1", a, 1));
 					await (transaction.CommitAsync());
 				}
 
@@ -77,11 +91,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2808
 			using (ISession session = OpenSession())
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					var a = (Entity)session.Get("Entity1", 1);
+					var a = (Entity)await (session.GetAsync("Entity1", 1));
 					a.Name = "A'";
 					var b = new Entity{Name = "B"};
-					session.SaveOrUpdate("Entity1", a, 1);
-					session.SaveOrUpdate("Entity1", b, 2);
+					await (session.SaveOrUpdateAsync("Entity1", a, 1));
+					await (session.SaveOrUpdateAsync("Entity1", b, 2));
 					await (transaction.CommitAsync());
 				}
 
@@ -89,8 +103,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2808
 			using (ISession session = OpenSession())
 				using (session.BeginTransaction())
 				{
-					var a = (Entity)session.Get("Entity1", 1);
-					var b = (Entity)session.Get("Entity1", 2);
+					var a = (Entity)await (session.GetAsync("Entity1", 1));
+					var b = (Entity)await (session.GetAsync("Entity1", 2));
 					Assert.AreEqual("A'", a.Name);
 					Assert.AreEqual("B", b.Name);
 				}

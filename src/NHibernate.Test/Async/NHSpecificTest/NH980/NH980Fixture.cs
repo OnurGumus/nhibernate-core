@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH980
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class NH980Fixture : BugTestCase
+	public partial class NH980FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task IdGeneratorShouldUseQuotedTableNameAsync()

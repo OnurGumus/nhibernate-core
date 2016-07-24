@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2470
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Class1_Class2_Tests : BugTestCase
+	public partial class Class1_Class2_TestsAsync : BugTestCaseAsync
 	{
 		public async Task CleanAsync()
 		{

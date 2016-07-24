@@ -5,9 +5,43 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1868
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnSetUpAsync()
+		{
+			await (base.OnSetUpAsync());
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					cat = new Category{ValidUntil = DateTime.Now};
+					await (session.SaveAsync(cat));
+					package = new Package{ValidUntil = DateTime.Now};
+					await (session.SaveAsync(package));
+					await (tx.CommitAsync());
+				}
+			}
+		}
+
+		private Category cat;
+		private Package package;
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from Category"));
+					await (session.DeleteAsync("from Package"));
+					await (tx.CommitAsync());
+				}
+			}
+
+			await (base.OnTearDownAsync());
+		}
+
 		public async Task ExecuteQueryAsync(Action<ISession> sessionModifier)
 		{
 			using (ISession session = OpenSession())
@@ -15,9 +49,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1868
 				using (ITransaction tx = session.BeginTransaction())
 				{
 					sessionModifier(session);
-					session.Refresh(cat);
-					session.Refresh(package);
-					session.CreateQuery(@"
+					await (session.RefreshAsync(cat));
+					await (session.RefreshAsync(package));
+					await ((await ((await (session.CreateQuery(@"
                     select 
                         inv
                     from 
@@ -28,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1868
                         and inv.Category = :cat
                         and inv.ValidUntil > :now
                         and inv.Package = :package 
-                    ").SetEntity("cat", cat).SetEntity("package", package).SetDateTime("now", DateTime.Now).UniqueResult<Invoice>();
+                    ").SetEntityAsync("cat", cat))).SetEntityAsync("package", package))).SetDateTime("now", DateTime.Now).UniqueResultAsync<Invoice>());
 					await (tx.CommitAsync());
 				}
 			}
@@ -37,34 +71,34 @@ namespace NHibernate.Test.NHSpecificTest.NH1868
 		[Test]
 		public async Task BugAsync()
 		{
-			Assert.DoesNotThrow(async () => await (ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now))));
+			Assert.DoesNotThrowAsync(async () => await (ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now))));
 		}
 
 		[Test]
 		public async Task FilterOnOffOnAsync()
 		{
-			Assert.DoesNotThrow(async () => await (ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now))));
-			Assert.DoesNotThrow(async () => await (ExecuteQueryAsync(s =>
+			Assert.DoesNotThrowAsync(async () => await (ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now))));
+			Assert.DoesNotThrowAsync(async () => await (ExecuteQueryAsync(s =>
 			{
 			}
 
 			)));
-			Assert.DoesNotThrow(async () => await (ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now))));
+			Assert.DoesNotThrowAsync(async () => await (ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now))));
 		}
 
 		[Test]
 		public async Task FilterQueryTwiceAsync()
 		{
-			Assert.DoesNotThrow(async () => await (ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now))));
-			Assert.DoesNotThrow(async () => await (ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now))));
+			Assert.DoesNotThrowAsync(async () => await (ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now))));
+			Assert.DoesNotThrowAsync(async () => await (ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now))));
 		}
 
 		[Test]
 		public async Task FilterQuery3Async()
 		{
-			Assert.DoesNotThrow(async () => await (ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now))));
-			Assert.DoesNotThrow(async () => await (ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now))));
-			Assert.DoesNotThrow(async () => await (ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now))));
+			Assert.DoesNotThrowAsync(async () => await (ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now))));
+			Assert.DoesNotThrowAsync(async () => await (ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now))));
+			Assert.DoesNotThrowAsync(async () => await (ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now))));
 		}
 	}
 }

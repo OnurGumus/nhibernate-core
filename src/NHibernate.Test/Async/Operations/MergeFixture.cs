@@ -3,12 +3,25 @@ using System.Collections.Generic;
 using NHibernate.Criterion;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Operations
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class MergeFixture : AbstractOperationTestCase
+	public partial class MergeFixtureAsync : AbstractOperationTestCaseAsync
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is Dialect.FirebirdDialect); // Firebird has no CommandTimeout, and locks up during the tear-down of this fixture
+		}
+
+		protected override Task OnTearDownAsync()
+		{
+			return CleanupAsync();
+		}
+
 		private async Task CleanupAsync()
 		{
 			using (ISession s = OpenSession())
@@ -262,8 +275,8 @@ namespace NHibernate.Test.Operations
 			rit.MoveNext();
 			NumberedNode mergedChild = rit.Current;
 			Assert.That(mergedChild, Is.Not.SameAs(child));
-			Assert.That(s.Contains(mergedChild));
-			Assert.That(!s.Contains(child));
+			Assert.That(await (s.ContainsAsync(mergedChild)));
+			Assert.That(!await (s.ContainsAsync(child)));
 			Assert.That(root.Children.Count, Is.EqualTo(1));
 			Assert.That(root.Children.Contains(mergedChild));
 			//assertNotSame( mergedChild, s.Merge(child) ); //yucky :(
@@ -568,7 +581,7 @@ namespace NHibernate.Test.Operations
 			try
 			{
 				// control operation...
-				s.SaveOrUpdate(new TimestampedEntity{Id = "test", Name = "test-3"});
+				await (s.SaveOrUpdateAsync(new TimestampedEntity{Id = "test", Name = "test-3"}));
 				Assert.Fail("saveOrUpdate() should fail here");
 			}
 			catch (NonUniqueObjectException)
@@ -591,7 +604,7 @@ namespace NHibernate.Test.Operations
 			try
 			{
 				// control operation...
-				s.SaveOrUpdate(new VersionedEntity{Id = "test", Name = "test-3"});
+				await (s.SaveOrUpdateAsync(new VersionedEntity{Id = "test", Name = "test-3"}));
 				Assert.Fail("saveOrUpdate() should fail here");
 			}
 			catch (NonUniqueObjectException)
@@ -615,7 +628,7 @@ namespace NHibernate.Test.Operations
 					jboss.Employees = new List<Employee>{gavin};
 					s.Merge(jboss);
 					await (s.FlushAsync());
-					jboss = s.CreateQuery("from Employer e join fetch e.Employees").UniqueResult<Employer>();
+					jboss = await (s.CreateQuery("from Employer e join fetch e.Employees").UniqueResultAsync<Employer>());
 					Assert.That(NHibernateUtil.IsInitialized(jboss.Employees));
 					Assert.That(jboss.Employees.Count, Is.EqualTo(1));
 					s.Clear();

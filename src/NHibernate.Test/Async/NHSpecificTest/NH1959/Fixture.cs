@@ -4,9 +4,21 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1959
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = OpenSession())
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					await (s.DeleteAsync("from ClassB"));
+					await (s.DeleteAsync("from ClassA"));
+					await (tx.CommitAsync());
+				}
+		}
+
 		[Test]
 		public async Task StartWithEmptyDoAddAndRemoveAsync()
 		{

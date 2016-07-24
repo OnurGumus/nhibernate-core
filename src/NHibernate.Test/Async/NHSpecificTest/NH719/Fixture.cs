@@ -4,9 +4,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH719
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH719";
+			}
+		}
+
 		[Test]
 		public async Task CacheLoadTestAsync()
 		{
@@ -29,10 +38,10 @@ namespace NHibernate.Test.NHSpecificTest.NH719
 				using (ISession session = sessions.OpenSession())
 				{
 					// runs OK, since it's not cached
-					NotCached nc = (NotCached)session.Load(typeof (NotCached), 1);
+					NotCached nc = (NotCached)await (session.LoadAsync(typeof (NotCached), 1));
 					Assert.AreEqual("bbb", ((B)nc.Owner).Foo);
 					// 1st run OK, not yet in cache
-					Cached ca = (Cached)session.Load(typeof (Cached), 1);
+					Cached ca = (Cached)await (session.LoadAsync(typeof (Cached), 1));
 					Assert.AreEqual("aaa", ((A)ca.Owner).Foo);
 				}
 
@@ -40,10 +49,10 @@ namespace NHibernate.Test.NHSpecificTest.NH719
 				using (ISession session = sessions.OpenSession())
 				{
 					// runs OK, since it's not cached
-					NotCached nc = (NotCached)session.Load(typeof (NotCached), 1);
+					NotCached nc = (NotCached)await (session.LoadAsync(typeof (NotCached), 1));
 					Assert.AreEqual("bbb", ((B)nc.Owner).Foo);
 					// 2nd run fails, when loaded from in cache
-					Cached ca = (Cached)session.Load(typeof (Cached), 1);
+					Cached ca = (Cached)await (session.LoadAsync(typeof (Cached), 1));
 					Assert.AreEqual("aaa", ((A)ca.Owner).Foo);
 				}
 			}

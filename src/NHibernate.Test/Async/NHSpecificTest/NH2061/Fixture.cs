@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH2061
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task merge_with_many_to_many_inside_component_that_is_nullAsync()
@@ -25,6 +26,19 @@ namespace NHibernate.Test.NHSpecificTest.NH2061
 
 			Assert.That(mergedCopy, Is.Not.Null);
 			Assert.That(mergedCopy.GroupComponent, Is.Null);
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = OpenSession())
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from Order"));
+					await (session.DeleteAsync("from Country"));
+					await (tx.CommitAsync());
+				}
+
+			await (base.OnTearDownAsync());
 		}
 	}
 }

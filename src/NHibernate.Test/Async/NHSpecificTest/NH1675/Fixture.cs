@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1675
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task ShouldWorkUsingDistinctAndLimitsAsync()
@@ -24,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1675
 			using (ISession s = OpenSession())
 			{
 				var q = s.CreateQuery("select distinct p from Person p").SetFirstResult(0).SetMaxResults(10);
-				Assert.That(q.List().Count, Is.EqualTo(5));
+				Assert.That((await (q.ListAsync())).Count, Is.EqualTo(5));
 			}
 
 			// clean up

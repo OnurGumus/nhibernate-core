@@ -7,9 +7,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH496
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH496";
+			}
+		}
+
 		[Test]
 		public async Task CRUDAsync()
 		{
@@ -32,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH496
 				using (ISession s = OpenSession())
 					using (ITransaction t = s.BeginTransaction())
 					{
-						Assert.Throws<PropertyAccessException>(() => s.Get(typeof (WronglyMappedClass), obj.Id));
+						Assert.ThrowsAsync<PropertyAccessException>(async () => await (s.GetAsync(typeof (WronglyMappedClass), obj.Id)));
 						await (t.CommitAsync());
 					}
 			}

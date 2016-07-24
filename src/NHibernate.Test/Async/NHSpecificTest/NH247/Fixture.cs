@@ -6,9 +6,33 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH247
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH247";
+			}
+		}
+
+		private void AssertDialect()
+		{
+			if (!(Dialect is FirebirdDialect))
+				Assert.Ignore("This test is specific for FirebirdDialect");
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				await (s.DeleteAsync("from LiteralDescription"));
+				await (s.FlushAsync());
+			}
+		}
+
 		private async Task FillDBAsync()
 		{
 			LiteralDescription ld1 = new LiteralDescription("DescriptioN 1");
@@ -38,21 +62,21 @@ namespace NHibernate.Test.NHSpecificTest.NH247
 			{
 				IQuery q;
 				q = s.CreateQuery("from ld in class LiteralDescription where upper(ld.Description) = 'DESCRIPTION 1'");
-				Assert.AreEqual(1, q.List().Count);
+				Assert.AreEqual(1, (await (q.ListAsync())).Count);
 				q = s.CreateQuery("from ld in class LiteralDescription where lower(ld.Description) = 'description 1'");
-				Assert.AreEqual(1, q.List().Count);
+				Assert.AreEqual(1, (await (q.ListAsync())).Count);
 				q = s.CreateQuery("from ld in class LiteralDescription where trim(ld.Description) = 'Description 2'");
-				Assert.AreEqual(1, q.List().Count);
+				Assert.AreEqual(1, (await (q.ListAsync())).Count);
 				q = s.CreateQuery("from ld in class LiteralDescription where trim(ld.Description) = 'Description'");
-				Assert.AreEqual(1, q.List().Count);
+				Assert.AreEqual(1, (await (q.ListAsync())).Count);
 				q = s.CreateQuery("from ld in class LiteralDescription where trim(upper(ld.Description)) = 'DESCRIPTION'");
-				Assert.AreEqual(1, q.List().Count);
+				Assert.AreEqual(1, (await (q.ListAsync())).Count);
 				q = s.CreateQuery("from ld in class LiteralDescription where lower(trim(ld.Description)) = 'description'");
-				Assert.AreEqual(1, q.List().Count);
+				Assert.AreEqual(1, (await (q.ListAsync())).Count);
 				q = s.CreateQuery("from ld in class LiteralDescription where upper(ld.Description) like 'DESCRIPTION%'");
-				Assert.AreEqual(2, q.List().Count);
+				Assert.AreEqual(2, (await (q.ListAsync())).Count);
 				q = s.CreateQuery("from ld in class LiteralDescription where lower(ld.Description) like 'description%'");
-				Assert.AreEqual(2, q.List().Count);
+				Assert.AreEqual(2, (await (q.ListAsync())).Count);
 			}
 		}
 
@@ -65,9 +89,9 @@ namespace NHibernate.Test.NHSpecificTest.NH247
 			{
 				IQuery q;
 				q = s.CreateQuery("from ld in class LiteralDescription where char_length(ld.Description) = 10");
-				Assert.AreEqual(1, q.List().Count);
+				Assert.AreEqual(1, (await (q.ListAsync())).Count);
 				q = s.CreateQuery("from ld in class LiteralDescription where char_length(trim(ld.Description)) = 10");
-				Assert.AreEqual(2, q.List().Count);
+				Assert.AreEqual(2, (await (q.ListAsync())).Count);
 			}
 		}
 
@@ -80,19 +104,19 @@ namespace NHibernate.Test.NHSpecificTest.NH247
 				ICriteria c;
 				c = s.CreateCriteria(typeof (LiteralDescription));
 				c.Add(new InsensitiveLikeExpression("Description", "DeScripTion%"));
-				Assert.AreEqual(2, c.List().Count);
+				Assert.AreEqual(2, (await (c.ListAsync())).Count);
 				c = s.CreateCriteria(typeof (LiteralDescription));
 				c.Add(Expression.InsensitiveLike("Description", "DeScripTion", MatchMode.Start));
-				Assert.AreEqual(2, c.List().Count);
+				Assert.AreEqual(2, (await (c.ListAsync())).Count);
 				c = s.CreateCriteria(typeof (LiteralDescription));
 				c.Add(Expression.InsensitiveLike("Description", "DeScripTion", MatchMode.Anywhere));
-				Assert.AreEqual(4, c.List().Count);
+				Assert.AreEqual(4, (await (c.ListAsync())).Count);
 				c = s.CreateCriteria(typeof (LiteralDescription));
 				c.Add(Expression.InsensitiveLike("Description", "tHeeND", MatchMode.End));
-				Assert.AreEqual(1, c.List().Count);
+				Assert.AreEqual(1, (await (c.ListAsync())).Count);
 				c = s.CreateCriteria(typeof (LiteralDescription));
 				c.Add(Expression.InsensitiveLike("Description", "DescRiptioN TheEnd", MatchMode.Exact));
-				Assert.AreEqual(1, c.List().Count);
+				Assert.AreEqual(1, (await (c.ListAsync())).Count);
 			}
 		}
 	}

@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1018
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class NH1018Fixture : BugTestCase
+	public partial class NH1018FixtureAsync : BugTestCaseAsync
 	{
 		[Test]
 		public async Task TestAsync()
@@ -41,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1018
 
 			using (ISession session = OpenSession())
 			{
-				IList employers = session.CreateQuery("select emr from Employer emr inner join fetch emr.Employees").SetResultTransformer(CriteriaSpecification.DistinctRootEntity).List();
+				IList employers = await (session.CreateQuery("select emr from Employer emr inner join fetch emr.Employees").SetResultTransformer(CriteriaSpecification.DistinctRootEntity).ListAsync());
 				Assert.AreEqual(2, employers.Count);
 			}
 

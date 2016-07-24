@@ -8,8 +8,49 @@ using System.Threading.Tasks;
 namespace NHibernate.Test.MultipleCollectionFetchTest
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public abstract partial class AbstractMultipleCollectionFetchFixture : TestCase
+	public abstract partial class AbstractMultipleCollectionFetchFixtureAsync : TestCaseAsync
 	{
+		protected override string MappingsAssembly
+		{
+			get
+			{
+				return "NHibernate.Test";
+			}
+		}
+
+		protected abstract void AddToCollection(ICollection<Person> collection, Person person);
+		protected abstract ICollection<Person> CreateCollection();
+		protected override async Task OnTearDownAsync()
+		{
+			await (base.OnTearDownAsync());
+			using (ISession s = OpenSession())
+			{
+				await (s.DeleteAsync("from Person p where p.Parent is null"));
+				await (s.FlushAsync());
+			}
+		}
+
+		private Person CreateGrandparent()
+		{
+			Person parent = new Person();
+			parent.Children = CreateCollection();
+			for (int i = 0; i < 2; i++)
+			{
+				Person child = new Person();
+				child.Parent = parent;
+				AddToCollection(parent.Children, child);
+				child.Children = CreateCollection();
+				for (int j = 0; j < 3; j++)
+				{
+					Person grandChild = new Person();
+					grandChild.Parent = child;
+					AddToCollection(child.Children, grandChild);
+				}
+			}
+
+			return parent;
+		}
+
 		protected virtual async Task RunLinearJoinFetchTestAsync(Person parent)
 		{
 			using (ISession s = OpenSession())
@@ -39,6 +80,27 @@ namespace NHibernate.Test.MultipleCollectionFetchTest
 		{
 			Person parent = CreateGrandparent();
 			await (RunLinearJoinFetchTestAsync(parent));
+		}
+
+		private Person CreateParentAndFriend()
+		{
+			Person parent = new Person();
+			parent.Children = CreateCollection();
+			for (int i = 0; i < 2; i++)
+			{
+				Person child = new Person();
+				child.Parent = parent;
+				AddToCollection(parent.Children, child);
+			}
+
+			parent.Friends = CreateCollection();
+			for (int i = 0; i < 3; i++)
+			{
+				Person friend = new Person();
+				AddToCollection(parent.Friends, friend);
+			}
+
+			return parent;
 		}
 
 		protected virtual async Task RunNonLinearJoinFetchTestAsync(Person person)

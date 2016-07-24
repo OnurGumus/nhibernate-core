@@ -4,9 +4,28 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1217
 {
+	[TestFixture, Ignore("Not fixed yet")]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH1217";
+			}
+		}
+
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession s = OpenSession())
+				using (ITransaction tx = s.BeginTransaction())
+				{
+					await (s.DeleteAsync("from System.Object o"));
+					await (tx.CommitAsync());
+				}
+		}
+
 		/// <summary>
 		/// +--------+          +--------+ 1   from   * +--------+
 		///	|        | 1      * |        |--------------|        |

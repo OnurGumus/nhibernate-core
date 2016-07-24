@@ -8,9 +8,22 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH1584
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class TestFixture : BugTestCase
+	public partial class TestFixtureAsync : BugTestCaseAsync
 	{
+		protected override async Task OnTearDownAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction trx = session.BeginTransaction())
+				{
+					await (session.DeleteAsync("from Male"));
+					await (trx.CommitAsync());
+				}
+			}
+		}
+
 		/// <summary>
 		/// Demonstrate that the session is able to load the one-to-one composition between a joined subclass and its related entity. 
 		/// </summary>

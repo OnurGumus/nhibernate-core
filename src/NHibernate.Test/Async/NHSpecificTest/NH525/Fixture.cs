@@ -5,9 +5,18 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Test.NHSpecificTest.NH525
 {
+	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class Fixture : BugTestCase
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
+		public override string BugNumber
+		{
+			get
+			{
+				return "NH525";
+			}
+		}
+
 		[Test]
 		public async Task DoSomethingAsync()
 		{
@@ -22,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH525
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					AbstractBase baseObj = (AbstractBase)s.Load(typeof (AbstractBase), obj.Id);
+					AbstractBase baseObj = (AbstractBase)await (s.LoadAsync(typeof (AbstractBase), obj.Id));
 					Assert.AreEqual(NonAbstract.AbstractMethodResult, baseObj.AbstractMethod());
 					await (s.DeleteAsync(baseObj));
 					await (t.CommitAsync());
