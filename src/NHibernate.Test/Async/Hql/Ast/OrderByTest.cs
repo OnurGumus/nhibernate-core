@@ -55,7 +55,7 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public async Task TestOrderByComponentDescNoSelectAliasRefFailureExpectedAsync()
 		{
-			Assert.ThrowsAsync<Exception>(async () =>
+			Assert.ThrowsAsync<AssertionException>(async () =>
 			{
 				using (ISession s = OpenSession())
 					using (ITransaction txn = s.BeginTransaction())
@@ -100,7 +100,7 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public async Task TestOrderByComponentDescSelectAliasRefFailureExpectedAsync()
 		{
-			Assert.ThrowsAsync<Exception>(async () =>
+			Assert.ThrowsAsync<AssertionException>(async () =>
 			{
 				using (ISession s = OpenSession())
 					using (ITransaction txn = s.BeginTransaction())

@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2806
 {
 	[TestFixture, Ignore("Not fixed yet.")]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public class FixtureAsync : BugTestCaseAsync
+	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		protected override async Task OnSetUpAsync()
 		{

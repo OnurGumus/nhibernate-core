@@ -16,7 +16,7 @@ namespace NHibernate.Test.DialectTest.FunctionTests
 		/// <summary>
 		/// Test case data source for DialectShouldUseCorrectSubstringImplementation().
 		/// </summary>
-		private IEnumerable<System.Type> GetAllDialectTypes()
+		private static IEnumerable<System.Type> GetAllDialectTypes()
 		{
 			var dialectBaseType = typeof (NHibernate.Dialect.Dialect);
 			return dialectBaseType.Assembly.GetExportedTypes().Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(dialectBaseType)).ToList();

@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
 using NHibernate.Cfg;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.CfgTest
@@ -94,7 +96,7 @@ namespace NHibernate.Test.CfgTest
 
 		#region NUnit.Framework.TestFixture Members
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void TestFixtureSetUp()
 		{
 			dir_ = Directory.GetCurrentDirectory();
@@ -138,7 +140,7 @@ namespace NHibernate.Test.CfgTest
 		{
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public virtual void TestFixtureTearDown()
 		{
 		}

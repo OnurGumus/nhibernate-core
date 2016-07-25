@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3570
 		[Test]
 		public void ShouldNotSaveRemoveChild()
 		{
-			Assert.Throws<Exception>(
+			Assert.Throws<AssertionException>(
 				() =>
 				{
 					var parent = new BiParent();

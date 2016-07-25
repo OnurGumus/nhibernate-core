@@ -421,7 +421,7 @@ namespace NHibernate.Test.CfgTest
 				using (var session = sessionFactory.OpenSession())
 				{
 					var query = session.Query<NHibernate.DomainModel.A>();
-					Assert.IsInstanceOf(typeof (SampleQueryProvider), query.Provider);
+					Assert.IsInstanceOf(typeof (ConfigurationFixture.SampleQueryProvider), query.Provider);
 				}
 			}
 		}

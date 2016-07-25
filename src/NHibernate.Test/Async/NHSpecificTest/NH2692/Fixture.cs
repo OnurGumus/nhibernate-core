@@ -4,6 +4,7 @@ using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Exceptions;
 using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2692
@@ -26,31 +27,24 @@ namespace NHibernate.Test.NHSpecificTest.NH2692
 		[Test]
 		public Task QueryingChildrenComponentsAsync()
 		{
-			try
+			Assert.Throws<GenericADOException>(() =>
 			{
-				Assert.Throws<Exception>(() =>
-				{
-					using (var session = OpenSession())
-						using (session.BeginTransaction())
-						{
-							var result = session.Query<Parent>().SelectMany(x => x.ChildComponents).ToList();
-							Assert.That(result, Has.Count.EqualTo(1));
-						}
-				}
+				using (var session = OpenSession())
+					using (session.BeginTransaction())
+					{
+						var result = session.Query<Parent>().SelectMany(x => x.ChildComponents).ToList();
+						Assert.That(result, Has.Count.EqualTo(1));
+					}
+			}
 
-				, KnownBug.Issue("NH-2692"));
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			, KnownBug.Issue("NH-2692"));
+			return TaskHelper.CompletedTask;
 		}
 
 		[Test]
 		public async Task QueryingChildrenComponentsHqlAsync()
 		{
-			Assert.ThrowsAsync<Exception>(async () =>
+			Assert.ThrowsAsync<GenericADOException>(async () =>
 			{
 				using (var session = OpenSession())
 					using (session.BeginTransaction())

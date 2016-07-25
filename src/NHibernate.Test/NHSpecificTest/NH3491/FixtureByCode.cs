@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3491
 		[Test(Description = "NH-3491")]
 		public void ShouldProperlyMapComponentWhenMappingOnlyPartOfItInSomePlaces()
 		{
-			Assert.Throws<Exception>(
+			Assert.Throws<AssertionException>(
 				() =>
 				{
 					var mapper = new ModelMapper();

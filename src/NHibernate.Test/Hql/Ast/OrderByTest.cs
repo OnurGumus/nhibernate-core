@@ -94,7 +94,7 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void TestOrderByComponentDescNoSelectAliasRefFailureExpected()
 		{
-			Assert.Throws<Exception>(
+			Assert.Throws<AssertionException>(
 				() =>
 				{
 					using (ISession s = OpenSession())
@@ -197,7 +197,7 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public void TestOrderByComponentDescSelectAliasRefFailureExpected()
 		{
-			Assert.Throws<Exception>(
+			Assert.Throws<AssertionException>(
 				() =>
 				{
 					using (ISession s = OpenSession())

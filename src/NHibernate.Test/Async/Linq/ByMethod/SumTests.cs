@@ -1,9 +1,9 @@
 #if NET_4_5
 using System;
 using System.Linq;
+using NHibernate.Exceptions;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using NHibernate.Exceptions;
 using NHibernate.Util;
 
 namespace NHibernate.Test.Linq.ByMethod

@@ -78,11 +78,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=3.2.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+    <Reference Include="nunit.framework, Version=3.4.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\4.5\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="nunitlite, Version=3.2.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+    <Reference Include="nunitlite, Version=3.4.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\4.5\nunitlite.dll</HintPath>
     </Reference>
@@ -190,8 +190,6 @@
     <Compile Include="Async\Criteria\Lambda\SubqueryFixture.cs" />
     <Compile Include="Async\Criteria\Lambda\SubQueryIntegrationFixture.cs" />
     <Compile Include="Async\Criteria\ProjectionsTest.cs" />
-    <Compile Include="Async\DateTimeOffsetUserType.cs" />
-    <Compile Include="Async\DebugConnectionProvider.cs" />
     <Compile Include="Async\Deletetransient\DeleteTransientEntityTest.cs" />
     <Compile Include="Async\DialectTest\DB2DialectFixture.cs" />
     <Compile Include="Async\DialectTest\DialectFixture.cs" />
@@ -666,7 +664,6 @@
     <Compile Include="Async\NHSpecificTest\NH1756\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1757\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1760\SampleTest.cs" />
-    <Compile Include="Async\NHSpecificTest\NH1763\EmptyStringUserType.cs" />
     <Compile Include="Async\NHSpecificTest\NH1763\SampleTest.cs" />
     <Compile Include="Async\NHSpecificTest\NH1773\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1775\Fixture.cs" />
@@ -710,7 +707,6 @@
     <Compile Include="Async\NHSpecificTest\NH1904\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1905\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1907\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH1907\MyType.cs" />
     <Compile Include="Async\NHSpecificTest\NH1908ThreadSafety\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1908\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1911\Fixture.cs" />
@@ -782,7 +778,6 @@
     <Compile Include="Async\NHSpecificTest\NH2228\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2230\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2234\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH2234\MyType.cs" />
     <Compile Include="Async\NHSpecificTest\NH2242\FormulaTest.cs" />
     <Compile Include="Async\NHSpecificTest\NH2243\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2244\Fixture.cs" />
@@ -798,13 +793,11 @@
     <Compile Include="Async\NHSpecificTest\NH2294\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2296\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2297\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH2297\InvalidCustomCompositeUserTypeBase.cs" />
     <Compile Include="Async\NHSpecificTest\NH2302\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2317\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2318\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2322\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2324\BulkUpdateWithCustomCompositeType.cs" />
-    <Compile Include="Async\NHSpecificTest\NH2324\CompositeUserType.cs" />
     <Compile Include="Async\NHSpecificTest\NH2328\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2331\Nh2331Test.cs" />
     <Compile Include="Async\NHSpecificTest\NH2341\Fixture.cs" />
@@ -819,9 +812,7 @@
     <Compile Include="Async\NHSpecificTest\NH2386\Test.cs" />
     <Compile Include="Async\NHSpecificTest\NH2390\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2392\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH2392\PhoneNumberUserType.cs" />
     <Compile Include="Async\NHSpecificTest\NH2394\Fixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH2394\PhoneNumberUserType.cs" />
     <Compile Include="Async\NHSpecificTest\NH2404\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2408\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2409\Fixture.cs" />
@@ -967,7 +958,6 @@
     <Compile Include="Async\NHSpecificTest\NH3221\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3234\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3237\ByCodeFixture.cs" />
-    <Compile Include="Async\NHSpecificTest\NH3237\EnumUserType.cs" />
     <Compile Include="Async\NHSpecificTest\NH3252\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3316\ByCodeFixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3324\FixtureByCode.cs" />
@@ -1163,8 +1153,6 @@
     <Compile Include="Async\SqlTest\Custom\Oracle\OracleCustomSQLFixture.cs" />
     <Compile Include="Async\SqlTest\Identity\IdentityInsertWithStoredProcsTest.cs" />
     <Compile Include="Async\SqlTest\Identity\MsSQL\MSSQLIdentityInsertWithStoredProcsTest.cs" />
-    <Compile Include="Async\SqlTest\MonetaryAmountUserType.cs" />
-    <Compile Include="Async\SqlTest\NullDateUserType.cs" />
     <Compile Include="Async\SqlTest\Query\NativeSQLQueriesFixture.cs" />
     <Compile Include="Async\SqlTest\Query\SelfReferencingCollectionLoadTest.cs" />
     <Compile Include="Async\SqlTest\SqlTypeFactoryFixture.cs" />
@@ -1397,6 +1385,7 @@
     <Compile Include="DialectTest\MsSqlCe40DialectFixture.cs" />
     <Compile Include="DialectTest\Oracle8iDialectFixture.cs" />
     <Compile Include="DialectTest\SchemaTests\ColumnMetaDataFixture.cs" />
+    <Compile Include="DirectorySetupFixture.cs" />
     <Compile Include="DriverTest\DbProviderFactoryDriveConnectionCommandProviderTest.cs" />
     <Compile Include="DriverTest\FirebirdClientDriverFixture.cs" />
     <Compile Include="DriverTest\ReflectionBasedDriverTest.cs" />

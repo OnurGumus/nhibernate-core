@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2049
 		[Test]
 		public void CanCriteriaQueryWithFilterOnJoinClassBaseClassProperty()
 		{
-			Assert.Throws<Exception>(
+			Assert.Throws<GenericADOException>(
 				   () =>
 				   {
 					   using (ISession session = OpenSession())

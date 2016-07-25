@@ -306,7 +306,9 @@ namespace NHibernate.Test.Linq
 						var count = text.Split(new[]{"SELECT"}, StringSplitOptions.None).Length - 1;
 						Assert.That(count, Is.EqualTo(1));
 					}
-				} , KnownBug.Issue("NH-3045"));
+				}
+
+				, KnownBug.Issue("NH-3045"));
 				return TaskHelper.CompletedTask;
 			}
 			catch (Exception ex)

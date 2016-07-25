@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2806
 {
 	[TestFixture, Ignore("Not fixed yet.")]
-	public  class Fixture : BugTestCase
+	public partial class Fixture : BugTestCase
 	{
 		protected override void OnSetUp()
 		{

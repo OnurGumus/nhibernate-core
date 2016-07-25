@@ -1,9 +1,9 @@
 #if NET_4_5
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Exceptions;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using NHibernate.Exceptions;
 
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3269
 {
@@ -18,12 +18,12 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3269
 				{
 					var e1 = new Inherited1{Name = "Bob"};
 					await (session.SaveAsync(e1));
+					Assert.ThrowsAsync<GenericADOException>(async () =>
+					{
+						await (transaction.CommitAsync());
+					}
 
-					Assert.ThrowsAsync<GenericADOException>(
-						async () =>
-						{
-							await (transaction.CommitAsync());
-						});
+					);
 				}
 		}
 

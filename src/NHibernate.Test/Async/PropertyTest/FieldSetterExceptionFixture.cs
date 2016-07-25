@@ -20,22 +20,6 @@ namespace NHibernate.Test.PropertyTest
 			_setter = _accessor.GetSetter(typeof (A), "Id");
 		}
 
-		[Test]
-		public Task SetInvalidTypeAsync()
-		{
-			try
-			{
-				A instance = new A();
-				var e = Assert.Throws<PropertyAccessException>(() => _setter.Set(instance, "wrong type"));
-				Assert.That(e.Message, Is.EqualTo("The type System.String can not be assigned to a field of type System.Int32 setter of NHibernate.Test.PropertyTest.FieldSetterExceptionFixture+A.Id"));
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
-		}
-
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		public partial class A
 		{

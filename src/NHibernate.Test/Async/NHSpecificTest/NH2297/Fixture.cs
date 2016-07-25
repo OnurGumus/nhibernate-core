@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2297
 		[TestCase(".MappingsNames.hbm.xml")]
 		public void InvalidCustomCompositeUserTypeThrowsMeaningfulException(string mappingFile)
 		{
-			Assert.That(() =>
+			var ex = Assert.Throws<InvalidOperationException>(() =>
 			{
 				var cfg = new Configuration();
 				if (TestConfigurationHelper.hibernateConfigFile != null)
@@ -27,9 +27,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2297
 				cfg.AddResource(MappingsAssembly + "." + "NHSpecificTest." + bugNumber + mappingFile, assembly);
 				// build session factory creates the invalid custom type mapper, and throws the exception
 				cfg.BuildSessionFactory();
-			}
-
-			, Throws.TypeOf<InvalidOperationException>().With.Message.SameAs("ICompositeUserType NHibernate.Test.NHSpecificTest.NH2297.InvalidNamesCustomCompositeUserType returned a null value for 'PropertyNames'."));
+			});
+			Assert.That(ex.Message, Is.EqualTo("ICompositeUserType NHibernate.Test.NHSpecificTest.NH2297.InvalidNamesCustomCompositeUserType returned a null value for 'PropertyNames'."));
 		}
 	}
 }

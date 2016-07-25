@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Data.Common;
+using System.IO;
 using System.Reflection;
 using log4net;
 using log4net.Config;
@@ -83,7 +84,7 @@ namespace NHibernate.Test
 		/// <summary>
 		/// Creates the tables used in this TestCase
 		/// </summary>
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public async Task TestFixtureSetUpAsync()
 		{
 			try
@@ -126,7 +127,7 @@ namespace NHibernate.Test
 		/// will occur if the TestCase does not have the same hbm.xml files
 		/// included as a previous one.
 		/// </remarks>
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public async Task TestFixtureTearDownAsync()
 		{
 			// If TestFixtureSetup fails due to an IgnoreException, it will still run the teardown.

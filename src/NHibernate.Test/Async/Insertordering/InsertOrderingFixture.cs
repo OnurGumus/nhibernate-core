@@ -122,9 +122,9 @@ namespace NHibernate.Test.Insertordering
 				batchSQL = null;
 			}
 
-			public override DbCommand PrepareBatchCommand(CommandType type, SqlString sql, SqlType[] parameterTypes)
+			public override async Task<DbCommand> PrepareBatchCommandAsync(CommandType type, SqlString sql, SqlType[] parameterTypes)
 			{
-				DbCommand result = base.PrepareBatchCommand(type, sql, parameterTypes);
+				DbCommand result = await base.PrepareBatchCommandAsync(type, sql, parameterTypes);
 				string sqlstring = sql.ToString();
 				if (batchSQL == null || !sqlstring.Equals(batchSQL))
 				{
@@ -138,19 +138,19 @@ namespace NHibernate.Test.Insertordering
 				return result;
 			}
 
-			public override void AddToBatch(IExpectation expectation)
+			public override Task AddToBatchAsync(IExpectation expectation)
 			{
 				batchSizes[currentBatch]++;
 				Console.WriteLine("Adding to batch [" + batchSQL + "]");
-				base.AddToBatch(expectation);
+				return base.AddToBatchAsync(expectation);
 			}
 
-			protected override void DoExecuteBatch(DbCommand ps)
+			protected override Task DoExecuteBatchAsync(DbCommand ps)
 			{
 				Console.WriteLine("executing batch [" + batchSQL + "]");
 				Console.WriteLine("--------------------------------------------------------");
 				batchSQL = null;
-				base.DoExecuteBatch(ps);
+				return base.DoExecuteBatchAsync(ps);
 			}
 		}
 

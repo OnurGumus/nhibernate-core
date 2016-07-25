@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3570
 		[Test]
 		public async Task ShouldNotSaveRemoveChildAsync()
 		{
-			Assert.ThrowsAsync<Exception>(async () =>
+			Assert.ThrowsAsync<AssertionException>(async () =>
 			{
 				var parent = new BiParent();
 				parent.AddChild(new BiChild());

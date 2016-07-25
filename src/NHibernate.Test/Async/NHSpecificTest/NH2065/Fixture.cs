@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2065
 		[Test]
 		public async Task GetGoodErrorForDirtyReassociatedCollectionAsync()
 		{
-			Assert.That(async () =>
+			var ex = Assert.ThrowsAsync<HibernateException>(async () =>
 			{
 				Person person;
 				using (var s = OpenSession())
@@ -58,9 +58,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2065
 					{
 						await (s.LockAsync(person, LockMode.None));
 					}
-			}
-
-			, Throws.TypeOf<HibernateException>().With.Message.SameAs("reassociated object has dirty collection: NHibernate.Test.NHSpecificTest.NH2065.Person.Children"));
+			});
+			Assert.That(ex.Message, Is.EqualTo("reassociated object has dirty collection: NHibernate.Test.NHSpecificTest.NH2065.Person.Children"));
 		}
 	}
 }

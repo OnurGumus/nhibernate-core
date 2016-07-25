@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using NHibernate.Exceptions;
 using NHibernate.Linq;
 using NUnit.Framework;
 
@@ -25,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2692
 		[Test]
 		public void QueryingChildrenComponents()
 		{
-			Assert.Throws<Exception>(
+			Assert.Throws<GenericADOException>(
 				() =>
 				{
 					using (var session = OpenSession())
@@ -43,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2692
 		[Test]
 		public void QueryingChildrenComponentsHql()
 		{
-			Assert.Throws<Exception>(
+			Assert.Throws<GenericADOException>(
 				() =>
 				{
 					using (var session = OpenSession())

@@ -62,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3491
 		{
 			try
 			{
-				Assert.Throws<Exception>(() =>
+				Assert.Throws<AssertionException>(() =>
 				{
 					var mapper = new ModelMapper();
 					mapper.Class<ClassWithComponents>(cm =>

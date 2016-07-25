@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2049
 		[Test]
 		public async Task CanCriteriaQueryWithFilterOnJoinClassBaseClassPropertyAsync()
 		{
-			Assert.ThrowsAsync<Exception>(async () =>
+			Assert.ThrowsAsync<GenericADOException>(async () =>
 			{
 				using (ISession session = OpenSession())
 				{
