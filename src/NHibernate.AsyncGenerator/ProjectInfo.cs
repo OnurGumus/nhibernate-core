@@ -399,6 +399,8 @@ namespace NHibernate.AsyncGenerator
 
 			public HashSet<IMethodSymbol> InterfaceMethods { get; set; }
 
+			public HashSet<IMethodSymbol> AsyncInterfaceMethods { get; set; }
+
 			public HashSet<IMethodSymbol> OverriddenMethods { get; set; }
 
 			public IMethodSymbol BaseOverriddenMethod { get; set; }
@@ -531,17 +533,27 @@ namespace NHibernate.AsyncGenerator
 			}
 
 			var interfaceMethods = new HashSet<IMethodSymbol>();
+			var asyncMethods = new HashSet<IMethodSymbol>();
 			// check if explicitly implements external interfaces
 			if (methodSymbol.MethodKind == MethodKind.ExplicitInterfaceImplementation)
 			{
 				foreach (var interfaceMember in methodSymbol.ExplicitInterfaceImplementations)
 				{
 					var syntax = interfaceMember.DeclaringSyntaxReferences.SingleOrDefault();
-					if (syntax == null || methodSymbol.ContainingAssembly.Name != interfaceMember.ContainingAssembly.Name)
+					if (methodSymbol.ContainingAssembly.Name != interfaceMember.ContainingAssembly.Name)
 					{
-						Logger.Warn(
-							$"Method {methodSymbol} implements an external interface {interfaceMember} and cannot be made async");
-						return MethodSymbolInfo.Invalid;
+						// check if the member has an async counterpart that is not implemented in the current type (missing member)
+						var asyncConterPart = interfaceMember.ContainingType.GetMembers()
+															 .OfType<IMethodSymbol>()
+															 .Where(o => o.Name == methodSymbol.Name + "Async")
+															 .SingleOrDefault(o => o.HaveSameParameters(methodSymbol));
+						if (asyncConterPart == null)
+						{
+							Logger.Warn(
+								$"Method {methodSymbol} implements an external interface {interfaceMember} and cannot be made async");
+							return MethodSymbolInfo.Invalid;
+						}
+						asyncMethods.Add(asyncConterPart);
 					}
 					if (memorize && !AnalyzedMethodSymbols.Contains(interfaceMember.OriginalDefinition))
 					{
@@ -566,9 +578,18 @@ namespace NHibernate.AsyncGenerator
 				var syntax = interfaceMember.DeclaringSyntaxReferences.SingleOrDefault();
 				if (syntax == null || methodSymbol.ContainingAssembly.Name != interfaceMember.ContainingAssembly.Name)
 				{
-					Logger.Warn(
-						$"Method {methodSymbol} implements an external interface {interfaceMember} and cannot be made async");
-					return MethodSymbolInfo.Invalid;
+					// check if the member has an async counterpart that is not implemented in the current type (missing member)
+					var asyncConterPart = interfaceMember.ContainingType.GetMembers()
+														 .OfType<IMethodSymbol>()
+														 .Where(o => o.Name == methodSymbol.Name + "Async")
+														 .SingleOrDefault(o => o.HaveSameParameters(methodSymbol));
+					if (asyncConterPart == null)
+					{
+						Logger.Warn(
+							$"Method {methodSymbol} implements an external interface {interfaceMember} and cannot be made async");
+						return MethodSymbolInfo.Invalid;
+					}
+					asyncMethods.Add(asyncConterPart);
 				}
 				if (memorize && !AnalyzedMethodSymbols.Contains(interfaceMember.OriginalDefinition))
 				{
@@ -587,10 +608,26 @@ namespace NHibernate.AsyncGenerator
 			while (overridenMethod != null)
 			{
 				var syntax = overridenMethod.DeclaringSyntaxReferences.SingleOrDefault();
-				if (syntax == null || methodSymbol.ContainingAssembly.Name != overridenMethod.ContainingAssembly.Name)
+				if (methodSymbol.ContainingAssembly.Name != overridenMethod.ContainingAssembly.Name)
 				{
-					Logger.Warn($"Method {methodSymbol} overrides an external method {overridenMethod} and cannot be made async");
-					return MethodSymbolInfo.Invalid;
+					// check if the member has an async counterpart that is not implemented in the current type (missing member)
+					var asyncConterPart = overridenMethod.ContainingType.GetMembers()
+														 .OfType<IMethodSymbol>()
+														 .Where(o => o.Name == methodSymbol.Name + "Async" && !o.IsSealed)
+														 .SingleOrDefault(o => o.HaveSameParameters(methodSymbol));
+					if (asyncConterPart == null)
+					{
+						if (!asyncMethods.Any() ||
+						(asyncMethods.Any() && !overridenMethod.IsOverride && !overridenMethod.IsVirtual))
+						{
+							Logger.Warn($"Method {methodSymbol} overrides an external method {overridenMethod} and cannot be made async");
+							return MethodSymbolInfo.Invalid;
+						}
+					}
+					else
+					{
+						asyncMethods.Add(asyncConterPart);
+					}
 				}
 				if (memorize && !AnalyzedMethodSymbols.Contains(overridenMethod.OriginalDefinition))
 				{
@@ -627,6 +664,7 @@ namespace NHibernate.AsyncGenerator
 			{
 				IsValid = true,
 				MethodSymbol = methodSymbol,
+				AsyncInterfaceMethods = asyncMethods,
 				InterfaceMethods = interfaceMethods,
 				BaseOverriddenMethod = overridenMethod?.OriginalDefinition,
 				OverriddenMethods = overrrides,
@@ -647,6 +685,10 @@ namespace NHibernate.AsyncGenerator
 			_processedMethodSymbolInfos.Add(methodSymbolInfo);
 
 			var mainMethodInfo = methodDocInfo.GetOrCreateMethodInfo(methodSymbolInfo.MethodSymbol);
+			foreach (var asyncMethod in methodSymbolInfo.AsyncInterfaceMethods)
+			{
+				mainMethodInfo.ExternalAsyncMethods.Add(asyncMethod);
+			}
 
 			DocumentInfo docInfo;
 			SyntaxReference syntax;

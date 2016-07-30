@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Runtime.CompilerServices;
 using NHibernate.Connection;
 
 namespace NHibernate.Test
@@ -14,13 +15,17 @@ namespace NHibernate.Test
 	public partial class DebugConnectionProvider : DriverConnectionProvider
 	{
 		private ISet<DbConnection> connections = new HashSet<DbConnection>();
+		private readonly object lockObject = new object();
 
 		public override DbConnection GetConnection()
 		{
 			try
 			{
-		        DbConnection connection = base.GetConnection();
-				connections.Add(connection);
+				DbConnection connection = base.GetConnection();
+				lock (lockObject)
+				{
+					connections.Add(connection);
+				}
 				return connection;
 			}
 			catch (Exception e)
@@ -32,8 +37,11 @@ namespace NHibernate.Test
 
 		public override void CloseConnection(DbConnection conn)
 		{
-			base.CloseConnection(conn);
-			connections.Remove(conn);
+			lock (lockObject)
+			{
+				base.CloseConnection(conn);
+				connections.Remove(conn);
+			}
 		}
 
 		public bool HasOpenConnections
@@ -71,11 +79,14 @@ namespace NHibernate.Test
 
 		public void CloseAllConnections()
 		{
-			while (connections.Count != 0)
+			lock (lockObject)
 			{
-				IEnumerator en = connections.GetEnumerator();
-				en.MoveNext();
-				CloseConnection(en.Current as DbConnection);
+				while (connections.Count != 0)
+				{
+					IEnumerator en = connections.GetEnumerator();
+					en.MoveNext();
+					CloseConnection(en.Current as DbConnection);
+				}
 			}
 		}
 	}

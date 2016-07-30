@@ -190,6 +190,7 @@
     <Compile Include="Async\Criteria\Lambda\SubqueryFixture.cs" />
     <Compile Include="Async\Criteria\Lambda\SubQueryIntegrationFixture.cs" />
     <Compile Include="Async\Criteria\ProjectionsTest.cs" />
+    <Compile Include="Async\DebugConnectionProvider.cs" />
     <Compile Include="Async\Deletetransient\DeleteTransientEntityTest.cs" />
     <Compile Include="Async\DialectTest\DB2DialectFixture.cs" />
     <Compile Include="Async\DialectTest\DialectFixture.cs" />
@@ -246,6 +247,7 @@
     <Compile Include="Async\Events\Collections\Association\Unidirectional\ManyToMany\UnidirectionalManyToManyBagCollectionEventFixture.cs" />
     <Compile Include="Async\Events\Collections\Association\Unidirectional\OneToMany\UnidirectionalOneToManyBagCollectionEventFixture.cs" />
     <Compile Include="Async\Events\Collections\Association\Unidirectional\OneToMany\UnidirectionalOneToManySetCollectionEventFixture.cs" />
+    <Compile Include="Async\Events\Collections\CollectionListeners.cs" />
     <Compile Include="Async\Events\Collections\Values\ValuesBagCollectionEventFixture.cs" />
     <Compile Include="Async\Events\DisposableListenersTest.cs" />
     <Compile Include="Async\Events\PostEvents\PostUpdateFixture.cs" />

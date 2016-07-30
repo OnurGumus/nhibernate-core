@@ -24,6 +24,8 @@ namespace NHibernate.AsyncGenerator
 
 		public IMethodSymbol Symbol { get; }
 
+		public bool Ignore { get; set; }
+
 		public bool CanBeAsync { get; internal set; }
 
 		public bool DeclaredWithinSameType { get; internal set; }

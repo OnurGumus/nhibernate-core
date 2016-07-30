@@ -36,6 +36,19 @@ namespace NHibernate.AsyncGenerator
 
 		public HashSet<IMethodSymbol> ExternalDependencies { get; } = new HashSet<IMethodSymbol>();
 
+		// async methods that have the same parameters and name and are external
+		public HashSet<IMethodSymbol> ExternalAsyncMethods { get; } = new HashSet<IMethodSymbol>();
+
+		public bool HasRequiredExternalMethods
+		{
+			get
+			{
+				return ExternalDependencies.Select(o => o.ContainingType.GetFullName())
+										   .Except(ExternalAsyncMethods.Select(o => o.ContainingType.GetFullName()))
+										   .Any();
+			}
+		}
+
 		/// <summary>
 		/// When true the method will be ignored when generating async members
 		/// </summary>
@@ -57,7 +70,7 @@ namespace NHibernate.AsyncGenerator
 
 		public bool IsRequired
 		{
-			get { return ExternalDependencies.Any() || GetAllDependencies().Any(o => o.ExternalDependencies.Any())/* || Dependencies.Any(o => o.Ignore)*/; }
+			get { return HasRequiredExternalMethods || GetAllDependencies().Any(o => o.HasRequiredExternalMethods); }
 		}
 
 		public bool Candidate { get; set; }
@@ -211,12 +224,18 @@ namespace NHibernate.AsyncGenerator
 									   return o.Span == reference.Location.SourceSpan;
 								   });
 			var docInfo = TypeInfo.NamespaceInfo.DocumentInfo;
+			var config = docInfo.ProjectInfo.Configuration;
 			var methodSymbol = (IMethodSymbol) docInfo.SemanticModel.GetSymbolInfo(nameNode).Symbol;
 			var result = new MethodReferenceResult(reference, nameNode, methodSymbol)
 			{
 				CanBeAsync = true,
 				DeclaredWithinSameType = TypeInfo.Symbol.GetFullName() == methodSymbol.ContainingType.GetFullName()
 			};
+			if (!config.CanConvertReferenceFunc(methodSymbol))
+			{
+				result.Ignore = true;
+				return result;
+			}
 
 			var currNode = nameNode.Parent;
 			var ascend = true;

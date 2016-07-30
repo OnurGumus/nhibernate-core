@@ -58,7 +58,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2065
 					{
 						await (s.LockAsync(person, LockMode.None));
 					}
-			});
+			}
+
+			);
 			Assert.That(ex.Message, Is.EqualTo("reassociated object has dirty collection: NHibernate.Test.NHSpecificTest.NH2065.Person.Children"));
 		}
 	}

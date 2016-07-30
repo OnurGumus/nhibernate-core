@@ -210,6 +210,11 @@ namespace NHibernate.AsyncGenerator
 		public Func<Document, bool> CanScanDocumentFunc { get; set; } = m => true;
 
 		/// <summary>
+		/// Predicate for reference selection
+		/// </summary>
+		public Func<IMethodSymbol, bool> CanConvertReferenceFunc { get; set; } = m => true;
+
+		/// <summary>
 		/// A custom method that will be called when for a method there is not an async counterpart with same parameters
 		/// </summary>
 		public Func<IMethodSymbol, IMethodSymbol> FindAsyncCounterpart { get; set; } = null;
@@ -294,12 +299,14 @@ namespace NHibernate.AsyncGenerator
 							}
 							return false;
 						},*/
-
-
+						CanConvertReferenceFunc = m =>
+						{
+							return m.ContainingNamespace.ToString() != "System.IO";
+						},
 						//CanScanDocumentFunc = doc =>
 						//{
-						//	//return doc.FilePath.EndsWith(@"Interceptor\StatefulInterceptor.cs");
-						//	return doc.FilePath.EndsWith(@"NHSpecificTest\NH1882\TestCollectionInitializingDuringFlush.cs"); //||
+						//	return doc.FilePath.EndsWith(@"Linq\QueryTimeoutTests.cs");
+						//	//return doc.FilePath.EndsWith(@"NHSpecificTest\NH1882\TestCollectionInitializingDuringFlush.cs"); //||
 						//	//doc.FilePath.EndsWith(@"TestCase.cs");
 						//},
 						FindAsyncCounterpart = symbol =>
@@ -320,20 +327,24 @@ namespace NHibernate.AsyncGenerator
 						},
 						TypeTransformationFunc = type =>
 						{
-								if (type.GetAttributes().Any(o => o.AttributeClass.Name == "TestFixtureAttribute") || type.Name == "TestCase")
+							if (type.Name == "LinqReadonlyTestsContext")
+							{
+								return TypeTransformation.None;
+							}
+							if (type.GetAttributes().Any(o => o.AttributeClass.Name == "TestFixtureAttribute") || type.Name == "TestCase")
+							{
+								return TypeTransformation.NewType;
+							}
+							var baseType = type.BaseType;
+							while (baseType != null)
+							{
+								if (baseType.Name == "TestCase")
 								{
 									return TypeTransformation.NewType;
 								}
-								var baseType = type.BaseType;
-								while (baseType != null)
-								{
-									if (baseType.Name == "TestCase")
-									{
-										return TypeTransformation.NewType;
-									}
-									baseType = baseType.BaseType;
-								}
-								return TypeTransformation.Partial;
+								baseType = baseType.BaseType;
+							}
+							return TypeTransformation.Partial;
 							}
 					}
 				},
