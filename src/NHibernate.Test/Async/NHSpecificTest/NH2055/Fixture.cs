@@ -19,9 +19,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2055
 			return (dialect is Dialect.MsSql2000Dialect);
 		}
 
-		protected override async Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			await (base.ConfigureAsync(configuration));
+			base.Configure(configuration);
 			cfg = configuration;
 		}
 

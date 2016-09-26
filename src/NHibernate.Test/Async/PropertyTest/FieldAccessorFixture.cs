@@ -3,6 +3,7 @@ using System;
 using NHibernate.Properties;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.PropertyTest
 {
@@ -30,26 +31,6 @@ namespace NHibernate.Test.PropertyTest
 			_setter = _accessor.GetSetter(typeof (FieldClass), "Id");
 			_instance = new FieldClass();
 			_instance.InitId(0);
-		}
-
-		[Test]
-		public void GetValue()
-		{
-			Assert.AreEqual(0, _getter.Get(_instance));
-			_instance.Increment();
-			Assert.AreEqual(1, _getter.Get(_instance));
-			Assert.IsFalse(_instance.BlahGetterCalled);
-			Assert.IsFalse(_instance.CamelBazGetterCalled);
-			Assert.IsFalse(_instance.CamelUnderscoreFooGetterCalled);
-			Assert.IsFalse(_instance.LowerUnderscoreFooGetterCalled);
-		}
-
-		[Test]
-		public void SetValue()
-		{
-			Assert.AreEqual(0, _getter.Get(_instance));
-			_setter.Set(_instance, 5);
-			Assert.AreEqual(5, _getter.Get(_instance));
 		}
 	}
 }

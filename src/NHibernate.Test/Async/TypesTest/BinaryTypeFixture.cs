@@ -7,6 +7,7 @@ using NHibernate.Dialect;
 using NHibernate.Type;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -20,21 +21,6 @@ namespace NHibernate.Test.TypesTest
 			{
 				return "Binary";
 			}
-		}
-
-		/// <summary>
-		/// Verify Equals will correctly determine when the property
-		/// is dirty.
-		/// </summary>
-		[Test]
-		public void Equals()
-		{
-			BinaryType type = (BinaryType)NHibernateUtil.Binary;
-			byte[] expected = Encoding.UTF8.GetBytes("ghij1`23%$");
-			byte[] expectedClone = Encoding.UTF8.GetBytes("ghij1`23%$");
-			Assert.IsTrue(type.IsEqual(expected, expected));
-			Assert.IsTrue(type.IsEqual(expected, expectedClone));
-			Assert.IsFalse(type.IsEqual(expected, GetByteArray(15)));
 		}
 
 		/// <summary>

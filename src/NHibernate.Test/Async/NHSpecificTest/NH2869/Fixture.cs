@@ -5,6 +5,8 @@ using NUnit.Framework;
 using NHibernate.Linq;
 using NHibernate.Cfg;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2869
 {
@@ -12,10 +14,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2869
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class FixtureAsync : BugTestCaseAsync
 	{
-		protected override async Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
 			configuration.LinqToHqlGeneratorsRegistry<MyLinqToHqlGeneratorsRegistry>();
-			await (base.ConfigureAsync(configuration));
+			base.Configure(configuration);
 		}
 
 		protected override async Task OnSetUpAsync()
@@ -45,19 +47,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2869
 		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
 		{
 			return dialect as MsSql2008Dialect != null;
-		}
-
-		[Test]
-		public void CustomExtensionWithConstantArgumentShouldBeIncludedInHqlProjection()
-		{
-			using (ISession session = this.OpenSession())
-			{
-				var projectionValue = (
-					from c in session.Query<DomainClass>()where c.Name.IsOneInDbZeroInLocal("test") == 1
-					select c.Name.IsOneInDbZeroInLocal("test")).FirstOrDefault();
-				//If the value is 0, the call was done in .NET, if it's 1 it has been projected correctly
-				Assert.AreEqual(1, projectionValue);
-			}
 		}
 	}
 }

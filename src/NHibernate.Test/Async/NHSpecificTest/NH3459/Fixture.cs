@@ -6,6 +6,7 @@ using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3459
 {
@@ -78,136 +79,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3459
 					await (session.DeleteAsync("from System.Object"));
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
-				}
-		}
-
-		[Test]
-		public void LeftOuterJoinAndGroupBy()
-		{
-			using (var session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var result = (
-						from o in session.Query<Order>()from ol in o.OrderLines.DefaultIfEmpty()group ol by ol.Manufacturer into grp
-							select new
-							{
-							grp.Key
-							}
-
-					).ToList();
-					Assert.AreEqual(4, result.Count);
-				}
-		}
-
-		[Test]
-		public void LeftOuterJoinWithInnerRestrictionAndGroupBy()
-		{
-			using (var session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var result = (
-						from o in session.Query<Order>()from ol in o.OrderLines.Where(x => x.Manufacturer == "Manufacturer 1").DefaultIfEmpty()group o by o.Name into grp
-							select new
-							{
-							grp.Key
-							}
-
-					).ToList();
-					Assert.AreEqual(3, result.Count);
-				}
-		}
-
-		[Test]
-		public void LeftOuterJoinWithOuterRestrictionAndGroupBy()
-		{
-			using (var session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var result = (
-						from o in session.Query<Order>()from ol in o.OrderLines.DefaultIfEmpty().Where(x => x.Manufacturer == "Manufacturer 1")group o by o.Name into grp
-							select new
-							{
-							grp.Key
-							}
-
-					).ToList();
-					Assert.AreEqual(2, result.Count);
-				}
-		}
-
-		[Test]
-		public void LeftOuterJoinWithOutermostRestrictionAndGroupBy()
-		{
-			using (var session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var result = (
-						from o in session.Query<Order>()from ol in o.OrderLines.DefaultIfEmpty()where ol.Manufacturer == "Manufacturer 1"
-						group o by o.Name into grp
-							select new
-							{
-							grp.Key
-							}
-
-					).ToList();
-					Assert.AreEqual(2, result.Count);
-				}
-		}
-
-		[Test]
-		public void InnerJoinAndGroupBy()
-		{
-			using (var session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var result = (
-						from o in session.Query<Order>()from ol in o.OrderLines
-						group ol by ol.Manufacturer into grp
-							select new
-							{
-							grp.Key
-							}
-
-					).ToList();
-					Assert.AreEqual(3, result.Count);
-				}
-		}
-
-		[Test]
-		public void InnerJoinWithRestrictionAndGroupBy()
-		{
-			using (var session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var result = (
-						from o in session.Query<Order>()from ol in o.OrderLines.Where(x => x.Manufacturer == "Manufacturer 1")group o by o.Name into grp
-							select new
-							{
-							grp.Key
-							}
-
-					).ToList();
-					Assert.AreEqual(2, result.Count);
-				}
-		}
-
-		[Test]
-		public void InnerJoinWithOutermostRestrictionAndGroupBy()
-		{
-			using (var session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var result = (
-						from o in session.Query<Order>()from ol in o.OrderLines
-						where ol.Manufacturer == "Manufacturer 1"
-						group o by o.Name into grp
-							select new
-							{
-							grp.Key
-							}
-
-					).ToList();
-					Assert.AreEqual(2, result.Count);
 				}
 		}
 	}

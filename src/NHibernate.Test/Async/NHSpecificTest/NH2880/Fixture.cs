@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2880
 {
@@ -54,25 +55,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2880
 			Entity2 e2 = e1.Entity2;
 			Assert.IsNotNull(e2);
 			Assert.AreEqual("Text", e2.Text);
-			restoredSession.Dispose();
-		}
-
-		[Test]
-		public void EnabledFiltersStillHaveFilterDefinitionOnDeserializedSessions()
-		{
-			MemoryStream sessionMemoryStream;
-			using (ISession s = sessions.OpenSession())
-			{
-				s.EnableFilter("myFilter");
-				sessionMemoryStream = new MemoryStream();
-				BinaryFormatter writer = new BinaryFormatter();
-				writer.Serialize(sessionMemoryStream, s);
-			}
-
-			sessionMemoryStream.Seek(0, SeekOrigin.Begin);
-			BinaryFormatter reader = new BinaryFormatter();
-			ISession restoredSession = (ISession)reader.Deserialize(sessionMemoryStream);
-			Assert.IsNotNull(restoredSession.GetEnabledFilter("myFilter").FilterDefinition);
 			restoredSession.Dispose();
 		}
 

@@ -12,9 +12,7 @@ namespace NHibernate.AsyncGenerator
 
 		public HashSet<MethodReferenceResult> ReferenceResults { get; } = new HashSet<MethodReferenceResult>();
 
-		public bool CanBeCompletelyAsync => CanBeAsnyc && ReferenceResults.All(o => o.CanBeAsync);
-
-		public bool CanBeAsnyc { get; internal set; }
+		//public bool CanBeCompletelyAsync => CanBeAsnyc && ReferenceResults.All(o => o.CanBeAsync);
 
 		public bool CanSkipAsync { get; internal set; }
 

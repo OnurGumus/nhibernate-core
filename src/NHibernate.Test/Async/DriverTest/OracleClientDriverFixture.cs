@@ -4,6 +4,7 @@ using System.Data.Common;
 using NHibernate.Driver;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.DriverTest
 {
@@ -20,17 +21,6 @@ namespace NHibernate.Test.DriverTest
 			IDriver driver = new OracleClientDriver();
 			DbConnection conn = await (driver.CreateConnectionAsync());
 			Assert.AreEqual("System.Data.OracleClient.OracleConnection", conn.GetType().FullName);
-		}
-
-		/// <summary>
-		/// Verify that the correct Command class is being loaded.
-		/// </summary>
-		[Test]
-		public void CommandClassName()
-		{
-			OracleClientDriver driver = new OracleClientDriver();
-			DbCommand cmd = driver.CreateCommand();
-			Assert.AreEqual("System.Data.OracleClient.OracleCommand", cmd.GetType().FullName);
 		}
 	}
 }

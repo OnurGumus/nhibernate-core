@@ -6,6 +6,7 @@ using System.Threading;
 using System.Transactions;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.SystemTransactions
 {
@@ -19,60 +20,6 @@ namespace NHibernate.Test.SystemTransactions
 			{
 				return new string[]{};
 			}
-		}
-
-		[Test]
-		public void NoTransaction()
-		{
-			var interceptor = new RecordingInterceptor();
-			using (sessions.OpenSession(interceptor))
-			{
-				Assert.AreEqual(0, interceptor.afterTransactionBeginCalled);
-				Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
-				Assert.AreEqual(0, interceptor.afterTransactionCompletionCalled);
-			}
-		}
-
-		[Test]
-		public void AfterBegin()
-		{
-			var interceptor = new RecordingInterceptor();
-			using (new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-				using (sessions.OpenSession(interceptor))
-				{
-					Assert.AreEqual(1, interceptor.afterTransactionBeginCalled);
-					Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
-					Assert.AreEqual(0, interceptor.afterTransactionCompletionCalled);
-				}
-		}
-
-		[Test]
-		public void Complete()
-		{
-			var interceptor = new RecordingInterceptor();
-			ISession session;
-			using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-			{
-				session = sessions.OpenSession(interceptor);
-				scope.Complete();
-			}
-
-			session.Dispose();
-			Assert.AreEqual(1, interceptor.beforeTransactionCompletionCalled);
-			Assert.AreEqual(1, interceptor.afterTransactionCompletionCalled);
-		}
-
-		[Test]
-		public void Rollback()
-		{
-			var interceptor = new RecordingInterceptor();
-			using (new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-				using (sessions.OpenSession(interceptor))
-				{
-				}
-
-			Assert.AreEqual(0, interceptor.beforeTransactionCompletionCalled);
-			Assert.AreEqual(1, interceptor.afterTransactionCompletionCalled);
 		}
 
 		[Test]

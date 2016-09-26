@@ -31,9 +31,9 @@ namespace NHibernate.Test.Generatedkeys.Identity
 			return dialect.SupportsIdentityColumns;
 		}
 
-		protected override async Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			await (base.ConfigureAsync(configuration));
+			base.Configure(configuration);
 			configuration.SetProperty(Environment.GenerateStatistics, "true");
 		}
 

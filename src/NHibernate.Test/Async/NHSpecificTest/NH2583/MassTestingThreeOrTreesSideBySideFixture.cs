@@ -28,7 +28,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 		}
 
 		// Condition pattern: (A || B) || (C || D), A || (B || (C || D))
-#region 5a. One path
 		[Test]
 		public async Task Test_xyP_in_A_C____xy_OJAsync()
 		{
@@ -53,8 +52,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 			await (RunTestAsync(x => (x.K1 == 1 || x.K2 == 1) || (x.BO1.I1 == 1 || x.K3 == 1), x => x.K1 == 1 || (x.K2 == 1 || (x.BO1.I1 == 1 || x.K3 == 1)), Setters<TK, TK, TBO1_I, TK>(MyBO.SetK1, MyBO.SetK2, MyBO.SetBO1_I1, MyBO.SetK3)));
 		}
 
-#endregion 5a. One path
-#region 5b. Two paths
 		[Test]
 		public async Task Test_xyP_in_A_C__rsQ_in_C____xy_OJ_rs_OJAsync()
 		{
@@ -91,8 +88,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 			await (RunTestAsync(x => ((x.BO1.I1 == 1 && x.BO2.J1 == 1) || x.BO2.J2 == 1) || (x.BO1.I2 == 1 || (x.BO1.I3 == 1 && x.BO2.J3 == 1)), x => (x.BO1.I1 == 1 && x.BO2.J1 == 1) || (x.BO2.J2 == 1 || (x.BO1.I2 == 1 || (x.BO1.I3 == 1 && x.BO2.J3 == 1))), Setters<TBO1_I, TBO2_J, TBO2_J, TBO1_I, TBO1_I, TBO2_J>(MyBO.SetBO1_I1, MyBO.SetBO2_J1, MyBO.SetBO2_J2, MyBO.SetBO1_I2, MyBO.SetBO1_I3, MyBO.SetBO2_J3)));
 		}
 
-#endregion 5b. Two paths
-#region 5c. Path and subpath
 		[Test]
 		public async Task Test_wxyP_in_A_C____OJ_wx_OJ_wxyAsync()
 		{
@@ -111,8 +106,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 			await (RunTestAsync(x => (x.BO1.I1 == 1 || x.K1 == 1) || (x.K2 == 1 || x.BO1.BO2.J1 == 1), x => x.BO1.I1 == 1 || (x.K1 == 1 || (x.K2 == 1 || x.BO1.BO2.J1 == 1)), Setters<TBO1_I, TK, TK, TBO1_BO2_J>(MyBO.SetBO1_I1, MyBO.SetK1, MyBO.SetK2, MyBO.SetBO1_BO2_J1)));
 		}
 
-#endregion 5c. Path and subpath
-#region 5d. Partially overlapping paths
 		[Test]
 		public async Task Test_wxvP_in_C__wxyP_in_D____IJ_wx_OJ_wxv_OJ_wxyAsync()
 		{
@@ -124,7 +117,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 		{
 			await (RunTestAsync(x => (x.BO1.BO2.J1 == 1 || x.K1 == 1) || (x.K2 == 1 || x.BO1.BO3.L1 == 1), x => x.BO1.BO2.J1 == 1 || (x.K1 == 1 || (x.K2 == 1 || x.BO1.BO3.L1 == 1)), Setters<TBO1_BO2_J, TK, TK, TBO1_BO3_L>(MyBO.SetBO1_BO2_J1, MyBO.SetK1, MyBO.SetK2, MyBO.SetBO1_BO3_L1)));
 		}
-#endregion 5d. Partially overlapping paths
 	// ...and many more...???...
 	// ...also partial paths as IJ then rest as OJ...???...    
 	}

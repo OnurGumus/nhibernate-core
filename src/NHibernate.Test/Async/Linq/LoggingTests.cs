@@ -4,6 +4,8 @@ using NHibernate.Cfg;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Linq
 {
@@ -11,19 +13,6 @@ namespace NHibernate.Test.Linq
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class LoggingTestsAsync : LinqTestCaseAsync
 	{
-		[Test]
-		public void PageBetweenProjections()
-		{
-			using (var spy = new LogSpy("NHibernate.Linq"))
-			{
-				var subquery = db.Products.Where(p => p.ProductId > 5);
-				var list = db.Products.Where(p => subquery.Contains(p)).Skip(5).Take(10).ToList();
-				var logtext = spy.GetWholeLog();
-				const string expected = "Expression (partially evaluated): value(NHibernate.Linq.NhQueryable`1[NHibernate.DomainModel.Northwind.Entities.Product]).Where(p => value(NHibernate.Linq.NhQueryable`1[NHibernate.DomainModel.Northwind.Entities.Product]).Where(p => (p.ProductId > 5)).Contains(p)).Skip(5).Take(10)";
-				Assert.That(logtext, Is.StringContaining(expected));
-			}
-		}
-
 		[Test]
 		public async Task CanLogLinqExpressionWithoutInitializingContainedProxyAsync()
 		{

@@ -6,24 +6,15 @@ using NHibernate.Dialect;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.DriverTest
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class Sql2008DateTime2TestAsync : TestCaseAsync
 	{
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
-			{
-				configuration.SetProperty(Environment.PrepareSql, "true");
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.SetProperty(Environment.PrepareSql, "true");
 		}
 
 		protected override string MappingsAssembly

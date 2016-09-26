@@ -12,7 +12,6 @@ namespace NHibernate.Test.Hql.Ast
 	public partial class BaseFixtureAsync : TestCaseAsync
 	{
 		private readonly IDictionary<string, IFilter> emptyfilters = new CollectionHelper.EmptyMapClass<string, IFilter>();
-#region Overrides of TestCase
 		protected override IList Mappings
 		{
 			get
@@ -21,26 +20,16 @@ namespace NHibernate.Test.Hql.Ast
 			}
 		}
 
-#endregion
-		protected override Task ConfigureAsync(Cfg.Configuration configuration)
+		protected override void Configure(Cfg.Configuration configuration)
 		{
-			try
+			var assembly = GetType().Assembly;
+			string mappingNamespace = GetType().Namespace;
+			foreach (var resource in assembly.GetManifestResourceNames())
 			{
-				var assembly = GetType().Assembly;
-				string mappingNamespace = GetType().Namespace;
-				foreach (var resource in assembly.GetManifestResourceNames())
+				if (resource.StartsWith(mappingNamespace) && resource.EndsWith(".hbm.xml"))
 				{
-					if (resource.StartsWith(mappingNamespace) && resource.EndsWith(".hbm.xml"))
-					{
-						configuration.AddResource(resource, assembly);
-					}
+					configuration.AddResource(resource, assembly);
 				}
-
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
 			}
 		}
 

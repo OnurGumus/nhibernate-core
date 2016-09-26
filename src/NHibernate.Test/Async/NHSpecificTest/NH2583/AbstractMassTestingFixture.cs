@@ -15,9 +15,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 	public abstract partial class AbstractMassTestingFixtureAsync : BugTestCaseAsync
 	{
 		public const int BatchSize = 200;
-		protected override async Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			await (base.ConfigureAsync(configuration));
+			base.Configure(configuration);
 			configuration.DataBaseIntegration(x => x.BatchSize = BatchSize + 5);
 			List<string> cacheSettings = new List<string>(configuration.Properties.Keys.Where(x => x.Contains("cache")));
 			foreach (var cacheSetting in cacheSettings)

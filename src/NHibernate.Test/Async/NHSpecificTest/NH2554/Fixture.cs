@@ -14,10 +14,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2554
 			return (dialect is NHibernate.Dialect.MsSql2005Dialect) || (dialect is NHibernate.Dialect.MsSql2008Dialect);
 		}
 
-		protected override async Task ConfigureAsync(NHibernate.Cfg.Configuration configuration)
+		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
 			configuration.SetProperty(NHibernate.Cfg.Environment.Hbm2ddlKeyWords, "keywords");
-			await (base.ConfigureAsync(configuration));
+			base.Configure(configuration);
 		}
 
 		protected override async Task OnSetUpAsync()

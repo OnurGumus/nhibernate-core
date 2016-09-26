@@ -92,7 +92,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 		}
 
 		[Test]
-		public async Task Can_roll_back_transactionAsync()
+		public void Can_roll_back_transaction()
 		{
 			if (Dialect is FirebirdDialect)
 				Assert.Ignore("Firebird driver does not support distributed transactions");
@@ -100,7 +100,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			using (ISession s = sessions.OpenSession())
 			{
 				new ForceEscalationToDistributedTx(true); //will rollback tx
-				await (s.SaveAsync(new Person{CreatedAt = DateTime.Today}));
+				s.Save(new Person{CreatedAt = DateTime.Today});
 				tx.Complete();
 			}
 
@@ -117,7 +117,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 
 		[Test]
 		[Description("Another action inside the transaction do the rollBack outside nh-session-scope.")]
-		public async Task RollbackOutsideNhAsync()
+		public void RollbackOutsideNh()
 		{
 			if (Dialect is FirebirdDialect)
 				Assert.Ignore("Firebird driver does not support distributed transactions");
@@ -128,7 +128,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 					using (ISession s = sessions.OpenSession())
 					{
 						var person = new Person{CreatedAt = DateTime.Now};
-						await (s.SaveAsync(person));
+						s.Save(person);
 					}
 
 					new ForceEscalationToDistributedTx(true); //will rollback tx
@@ -146,7 +146,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 
 		[Test]
 		[Description("rollback inside nh-session-scope should not commit save and the transaction should be aborted.")]
-		public async Task TransactionInsertWithRollBackTaskAsync()
+		public void TransactionInsertWithRollBackTask()
 		{
 			if (Dialect is FirebirdDialect)
 				Assert.Ignore("Firebird driver does not support distributed transactions");
@@ -157,10 +157,10 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 					using (ISession s = sessions.OpenSession())
 					{
 						var person = new Person{CreatedAt = DateTime.Now};
-						await (s.SaveAsync(person));
+						s.Save(person);
 						new ForceEscalationToDistributedTx(true); //will rollback tx
 						person.CreatedAt = DateTime.Now;
-						await (s.UpdateAsync(person));
+						s.Update(person);
 					}
 
 					txscope.Complete();

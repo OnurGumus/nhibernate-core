@@ -3,8 +3,10 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using log4net;
 using log4net.Config;
 using NHibernate.Cfg;
@@ -89,7 +91,7 @@ namespace NHibernate.Test
 		{
 			try
 			{
-				await (ConfigureAsync());
+				Configure();
 				if (!AppliesTo(Dialect))
 				{
 					Assert.Ignore(GetType() + " does not apply to " + Dialect);
@@ -230,11 +232,11 @@ namespace NHibernate.Test
 			return false;
 		}
 
-		private async Task ConfigureAsync()
+		private void Configure()
 		{
 			cfg = TestConfigurationHelper.GetDefaultConfiguration();
 			AddMappings(cfg);
-			await (ConfigureAsync(cfg));
+			Configure(cfg);
 			ApplyCacheSettings(cfg);
 		}
 
@@ -371,7 +373,6 @@ namespace NHibernate.Test
 			}
 		}
 
-#region Properties overridable by subclasses
 		protected virtual bool AppliesTo(Dialect.Dialect dialect)
 		{
 			return true;
@@ -382,9 +383,8 @@ namespace NHibernate.Test
 			return true;
 		}
 
-		protected virtual Task ConfigureAsync(Configuration configuration)
+		protected virtual void Configure(Configuration configuration)
 		{
-			return TaskHelper.CompletedTask;
 		}
 
 		protected virtual string CacheConcurrencyStrategy
@@ -395,7 +395,6 @@ namespace NHibernate.Test
 			}
 		//get { return null; }
 		}
-#endregion
 	}
 }
 #endif

@@ -1,10 +1,10 @@
 #if NET_4_5
 using System;
 using System.Linq;
+using NHibernate.Exceptions;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using NHibernate.Exceptions;
 using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2692
@@ -13,34 +13,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2692
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class FixtureAsync : BugTestCaseAsync
 	{
-		[Test]
-		public void QueryingParentWhichHasChildren()
-		{
-			using (var session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var result = session.Query<Parent>().Where(x => x.ChildComponents.Any()).ToList();
-					Assert.That(result, Has.Count.EqualTo(1));
-				}
-		}
-
-		[Test]
-		public Task QueryingChildrenComponentsAsync()
-		{
-			Assert.Throws<GenericADOException>(() =>
-			{
-				using (var session = OpenSession())
-					using (session.BeginTransaction())
-					{
-						var result = session.Query<Parent>().SelectMany(x => x.ChildComponents).ToList();
-						Assert.That(result, Has.Count.EqualTo(1));
-					}
-			}
-
-			, KnownBug.Issue("NH-2692"));
-			return TaskHelper.CompletedTask;
-		}
-
 		[Test]
 		public async Task QueryingChildrenComponentsHqlAsync()
 		{

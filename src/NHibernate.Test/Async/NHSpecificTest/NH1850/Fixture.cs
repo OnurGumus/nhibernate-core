@@ -1,8 +1,6 @@
 #if NET_4_5
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1850
 {
@@ -14,17 +12,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1850
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class FixtureAsync : BugTestCaseAsync
 	{
-		protected override Task ConfigureAsync(NHibernate.Cfg.Configuration configuration)
+		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
-			try
-			{
-				configuration.SetProperty(Environment.BatchSize, "1");
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.SetProperty(Environment.BatchSize, "1");
 		}
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)

@@ -46,7 +46,6 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 			return mappings;
 		}
 
-#region Nested type: FamilyMap
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		private class FamilyMap<T> : ClassMapping<Family<T>> where T : Animal
 		{
@@ -85,7 +84,6 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 			}
 		}
 
-#endregion
 		[Test]
 		public async Task ShouldWorkLoadingComplexEntitiesAsync()
 		{

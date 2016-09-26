@@ -6,6 +6,7 @@ using NHibernate.SqlCommand;
 using NHibernate.Util;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
 
 namespace NHibernate.Test.ExpressionTest
 {
@@ -55,12 +56,6 @@ namespace NHibernate.Test.ExpressionTest
 				Assert.AreEqual(expectedTV[i].Type, typedValues[i].Type);
 				Assert.AreEqual(expectedTV[i].Value, typedValues[i].Value);
 			}
-		}
-
-		[Test]
-		public void ToStringTest()
-		{
-			Assert.AreEqual("(Address is null and Count between 5 and 10)", _conjunction.ToString());
 		}
 	}
 }

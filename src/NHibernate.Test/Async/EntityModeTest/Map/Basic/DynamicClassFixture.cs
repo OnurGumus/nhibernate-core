@@ -6,8 +6,6 @@ using NHibernate.Engine;
 using NUnit.Framework;
 using NHibernate.Criterion;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.EntityModeTest.Map.Basic
 {
@@ -31,17 +29,9 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 			}
 		}
 
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
-			{
-				configuration.SetProperty(Environment.DefaultEntityMode, EntityModeHelper.ToString(EntityMode.Map));
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.SetProperty(Environment.DefaultEntityMode, EntityModeHelper.ToString(EntityMode.Map));
 		}
 
 		public delegate IDictionary SingleCarQueryDelegate(ISession session);

@@ -101,6 +101,7 @@ namespace NHibernate.AsyncGenerator
 
 		public void PostAnalyze()
 		{
+			var methodInfos = new HashSet<MethodInfo>();
 			foreach (var projectInfo in ProjectInfos)
 			{
 				foreach (var pair in projectInfo.Where(o => o.Value.Any()))
@@ -112,14 +113,20 @@ namespace NHibernate.AsyncGenerator
 							foreach (var typeInfo in rootTypeInfo.GetDescendantTypeInfosAndSelf()
 																 .Where(o => o.TypeTransformation != TypeTransformation.None))
 							{
-								foreach (var methodInfo in typeInfo.MethodInfos.Values.Where(o => !o.Ignore))
+								foreach (var methodInfo in typeInfo.MethodInfos.Values)
 								{
-									methodInfo.PostAnalyze();
+									methodInfos.Add(methodInfo);
+									methodInfo.Analyze();
 								}
 							}
 						}
 					}
 				}
+			}
+
+			foreach (var methodInfo in methodInfos)
+			{
+				methodInfo.PostAnalyze();
 			}
 		}
 
@@ -215,6 +222,11 @@ namespace NHibernate.AsyncGenerator
 		public Func<IMethodSymbol, bool> CanConvertReferenceFunc { get; set; } = m => true;
 
 		/// <summary>
+		/// Predicate for reference selection
+		/// </summary>
+		public Func<MethodInfo, bool> CanGenerateMethod { get; set; } = m => true;
+
+		/// <summary>
 		/// A custom method that will be called when for a method there is not an async counterpart with same parameters
 		/// </summary>
 		public Func<IMethodSymbol, IMethodSymbol> FindAsyncCounterpart { get; set; } = null;
@@ -290,6 +302,11 @@ namespace NHibernate.AsyncGenerator
 							return MethodAsyncConversion.Smart;
 							//symbol.ContainingType?.ContainingType?.GetAttributes().Any(a => a.AttributeClass.Name == "TestFixtureAttribute") == true
 						},
+						CanGenerateMethod = m =>
+						{
+							return
+								m.ReferenceResults.Any(o => o.Symbol.ContainingAssembly.ToString().StartsWith("NHibernate"));
+						},
 						/*
 						CanScanTypeFunc = symbol =>
 						{
@@ -305,25 +322,46 @@ namespace NHibernate.AsyncGenerator
 						},
 						//CanScanDocumentFunc = doc =>
 						//{
-						//	return doc.FilePath.EndsWith(@"Linq\QueryTimeoutTests.cs");
-						//	//return doc.FilePath.EndsWith(@"NHSpecificTest\NH1882\TestCollectionInitializingDuringFlush.cs"); //||
-						//	//doc.FilePath.EndsWith(@"TestCase.cs");
+						//	//return !doc.FilePath.Contains("NHSpecificTest") && (
+						//	//	doc.FilePath.EndsWith(@"MultiPathCircleCascadeTest.cs") ||
+						//	//	doc.FilePath.EndsWith(@"ComponentTest.cs") ||
+						//	//	doc.FilePath.EndsWith(@"\TestCase.cs")
+						//	//	);
+							
+						//	return doc.FilePath.EndsWith(@"NH2207\SampleTest.cs") ||
+						//	//doc.FilePath.EndsWith(@"NH2583\AbstractMassTestingFixture.cs") ||
+						//	doc.FilePath.EndsWith(@"NHSpecificTest\BugTestCase.cs") ||
+						//	//doc.FilePath.EndsWith(@"NH2583\Domain.cs") ||
+						//	doc.FilePath.EndsWith(@"\TestCase.cs");
+							
+						//	//return
+						//	//doc.FilePath.EndsWith(@"NHSpecificTest\BasicClassFixture.cs") ||
+						//	//doc.FilePath.EndsWith(@"\ObjectAssertion.cs") ||
+						//	//doc.FilePath.EndsWith(@"\TestCase.cs");
 						//},
 						FindAsyncCounterpart = symbol =>
 						{
-							if (symbol.ContainingAssembly.Name != "nunit.framework" && symbol.ContainingType.Name != "Assert")
+							var ns = symbol.ContainingNamespace?.ToString() ?? "";
+							if (ns.StartsWith("System") && !ns.StartsWith("System.Data"))
 							{
+								// TODO: handle Linq
 								return null;
 							}
-							var delegateNames = new HashSet<string> {"AsyncTestDelegate", "TestDelegate"};
-							Func<IParameterSymbol, IParameterSymbol, bool> paramCompareFunc = (p1, p2) =>
+
+							Func<IParameterSymbol, IParameterSymbol, bool> paramCompareFunc = null;
+							if (symbol.ContainingAssembly.Name == "nunit.framework" && symbol.ContainingType.Name == "Assert")
 							{
-								return p1.Type.Equals(p2.Type) || (delegateNames.Contains(p1.Type.Name) && delegateNames.Contains(p2.Type.Name));
-							};
-							return symbol.ContainingType.GetMembers(symbol.Name + "Async")
-										  .OfType<IMethodSymbol>()
-										  .Where(o => o.TypeParameters.Length == symbol.TypeParameters.Length)
-										  .FirstOrDefault(o => o.HaveSameParameters(symbol, paramCompareFunc));
+								var delegateNames = new HashSet<string> {"AsyncTestDelegate", "TestDelegate"};
+								paramCompareFunc = (p1, p2) =>
+								{
+									return p1.Type.Equals(p2.Type) || (delegateNames.Contains(p1.Type.Name) && delegateNames.Contains(p2.Type.Name));
+								};
+							}
+							return symbol.ContainingType.EnumerateBaseTypesAndSelf()
+								.SelectMany(o => o.GetMembers(symbol.Name + "Async"))
+								.OfType<IMethodSymbol>()
+								.Where(o => o.TypeParameters.Length == symbol.TypeParameters.Length)
+								.FirstOrDefault(o => o.HaveSameParameters(symbol, paramCompareFunc));
 						},
 						TypeTransformationFunc = type =>
 						{
@@ -390,6 +428,7 @@ namespace NHibernate.AsyncGenerator
 				},
 				Directive = "NET_4_5"
 			};
+
 
 			solutionInfo.Write(configuration);
 		}

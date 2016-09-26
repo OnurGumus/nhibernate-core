@@ -5,8 +5,6 @@ using NHibernate.Stat;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.Ondelete
 {
@@ -30,17 +28,9 @@ namespace NHibernate.Test.Ondelete
 			}
 		}
 
-		protected override Task ConfigureAsync(Configuration cfg)
+		protected override void Configure(Configuration cfg)
 		{
-			try
-			{
-				cfg.SetProperty(Environment.GenerateStatistics, "true");
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			cfg.SetProperty(Environment.GenerateStatistics, "true");
 		}
 
 		[Test]

@@ -6,6 +6,8 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.DriverTest
 {
@@ -53,76 +55,6 @@ namespace NHibernate.Test.DriverTest
 			//return connection2 to the pool
 			connection2.Close();
 			await (VerifyCountOfEstablishedConnectionsIsAsync(2));
-		}
-
-		[Test]
-		public void AdjustCommand_StringParametersWithinConditionalSelect_ThenParameterIsWrappedByAVarcharCastStatement()
-		{
-			MakeDriver();
-			var cmd = BuildSelectCaseCommand(SqlTypeFactory.GetString(0));
-			_driver.AdjustCommand(cmd);
-			var expectedCommandTxt = "select (case when col = @p0 then cast(@p1 as VARCHAR(255)) else cast(@p2 as VARCHAR(255)) end) from table";
-			Assert.That(cmd.CommandText, Is.EqualTo(expectedCommandTxt));
-		}
-
-		[Test]
-		public void AdjustCommand_IntParametersWithinConditionalSelect_ThenParameterIsWrappedByAnIntCastStatement()
-		{
-			MakeDriver();
-			var cmd = BuildSelectCaseCommand(SqlTypeFactory.Int32);
-			_driver.AdjustCommand(cmd);
-			var expectedCommandTxt = "select (case when col = @p0 then cast(@p1 as INTEGER) else cast(@p2 as INTEGER) end) from table";
-			Assert.That(cmd.CommandText, Is.EqualTo(expectedCommandTxt));
-		}
-
-		[Test]
-		public void AdjustCommand_ParameterWithinSelectConcat_ParameterIsCasted()
-		{
-			MakeDriver();
-			var cmd = BuildSelectConcatCommand(SqlTypeFactory.GetString(0));
-			_driver.AdjustCommand(cmd);
-			var expected = "select col || cast(@p0 as VARCHAR(255)) || col from table";
-			Assert.That(cmd.CommandText, Is.EqualTo(expected));
-		}
-
-		[Test]
-		public void AdjustCommand_ParameterWithinSelectAddFunction_ParameterIsCasted()
-		{
-			MakeDriver();
-			var cmd = BuildSelectAddCommand(SqlTypeFactory.GetString(0));
-			_driver.AdjustCommand(cmd);
-			var expected = "select col + cast(@p0 as VARCHAR(255)) from table";
-			Assert.That(cmd.CommandText, Is.EqualTo(expected));
-		}
-
-		[Test]
-		public void AdjustCommand_InsertWithParamsInSelect_ParameterIsCasted()
-		{
-			MakeDriver();
-			var cmd = BuildInsertWithParamsInSelectCommand(SqlTypeFactory.Int32);
-			_driver.AdjustCommand(cmd);
-			var expected = "insert into table1 (col1, col2) select col1, cast(@p0 as INTEGER) from table2";
-			Assert.That(cmd.CommandText, Is.EqualTo(expected));
-		}
-
-		[Test]
-		public void AdjustCommand_InsertWithParamsInSelect_ParameterIsNotCasted_WhenColumnNameContainsSelect()
-		{
-			MakeDriver();
-			var cmd = BuildInsertWithParamsInSelectCommandWithSelectInColumnName(SqlTypeFactory.Int32);
-			_driver.AdjustCommand(cmd);
-			var expected = "insert into table1 (col1_select_aaa) values(@p0) from table2";
-			Assert.That(cmd.CommandText, Is.EqualTo(expected));
-		}
-
-		[Test]
-		public void AdjustCommand_InsertWithParamsInSelect_ParameterIsNotCasted_WhenColumnNameContainsWhere()
-		{
-			MakeDriver();
-			var cmd = BuildInsertWithParamsInSelectCommandWithWhereInColumnName(SqlTypeFactory.Int32);
-			_driver.AdjustCommand(cmd);
-			var expected = "insert into table1 (col1_where_aaa) values(@p0) from table2";
-			Assert.That(cmd.CommandText, Is.EqualTo(expected));
 		}
 
 		private void MakeDriver()

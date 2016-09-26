@@ -174,7 +174,7 @@ namespace NHibernate.AsyncGenerator
 				// if the type have to be defined as a new type then we need to find all references to that type 
 				if (typeTransform == TypeTransformation.NewType)
 				{
-					await ScanForTypeReferences(declaredSymbol).ConfigureAwait(false);
+					await ScanForTypeReferences(typeInfo, declaredSymbol).ConfigureAwait(false);
 				}
 				
 				if (Configuration.ScanForMissingAsyncMembers)
@@ -198,7 +198,6 @@ namespace NHibernate.AsyncGenerator
 					{
 						continue;
 					}
-
 					if (conversion == MethodAsyncConversion.Smart && !SmartAnalyzeMethod(docInfo, memberSymbol, symbolInfo))
 					{
 						continue;
@@ -211,15 +210,20 @@ namespace NHibernate.AsyncGenerator
 
 		private bool SmartAnalyzeMethod(DocumentInfo docInfo, IMethodSymbol memberSymbol, MethodSymbolInfo symbolInfo)
 		{
-			var methodInfo = docInfo.GetOrCreateMethodInfo(memberSymbol);
-			if (methodInfo.Missing)
+			var methodInfo = docInfo.GetMethodInfo(memberSymbol);
+			var created = false;
+			if (methodInfo == null)
+			{
+				methodInfo = docInfo.GetOrCreateMethodInfo(memberSymbol);
+				created = true;
+			}
+			if (methodInfo.Missing || methodInfo.FindAsyncCounterpartMethodsWhitinBody(MethodAsyncConterparts).Any())
 			{
 				return true;
 			}
-
-			if (methodInfo.FindAsyncCounterpartMethodsWhitinBody(MethodAsyncConterparts).Any())
+			if (created)
 			{
-				return true;
+				methodInfo.TypeInfo.MethodInfos.Remove(methodInfo.Node);
 			}
 			return false;
 		}
@@ -250,9 +254,10 @@ namespace NHibernate.AsyncGenerator
 		/// When a type needs to be defined as a new type we need to find all references to them.
 		/// Reference can point to a variable, field, base type, argument definition
 		/// </summary>
+		/// <param name="typeInfo"></param>
 		/// <param name="symbol"></param>
 		/// <returns></returns>
-		private async Task ScanForTypeReferences(INamedTypeSymbol symbol)
+		private async Task ScanForTypeReferences(TypeInfo typeInfo, INamedTypeSymbol symbol)
 		{
 			if (_scannedTypeReferenceSymbols.Contains(symbol.OriginalDefinition))
 			{
@@ -272,6 +277,8 @@ namespace NHibernate.AsyncGenerator
 				{
 					continue;
 				}
+				typeInfo.Dependencies.Add(refLocation);
+
 				// we need to find the type where the reference location is
 				var node = info.RootNode.DescendantNodes(descendIntoTrivia:true)
 					.First(
@@ -288,8 +295,7 @@ namespace NHibernate.AsyncGenerator
 				var methodNode = node.Ancestors().OfType<MethodDeclarationSyntax>().FirstOrDefault();
 				if (methodNode != null)
 				{
-					var methodInfo = info.GetOrCreateMethodInfo(methodNode);
-					//methodInfo.Ignore = false;
+					var methodInfo = info.GetOrCreateMethodInfo(methodNode, true);
 					if (methodInfo.TypeReferences.Contains(refLocation))
 					{
 						continue;
@@ -301,12 +307,12 @@ namespace NHibernate.AsyncGenerator
 					var type = node.Ancestors().OfType<TypeDeclarationSyntax>().FirstOrDefault();
 					if (type != null) 
 					{
-						var typeInfo = info.GetOrCreateTypeInfo(type);
-						if (typeInfo.TypeReferences.Contains(refLocation))
+						var refTypeInfo = info.GetOrCreateTypeInfo(type);
+						if (refTypeInfo.TypeReferences.Contains(refLocation))
 						{
 							continue;
 						}
-						typeInfo.TypeReferences.Add(refLocation);
+						refTypeInfo.TypeReferences.Add(refLocation);
 					}
 					else // can happen when declaring a Name in a using statement
 					{
@@ -328,10 +334,14 @@ namespace NHibernate.AsyncGenerator
 
 		private async Task ScanForTypeMissingAsyncMethods(DocumentInfo docInfo, INamedTypeSymbol typeSymbol)
 		{
-			var members = typeSymbol.GetMembers().OfType<IMethodSymbol>().ToLookup(o => o.Name);
+			var members = typeSymbol.GetMembers()
+				.Where(o => o.Locations.All(l => !l.SourceTree.FilePath.StartsWith(_asyncProjectFolder)))
+				.OfType<IMethodSymbol>().ToLookup(o => o.Name);
 			var methodInfos = new List<MethodInfo>();
 			foreach (var asyncMember in typeSymbol.AllInterfaces
-												  .SelectMany(o => o.GetMembers().OfType<IMethodSymbol>().Where(m => m.Name.EndsWith("Async"))))
+												  .SelectMany(o => o.GetMembers().OfType<IMethodSymbol>()
+													.Where(m => m.Locations.All(l => l.SourceTree == null || !l.SourceTree.FilePath.StartsWith(_asyncProjectFolder)))
+													.Where(m => m.Name.EndsWith("Async"))))
 			{
 				// FindImplementationForInterfaceMember will find also the implementation of an already generated type so we need an extra check 
 				var impl = typeSymbol.FindImplementationForInterfaceMember(asyncMember);
@@ -365,6 +375,7 @@ namespace NHibernate.AsyncGenerator
 				}
 				foreach (var asyncMember in baseType.GetMembers()
 					.OfType<IMethodSymbol>()
+					.Where(o => o.Locations.All(l => l.SourceTree == null || !l.SourceTree.FilePath.StartsWith(_asyncProjectFolder)))
 					.Where(o => o.IsAbstract && o.Name.EndsWith("Async")))
 				{
 					var nonAsyncName = asyncMember.Name.Remove(asyncMember.Name.LastIndexOf("Async", StringComparison.InvariantCulture));
@@ -546,6 +557,7 @@ namespace NHibernate.AsyncGenerator
 						var asyncConterPart = interfaceMember.ContainingType.GetMembers()
 															 .OfType<IMethodSymbol>()
 															 .Where(o => o.Name == methodSymbol.Name + "Async")
+															 .Where(o => o.Locations.All(l => l.SourceTree == null || !l.SourceTree.FilePath.StartsWith(_asyncProjectFolder)))
 															 .SingleOrDefault(o => o.HaveSameParameters(methodSymbol));
 						if (asyncConterPart == null)
 						{
@@ -582,6 +594,7 @@ namespace NHibernate.AsyncGenerator
 					var asyncConterPart = interfaceMember.ContainingType.GetMembers()
 														 .OfType<IMethodSymbol>()
 														 .Where(o => o.Name == methodSymbol.Name + "Async")
+														 .Where(o => o.Locations.All(l => l.SourceTree == null || !l.SourceTree.FilePath.StartsWith(_asyncProjectFolder)))
 														 .SingleOrDefault(o => o.HaveSameParameters(methodSymbol));
 					if (asyncConterPart == null)
 					{
@@ -614,6 +627,7 @@ namespace NHibernate.AsyncGenerator
 					var asyncConterPart = overridenMethod.ContainingType.GetMembers()
 														 .OfType<IMethodSymbol>()
 														 .Where(o => o.Name == methodSymbol.Name + "Async" && !o.IsSealed)
+														 .Where(o => o.Locations.All(l => l.SourceTree == null || !l.SourceTree.FilePath.StartsWith(_asyncProjectFolder)))
 														 .SingleOrDefault(o => o.HaveSameParameters(methodSymbol));
 					if (asyncConterPart == null)
 					{
@@ -712,7 +726,8 @@ namespace NHibernate.AsyncGenerator
 				
 
 				var implementations = await SymbolFinder.FindImplementationsAsync(interfaceMethod, Project.Solution, GetSearchableProjects()).ConfigureAwait(false);
-				foreach (var implementation in implementations.OfType<IMethodSymbol>())
+				foreach (var implementation in implementations.OfType<IMethodSymbol>()
+					.Where(o => o.Locations.All(l => !l.SourceTree.FilePath.StartsWith(_asyncProjectFolder))))
 				{
 					syntax = implementation.DeclaringSyntaxReferences.Single();
 					docInfo = await GetOrCreateDocumentInfo(syntax).ConfigureAwait(false);
@@ -748,13 +763,14 @@ namespace NHibernate.AsyncGenerator
 				syntax = baseMethod.DeclaringSyntaxReferences.Single();
 				docInfo = await GetOrCreateDocumentInfo(syntax).ConfigureAwait(false);
 				var baseMethodInfo = docInfo?.GetOrCreateMethodInfo(baseMethod);
-				if (baseMethodInfo != null && baseMethod.IsAbstract)
+				if (baseMethodInfo != null && !baseMethod.IsAbstract)
 				{
 					bodyScanMethodInfos.Add(baseMethodInfo);
 				}
 				
 				var overrides = await SymbolFinder.FindOverridesAsync(baseMethod, Project.Solution, GetSearchableProjects()).ConfigureAwait(false);
-				foreach (var overriddenMethod in overrides.OfType<IMethodSymbol>())
+				foreach (var overriddenMethod in overrides.OfType<IMethodSymbol>()
+					.Where(o => o.Locations.All(l => !l.SourceTree.FilePath.StartsWith(_asyncProjectFolder))))
 				{
 					syntax = overriddenMethod.DeclaringSyntaxReferences.Single();
 					docInfo = await GetOrCreateDocumentInfo(syntax).ConfigureAwait(false);
@@ -879,7 +895,45 @@ namespace NHibernate.AsyncGenerator
 					//methodInfo.Ignore = false;
 				}*/
 				methodInfo.References.Add(refLocation);
+				var nameNode = methodInfo.Node.DescendantNodes()
+							   .OfType<SimpleNameSyntax>()
+							   .First(
+								   o =>
+								   {
+									   if (o.IsKind(SyntaxKind.GenericName))
+									   {
+										   return o.ChildTokens().First(t => t.IsKind(SyntaxKind.IdentifierToken)).Span ==
+												  refLocation.Location.SourceSpan;
+									   }
+									   return o.Span == refLocation.Location.SourceSpan;
+								   });
+				var invokedSymbol = (IMethodSymbol) docInfo.SemanticModel.GetSymbolInfo(nameNode).Symbol;
+				var invokedMethodDocInfoTask = invokedSymbol.DeclaringSyntaxReferences
+																  .Select(GetOrCreateDocumentInfo)
+																  .SingleOrDefault();
+				if (invokedMethodDocInfoTask != null)
+				{
+					var invokedMethodDocInfo = await invokedMethodDocInfoTask;
+					if (invokedMethodDocInfo != null)
+					{
+						var invokedMethodInfo = invokedMethodDocInfo.GetOrCreateMethodInfo(invokedSymbol);
+						if (!invokedMethodInfo.InvokedBy.ContainsKey(refLocation))
+						{
+							invokedMethodInfo.InvokedBy.Add(refLocation, methodInfo);
+						}
+						else
+						{
 
+						}
+					}
+				}
+
+				
+				/*
+				if (invokedSymbol.ContainingAssembly.ToString() == symbolInfo.MethodSymbol.ContainingAssembly.ToString())
+				{
+					
+				}*/
 				await ProcessMethodSymbolInfo(symbolInfo, docInfo, depth).ConfigureAwait(false);
 			}
 		}

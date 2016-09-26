@@ -6,6 +6,7 @@ using NHibernate.Dialect;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Linq
 {
@@ -24,103 +25,6 @@ namespace NHibernate.Test.Linq
 		{
 			await (base.OnSetUpAsync());
 			_orderLines = db.OrderLines.OrderBy(ol => ol.Id).Take(10).ToList().AsQueryable();
-		}
-
-		[Test]
-		public void SignAllPositiveTest()
-		{
-			IgnoreIfNotSupported("sign");
-			var signs = (
-				from o in db.OrderLines
-				select Math.Sign(o.UnitPrice)).ToList();
-			Assert.That(signs.All(x => x == 1), Is.True);
-		}
-
-		[Test]
-		public void SignAllNegativeTest()
-		{
-			IgnoreIfNotSupported("sign");
-			var signs = (
-				from o in db.OrderLines
-				select Math.Sign(0m - o.UnitPrice)).ToList();
-			Assert.That(signs.All(x => x == -1), Is.True);
-		}
-
-		[Test]
-		public void SinTest()
-		{
-			IgnoreIfNotSupported("sin");
-			Test(o => Math.Round(Math.Sin((double)o.UnitPrice), 5));
-		}
-
-		[Test]
-		public void CosTest()
-		{
-			IgnoreIfNotSupported("cos");
-			Test(o => Math.Round(Math.Cos((double)o.UnitPrice), 5));
-		}
-
-		[Test]
-		public void TanTest()
-		{
-			IgnoreIfNotSupported("tan");
-			Test(o => Math.Round(Math.Tan((double)o.Discount), 5));
-		}
-
-		[Test]
-		public void SinhTest()
-		{
-			IgnoreIfNotSupported("sinh");
-			Test(o => Math.Round(Math.Sinh((double)o.Discount), 5));
-		}
-
-		[Test]
-		public void CoshTest()
-		{
-			IgnoreIfNotSupported("cosh");
-			Test(o => Math.Round(Math.Cosh((double)o.Discount), 5));
-		}
-
-		[Test]
-		public void TanhTest()
-		{
-			IgnoreIfNotSupported("tanh");
-			Test(o => Math.Round(Math.Tanh((double)o.Discount), 5));
-		}
-
-		[Test]
-		public void AsinTest()
-		{
-			IgnoreIfNotSupported("asin");
-			Test(o => Math.Round(Math.Asin((double)o.Discount), 5));
-		}
-
-		[Test]
-		public void AcosTest()
-		{
-			IgnoreIfNotSupported("acos");
-			Test(o => Math.Round(Math.Acos((double)o.Discount), 5));
-		}
-
-		[Test]
-		public void AtanTest()
-		{
-			IgnoreIfNotSupported("atan");
-			Test(o => Math.Round(Math.Atan((double)o.UnitPrice), 5));
-		}
-
-		[Test]
-		public void Atan2Test()
-		{
-			IgnoreIfNotSupported("atan2");
-			Test(o => Math.Round(Math.Atan2((double)o.Discount, 0.5d), 5));
-		}
-
-		[Test]
-		public void PowTest()
-		{
-			IgnoreIfNotSupported("power");
-			Test(o => Math.Round(Math.Pow((double)o.Discount, 0.5d), 5));
 		}
 
 		private void Test(Expression<Func<OrderLine, double>> selector)

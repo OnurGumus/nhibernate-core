@@ -15,17 +15,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2856
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class FixtureAsync : TestCaseMappingByCodeAsync
 	{
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
-			{
-				configuration.SetProperty(Environment.GenerateStatistics, "true");
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.SetProperty(Environment.GenerateStatistics, "true");
 		}
 
 		protected override HbmMapping GetMappings()
@@ -49,25 +41,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2856
 
 			);
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
-		}
-
-		[Test]
-		public void EntityIsReturnedFromCacheOnSubsequentQueriesWhenUsingCacheableFetchQuery()
-		{
-			using (var session = OpenSession())
-			{
-				var query = session.Query<Person>().Fetch(p => p.Address).Cacheable();
-				sessions.Statistics.Clear();
-				var result = query.ToList(); // Execute the query
-				Assert.That(result.Count, Is.EqualTo(1));
-				Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(1));
-				Assert.That(sessions.Statistics.QueryCacheHitCount, Is.EqualTo(0));
-				sessions.Statistics.Clear();
-				var cachedResult = query.ToList(); // Re-execute the query
-				Assert.That(cachedResult.Count, Is.EqualTo(1));
-				Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(0));
-				Assert.That(sessions.Statistics.QueryCacheHitCount, Is.EqualTo(1));
-			}
 		}
 
 		protected override async Task OnSetUpAsync()

@@ -2,8 +2,6 @@
 using NHibernate.Cfg;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 {
@@ -12,17 +10,9 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		private const string hqlQuery = "select a.Id from ClassA a";
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
-			{
-				configuration.DataBaseIntegration(x => x.ExceptionConverter<SqlConverter>());
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.DataBaseIntegration(x => x.ExceptionConverter<SqlConverter>());
 		}
 
 		[Test]

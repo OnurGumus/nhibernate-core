@@ -27,10 +27,10 @@ namespace NHibernate.Test.IdTest
 			}
 		}
 
-		protected override async Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
 			cfg.SetProperty(Environment.UseIdentifierRollBack, "true");
-			await (base.ConfigureAsync(configuration));
+			base.Configure(configuration);
 		}
 
 		public async Task SimpleRollbackAsync()

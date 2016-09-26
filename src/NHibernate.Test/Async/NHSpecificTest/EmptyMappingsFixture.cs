@@ -23,36 +23,6 @@ namespace NHibernate.Test.NHSpecificTest
 		}
 
 		[Test]
-		public void BeginWithIsolationLevel()
-		{
-			using (ISession s = OpenSession())
-				using (ITransaction t = s.BeginTransaction(IsolationLevel.ReadCommitted))
-				{
-					AdoTransaction at = (AdoTransaction)t;
-					Assert.AreEqual(IsolationLevel.ReadCommitted, at.IsolationLevel);
-				}
-		}
-
-		[Test]
-		public Task ReconnectAfterCloseAsync()
-		{
-			try
-			{
-				using (ISession s = OpenSession())
-				{
-					s.Close();
-					Assert.Throws<ObjectDisposedException>(() => s.Reconnect());
-				}
-
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
-		}
-
-		[Test]
 		public async Task InvalidQueryAsync()
 		{
 			try
@@ -65,21 +35,6 @@ namespace NHibernate.Test.NHSpecificTest
 			catch (QueryException)
 			{
 			//
-			}
-		}
-
-		[Test]
-		public Task NullInterceptorAsync()
-		{
-			try
-			{
-				IInterceptor nullInterceptor = null;
-				Assert.Throws<ArgumentNullException>(() => sessions.OpenSession(nullInterceptor).Close());
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
 			}
 		}
 

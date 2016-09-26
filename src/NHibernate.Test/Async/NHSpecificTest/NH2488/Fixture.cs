@@ -9,7 +9,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class FixtureAsync : BugTestCaseAsync
 	{
-#region Scenarios
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		private class FetchSelectScenario : IDisposable
 		{
@@ -103,7 +102,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 			}
 		}
 
-#endregion
 		[Test]
 		public async Task ShouldNotQueryLazyProperties_FetchJoinAsync()
 		{

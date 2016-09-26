@@ -4,6 +4,8 @@ using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH2825
 {
@@ -56,30 +58,6 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH2825
 					await (session.DeleteAsync("from Child"));
 					await (session.DeleteAsync("from Parent"));
 					await (transaction.CommitAsync());
-				}
-		}
-
-		[Test]
-		public void VerifyOneEndOfManyToOneMappingUsingPropertyRef()
-		{
-			using (ISession session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var result = session.Query<Child>().ToList();
-					Assert.That(result.Count, Is.EqualTo(3));
-					Assert.That(result.Where(c => c.Name == "Child 1").First().Parent.ParentCode, Is.EqualTo(10));
-				}
-		}
-
-		[Test]
-		public void VerifyManyEndOfManyToOneMappingUsingPropertyRef()
-		{
-			using (ISession session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var result = session.Query<Parent>().ToList();
-					Assert.That(result.Count(), Is.EqualTo(2));
-					Assert.That(result.First(p => p.ParentCode == 10).Children.Count(), Is.EqualTo(2));
 				}
 		}
 	}

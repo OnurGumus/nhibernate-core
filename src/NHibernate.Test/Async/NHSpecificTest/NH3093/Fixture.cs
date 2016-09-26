@@ -6,6 +6,7 @@ using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3093
 {
@@ -92,47 +93,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3093
 					await (session.DeleteAsync("from System.Object"));
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
-				}
-		}
-
-		[Test]
-		public void Linq11()
-		{
-			using (var session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var cultivationsId = session.Query<Cultivation>().Select(c => c.Id).ToArray();
-					var products = (
-						from p in session.Query<Product>()where p.Family.Cultivations.Any(c => cultivationsId.Contains(c.Id)) && p.Family.Segment.Name == "segment 1"
-						select p).ToList();
-					Assert.AreEqual(1, products.Count);
-				}
-		}
-
-		[Test]
-		public void Linq12()
-		{
-			using (var session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var cultivationsId = session.Query<Cultivation>().Select(c => c.Id).ToArray();
-					var products = (
-						from p in session.Query<Product>()where p.Family.Cultivations.Any(c => cultivationsId.Contains(c.Id))orderby p.Family.Segment.Name
-						select p).ToList();
-					Assert.AreEqual(1, products.Count);
-				}
-		}
-
-		[Test]
-		public void Linq2()
-		{
-			using (var session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var products = (
-						from p in session.Query<Product>()where p.Family.Cultivations.Any(c => c.Name == "Sample") && p.Family.Segment.Name == "segment 1"
-						select p).ToList();
-					Assert.AreEqual(1, products.Count);
 				}
 		}
 	}

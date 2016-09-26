@@ -78,10 +78,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 			}
 		}
 
-		protected override async Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
 			configuration.SetProperty(Environment.InterceptorsBeforeTransactionCompletionIgnoreExceptions, "true");
-			await (base.ConfigureAsync(configuration));
+			base.Configure(configuration);
 		}
 
 		[Test]

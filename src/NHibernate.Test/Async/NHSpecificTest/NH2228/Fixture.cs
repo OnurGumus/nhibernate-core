@@ -4,7 +4,6 @@ using NHibernate.Cfg;
 using NUnit.Framework;
 using NHibernate.Cfg.Loquacious;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2228
 {
@@ -47,18 +46,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2228
 			}
 		}
 
-		protected override Task ConfigureAsync(NHibernate.Cfg.Configuration configuration)
+		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
-			try
-			{
-				// needed to be sure of StaleStateException that the user has reported in the issue
-				configuration.DataBaseIntegration(x => x.BatchSize = 1);
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			// needed to be sure of StaleStateException that the user has reported in the issue
+			configuration.DataBaseIntegration(x => x.BatchSize = 1);
 		}
 
 		[Test]

@@ -8,6 +8,8 @@ using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3119
 {
@@ -58,37 +60,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3119
 					await (session.DeleteAsync("from System.Object"));
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
-				}
-		}
-
-		[Test]
-		public void PocoComponentTuplizer_Instantiate_UsesReflectonOptimizer()
-		{
-			using (ISession freshSession = OpenSession())
-				using (freshSession.BeginTransaction())
-				{
-					Entity entity = freshSession.Query<Entity>().Single();
-					string stackTrace = entity.Component.LastCtorStackTrace;
-					StringAssert.Contains("NHibernate.Bytecode.Lightweight.ReflectionOptimizer.CreateInstance", stackTrace);
-				}
-		}
-
-		[Test]
-		public void PocoComponentTuplizerOfDeserializedConfiguration_Instantiate_UsesReflectonOptimizer()
-		{
-			MemoryStream configMemoryStream = new MemoryStream();
-			BinaryFormatter writer = new BinaryFormatter();
-			writer.Serialize(configMemoryStream, cfg);
-			configMemoryStream.Seek(0, SeekOrigin.Begin);
-			BinaryFormatter reader = new BinaryFormatter();
-			Configuration deserializedConfig = (Configuration)reader.Deserialize(configMemoryStream);
-			ISessionFactory factoryFromDeserializedConfig = deserializedConfig.BuildSessionFactory();
-			using (ISession deserializedSession = factoryFromDeserializedConfig.OpenSession())
-				using (deserializedSession.BeginTransaction())
-				{
-					Entity entity = deserializedSession.Query<Entity>().Single();
-					string stackTrace = entity.Component.LastCtorStackTrace;
-					StringAssert.Contains("NHibernate.Bytecode.Lightweight.ReflectionOptimizer.CreateInstance", stackTrace);
 				}
 		}
 	}

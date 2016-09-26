@@ -16,9 +16,9 @@ namespace NHibernate.Test.SqlTest.Identity
 			}
 		}
 
-		protected override async Task ConfigureAsync(NHibernate.Cfg.Configuration configuration)
+		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
-			await (base.ConfigureAsync(configuration));
+			base.Configure(configuration);
 			configuration.SetProperty(Environment.FormatSql, "false");
 		}
 

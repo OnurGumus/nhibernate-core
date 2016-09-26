@@ -3,6 +3,7 @@ using System;
 using NHibernate.Type;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -16,18 +17,6 @@ namespace NHibernate.Test.TypesTest
 			{
 				return "Byte";
 			}
-		}
-
-		/// <summary>
-		/// Verify Equals will correctly determine when the property
-		/// is dirty.
-		/// </summary>
-		[Test]
-		public void Equals()
-		{
-			ByteType type = (ByteType)NHibernateUtil.Byte;
-			Assert.IsTrue(type.IsEqual((byte)5, (byte)5));
-			Assert.IsFalse(type.IsEqual((byte)5, (byte)6));
 		}
 
 		[Test]

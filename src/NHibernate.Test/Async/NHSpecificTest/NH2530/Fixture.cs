@@ -5,25 +5,15 @@ using NHibernate.Dialect;
 using NHibernate.Mapping;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2530
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class FixtureAsync : BugTestCaseAsync
 	{
-		protected override Task ConfigureAsync(Cfg.Configuration configuration)
+		protected override void Configure(Cfg.Configuration configuration)
 		{
-			try
-			{
-				configuration.AddAuxiliaryDatabaseObject(CreateHighLowScript(new[]{typeof (Product)}));
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.AddAuxiliaryDatabaseObject(CreateHighLowScript(new[]{typeof (Product)}));
 		}
 
 		private IAuxiliaryDatabaseObject CreateHighLowScript(IEnumerable<System.Type> entities)

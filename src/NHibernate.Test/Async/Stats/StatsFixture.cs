@@ -5,8 +5,6 @@ using NHibernate.Criterion;
 using NHibernate.Stat;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.Stats
 {
@@ -30,17 +28,9 @@ namespace NHibernate.Test.Stats
 			}
 		}
 
-		protected override Task ConfigureAsync(Cfg.Configuration configuration)
+		protected override void Configure(Cfg.Configuration configuration)
 		{
-			try
-			{
-				configuration.SetProperty(Cfg.Environment.GenerateStatistics, "true");
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.SetProperty(Cfg.Environment.GenerateStatistics, "true");
 		}
 
 		private static async Task<Continent> FillDbAsync(ISession s)

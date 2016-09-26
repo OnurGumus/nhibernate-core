@@ -8,7 +8,6 @@ using NHibernate.Transform;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.EntityModeTest.Xml.Basic
 {
@@ -32,17 +31,9 @@ namespace NHibernate.Test.EntityModeTest.Xml.Basic
 			}
 		}
 
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
-			{
-				cfg.SetProperty(Environment.DefaultEntityMode, EntityModeHelper.ToString(EntityMode.Xml));
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			cfg.SetProperty(Environment.DefaultEntityMode, EntityModeHelper.ToString(EntityMode.Xml));
 		}
 
 		public async Task XmlAsync()

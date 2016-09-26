@@ -4,8 +4,6 @@ using NHibernate.Cfg;
 using NHibernate.Event;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1332
 {
@@ -22,20 +20,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1332
 			}
 		}
 
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
-			{
-				configuration.SetProperty(Environment.UseSecondLevelCache, "false");
-				configuration.SetProperty(Environment.UseQueryCache, "false");
-				configuration.SetProperty(Environment.CacheProvider, null);
-				configuration.SetListener(ListenerType.PostCommitDelete, new PostCommitDelete());
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.SetProperty(Environment.UseSecondLevelCache, "false");
+			configuration.SetProperty(Environment.UseQueryCache, "false");
+			configuration.SetProperty(Environment.CacheProvider, null);
+			configuration.SetListener(ListenerType.PostCommitDelete, new PostCommitDelete());
 		}
 
 		[Test]

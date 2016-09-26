@@ -9,9 +9,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1101
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class FixtureAsync : BugTestCaseAsync
 	{
-		protected override async Task ConfigureAsync(Cfg.Configuration configuration)
+		protected override void Configure(Cfg.Configuration configuration)
 		{
-			await (base.ConfigureAsync(configuration));
+			base.Configure(configuration);
 			cfg.SetProperty(Cfg.Environment.GenerateStatistics, "true");
 		}
 

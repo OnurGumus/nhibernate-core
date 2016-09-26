@@ -6,8 +6,6 @@ using NHibernate.Dialect;
 using NHibernate.Driver;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3202
 {
@@ -15,22 +13,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class FixtureAsync : BugTestCaseAsync
 	{
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
-			{
-				if (!(Dialect is MsSql2008Dialect))
-					Assert.Ignore("Test is for MS SQL Server dialect only (custom dialect).");
-				if (!Environment.ConnectionDriver.Contains("SqlClientDriver"))
-					Assert.Ignore("Test is for MS SQL Server driver only (custom driver is used).");
-				cfg.SetProperty(Environment.Dialect, typeof (OffsetStartsAtOneTestDialect).AssemblyQualifiedName);
-				cfg.SetProperty(Environment.ConnectionDriver, typeof (OffsetTestDriver).AssemblyQualifiedName);
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			if (!(Dialect is MsSql2008Dialect))
+				Assert.Ignore("Test is for MS SQL Server dialect only (custom dialect).");
+			if (!Environment.ConnectionDriver.Contains("SqlClientDriver"))
+				Assert.Ignore("Test is for MS SQL Server driver only (custom driver is used).");
+			cfg.SetProperty(Environment.Dialect, typeof (OffsetStartsAtOneTestDialect).AssemblyQualifiedName);
+			cfg.SetProperty(Environment.ConnectionDriver, typeof (OffsetTestDriver).AssemblyQualifiedName);
 		}
 
 		private OffsetStartsAtOneTestDialect OffsetStartsAtOneTestDialect

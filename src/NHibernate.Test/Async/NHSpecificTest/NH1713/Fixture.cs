@@ -4,7 +4,6 @@ using NHibernate.Dialect;
 using NHibernate.Util;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
 
 namespace NHibernate.Test.NHSpecificTest.NH1713
 {
@@ -18,17 +17,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1713
 		 * <property name="prepare_sql">false</property>
 		 * we should do some additional work for INSERT+UPDATE
 		 */
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
-			{
-				configuration.SetProperty(Environment.PrepareSql, "true");
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.SetProperty(Environment.PrepareSql, "true");
 		}
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)

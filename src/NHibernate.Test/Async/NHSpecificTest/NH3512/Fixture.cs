@@ -2,8 +2,6 @@
 using NHibernate.Cfg;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3512
 {
@@ -64,14 +62,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3512
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class DynamicUpdateOnAsync : FixtureAsync
 	{
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
 			foreach (var mapping in configuration.ClassMappings)
 			{
 				mapping.DynamicUpdate = true;
 			}
-
-			return TaskHelper.CompletedTask;
 		}
 
 		[Test]

@@ -17,17 +17,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3405
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class FixtureAsync : TestCaseMappingByCodeAsync
 	{
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
-			{
-				configuration.SetProperty(Cfg.Environment.WrapResultSets, Boolean.TrueString);
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.SetProperty(Cfg.Environment.WrapResultSets, Boolean.TrueString);
 		}
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
@@ -82,17 +74,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3405
 					await (session.DeleteAsync("from System.Object"));
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
-				}
-		}
-
-		[Test]
-		public void CanLoadEntityWithXDocument()
-		{
-			using (var session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var test = session.Query<XmlTest>().First();
-					Assert.NotNull(test);
 				}
 		}
 	}

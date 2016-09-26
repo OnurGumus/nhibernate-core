@@ -7,6 +7,8 @@ using NHibernate.DomainModel;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.CfgTest
 {
@@ -14,12 +16,6 @@ namespace NHibernate.Test.CfgTest
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class ConfigurationSerializationTestsAsync
 	{
-		[Test]
-		public void Configuration_should_be_serializable()
-		{
-			NHAssert.HaveSerializableAttribute(typeof (Configuration));
-		}
-
 		[Test]
 		public async Task Basic_CRUD_should_workAsync()
 		{

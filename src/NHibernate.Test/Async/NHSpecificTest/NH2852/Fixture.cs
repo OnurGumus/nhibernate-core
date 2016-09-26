@@ -4,6 +4,8 @@ using NHibernate.Driver;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2852
 {
@@ -43,32 +45,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2852
 					await (session.DeleteAsync("from System.Object"));
 					await (transction.CommitAsync());
 				}
-		}
-
-		[Test]
-		public void ThenFetchCanExecute()
-		{
-			using (var session = OpenSession())
-			{
-				var query = session.Query<Person>().Where(p => p.Address.City.Name == "London").Fetch(r => r.Address).ThenFetch(a => a.City);
-				var results = query.ToList();
-				session.Close();
-				Assert.That(NHibernateUtil.IsInitialized(results[0].Address), Is.True);
-				Assert.That(NHibernateUtil.IsInitialized(results[0].Address.City), Is.True);
-			}
-		}
-
-		[Test]
-		public void AlsoFails()
-		{
-			using (var session = OpenSession())
-			{
-				var query = session.Query<Person>().Where(p => p.Parent.Parent.Name == "Bill").Fetch(p => p.Parent).ThenFetch(p => p.Parent);
-				var results = query.ToList();
-				session.Close();
-				Assert.That(NHibernateUtil.IsInitialized(results[0].Parent), Is.True);
-				Assert.That(NHibernateUtil.IsInitialized(results[0].Parent.Parent), Is.True);
-			}
 		}
 	}
 }

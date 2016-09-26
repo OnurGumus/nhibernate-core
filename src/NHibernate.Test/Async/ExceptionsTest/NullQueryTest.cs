@@ -13,7 +13,6 @@ namespace NHibernate.Test.ExceptionsTest
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class NullQueryTestAsync : TestCaseAsync
 	{
-#region Overrides of TestCase
 		protected override IList Mappings
 		{
 			get
@@ -22,7 +21,6 @@ namespace NHibernate.Test.ExceptionsTest
 			}
 		}
 
-#endregion
 		[Test]
 		public async Task BadGrammarAsync()
 		{

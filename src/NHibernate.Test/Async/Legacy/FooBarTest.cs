@@ -4599,7 +4599,6 @@ namespace NHibernate.Test.Legacy
 				}
 		}
 
-#region NHibernate specific tests
 		[Test]
 		public async Task FormulaAsync()
 		{
@@ -4692,7 +4691,6 @@ namespace NHibernate.Test.Legacy
 				await (s.CreateQuery("from Foo as foo order by case ? when 0 then foo.id else foo.id end").SetInt32(0, 0).ListAsync());
 			}
 		}
-#endregion
 	}
 }
 #endif

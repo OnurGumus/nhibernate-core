@@ -6,7 +6,6 @@ using NHibernate.DomainModel;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.CacheTest
 {
@@ -22,17 +21,9 @@ namespace NHibernate.Test.CacheTest
 			}
 		}
 
-		protected override Task ConfigureAsync(Configuration cfg)
+		protected override void Configure(Configuration cfg)
 		{
-			try
-			{
-				cfg.SetProperty(Environment.UseQueryCache, "true");
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			cfg.SetProperty(Environment.UseQueryCache, "true");
 		}
 
 		[Test]

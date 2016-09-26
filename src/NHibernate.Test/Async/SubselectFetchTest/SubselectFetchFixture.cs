@@ -5,7 +5,6 @@ using NHibernate.Criterion;
 using NHibernate.Util;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
 
 namespace NHibernate.Test.SubselectFetchTest
 {
@@ -13,17 +12,9 @@ namespace NHibernate.Test.SubselectFetchTest
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class SubselectFetchFixtureAsync : TestCaseAsync
 	{
-		protected override Task ConfigureAsync(Configuration cfg)
+		protected override void Configure(Configuration cfg)
 		{
-			try
-			{
-				cfg.SetProperty(Cfg.Environment.GenerateStatistics, "true");
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			cfg.SetProperty(Cfg.Environment.GenerateStatistics, "true");
 		}
 
 		[Test]

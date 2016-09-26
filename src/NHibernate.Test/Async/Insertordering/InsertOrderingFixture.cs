@@ -11,7 +11,6 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.Insertordering
 {
@@ -42,24 +41,16 @@ namespace NHibernate.Test.Insertordering
 			return dialect.SupportsSqlBatches;
 		}
 
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
+			configuration.DataBaseIntegration(x =>
 			{
-				configuration.DataBaseIntegration(x =>
-				{
-					x.BatchSize = batchSize;
-					x.OrderInserts = true;
-					x.Batcher<StatsBatcherFactory>();
-				}
+				x.BatchSize = batchSize;
+				x.OrderInserts = true;
+				x.Batcher<StatsBatcherFactory>();
+			}
 
-				);
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			);
 		}
 
 		[Test]
@@ -96,7 +87,6 @@ namespace NHibernate.Test.Insertordering
 			}
 		}
 
-#region Nested type: StatsBatcher
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		public partial class StatsBatcher : SqlClientBatchingBatcher
 		{
@@ -124,7 +114,7 @@ namespace NHibernate.Test.Insertordering
 
 			public override async Task<DbCommand> PrepareBatchCommandAsync(CommandType type, SqlString sql, SqlType[] parameterTypes)
 			{
-				DbCommand result = await base.PrepareBatchCommandAsync(type, sql, parameterTypes);
+				DbCommand result = await (base.PrepareBatchCommandAsync(type, sql, parameterTypes));
 				string sqlstring = sql.ToString();
 				if (batchSQL == null || !sqlstring.Equals(batchSQL))
 				{
@@ -138,35 +128,30 @@ namespace NHibernate.Test.Insertordering
 				return result;
 			}
 
-			public override Task AddToBatchAsync(IExpectation expectation)
+			public override async Task AddToBatchAsync(IExpectation expectation)
 			{
 				batchSizes[currentBatch]++;
 				Console.WriteLine("Adding to batch [" + batchSQL + "]");
-				return base.AddToBatchAsync(expectation);
+				await (base.AddToBatchAsync(expectation));
 			}
 
-			protected override Task DoExecuteBatchAsync(DbCommand ps)
+			protected override async Task DoExecuteBatchAsync(DbCommand ps)
 			{
 				Console.WriteLine("executing batch [" + batchSQL + "]");
 				Console.WriteLine("--------------------------------------------------------");
 				batchSQL = null;
-				return base.DoExecuteBatchAsync(ps);
+				await (base.DoExecuteBatchAsync(ps));
 			}
 		}
 
-#endregion
-#region Nested type: StatsBatcherFactory
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		public partial class StatsBatcherFactory : IBatcherFactory
 		{
-#region IBatcherFactory Members
 			public IBatcher CreateBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
 			{
 				return new StatsBatcher(connectionManager, interceptor);
 			}
-#endregion
 		}
-#endregion
 	}
 }
 #endif

@@ -5,7 +5,6 @@ using NHibernate.Criterion;
 using NHibernate.Dialect.Function;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1313
 {
@@ -21,19 +20,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1313
 			}
 		}
 
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
-			{
-				Dialect.Dialect d = Dialect;
-				ISQLFunction toReRegister = d.Functions["current_timestamp"];
-				configuration.AddSqlFunction("MyCurrentTime", toReRegister);
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			Dialect.Dialect d = Dialect;
+			ISQLFunction toReRegister = d.Functions["current_timestamp"];
+			configuration.AddSqlFunction("MyCurrentTime", toReRegister);
 		}
 
 		[Test]

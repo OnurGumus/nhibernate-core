@@ -6,6 +6,7 @@ using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3237
 {
@@ -58,123 +59,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3237
 					await (session.DeleteAsync("from System.Object"));
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
-				}
-		}
-
-		[Test]
-		public void Test_That_DateTimeOffset_UserType_Can_Be_Used_For_Max_And_Min_Aggregates()
-		{
-			using (ISession session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var min = session.Query<Entity>().Min(e => e.DateTimeOffsetValue);
-					Assert.AreEqual(new DateTimeOffset(2012, 08, 06, 11, 0, 0, TimeSpan.FromHours(10)), min);
-					var max = session.Query<Entity>().Max(e => e.DateTimeOffsetValue);
-					Assert.AreEqual(new DateTimeOffset(2012, 08, 06, 13, 0, 0, TimeSpan.FromHours(10)), max);
-				}
-		}
-
-		[Test]
-		public void Test_That_Enum_Type_Can_Be_Used_For_Max_And_Min_Aggregates()
-		{
-			using (ISession session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var min = session.Query<Entity>().Min(e => e.EnumValue);
-					Assert.AreEqual(TestEnum.Zero, min);
-					var max = session.Query<Entity>().Max(e => e.EnumValue);
-					Assert.AreEqual(TestEnum.Two, max);
-				}
-		}
-
-		[Test]
-		public void Test_Max_And_Min_Aggregates_Work_For_Ints()
-		{
-			using (ISession session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var min = session.Query<Entity>().Min(e => e.IntValue);
-					Assert.AreEqual(1, min);
-					var max = session.Query<Entity>().Max(e => e.IntValue);
-					Assert.AreEqual(3, max);
-				}
-		}
-
-		[Test]
-		public void Test_Max_And_Min_Aggregates_Work_For_Longs()
-		{
-			using (ISession session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var min = session.Query<Entity>().Min(e => e.LongValue);
-					Assert.AreEqual(1L, min);
-					var max = session.Query<Entity>().Max(e => e.LongValue);
-					Assert.AreEqual(3L, max);
-				}
-		}
-
-		[Test]
-		public void Test_Max_And_Min_Aggregates_Work_For_Decimals()
-		{
-			using (ISession session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var min = session.Query<Entity>().Min(e => e.DecimalValue);
-					Assert.AreEqual(1.2m, min);
-					var max = session.Query<Entity>().Max(e => e.DecimalValue);
-					Assert.AreEqual(3.2m, max);
-				}
-		}
-
-		[Test]
-		public void Test_Max_And_Min_Aggregates_Work_For_Doubles()
-		{
-			using (ISession session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var min = session.Query<Entity>().Min(e => e.DoubleValue);
-					Assert.AreEqual(1.2d, min);
-					var max = session.Query<Entity>().Max(e => e.DoubleValue);
-					Assert.AreEqual(3.2d, max);
-				}
-		}
-
-		[Test]
-		public void Test_Max_And_Min_Aggregates_Work_For_Floats()
-		{
-			using (ISession session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var min = session.Query<Entity>().Min(e => e.FloatValue);
-					Assert.AreEqual(1.2f, min);
-					var max = session.Query<Entity>().Max(e => e.FloatValue);
-					Assert.AreEqual(3.2f, max);
-				}
-		}
-
-		[Test]
-		public void Test_Max_And_Min_Aggregates_Work_For_DateTimes()
-		{
-			using (ISession session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var min = session.Query<Entity>().Min(e => e.DateTimeValue);
-					Assert.AreEqual(new DateTime(2012, 08, 06, 11, 0, 0), min);
-					var max = session.Query<Entity>().Max(e => e.DateTimeValue);
-					Assert.AreEqual(new DateTime(2012, 08, 06, 13, 0, 0), max);
-				}
-		}
-
-		[Test]
-		public void Test_Max_And_Min_Aggregates_Work_For_Strings()
-		{
-			using (ISession session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var min = session.Query<Entity>().Min(e => e.StringValue);
-					Assert.AreEqual("a", min);
-					var max = session.Query<Entity>().Max(e => e.StringValue);
-					Assert.AreEqual("c", max);
 				}
 		}
 	}

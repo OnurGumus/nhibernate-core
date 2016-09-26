@@ -8,6 +8,7 @@ using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3436
 {
@@ -50,47 +51,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3436
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
 				}
-		}
-
-		[Test]
-		public void TestQueryWithContainsInParallel()
-		{
-			var ids = new List<Guid>{Guid.NewGuid(), Guid.NewGuid(), };
-			const int threadsToRun = 32;
-			var events = new WaitHandle[threadsToRun];
-			var exceptions = new List<Exception>();
-			for (var i = 0; i < threadsToRun; i++)
-			{
-				var @event = new ManualResetEvent(false);
-				events[i] = @event;
-				ThreadPool.QueueUserWorkItem(s =>
-				{
-					try
-					{
-						Run(ids);
-					}
-					catch (Exception ex)
-					{
-						exceptions.Add(ex);
-					}
-					finally
-					{
-						@event.Set();
-					}
-				}
-
-				);
-			}
-
-			WaitHandle.WaitAll(events);
-			Assert.IsEmpty(exceptions);
-		}
-
-		[Test]
-		public void TestQueryWithContains()
-		{
-			var ids = new List<Guid>{Guid.NewGuid(), Guid.NewGuid(), };
-			Run(ids);
 		}
 
 		private void Run(ICollection<Guid> ids)

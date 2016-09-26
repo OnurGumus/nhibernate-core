@@ -5,6 +5,7 @@ using NHibernate.Type;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -17,18 +18,6 @@ namespace NHibernate.Test.TypesTest
 			{
 				return "Date";
 			}
-		}
-
-		[Test]
-		public void ShouldBeDateType()
-		{
-			if (!(Dialect is MsSql2008Dialect))
-			{
-				Assert.Ignore("This test does not apply to " + Dialect);
-			}
-
-			var sqlType = Dialect.GetTypeName(NHibernateUtil.Date.SqlType);
-			Assert.That(sqlType.ToLowerInvariant(), Is.EqualTo("date"));
 		}
 
 		[Test]

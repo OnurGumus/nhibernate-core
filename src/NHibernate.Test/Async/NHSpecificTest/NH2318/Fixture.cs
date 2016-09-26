@@ -14,9 +14,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2318
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class FixtureAsync : BugTestCaseAsync
 	{
-		protected override async Task ConfigureAsync(Cfg.Configuration configuration)
+		protected override void Configure(Cfg.Configuration configuration)
 		{
-			await (base.ConfigureAsync(configuration));
+			base.Configure(configuration);
 			configuration.SetProperty("linqtohql.generatorsregistry", "NHibernate.Test.NHSpecificTest.NH2318.ExtendedLinqtoHqlGeneratorsRegistry, NHibernate.Test");
 		}
 

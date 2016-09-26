@@ -9,6 +9,8 @@ using NHibernate.Linq;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.Futures
 {
@@ -22,9 +24,9 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 			return !cp.Driver.SupportsMultipleQueries;
 		}
 
-		protected override async Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			await (base.ConfigureAsync(configuration));
+			base.Configure(configuration);
 			if (Dialect is MsSql2000Dialect)
 			{
 				configuration.Properties[Environment.ConnectionDriver] = typeof (TestDriverThatDoesntSupportQueryBatching).AssemblyQualifiedName;
@@ -103,16 +105,6 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 			{
 				var futureCount = await (session.CreateQuery("select count(*) from Person").FutureValueAsync<long>());
 				Assert.That(futureCount.Value, Is.EqualTo(1L));
-			}
-		}
-
-		[Test]
-		public void FutureOfLinqFallsBackToListImplementationWhenQueryBatchingIsNotSupported()
-		{
-			using (var session = sessions.OpenSession())
-			{
-				var results = session.Query<Person>().ToFuture();
-				results.GetEnumerator().MoveNext();
 			}
 		}
 

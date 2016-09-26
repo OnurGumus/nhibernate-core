@@ -3,6 +3,8 @@ using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2378
 {
@@ -36,17 +38,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2378
 				{
 					await (session.DeleteAsync("from System.Object"));
 					await (tx.CommitAsync());
-				}
-		}
-
-		[Test]
-		public void ShortEntityCanBeQueryCorrectlyUsingLinqProvider()
-		{
-			using (var session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var m = session.Query<TestEntity>().Select(o => new TestEntityDto{EntityId = o.Id, EntityName = o.Name, PersonId = (o.TestPerson != null) ? o.TestPerson.Id : (short)0, PersonName = (o.TestPerson != null) ? o.TestPerson.Name : string.Empty}).Where(o => o.PersonId == 2).ToList();
-					Assert.That(m.Count, Is.EqualTo(1));
 				}
 		}
 	}

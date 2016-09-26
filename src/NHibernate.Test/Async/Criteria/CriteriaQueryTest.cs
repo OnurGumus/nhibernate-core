@@ -1607,29 +1607,6 @@ namespace NHibernate.Test.Criteria
 		}
 
 		[Test]
-		public void CriteriaInspection()
-		{
-			using (ISession session = OpenSession())
-			{
-				ICriteria criteria = session.CreateCriteria(typeof (MaterialUnit), "mu").CreateAlias("mu.Material", "ma");
-				Assert.IsNotNull(criteria.GetCriteriaByAlias("ma"));
-				Assert.AreEqual("ma", criteria.GetCriteriaByPath("mu.Material").Alias);
-				Assert.AreEqual(criteria, criteria.GetCriteriaByAlias("mu"));
-				Assert.AreEqual(criteria.CreateCriteria("fooBar"), criteria.GetCriteriaByPath("fooBar"));
-			}
-		}
-
-		[Test]
-		public void DetachedCriteriaInspection()
-		{
-			DetachedCriteria criteria = DetachedCriteria.For(typeof (Student)).CreateAlias("mu.Material", "ma");
-			Assert.IsNotNull(criteria.GetCriteriaByAlias("ma"));
-			Assert.AreEqual("ma", criteria.GetCriteriaByPath("mu.Material").Alias);
-			Assert.IsNull(criteria.GetCriteriaByPath("fooBar"));
-			Assert.IsNull(criteria.GetCriteriaByAlias("fooBar"));
-		}
-
-		[Test]
 		public async Task SameColumnAndAliasNamesAsync()
 		{
 			DetachedCriteria dc = DetachedCriteria.For(typeof (Student)).Add(Property.ForName("Name").Eq("Gavin King")).AddOrder(Order.Asc("StudentNumber")).SetProjection(Projections.ProjectionList().Add(Projections.Property("StudentNumber"), "StudentNumber").Add(Projections.Property("Name"), "Name"));

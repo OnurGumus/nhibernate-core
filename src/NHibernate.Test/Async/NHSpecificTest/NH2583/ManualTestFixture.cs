@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2583
 {
@@ -188,41 +189,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 				// With "projection anomaly", the previous Select will fail, as one "bo" is null,
 				// and hence bo.Id throws a NRE.
 				Assert.That(() => resultViaProjection.ToList(), Is.EquivalentTo(directResult.ToList()));
-			}
-		}
-
-		[Test, Explicit("Exploratory Test")]
-		public void LinqExploratoryTestWhichProvesNothing()
-		{
-			{
-				var i1001 = new MyRef1{Id = 1001, I1 = null, I2 = 101};
-				var i1101 = new MyRef1{Id = 1101, I1 = null, I2 = 111};
-				var i1002 = new MyRef1{Id = 1002, I1 = 12, I2 = 102};
-				var i1003 = new MyRef1{Id = 1003, I1 = 13, I2 = 103};
-				var ref1s = new[]{i1001, i1101, i1002, i1003};
-				var someRef1s =
-					from r in ref1s
-					orderby (r.Id == 1101 || r.Id == 1102 ? r.Id - 1000 : r.Id)select (r.Id == 1101 || r.Id == 1102 ? r.Id + 1000 : r.Id);
-				CollectionAssert.AreEqual(new[]{2101, 1001, 1002, 1003}, someRef1s.ToList());
-			}
-
-			{
-				var j2001 = new MyRef2{Id = 2001, J1 = null, J2 = 201};
-				var j2002 = new MyRef2{Id = 2002, J1 = 22, J2 = 202};
-				var i1001 = new MyRef1{Id = 1001, I1 = null, I2 = 101, BO2 = j2001};
-				var i1002 = new MyRef1{Id = 1002, I1 = 12, I2 = 102, BO2 = null};
-				var b10 = new MyBO{Id = 10, Name = "1:1001,o1:NULL,2:NULL", BO1 = i1001, OtherBO1 = null, BO2 = null};
-				var b20 = new MyBO{Id = 20, Name = "1:1002,o1:NULL,2:2002", BO1 = i1002, OtherBO1 = null, BO2 = j2002};
-				var bos = new[]{b10};
-				//var someBos = from r in bos
-				//              where r.BO1.BO2.J2 == 201
-				//              select r;
-				//CollectionAssert.AreEqual(new[] { b10 }, someBos.ToList());
-				var someBos1 =
-					from r in bos
-					where (r.BO1.BO2 == null ? r.BO2 : r.BO1.BO2).J2 == 201
-					select r.Id;
-				Assert.That(() => someBos1.ToList(), Is.EquivalentTo(new[]{b10.Id}));
 			}
 		}
 

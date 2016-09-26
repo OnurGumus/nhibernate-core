@@ -21,7 +21,6 @@ namespace NHibernate.Test.Hql.Ast
 			return OpenSession();
 		}
 
-#region Non-exists
 		[Test]
 		public async Task DeleteNonExistentEntityAsync()
 		{
@@ -40,8 +39,6 @@ namespace NHibernate.Test.Hql.Ast
 			}
 		}
 
-#endregion
-#region INSERTS
 		[Test]
 		public async Task SimpleInsertAsync()
 		{
@@ -249,26 +246,6 @@ namespace NHibernate.Test.Hql.Ast
 			await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
 			await (s.Transaction.CommitAsync());
 			s.Close();
-		}
-
-#endregion
-#region UPDATES
-		[Test]
-		public Task IncorrectSyntaxAsync()
-		{
-			try
-			{
-				using (ISession s = OpenSession())
-				{
-					Assert.Throws<QueryException>(() => s.CreateQuery("update Human set Human.description = 'xyz' where Human.id = 1 and Human.description is null"));
-				}
-
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
 		}
 
 		[Test]
@@ -623,8 +600,6 @@ namespace NHibernate.Test.Hql.Ast
 			await (data.CleanupAsync());
 		}
 
-#endregion
-#region DELETES
 		[Test]
 		public async Task DeleteWithSubqueryAsync()
 		{
@@ -820,7 +795,6 @@ namespace NHibernate.Test.Hql.Ast
 			s.Close();
 		}
 
-#endregion
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		private partial class TestData
 		{

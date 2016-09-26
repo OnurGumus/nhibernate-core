@@ -7,6 +7,7 @@ using NHibernate.Dialect;
 using NHibernate.Mapping;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1007
 {
@@ -40,26 +41,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1007
 					Assert.That(employer.Id, Is.Not.EqualTo(Guid.Empty));
 					await (transaction.CommitAsync());
 				}
-		}
-
-		[Test]
-		public void ConfiguringIdGeneratorUsingAttributeAndElementIsEquivalent()
-		{
-			// <id name="Employer1"><generator class="guid" /></id>
-			var mapIdentityGeneratorByElement = new HbmMapping()
-			{Items = new object[]{new HbmClass()
-			{name = "Employer1", Item = new HbmId()
-			{name = "Id", generator1 = "guid"}, Items = new object[]{new HbmProperty()
-			{name = "Name"}}}}};
-			// <id name="Employer1" generator="guid" />
-			var mapIdentityGeneratorByAttribute = new HbmMapping()
-			{Items = new object[]{new HbmClass()
-			{name = "Employer1", Item = new HbmId()
-			{name = "Id", generator = new HbmGenerator()
-			{@class = "guid"}}, Items = new object[]{new HbmProperty()
-			{name = "Name"}}}}};
-			VerifyMapping(mapIdentityGeneratorByElement);
-			VerifyMapping(mapIdentityGeneratorByAttribute);
 		}
 
 		private void VerifyMapping(HbmMapping mapping)

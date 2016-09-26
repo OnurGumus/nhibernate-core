@@ -6,7 +6,6 @@ using NHibernate.Transform;
 using NUnit.Framework;
 using NHibernate.Transaction;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.SessionIdLoggingContextTest
 {
@@ -29,18 +28,10 @@ namespace NHibernate.Test.NHSpecificTest.SessionIdLoggingContextTest
 			}
 		}
 
-		protected override Task ConfigureAsync(Cfg.Configuration configuration)
+		protected override void Configure(Cfg.Configuration configuration)
 		{
-			try
-			{
-				//get rid of the overhead supporting distr trans
-				configuration.SetProperty(Cfg.Environment.TransactionStrategy, typeof (AdoNetTransactionFactory).FullName);
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			//get rid of the overhead supporting distr trans
+			configuration.SetProperty(Cfg.Environment.TransactionStrategy, typeof (AdoNetTransactionFactory).FullName);
 		}
 
 		protected override async Task OnSetUpAsync()

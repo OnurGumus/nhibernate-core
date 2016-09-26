@@ -9,7 +9,6 @@ using NHibernate.Mapping.ByCode;
 using NHibernate.Transform;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2673
 {
@@ -33,23 +32,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 			return mapping;
 		}
 
-		protected override Task ConfigureAsync(Cfg.Configuration configuration)
+		protected override void Configure(Cfg.Configuration configuration)
 		{
-			try
+			configuration.Cache(x =>
 			{
-				configuration.Cache(x =>
-				{
-					x.Provider<HashtableCacheProvider>();
-					x.UseQueryCache = true;
-				}
+				x.Provider<HashtableCacheProvider>();
+				x.UseQueryCache = true;
+			}
 
-				);
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			);
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]

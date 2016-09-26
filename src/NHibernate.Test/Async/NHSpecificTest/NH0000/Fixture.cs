@@ -3,6 +3,8 @@ using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH0000
 {
@@ -32,19 +34,6 @@ namespace NHibernate.Test.NHSpecificTest.NH0000
 					await (session.DeleteAsync("from System.Object"));
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
-				}
-		}
-
-		[Test]
-		public void YourTestName()
-		{
-			using (ISession session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var result =
-						from e in session.Query<Entity>()where e.Name == "Bob"
-						select e;
-					Assert.AreEqual(1, result.ToList().Count);
 				}
 		}
 	}

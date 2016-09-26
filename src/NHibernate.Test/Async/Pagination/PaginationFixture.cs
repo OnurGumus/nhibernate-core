@@ -7,7 +7,6 @@ using NHibernate.Dialect;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.Pagination
 {
@@ -31,17 +30,9 @@ namespace NHibernate.Test.Pagination
 			}
 		}
 
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
-			{
-				cfg.SetProperty(Environment.DefaultBatchFetchSize, "20");
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			cfg.SetProperty(Environment.DefaultBatchFetchSize, "20");
 		}
 
 		protected override string CacheConcurrencyStrategy

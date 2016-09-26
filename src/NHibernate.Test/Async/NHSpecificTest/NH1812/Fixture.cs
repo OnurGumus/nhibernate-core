@@ -40,17 +40,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1812
 			}
 		}
 	}
-
-	[TestFixture]
-	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class AstBugAsync : AstBugBaseAsync
-	{
-	/* to the nh guy...
-         * sorry for not coming up with a more realistic use case
-         * We have a query that works fine with the old parser but not with the new AST parser
-         * I've broke our complex query down to this... 
-         * I believe the problem is when mixing aggregate methods with isnull()
-         */
-	}
 }
 #endif

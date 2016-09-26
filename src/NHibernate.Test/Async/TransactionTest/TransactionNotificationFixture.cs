@@ -3,6 +3,8 @@ using System.Collections;
 using System.Data.Common;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.TransactionTest
 {
@@ -19,31 +21,6 @@ namespace NHibernate.Test.TransactionTest
 		}
 
 		[Test]
-		public void NoTransaction()
-		{
-			var interceptor = new RecordingInterceptor();
-			using (sessions.OpenSession(interceptor))
-			{
-				Assert.That(interceptor.afterTransactionBeginCalled, Is.EqualTo(0));
-				Assert.That(interceptor.beforeTransactionCompletionCalled, Is.EqualTo(0));
-				Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(0));
-			}
-		}
-
-		[Test]
-		public void AfterBegin()
-		{
-			var interceptor = new RecordingInterceptor();
-			using (ISession session = sessions.OpenSession(interceptor))
-				using (session.BeginTransaction())
-				{
-					Assert.That(interceptor.afterTransactionBeginCalled, Is.EqualTo(1));
-					Assert.That(interceptor.beforeTransactionCompletionCalled, Is.EqualTo(0));
-					Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(0));
-				}
-		}
-
-		[Test]
 		public async Task CommitAsync()
 		{
 			var interceptor = new RecordingInterceptor();
@@ -53,20 +30,6 @@ namespace NHibernate.Test.TransactionTest
 				await (tx.CommitAsync());
 				Assert.That(interceptor.afterTransactionBeginCalled, Is.EqualTo(1));
 				Assert.That(interceptor.beforeTransactionCompletionCalled, Is.EqualTo(1));
-				Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(1));
-			}
-		}
-
-		[Test]
-		public void Rollback()
-		{
-			var interceptor = new RecordingInterceptor();
-			using (ISession session = sessions.OpenSession(interceptor))
-			{
-				ITransaction tx = session.BeginTransaction();
-				tx.Rollback();
-				Assert.That(interceptor.afterTransactionBeginCalled, Is.EqualTo(1));
-				Assert.That(interceptor.beforeTransactionCompletionCalled, Is.EqualTo(0));
 				Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(1));
 			}
 		}

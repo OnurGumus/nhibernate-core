@@ -6,6 +6,7 @@ using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Legacy
 {
@@ -49,17 +50,6 @@ namespace NHibernate.Test.Legacy
 			await (s.CreateQuery("from Multi m where m.Derived like 'F%'").ListAsync());
 			await (s.CreateQuery("from SubMulti m where m.Derived like 'F%'").ListAsync());
 			s.Close();
-		}
-
-		[Test]
-		public void JoinOpenBug()
-		{
-		// Known bug in H2.1, fixed in H3
-		/*
-			ISession s = OpenSession();
-			s.CreateQuery("from Lower l where lower(l.YetAnother.Top.Name) > 'a'").List();
-			s.Close();
-			*/
 		}
 
 		[Test]

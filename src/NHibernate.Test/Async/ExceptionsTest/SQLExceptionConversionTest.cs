@@ -31,35 +31,26 @@ namespace NHibernate.Test.ExceptionsTest
 			}
 		}
 
-		protected override Task ConfigureAsync(Cfg.Configuration configuration)
+		protected override void Configure(Cfg.Configuration configuration)
 		{
-			try
+			if (Dialect is MsSql2000Dialect)
 			{
-				if (Dialect is MsSql2000Dialect)
-				{
-					configuration.SetProperty(Cfg.Environment.SqlExceptionConverter, typeof (MSSQLExceptionConverterExample).AssemblyQualifiedName);
-				}
-
-				if (Dialect is Oracle8iDialect)
-				{
-					configuration.SetProperty(Cfg.Environment.SqlExceptionConverter, typeof (OracleClientExceptionConverterExample).AssemblyQualifiedName);
-				}
-
-				if (Dialect is PostgreSQLDialect)
-				{
-					configuration.SetProperty(Cfg.Environment.SqlExceptionConverter, typeof (PostgresExceptionConverterExample).AssemblyQualifiedName);
-				}
-
-				if (Dialect is FirebirdDialect)
-				{
-					configuration.SetProperty(Cfg.Environment.SqlExceptionConverter, typeof (FbExceptionConverterExample).AssemblyQualifiedName);
-				}
-
-				return TaskHelper.CompletedTask;
+				configuration.SetProperty(Cfg.Environment.SqlExceptionConverter, typeof (MSSQLExceptionConverterExample).AssemblyQualifiedName);
 			}
-			catch (Exception ex)
+
+			if (Dialect is Oracle8iDialect)
 			{
-				return TaskHelper.FromException<object>(ex);
+				configuration.SetProperty(Cfg.Environment.SqlExceptionConverter, typeof (OracleClientExceptionConverterExample).AssemblyQualifiedName);
+			}
+
+			if (Dialect is PostgreSQLDialect)
+			{
+				configuration.SetProperty(Cfg.Environment.SqlExceptionConverter, typeof (PostgresExceptionConverterExample).AssemblyQualifiedName);
+			}
+
+			if (Dialect is FirebirdDialect)
+			{
+				configuration.SetProperty(Cfg.Environment.SqlExceptionConverter, typeof (FbExceptionConverterExample).AssemblyQualifiedName);
 			}
 		}
 

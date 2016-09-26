@@ -14,10 +14,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1882
 	public partial class TestCollectionInitializingDuringFlushAsync : TestCaseMappingByCodeAsync
 	{
 		private readonly InitializingPreUpdateEventListener listener = new InitializingPreUpdateEventListener();
-		protected override async Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
 			configuration.EventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[]{listener};
-			await (base.ConfigureAsync(configuration));
+			base.Configure(configuration);
 		}
 
 		protected override HbmMapping GetMappings()

@@ -52,20 +52,6 @@ namespace NHibernate.Test.Hql.Ast
 		}
 
 		[Test]
-		public void ReturnMetadata()
-		{
-			HQLQueryPlan plan;
-			plan = CreateQueryPlan("from Animal a");
-			Check(plan.ReturnMetadata, false, true);
-			plan = CreateQueryPlan("select a as animal from Animal a");
-			Check(plan.ReturnMetadata, false, false);
-			plan = CreateQueryPlan("from System.Object");
-			Check(plan.ReturnMetadata, true, true);
-			plan = CreateQueryPlan("select o as entity from System.Object o");
-			Check(plan.ReturnMetadata, true, false);
-		}
-
-		[Test]
 		public async Task OrderByPropertiesImplicitlySpecifiedInTheSelectAsync()
 		{
 			// NH-2035 

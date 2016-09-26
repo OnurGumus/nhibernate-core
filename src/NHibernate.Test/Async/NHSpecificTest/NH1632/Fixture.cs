@@ -24,17 +24,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			}
 		}
 
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
-			{
-				configuration.SetProperty(Environment.UseSecondLevelCache, "true").SetProperty(Environment.CacheProvider, typeof (HashtableCacheProvider).AssemblyQualifiedName);
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.SetProperty(Environment.UseSecondLevelCache, "true").SetProperty(Environment.CacheProvider, typeof (HashtableCacheProvider).AssemblyQualifiedName);
 		}
 
 		[Test]
@@ -69,22 +61,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 				}
 
 			Assert.AreNotEqual(scalar1, scalar2, "HiLo must run with in its own transaction");
-		}
-
-		[Test]
-		public void Dispose_session_inside_transaction_scope()
-		{
-			ISession s;
-			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-			{
-				using (s = sessions.OpenSession())
-				{
-				}
-
-				tx.Complete();
-			}
-
-			Assert.IsFalse(s.IsOpen);
 		}
 
 		[Test]

@@ -3,6 +3,8 @@ using System.Collections;
 using NHibernate.Mapping;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.TypeParameters
 {
@@ -24,15 +26,6 @@ namespace NHibernate.Test.TypeParameters
 			{
 				return "NHibernate.Test";
 			}
-		}
-
-		[Test]
-		public void HasParametrizedId()
-		{
-			var pc = cfg.GetClassMapping(typeof (EntityCustomId));
-			var idMap = (SimpleValue)pc.IdentifierProperty.Value;
-			Assert.That(idMap.IdentifierGeneratorStrategy, Is.EqualTo("NHibernate.Id.TableHiLoGenerator, NHibernate"));
-			Assert.That(idMap.IdentifierGeneratorProperties["max_lo"], Is.EqualTo("99"));
 		}
 
 		[Test]

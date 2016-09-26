@@ -3,8 +3,6 @@ using System.Collections;
 using NHibernate.Stat;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.Ondelete
 {
@@ -28,17 +26,9 @@ namespace NHibernate.Test.Ondelete
 			}
 		}
 
-		protected override Task ConfigureAsync(Cfg.Configuration configuration)
+		protected override void Configure(Cfg.Configuration configuration)
 		{
-			try
-			{
-				cfg.SetProperty(Cfg.Environment.GenerateStatistics, "true");
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			cfg.SetProperty(Cfg.Environment.GenerateStatistics, "true");
 		}
 
 		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)

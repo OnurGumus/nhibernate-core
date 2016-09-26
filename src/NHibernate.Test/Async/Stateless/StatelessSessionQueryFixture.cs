@@ -26,9 +26,9 @@ namespace NHibernate.Test.Stateless
 			}
 		}
 
-		protected override async Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			await (base.ConfigureAsync(configuration));
+			base.Configure(configuration);
 			cfg.SetProperty(Environment.MaxFetchDepth, 1.ToString());
 		}
 

@@ -4,8 +4,6 @@ using NHibernate.Dialect;
 using NHibernate.Exceptions;
 using NHibernate.Test.ExceptionsTest;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2020
 {
@@ -13,18 +11,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2020
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class FixtureAsync : BugTestCaseAsync
 	{
-		protected override Task ConfigureAsync(Cfg.Configuration configuration)
+		protected override void Configure(Cfg.Configuration configuration)
 		{
-			try
-			{
-				configuration.SetProperty(Cfg.Environment.BatchSize, "10");
-				configuration.SetProperty(Cfg.Environment.SqlExceptionConverter, typeof (MSSQLExceptionConverterExample).AssemblyQualifiedName);
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.SetProperty(Cfg.Environment.BatchSize, "10");
+			configuration.SetProperty(Cfg.Environment.SqlExceptionConverter, typeof (MSSQLExceptionConverterExample).AssemblyQualifiedName);
 		}
 
 		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)

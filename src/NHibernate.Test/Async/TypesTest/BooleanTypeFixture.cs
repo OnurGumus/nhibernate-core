@@ -3,6 +3,7 @@ using System;
 using NHibernate.Type;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -16,19 +17,6 @@ namespace NHibernate.Test.TypesTest
 			{
 				return "Boolean";
 			}
-		}
-
-		/// <summary>
-		/// Verify Equals will correctly determine when the property
-		/// is dirty.
-		/// </summary>
-		[Test]
-		public void Equals()
-		{
-			BooleanType type = (BooleanType)NHibernateUtil.Boolean;
-			Assert.IsTrue(type.IsEqual(true, true));
-			Assert.IsTrue(type.IsEqual(false, false));
-			Assert.IsFalse(type.IsEqual(true, false));
 		}
 
 		[Test]

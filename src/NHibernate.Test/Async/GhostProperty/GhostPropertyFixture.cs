@@ -31,17 +31,9 @@ namespace NHibernate.Test.GhostProperty
 			}
 		}
 
-		protected override Task ConfigureAsync(Cfg.Configuration configuration)
+		protected override void Configure(Cfg.Configuration configuration)
 		{
-			try
-			{
-				configuration.DataBaseIntegration(x => x.LogFormattedSql = false);
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.DataBaseIntegration(x => x.LogFormattedSql = false);
 		}
 
 		protected override async Task OnSetUpAsync()
@@ -74,12 +66,6 @@ namespace NHibernate.Test.GhostProperty
 				base.BuildSessionFactory();
 				log = logSpy.GetWholeLog();
 			}
-		}
-
-		[Test]
-		public void ShouldGenerateErrorForNonAutoPropGhostProp()
-		{
-			Assert.IsTrue(log.Contains("NHibernate.Test.GhostProperty.Order.Payment is not an auto property, which may result in uninitialized property access"));
 		}
 
 		[Test]

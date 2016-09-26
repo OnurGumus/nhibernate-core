@@ -33,7 +33,7 @@ namespace NHibernate.Test.Component.Basic
 			}
 		}
 
-		protected override async Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
 			if (Dialect.Functions.ContainsKey("year"))
 			{
@@ -41,7 +41,7 @@ namespace NHibernate.Test.Component.Basic
 				{
 					using (StreamReader reader = new StreamReader(stream))
 					{
-						string mapping = await (reader.ReadToEndAsync());
+						string mapping = reader.ReadToEnd();
 						IList args = new ArrayList();
 						args.Add("dob");
 						// We don't have a session factory yet... is there some way to get one sooner?

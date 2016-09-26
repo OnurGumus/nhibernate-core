@@ -22,9 +22,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3058
 			AmbientSfi = Sfi;
 		}
 
-		protected override async Task ConfigureAsync(Cfg.Configuration configuration)
+		protected override void Configure(Cfg.Configuration configuration)
 		{
-			await (base.ConfigureAsync(configuration));
+			base.Configure(configuration);
 			configuration.Properties.Add("current_session_context_class", "thread_static");
 		}
 

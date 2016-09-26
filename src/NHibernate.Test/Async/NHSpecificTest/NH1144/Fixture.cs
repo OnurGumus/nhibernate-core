@@ -5,8 +5,6 @@ using NHibernate.Cfg;
 using NHibernate.Driver;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1144
 {
@@ -23,11 +21,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1144
 			}
 		}
 
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
 			this.configuration = configuration;
 			this.configuration.Properties[Environment.BatchSize] = "10";
-			return TaskHelper.CompletedTask;
 		}
 
 		[Test]

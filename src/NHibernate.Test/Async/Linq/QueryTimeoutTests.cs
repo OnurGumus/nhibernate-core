@@ -7,61 +7,18 @@ using NHibernate.Engine;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Linq
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class QueryTimeoutTestsAsync : LinqTestCaseAsync
 	{
-		protected override async Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			await (base.ConfigureAsync(configuration));
+			base.Configure(configuration);
 			configuration.SetProperty(Environment.BatchStrategy, typeof (TimeoutCatchingNonBatchingBatcherFactory).AssemblyQualifiedName);
-		}
-
-		[Test]
-		public void CanSetTimeoutOnLinqQueries()
-		{
-			var result = (
-				from e in db.Customers
-				where e.CompanyName == "Corp"
-				select e).Timeout(17).ToList();
-			Assert.That(TimeoutCatchingNonBatchingBatcher.LastCommandTimeout, Is.EqualTo(17));
-		}
-
-		[Test]
-		public void CanSetTimeoutOnLinqPagingQuery()
-		{
-			var result = (
-				from e in db.Customers
-				where e.CompanyName == "Corp"
-				select e).Skip(5).Take(5).Timeout(17).ToList();
-			Assert.That(TimeoutCatchingNonBatchingBatcher.LastCommandTimeout, Is.EqualTo(17));
-		}
-
-		[Test]
-		public void CanSetTimeoutBeforeSkipOnLinqOrderedPageQuery()
-		{
-			var result = (
-				from e in db.Customers
-				orderby e.CompanyName
-				select e).Timeout(17).Skip(5).Take(5).ToList();
-			Assert.That(TimeoutCatchingNonBatchingBatcher.LastCommandTimeout, Is.EqualTo(17));
-		}
-
-		[Test]
-		public void CanSetTimeoutOnLinqGroupPageQuery()
-		{
-			var subQuery = db.Customers.Where(e2 => e2.CompanyName.Contains("a")).Select(e2 => e2.CustomerId).Timeout(18); // This Timeout() should not cause trouble, and be ignored.
-			var result = (
-				from e in db.Customers
-				where subQuery.Contains(e.CustomerId)group e by e.CompanyName into g
-					select new
-					{
-					g.Key, Count = g.Count()}
-
-			).Skip(5).Take(5).Timeout(17).ToList();
-			Assert.That(TimeoutCatchingNonBatchingBatcher.LastCommandTimeout, Is.EqualTo(17));
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
@@ -74,10 +31,10 @@ namespace NHibernate.Test.Linq
 			{
 			}
 
-			public override DbDataReader ExecuteReader(DbCommand cmd)
+			public override async Task<DbDataReader> ExecuteReaderAsync(DbCommand cmd)
 			{
 				LastCommandTimeout = cmd.CommandTimeout;
-				return base.ExecuteReader(cmd);
+				return await (base.ExecuteReaderAsync(cmd));
 			}
 		}
 

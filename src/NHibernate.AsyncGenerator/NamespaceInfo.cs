@@ -78,9 +78,13 @@ namespace NHibernate.AsyncGenerator
 
 				var docType = new TypeInfo(this, currentDocType, typeSymbol, node);
 				(currentDocType?.TypeInfos ?? this).Add(node, docType);
-				if ((currentDocType?.TypeInfos ?? this).Keys.GroupBy(o => o.Identifier.ValueText).Any(o => o.Count() > 1)) //TODO REMOVE
+				if ((currentDocType?.TypeInfos ?? this).Keys.GroupBy(o => 
+					o.Identifier.ValueText
+					+ (o.TypeParameterList != null
+					? $"<{string.Join(",", o.TypeParameterList.Parameters.Select(p => p.Identifier.ValueText))}>"
+					: "")).Any(o => o.Count() > 1)) //TODO REMOVE
 				{
-
+					throw new Exception("dasdas");
 				}
 				currentDocType = docType;
 			}

@@ -4,6 +4,7 @@ using NHibernate.Linq;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2865
 {
@@ -33,17 +34,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2865
 					await (session.DeleteAsync("from System.Object"));
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
-				}
-		}
-
-		[Test]
-		public void UsingConvertToInt32InSumExpressionShouldNotThrowException()
-		{
-			using (ISession session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var result = session.Query<OrderLine>().Sum(l => int.Parse(l.Quantity));
-					Assert.AreEqual(5, result);
 				}
 		}
 	}

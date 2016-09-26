@@ -3,34 +3,14 @@ using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.Futures
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class LinqToFutureValueFixtureAsync : FutureFixtureAsync
 	{
-		[Test]
-		public void CanExecuteToFutureValueCount()
-		{
-			using (var session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var personsCount = session.Query<Person>().Where(x => x.Name == "Test1").ToFutureValue(x => x.Count());
-					Assert.AreEqual(1, personsCount.Value);
-				}
-		}
-
-		[Test]
-		public void CanExecuteToFutureValueCountWithPredicate()
-		{
-			using (var session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var personsCount = session.Query<Person>().ToFutureValue(q => q.Count(x => x.Name == "Test1"));
-					Assert.AreEqual(1, personsCount.Value);
-				}
-		}
-
 		protected override async Task OnSetUpAsync()
 		{
 			using (var session = OpenSession())

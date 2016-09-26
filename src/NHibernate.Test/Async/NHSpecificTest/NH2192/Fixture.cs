@@ -41,11 +41,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2192
 		}
 
 		private const int _threadCount = 150;
-		private async Task<int> FetchRowResultsAsync()
+		private int FetchRowResults()
 		{
 			using (var s = Sfi.OpenSession())
 			{
-				var count = (await (s.CreateQuery("select ci from ContentItem ci where ci.Name = :v1").SetParameter("v1", "Test").ListAsync<ContentItem>())).Count;
+				var count = s.CreateQuery("select ci from ContentItem ci where ci.Name = :v1").SetParameter("v1", "Test").List<ContentItem>().Count;
 				return count;
 			}
 		}

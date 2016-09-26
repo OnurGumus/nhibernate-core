@@ -9,6 +9,7 @@ using NHibernate.Driver;
 using NHibernate.Type;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.Dates
 {
@@ -66,22 +67,6 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 		}
 
 		[Test]
-		public void WhenEqualTicksThenShouldMatchIsEqual()
-		{
-			var type = new DateTimeOffsetType();
-			var now = DateTimeOffset.Now;
-			Assert.That(type.IsEqual(new DateTimeOffset(now.Ticks, now.Offset), new DateTimeOffset(now.Ticks, now.Offset)), Is.True);
-		}
-
-		[Test]
-		public void WhenNotEqualTicksThenShouldNotMatchIsEqual()
-		{
-			var type = new DateTimeOffsetType();
-			var now = DateTimeOffset.Now;
-			Assert.That(type.IsEqual(new DateTimeOffset(now.Ticks - 1, now.Offset), new DateTimeOffset(now.Ticks, now.Offset)), Is.False);
-		}
-
-		[Test]
 		public async Task HashCodeShouldHaveSameBehaviorOfNetTypeAsync()
 		{
 			var type = new DateTimeOffsetType();
@@ -104,29 +89,6 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 		{
 			var type = NHibernateUtil.DateTimeOffset;
 			Assert.That(await (type.SeedAsync(null)), Is.TypeOf<DateTimeOffset>());
-		}
-
-		[Test(Description = "NH-3842")]
-		public void DefaultValueDoesNotThrowException()
-		{
-			var type = NHibernateUtil.DateTimeOffset;
-			Assert.That(() => type.DefaultValue, Throws.Nothing);
-		}
-
-		[Test(Description = "NH-3842")]
-		public void CanBinarySerialize()
-		{
-			var type = NHibernateUtil.DateTimeOffset;
-			var formatter = new BinaryFormatter();
-			Assert.That(() => formatter.Serialize(Stream.Null, type), Throws.Nothing);
-		}
-
-		[Test(Description = "NH-3842")]
-		public void CanXmlSerialize()
-		{
-			var type = NHibernateUtil.DateTimeOffset;
-			var formatter = new XmlSerializer(typeof (DateTimeOffsetType));
-			Assert.That(() => formatter.Serialize(Stream.Null, type), Throws.Nothing);
 		}
 	}
 }

@@ -4,6 +4,7 @@ using System.Collections;
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest
 {
@@ -62,16 +63,6 @@ namespace NHibernate.Test.NHSpecificTest
 					Assert.AreEqual("TestUpdated", simpleComp.Audit.UpdatedUserId);
 					await (t.CommitAsync());
 				}
-		}
-
-		/// <summary>
-		/// Test the ability to insert a new row with a User Assigned Key
-		/// Right now - the only way to verify this is to watch SQL Profiler
-		/// </summary>
-		[Test]
-		public void TestInsert()
-		{
-		// Do nothing, all the action is in OnSetUp.
 		}
 	}
 }

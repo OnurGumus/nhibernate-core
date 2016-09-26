@@ -12,6 +12,7 @@ using NHibernate.Type;
 using NHibernate.Util;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
 
 namespace NHibernate.Test.ReadOnly
 {
@@ -82,42 +83,6 @@ namespace NHibernate.Test.ReadOnly
 				await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
 				await (s.Transaction.CommitAsync());
 			}
-		}
-
-		[Test]
-		[Ignore("Scrollable result sets not supported in NHibernate")]
-		public void ReadOnlySessionDefaultQueryScroll()
-		{
-		}
-
-		[Test]
-		[Ignore("Scrollable result sets not supported in NHibernate")]
-		public void ReadOnlySessionModifiableQueryScroll()
-		{
-		}
-
-		[Test]
-		[Ignore("Scrollable result sets not supported in NHibernate")]
-		public void ModifiableSessionReadOnlyQueryScroll()
-		{
-		}
-
-		[Test]
-		[Ignore("Scrollable result sets not supported in NHibernate")]
-		public void ModifiableSessionDefaultQueryReadOnlySessionScroll()
-		{
-		}
-
-		[Test]
-		[Ignore("Scrollable result sets not supported in NHibernate")]
-		public void QueryReadOnlyScroll()
-		{
-		}
-
-		[Test]
-		[Ignore("Scrollable result sets not supported in NHibernate")]
-		public void QueryModifiableScroll()
-		{
 		}
 
 		[Test]
@@ -902,18 +867,6 @@ namespace NHibernate.Test.ReadOnly
 					await (t.CommitAsync());
 				}
 			}
-		}
-
-		[Test]
-		[Ignore("Scrollable result sets not supported in NHibernate")]
-		public void ReadOnlyModeWithExistingModifiableEntity()
-		{
-		}
-
-		[Test]
-		[Ignore("Scrollable result sets not supported in NHibernate")]
-		public void ModifiableModeWithExistingReadOnlyEntity()
-		{
 		}
 
 		[Test]

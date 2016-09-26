@@ -51,40 +51,6 @@ namespace NHibernate.Test.TransactionTest
 		}
 
 		[Test]
-		public Task RollbackAfterDisposeThrowsExceptionAsync()
-		{
-			try
-			{
-				using (ISession s = OpenSession())
-				{
-					ITransaction t = s.BeginTransaction();
-					t.Dispose();
-					Assert.Throws<ObjectDisposedException>(() => t.Rollback());
-				}
-
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
-		}
-
-		[Test]
-		public void EnlistAfterDisposeDoesNotThrowException()
-		{
-			using (ISession s = OpenSession())
-			{
-				ITransaction t = s.BeginTransaction();
-				using (DbCommand cmd = s.Connection.CreateCommand())
-				{
-					t.Dispose();
-					t.Enlist(cmd);
-				}
-			}
-		}
-
-		[Test]
 		public async Task CommandAfterTransactionShouldWorkAsync()
 		{
 			using (ISession s = OpenSession())

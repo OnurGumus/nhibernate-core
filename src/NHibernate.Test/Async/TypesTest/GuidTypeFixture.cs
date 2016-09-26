@@ -6,6 +6,7 @@ using NHibernate.Criterion;
 using NHibernate.Type;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -19,21 +20,6 @@ namespace NHibernate.Test.TypesTest
 			{
 				return "Guid";
 			}
-		}
-
-		/// <summary>
-		/// Verify Equals will correctly determine when the property
-		/// is dirty.
-		/// </summary>
-		[Test]
-		public void Equals()
-		{
-			GuidType type = (GuidType)NHibernateUtil.Guid;
-			Guid lhs = new Guid("{01234567-abcd-abcd-abcd-0123456789ab}");
-			Guid rhs = new Guid("{01234567-abcd-abcd-abcd-0123456789ab}");
-			Assert.IsTrue(type.IsEqual(lhs, rhs));
-			rhs = new Guid("{11234567-abcd-abcd-abcd-0123456789ab}");
-			Assert.IsFalse(type.IsEqual(lhs, rhs));
 		}
 
 		[Test]

@@ -6,6 +6,7 @@ using NHibernate.Driver;
 using NHibernate.Test.SecondLevelCacheTests;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.QueryTest
 {
@@ -264,28 +265,6 @@ namespace NHibernate.Test.QueryTest
 				var secondResult = (IList)await (multiQuery.GetResultAsync("second"));
 				var firstResult = (IList)await (multiQuery.GetResultAsync("first"));
 				Assert.Greater(secondResult.Count, firstResult.Count);
-			}
-		}
-
-		[Test]
-		public void CanNotAddQueryWithKeyThatAlreadyExists()
-		{
-			using (var session = OpenSession())
-			{
-				var multiQuery = session.CreateMultiQuery();
-				var firstQuery = session.CreateSQLQuery("select * from ITEM where Id < :id").AddEntity(typeof (Item)).SetInt32("id", 50);
-				try
-				{
-					IQuery secondQuery = session.CreateSQLQuery("select * from ITEM").AddEntity(typeof (Item));
-					multiQuery.Add("first", firstQuery).Add("second", secondQuery);
-				}
-				catch (InvalidOperationException)
-				{
-				}
-				catch (Exception)
-				{
-					Assert.Fail("This should've thrown an InvalidOperationException");
-				}
 			}
 		}
 

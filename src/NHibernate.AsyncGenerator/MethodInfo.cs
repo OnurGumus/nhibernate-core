@@ -16,6 +16,8 @@ namespace NHibernate.AsyncGenerator
 	public class MethodInfo
 	{
 		private static readonly ILog Logger = LogManager.GetLogger(typeof(MethodInfo));
+		private bool _ignoreCalculated;
+		private bool _ignoreCalculating;
 
 		public MethodInfo(TypeInfo typeInfo, IMethodSymbol symbol, MethodDeclarationSyntax node)
 		{
@@ -32,6 +34,8 @@ namespace NHibernate.AsyncGenerator
 
 		public bool Missing { get; set; }
 
+		public Dictionary<ReferenceLocation, MethodInfo> InvokedBy { get; } = new Dictionary<ReferenceLocation, MethodInfo>();
+
 		public HashSet<MethodInfo> Dependencies { get; } = new HashSet<MethodInfo>();
 
 		public HashSet<IMethodSymbol> ExternalDependencies { get; } = new HashSet<IMethodSymbol>();
@@ -39,25 +43,120 @@ namespace NHibernate.AsyncGenerator
 		// async methods that have the same parameters and name and are external
 		public HashSet<IMethodSymbol> ExternalAsyncMethods { get; } = new HashSet<IMethodSymbol>();
 
-		public bool HasRequiredExternalMethods
-		{
-			get
-			{
-				return ExternalDependencies.Select(o => o.ContainingType.GetFullName())
-										   .Except(ExternalAsyncMethods.Select(o => o.ContainingType.GetFullName()))
-										   .Any();
-			}
-		}
-
 		/// <summary>
-		/// When true the method will be ignored when generating async members
+		/// When true the method will not be generated. Example would be a test method (never invoked in code) that does not have any async calls 
+		/// or a method that is only called by that test method. If there are some references (methods invoked) we need to check them as they can be
+		/// 
 		/// </summary>
-		public bool Ignore
+		public void CalculateIgnore(int deep = 0, HashSet<MethodInfo> processedMethodInfos = null)
 		{
-			get
+			if (_ignoreCalculated)
 			{
-				return !Missing && !References.Any() && !TypeReferences.Any() && GetAllDependencies().All(o => !o.References.Any());
+				return;
 			}
+			if (_ignoreCalculating)
+			{
+				throw new Exception("_ignoreCalculating");
+			}
+			_ignoreCalculating = true;
+			
+			
+			if (processedMethodInfos == null)
+			{
+				processedMethodInfos = new HashSet<MethodInfo> {this};
+			}
+
+			deep++;
+			if (deep > 20)
+			{
+				Ignore = false;
+				_ignoreCalculating = false;
+				_ignoreCalculated = true;
+				return;
+			}
+			/*
+			foreach (var refResult in ReferenceResults)
+			{
+				refResult.CalculateIgnore(deep, processedMethodInfos);
+			}*/
+
+			if (Missing || IsRequired)
+			{
+				Ignore = false;
+				_ignoreCalculating = false;
+				_ignoreCalculated = true;
+				return;
+			}
+			var config = TypeInfo.NamespaceInfo.DocumentInfo.ProjectInfo.Configuration;
+
+			//if (TypeInfo.TypeTransformation == TypeTransformation.NewType)
+			//{
+				
+			//}
+
+			// If method is used elsewhere then we should generante the method (TODO: check if methods that invoke this one are ignored... problem with circular calls)
+			if (InvokedBy.Any())
+			{
+				Ignore = false;
+				_ignoreCalculating = false;
+				_ignoreCalculated = true;
+				return;
+			}
+
+			/*
+			foreach (var methodInfo in InvokedBy.Values)
+			{
+				if (methodInfo == this)
+				{
+					continue;
+				}
+
+				methodInfo.CalculateIgnore(deep, processedMethodInfos);
+				if (methodInfo.Ignore)
+				{
+					continue;
+				}
+				Ignore = false;
+				return;
+			}*/
+
+			var dependencies = ReferenceResults
+				.Union(GetAllDependencies().ToList().SelectMany(o => o.ReferenceResults))
+				.ToList();/*
+			if (!dependencies.Any() && config.CanGenerateMethod != null)
+			{
+				return !config.CanGenerateMethod(this);
+			}
+			*/
+			foreach (var refResult in dependencies)
+			{
+				// if the reference cannot be async we should preserve the original method. TODO: what if the method has dependecies that are async
+				if (!refResult.CanBeAsync && refResult.MethodInfo != null)
+				{
+					refResult.MethodInfo.CanBeAsnyc = false;
+				}
+				refResult.CalculateIgnore(deep, processedMethodInfos);
+
+				/*
+				var ignore = false;
+				if (refResult.MethodInfo != null)
+				{
+					if (processedMethodInfos.Contains(refResult.MethodInfo))
+					{
+						continue;
+					}
+					processedMethodInfos.Add(refResult.MethodInfo);
+					ignore |= refResult.MethodInfo.CanIgnore(deep, processedMethodInfos);
+				}
+				ignore |= refResult.UserIgnore;
+				if (!ignore)
+				{
+					return false;
+				}*/
+			}
+			Ignore = dependencies.All(o => o.Ignore);
+			_ignoreCalculating = false;
+			_ignoreCalculated = true;
 		}
 
 		public bool HasReferences
@@ -68,26 +167,55 @@ namespace NHibernate.AsyncGenerator
 			}
 		}
 
-		public bool IsRequired
+		public bool HasRequiredExternalMethods(int deep = 0, HashSet<MethodInfo> processedMethodInfos = null)
 		{
-			get { return HasRequiredExternalMethods || GetAllDependencies().Any(o => o.HasRequiredExternalMethods); }
+			deep++;
+			if (deep > 980)
+			{
+				return true;
+			}
+			if (processedMethodInfos == null)
+			{
+				processedMethodInfos = new HashSet<MethodInfo> { this };
+			}
+
+			if (ExternalDependencies.Select(o => o.ContainingType.GetFullName())
+									.Except(ExternalAsyncMethods.Select(o => o.ContainingType.GetFullName()))
+									.Any())
+			{
+				return true;
+			}
+			foreach (var depednency in GetAllDependencies())
+			{
+				if (processedMethodInfos.Contains(depednency))
+				{
+					continue;
+				}
+				processedMethodInfos.Add(depednency);
+				if (depednency.HasRequiredExternalMethods(deep, processedMethodInfos))
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 
-		public bool Candidate { get; set; }
+		public bool IsRequired
+		{
+			get { return OverridenMethod != null && OverridenMethod.IsAbstract; }
+		}
 
 		public IMethodSymbol OverridenMethod { get; set; }
 
 		/// <summary>
-		/// references that need to be async
+		/// references that are candidates to be async
 		/// </summary>
-		public HashSet<ReferenceLocation> References { get; } = new HashSet<ReferenceLocation>();
+		internal HashSet<ReferenceLocation> References { get; } = new HashSet<ReferenceLocation>();
 
 		/// <summary>
 		/// Type references that need to be renamed
 		/// </summary>
 		public HashSet<ReferenceLocation> TypeReferences { get; } = new HashSet<ReferenceLocation>();
-
-		//public HashSet<ReferenceLocation> BodyToAsyncMethodsReferences { get; } = new HashSet<ReferenceLocation>();
 
 		public IEnumerable<MethodInfo> GetAllDependencies()
 		{
@@ -101,11 +229,15 @@ namespace NHibernate.AsyncGenerator
 					continue;
 				}
 				deps.Add(dependency);
-				yield return dependency;
-				foreach (var subDependency in dependency.Dependencies.Where(o => !deps.Contains(o)))
+				foreach (var subDependency in dependency.Dependencies)
 				{
+					if (deps.Contains(subDependency))
+					{
+						continue;
+					}
 					depsQueue.Enqueue(subDependency);
 				}
+				yield return dependency;
 			}
 		}
 
@@ -122,7 +254,9 @@ namespace NHibernate.AsyncGenerator
 			var docInfo = TypeInfo.NamespaceInfo.DocumentInfo;
 
 			var methodSymbol = (IMethodSymbol)docInfo.SemanticModel.GetSymbolInfo(nameNode).Symbol;
-			var asyncMethodSymbol = docInfo.ProjectInfo.MethodAsyncConterparts[methodSymbol.OriginalDefinition];
+			var asyncMethodSymbol = docInfo.ProjectInfo.MethodAsyncConterparts.ContainsKey(methodSymbol.OriginalDefinition)
+				? docInfo.ProjectInfo.MethodAsyncConterparts[methodSymbol.OriginalDefinition]
+				: null;
 
 			if (asyncMethodSymbol != null && (asyncMethodSymbol.ReturnsVoid || asyncMethodSymbol.ReturnType.Name != "Task"))
 			{
@@ -209,7 +343,7 @@ namespace NHibernate.AsyncGenerator
 			}
 		}
 
-		public MethodReferenceResult AnalyzeMethodReference(ReferenceLocation reference)
+		public MethodReferenceResult AnalyzeReference(ReferenceLocation reference)
 		{
 			var nameNode = Node.DescendantNodes()
 							   .OfType<SimpleNameSyntax>()
@@ -226,14 +360,22 @@ namespace NHibernate.AsyncGenerator
 			var docInfo = TypeInfo.NamespaceInfo.DocumentInfo;
 			var config = docInfo.ProjectInfo.Configuration;
 			var methodSymbol = (IMethodSymbol) docInfo.SemanticModel.GetSymbolInfo(nameNode).Symbol;
-			var result = new MethodReferenceResult(reference, nameNode, methodSymbol)
+
+			MethodInfo methodInfo = null;
+			var methodDocInfo = methodSymbol.DeclaringSyntaxReferences.Select(o => docInfo.ProjectInfo.GetDocumentInfo(o))
+						.SingleOrDefault(o => o != null);
+			if (methodDocInfo != null)
+			{
+				methodInfo = methodDocInfo.GetMethodInfo(methodSymbol);
+			}
+			var result = new MethodReferenceResult(reference, nameNode, methodSymbol, methodInfo)
 			{
 				CanBeAsync = true,
 				DeclaredWithinSameType = TypeInfo.Symbol.GetFullName() == methodSymbol.ContainingType.GetFullName()
 			};
 			if (!config.CanConvertReferenceFunc(methodSymbol))
 			{
-				result.Ignore = true;
+				result.UserIgnore = true;
 				return result;
 			}
 
@@ -332,14 +474,18 @@ namespace NHibernate.AsyncGenerator
 				}
 				else
 				{
-					var type = methodSymbol.ContainingType;
-					asyncMethodSymbol = type.GetMembers(methodSymbol.Name + "Async")
-											  .OfType<IMethodSymbol>()
-											  .FirstOrDefault(o => o.HaveSameParameters(methodSymbol));
-					if (asyncMethodSymbol == null)
+					var config = TypeInfo.NamespaceInfo.DocumentInfo.ProjectInfo.Configuration;
+					if (config.FindAsyncCounterpart != null)
 					{
-						var config = TypeInfo.NamespaceInfo.DocumentInfo.ProjectInfo.Configuration;
-						asyncMethodSymbol = config.FindAsyncCounterpart?.Invoke(methodSymbol);
+						asyncMethodSymbol = config.FindAsyncCounterpart.Invoke(methodSymbol.OriginalDefinition);
+					}
+					else
+					{
+						asyncMethodSymbol = methodSymbol.ContainingType.EnumerateBaseTypesAndSelf()
+														.SelectMany(o => o.GetMembers(methodSymbol.Name + "Async"))
+														.OfType<IMethodSymbol>()
+														.Where(o => o.TypeParameters.Length == methodSymbol.TypeParameters.Length)
+														.FirstOrDefault(o => o.HaveSameParameters(methodSymbol));
 					}
 					methodAsyncConterparts?.Add(methodSymbol.OriginalDefinition, asyncMethodSymbol?.OriginalDefinition);
 				}
@@ -358,58 +504,82 @@ namespace NHibernate.AsyncGenerator
 			return result;
 		}
 
-		public MethodAnalyzeResult PostAnalyzeResult { get; private set; }
 
-		// check if all the references can be converted to async
+		#region Analyze properties
+
+		public bool CanBeAsnyc { get; private set; }
+		/*
+		public bool CanBeAsnyc(int deep = 0, HashSet<MethodInfo> processedMethodInfos = null)
+		{
+			if (processedMethodInfos == null)
+			{
+				processedMethodInfos = new HashSet<MethodInfo>();
+			}
+			processedMethodInfos.Add(this);
+
+			deep++;
+			if (deep > 980)
+			{
+				return false;
+			}
+			return ReferenceResults.Where(o => o.MethodInfo == null || !processedMethodInfos.Contains(o.MethodInfo))
+				.All(o => !o.CalculateIgnore(deep, processedMethodInfos));
+		}*/
+
+		public HashSet<MethodReferenceResult> ReferenceResults { get; } = new HashSet<MethodReferenceResult>();
+
+		public bool CanSkipAsync { get; internal set; }
+
+		public bool MustRunSynchronized { get; internal set; }
+
+		public bool HasBody => Node.Body != null;
+
+		public bool HasYields { get; internal set; }
+
+		public bool IsEmpty { get; internal set; }
+
+		/// <summary>
+		/// Used for a method that is not supposed to be async at the moment of creation, 
+		/// it will be removed from the TypeInfo on post analyize if the calculation of ignore will be true
+		/// </summary>
+		public bool LazyCreate { get; internal set; }
+
+		#endregion
+
+		#region Post Analyze properties
+
+		public bool Ignore { get; private set; }
+
+		#endregion
+
 		public void PostAnalyze()
 		{
-			if (Node.Body == null)
+			CalculateIgnore();
+			if (Ignore && LazyCreate)
 			{
-				PostAnalyzeResult = new MethodAnalyzeResult();
-				return;
+				TypeInfo.MethodInfos.Remove(Node);
 			}
-			PostAnalyzeResult = new MethodAnalyzeResult
-			{
-				HasBody = true
-			};
+		}
 
+		// check if all the references can be converted to async
+		public void Analyze()
+		{
 			foreach (var reference in References)
 			{
-				PostAnalyzeResult.ReferenceResults.Add(AnalyzeMethodReference(reference));
+				ReferenceResults.Add(AnalyzeReference(reference));
 			}
-			/*
-			if (Candidate)
-			{
-				var syntax = OverridenMethod.DeclaringSyntaxReferences.Single();
-				var docInfo = TypeInfo.NamespaceInfo.DocumentInfo.ProjectInfo.GetDocumentInfo(syntax);
-				if (docInfo == null)
-				{
-					result.IsValid = false;
-					return result;
-				}
-				var methodInfo = docInfo.GetMethodInfo(OverridenMethod);
-				if (methodInfo == null)
-				{
-					result.IsValid = false;
-					return result;
-				}
-			}*/
-
+			CanBeAsnyc = ReferenceResults.Any(o => o.CanBeAsync);
 
 			var counter = new MethodStatementsCounterVisitior();
 			counter.Visit(Node.Body);
 
 			if (counter.TotalYields > 0)
 			{
-				PostAnalyzeResult.Yields = true;
+				HasYields = true;
 			}
 			if (counter.TotalStatements == 0)
 			{
-				PostAnalyzeResult.IsEmpty = true;
-			}
-			if (PostAnalyzeResult.ReferenceResults.Any(o => o.CanBeAsync))
-			{
-				PostAnalyzeResult.CanBeAsnyc = true;
+				IsEmpty = true;
 			}
 
 			var solutionConfig = TypeInfo.NamespaceInfo.DocumentInfo.ProjectInfo.SolutionInfo.Configuration;
@@ -417,7 +587,7 @@ namespace NHibernate.AsyncGenerator
 					.SelectMany(o => o.Attributes.Where(a => a.Name.ToString() == "MethodImpl"))
 					.Any(o => o.ArgumentList.Arguments.Any(a => a.Expression.ToString() == "MethodImplOptions.Synchronized")))
 			{
-				PostAnalyzeResult.MustRunSynchronized = true;
+				MustRunSynchronized = true;
 			}
 			else if (counter.InvocationExpressions.Count == 1 && Symbol.GetAttributes()
 				.All(o => !solutionConfig.TestAttributeNames.Contains(o.AttributeClass.Name)))
@@ -426,24 +596,25 @@ namespace NHibernate.AsyncGenerator
 				if (Symbol.ReturnsVoid)
 				{
 					// if there is only one await and it is the last statement to be executed we can just forward the task
-					if (PostAnalyzeResult.ReferenceResults.All(o => o.LastStatement) &&
+					if (ReferenceResults.All(o => o.LastStatement) &&
 						invocation.Parent.IsKind(SyntaxKind.ExpressionStatement) &&
 						counter.TotalStatements == 1)
 					{
-						PostAnalyzeResult.CanSkipAsync = true;
+						CanSkipAsync = true;
 					}
 				}
 				else
 				{
 					// if there is only one await and it is used as a reutorn value we can just forward the task
-					if (PostAnalyzeResult.ReferenceResults.All(o => o.UsedAsReturnValue) &&
+					if (ReferenceResults.All(o => o.UsedAsReturnValue) &&
 						invocation.IsReturned() &&
 						counter.TotalStatements == 1)
 					{
-						PostAnalyzeResult.CanSkipAsync = true;
+						CanSkipAsync = true;
 					}
 				}
 			}
 		}
+
 	}
 }

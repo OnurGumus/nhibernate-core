@@ -3,8 +3,6 @@ using System.Data;
 using NHibernate.Mapping;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2302
 {
@@ -12,31 +10,22 @@ namespace NHibernate.Test.NHSpecificTest.NH2302
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class FixtureAsync : BugTestCaseAsync
 	{
-		protected override Task ConfigureAsync(Cfg.Configuration configuration)
+		protected override void Configure(Cfg.Configuration configuration)
 		{
-			try
+			foreach (var cls in configuration.ClassMappings)
 			{
-				foreach (var cls in configuration.ClassMappings)
+				foreach (var prop in cls.PropertyIterator)
 				{
-					foreach (var prop in cls.PropertyIterator)
+					foreach (var col in prop.ColumnIterator)
 					{
-						foreach (var col in prop.ColumnIterator)
+						if (col is Column)
 						{
-							if (col is Column)
-							{
-								var column = col as Column;
-								if (column.SqlType == "nvarchar(max)")
-									column.SqlType = Dialect.GetLongestTypeName(DbType.String);
-							}
+							var column = col as Column;
+							if (column.SqlType == "nvarchar(max)")
+								column.SqlType = Dialect.GetLongestTypeName(DbType.String);
 						}
 					}
 				}
-
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
 			}
 		}
 

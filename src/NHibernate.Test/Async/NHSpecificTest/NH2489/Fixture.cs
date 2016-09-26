@@ -9,7 +9,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2489
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class FixtureAsync : BugTestCaseAsync
 	{
-#region Scenarios
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		private class ListScenario : IDisposable
 		{
@@ -84,7 +83,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2489
 			}
 		}
 
-#endregion
 		[Test]
 		public async Task List_InvalidIndexAsync()
 		{

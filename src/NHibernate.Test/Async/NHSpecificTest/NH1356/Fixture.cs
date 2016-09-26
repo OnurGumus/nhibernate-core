@@ -44,59 +44,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1356
 
 		protected abstract ICollection<Address> NewCollection();
 	}
-
-	[TestFixture]
-	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class FixtureWithListAsync : FixtureAsync
-	{
-		protected override IList Mappings
-		{
-			get
-			{
-				return new[]{"NHSpecificTest." + BugNumber + ".MappingsList.hbm.xml"};
-			}
-		}
-
-		protected override ICollection<Address> NewCollection()
-		{
-			return new List<Address>();
-		}
-	}
-
-	[TestFixture]
-	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class FixtureWithBagAsync : FixtureAsync
-	{
-		protected override IList Mappings
-		{
-			get
-			{
-				return new[]{"NHSpecificTest." + BugNumber + ".MappingsBag.hbm.xml"};
-			}
-		}
-
-		protected override ICollection<Address> NewCollection()
-		{
-			return new List<Address>();
-		}
-	}
-
-	[TestFixture]
-	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class FixtureWithSetAsync : FixtureAsync
-	{
-		protected override IList Mappings
-		{
-			get
-			{
-				return new[]{"NHSpecificTest." + BugNumber + ".MappingsSet.hbm.xml"};
-			}
-		}
-
-		protected override ICollection<Address> NewCollection()
-		{
-			return new HashSet<Address>();
-		}
-	}
 }
 #endif

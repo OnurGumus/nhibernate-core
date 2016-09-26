@@ -71,9 +71,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3489
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
-		protected override async Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			await (base.ConfigureAsync(configuration));
+			base.Configure(configuration);
 			configuration.SetProperty(Environment.BatchSize, batchSize.ToString(CultureInfo.InvariantCulture));
 		}
 

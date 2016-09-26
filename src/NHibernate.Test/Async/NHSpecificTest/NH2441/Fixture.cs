@@ -4,6 +4,8 @@ using NHibernate.Dialect;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2441
 {
@@ -40,19 +42,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2441
 				}
 
 			await (base.OnTearDownAsync());
-		}
-
-		[Test]
-		public void LinqQueryBooleanSQLite()
-		{
-			using (ISession session = OpenSession())
-			{
-				var query1 = session.Query<Person>().Where(p => true);
-				var query2 = session.Query<Person>().Where(p => p.Id != null);
-				var query3 = session.Query<Person>();
-				Assert.That(query1.Count(), Is.EqualTo(query2.Count()));
-				Assert.That(query3.Count(), Is.EqualTo(query1.Count()));
-			}
 		}
 	}
 }

@@ -7,6 +7,8 @@ using NHibernate.Mapping;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 {
@@ -68,22 +70,6 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			var configuration = TestConfigurationHelper.GetDefaultConfiguration();
 			configuration.AddResource("NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest.HeavyEntity.hbm.xml", GetType().Assembly);
 			await (SchemaMetadataUpdater.QuoteTableAndColumnsAsync(configuration));
-			var cm = configuration.GetClassMapping(typeof (Order));
-			Assert.That(cm.Table.IsQuoted);
-			var culs = new List<Column>(cm.Table.ColumnIterator);
-			Assert.That(GetColumnByName(culs, "From").IsQuoted);
-			Assert.That(GetColumnByName(culs, "And").IsQuoted);
-			Assert.That(GetColumnByName(culs, "Select").IsQuoted);
-			Assert.That(!GetColumnByName(culs, "Name").IsQuoted);
-		}
-
-		[Test]
-		public void AutoQuoteTableAndColumnsAtStratup()
-		{
-			var configuration = TestConfigurationHelper.GetDefaultConfiguration();
-			configuration.SetProperty(Environment.Hbm2ddlKeyWords, "auto-quote");
-			configuration.AddResource("NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest.HeavyEntity.hbm.xml", GetType().Assembly);
-			configuration.BuildSessionFactory();
 			var cm = configuration.GetClassMapping(typeof (Order));
 			Assert.That(cm.Table.IsQuoted);
 			var culs = new List<Column>(cm.Table.ColumnIterator);

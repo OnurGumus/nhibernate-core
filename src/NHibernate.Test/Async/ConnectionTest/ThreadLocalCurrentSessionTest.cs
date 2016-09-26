@@ -4,6 +4,8 @@ using NHibernate.Context;
 using NHibernate.Engine;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.ConnectionTest
 {
@@ -18,9 +20,9 @@ namespace NHibernate.Test.ConnectionTest
 			return session;
 		}
 
-		protected override async Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			await (base.ConfigureAsync(cfg));
+			base.Configure(cfg);
 			cfg.SetProperty(Environment.CurrentSessionContextClass, typeof (TestableThreadLocalContext).AssemblyQualifiedName);
 			cfg.SetProperty(Environment.GenerateStatistics, "true");
 		}
@@ -49,23 +51,6 @@ namespace NHibernate.Test.ConnectionTest
 			session2.Close();
 			Assert.IsFalse(session2.IsOpen, "session open after closing");
 			Assert.IsFalse(TestableThreadLocalContext.IsSessionBound(session2), "session still bound after closing");
-		}
-
-		[Test]
-		public void TransactionProtection()
-		{
-			using (ISession session = OpenSession())
-			{
-				try
-				{
-					session.CreateQuery("from Silly");
-					Assert.Fail("method other than beginTransaction{} allowed");
-				}
-				catch (HibernateException)
-				{
-				// ok
-				}
-			}
 		}
 	}
 }

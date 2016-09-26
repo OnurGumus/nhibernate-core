@@ -13,7 +13,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2905
 	public partial class FixtureAsync : TestCaseMappingByCodeAsync
 	{
 		private Guid _entity3Id;
-#region Test Configuration
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();
@@ -96,7 +95,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2905
 				}
 		}
 
-#endregion
 		[Test]
 		public async Task JoinOverMultipleSteps_MethodSyntax_SelectAndSelectManyAsync()
 		{

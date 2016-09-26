@@ -3,6 +3,8 @@ using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3057
 {
@@ -30,18 +32,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3057
 				{
 					await (session.DeleteAsync("from System.Object"));
 					await (transaction.CommitAsync());
-				}
-		}
-
-		[Test]
-		public void CollectionQueryOnJoinedSubclassInheritedProperty()
-		{
-			using (var session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var entities = session.Query<AClass>().Where(a => a.Bs.Any(b => b.InheritedProperty == "B2")).ToList();
-					Assert.AreEqual(1, entities.Count);
-					Assert.AreEqual(1, entities[0].Id);
 				}
 		}
 

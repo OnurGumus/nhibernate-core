@@ -5,6 +5,7 @@ using NHibernate.Dialect;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2507
 {
@@ -12,7 +13,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2507
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class FixtureAsync : BugTestCaseAsync
 	{
-#region BugTestCase Overrides
 		protected override async Task OnSetUpAsync()
 		{
 			await (base.OnSetUpAsync());
@@ -48,41 +48,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2507
 				const string hql = "from System.Object";
 				await (session.DeleteAsync(hql));
 				await (session.FlushAsync());
-			}
-		}
-
-#endregion BugTestCase Overrides
-		/// <summary>
-		/// Test LINQ query that compares enumeration values while simulating projects with Advanced Build property
-		/// value for "Check for arithmetic overflow/underflow" as <b>checked</b>.
-		/// </summary>
-		[Test]
-		public void QueryEnumerationWithCheckedArithmeticOverflowTest()
-		{
-			using (ISession session = this.OpenSession())
-			{
-				checked
-				{
-					var query = session.Query<Animal>().Where(item => item.Sex == Sex.Undefined).ToList();
-					Assert.AreEqual(1, query.Count);
-				}
-			}
-		}
-
-		/// <summary>
-		/// Test LINQ query that compares enumeration values while simulating projects with Advanced Build property
-		/// value for "Check for arithmetic overflow/underflow" as <b>unchecked</b>.
-		/// </summary>
-		[Test]
-		public void QueryEnumerationWithUncheckedArithmeticOverflowTest()
-		{
-			using (ISession session = this.OpenSession())
-			{
-				unchecked
-				{
-					var query = session.Query<Animal>().Where(item => item.Sex == Sex.Undefined).ToList();
-					Assert.AreEqual(1, query.Count);
-				}
 			}
 		}
 	}

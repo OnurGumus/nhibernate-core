@@ -39,39 +39,61 @@ namespace NHibernate.AsyncGenerator
 			}
 		}
 
+		public bool CanIgnore()
+		{
+			return !Dependencies.Any() && 
+				MethodInfos.All(o => o.Value.Ignore) &&
+				TypeInfos.All(o => o.Value.CanIgnore());
+		}
+
 		/// <summary>
 		/// Type references that need to be renamed
 		/// </summary>
 		public HashSet<ReferenceLocation> TypeReferences { get; } = new HashSet<ReferenceLocation>();
 
+		public HashSet<ReferenceLocation> Dependencies { get; } = new HashSet<ReferenceLocation>();
+
 		public Dictionary<MethodDeclarationSyntax, MethodInfo> MethodInfos { get; } = new Dictionary<MethodDeclarationSyntax, MethodInfo>();
 
 		public Dictionary<TypeDeclarationSyntax, TypeInfo> TypeInfos { get; } = new Dictionary<TypeDeclarationSyntax, TypeInfo>();
 
-		public MethodInfo GetMethodInfo(IMethodSymbol symbol, MethodDeclarationSyntax memberNode, bool create = false)
+		public MethodInfo GetMethodInfo(IMethodSymbol symbol, MethodDeclarationSyntax memberNode, bool create = false, bool lazyCreate = false)
 		{
 			if (MethodInfos.ContainsKey(memberNode))
 			{
-				return MethodInfos[memberNode];
+				var memberInfo = MethodInfos[memberNode];
+				if (create && !lazyCreate && memberInfo.LazyCreate)
+				{
+					memberInfo.LazyCreate = false;
+				}
+				return memberInfo;
 			}
 			if (!create)
 			{
 				return null;
 			}
-			var asyncMember = new MethodInfo(this, symbol, memberNode);
-			MethodInfos.Add(memberNode, asyncMember);
-			if ((MethodInfos).Keys.GroupBy(o => o.Identifier.ValueText).Any(o => o.Count() > 1)) //TODO DELETE
+			var asyncMember = new MethodInfo(this, symbol, memberNode)
 			{
-
+				LazyCreate = lazyCreate
+			};
+			MethodInfos.Add(memberNode, asyncMember);
+			if ((MethodInfos).Keys.GroupBy(o => 
+				o.Identifier.ToString()
+				+ (o.TypeParameterList != null 
+					? $"<{string.Join(",", o.TypeParameterList.Parameters.Select(p => p.Identifier.ValueText))}>" 
+					: "") 
+				+ o.ParameterList.ToString()).Any(o => o.Count() > 1)) //TODO DELETE
+			{
+				throw new Exception("asdad");
 			}
 			return asyncMember;
 		}
 
-		public MethodInfo GetMethodInfo(MethodDeclarationSyntax memberNode, bool create = false)
+		public MethodInfo GetMethodInfo(MethodDeclarationSyntax memberNode, bool create = false, bool lazyCreate = false)
 		{
 			var methodSymbol = NamespaceInfo.DocumentInfo.SemanticModel.GetDeclaredSymbol(memberNode);
 
-			return GetMethodInfo(methodSymbol, memberNode, create);
+			return GetMethodInfo(methodSymbol, memberNode, create, lazyCreate);
 		}
 
 		public MethodInfo GetMethodInfo(IMethodSymbol symbol, bool create = false)

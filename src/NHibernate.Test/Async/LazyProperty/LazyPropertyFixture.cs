@@ -3,6 +3,8 @@ using System.Collections;
 using NHibernate.Tuple.Entity;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.LazyProperty
 {
@@ -70,12 +72,6 @@ namespace NHibernate.Test.LazyProperty
 				Assert.That(await (NHibernateUtil.IsPropertyInitializedAsync(book, "Name")), Is.True);
 				Assert.That(await (NHibernateUtil.IsPropertyInitializedAsync(book, "ALotOfText")), Is.False);
 			}
-		}
-
-		[Test]
-		public void ShouldGenerateErrorForNonAutoPropLazyProp()
-		{
-			Assert.IsTrue(log.Contains("NHibernate.Test.LazyProperty.Book.ALotOfText is not an auto property, which may result in uninitialized property access"));
 		}
 
 		[Test]

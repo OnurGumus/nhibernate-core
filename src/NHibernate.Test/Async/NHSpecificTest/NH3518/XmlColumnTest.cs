@@ -6,8 +6,6 @@ using NHibernate.Driver;
 using NHibernate.Engine;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3518
 {
@@ -35,17 +33,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3518
 			return factory.ConnectionProvider.Driver is SqlClientDriver;
 		}
 
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
-			{
-				configuration.SetProperty(Environment.PrepareSql, "true");
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.SetProperty(Environment.PrepareSql, "true");
 		}
 
 		[Test]

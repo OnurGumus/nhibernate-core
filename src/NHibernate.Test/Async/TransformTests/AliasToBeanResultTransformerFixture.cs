@@ -61,7 +61,6 @@ namespace NHibernate.Test.TransformTests
 			}
 		}
 
-#region Overrides of TestCase
 		protected override IList Mappings
 		{
 			get
@@ -78,7 +77,6 @@ namespace NHibernate.Test.TransformTests
 			}
 		}
 
-#endregion
 		[Test]
 		public async Task WorkWithOutPublicParameterLessCtorAsync()
 		{

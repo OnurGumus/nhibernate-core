@@ -6,6 +6,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.GenericTest.EnumGeneric
 {
@@ -26,30 +27,6 @@ namespace NHibernate.Test.GenericTest.EnumGeneric
 			get
 			{
 				return "NHibernate.Test";
-			}
-		}
-
-		[Test]
-		public void MapsToEnum()
-		{
-			using (ISession s = OpenSession())
-			{
-				A a = new A();
-				SessionImpl impl = (SessionImpl)s;
-				IEntityPersister persister = impl.GetEntityPersister(typeof (A).FullName, a);
-				int index = -1;
-				for (int i = 0; i < persister.PropertyNames.Length; i++)
-				{
-					if (persister.PropertyNames[i] == "NullableValue")
-					{
-						index = i;
-						break;
-					}
-				}
-
-				if (index == -1)
-					Assert.Fail("Property NullableValue not found.");
-				Assert.That(persister.PropertyTypes[index], Is.AssignableTo<PersistentEnumType>());
 			}
 		}
 

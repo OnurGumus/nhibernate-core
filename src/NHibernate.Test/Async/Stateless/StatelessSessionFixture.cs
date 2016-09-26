@@ -6,6 +6,7 @@ using NHibernate.Criterion;
 using NHibernate.Engine;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Stateless
 {
@@ -183,28 +184,6 @@ namespace NHibernate.Test.Stateless
 		}
 
 		[Test]
-		public void WhenSetTheBatchSizeThenSetTheBatchSizeOfTheBatcher()
-		{
-			if (!Dialect.SupportsSqlBatches)
-				Assert.Ignore("Dialect does not support sql batches.");
-			using (IStatelessSession ss = sessions.OpenStatelessSession())
-			{
-				ss.SetBatchSize(37);
-				var impl = (ISessionImplementor)ss;
-				Assert.That(impl.Batcher.BatchSize, Is.EqualTo(37));
-			}
-		}
-
-		[Test]
-		public void CanGetImplementor()
-		{
-			using (IStatelessSession ss = sessions.OpenStatelessSession())
-			{
-				Assert.That(ss.GetSessionImplementation(), Is.SameAs(ss));
-			}
-		}
-
-		[Test]
 		public async Task HavingDetachedCriteriaThenCanGetExecutableCriteriaFromStatelessSessionAsync()
 		{
 			var dc = DetachedCriteria.For<Paper>();
@@ -213,21 +192,6 @@ namespace NHibernate.Test.Stateless
 				ICriteria criteria = null;
 				Assert.That(() => criteria = dc.GetExecutableCriteria(ss), Throws.Nothing);
 				Assert.That(async () => await (criteria.ListAsync()), Throws.Nothing);
-			}
-		}
-
-		[Test]
-		public void DisposingClosedStatelessSessionShouldNotCauseSessionException()
-		{
-			try
-			{
-				IStatelessSession ss = sessions.OpenStatelessSession();
-				ss.Close();
-				ss.Dispose();
-			}
-			catch (SessionException)
-			{
-				Assert.Fail();
 			}
 		}
 	}

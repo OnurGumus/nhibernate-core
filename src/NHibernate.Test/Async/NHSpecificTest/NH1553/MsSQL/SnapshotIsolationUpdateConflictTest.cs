@@ -161,9 +161,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 			await (base.OnTearDownAsync());
 		}
 
-		protected override async Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			await (base.ConfigureAsync(configuration));
+			base.Configure(configuration);
 			configuration.SetProperty(Environment.SqlExceptionConverter, typeof (SQLUpdateConflictToStaleStateExceptionConverter).AssemblyQualifiedName);
 		}
 	}

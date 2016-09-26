@@ -1,6 +1,8 @@
 #if NET_4_5
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1508
 {
@@ -52,29 +54,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1508
 					var sqlQuery = session.CreateQuery("from Document");
 					var q = session.CreateMultiQuery().Add(sqlQuery);
 					await (q.ListAsync());
-				}
-		}
-
-		[Test]
-		public void DoesntThrowsExceptionWhenSqlQueryIsGiven()
-		{
-			using (var session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var sqlQuery = session.CreateSQLQuery("select * from Document");
-					var multiquery = session.CreateMultiQuery();
-					Assert.That(() => multiquery.Add(sqlQuery), Throws.Nothing);
-				}
-		}
-
-		[Test]
-		public void DoesntThrowsExceptionWhenNamedSqlQueryIsGiven()
-		{
-			using (var session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var multiquery = session.CreateMultiQuery();
-					Assert.That(() => multiquery.AddNamedQuery("SampleSqlQuery"), Throws.Nothing);
 				}
 		}
 	}

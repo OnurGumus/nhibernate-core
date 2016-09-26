@@ -6,8 +6,6 @@ using NHibernate.Mapping.ByCode;
 using NHibernate.Test.NHSpecificTest.NH1845;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2893
 {
@@ -32,17 +30,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2893
 			return (dialect is Dialect.SybaseSQLAnywhere12Dialect);
 		}
 
-		protected override Task ConfigureAsync(Cfg.Configuration configuration)
+		protected override void Configure(Cfg.Configuration configuration)
 		{
-			try
-			{
-				configuration.SetProperty("hbm2ddl.keywords", "auto-quote");
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.SetProperty("hbm2ddl.keywords", "auto-quote");
 		}
 
 		protected override async Task OnSetUpAsync()

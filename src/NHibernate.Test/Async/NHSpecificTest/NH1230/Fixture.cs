@@ -3,8 +3,6 @@ using NHibernate.Cfg;
 using NHibernate.Event;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1230
 {
@@ -20,17 +18,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1230
 			}
 		}
 
-		protected override Task ConfigureAsync(Configuration cfg)
+		protected override void Configure(Configuration cfg)
 		{
-			try
-			{
-				cfg.SetListener(ListenerType.PreInsert, new PreSaveDoVeto());
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			cfg.SetListener(ListenerType.PreInsert, new PreSaveDoVeto());
 		}
 
 		/// <summary>

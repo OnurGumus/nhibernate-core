@@ -15,9 +15,9 @@ namespace NHibernate.Test.ConnectionTest
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class AggressiveReleaseTestAsync : ConnectionManagementTestCaseAsync
 	{
-		protected override async Task ConfigureAsync(Configuration cfg)
+		protected override void Configure(Configuration cfg)
 		{
-			await (base.ConfigureAsync(cfg));
+			base.Configure(cfg);
 			cfg.SetProperty(Environment.ReleaseConnections, "after_transaction");
 			//cfg.SetProperty(Environment.ConnectionProvider, typeof(DummyConnectionProvider).AssemblyQualifiedName);
 			//cfg.SetProperty(Environment.GenerateStatistics, "true");

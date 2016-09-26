@@ -9,7 +9,6 @@ using NHibernate.DomainModel.NHSpecific;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest
 {
@@ -743,12 +742,12 @@ namespace NHibernate.Test.NHSpecificTest
 			Assert.AreEqual(expected.YesNoProperty, actual.YesNoProperty, "YesNoProperty");
 			if (includeCollections)
 			{
-				ObjectAssertAsync.AreEqual(expected.StringArray, actual.StringArray);
-				ObjectAssertAsync.AreEqual(expected.Int32Array, actual.Int32Array);
-				ObjectAssertAsync.AreEqual(expected.StringBag, actual.StringBag, false);
-				ObjectAssertAsync.AreEqual(expected.StringList, actual.StringList);
-				ObjectAssertAsync.AreEqual(expected.StringMap, actual.StringMap, true);
-				ObjectAssertAsync.AreEqual(expected.StringSet, actual.StringSet);
+				ObjectAssert.AreEqual(expected.StringArray, actual.StringArray);
+				ObjectAssert.AreEqual(expected.Int32Array, actual.Int32Array);
+				ObjectAssert.AreEqual(expected.StringBag, actual.StringBag, false);
+				ObjectAssert.AreEqual(expected.StringList, actual.StringList);
+				ObjectAssert.AreEqual(expected.StringMap, actual.StringMap, true);
+				ObjectAssert.AreEqual(expected.StringSet, actual.StringSet);
 			}
 		}
 

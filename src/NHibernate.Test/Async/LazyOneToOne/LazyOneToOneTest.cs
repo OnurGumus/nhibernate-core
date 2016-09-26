@@ -5,7 +5,6 @@ using NHibernate.Intercept;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.LazyOneToOne
 {
@@ -34,18 +33,10 @@ namespace NHibernate.Test.LazyOneToOne
 		//  // this test work only with Field interception (NH-1618)
 		//  return FieldInterceptionHelper.IsInstrumented( new Person() );
 		//}
-		protected override Task ConfigureAsync(Cfg.Configuration configuration)
+		protected override void Configure(Cfg.Configuration configuration)
 		{
-			try
-			{
-				configuration.SetProperty(Environment.MaxFetchDepth, "2");
-				configuration.SetProperty(Environment.UseSecondLevelCache, "false");
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.SetProperty(Environment.MaxFetchDepth, "2");
+			configuration.SetProperty(Environment.UseSecondLevelCache, "false");
 		}
 
 		protected override string CacheConcurrencyStrategy

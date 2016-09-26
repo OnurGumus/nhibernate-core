@@ -12,6 +12,7 @@ using NHibernate.Mapping;
 using NUnit.Framework;
 using Single = NHibernate.DomainModel.Single;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Legacy
 {
@@ -68,16 +69,6 @@ namespace NHibernate.Test.Legacy
 			await (s.DeleteAsync(jay.Eye));
 			await (s.FlushAsync());
 			s.Close();
-		}
-
-		[Test]
-		public void Meta()
-		{
-			PersistentClass clazz = cfg.GetClassMapping(typeof (Master));
-			MetaAttribute meta = clazz.GetMetaAttribute("foo");
-			Assert.AreEqual("foo", meta.Value);
-			meta = clazz.GetProperty("Name").GetMetaAttribute("bar");
-			Assert.IsTrue(meta.IsMultiValued);
 		}
 
 		[Test]

@@ -10,9 +10,9 @@ namespace NHibernate.Test.Hql.Ast
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class QuerySubstitutionTestAsync : BaseFixtureAsync
 	{
-		protected override async Task ConfigureAsync(NHibernate.Cfg.Configuration configuration)
+		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
-			await (base.ConfigureAsync(configuration));
+			base.Configure(configuration);
 			configuration.SessionFactory().Integrate.CreateCommands.WithHqlToSqlSubstitutions("pizza 1, calda 'bobrock'");
 		}
 

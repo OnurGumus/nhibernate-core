@@ -4,8 +4,6 @@ using NUnit.Framework;
 using NHibernate.Event;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2322
 {
@@ -13,18 +11,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2322
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class FixtureAsync : BugTestCaseAsync
 	{
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
-			{
-				configuration.SetProperty(Environment.FormatSql, "false");
-				configuration.SetListener(ListenerType.PostUpdate, new PostUpdateEventListener());
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.SetProperty(Environment.FormatSql, "false");
+			configuration.SetListener(ListenerType.PostUpdate, new PostUpdateEventListener());
 		}
 
 		protected override async Task OnTearDownAsync()

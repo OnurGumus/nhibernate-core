@@ -434,6 +434,17 @@ namespace NHibernate.AsyncGenerator.Extensions
 			return bases;
 		}
 
+		public static IEnumerable<INamedTypeSymbol> EnumerateBaseTypesAndSelf(this INamedTypeSymbol type)
+		{
+			yield return type;
+			var currType = type.BaseType;
+			while (currType != null)
+			{
+				yield return currType;
+				currType = currType.BaseType;
+			}
+		}
+
 
 		public static async Task<ISymbol> FindApplicableAlias(this ITypeSymbol type, int position, SemanticModel semanticModel, CancellationToken cancellationToken)
 		{

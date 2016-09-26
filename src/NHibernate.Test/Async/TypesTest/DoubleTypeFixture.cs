@@ -4,6 +4,7 @@ using NHibernate.Dialect;
 using NHibernate.Type;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -33,18 +34,6 @@ namespace NHibernate.Test.TypesTest
 				_values[0] = 1.5e35;
 				_values[1] = 1.2e-35;
 			}
-		}
-
-		/// <summary>
-		/// Verify Equals will correctly determine when the property
-		/// is dirty.
-		/// </summary>
-		[Test]
-		public void Equals()
-		{
-			DoubleType type = (DoubleType)NHibernateUtil.Double;
-			Assert.IsTrue(type.IsEqual(1.5e20, 1.5e20));
-			Assert.IsFalse(type.IsEqual(1.5e20, 1.4e20));
 		}
 
 		[Test]

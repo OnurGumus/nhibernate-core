@@ -7,7 +7,6 @@ using NHibernate.Criterion;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.Naturalid.Mutable
 {
@@ -31,19 +30,11 @@ namespace NHibernate.Test.Naturalid.Mutable
 			}
 		}
 
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
-			{
-				cfg.SetProperty(Environment.UseSecondLevelCache, "true");
-				cfg.SetProperty(Environment.UseQueryCache, "true");
-				cfg.SetProperty(Environment.GenerateStatistics, "true");
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			cfg.SetProperty(Environment.UseSecondLevelCache, "true");
+			cfg.SetProperty(Environment.UseQueryCache, "true");
+			cfg.SetProperty(Environment.GenerateStatistics, "true");
 		}
 
 		[Test]

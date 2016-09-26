@@ -4,8 +4,6 @@ using NHibernate.Cfg;
 using NHibernate.Criterion;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.Naturalid.Immutable
 {
@@ -29,19 +27,11 @@ namespace NHibernate.Test.Naturalid.Immutable
 			}
 		}
 
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
-			{
-				cfg.SetProperty(Environment.UseSecondLevelCache, "true");
-				cfg.SetProperty(Environment.UseQueryCache, "true");
-				cfg.SetProperty(Environment.GenerateStatistics, "true");
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			cfg.SetProperty(Environment.UseSecondLevelCache, "true");
+			cfg.SetProperty(Environment.UseQueryCache, "true");
+			cfg.SetProperty(Environment.GenerateStatistics, "true");
 		}
 
 		[Test]

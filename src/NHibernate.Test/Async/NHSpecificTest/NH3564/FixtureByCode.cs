@@ -37,18 +37,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3564
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
-			{
-				configuration.SetProperty(Environment.CacheProvider, typeof (MyDummyCacheProvider).AssemblyQualifiedName);
-				configuration.SetProperty(Environment.UseQueryCache, "true");
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.SetProperty(Environment.CacheProvider, typeof (MyDummyCacheProvider).AssemblyQualifiedName);
+			configuration.SetProperty(Environment.UseQueryCache, "true");
 		}
 
 		protected override async Task OnSetUpAsync()
@@ -70,21 +62,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3564
 					await (session.DeleteAsync("from System.Object"));
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
-				}
-		}
-
-		[Test]
-		public void ShouldUseDifferentCache()
-		{
-			using (var session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var bob = session.Query<Person>().Cacheable().Where(e => e.DateOfBirth == new DateTime(2015, 4, 22)).ToList();
-					var sally = session.Query<Person>().Cacheable().Where(e => e.DateOfBirth == new DateTime(2014, 4, 22)).ToList();
-					Assert.That(bob, Has.Count.EqualTo(1));
-					Assert.That(bob[0].Name, Is.EqualTo("Bob"));
-					Assert.That(sally, Has.Count.EqualTo(1));
-					Assert.That(sally[0].Name, Is.EqualTo("Sally"));
 				}
 		}
 	}

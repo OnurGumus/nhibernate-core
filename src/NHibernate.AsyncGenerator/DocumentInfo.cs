@@ -109,9 +109,9 @@ namespace NHibernate.AsyncGenerator
 			return GetNamespaceInfo(symbol, true).GetTypeInfo(symbol, true).GetMethodInfo(symbol, true);
 		}
 
-		public MethodInfo GetOrCreateMethodInfo(MethodDeclarationSyntax node)
+		public MethodInfo GetOrCreateMethodInfo(MethodDeclarationSyntax node, bool lazyCreate)
 		{
-			return GetNamespaceInfo(node, true).GetTypeInfo(node, true).GetMethodInfo(node, true);
+			return GetNamespaceInfo(node, true).GetTypeInfo(node, true).GetMethodInfo(node, true, lazyCreate);
 		}
 
 		public MethodInfo GetMethodInfo(IMethodSymbol symbol)

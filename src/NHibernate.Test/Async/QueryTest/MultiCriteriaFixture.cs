@@ -8,6 +8,7 @@ using NHibernate.Test.SecondLevelCacheTests;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.QueryTest
 {
@@ -36,9 +37,9 @@ namespace NHibernate.Test.QueryTest
 			return factory.ConnectionProvider.Driver.SupportsMultipleQueries;
 		}
 
-		protected override async Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			await (base.ConfigureAsync(configuration));
+			base.Configure(configuration);
 			configuration.SetProperty(Environment.GenerateStatistics, "true");
 		}
 
@@ -265,54 +266,6 @@ namespace NHibernate.Test.QueryTest
 				var secondResult = (IList)await (multiCriteria.GetResultAsync("secondCriteria"));
 				var firstResult = (IList)await (multiCriteria.GetResultAsync("firstCriteria"));
 				Assert.Greater(secondResult.Count, firstResult.Count);
-			}
-		}
-
-		[Test]
-		public void CanNotAddCriteriaWithKeyThatAlreadyExists()
-		{
-			using (var session = OpenSession())
-			{
-				var multiCriteria = session.CreateMultiCriteria();
-				var firstCriteria = session.CreateCriteria(typeof (Item)).Add(Restrictions.Lt("id", 50));
-				var secondCriteria = session.CreateCriteria(typeof (Item));
-				multiCriteria.Add("firstCriteria", firstCriteria);
-				try
-				{
-					multiCriteria.Add("firstCriteria", secondCriteria);
-					Assert.Fail("This should've thrown an InvalidOperationException");
-				}
-				catch (InvalidOperationException)
-				{
-				}
-				catch (Exception)
-				{
-					Assert.Fail("This should've thrown an InvalidOperationException");
-				}
-			}
-		}
-
-		[Test]
-		public void CanNotAddDetachedCriteriaWithKeyThatAlreadyExists()
-		{
-			using (var session = OpenSession())
-			{
-				var multiCriteria = session.CreateMultiCriteria();
-				var firstCriteria = DetachedCriteria.For(typeof (Item)).Add(Restrictions.Lt("id", 50));
-				var secondCriteria = DetachedCriteria.For(typeof (Item));
-				multiCriteria.Add("firstCriteria", firstCriteria);
-				try
-				{
-					multiCriteria.Add("firstCriteria", secondCriteria);
-					Assert.Fail("This should've thrown an InvalidOperationException");
-				}
-				catch (InvalidOperationException)
-				{
-				}
-				catch (Exception)
-				{
-					Assert.Fail("This should've thrown an InvalidOperationException");
-				}
 			}
 		}
 

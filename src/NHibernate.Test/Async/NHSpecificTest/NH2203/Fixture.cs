@@ -4,6 +4,8 @@ using NHibernate.DomainModel;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2203
 {
@@ -23,18 +25,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2203
 					}
 
 					await (tx.CommitAsync());
-				}
-		}
-
-		[Test]
-		public void QueryShouldWork()
-		{
-			using (var session = sessions.OpenSession())
-				using (session.BeginTransaction())
-				{
-					var actual = session.Query<Artist>().OrderBy(a => a.Name).Where(a => a.Name.StartsWith("F")).ToArray();
-					var expected = new[]{"Fez", "Foo"};
-					Assert.That(actual.Select(a => a.Name), Is.EquivalentTo(expected));
 				}
 		}
 

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test
 {
@@ -72,18 +73,6 @@ namespace NHibernate.Test
 				if (compareValues)
 					Assert.AreEqual(expected[de.Key], actual[de.Key], "The item identified by the key " + de.Key.ToString());
 			}
-		}
-
-		[Test]
-		public void TestIDictionaryEqual()
-		{
-			IDictionary<string, string> expected = new Dictionary<string, string>();
-			IDictionary<string, string> actualWithEqualValues = new Dictionary<string, string>();
-			expected["ZERO"] = "zero";
-			expected["ONE"] = "one";
-			actualWithEqualValues["ZERO"] = "zero";
-			actualWithEqualValues["ONE"] = "one";
-			AreEqual(expected, actualWithEqualValues, true);
 		}
 
 		public static void AreEqual(DateTime expected, DateTime actual, bool useMilliseconds)

@@ -6,6 +6,7 @@ using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Legacy
 {
@@ -136,21 +137,6 @@ namespace NHibernate.Test.Legacy
 				await (s.DeleteAsync("from Master"));
 				await (s.FlushAsync());
 			}
-		}
-
-		[Test]
-		public void Criteria_can_get_query_entity_type()
-		{
-			using (ISession s = OpenSession())
-			{
-				Assert.AreEqual(typeof (Master), s.CreateCriteria(typeof (Master)).GetRootEntityTypeIfAvailable());
-			}
-		}
-
-		[Test]
-		public void DetachedCriteria_can_get_query_entity_type()
-		{
-			Assert.AreEqual(typeof (Master), DetachedCriteria.For<Master>().GetRootEntityTypeIfAvailable());
 		}
 	}
 }

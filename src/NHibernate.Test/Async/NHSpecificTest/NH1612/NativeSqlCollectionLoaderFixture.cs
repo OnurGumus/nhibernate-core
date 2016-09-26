@@ -11,7 +11,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class NativeSqlCollectionLoaderFixtureAsync : BugTestCaseAsync
 	{
-#region Tests - <return-join>
 		[Test]
 		public async Task LoadElementsWithWithSimpleHbmAliasInjectionAsync()
 		{
@@ -151,8 +150,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			}
 		}
 
-#endregion
-#region Tests - <load-collection>
 		[Test]
 		public async Task LoadElementCollectionWithCustomLoaderAsync()
 		{
@@ -214,8 +211,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			}
 		}
 
-#endregion
-#region Tests - corner cases to verify backwards compatibility of NH-1612 patch
 		[Test]
 		public async Task NativeUpdateQueryWithoutResultsAsync()
 		{
@@ -294,8 +289,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			}
 		}
 
-#endregion
-#region cleanup
 		private async Task CleanupAsync()
 		{
 			using (ISession session = OpenSession())
@@ -334,8 +327,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			}
 		}
 
-#endregion
-#region Factory methods
 		private static Country CreateCountry()
 		{
 			const string COUNTRY_CODE = "WL";
@@ -393,7 +384,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			var amy = new Person("Amy");
 			return new Dictionary<int, AreaStatistics>{{1850, new AreaStatistics{CitizenCount = 10000, GDP = new MonetaryValue("USD", 20000), Reporter = archimedes}}, {1900, new AreaStatistics{CitizenCount = 20000, GDP = new MonetaryValue("USD", 50000), Reporter = archibald}}, {1950, new AreaStatistics{CitizenCount = 40000, GDP = new MonetaryValue("USD", 125000)}}, {2000, new AreaStatistics{CitizenCount = 80000, GDP = new MonetaryValue("USD", 500000), Reporter = amy}}, };
 		}
-#endregion
 	}
 }
 #endif

@@ -6,7 +6,6 @@ using NHibernate.Stat;
 using NUnit.Framework;
 using NHibernate.Transform;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.SecondLevelCacheTests
 {
@@ -30,17 +29,9 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			}
 		}
 
-		protected override Task ConfigureAsync(Cfg.Configuration configuration)
+		protected override void Configure(Cfg.Configuration configuration)
 		{
-			try
-			{
-				configuration.SetProperty(Cfg.Environment.GenerateStatistics, "true");
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.SetProperty(Cfg.Environment.GenerateStatistics, "true");
 		}
 
 		public async Task FillDbAsync(int startId)

@@ -11,11 +11,15 @@ namespace NHibernate.AsyncGenerator
 {
 	public class MethodReferenceResult
 	{
-		public MethodReferenceResult(ReferenceLocation reference, SimpleNameSyntax referenceNode, IMethodSymbol symbol)
+		private bool _ignoreCalculated;
+		private bool _ignoreCalculating;
+
+		public MethodReferenceResult(ReferenceLocation reference, SimpleNameSyntax referenceNode, IMethodSymbol symbol, MethodInfo methodInfo)
 		{
 			ReferenceLocation = reference;
 			ReferenceNode = referenceNode;
 			Symbol = symbol;
+			MethodInfo = methodInfo;
 		}
 
 		public SimpleNameSyntax ReferenceNode { get; }
@@ -24,9 +28,66 @@ namespace NHibernate.AsyncGenerator
 
 		public IMethodSymbol Symbol { get; }
 
-		public bool Ignore { get; set; }
+		public MethodInfo MethodInfo { get; }
 
-		public bool CanBeAsync { get; internal set; }
+		public bool UserIgnore { get; set; }
+
+		public bool CanBeAsync { get; set; }
+
+		public bool Ignore { get; internal set; }
+
+		public void CalculateIgnore(int deep = 0, HashSet<MethodInfo> processedMethodInfos = null)
+		{
+			if (_ignoreCalculated)
+			{
+				return;
+			}
+			if (_ignoreCalculating)
+			{
+				throw new Exception("_ignoreCalculating");
+			}
+			_ignoreCalculating = true;
+
+			if (processedMethodInfos == null)
+			{
+				processedMethodInfos = new HashSet<MethodInfo>();
+			}
+
+			if (!CanBeAsync)
+			{
+				Ignore = true;
+				_ignoreCalculating = false;
+				_ignoreCalculated = true;
+				return;
+			}
+
+			var ignore = false;
+			if (MethodInfo != null)
+			{
+				if (processedMethodInfos.Contains(MethodInfo))
+				{
+					ignore |= MethodInfo.Ignore;
+				}
+				else
+				{
+					processedMethodInfos.Add(MethodInfo);
+					MethodInfo.CalculateIgnore(deep, processedMethodInfos);
+					ignore |= MethodInfo.Ignore;
+				}
+				
+			}
+			ignore |= UserIgnore;
+			if (!ignore)
+			{
+				Ignore = false;
+				_ignoreCalculating = false;
+				_ignoreCalculated = true;
+				return;
+			}
+			Ignore = true;
+			_ignoreCalculating = false;
+			_ignoreCalculated = true;
+		}
 
 		public bool DeclaredWithinSameType { get; internal set; }
 

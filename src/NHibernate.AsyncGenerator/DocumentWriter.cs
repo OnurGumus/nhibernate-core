@@ -100,10 +100,20 @@ namespace NHibernate.AsyncGenerator
 			);
 		}
 
-		private MethodDeclarationSyntax RewiteMethod(MethodInfo methodInfo, MethodAnalyzeResult analyzeResult)
+		private MethodDeclarationSyntax RewiteMethod(MethodInfo methodInfo)
 		{
+			// TODO: if a method cannot be converted to async we should not convert dependencies too
+			if (!methodInfo.CanBeAsnyc && !methodInfo.Dependencies.Any() && !methodInfo.Missing)
+			{
+				if (methodInfo.TypeInfo.TypeTransformation == TypeTransformation.Partial)
+				{
+					return null;
+				}
+				return methodInfo.Node;
+			}
+
 			var taskConflict = !DocumentInfo.ProjectInfo.IsNameUniqueInsideNamespace(methodInfo.TypeInfo.NamespaceInfo.Symbol, "Task");
-			if (!analyzeResult.HasBody)
+			if (!methodInfo.HasBody)
 			{
 				return methodInfo.Node
 								 .WithoutAttribute("Async")
@@ -136,8 +146,8 @@ namespace NHibernate.AsyncGenerator
 			}
 
 			var referenceAnnotations = new Dictionary<string, MethodReferenceResult>();
-			foreach (var referenceResult in analyzeResult.ReferenceResults
-														.Where(o => o.CanBeAsync))
+			foreach (var referenceResult in methodInfo.ReferenceResults
+														.Where(o => !o.Ignore))
 			{
 				var reference = referenceResult.ReferenceLocation;
 				var startSpan = reference.Location.SourceSpan.Start - methodInfo.Node.Span.Start;
@@ -180,7 +190,7 @@ namespace NHibernate.AsyncGenerator
 					continue;
 				}
 
-				if (analyzeResult.CanSkipAsync)
+				if (methodInfo.CanSkipAsync)
 				{
 					// return task instead of awaiting
 					if (referenceResult.UsedAsReturnValue)
@@ -254,8 +264,8 @@ namespace NHibernate.AsyncGenerator
 			}
 
 			if (methodInfo.TypeInfo.ParentTypeInfo?.TypeTransformation != TypeTransformation.NewType && 
-				methodInfo.TypeInfo.TypeTransformation != TypeTransformation.NewType && 
-				!analyzeResult.CanBeAsnyc && !analyzeResult.IsEmpty) // forward call
+				methodInfo.TypeInfo.TypeTransformation != TypeTransformation.NewType &&
+				!methodInfo.CanBeAsnyc && !methodInfo.IsEmpty) // forward call
 			{
 				var name = methodInfo.Node.TypeParameterList != null
 					? GenericName(methodInfo.Node.Identifier.ValueText)
@@ -282,20 +292,20 @@ namespace NHibernate.AsyncGenerator
 					methodNode = methodNode.WithBody(Block(ReturnStatement(invocation)));
 				}
 			}
-			else if (analyzeResult.Yields)
+			else if (methodInfo.HasYields)
 			{
 				var yieldRewriter = new YieldToAsyncMethodRewriter();
 				methodNode = (MethodDeclarationSyntax)yieldRewriter.VisitMethodDeclaration(methodNode);
 			}
 
-			if (!analyzeResult.CanBeAsnyc || analyzeResult.CanSkipAsync || analyzeResult.Yields)
+			if (!methodInfo.CanBeAsnyc || methodInfo.CanSkipAsync || methodInfo.HasYields)
 			{
 				var taskRewriter = new ReturnTaskMethodRewriter(Configuration.Async.CustomTaskType);
 				methodNode = (MethodDeclarationSyntax)taskRewriter.VisitMethodDeclaration(methodNode);
 			}
 
 			// check if method must run synhronized
-			if (analyzeResult.MustRunSynchronized)
+			if (methodInfo.MustRunSynchronized)
 			{
 				methodNode = methodNode
 					.WithBody(AsyncLockBlock(methodNode.Body))
@@ -306,13 +316,50 @@ namespace NHibernate.AsyncGenerator
 				.ReturnAsTask(methodInfo.Symbol, taskConflict)
 				.WithIdentifier(Identifier(methodNode.Identifier.Value + "Async"));
 
-			if (analyzeResult.MustRunSynchronized || (!analyzeResult.CanSkipAsync && !analyzeResult.Yields && analyzeResult.CanBeAsnyc))
+			if (methodInfo.MustRunSynchronized || (!methodInfo.CanSkipAsync && !methodInfo.HasYields && methodInfo.CanBeAsnyc))
 			{
 				methodNode = methodNode.AddAsync(methodNode);
 			}
-			return methodNode
-				.WithLeadingTrivia(methodInfo.Node.GetLeadingTrivia())
+
+			return RemoveLeadingRegions(methodNode.WithLeadingTrivia(methodInfo.Node.GetLeadingTrivia()))
 				.WithTrailingTrivia(methodInfo.Node.GetTrailingTrivia());
+		}
+
+		private SyntaxTriviaList RemoveRegions(SyntaxTriviaList list) 
+		{
+			var toRemove = new List<int>();
+			for (var i = list.Count - 1; i >= 0; i--)
+			{
+				var trivia = list[i];
+				if (trivia.IsKind(SyntaxKind.RegionDirectiveTrivia) || trivia.IsKind(SyntaxKind.EndRegionDirectiveTrivia))
+				{
+					toRemove.Add(i);
+				}
+			}
+			while (toRemove.Count > 0)
+			{
+				list = list.RemoveAt(toRemove[0]);
+				toRemove.RemoveAt(0);
+			}
+			return list;
+		}
+
+		private T RemoveLeadingRegions<T>(T memberNode) where T : MemberDeclarationSyntax
+		{
+			// remove all regions as not all methods will be written in the type
+			var leadingTrivia = memberNode.GetLeadingTrivia();
+			memberNode = memberNode.WithLeadingTrivia(RemoveRegions(leadingTrivia));
+
+			var baseTypeNode = memberNode as BaseTypeDeclarationSyntax;
+			if (baseTypeNode == null)
+			{
+				return memberNode;
+			}
+			return memberNode
+				.ReplaceToken(
+					baseTypeNode.CloseBraceToken,
+					baseTypeNode.CloseBraceToken
+								.WithLeadingTrivia(RemoveRegions(baseTypeNode.CloseBraceToken.LeadingTrivia)));
 		}
 
 		private class RewrittenNode
@@ -353,7 +400,6 @@ namespace NHibernate.AsyncGenerator
 			var startRootTypeSpan = rootTypeInfo.Node.SpanStart;
 
 			rootTypeNode = rootTypeNode.WithoutTrivia(); // references have spans without trivia
-			var leadingTrivia = rootTypeInfo.Node.GetLeadingTrivia();
 
 			// we first need to annotate nodes that will be modified in order to find them later on. We cannot rely on spans after the first modification as they will change
 			var typeInfoMetadatas = new Dictionary<TypeInfo, TypeInfoMetadata>();
@@ -415,7 +461,7 @@ namespace NHibernate.AsyncGenerator
 				
 
 				// process methods
-				foreach (var methodInfo in typeInfo.MethodInfos.Values.Where(o => !o.Ignore))
+				foreach (var methodInfo in typeInfo.MethodInfos.Values)
 				{
 					var methodSpanStart = methodInfo.Node.SpanStart - startRootTypeSpan;
 					var methodSpanLength = methodInfo.Node.Span.Length;
@@ -425,27 +471,25 @@ namespace NHibernate.AsyncGenerator
 					annotation = Guid.NewGuid().ToString();
 					rootTypeNode = rootTypeNode.ReplaceNode(methodNode, methodNode.WithAdditionalAnnotations(new SyntaxAnnotation(annotation)));
 
-					var methodAnalyzeResult = methodInfo.PostAnalyzeResult;
-					if (!methodAnalyzeResult.IsValid)
-					{
-						continue;
-					}
-					var removeNode = false;
+					var removeNode = methodInfo.Ignore;
+
+					//TODO: REMOVE THIS
+					/*
 					if (typeInfo.TypeTransformation == TypeTransformation.NewType &&
-						methodAnalyzeResult.ReferenceResults.Any(o => !o.CanBeAsync && o.DeclaredWithinSameType))
+						methodInfo.ReferenceResults.Any(o => !o.CanBeAsync && o.DeclaredWithinSameType))
 					{
 						//TODO: handle dependencies and methods from other types
 						removeNode = true;
-					}
+					}*/
 
-					metadata.TaskUsed |= methodAnalyzeResult.CanSkipAsync || methodAnalyzeResult.IsEmpty || methodAnalyzeResult.Yields || !methodAnalyzeResult.CanBeAsnyc;
+					metadata.TaskUsed |= methodInfo.CanSkipAsync || methodInfo.IsEmpty || methodInfo.HasYields || !methodInfo.CanBeAsnyc;
 					result.TaskUsed |= metadata.TaskUsed;
-					metadata.AsyncLockUsed |= methodAnalyzeResult.MustRunSynchronized;
+					metadata.AsyncLockUsed |= methodInfo.MustRunSynchronized;
 					result.AsyncLockUsed |= metadata.AsyncLockUsed;
 					metadata.RewrittenNodes.Add(new RewrittenNode
 					{
 						Original = methodNode,
-						Rewritten = removeNode ? null : RewiteMethod(methodInfo, methodAnalyzeResult),
+						Rewritten = removeNode ? null : RewiteMethod(methodInfo),
 						MethodInfo = methodInfo,
 						Annotation = annotation
 					});
@@ -473,7 +517,7 @@ namespace NHibernate.AsyncGenerator
 				{
 					// replace all rewritten nodes
 					foreach (var rewNode in metadata.RewrittenNodes
-						.Where(o => o.MethodInfo == null || (!o.MethodInfo.Missing && !o.MethodInfo.IsRequired))
+						.Where(o => o.MethodInfo == null || (!o.MethodInfo.Missing /*&& !o.MethodInfo.HasRequiredExternalMethods()*/))
 						.OrderByDescending(o => o.Original.SpanStart))
 					{
 						var node = rootTypeNode.GetAnnotatedNodes(rewNode.Annotation).First();
@@ -488,9 +532,11 @@ namespace NHibernate.AsyncGenerator
 					}
 					// add missing members
 					var typeNode = rootTypeNode.GetAnnotatedNodes(metadata.NodeAnnotation).OfType<TypeDeclarationSyntax>().First();
+
 					rootTypeNode = rootTypeNode.ReplaceNode(typeNode, typeNode.WithMembers(
-						typeNode.Members.AddRange(
-							metadata.RewrittenNodes
+							typeNode.Members.Select(RemoveLeadingRegions).ToSyntaxList()
+							.AddRange(
+								metadata.RewrittenNodes
 									.OrderBy(o => o.Original.SpanStart)
 									.Where(o => o.MethodInfo != null && o.MethodInfo.Missing)
 									.Select(o => o.Rewritten)
@@ -509,7 +555,7 @@ namespace NHibernate.AsyncGenerator
 					// rename all constructors
 					if (typeInfo.TypeTransformation == TypeTransformation.NewType)
 					{
-						while(true)
+						while (true)
 						{
 							var ctorNode = rootTypeNode.DescendantNodes()
 											   .OfType<ConstructorDeclarationSyntax>()
@@ -527,11 +573,13 @@ namespace NHibernate.AsyncGenerator
 					var typeNode = rootTypeNode.GetAnnotatedNodes(metadata.NodeAnnotation).OfType<TypeDeclarationSyntax>().First();
 					var newNodes = (onlyMissingMembers
 						? metadata.RewrittenNodes
+							.Where(o => o.Rewritten != null)
 							.Where(o => o.MethodInfo != null && o.MethodInfo.Missing)
 							.OrderBy(o => o.Original.SpanStart)
 							.Select(o => o.Rewritten)
 						: metadata.RewrittenNodes
-							.Where(o => o.MethodInfo == null || (o.MethodInfo != null && (!o.MethodInfo.IsRequired || o.MethodInfo.Missing))) // for partials we wont have onlyMissingMembers = true 
+							.Where(o => o.Rewritten != null)
+							.Where(o => o.MethodInfo == null || (o.MethodInfo != null && (!o.MethodInfo.HasRequiredExternalMethods() || o.MethodInfo.Missing))) // for partials we wont have onlyMissingMembers = true 
 							.OrderBy(o => o.Original.SpanStart)
 							.Select(o => o.Rewritten))
 						.Union(typeNode.DescendantNodes().OfType<TypeDeclarationSyntax>())
@@ -552,11 +600,12 @@ namespace NHibernate.AsyncGenerator
 										   .Any(n => n.AttributeLists.Any(o => o.Attributes.Any(a => a.Name.ToString().EndsWith("GeneratedCode"))))
 							? newTypeNode.WithoutAttributes()
 							: newTypeNode.AddGeneratedCodeAttribute(false);
+						/*
 						newTypeNode = newTypeNode.RemoveNodes(
 								newTypeNode.DescendantNodes(descendIntoTrivia: true).OfType<DirectiveTriviaSyntax>(), SyntaxRemoveOptions.KeepNoTrivia); // remove invalid #endregion
-
+						*/
 						rootTypeNode = rootTypeNode
-							.ReplaceNode(typeNode, newTypeNode);
+							.ReplaceNode(typeNode, RemoveLeadingRegions(newTypeNode));
 					}
 				}
 
@@ -569,7 +618,8 @@ namespace NHibernate.AsyncGenerator
 				}
 			}
 
-			result.Node = rootTypeNode
+			// remove all regions as not all methods will be written in the type
+			result.Node = RemoveLeadingRegions(rootTypeNode);
 				/*.WithTriviaFrom(rootTypeInfo.Node)*/;
 			return result;
 		}
@@ -592,6 +642,11 @@ namespace NHibernate.AsyncGenerator
 				var typeNodes = new List<MemberDeclarationSyntax>();
 				foreach (var typeInfo in namespaceInfo.Values.Where(o => o.TypeTransformation != TypeTransformation.None).OrderBy(o => o.Node.SpanStart))
 				{
+					if (typeInfo.CanIgnore())
+					{
+						continue;
+					}
+
 					var rewriteResult = RewriteType(typeInfo);
 					if (rewriteResult.Node == null)
 					{

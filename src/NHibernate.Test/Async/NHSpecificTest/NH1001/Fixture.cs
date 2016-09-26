@@ -3,8 +3,6 @@ using NHibernate.Cfg;
 using NUnit.Framework;
 using NHibernate.Stat;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1001
 {
@@ -20,17 +18,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 			}
 		}
 
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
-			{
-				cfg.SetProperty(Environment.GenerateStatistics, "true");
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			cfg.SetProperty(Environment.GenerateStatistics, "true");
 		}
 
 		[Test]

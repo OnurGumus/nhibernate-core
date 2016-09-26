@@ -3,6 +3,8 @@ using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3332
 {
@@ -39,28 +41,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3332
 					await (session.DeleteAsync("from Culture"));
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
-				}
-		}
-
-		[Test]
-		public void TestJoins()
-		{
-			using (var session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					// this query should return one row
-					var query =
-						from me in session.Query<MasterEntity>()from dtd in me.DataType.DataTypeDescriptions
-						from std in me.State.StateDescriptions
-						where dtd.Culture.CountryCode == "CA" && dtd.Culture.LanguageCode == "en" && std.Culture.CountryCode == "CA" && std.Culture.LanguageCode == "en"
-						select new
-						{
-						me.Id, me.Name, DataTypeName = me.DataType.Name, StateName = me.State.Name
-						}
-
-					;
-					var list = query.ToList();
-					Assert.That(list, Has.Count.EqualTo(1));
 				}
 		}
 

@@ -5,6 +5,8 @@ using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -76,14 +78,6 @@ namespace NHibernate.Test.TypesTest
 				await (s.DeleteAsync(docEntity));
 				await (s.FlushAsync());
 			}
-		}
-
-		[Test]
-		public void AutoDiscoverFromNetType()
-		{
-			// integration test to be 100% sure
-			var propertyType = sessions.GetEntityPersister(typeof (XmlDocClass).FullName).GetPropertyType("AutoDocument");
-			Assert.That(propertyType, Is.InstanceOf<XmlDocType>());
 		}
 	}
 }

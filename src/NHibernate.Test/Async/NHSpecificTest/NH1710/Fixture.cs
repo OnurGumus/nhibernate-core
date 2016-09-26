@@ -20,45 +20,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1710
 			await (new SchemaExport(cfg).DropAsync(false, true));
 		}
 	}
-
-	[TestFixture]
-	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class FixtureWithExplicitDefinedTypeAsync : BaseFixture
-	{
-		protected override string GetResourceName()
-		{
-			return "Heuristic.hbm.xml";
-		}
-	}
-
-	[TestFixture]
-	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class FixtureWithHeuristicDefinedTypeAsync : BaseFixture
-	{
-		protected override string GetResourceName()
-		{
-			return "Defined.hbm.xml";
-		}
-	}
-
-	[TestFixture]
-	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class FixtureWithInLineDefinedTypeAsync : BaseFixture
-	{
-		protected override string GetResourceName()
-		{
-			return "InLine.hbm.xml";
-		}
-	}
-
-	[TestFixture]
-	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class FixtureWithColumnNodeAsync : BaseFixture
-	{
-		protected override string GetResourceName()
-		{
-			return "WithColumnNode.hbm.xml";
-		}
-	}
 }
 #endif

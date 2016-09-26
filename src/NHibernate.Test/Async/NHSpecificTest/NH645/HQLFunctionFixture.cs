@@ -8,21 +8,9 @@ using NHibernate.Hql.Ast.ANTLR;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH645
 {
-	[TestFixture]
-	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class HqlFunctionWithAstHqlParserAsync : HQLFunctionFixtureBaseAsync
-	{
-		protected override async Task ConfigureAsync(Configuration configuration)
-		{
-			await (base.ConfigureAsync(configuration));
-			configuration.SetProperty(Environment.QueryTranslator, typeof (ASTQueryTranslatorFactory).AssemblyQualifiedName);
-		}
-	}
-
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class HQLFunctionFixtureBaseAsync : TestCaseAsync
 	{
@@ -48,20 +36,12 @@ namespace NHibernate.Test.NHSpecificTest.NH645
 			return appliesToThisDialect;
 		}
 
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
-			{
-				if (Dialect is MsSql2005Dialect)
-					configuration.SetProperty(Environment.Dialect, typeof (CustomDialect).AssemblyQualifiedName);
-				else
-					appliesToThisDialect = false;
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			if (Dialect is MsSql2005Dialect)
+				configuration.SetProperty(Environment.Dialect, typeof (CustomDialect).AssemblyQualifiedName);
+			else
+				appliesToThisDialect = false;
 		}
 
 		public async Task RunAsync(string hql)

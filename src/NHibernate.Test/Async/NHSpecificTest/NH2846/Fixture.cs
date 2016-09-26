@@ -4,6 +4,8 @@ using NHibernate.Driver;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2846
 {
@@ -53,16 +55,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2846
 					await (session.DeleteAsync("from Category"));
 					await (tran.CommitAsync());
 				}
-			}
-		}
-
-		[Test]
-		public void FetchOnCountWorks()
-		{
-			using (var session = OpenSession())
-			{
-				var count = session.Query<Post>().Fetch(p => p.Category).FetchMany(p => p.Comments).Count();
-				Assert.AreEqual(1, count);
 			}
 		}
 	}

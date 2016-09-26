@@ -27,18 +27,10 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			}
 		}
 
-		protected override Task ConfigureAsync(NHibernate.Cfg.Configuration configuration)
+		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
-			try
-			{
-				configuration.SetProperty(NHibernate.Cfg.Environment.GenerateStatistics, "true");
-				configuration.SetProperty(NHibernate.Cfg.Environment.BatchSize, "0");
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.SetProperty(NHibernate.Cfg.Environment.GenerateStatistics, "true");
+			configuration.SetProperty(NHibernate.Cfg.Environment.BatchSize, "0");
 		}
 
 		protected virtual bool CheckUpdateCountsAfterAddingExistingElement()

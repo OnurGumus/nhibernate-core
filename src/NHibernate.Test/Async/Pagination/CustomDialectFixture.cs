@@ -6,8 +6,6 @@ using NHibernate.Criterion;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.Pagination
 {
@@ -31,20 +29,12 @@ namespace NHibernate.Test.Pagination
 			}
 		}
 
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
-			{
-				if (!(Dialect is Dialect.MsSql2005Dialect))
-					Assert.Ignore("Test is for SQL dialect only");
-				cfg.SetProperty(Environment.Dialect, typeof (CustomMsSqlDialect).AssemblyQualifiedName);
-				cfg.SetProperty(Environment.ConnectionDriver, typeof (CustomMsSqlDriver).AssemblyQualifiedName);
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			if (!(Dialect is Dialect.MsSql2005Dialect))
+				Assert.Ignore("Test is for SQL dialect only");
+			cfg.SetProperty(Environment.Dialect, typeof (CustomMsSqlDialect).AssemblyQualifiedName);
+			cfg.SetProperty(Environment.ConnectionDriver, typeof (CustomMsSqlDriver).AssemblyQualifiedName);
 		}
 
 		private CustomMsSqlDialect CustomDialect

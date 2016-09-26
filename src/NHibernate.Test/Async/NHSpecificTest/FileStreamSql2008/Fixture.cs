@@ -5,7 +5,6 @@ using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.FileStreamSql2008
 {
@@ -34,11 +33,10 @@ namespace NHibernate.Test.NHSpecificTest.FileStreamSql2008
 			return dialect is MsSql2008Dialect;
 		}
 
-		protected override Task ConfigureAsync(Configuration cfg)
+		protected override void Configure(Configuration cfg)
 		{
 			//Points to the database created with FileStream Filegroup.
 			cfg.Properties["connection.connection_string"] = @"Data Source=localhost\SQLEXPRESS;Initial Catalog=FileStreamDB;Integrated Security=True;Pooling=False";
-			return TaskHelper.CompletedTask;
 #region CREATE DATABASE example
 		/*
 			CREATE DATABASE FileStreamDB ON PRIMARY

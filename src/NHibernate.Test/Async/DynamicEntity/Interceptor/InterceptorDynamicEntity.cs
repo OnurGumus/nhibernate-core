@@ -3,8 +3,6 @@ using System.Collections;
 using NHibernate.Cfg;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.DynamicEntity.Interceptor
 {
@@ -28,17 +26,9 @@ namespace NHibernate.Test.DynamicEntity.Interceptor
 			}
 		}
 
-		protected override Task ConfigureAsync(Configuration configuration)
+		protected override void Configure(Configuration configuration)
 		{
-			try
-			{
-				configuration.SetInterceptor(new ProxyInterceptor());
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.SetInterceptor(new ProxyInterceptor());
 		}
 
 		[Test]

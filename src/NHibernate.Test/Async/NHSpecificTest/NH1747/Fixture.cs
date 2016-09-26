@@ -1,6 +1,8 @@
 #if NET_4_5
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1747
 {
@@ -8,20 +10,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1747
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class JoinTraversalTestAsync : BugTestCaseAsync
 	{
-		[Test]
-		public void PaymentTableNotContainsFk()
-		{
-			var cm = cfg.GetClassMapping(typeof (Payment));
-			bool containsFK = false;
-			foreach (var column in cm.Table.ColumnIterator)
-			{
-				if (column.Name.Equals("PaymentBatchFK_ID"))
-					containsFK = true;
-			}
-
-			Assert.That(containsFK, Is.False);
-		}
-
 		protected override async Task OnSetUpAsync()
 		{
 			await (base.OnSetUpAsync());

@@ -5,6 +5,8 @@ using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3604
 {
@@ -59,35 +61,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3604
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
 				}
-		}
-
-		[Test]
-		public void CanPerformQueryOnMappedClassWithProtectedProperty()
-		{
-			using (ISession session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					var result =
-						from e in session.Query<Entity>()where e.Name == "Sally"
-						select e;
-					var entities = result.ToList();
-					Assert.AreEqual(1, entities.Count);
-					Assert.AreEqual("Jo", entities[0].Detail.ExtraInfo);
-				}
-		}
-
-		[Test]
-		public void CanWriteMappingsReferencingProtectedProperty()
-		{
-			var mapper = new ModelMapper();
-			mapper.Class<Entity>(rc =>
-			{
-				rc.Id(Entity.PropertyAccessExpressions.Id, m => m.Generator(Generators.GuidComb));
-				rc.Property(x => x.Name);
-			}
-
-			);
-			mapper.CompileMappingForEachExplicitlyAddedEntity().WriteAllXmlMapping();
 		}
 	}
 }

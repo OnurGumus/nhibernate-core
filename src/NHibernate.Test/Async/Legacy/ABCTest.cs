@@ -6,6 +6,7 @@ using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.Legacy
 {
@@ -19,20 +20,6 @@ namespace NHibernate.Test.Legacy
 			{
 				return new string[]{"ABC.hbm.xml"};
 			}
-		}
-
-		[Test]
-		public void HigherLevelIndexDefinitionInColumnTag()
-		{
-			string[] commands = cfg.GenerateSchemaCreationScript(Dialect);
-			Assert.IsTrue(ContainsCommandWithSubstring(commands, "create index indx_a_name"), "Unable to locate indx_a_name index creation");
-		}
-
-		[Test]
-		public void HigherLevelIndexDefinitionInPropertyTag()
-		{
-			string[] commands = cfg.GenerateSchemaCreationScript(Dialect);
-			Assert.IsTrue(ContainsCommandWithSubstring(commands, "create index indx_a_anothername"), "Unable to locate indx_a_anothername index creation");
 		}
 
 		[Test]

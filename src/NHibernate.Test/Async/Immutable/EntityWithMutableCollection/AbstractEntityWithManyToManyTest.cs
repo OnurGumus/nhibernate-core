@@ -7,8 +7,6 @@ using NHibernate.Impl;
 using NHibernate.Criterion;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 {
@@ -27,18 +25,10 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			}
 		}
 
-		protected override Task ConfigureAsync(NHibernate.Cfg.Configuration configuration)
+		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
-			try
-			{
-				configuration.SetProperty(NHibernate.Cfg.Environment.GenerateStatistics, "true");
-				configuration.SetProperty(NHibernate.Cfg.Environment.BatchSize, "0");
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
+			configuration.SetProperty(NHibernate.Cfg.Environment.GenerateStatistics, "true");
+			configuration.SetProperty(NHibernate.Cfg.Environment.BatchSize, "0");
 		}
 
 		protected override async Task OnSetUpAsync()

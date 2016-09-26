@@ -146,43 +146,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1098
 		}
 
 		[Test]
-		public Task QueryWithMixedParametersAsync()
-		{
-			try
-			{
-				ISession session = OpenSession();
-				session.EnableFilter("EnabledObjects").SetParameter("Enabled", true);
-				var sql = new StringBuilder();
-				sql.Append("from A as a where a.ValueA < :ValA");
-				sql.Append(" and exists (select b.ValueB from B as b where ");
-				sql.Append(" a.ValueA < b.ValueB and b.ValueB > ?)");
-				Assert.Throws<SemanticException>(() => session.CreateQuery(sql.ToString()));
-				return TaskHelper.CompletedTask;
-			//
-			// Query:
-			// {select a0_.id as id0_, a0_.val_a as val2_0_, a0_.enabled as enabled0_ 
-			//     from table_a a0_ 
-			//     where a0_.enabled = ? and ((a0_.val_a<? )and
-			//        (exists(select b1_.val_b 
-			//                  from table_b b1_ 
-			//                  where b1_.enabled = ? and ((a0_.val_a<b1_.val_b )and(b1_.val_b>? )))))}
-			// 
-			// Parameter:
-			// 1) "this_.enabled = :EnabledObjects.Enabled" [filter #1]
-			// 2) "this_.val_a < (?)" [named parameter #1]
-			// 3) "this_0_.enabled = :EnabledObjects.Enabled" [filter #2]
-			// 4) "this_0_.val_b > (?)" [positional parameter #1]
-			// 
-			// => ERROR, parameters are in wrong order: filter #1, pos #1, filter #2, named #1
-			//
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
-		}
-
-		[Test]
 		public async Task QueryMapElementsAsync()
 		{
 			IQuery query = OpenSession().CreateQuery("from A a where a.C[:ValC] = :Text");

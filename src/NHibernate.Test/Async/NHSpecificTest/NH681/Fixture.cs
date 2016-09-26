@@ -2,7 +2,6 @@
 using System;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH681
 {
@@ -18,9 +17,8 @@ namespace NHibernate.Test.NHSpecificTest.NH681
 			}
 		}
 
-		protected override Task ConfigureAsync(NHibernate.Cfg.Configuration cfg)
+		protected override void Configure(NHibernate.Cfg.Configuration cfg)
 		{
-			return TaskHelper.CompletedTask;
 		}
 
 		[Test]

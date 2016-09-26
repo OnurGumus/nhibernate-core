@@ -3,6 +3,8 @@ using NHibernate.Dialect;
 using NHibernate.SqlTypes;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1619
 {
@@ -41,12 +43,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1619
 					await (s.DeleteAsync(entity));
 					await (tx.CommitAsync());
 				}
-		}
-
-		[Test]
-		public void UsingBooleanPostgreSQLType()
-		{
-			Assert.AreEqual("boolean", Dialect.GetTypeName(SqlTypeFactory.Boolean));
 		}
 	}
 }

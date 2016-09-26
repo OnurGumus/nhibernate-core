@@ -3,6 +3,7 @@ using System;
 using NHibernate.Type;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -16,23 +17,6 @@ namespace NHibernate.Test.TypesTest
 			{
 				return "Decimal";
 			}
-		}
-
-		/// <summary>
-		/// Test that two decimal fields that are exactly equal are returned
-		/// as Equal by the DecimalType.
-		/// </summary>
-		[Test]
-		public void Equals()
-		{
-			decimal lhs = 5.64351M;
-			decimal rhs = 5.64351M;
-			DecimalType type = (DecimalType)NHibernateUtil.Decimal;
-			Assert.IsTrue(type.IsEqual(lhs, rhs));
-			// Test that two decimal fields that are equal except one has a higher precision than
-			// the other one are returned as Equal by the DecimalType.
-			rhs = 5.643510M;
-			Assert.IsTrue(type.IsEqual(lhs, rhs));
 		}
 
 		[Test]
@@ -53,15 +37,6 @@ namespace NHibernate.Test.TypesTest
 			await (s.DeleteAsync(basic));
 			await (s.FlushAsync());
 			s.Close();
-		}
-
-		[Test]
-		public void UnsavedValue()
-		{
-			DecimalType type = (DecimalType)NHibernateUtil.Decimal;
-			object mappedValue = type.StringToObject("0");
-			Assert.AreEqual(0m, mappedValue);
-			Assert.IsTrue(type.IsEqual(mappedValue, 0m), "'0' in the mapping file should have been converted to a 0m");
 		}
 	}
 }

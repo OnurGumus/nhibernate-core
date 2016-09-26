@@ -19,39 +19,6 @@ namespace NHibernate.Test.NHSpecificTest.EntityModeToTuplizerPerf
 			target = new TargetClazz();
 		}
 
-		[Test]
-		public void VerifyEntityModeNotFound()
-		{
-			Assert.IsNull(target.GetTuplizerOrNull(EntityMode.Xml));
-		}
-
-		[Test]
-		public void VerifyEntityModeFound()
-		{
-			ITuplizer tuplizer = new TuplizerStub();
-			target.Add(EntityMode.Map, tuplizer);
-			Assert.AreSame(tuplizer, target.GetTuplizerOrNull(EntityMode.Map));
-		}
-
-		[Test, Explicit("To the commiter - run before and after")]
-		public void RemoveThisTest_JustToShowPerfDifference()
-		{
-			const int loop = 1000000;
-			target.Add(EntityMode.Map, new TuplizerStub());
-			target.Add(EntityMode.Poco, new TuplizerStub());
-			target.Add(EntityMode.Xml, new TuplizerStub());
-			var watch = new Stopwatch();
-			watch.Start();
-			for (int i = 0; i < loop; i++)
-			{
-				target.GetTuplizerOrNull(EntityMode.Map);
-				target.GetTuplizerOrNull(EntityMode.Poco);
-			}
-
-			watch.Stop();
-			Console.WriteLine(watch.ElapsedMilliseconds);
-		}
-
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		private class TargetClazz : EntityModeToTuplizerMapping
 		{
