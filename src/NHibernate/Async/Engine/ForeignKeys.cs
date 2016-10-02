@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Engine
 {
-	/// <summary> Algorithms related to foreign key constraint transparency </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public static partial class ForeignKeys
 	{
@@ -54,7 +53,7 @@ namespace NHibernate.Engine
 				return isUnsaved.Value;
 			// let the persister inspect the instance to decide
 			IEntityPersister persister = session.GetEntityPersister(entityName, entity);
-			isUnsaved = await (persister.IsTransientAsync(entity, session));
+			isUnsaved = persister.IsTransient(entity, session);
 			if (isUnsaved.HasValue)
 				return isUnsaved.Value;
 			// we use the assumed value, if there is one, to avoid hitting
@@ -66,11 +65,11 @@ namespace NHibernate.Engine
 				// When using assigned identifiers we cannot tell if an entity
 				// is transient or detached without querying the database.
 				// This could potentially cause Select N+1 in cascaded saves, so warn the user.
-				log.Warn("Unable to determine if " + entity.ToString() + " with assigned identifier " + await (persister.GetIdentifierAsync(entity, session.EntityMode)) + " is transient or detached; querying the database." + " Use explicit Save() or Update() in session to prevent this.");
+				log.Warn("Unable to determine if " + entity.ToString() + " with assigned identifier " + persister.GetIdentifier(entity, session.EntityMode) + " is transient or detached; querying the database." + " Use explicit Save() or Update() in session to prevent this.");
 			}
 
 			// hit the database, after checking the session cache for a snapshot
-			System.Object[] snapshot = await (session.PersistenceContext.GetDatabaseSnapshotAsync(await (persister.GetIdentifierAsync(entity, session.EntityMode)), persister));
+			System.Object[] snapshot = await (session.PersistenceContext.GetDatabaseSnapshotAsync(persister.GetIdentifier(entity, session.EntityMode), persister));
 			return snapshot == null;
 		}
 
@@ -118,7 +117,7 @@ namespace NHibernate.Engine
 						throw new TransientObjectException(string.Format("object references an unsaved transient instance - save the transient instance before flushing or set cascade action for the property to something that would make it autosave. Type: {0}, Entity: {1}", entityName, entityString));
 					}
 
-					id = await (session.GetEntityPersister(entityName, entity).GetIdentifierAsync(entity, session.EntityMode));
+					id = session.GetEntityPersister(entityName, entity).GetIdentifier(entity, session.EntityMode);
 				}
 
 				return id;
@@ -208,7 +207,7 @@ namespace NHibernate.Engine
 					INHibernateProxy proxy = obj as INHibernateProxy;
 					// if its an uninitialized proxy it can't be transient
 					ILazyInitializer li = proxy.HibernateLazyInitializer;
-					if (await (li.GetImplementationAsync(session)) == null)
+					if (li.GetImplementation(session) == null)
 					{
 						return false;
 					// ie. we never have to null out a reference to

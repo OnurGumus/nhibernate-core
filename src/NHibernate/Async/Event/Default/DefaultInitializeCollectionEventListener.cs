@@ -33,7 +33,7 @@ namespace NHibernate.Event.Default
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("initializing collection " + await (MessageHelper.CollectionInfoStringAsync(ce.LoadedPersister, collection, ce.LoadedKey, source)));
+					log.Debug("initializing collection " + MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, source));
 				}
 
 				log.Debug("checking second-level cache");
@@ -105,7 +105,7 @@ namespace NHibernate.Event.Default
 					IPersistenceContext persistenceContext = source.PersistenceContext;
 					CollectionCacheEntry cacheEntry = (CollectionCacheEntry)persister.CacheEntryStructure.Destructure(ce, factory);
 					await (cacheEntry.AssembleAsync(collection, persister, persistenceContext.GetCollectionOwner(id, persister)));
-					await (persistenceContext.GetCollectionEntry(collection).PostInitializeAsync(collection));
+					persistenceContext.GetCollectionEntry(collection).PostInitialize(collection);
 					return true;
 				}
 			}

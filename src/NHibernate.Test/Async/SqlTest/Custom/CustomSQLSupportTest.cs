@@ -54,7 +54,7 @@ namespace NHibernate.Test.SqlTest.Custom
 			emp = (Employment)GetFirstItem(jboss.Employments);
 			gavin = emp.Employee;
 			Assert.AreEqual(gavin.Name, "GAVIN");
-			Assert.AreEqual(await (s.GetCurrentLockModeAsync(gavin)), LockMode.Upgrade);
+			Assert.AreEqual(s.GetCurrentLockMode(gavin), LockMode.Upgrade);
 			emp.EndDate = DateTime.Today;
 			Employment emp3 = new Employment(gavin, jboss, "US");
 			await (s.SaveAsync(emp3));

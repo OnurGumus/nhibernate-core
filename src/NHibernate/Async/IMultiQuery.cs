@@ -8,9 +8,6 @@ using NHibernate.Util;
 
 namespace NHibernate
 {
-	/// <summary>
-	/// Combines several queries into a single database call
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface IMultiQuery
 	{

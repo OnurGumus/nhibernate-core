@@ -9,12 +9,6 @@ using NHibernate.Util;
 
 namespace NHibernate.Driver
 {
-	/// <summary>
-	/// A NHibernate Driver for using the Odbc DataProvider
-	/// </summary>
-	/// <remarks>
-	/// Always look for a native .NET DataProvider before using the Odbc DataProvider.
-	/// </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class OdbcDriver : DriverBase
 	{

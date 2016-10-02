@@ -7,14 +7,10 @@ using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 
 namespace NHibernate.Engine
 {
-	/// <summary> 
-	/// Delegate responsible, in conjunction with the various
-	/// <see cref = "CascadingAction"/>, for implementing cascade processing. 
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public sealed partial class Cascade
 	{

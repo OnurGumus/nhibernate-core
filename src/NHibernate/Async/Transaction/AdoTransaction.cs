@@ -9,10 +9,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Transaction
 {
-	/// <summary>
-	/// Wraps an ADO.NET <see cref = "DbTransaction"/> to implement
-	/// the <see cref = "ITransaction"/> interface.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class AdoTransaction : ITransaction
 	{

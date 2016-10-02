@@ -10,22 +10,6 @@ using NHibernate.Util;
 
 namespace NHibernate.Id
 {
-	/// <summary>
-	/// An <see cref = "IIdentifierGenerator"/> that indicates to the <see cref = "ISession"/> that identity
-	/// (ie. identity/autoincrement column) key generation should be used.
-	/// </summary>
-	/// <remarks>
-	/// <p>
-	///	This id generation strategy is specified in the mapping file as 
-	///	<code>&lt;generator class="identity" /&gt;</code> 
-	///	or if the database natively supports identity columns 
-	///	<code>&lt;generator class="native" /&gt;</code>
-	/// </p>
-	/// <p>
-	/// This indicates to NHibernate that the database generates the id when
-	/// the entity is inserted.
-	/// </p>
-	/// </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class IdentityGenerator : AbstractPostInsertGenerator
 	{

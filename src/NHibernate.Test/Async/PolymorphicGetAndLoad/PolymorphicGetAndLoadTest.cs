@@ -169,8 +169,8 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 					Assert.That(NHibernateProxyHelper.GetClassWithoutInitializingProxy(loadedEntity), Is.EqualTo(typeof (A)));
 					var narrowedProxy = await (s.LoadAsync<B>(scenario.B.Id));
 					Assert.That(NHibernateProxyHelper.GetClassWithoutInitializingProxy(narrowedProxy), Is.EqualTo(typeof (B)));
-					var firstLoadedImpl = await (((INHibernateProxy)loadedEntity).HibernateLazyInitializer.GetImplementationAsync((ISessionImplementor)s));
-					var secondLoadedImpl = await (((INHibernateProxy)narrowedProxy).HibernateLazyInitializer.GetImplementationAsync((ISessionImplementor)s));
+					var firstLoadedImpl = ((INHibernateProxy)loadedEntity).HibernateLazyInitializer.GetImplementation((ISessionImplementor)s);
+					var secondLoadedImpl = ((INHibernateProxy)narrowedProxy).HibernateLazyInitializer.GetImplementation((ISessionImplementor)s);
 					Assert.That(firstLoadedImpl, Is.SameAs(secondLoadedImpl));
 				}
 			}
@@ -188,8 +188,8 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 					Assert.That(NHibernateProxyHelper.GetClassWithoutInitializingProxy(loadedEntity), Is.EqualTo(typeof (A)));
 					var narrowedProxy = await (s.LoadAsync<IOccuped>(scenario.B.Id));
 					Assert.That(NHibernateProxyHelper.GetClassWithoutInitializingProxy(narrowedProxy), Is.EqualTo(typeof (B)));
-					var firstLoadedImpl = await (((INHibernateProxy)loadedEntity).HibernateLazyInitializer.GetImplementationAsync((ISessionImplementor)s));
-					var secondLoadedImpl = await (((INHibernateProxy)narrowedProxy).HibernateLazyInitializer.GetImplementationAsync((ISessionImplementor)s));
+					var firstLoadedImpl = ((INHibernateProxy)loadedEntity).HibernateLazyInitializer.GetImplementation((ISessionImplementor)s);
+					var secondLoadedImpl = ((INHibernateProxy)narrowedProxy).HibernateLazyInitializer.GetImplementation((ISessionImplementor)s);
 					Assert.That(firstLoadedImpl, Is.SameAs(secondLoadedImpl));
 				}
 			}

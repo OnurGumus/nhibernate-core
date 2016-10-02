@@ -13,12 +13,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
-	/// <summary>
-	/// Provides an <see cref = "IEnumerable"/> wrapper over the results of an <see cref = "IQuery"/>.
-	/// </summary>
-	/// <remarks>
-	/// This is the IteratorImpl in H2.0.3
-	/// </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class EnumerableImpl : IEnumerable, IEnumerator, IDisposable
 	{

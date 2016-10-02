@@ -10,9 +10,6 @@ using NHibernate.Util;
 
 namespace NHibernate.Param
 {
-	/// <summary>
-	/// Parameter bind specification for an explicit named parameter.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class NamedParameterSpecification : AbstractExplicitParameterSpecification
 	{

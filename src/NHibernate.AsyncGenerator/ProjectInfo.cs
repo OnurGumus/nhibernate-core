@@ -348,7 +348,7 @@ namespace NHibernate.AsyncGenerator
 				if (impl != null)
 				{
 					var location = impl.Locations.SingleOrDefault();
-					if (location == null || !location.SourceTree.FilePath.StartsWith(_asyncProjectFolder))
+					if (impl.ContainingAssembly.Name != typeSymbol.ContainingAssembly.Name || location.SourceTree.FilePath.StartsWith(_asyncProjectFolder))
 					{
 						continue;
 					}
@@ -579,13 +579,68 @@ namespace NHibernate.AsyncGenerator
 				}
 			}
 
+			// check if the method is overriding an external method
+			var overridenMethod = methodSymbol.OverriddenMethod;
+			var overrrides = new HashSet<IMethodSymbol>();
+			while (overridenMethod != null)
+			{
+				var syntax = overridenMethod.DeclaringSyntaxReferences.SingleOrDefault();
+				if (methodSymbol.ContainingAssembly.Name != overridenMethod.ContainingAssembly.Name)
+				{
+					// check if the member has an async counterpart that is not implemented in the current type (missing member)
+					var asyncConterPart = overridenMethod.ContainingType.GetMembers()
+														 .OfType<IMethodSymbol>()
+														 .Where(o => o.Name == methodSymbol.Name + "Async" && !o.IsSealed && (o.IsVirtual || o.IsAbstract || o.IsOverride))
+														 .Where(o => o.Locations.All(l => l.SourceTree == null || !l.SourceTree.FilePath.StartsWith(_asyncProjectFolder)))
+														 .SingleOrDefault(o => o.HaveSameParameters(methodSymbol));
+					if (asyncConterPart == null)
+					{
+						if (!asyncMethods.Any() || (asyncMethods.Any() && !overridenMethod.IsOverride && !overridenMethod.IsVirtual))
+						{
+							Logger.Warn($"Method {methodSymbol} overrides an external method {overridenMethod} and cannot be made async");
+							return MethodSymbolInfo.Invalid;
+						}
+					}
+					else
+					{
+						asyncMethods.Add(asyncConterPart);
+					}
+				}
+				else if (CanProcessSyntaxReference(syntax))
+				{
+					overrrides.Add(overridenMethod.OriginalDefinition);
+				}
+				if (memorize && !AnalyzedMethodSymbols.Contains(overridenMethod.OriginalDefinition))
+				{
+					AnalyzedMethodSymbols.Add(overridenMethod.OriginalDefinition);
+				}
+				
+				if (overridenMethod.OverriddenMethod != null)
+				{
+					overridenMethod = overridenMethod.OverriddenMethod;
+				}
+				else
+				{
+					break;
+				}
+			}
+
 			// check if the method is implementing an external interface, if true skip as we cannot modify externals
+			// FindImplementationForInterfaceMember will find the first implementation method starting from the deepest base class
 			var type = methodSymbol.ContainingType;
 			foreach (var interfaceMember in type.AllInterfaces
 												.SelectMany(
 													o => o.GetMembers(methodSymbol.Name)
-														  .Where(m => type.FindImplementationForInterfaceMember(m) != null)
-														  .OfType<IMethodSymbol>()))
+														  .Where(
+															  m =>
+															  {
+																  // find out if the method implements the interface member or an override 
+																  // method that implements it
+																  var impl = type.FindImplementationForInterfaceMember(m);
+																  return methodSymbol.Equals(impl) || overrrides.Any(ov => ov.Equals(impl));
+															  }
+															))
+														  .OfType<IMethodSymbol>())
 			{
 				var syntax = interfaceMember.DeclaringSyntaxReferences.SingleOrDefault();
 				if (syntax == null || methodSymbol.ContainingAssembly.Name != interfaceMember.ContainingAssembly.Name)
@@ -615,51 +670,6 @@ namespace NHibernate.AsyncGenerator
 				interfaceMethods.Add(interfaceMember.OriginalDefinition);
 			}
 
-			// check if the method is overriding an external method
-			var overridenMethod = methodSymbol.OverriddenMethod;
-			var overrrides = new HashSet<IMethodSymbol>();
-			while (overridenMethod != null)
-			{
-				var syntax = overridenMethod.DeclaringSyntaxReferences.SingleOrDefault();
-				if (methodSymbol.ContainingAssembly.Name != overridenMethod.ContainingAssembly.Name)
-				{
-					// check if the member has an async counterpart that is not implemented in the current type (missing member)
-					var asyncConterPart = overridenMethod.ContainingType.GetMembers()
-														 .OfType<IMethodSymbol>()
-														 .Where(o => o.Name == methodSymbol.Name + "Async" && !o.IsSealed)
-														 .Where(o => o.Locations.All(l => l.SourceTree == null || !l.SourceTree.FilePath.StartsWith(_asyncProjectFolder)))
-														 .SingleOrDefault(o => o.HaveSameParameters(methodSymbol));
-					if (asyncConterPart == null)
-					{
-						if (!asyncMethods.Any() ||
-						(asyncMethods.Any() && !overridenMethod.IsOverride && !overridenMethod.IsVirtual))
-						{
-							Logger.Warn($"Method {methodSymbol} overrides an external method {overridenMethod} and cannot be made async");
-							return MethodSymbolInfo.Invalid;
-						}
-					}
-					else
-					{
-						asyncMethods.Add(asyncConterPart);
-					}
-				}
-				if (memorize && !AnalyzedMethodSymbols.Contains(overridenMethod.OriginalDefinition))
-				{
-					AnalyzedMethodSymbols.Add(overridenMethod.OriginalDefinition);
-				}
-				if (CanProcessSyntaxReference(syntax))
-				{
-					overrrides.Add(overridenMethod.OriginalDefinition);
-				}
-				if (overridenMethod.OverriddenMethod != null)
-				{
-					overridenMethod = overridenMethod.OverriddenMethod;
-				}
-				else
-				{
-					break;
-				}
-			}
 
 			if (_solutionConfiguration.IsSymbolValidFunc != null && !_solutionConfiguration.IsSymbolValidFunc(this, methodSymbol))
 			{
@@ -680,7 +690,9 @@ namespace NHibernate.AsyncGenerator
 				MethodSymbol = methodSymbol,
 				AsyncInterfaceMethods = asyncMethods,
 				InterfaceMethods = interfaceMethods,
-				BaseOverriddenMethod = overridenMethod?.OriginalDefinition,
+				BaseOverriddenMethod = overridenMethod?.DeclaringSyntaxReferences.Length > 0
+					? overridenMethod.OriginalDefinition
+					: null,
 				OverriddenMethods = overrrides,
 			};
 			_cachedMethodSymbolInfos.Add(methodSymbol, result);
@@ -733,18 +745,18 @@ namespace NHibernate.AsyncGenerator
 					docInfo = await GetOrCreateDocumentInfo(syntax).ConfigureAwait(false);
 					if (docInfo == null)
 					{
-						interfaceMethodInfo?.ExternalDependencies.Add(implementation);
+						interfaceMethodInfo?.ExternalRelatedMethods.Add(implementation);
 						continue;
 					}
 					var methodInfo = docInfo.GetOrCreateMethodInfo(implementation.OriginalDefinition);
 					if (interfaceMethodInfo != null)
 					{
-						methodInfo.Dependencies.Add(interfaceMethodInfo);
-						interfaceMethodInfo.Dependencies.Add(methodInfo);
+						methodInfo.RelatedMethods.Add(interfaceMethodInfo);
+						interfaceMethodInfo.RelatedMethods.Add(methodInfo);
 					}
 					else
 					{
-						methodInfo.ExternalDependencies.Add(interfaceMethod);
+						methodInfo.ExternalRelatedMethods.Add(interfaceMethod);
 					}
 					
 					bodyScanMethodInfos.Add(methodInfo);
@@ -776,18 +788,18 @@ namespace NHibernate.AsyncGenerator
 					docInfo = await GetOrCreateDocumentInfo(syntax).ConfigureAwait(false);
 					if (docInfo == null)
 					{
-						baseMethodInfo?.ExternalDependencies.Add(overriddenMethod);
+						baseMethodInfo?.ExternalRelatedMethods.Add(overriddenMethod);
 						continue;
 					}
 					var methodInfo = docInfo.GetOrCreateMethodInfo(overriddenMethod.OriginalDefinition);
 					if (baseMethodInfo != null)
 					{
-						methodInfo.Dependencies.Add(baseMethodInfo);
-						baseMethodInfo.Dependencies.Add(methodInfo);
+						methodInfo.RelatedMethods.Add(baseMethodInfo);
+						baseMethodInfo.RelatedMethods.Add(methodInfo);
 					}
 					else
 					{
-						methodInfo.ExternalDependencies.Add(baseMethod);
+						methodInfo.ExternalRelatedMethods.Add(baseMethod);
 					}
 					
 					if (!overriddenMethod.IsAbstract)
@@ -889,12 +901,9 @@ namespace NHibernate.AsyncGenerator
 				}
 				// save the reference as it can be made async
 				var methodInfo = docInfo.GetOrCreateMethodInfo(symbolInfo.MethodSymbol);
-				/*
-				if (methodInfo.Ignore)
-				{
-					//methodInfo.Ignore = false;
-				}*/
 				methodInfo.References.Add(refLocation);
+
+				// find the real method on that reference as FindReferencesAsync will also find references to base and interface methods
 				var nameNode = methodInfo.Node.DescendantNodes()
 							   .OfType<SimpleNameSyntax>()
 							   .First(
@@ -917,23 +926,12 @@ namespace NHibernate.AsyncGenerator
 					if (invokedMethodDocInfo != null)
 					{
 						var invokedMethodInfo = invokedMethodDocInfo.GetOrCreateMethodInfo(invokedSymbol);
-						if (!invokedMethodInfo.InvokedBy.ContainsKey(refLocation))
+						if (!invokedMethodInfo.InvokedBy.Contains(methodInfo))
 						{
-							invokedMethodInfo.InvokedBy.Add(refLocation, methodInfo);
-						}
-						else
-						{
-
+							invokedMethodInfo.InvokedBy.Add(methodInfo);
 						}
 					}
 				}
-
-				
-				/*
-				if (invokedSymbol.ContainingAssembly.ToString() == symbolInfo.MethodSymbol.ContainingAssembly.ToString())
-				{
-					
-				}*/
 				await ProcessMethodSymbolInfo(symbolInfo, docInfo, depth).ConfigureAwait(false);
 			}
 		}

@@ -11,15 +11,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Dialect.Lock
 {
-	/// <summary> 
-	/// A locking strategy where the locks are obtained through select statements.
-	///  </summary>
-	/// <seealso cref = "NHibernate.Dialect.Dialect.GetForUpdateString(NHibernate.LockMode)"/>
-	/// <seealso cref = "NHibernate.Dialect.Dialect.AppendLockHint(NHibernate.LockMode, string)"/>
-	/// <remarks>
-	/// For non-read locks, this is achieved through the Dialect's specific
-	/// SELECT ... FOR UPDATE syntax.
-	/// </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class SelectLockingStrategy : ILockingStrategy
 	{

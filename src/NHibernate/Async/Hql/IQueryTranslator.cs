@@ -6,14 +6,11 @@ using NHibernate.Engine.Query;
 using NHibernate.Event;
 using NHibernate.Type;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Hql
 {
-	/// <summary>
-	/// Defines the contract of an HQL->SQL translator.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface IQueryTranslator
 	{

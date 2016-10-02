@@ -144,7 +144,7 @@ namespace NHibernate.Impl
 							log.DebugFormat("Query {0} returned {1} results", i, tempResults.Count);
 						}
 
-						reader.NextResult();
+						await (reader.NextResultAsync());
 					}
 
 					for (int i = 0; i < translators.Count; i++)

@@ -17,28 +17,6 @@ namespace NHibernate.Collection
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class PersistentArrayHolder : AbstractPersistentCollection, ICollection
 	{
-		public override async Task<object> GetSnapshotAsync(ICollectionPersister persister)
-		{
-			EntityMode entityMode = Session.EntityMode;
-			int length = array.Length;
-			Array result = System.Array.CreateInstance(persister.ElementClass, length);
-			for (int i = 0; i < length; i++)
-			{
-				object elt = array.GetValue(i);
-				try
-				{
-					result.SetValue(await (persister.ElementType.DeepCopyAsync(elt, entityMode, persister.Factory)), i);
-				}
-				catch (Exception e)
-				{
-					log.Error("Array element type error", e);
-					throw new HibernateException("Array element type error", e);
-				}
-			}
-
-			return result;
-		}
-
 		public override async Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
 		{
 			object[] sn = (object[])snapshot;

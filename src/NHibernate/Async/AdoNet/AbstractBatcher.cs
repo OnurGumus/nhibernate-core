@@ -16,9 +16,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.AdoNet
 {
-	/// <summary>
-	/// Manages prepared statements and batching. Class exists to enforce separation of concerns
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class AbstractBatcher : IBatcher
 	{

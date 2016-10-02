@@ -96,7 +96,7 @@ namespace NHibernate.Event.Default
 					throw new PersistentObjectException("attempted to load into an instance that was already associated with the session: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 				}
 
-				await (persister.SetIdentifierAsync(@event.InstanceToLoad, @event.EntityId, @event.Session.EntityMode));
+				persister.SetIdentifier(@event.InstanceToLoad, @event.EntityId, @event.Session.EntityMode);
 			}
 
 			object entity = await (DoLoadAsync(@event, persister, keyToLoad, options));
@@ -417,13 +417,13 @@ namespace NHibernate.Event.Default
 			}
 
 			IEntityPersister subclassPersister = factory.GetEntityPersister(entry.Subclass);
-			object result = optionalObject ?? await (session.InstantiateAsync(subclassPersister, id));
+			object result = optionalObject ?? session.Instantiate(subclassPersister, id);
 			// make it circular-reference safe
 			EntityKey entityKey = session.GenerateEntityKey(id, subclassPersister);
 			TwoPhaseLoad.AddUninitializedCachedEntity(entityKey, result, subclassPersister, LockMode.None, entry.AreLazyPropertiesUnfetched, entry.Version, session);
 			IType[] types = subclassPersister.PropertyTypes;
 			object[] values = await (entry.AssembleAsync(result, id, subclassPersister, session.Interceptor, session)); // intializes result by side-effect
-			await (TypeHelper.DeepCopyAsync(values, types, subclassPersister.PropertyUpdateability, values, session));
+			TypeHelper.DeepCopy(values, types, subclassPersister.PropertyUpdateability, values, session);
 			object version = Versioning.GetVersion(values, subclassPersister);
 			if (log.IsDebugEnabled)
 			{

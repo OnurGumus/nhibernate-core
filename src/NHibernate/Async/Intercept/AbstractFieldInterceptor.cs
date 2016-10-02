@@ -59,7 +59,7 @@ namespace NHibernate.Intercept
 				loadedUnwrapProxyFieldNames.Add(fieldName);
 			}
 
-			return await (value.HibernateLazyInitializer.GetImplementationAsync(session));
+			return value.HibernateLazyInitializer.GetImplementation(session);
 		}
 
 		private async Task<object> InitializeFieldAsync(string fieldName, object target)

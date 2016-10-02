@@ -2,7 +2,7 @@
 using NHibernate.Engine;
 using NHibernate.Id.Insert;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Id

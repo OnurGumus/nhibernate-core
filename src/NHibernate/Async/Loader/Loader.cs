@@ -29,23 +29,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Loader
 {
-	/// <summary>
-	/// Abstract superclass of object loading (and querying) strategies.
-	/// </summary>
-	/// <remarks>
-	/// <p>
-	/// This class implements useful common functionality that concrete loaders would delegate to.
-	/// It is not intended that this functionality would be directly accessed by client code (Hence,
-	/// all methods of this class are declared <c>protected</c> or <c>private</c>.) This class relies heavily upon the
-	/// <see cref = "ILoadable"/> interface, which is the contract between this class and 
-	/// <see cref = "IEntityPersister"/>s that may be loaded by it.
-	/// </p>
-	/// <p>
-	/// The present implementation is able to load any number of columns of entities and at most 
-	/// one collection role per query.
-	/// </p>
-	/// </remarks>
-	/// <seealso cref = "NHibernate.Persister.Entity.ILoadable"/>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class Loader
 	{
@@ -277,7 +260,12 @@ namespace NHibernate.Loader
 				{
 					if (collectionPersisters[i].IsArray)
 					{
-						await (EndCollectionLoadAsync(resultSetId, session, collectionPersisters[i]));
+						//for arrays, we should end the collection load before resolving
+						//the entities, since the actual array instances are not instantiated
+						//during loading
+						//TODO: or we could do this polymorphically, and have two
+						//      different operations implemented differently for arrays
+						EndCollectionLoad(resultSetId, session, collectionPersisters[i]);
 					}
 				}
 			}
@@ -317,16 +305,14 @@ namespace NHibernate.Loader
 				{
 					if (!collectionPersisters[i].IsArray)
 					{
-						await (EndCollectionLoadAsync(resultSetId, session, collectionPersisters[i]));
+						//for sets, we should end the collection load after resolving
+						//the entities, since we might call hashCode() on the elements
+						//TODO: or we could do this polymorphically, and have two
+						//      different operations implemented differently for arrays
+						EndCollectionLoad(resultSetId, session, collectionPersisters[i]);
 					}
 				}
 			}
-		}
-
-		private static async Task EndCollectionLoadAsync(object resultSetId, ISessionImplementor session, ICollectionPersister collectionPersister)
-		{
-			//this is a query and we are loading multiple instances of the same collection role
-			await (session.PersistenceContext.LoadContexts.GetCollectionLoadContext((DbDataReader)resultSetId).EndLoadingCollectionsAsync(collectionPersister));
 		}
 
 		/// <summary>
@@ -432,7 +418,7 @@ namespace NHibernate.Loader
 			{
 				IType idType = persister.IdentifierType;
 				resultId = await (idType.NullSafeGetAsync(rs, EntityAliases[i].SuffixedKeyAliases, session, null));
-				bool idIsResultId = id != null && resultId != null && await (idType.IsEqualAsync(id, resultId, session.EntityMode, _factory));
+				bool idIsResultId = id != null && resultId != null && idType.IsEqual(id, resultId, session.EntityMode, _factory);
 				if (idIsResultId)
 				{
 					resultId = id; //use the id passed in
@@ -557,7 +543,7 @@ namespace NHibernate.Loader
 			}
 			else
 			{
-				obj = await (session.InstantiateAsync(instanceClass, key.Identifier));
+				obj = session.Instantiate(instanceClass, key.Identifier);
 			}
 
 			// need to hydrate it
@@ -612,7 +598,7 @@ namespace NHibernate.Loader
 				}
 			}
 
-			await (TwoPhaseLoad.PostHydrateAsync(persister, id, values, rowId, obj, lockMode, !eagerPropertyFetch, session));
+			TwoPhaseLoad.PostHydrate(persister, id, values, rowId, obj, lockMode, !eagerPropertyFetch, session);
 		}
 
 		/// <summary>
@@ -750,7 +736,7 @@ namespace NHibernate.Loader
 		{
 			if (Log.IsDebugEnabled)
 			{
-				Log.Debug("loading entity: " + await (MessageHelper.InfoStringAsync(persister, id, identifierType, Factory)));
+				Log.Debug("loading entity: " + MessageHelper.InfoString(persister, id, identifierType, Factory));
 			}
 
 			IList result;
@@ -766,7 +752,7 @@ namespace NHibernate.Loader
 			catch (Exception sqle)
 			{
 				ILoadable[] persisters = EntityPersisters;
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not load an entity: " + await (MessageHelper.InfoStringAsync(persisters[persisters.Length - 1], id, identifierType, Factory)), SqlString);
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not load an entity: " + MessageHelper.InfoString(persisters[persisters.Length - 1], id, identifierType, Factory), SqlString);
 			}
 
 			Log.Debug("done entity load");
@@ -797,7 +783,7 @@ namespace NHibernate.Loader
 		{
 			if (Log.IsDebugEnabled)
 			{
-				Log.Debug("batch loading entity: " + await (MessageHelper.InfoStringAsync(persister, ids, Factory)));
+				Log.Debug("batch loading entity: " + MessageHelper.InfoString(persister, ids, Factory));
 			}
 
 			IType[] types = new IType[ids.Length];
@@ -813,7 +799,7 @@ namespace NHibernate.Loader
 			}
 			catch (Exception sqle)
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not load an entity batch: " + await (MessageHelper.InfoStringAsync(persister, ids, Factory)), SqlString);
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not load an entity batch: " + MessageHelper.InfoString(persister, ids, Factory), SqlString);
 			// NH: Hibernate3 passes EntityPersisters[0] instead of persister, I think it's wrong.
 			}
 

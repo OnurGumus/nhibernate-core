@@ -5,17 +5,11 @@ using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Id.Insert
 {
-	/// <summary> 
-	/// Abstract InsertGeneratedIdentifierDelegate implementation where the
-	/// underlying strategy causes the generated identifier to be returned as an
-	/// effect of performing the insert statement.  Thus, there is no need for an
-	/// additional sql statement to determine the generated identifier. 
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class AbstractReturningDelegate : IInsertGeneratedIdentifierDelegate
 	{

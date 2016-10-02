@@ -23,7 +23,7 @@ namespace NHibernate.Event.Default
 				}
 				else
 				{
-					return await (EntityIsPersistentAsync(@event));
+					return EntityIsPersistent(@event);
 				}
 			}
 			else
@@ -36,23 +36,6 @@ namespace NHibernate.Event.Default
 		protected override Task<object> SaveWithGeneratedOrRequestedIdAsync(SaveOrUpdateEvent @event)
 		{
 			return SaveWithGeneratedIdAsync(@event.Entity, @event.EntityName, null, @event.Session, true);
-		}
-
-		/// <summary> 
-		/// If the user specified an id, assign it to the instance and use that, 
-		/// otherwise use the id already assigned to the instance
-		/// </summary>
-		protected override async Task<object> GetUpdateIdAsync(object entity, IEntityPersister persister, object requestedId, EntityMode entityMode)
-		{
-			if (requestedId == null)
-			{
-				return await (base.GetUpdateIdAsync(entity, persister, requestedId, entityMode));
-			}
-			else
-			{
-				await (persister.SetIdentifierAsync(entity, requestedId, entityMode));
-				return requestedId;
-			}
 		}
 	}
 }

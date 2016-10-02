@@ -11,13 +11,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Tuple
 {
-	/// <summary>
-	/// Responsible for generation of runtime metamodel <see cref = "NHibernate.Tuple.Property"/> representations.
-	/// Makes distinction between identifier, version, and other (standard) properties.
-	/// </summary>
-	/// <remarks>
-	/// Author: Steve Ebersole
-	/// </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class PropertyFactory
 	{

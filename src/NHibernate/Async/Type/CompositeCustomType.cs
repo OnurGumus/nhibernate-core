@@ -19,14 +19,9 @@ namespace NHibernate.Type
 	{
 		public virtual Task<object[]> GetPropertyValuesAsync(object component, ISessionImplementor session)
 		{
-			return GetPropertyValuesAsync(component, session.EntityMode);
-		}
-
-		public virtual Task<object[]> GetPropertyValuesAsync(object component, EntityMode entityMode)
-		{
 			try
 			{
-				return Task.FromResult<object[]>(GetPropertyValues(component, entityMode));
+				return Task.FromResult<object[]>(GetPropertyValues(component, session));
 			}
 			catch (Exception ex)
 			{
@@ -51,18 +46,6 @@ namespace NHibernate.Type
 			try
 			{
 				return Task.FromResult<object>(Assemble(cached, session, owner));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
-		}
-
-		public override Task<object> DeepCopyAsync(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
-		{
-			try
-			{
-				return Task.FromResult<object>(DeepCopy(value, entityMode, factory));
 			}
 			catch (Exception ex)
 			{
@@ -132,18 +115,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<string> ToLoggableStringAsync(object value, ISessionFactoryImplementor factory)
-		{
-			try
-			{
-				return Task.FromResult<string>(ToLoggableString(value, factory));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<string>(ex);
-			}
-		}
-
 		public override Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
 			return IsDirtyAsync(old, current, session);
@@ -159,36 +130,6 @@ namespace NHibernate.Type
 			{
 				return TaskHelper.FromException<object>(ex);
 			}
-		}
-
-		public override Task<bool> IsEqualAsync(object x, object y, EntityMode entityMode)
-		{
-			try
-			{
-				return Task.FromResult<bool>(IsEqual(x, y, entityMode));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<bool>(ex);
-			}
-		}
-
-		public override async Task<bool[]> ToColumnNullnessAsync(object value, IMapping mapping)
-		{
-			bool[] result = new bool[GetColumnSpan(mapping)];
-			if (value == null)
-				return result;
-			object[] values = await (GetPropertyValuesAsync(value, EntityMode.Poco));
-			int loc = 0;
-			IType[] propertyTypes = Subtypes;
-			for (int i = 0; i < propertyTypes.Length; i++)
-			{
-				bool[] propertyNullness = await (propertyTypes[i].ToColumnNullnessAsync(values[i], mapping));
-				Array.Copy(propertyNullness, 0, result, loc, propertyNullness.Length);
-				loc += propertyNullness.Length;
-			}
-
-			return result;
 		}
 	}
 }

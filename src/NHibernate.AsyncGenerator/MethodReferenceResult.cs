@@ -12,7 +12,6 @@ namespace NHibernate.AsyncGenerator
 	public class MethodReferenceResult
 	{
 		private bool _ignoreCalculated;
-		private bool _ignoreCalculating;
 
 		public MethodReferenceResult(ReferenceLocation reference, SimpleNameSyntax referenceNode, IMethodSymbol symbol, MethodInfo methodInfo)
 		{
@@ -42,21 +41,15 @@ namespace NHibernate.AsyncGenerator
 			{
 				return;
 			}
-			if (_ignoreCalculating)
-			{
-				throw new Exception("_ignoreCalculating");
-			}
-			_ignoreCalculating = true;
 
 			if (processedMethodInfos == null)
 			{
 				processedMethodInfos = new HashSet<MethodInfo>();
 			}
 
-			if (!CanBeAsync)
+			if (!CanBeAsync || UserIgnore)
 			{
 				Ignore = true;
-				_ignoreCalculating = false;
 				_ignoreCalculated = true;
 				return;
 			}
@@ -66,26 +59,27 @@ namespace NHibernate.AsyncGenerator
 			{
 				if (processedMethodInfos.Contains(MethodInfo))
 				{
+					// circular dependency
+					//if (MethodInfo._ignoreCalculating)
+					//{
+						
+					//}
 					ignore |= MethodInfo.Ignore;
 				}
 				else
 				{
-					processedMethodInfos.Add(MethodInfo);
 					MethodInfo.CalculateIgnore(deep, processedMethodInfos);
 					ignore |= MethodInfo.Ignore;
 				}
 				
 			}
-			ignore |= UserIgnore;
 			if (!ignore)
 			{
 				Ignore = false;
-				_ignoreCalculating = false;
 				_ignoreCalculated = true;
 				return;
 			}
 			Ignore = true;
-			_ignoreCalculating = false;
 			_ignoreCalculated = true;
 		}
 

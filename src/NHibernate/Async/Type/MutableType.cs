@@ -11,18 +11,11 @@ namespace NHibernate.Type
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class MutableType : NullableType
 	{
-		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready)
-		{
-			if (await (IsEqualAsync(original, target, session.EntityMode)))
-				return original;
-			return await (DeepCopyAsync(original, session.EntityMode, session.Factory));
-		}
-
-		public override Task<object> DeepCopyAsync(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
+		public override Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready)
 		{
 			try
 			{
-				return Task.FromResult<object>(DeepCopy(value, entityMode, factory));
+				return Task.FromResult<object>(Replace(original, target, session, owner, copiedAlready));
 			}
 			catch (Exception ex)
 			{

@@ -15,7 +15,7 @@ namespace NHibernate.Event.Default
 			EntityEntry entry = @event.Session.PersistenceContext.GetEntry(@event.Entity);
 			if (entry != null && entry.Status != Status.Deleted)
 			{
-				return await (EntityIsPersistentAsync(@event));
+				return EntityIsPersistent(@event);
 			}
 			else
 			{

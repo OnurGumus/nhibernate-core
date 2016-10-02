@@ -47,7 +47,7 @@ namespace NHibernate.Event.Default
 					PerformDetachedEntityDeletionCheck(@event);
 				}
 
-				id = await (persister.GetIdentifierAsync(entity, source.EntityMode));
+				id = persister.GetIdentifier(entity, source.EntityMode);
 				if (id == null)
 				{
 					throw new TransientObjectException("the detached instance passed to delete() had a null identifier");
@@ -78,7 +78,7 @@ namespace NHibernate.Event.Default
 			await (DeleteEntityAsync(source, entity, entityEntry, @event.CascadeDeleteEnabled, persister, transientEntities));
 			if (source.Factory.Settings.IsIdentifierRollbackEnabled)
 			{
-				await (persister.ResetIdentifierAsync(entity, id, version, source.EntityMode));
+				persister.ResetIdentifier(entity, id, version, source.EntityMode);
 			}
 		}
 
@@ -148,7 +148,7 @@ namespace NHibernate.Event.Default
 				currentState = entityEntry.LoadedState;
 			}
 
-			object[] deletedState = await (CreateDeletedStateAsync(persister, currentState, session));
+			object[] deletedState = CreateDeletedState(persister, currentState, session);
 			entityEntry.DeletedState = deletedState;
 			session.Interceptor.OnDelete(entity, entityEntry.Id, deletedState, persister.PropertyNames, propTypes);
 			// before any callbacks, etc, so subdeletions see that this deletion happened first
@@ -156,7 +156,7 @@ namespace NHibernate.Event.Default
 			EntityKey key = session.GenerateEntityKey(entityEntry.Id, persister);
 			await (CascadeBeforeDeleteAsync(session, persister, entity, entityEntry, transientEntities));
 			await (new ForeignKeys.Nullifier(entity, true, false, session).NullifyTransientReferencesAsync(entityEntry.DeletedState, propTypes));
-			await (new Nullability(session).CheckNullabilityAsync(entityEntry.DeletedState, persister, true));
+			new Nullability(session).CheckNullability(entityEntry.DeletedState, persister, true);
 			persistenceContext.NullifiableEntityKeys.Add(key);
 			// Ensures that containing deletions happen before sub-deletions
 			session.ActionQueue.AddAction(new EntityDeleteAction(entityEntry.Id, deletedState, version, entity, persister, isCascadeDeleteEnabled, session));
@@ -165,17 +165,6 @@ namespace NHibernate.Event.Default
 		// override the stale snapshot
 		// This is now handled by removeEntity() in EntityDeleteAction
 		//persistenceContext.removeDatabaseSnapshot(key);
-		}
-
-		private async Task<object[]> CreateDeletedStateAsync(IEntityPersister persister, object[] currentState, IEventSource session)
-		{
-			IType[] propTypes = persister.PropertyTypes;
-			object[] deletedState = new object[propTypes.Length];
-			//		TypeFactory.deepCopy( currentState, propTypes, persister.getPropertyUpdateability(), deletedState, session );
-			bool[] copyability = new bool[propTypes.Length];
-			ArrayHelper.Fill(copyability, true);
-			await (TypeHelper.DeepCopyAsync(currentState, propTypes, copyability, deletedState, session));
-			return deletedState;
 		}
 
 		protected virtual async Task CascadeBeforeDeleteAsync(IEventSource session, IEntityPersister persister, object entity, EntityEntry entityEntry, ISet<object> transientEntities)

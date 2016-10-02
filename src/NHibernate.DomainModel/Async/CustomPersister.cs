@@ -16,17 +16,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.DomainModel
 {
-	/// <summary>
-	/// Summary description for CustomPersister.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class CustomPersister : IEntityPersister
 	{
-		public Task PostInstantiateAsync()
-		{
-			return TaskHelper.CompletedTask;
-		}
-
 		public Task<int[]> FindDirtyAsync(object[] currentState, object[] previousState, object entity, ISessionImplementor session)
 		{
 			try
@@ -72,7 +64,7 @@ namespace NHibernate.DomainModel
 			{
 				clone = (Custom)obj.Clone();
 				TwoPhaseLoad.AddUninitializedEntity(session.GenerateEntityKey(id, this), clone, this, LockMode.None, false, session);
-				await (TwoPhaseLoad.PostHydrateAsync(this, id, new String[]{obj.Name}, null, clone, LockMode.None, false, session));
+				TwoPhaseLoad.PostHydrate(this, id, new String[]{obj.Name}, null, clone, LockMode.None, false, session);
 				await (TwoPhaseLoad.InitializeEntityAsync(clone, false, session, new PreLoadEvent((IEventSource)session), new PostLoadEvent((IEventSource)session)));
 			}
 
@@ -179,18 +171,6 @@ namespace NHibernate.DomainModel
 			}
 		}
 
-		public Task<bool ? > IsTransientAsync(object obj, ISessionImplementor session)
-		{
-			try
-			{
-				return Task.FromResult<bool ? >(IsTransient(obj, session));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<bool ? >(ex);
-			}
-		}
-
 		public Task<object[]> GetPropertyValuesToInsertAsync(object obj, IDictionary mergeMap, ISessionImplementor session)
 		{
 			try
@@ -211,56 +191,6 @@ namespace NHibernate.DomainModel
 		public Task ProcessUpdateGeneratedPropertiesAsync(object id, object entity, object[] state, ISessionImplementor session)
 		{
 			return TaskHelper.CompletedTask;
-		}
-
-		public Task<object> GetIdentifierAsync(object obj, EntityMode entityMode)
-		{
-			try
-			{
-				return Task.FromResult<object>(GetIdentifier(obj, entityMode));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
-		}
-
-		public Task SetIdentifierAsync(object obj, object id, EntityMode entityMode)
-		{
-			try
-			{
-				SetIdentifier(obj, id, entityMode);
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
-		}
-
-		public Task<object> InstantiateAsync(object id, EntityMode entityMode)
-		{
-			try
-			{
-				return Task.FromResult<object>(Instantiate(id, entityMode));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
-		}
-
-		public Task ResetIdentifierAsync(object entity, object currentId, object currentVersion, EntityMode entityMode)
-		{
-			try
-			{
-				ResetIdentifier(entity, currentId, currentVersion, entityMode);
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
 		}
 	}
 }

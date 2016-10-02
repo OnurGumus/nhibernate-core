@@ -10,27 +10,11 @@ using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Persister.Collection
 {
-	/// <summary>
-	/// A strategy for persisting a collection role.
-	/// </summary>
-	/// <remarks>
-	/// Defines a contract between the persistence strategy and the actual persistent collection framework
-	/// and session. Does not define operations that are required for querying collections, or loading by outer join.
-	/// <para/>
-	/// Implements persistence of a collection instance while the instance is
-	/// referenced in a particular role.
-	/// <para/>
-	/// This class is highly coupled to the <see cref = "IPersistentCollection"/>
-	/// hierarchy, since double dispatch is used to load and update collection 
-	/// elements.
-	/// <para/>
-	/// May be considered an immutable view of the mapping object
-	/// </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface ICollectionPersister
 	{

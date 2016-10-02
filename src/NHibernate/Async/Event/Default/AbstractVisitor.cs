@@ -2,15 +2,11 @@
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Event.Default
 {
-	/// <summary> 
-	/// Abstract superclass of algorithms that walk a tree of property values of an entity, and
-	/// perform specific functionality for collections, components and associated entities. 
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class AbstractVisitor
 	{

@@ -7,12 +7,11 @@ using NHibernate.Persister.Collection;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Loader.Collection
 {
-	/// <summary> Implements subselect fetching for a collection</summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class SubselectCollectionLoader : BasicCollectionLoader
 	{

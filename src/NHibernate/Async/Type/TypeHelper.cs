@@ -9,36 +9,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Type
 {
-	/// <summary>
-	/// Collection of convenience methods relating to operations across arrays of types...
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public static partial class TypeHelper
 	{
-		/// <summary>Deep copy a series of values from one array to another</summary>
-		/// <param name = "values">The values to copy (the source)</param>
-		/// <param name = "types">The value types</param>
-		/// <param name = "copy">An array indicating which values to include in the copy</param>
-		/// <param name = "target">The array into which to copy the values</param>
-		/// <param name = "session">The originating session</param>
-		public static async Task DeepCopyAsync(object[] values, IType[] types, bool[] copy, object[] target, ISessionImplementor session)
-		{
-			for (int i = 0; i < types.Length; i++)
-			{
-				if (copy[i])
-				{
-					if (Equals(LazyPropertyInitializer.UnfetchedProperty, values[i]) || Equals(BackrefPropertyAccessor.Unknown, values[i]))
-					{
-						target[i] = values[i];
-					}
-					else
-					{
-						target[i] = await (types[i].DeepCopyAsync(values[i], session.EntityMode, session.Factory));
-					}
-				}
-			}
-		}
-
 		/// <summary>Apply the <see cref = "ICacheAssembler.BeforeAssemble"/> operation across a series of values.</summary>
 		/// <param name = "row">The values</param>
 		/// <param name = "types">The value types</param>

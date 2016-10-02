@@ -5,9 +5,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Engine
 {
-	/// <summary>
-	/// Utility methods for managing versions and timestamps
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class Versioning
 	{
@@ -23,7 +20,7 @@ namespace NHibernate.Engine
 			object next = await (versionType.NextAsync(version, session));
 			if (log.IsDebugEnabled)
 			{
-				log.Debug(string.Format("Incrementing: {0} to {1}", await (versionType.ToLoggableStringAsync(version, session.Factory)), await (versionType.ToLoggableStringAsync(next, session.Factory))));
+				log.Debug(string.Format("Incrementing: {0} to {1}", versionType.ToLoggableString(version, session.Factory), versionType.ToLoggableString(next, session.Factory)));
 			}
 
 			return next;

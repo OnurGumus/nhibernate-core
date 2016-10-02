@@ -7,13 +7,6 @@ using NHibernate.Util;
 
 namespace NHibernate.Connection
 {
-	/// <summary>
-	/// An implementation of the <c>IConnectionProvider</c> that simply throws an exception when
-	/// a connection is requested.
-	/// </summary>
-	/// <remarks>
-	/// This implementation indicates that the user is expected to supply an ADO.NET connection
-	/// </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class UserSuppliedConnectionProvider : ConnectionProvider
 	{

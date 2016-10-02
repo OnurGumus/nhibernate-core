@@ -1,6 +1,6 @@
 #if NET_4_5
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Event

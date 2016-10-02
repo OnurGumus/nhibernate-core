@@ -254,7 +254,7 @@ namespace NHibernate.AsyncGenerator
 		/// <summary>
 		/// Define how types will be converted to async. Default all types will be generated as partial
 		/// </summary>
-		public Func<INamedTypeSymbol, TypeTransformation> TypeTransformationFunc { get; set; }
+		public Func<INamedTypeSymbol, TypeTransformation> TypeTransformationFunc { get; set; } = s => TypeTransformation.Partial; 
 
 		/// <summary>
 		/// Name of the folder where all async partial classes will be stored
@@ -270,121 +270,120 @@ namespace NHibernate.AsyncGenerator
 			var currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 			var basePath = Path.GetFullPath(Path.Combine(currentPath, @"..\..\..\"));
 
+			Func<IMethodSymbol, IMethodSymbol> findAsyncFn = symbol =>
+			{
+				var ns = symbol.ContainingNamespace?.ToString() ?? "";
+				if (ns.StartsWith("System") && !ns.StartsWith("System.Data"))
+				{
+					// TODO: handle Linq
+					return null;
+				}
+
+				Func<IParameterSymbol, IParameterSymbol, bool> paramCompareFunc = null;
+				if (symbol.ContainingAssembly.Name == "nunit.framework" && symbol.ContainingType.Name == "Assert")
+				{
+					var delegateNames = new HashSet<string> { "AsyncTestDelegate", "TestDelegate" };
+					paramCompareFunc = (p1, p2) => p1.Type.Equals(p2.Type) ||
+												   (delegateNames.Contains(p1.Type.Name) && delegateNames.Contains(p2.Type.Name));
+				}
+				return symbol.ContainingType.EnumerateBaseTypesAndSelf()
+					.SelectMany(o => o.GetMembers(symbol.Name + "Async"))
+					.OfType<IMethodSymbol>()
+					.Where(o => o.TypeParameters.Length == symbol.TypeParameters.Length)
+					.FirstOrDefault(o => o.HaveSameParameters(symbol, paramCompareFunc));
+			};
+
 			var solutionConfig = new SolutionConfiguration(Path.Combine(basePath, @"NHibernate.sln"))
 			{
 				ProjectConfigurations =
 				{
-					/*
 					new ProjectConfiguration("NHibernate")
 					{
 						ScanMethodsBody = true,
 						IgnoreExternalReferences = true,
-						CanScanMethodFunc = symbol => symbol.GetAttributes().Any(a => a.AttributeClass.Name == "AsyncAttribute"))
-					},
-					
-					new ProjectConfiguration("NHibernate.DomainModel")
-					{
-						ScanMethodsBody = true,
-						ScanForMissingAsyncMembers = true,
-						IgnoreReferencesFromProjects = new HashSet<string> { "NHibernate" }
-					},*/
-					new ProjectConfiguration("NHibernate.Test")
-					{
-						ScanForMissingAsyncMembers = true,
-						IgnoreExternalReferences = true,
-						ScanMethodsBody = true,
 						MethodConversionFunc = symbol =>
 						{
-							if (symbol.GetAttributes().Any(a => a.AttributeClass.Name == "TestAttribute"))
+							if (symbol.GetAttributes().Any(a => a.AttributeClass.Name == "AsyncAttribute"))
 							{
 								return MethodAsyncConversion.ToAsync;
 							}
-							return MethodAsyncConversion.Smart;
-							//symbol.ContainingType?.ContainingType?.GetAttributes().Any(a => a.AttributeClass.Name == "TestFixtureAttribute") == true
+							return MethodAsyncConversion.None;
 						},
-						CanGenerateMethod = m =>
-						{
-							return
-								m.ReferenceResults.Any(o => o.Symbol.ContainingAssembly.ToString().StartsWith("NHibernate"));
-						},
-						/*
-						CanScanTypeFunc = symbol =>
-						{
-							if (symbol.Name == "TestCase" || symbol.BaseType?.Name == "TestCase")
-							{
-								return true;
-							}
-							return false;
-						},*/
-						CanConvertReferenceFunc = m =>
-						{
-							return m.ContainingNamespace.ToString() != "System.IO";
-						},
-						//CanScanDocumentFunc = doc =>
-						//{
-						//	//return !doc.FilePath.Contains("NHSpecificTest") && (
-						//	//	doc.FilePath.EndsWith(@"MultiPathCircleCascadeTest.cs") ||
-						//	//	doc.FilePath.EndsWith(@"ComponentTest.cs") ||
-						//	//	doc.FilePath.EndsWith(@"\TestCase.cs")
-						//	//	);
-							
-						//	return doc.FilePath.EndsWith(@"NH2207\SampleTest.cs") ||
-						//	//doc.FilePath.EndsWith(@"NH2583\AbstractMassTestingFixture.cs") ||
-						//	doc.FilePath.EndsWith(@"NHSpecificTest\BugTestCase.cs") ||
-						//	//doc.FilePath.EndsWith(@"NH2583\Domain.cs") ||
-						//	doc.FilePath.EndsWith(@"\TestCase.cs");
-							
-						//	//return
-						//	//doc.FilePath.EndsWith(@"NHSpecificTest\BasicClassFixture.cs") ||
-						//	//doc.FilePath.EndsWith(@"\ObjectAssertion.cs") ||
-						//	//doc.FilePath.EndsWith(@"\TestCase.cs");
-						//},
-						FindAsyncCounterpart = symbol =>
-						{
-							var ns = symbol.ContainingNamespace?.ToString() ?? "";
-							if (ns.StartsWith("System") && !ns.StartsWith("System.Data"))
-							{
-								// TODO: handle Linq
-								return null;
-							}
+						FindAsyncCounterpart = findAsyncFn
+					},
 
-							Func<IParameterSymbol, IParameterSymbol, bool> paramCompareFunc = null;
-							if (symbol.ContainingAssembly.Name == "nunit.framework" && symbol.ContainingType.Name == "Assert")
-							{
-								var delegateNames = new HashSet<string> {"AsyncTestDelegate", "TestDelegate"};
-								paramCompareFunc = (p1, p2) =>
-								{
-									return p1.Type.Equals(p2.Type) || (delegateNames.Contains(p1.Type.Name) && delegateNames.Contains(p2.Type.Name));
-								};
-							}
-							return symbol.ContainingType.EnumerateBaseTypesAndSelf()
-								.SelectMany(o => o.GetMembers(symbol.Name + "Async"))
-								.OfType<IMethodSymbol>()
-								.Where(o => o.TypeParameters.Length == symbol.TypeParameters.Length)
-								.FirstOrDefault(o => o.HaveSameParameters(symbol, paramCompareFunc));
-						},
-						TypeTransformationFunc = type =>
-						{
-							if (type.Name == "LinqReadonlyTestsContext")
-							{
-								return TypeTransformation.None;
-							}
-							if (type.GetAttributes().Any(o => o.AttributeClass.Name == "TestFixtureAttribute") || type.Name == "TestCase")
-							{
-								return TypeTransformation.NewType;
-							}
-							var baseType = type.BaseType;
-							while (baseType != null)
-							{
-								if (baseType.Name == "TestCase")
-								{
-									return TypeTransformation.NewType;
-								}
-								baseType = baseType.BaseType;
-							}
-							return TypeTransformation.Partial;
-							}
-					}
+					//new ProjectConfiguration("NHibernate.DomainModel")
+					//{
+					//	ScanMethodsBody = true,
+					//	IgnoreExternalReferences = true,
+					//	ScanForMissingAsyncMembers = true,
+					//	FindAsyncCounterpart = findAsyncFn
+					//},
+
+					//new ProjectConfiguration("NHibernate.Test")
+					//{
+					//	ScanForMissingAsyncMembers = true,
+					//	IgnoreExternalReferences = true,
+					//	ScanMethodsBody = true,
+					//	MethodConversionFunc = symbol =>
+					//	{
+					//		if (symbol.GetAttributes().Any(a => a.AttributeClass.Name == "TestAttribute"))
+					//		{
+					//			return MethodAsyncConversion.ToAsync;
+					//		}
+					//		return MethodAsyncConversion.Smart;
+					//	},
+					//	CanGenerateMethod = m =>
+					//	{
+					//		return
+					//			m.ReferenceResults.Any(o => o.Symbol.ContainingAssembly.ToString().StartsWith("NHibernate"));
+					//	},
+					//	CanConvertReferenceFunc = m =>
+					//	{
+					//		return m.ContainingNamespace.ToString() != "System.IO";
+					//	},
+					//	//CanScanDocumentFunc = doc =>
+					//	//{
+					//	//	//return !doc.FilePath.Contains("NHSpecificTest") && (
+					//	//	//	doc.FilePath.EndsWith(@"MultiPathCircleCascadeTest.cs") ||
+					//	//	//	doc.FilePath.EndsWith(@"ComponentTest.cs") ||
+					//	//	//	doc.FilePath.EndsWith(@"\TestCase.cs")
+					//	//	//	);
+							
+					//	//	return doc.FilePath.EndsWith(@"Insertordering\InsertOrderingFixture.cs") ||
+					//	//	//doc.FilePath.EndsWith(@"NH2583\AbstractMassTestingFixture.cs") ||
+					//	//	//doc.FilePath.EndsWith(@"NHSpecificTest\BugTestCase.cs") ||
+					//	//	//doc.FilePath.EndsWith(@"NH2583\Domain.cs") ||
+					//	//	doc.FilePath.EndsWith(@"\TestCase.cs");
+							
+					//	//	//return
+					//	//	//doc.FilePath.EndsWith(@"NHSpecificTest\BasicClassFixture.cs") ||
+					//	//	//doc.FilePath.EndsWith(@"\ObjectAssertion.cs") ||
+					//	//	//doc.FilePath.EndsWith(@"\TestCase.cs");
+					//	//},
+					//	FindAsyncCounterpart = findAsyncFn,
+					//	TypeTransformationFunc = type =>
+					//	{
+					//		if (type.Name == "LinqReadonlyTestsContext")
+					//		{
+					//			return TypeTransformation.None;
+					//		}
+					//		if (type.GetAttributes().Any(o => o.AttributeClass.Name == "TestFixtureAttribute") || type.Name == "TestCase")
+					//		{
+					//			return TypeTransformation.NewType;
+					//		}
+					//		var baseType = type.BaseType;
+					//		while (baseType != null)
+					//		{
+					//			if (baseType.Name == "TestCase")
+					//			{
+					//				return TypeTransformation.NewType;
+					//			}
+					//			baseType = baseType.BaseType;
+					//		}
+					//		return TypeTransformation.Partial;
+					//	}
+					//}
 				},
 				IgnoreProjectNames = new HashSet<string> { "NHibernate.TestDatabaseSetup" },
 				TestAttributeNames = new HashSet<string>{ "TestAttribute" },
@@ -400,8 +399,6 @@ namespace NHibernate.AsyncGenerator
 			};
 
 			var solutionInfo = new SolutionInfo(solutionConfig);
-			//solutionInfo.Open().ConfigureAwait(false).GetAwaiter().GetResult();
-			//solutionInfo.Analyze().ConfigureAwait(false).GetAwaiter().GetResult();
 			AsyncContext.Run(() => solutionInfo.Open());
 			AsyncContext.Run(() => solutionInfo.Analyze());
 			solutionInfo.PostAnalyze();

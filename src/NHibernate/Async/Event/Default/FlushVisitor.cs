@@ -6,10 +6,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Event.Default
 {
-	/// <summary> 
-	/// Process collections reachable from an entity. 
-	/// This visitor assumes that wrap was already performed for the entity.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class FlushVisitor : AbstractVisitor
 	{

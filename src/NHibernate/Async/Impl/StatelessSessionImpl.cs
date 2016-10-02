@@ -221,15 +221,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task<object> InstantiateAsync(string clazz, object id)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				CheckAndUpdateSessionStatus();
-				return await (Factory.GetEntityPersister(clazz).InstantiateAsync(id, EntityMode.Poco));
-			}
-		}
-
 		public override async Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -349,7 +340,7 @@ namespace NHibernate.Impl
 					await (persister.InsertAsync(id, state, entity, this));
 				}
 
-				await (persister.SetIdentifierAsync(entity, id, EntityMode.Poco));
+				persister.SetIdentifier(entity, id, EntityMode.Poco);
 				return id;
 			}
 		}
@@ -374,7 +365,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				IEntityPersister persister = GetEntityPersister(entityName, entity);
-				object id = await (persister.GetIdentifierAsync(entity, EntityMode.Poco));
+				object id = persister.GetIdentifier(entity, EntityMode.Poco);
 				object[] state = persister.GetPropertyValues(entity, EntityMode.Poco);
 				object oldVersion;
 				if (persister.IsVersioned)
@@ -413,7 +404,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				IEntityPersister persister = GetEntityPersister(entityName, entity);
-				object id = await (persister.GetIdentifierAsync(entity, EntityMode.Poco));
+				object id = persister.GetIdentifier(entity, EntityMode.Poco);
 				object version = persister.GetVersion(entity, EntityMode.Poco);
 				await (persister.DeleteAsync(id, version, entity, this));
 			}
@@ -530,7 +521,7 @@ namespace NHibernate.Impl
 			using (new SessionIdLoggingContext(SessionId))
 			{
 				IEntityPersister persister = GetEntityPersister(entityName, entity);
-				object id = await (persister.GetIdentifierAsync(entity, EntityMode));
+				object id = persister.GetIdentifier(entity, EntityMode);
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("refreshing transient " + MessageHelper.InfoString(persister, id, Factory));

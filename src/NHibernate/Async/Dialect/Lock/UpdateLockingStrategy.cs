@@ -11,10 +11,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Dialect.Lock
 {
-	/// <summary> 
-	/// A locking strategy where the locks are obtained through update statements.
-	/// </summary>
-	/// <remarks> This strategy is not valid for read style locks. </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class UpdateLockingStrategy : ILockingStrategy
 	{

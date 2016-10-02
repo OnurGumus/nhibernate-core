@@ -3,15 +3,11 @@ using NHibernate.Type;
 using NHibernate.Engine;
 using System.Data.Common;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Persister.Entity
 {
-	/// <summary>
-	/// Implemented by <c>ClassPersister</c> that uses <c>Loader</c>. There are several optional
-	/// operations used only by loaders that inherit <c>OuterJoinLoader</c>
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface ILoadable : IEntityPersister
 	{

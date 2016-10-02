@@ -77,12 +77,7 @@ namespace NHibernate.AsyncGenerator
 				LazyCreate = lazyCreate
 			};
 			MethodInfos.Add(memberNode, asyncMember);
-			if ((MethodInfos).Keys.GroupBy(o => 
-				o.Identifier.ToString()
-				+ (o.TypeParameterList != null 
-					? $"<{string.Join(",", o.TypeParameterList.Parameters.Select(p => p.Identifier.ValueText))}>" 
-					: "") 
-				+ o.ParameterList.ToString()).Any(o => o.Count() > 1)) //TODO DELETE
+			if ((MethodInfos).Keys.GroupBy(o => o.WithBody(null).ToString()).Any(o => o.Count() > 1)) //TODO DELETE
 			{
 				throw new Exception("asdad");
 			}

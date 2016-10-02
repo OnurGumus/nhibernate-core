@@ -49,7 +49,7 @@ namespace NHibernate.Action
 			{
 				if (affectedByFilters)
 				{
-					throw new HibernateException("cannot recreate collection while filter is enabled: " + await (MessageHelper.CollectionInfoStringAsync(persister, collection, id, session)));
+					throw new HibernateException("cannot recreate collection while filter is enabled: " + MessageHelper.CollectionInfoString(persister, collection, id, session));
 				}
 
 				if (!emptySnapshot)
@@ -66,7 +66,7 @@ namespace NHibernate.Action
 				await (persister.InsertRowsAsync(collection, id, session));
 			}
 
-			await (Session.PersistenceContext.GetCollectionEntry(collection).AfterActionAsync(collection));
+			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
 			Evict();
 			PostUpdate();
 			if (statsEnabled)

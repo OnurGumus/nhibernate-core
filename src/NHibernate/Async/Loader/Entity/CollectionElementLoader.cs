@@ -12,7 +12,7 @@ using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 
 namespace NHibernate.Loader.Entity
 {

@@ -10,34 +10,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Id
 {
-	/// <summary>
-	/// An <see cref = "IIdentifierGenerator"/> that returns an <c>Int64</c>, constructed using
-	/// a hi/lo algorithm.
-	/// </summary>
-	/// <remarks>
-	/// <p>
-	///	This id generation strategy is specified in the mapping file as 
-	///	<code>
-	///	&lt;generator class="hilo"&gt;
-	///		&lt;param name="table"&gt;table&lt;/param&gt;
-	///		&lt;param name="column"&gt;id_column&lt;/param&gt;
-	///		&lt;param name="max_lo"&gt;max_lo_value&lt;/param&gt;
-	///		&lt;param name="schema"&gt;db_schema&lt;/param&gt;
-	///	&lt;/generator&gt;
-	///	</code>
-	/// </p>
-	/// <p>
-	/// The <c>table</c> and <c>column</c> parameters are required, the <c>max_lo</c> and 
-	/// <c>schema</c> are optional.
-	/// </p>
-	/// <p>
-	/// The hi value MUST be fecthed in a separate transaction to the <c>ISession</c>
-	/// transaction so the generator must be able to obtain a new connection and 
-	/// commit it. Hence this implementation may not be used when the user is supplying
-	/// connections.  In that case a <see cref = "SequenceHiLoGenerator"/> would be a 
-	/// better choice (where supported).
-	/// </p>
-	/// </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class TableHiLoGenerator : TableGenerator
 	{

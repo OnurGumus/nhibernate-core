@@ -2,15 +2,11 @@
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
-	/// <summary> 
-	/// Encapsulates the strategy required to execute various types of update, delete,
-	/// and insert statements issued through HQL. 
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface IStatementExecutor
 	{

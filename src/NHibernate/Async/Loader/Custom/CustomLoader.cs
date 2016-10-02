@@ -18,9 +18,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Loader.Custom
 {
-	/// <summary> 
-	/// Extension point for loaders which use a SQL result set with "unexpected" column aliases. 
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class CustomLoader : Loader
 	{

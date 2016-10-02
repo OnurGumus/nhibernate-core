@@ -30,18 +30,6 @@ namespace NHibernate.Type
 				return TaskHelper.FromException<object>(ex);
 			}
 		}
-
-		public override Task<int> GetHashCodeAsync(object x, EntityMode entityMode)
-		{
-			try
-			{
-				return Task.FromResult<int>(GetHashCode(x, entityMode));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<int>(ex);
-			}
-		}
 	}
 }
 #endif

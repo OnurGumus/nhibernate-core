@@ -5,11 +5,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Proxy
 {
-	/// <summary>
-	/// NHibernateProxyHelper provides convenience methods for working with
-	/// objects that might be instances of Classes or the Proxied version of 
-	/// the Class.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public static partial class NHibernateProxyHelper
 	{

@@ -12,9 +12,6 @@ using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
-	/// <summary>
-	/// A session action that may be cascaded from parent entity to its children
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class CascadingAction
 	{

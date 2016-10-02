@@ -130,22 +130,6 @@ namespace NHibernate.Collection.Generic
 			return element;
 		}
 
-		public override async Task<object> GetSnapshotAsync(ICollectionPersister persister)
-		{
-			EntityMode entityMode = Session.EntityMode;
-			var map = new HashSet<SnapshotElement>();
-			int i = 0;
-			foreach (object value in _values)
-			{
-				object id;
-				_identifiers.TryGetValue(i++, out id);
-				var valueCopy = await (persister.ElementType.DeepCopyAsync(value, entityMode, persister.Factory));
-				map.Add(new SnapshotElement{Id = id, Value = valueCopy});
-			}
-
-			return map;
-		}
-
 		public override async Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
 		{
 			var sn = (ISet<SnapshotElement>)GetSnapshot();

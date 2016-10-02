@@ -23,11 +23,16 @@ namespace NHibernate.Type
 		/// <remarks>
 		/// This method calls DeepCopy if the value is not null.
 		/// </remarks>
-		public virtual async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
+		public virtual Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
 		{
-			if (value == null)
-				return null;
-			return await (DeepCopyAsync(value, session.EntityMode, session.Factory));
+			try
+			{
+				return Task.FromResult<object>(Disassemble(value, session, owner));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 
 		/// <summary>
@@ -40,11 +45,16 @@ namespace NHibernate.Type
 		/// <remarks>
 		/// This method calls DeepCopy if the value is not null.
 		/// </remarks>
-		public virtual async Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner)
+		public virtual Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner)
 		{
-			if (cached == null)
-				return null;
-			return await (DeepCopyAsync(cached, session.EntityMode, session.Factory));
+			try
+			{
+				return Task.FromResult<object>(Assemble(cached, session, owner));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 
 		public virtual Task BeforeAssembleAsync(object cached, ISessionImplementor session)
@@ -61,9 +71,16 @@ namespace NHibernate.Type
 		/// <param name = "session">The <see cref = "ISessionImplementor"/> is not used by this method.</param>
 		/// <returns>true if the field is dirty</returns>
 		/// <remarks>This method uses <c>IType.Equals(object, object)</c> to determine the value of IsDirty.</remarks>
-		public virtual async Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session)
+		public virtual Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session)
 		{
-			return !await (IsSameAsync(old, current, session.EntityMode));
+			try
+			{
+				return Task.FromResult<bool>(IsDirty(old, current, session));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<bool>(ex);
+			}
 		}
 
 		/// <summary>
@@ -129,10 +146,6 @@ namespace NHibernate.Type
 			return IsDirtyAsync(old, current, session);
 		}
 
-		/// <include file = 'IType.cs.xmldoc'
-		///path = '//members[@type="IType"]/member[@name="M:IType.DeepCopy"]/*'
-		////> 
-		public abstract Task<object> DeepCopyAsync(object val, EntityMode entityMode, ISessionFactoryImplementor factory);
 		public virtual async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
 		{
 			bool include;
@@ -149,59 +162,7 @@ namespace NHibernate.Type
 			return include ? await (ReplaceAsync(original, target, session, owner, copyCache)) : target;
 		}
 
-		public virtual Task<bool> IsSameAsync(object x, object y, EntityMode entityMode)
-		{
-			return IsEqualAsync(x, y, entityMode);
-		}
-
-		public virtual Task<bool> IsEqualAsync(object x, object y, EntityMode entityMode)
-		{
-			try
-			{
-				return Task.FromResult<bool>(IsEqual(x, y, entityMode));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<bool>(ex);
-			}
-		}
-
-		public virtual Task<bool> IsEqualAsync(object x, object y, EntityMode entityMode, ISessionFactoryImplementor factory)
-		{
-			return IsEqualAsync(x, y, entityMode);
-		}
-
-		public virtual Task<int> GetHashCodeAsync(object x, EntityMode entityMode)
-		{
-			try
-			{
-				return Task.FromResult<int>(GetHashCode(x, entityMode));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<int>(ex);
-			}
-		}
-
-		public virtual Task<int> GetHashCodeAsync(object x, EntityMode entityMode, ISessionFactoryImplementor factory)
-		{
-			return GetHashCodeAsync(x, entityMode);
-		}
-
-		public virtual Task<int> CompareAsync(object x, object y, EntityMode? entityMode)
-		{
-			try
-			{
-				return Task.FromResult<int>(Compare(x, y, entityMode));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<int>(ex);
-			}
-		}
-
 		public abstract Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, IDictionary copiedAlready);
-		public abstract Task<bool[]> ToColumnNullnessAsync(object value, IMapping mapping);
 		/// <include file = 'IType.cs.xmldoc'
 		///path = '//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, string[], ISessionImplementor, object)"]/*'
 		////> 
@@ -218,10 +179,6 @@ namespace NHibernate.Type
 		///path = '//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
 		////> 
 		public abstract Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session);
-		/// <include file = 'IType.cs.xmldoc'
-		///path = '//members[@type="IType"]/member[@name="M:IType.ToString"]/*'
-		////> 
-		public abstract Task<string> ToLoggableStringAsync(object value, ISessionFactoryImplementor factory);
 		public abstract Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session);
 	}
 }

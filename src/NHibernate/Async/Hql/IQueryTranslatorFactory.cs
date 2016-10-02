@@ -7,10 +7,6 @@ using NHibernate.Util;
 
 namespace NHibernate.Hql
 {
-	/// <summary>
-	/// Facade for generation of <see cref = "NHibernate.Hql.IQueryTranslator"/> 
-	/// and <see cref = "NHibernate.Hql.IFilterTranslator"/> instances.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface IQueryTranslatorFactory
 	{

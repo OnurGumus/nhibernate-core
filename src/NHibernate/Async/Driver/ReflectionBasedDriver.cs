@@ -3,7 +3,7 @@ using System.Data;
 using System.Data.Common;
 using NHibernate.Util;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 
 namespace NHibernate.Driver
 {

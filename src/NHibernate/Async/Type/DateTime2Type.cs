@@ -13,7 +13,14 @@ namespace NHibernate.Type
 	{
 		public override Task<object> NextAsync(object current, Engine.ISessionImplementor session)
 		{
-			return SeedAsync(session);
+			try
+			{
+				return Task.FromResult<object>(Seed(session));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<object>(ex);
+			}
 		}
 	}
 }

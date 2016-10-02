@@ -17,31 +17,6 @@ namespace NHibernate.Type
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class ComponentType : AbstractType, IAbstractComponentType
 	{
-		public override async Task<int> GetHashCodeAsync(object x, EntityMode entityMode, ISessionFactoryImplementor factory)
-		{
-			if (overridesGetHashCode)
-				return x.GetHashCode();
-			return await (GetHashCodeAsync(x, entityMode));
-		}
-
-		public override async Task<int> GetHashCodeAsync(object x, EntityMode entityMode)
-		{
-			int result = 17;
-			object[] values = await (GetPropertyValuesAsync(x, entityMode));
-			unchecked
-			{
-				for (int i = 0; i < propertySpan; i++)
-				{
-					object y = values[i];
-					result *= 37;
-					if (y != null)
-						result += await (propertyTypes[i].GetHashCodeAsync(y, entityMode));
-				}
-			}
-
-			return result;
-		}
-
 		public override async Task<bool> IsDirtyAsync(object x, object y, ISessionImplementor session)
 		{
 			if (x == y)
@@ -59,8 +34,8 @@ namespace NHibernate.Type
 				return true;
 			}
 
-			object[] xvalues = await (GetPropertyValuesAsync(x, entityMode));
-			object[] yvalues = await (GetPropertyValuesAsync(y, entityMode));
+			object[] xvalues = GetPropertyValues(x, entityMode);
+			object[] yvalues = GetPropertyValues(y, entityMode);
 			for (int i = 0; i < xvalues.Length; i++)
 			{
 				if (await (propertyTypes[i].IsDirtyAsync(xvalues[i], yvalues[i], session)))
@@ -89,8 +64,8 @@ namespace NHibernate.Type
 				return true;
 			}
 
-			object[] xvalues = await (GetPropertyValuesAsync(x, entityMode));
-			object[] yvalues = await (GetPropertyValuesAsync(y, entityMode));
+			object[] xvalues = GetPropertyValues(x, entityMode);
+			object[] yvalues = GetPropertyValues(y, entityMode);
 			int loc = 0;
 			for (int i = 0; i < xvalues.Length; i++)
 			{
@@ -134,7 +109,7 @@ namespace NHibernate.Type
 		/// <param name = "session"></param>
 		public override async Task NullSafeSetAsync(DbCommand st, object value, int begin, ISessionImplementor session)
 		{
-			object[] subvalues = await (NullSafeGetValuesAsync(value, session.EntityMode));
+			object[] subvalues = NullSafeGetValues(value, session.EntityMode);
 			for (int i = 0; i < propertySpan; i++)
 			{
 				await (propertyTypes[i].NullSafeSetAsync(st, subvalues[i], begin, session));
@@ -144,7 +119,7 @@ namespace NHibernate.Type
 
 		public override async Task NullSafeSetAsync(DbCommand st, object value, int begin, bool[] settable, ISessionImplementor session)
 		{
-			object[] subvalues = await (NullSafeGetValuesAsync(value, session.EntityMode));
+			object[] subvalues = NullSafeGetValues(value, session.EntityMode);
 			int loc = 0;
 			for (int i = 0; i < propertySpan; i++)
 			{
@@ -173,18 +148,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		private async Task<object[]> NullSafeGetValuesAsync(object value, EntityMode entityMode)
-		{
-			if (value == null)
-			{
-				return new object[propertySpan];
-			}
-			else
-			{
-				return await (GetPropertyValuesAsync(value, entityMode));
-			}
-		}
-
 		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			return NullSafeGetAsync(rs, new string[]{name}, session, owner);
@@ -202,11 +165,11 @@ namespace NHibernate.Type
 			}
 		}
 
-		public Task<object[]> GetPropertyValuesAsync(object component, EntityMode entityMode)
+		public Task<object[]> GetPropertyValuesAsync(object component, ISessionImplementor session)
 		{
 			try
 			{
-				return Task.FromResult<object[]>(GetPropertyValues(component, entityMode));
+				return Task.FromResult<object[]>(GetPropertyValues(component, session));
 			}
 			catch (Exception ex)
 			{
@@ -214,73 +177,13 @@ namespace NHibernate.Type
 			}
 		}
 
-		public Task<object[]> GetPropertyValuesAsync(object component, ISessionImplementor session)
-		{
-			return GetPropertyValuesAsync(component, session.EntityMode);
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name = "value"></param>
-		/// <param name = "factory"></param>
-		/// <returns></returns>
-		public override async Task<string> ToLoggableStringAsync(object value, ISessionFactoryImplementor factory)
-		{
-			if (value == null)
-			{
-				return "null";
-			}
-
-			IDictionary<string, string> result = new Dictionary<string, string>();
-			EntityMode? entityMode = tuplizerMapping.GuessEntityMode(value);
-			if (!entityMode.HasValue)
-			{
-				throw new InvalidCastException(value.GetType().FullName);
-			}
-
-			object[] values = await (GetPropertyValuesAsync(value, entityMode.Value));
-			for (int i = 0; i < propertyTypes.Length; i++)
-			{
-				result[propertyNames[i]] = await (propertyTypes[i].ToLoggableStringAsync(values[i], factory));
-			}
-
-			return StringHelper.Unqualify(Name) + CollectionPrinter.ToString(result);
-		}
-
-		public override async Task<object> DeepCopyAsync(object component, EntityMode entityMode, ISessionFactoryImplementor factory)
-		{
-			if (component == null)
-			{
-				return null;
-			}
-
-			object[] values = await (GetPropertyValuesAsync(component, entityMode));
-			for (int i = 0; i < propertySpan; i++)
-			{
-				values[i] = await (propertyTypes[i].DeepCopyAsync(values[i], entityMode, factory));
-			}
-
-			object result = await (InstantiateAsync(entityMode));
-			SetPropertyValues(result, values, entityMode);
-			//not absolutely necessary, but helps for some
-			//equals()/hashCode() implementations
-			IComponentTuplizer ct = (IComponentTuplizer)tuplizerMapping.GetTuplizer(entityMode);
-			if (ct.HasParentProperty)
-			{
-				ct.SetParent(result, ct.GetParent(component), factory);
-			}
-
-			return result;
-		}
-
 		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready)
 		{
 			if (original == null)
 				return null;
-			object result = target ?? await (InstantiateAsync(owner, session));
+			object result = target ?? Instantiate(owner, session);
 			EntityMode entityMode = session.EntityMode;
-			object[] values = await (TypeHelper.ReplaceAsync(await (GetPropertyValuesAsync(original, entityMode)), await (GetPropertyValuesAsync(result, entityMode)), propertyTypes, session, owner, copiedAlready));
+			object[] values = await (TypeHelper.ReplaceAsync(GetPropertyValues(original, entityMode), GetPropertyValues(result, entityMode), propertyTypes, session, owner, copiedAlready));
 			SetPropertyValues(result, values, entityMode);
 			return result;
 		}
@@ -289,28 +192,10 @@ namespace NHibernate.Type
 		{
 			if (original == null)
 				return null;
-			object result = target ?? await (InstantiateAsync(owner, session));
+			object result = target ?? Instantiate(owner, session);
 			EntityMode entityMode = session.EntityMode;
-			object[] values = await (TypeHelper.ReplaceAsync(await (GetPropertyValuesAsync(original, entityMode)), await (GetPropertyValuesAsync(result, entityMode)), propertyTypes, session, owner, copyCache, foreignKeyDirection));
+			object[] values = await (TypeHelper.ReplaceAsync(GetPropertyValues(original, entityMode), GetPropertyValues(result, entityMode), propertyTypes, session, owner, copyCache, foreignKeyDirection));
 			SetPropertyValues(result, values, entityMode);
-			return result;
-		}
-
-		/// <summary> This method does not populate the component parent</summary>
-		public async Task<object> InstantiateAsync(EntityMode entityMode)
-		{
-			return await (tuplizerMapping.GetTuplizer(entityMode).InstantiateAsync());
-		}
-
-		public virtual async Task<object> InstantiateAsync(object parent, ISessionImplementor session)
-		{
-			object result = await (InstantiateAsync(session.EntityMode));
-			IComponentTuplizer ct = (IComponentTuplizer)tuplizerMapping.GetTuplizer(session.EntityMode);
-			if (ct.HasParentProperty && parent != null)
-			{
-				ct.SetParent(result, session.PersistenceContext.ProxyFor(parent), session.Factory);
-			}
-
 			return result;
 		}
 
@@ -322,7 +207,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				object[] values = await (GetPropertyValuesAsync(value, session.EntityMode));
+				object[] values = GetPropertyValues(value, session.EntityMode);
 				for (int i = 0; i < propertyTypes.Length; i++)
 				{
 					values[i] = await (propertyTypes[i].DisassembleAsync(values[i], session, owner));
@@ -347,7 +232,7 @@ namespace NHibernate.Type
 					assembled[i] = await (propertyTypes[i].AssembleAsync(values[i], session, owner));
 				}
 
-				object result = await (InstantiateAsync(owner, session));
+				object result = Instantiate(owner, session);
 				SetPropertyValues(result, assembled, session.EntityMode);
 				return result;
 			}
@@ -389,7 +274,7 @@ namespace NHibernate.Type
 		{
 			if (value != null)
 			{
-				object result = await (InstantiateAsync(owner, session));
+				object result = Instantiate(owner, session);
 				object[] values = (object[])value;
 				object[] resolvedValues = new object[values.Length]; //only really need new array during semiresolve!
 				for (int i = 0; i < values.Length; i++)
@@ -442,120 +327,6 @@ namespace NHibernate.Type
 			}
 
 			return false;
-		}
-
-		public override async Task<int> CompareAsync(object x, object y, EntityMode? entityMode)
-		{
-			if (x == y)
-			{
-				return 0;
-			}
-
-			object[] xvalues = await (GetPropertyValuesAsync(x, entityMode.GetValueOrDefault()));
-			object[] yvalues = await (GetPropertyValuesAsync(y, entityMode.GetValueOrDefault()));
-			for (int i = 0; i < propertySpan; i++)
-			{
-				int propertyCompare = await (propertyTypes[i].CompareAsync(xvalues[i], yvalues[i], entityMode));
-				if (propertyCompare != 0)
-					return propertyCompare;
-			}
-
-			return 0;
-		}
-
-		public override async Task<bool> IsEqualAsync(object x, object y, EntityMode entityMode)
-		{
-			if (x == y)
-			{
-				return true;
-			}
-
-			if (x == null || y == null)
-			{
-				return false;
-			}
-
-			object[] xvalues = await (GetPropertyValuesAsync(x, entityMode));
-			object[] yvalues = await (GetPropertyValuesAsync(y, entityMode));
-			for (int i = 0; i < propertySpan; i++)
-			{
-				if (!await (propertyTypes[i].IsEqualAsync(xvalues[i], yvalues[i], entityMode)))
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
-
-		public override async Task<bool> IsEqualAsync(object x, object y, EntityMode entityMode, ISessionFactoryImplementor factory)
-		{
-			if (x == y)
-			{
-				return true;
-			}
-
-			if (x == null || y == null)
-			{
-				return false;
-			}
-
-			object[] xvalues = await (GetPropertyValuesAsync(x, entityMode));
-			object[] yvalues = await (GetPropertyValuesAsync(y, entityMode));
-			for (int i = 0; i < propertySpan; i++)
-			{
-				if (!await (propertyTypes[i].IsEqualAsync(xvalues[i], yvalues[i], entityMode, factory)))
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
-
-		public override async Task<bool> IsSameAsync(object x, object y, EntityMode entityMode)
-		{
-			if (x == y)
-			{
-				return true;
-			}
-
-			if (x == null || y == null)
-			{
-				return false;
-			}
-
-			object[] xvalues = await (GetPropertyValuesAsync(x, entityMode));
-			object[] yvalues = await (GetPropertyValuesAsync(y, entityMode));
-			for (int i = 0; i < propertySpan; i++)
-			{
-				if (!await (propertyTypes[i].IsSameAsync(xvalues[i], yvalues[i], entityMode)))
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
-
-		public override async Task<bool[]> ToColumnNullnessAsync(object value, IMapping mapping)
-		{
-			bool[] result = new bool[GetColumnSpan(mapping)];
-			if (value == null)
-			{
-				return result;
-			}
-
-			object[] values = await (GetPropertyValuesAsync(value, EntityMode.Poco));
-			int loc = 0;
-			for (int i = 0; i < propertyTypes.Length; i++)
-			{
-				bool[] propertyNullness = await (propertyTypes[i].ToColumnNullnessAsync(values[i], mapping));
-				Array.Copy(propertyNullness, 0, result, loc, propertyNullness.Length);
-				loc += propertyNullness.Length;
-			}
-
-			return result;
 		}
 	}
 }

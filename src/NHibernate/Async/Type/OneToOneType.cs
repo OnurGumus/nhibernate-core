@@ -101,18 +101,6 @@ namespace NHibernate.Type
 			//referenced value
 			return await (ResolveIdentifierAsync(session.GetContextEntityIdentifier(owner), session, owner));
 		}
-
-		public override Task<bool[]> ToColumnNullnessAsync(object value, IMapping mapping)
-		{
-			try
-			{
-				return Task.FromResult<bool[]>(ToColumnNullness(value, mapping));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<bool[]>(ex);
-			}
-		}
 	}
 }
 #endif

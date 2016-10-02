@@ -45,25 +45,6 @@ namespace NHibernate.Type
 
 			return result;
 		}
-
-		public override async Task<string> ToLoggableStringAsync(object value, ISessionFactoryImplementor factory)
-		{
-			if (value == null)
-			{
-				return "null";
-			}
-
-			Array array = (Array)value;
-			int length = array.Length;
-			IList list = new List<object>(length);
-			IType elemType = GetElementType(factory);
-			for (int i = 0; i < length; i++)
-			{
-				list.Add(await (elemType.ToLoggableStringAsync(array.GetValue(i), factory)));
-			}
-
-			return CollectionPrinter.ToString(list);
-		}
 	}
 }
 #endif

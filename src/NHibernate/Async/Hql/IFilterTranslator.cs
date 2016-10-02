@@ -1,14 +1,11 @@
 #if NET_4_5
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Hql
 {
-	/// <summary> 
-	/// Specialized interface for filters.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface IFilterTranslator : IQueryTranslator
 	{

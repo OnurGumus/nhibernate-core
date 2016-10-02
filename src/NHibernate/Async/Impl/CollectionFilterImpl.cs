@@ -8,9 +8,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
-	/// <summary>
-	/// Implementation of the <see cref = "IQuery"/> interface for collection filters.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class CollectionFilterImpl : QueryImpl
 	{

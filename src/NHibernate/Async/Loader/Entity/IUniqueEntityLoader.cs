@@ -1,14 +1,11 @@
 #if NET_4_5
 using NHibernate.Engine;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Loader.Entity
 {
-	/// <summary>
-	///  Loads entities for a <see cref = "NHibernate.Persister.Entity.IEntityPersister"/>
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface IUniqueEntityLoader
 	{

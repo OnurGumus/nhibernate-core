@@ -26,7 +26,7 @@ namespace NHibernate.Engine.Query
 			if (Log.IsDebugEnabled)
 			{
 				Log.Debug("find: " + _sourceQuery);
-				await (queryParameters.LogParametersAsync(session.Factory));
+				queryParameters.LogParameters(session.Factory);
 			}
 
 			bool hasLimit = queryParameters.RowSelection != null && queryParameters.RowSelection.DefinesLimits;
@@ -89,7 +89,7 @@ namespace NHibernate.Engine.Query
 			if (Log.IsDebugEnabled)
 			{
 				Log.Debug("executeUpdate: " + _sourceQuery);
-				await (queryParameters.LogParametersAsync(session.Factory));
+				queryParameters.LogParameters(session.Factory);
 			}
 
 			if (Translators.Length != 1)

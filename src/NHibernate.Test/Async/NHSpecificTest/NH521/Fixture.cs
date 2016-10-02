@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH521
 				{
 					await (session.LockAsync(uninitEntity, LockMode.None));
 					Assert.IsFalse(NHibernateUtil.IsInitialized(uninitEntity), "session.Lock() causes initialization of an unitialized entity.");
-					Assert.AreEqual(LockMode.None, await (session.GetCurrentLockModeAsync(uninitEntity)));
+					Assert.AreEqual(LockMode.None, session.GetCurrentLockMode(uninitEntity));
 					Assert.IsFalse(NHibernateUtil.IsInitialized(uninitEntity), "session.GetCurrentLockMode() causes initialization of an unitialized entity.");
 					await (session.DeleteAsync("from System.Object"));
 					await (transaction.CommitAsync());

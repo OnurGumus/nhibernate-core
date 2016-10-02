@@ -31,41 +31,6 @@ namespace NHibernate.Impl
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public sealed partial class SessionImpl : AbstractSessionImpl, IEventSource, ISerializable, IDeserializationCallback
 	{
-		public async Task<LockMode> GetCurrentLockModeAsync(object obj)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				CheckAndUpdateSessionStatus();
-				if (obj == null)
-				{
-					throw new ArgumentNullException("obj", "null object passed to GetCurrentLockMode");
-				}
-
-				if (obj.IsProxy())
-				{
-					var proxy = obj as INHibernateProxy;
-					obj = await (proxy.HibernateLazyInitializer.GetImplementationAsync(this));
-					if (obj == null)
-					{
-						return LockMode.None;
-					}
-				}
-
-				EntityEntry e = persistenceContext.GetEntry(obj);
-				if (e == null)
-				{
-					throw new TransientObjectException("Given object not associated with the session");
-				}
-
-				if (e.Status != Status.Loaded)
-				{
-					throw new ObjectDeletedException("The given object was deleted", e.Id, e.EntityName);
-				}
-
-				return e.LockMode;
-			}
-		}
-
 		/// <summary>
 		/// Save a transient object. An id is generated, assigned to the object and returned
 		/// </summary>
@@ -410,35 +375,6 @@ namespace NHibernate.Impl
 				}
 
 				return plan;
-			}
-		}
-
-		public override async Task<object> InstantiateAsync(string clazz, object id)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				return await (InstantiateAsync(Factory.GetEntityPersister(clazz), id));
-			}
-		}
-
-		/// <summary>
-		/// Give the interceptor an opportunity to override the default instantiation
-		/// </summary>
-		/// <param name = "persister"></param>
-		/// <param name = "id"></param>
-		/// <returns></returns>
-		public async Task<object> InstantiateAsync(IEntityPersister persister, object id)
-		{
-			using (new SessionIdLoggingContext(SessionId))
-			{
-				ErrorIfClosed();
-				object result = interceptor.Instantiate(persister.EntityName, entityMode, id);
-				if (result == null)
-				{
-					result = await (persister.InstantiateAsync(id, entityMode));
-				}
-
-				return result;
 			}
 		}
 

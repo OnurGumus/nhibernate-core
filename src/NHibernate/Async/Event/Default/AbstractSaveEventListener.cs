@@ -68,7 +68,7 @@ namespace NHibernate.Event.Default
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug(string.Format("generated identifier: {0}, using strategy: {1}", await (persister.IdentifierType.ToLoggableStringAsync(generatedId, source.Factory)), persister.IdentifierGenerator.GetType().FullName));
+					log.Debug(string.Format("generated identifier: {0}, using strategy: {1}", persister.IdentifierType.ToLoggableString(generatedId, source.Factory), persister.IdentifierGenerator.GetType().FullName));
 				}
 
 				return await (PerformSaveAsync(entity, generatedId, persister, false, anything, source, true));
@@ -119,7 +119,7 @@ namespace NHibernate.Event.Default
 					}
 				}
 
-				await (persister.SetIdentifierAsync(entity, id, source.EntityMode));
+				persister.SetIdentifier(entity, id, source.EntityMode);
 			}
 			else
 			{
@@ -185,9 +185,9 @@ namespace NHibernate.Event.Default
 				persister.SetPropertyValues(entity, values, source.EntityMode);
 			}
 
-			await (TypeHelper.DeepCopyAsync(values, types, persister.PropertyUpdateability, values, source));
+			TypeHelper.DeepCopy(values, types, persister.PropertyUpdateability, values, source);
 			await (new ForeignKeys.Nullifier(entity, false, useIdentityColumn, source).NullifyTransientReferencesAsync(values, types));
-			await (new Nullability(source).CheckNullabilityAsync(values, persister, false));
+			new Nullability(source).CheckNullability(values, persister, false);
 			if (useIdentityColumn)
 			{
 				EntityIdentityInsertAction insert = new EntityIdentityInsertAction(values, entity, persister, source, shouldDelayIdentityInserts);

@@ -32,7 +32,7 @@ namespace NHibernate.Event.Default
 			source.PersistenceContext.CheckUniqueness(key, entity);
 			//get a snapshot
 			object[] values = persister.GetPropertyValues(entity, source.EntityMode);
-			await (TypeHelper.DeepCopyAsync(values, persister.PropertyTypes, persister.PropertyUpdateability, values, source));
+			TypeHelper.DeepCopy(values, persister.PropertyTypes, persister.PropertyUpdateability, values, source);
 			object version = Versioning.GetVersion(values, persister);
 			EntityEntry newEntry = source.PersistenceContext.AddEntity(entity, persister.IsMutable ? Status.Loaded : Status.ReadOnly, values, key, version, LockMode.None, true, persister, false, true);
 			await (new OnLockVisitor(source, id, entity).ProcessAsync(entity, persister));

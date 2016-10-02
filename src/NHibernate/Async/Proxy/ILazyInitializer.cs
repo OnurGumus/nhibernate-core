@@ -1,7 +1,7 @@
 #if NET_4_5
 using NHibernate.Engine;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Proxy
@@ -21,12 +21,6 @@ namespace NHibernate.Proxy
 		/// </summary>
 		/// <returns>The persistent object this proxy is proxying.</returns>
 		Task<object> GetImplementationAsync();
-		/// <summary>
-		/// Return the underlying persistent object in a given <see cref = "ISession"/>, or null.
-		/// </summary>
-		/// <param name = "s">The session to get the object from.</param>
-		/// <returns>The persistent object this proxy is proxying, or <see langword = "null"/>.</returns>
-		Task<object> GetImplementationAsync(ISessionImplementor s);
 		/// <summary>
 		/// Associate the proxy with the given session.
 		///

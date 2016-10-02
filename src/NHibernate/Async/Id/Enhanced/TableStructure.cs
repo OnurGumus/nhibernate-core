@@ -10,9 +10,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Id.Enhanced
 {
-	/// <summary>
-	/// Describes a table used to mimic sequence behavior
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class TableStructure : TransactionHelper, IDatabaseStructure
 	{

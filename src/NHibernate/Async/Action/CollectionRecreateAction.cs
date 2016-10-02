@@ -29,7 +29,7 @@ namespace NHibernate.Action
 			IPersistentCollection collection = Collection;
 			PreRecreate();
 			await (Persister.RecreateAsync(collection, Key, Session));
-			await (Session.PersistenceContext.GetCollectionEntry(collection).AfterActionAsync(collection));
+			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
 			Evict();
 			PostRecreate();
 			if (statsEnabled)

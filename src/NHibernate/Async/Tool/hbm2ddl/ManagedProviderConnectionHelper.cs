@@ -7,10 +7,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Tool.hbm2ddl
 {
-	/// <summary>
-	/// A <seealso cref = "IConnectionHelper"/> implementation based on an internally 
-	/// built and managed <seealso cref = "ConnectionProvider"/>.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class ManagedProviderConnectionHelper : IConnectionHelper
 	{

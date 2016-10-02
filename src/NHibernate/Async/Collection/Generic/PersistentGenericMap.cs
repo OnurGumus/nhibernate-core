@@ -17,19 +17,6 @@ namespace NHibernate.Collection.Generic
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class PersistentGenericMap<TKey, TValue> : AbstractPersistentCollection, IDictionary<TKey, TValue>, ICollection
 	{
-		public override async Task<object> GetSnapshotAsync(ICollectionPersister persister)
-		{
-			EntityMode entityMode = Session.EntityMode;
-			Dictionary<TKey, TValue> clonedMap = new Dictionary<TKey, TValue>(WrappedMap.Count);
-			foreach (KeyValuePair<TKey, TValue> e in WrappedMap)
-			{
-				object copy = await (persister.ElementType.DeepCopyAsync(e.Value, entityMode, persister.Factory));
-				clonedMap[e.Key] = (TValue)copy;
-			}
-
-			return clonedMap;
-		}
-
 		public override async Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
 		{
 			var sn = (IDictionary<TKey, TValue>)snapshot;

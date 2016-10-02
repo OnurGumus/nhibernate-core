@@ -15,11 +15,6 @@ namespace NHibernate.Type
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class SerializableType : MutableType
 	{
-		public override async Task<int> GetHashCodeAsync(Object x, EntityMode entityMode)
-		{
-			return await (binaryType.GetHashCodeAsync(ToBytes(x), entityMode));
-		}
-
 		public override Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner)
 		{
 			try

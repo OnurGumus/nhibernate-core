@@ -8,26 +8,14 @@ using NHibernate.Tuple.Entity;
 using NHibernate.Type;
 using System.Collections;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Persister.Entity
 {
-	/// <summary>
-	/// Concrete <c>IEntityPersister</c>s implement mapping and persistence logic for a particular class.
-	/// </summary>
-	/// <remarks>
-	/// Implementors must be threadsafe (preferably immutable) and must provide a constructor of type
-	/// matching the signature of: (PersistentClass, SessionFactoryImplementor)
-	/// </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface IEntityPersister : IOptimisticCacheSource
 	{
-		/// <summary>
-		/// Finish the initialization of this object, once all <c>ClassPersisters</c> have been
-		/// instantiated. Called only once, before any other method.
-		/// </summary>
-		Task PostInstantiateAsync();
 		/// <summary> Locate the property-indices of all properties considered to be dirty. </summary>
 		/// <param name = "currentState">The current state of the entity (the state to be checked). </param>
 		/// <param name = "previousState">The previous state of the entity (the state to be checked against). </param>
@@ -103,8 +91,6 @@ namespace NHibernate.Persister.Entity
 		/// <returns></returns>
 		Task<object> GetCurrentVersionAsync(object id, ISessionImplementor session);
 		Task<object> ForceVersionIncrementAsync(object id, object currentVersion, ISessionImplementor session);
-		/// <summary> Is this a new transient instance?</summary>
-		Task<bool ? > IsTransientAsync(object obj, ISessionImplementor session);
 		/// <summary> Return the values of the insertable properties of the object (including backrefs)</summary>
 		Task<object[]> GetPropertyValuesToInsertAsync(object obj, IDictionary mergeMap, ISessionImplementor session);
 		/// <summary>
@@ -137,26 +123,6 @@ namespace NHibernate.Persister.Entity
 		/// <param name = "state">The entity state (at the time of Save).</param>
 		/// <param name = "session">The session.</param>
 		Task ProcessUpdateGeneratedPropertiesAsync(object id, object entity, object[] state, ISessionImplementor session);
-		/// <summary>
-		/// Get the identifier of an instance ( throw an exception if no identifier property)
-		/// </summary>
-		Task<object> GetIdentifierAsync(object obj, EntityMode entityMode);
-		/// <summary>
-		/// Set the identifier of an instance (or do nothing if no identifier property)
-		/// </summary>
-		/// <param name = "obj">The object to set the Id property on.</param>
-		/// <param name = "id">The value to set the Id property to.</param>
-		/// <param name = "entityMode">The EntityMode</param>
-		Task SetIdentifierAsync(object obj, object id, EntityMode entityMode);
-		/// <summary>
-		/// Create a class instance initialized with the given identifier
-		/// </summary>
-		Task<object> InstantiateAsync(object id, EntityMode entityMode);
-		/// <summary> 
-		/// Set the identifier and version of the given instance back
-		/// to its "unsaved" value, returning the id
-		/// </summary>
-		Task ResetIdentifierAsync(object entity, object currentId, object currentVersion, EntityMode entityMode);
 	}
 }
 #endif

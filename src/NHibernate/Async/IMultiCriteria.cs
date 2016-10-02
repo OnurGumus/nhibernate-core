@@ -3,14 +3,11 @@ using System.Collections;
 using NHibernate.Criterion;
 using NHibernate.Transform;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate
 {
-	/// <summary>
-	/// Combines several queries into a single DB call
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface IMultiCriteria
 	{

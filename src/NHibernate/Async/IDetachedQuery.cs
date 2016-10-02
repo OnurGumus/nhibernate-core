@@ -8,10 +8,6 @@ using NHibernate.Util;
 
 namespace NHibernate
 {
-	/// <summary>
-	/// Interface  to create queries in "detached mode" where the NHibernate session is not available.
-	/// All methods have the same semantics as the corresponding methods of the <see cref = "IQuery"/> interface.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface IDetachedQuery
 	{

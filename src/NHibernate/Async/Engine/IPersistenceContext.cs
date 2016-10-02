@@ -7,15 +7,11 @@ using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
-	/// <summary>
-	/// Holds the state of the persistence context, including the
-	/// first-level cache, entries, snapshots, proxies, etc.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface IPersistenceContext
 	{
@@ -42,19 +38,6 @@ namespace NHibernate.Engine
 		/// <param name = "maybeProxy">The reference to be unproxied if it currently represents a proxy. </param>
 		/// <returns> The unproxied instance. </returns>
 		Task<object> UnproxyAndReassociateAsync(object maybeProxy);
-		/// <summary> Get the entity that owned this persistent collection when it was loaded </summary>
-		/// <param name = "collection">The persistent collection </param>
-		/// <returns>
-		/// The owner if its entity ID is available from the collection's loaded key
-		/// and the owner entity is in the persistence context; otherwise, returns null
-		/// </returns>
-		Task<object> GetLoadedCollectionOwnerOrNullAsync(IPersistentCollection collection);
-		/// <summary> Get the ID for the entity that owned this persistent collection when it was loaded </summary>
-		/// <param name = "collection">The persistent collection </param>
-		/// <returns> the owner ID if available from the collection's loaded key; otherwise, returns null </returns>
-		Task<object> GetLoadedCollectionOwnerIdOrNullAsync(IPersistentCollection collection);
-		/// <summary> add a collection we just pulled out of the cache (does not need initializing)</summary>
-		Task<CollectionEntry> AddInitializedCollectionAsync(ICollectionPersister persister, IPersistentCollection collection, object id);
 		/// <summary>
 		/// Force initialization of all non-lazy collections encountered during
 		/// the current two-phase load (actually, this is a no-op, unless this

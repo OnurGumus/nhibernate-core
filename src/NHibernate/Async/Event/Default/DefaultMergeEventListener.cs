@@ -102,7 +102,7 @@ namespace NHibernate.Event.Default
 					if (entry == null)
 					{
 						IEntityPersister persister = source.GetEntityPersister(@event.EntityName, entity);
-						object id = await (persister.GetIdentifierAsync(entity, source.EntityMode));
+						object id = persister.GetIdentifier(entity, source.EntityMode);
 						if (id != null)
 						{
 							EntityKey key = source.GenerateEntityKey(id, persister);
@@ -169,16 +169,16 @@ namespace NHibernate.Event.Default
 		private async Task<object> MergeTransientEntityAsync(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache)
 		{
 			IEntityPersister persister = source.GetEntityPersister(entityName, entity);
-			object id = persister.HasIdentifierProperty ? await (persister.GetIdentifierAsync(entity, source.EntityMode)) : null;
+			object id = persister.HasIdentifierProperty ? persister.GetIdentifier(entity, source.EntityMode) : null;
 			object copy = null;
 			if (copyCache.Contains(entity))
 			{
 				copy = copyCache[entity];
-				await (persister.SetIdentifierAsync(copy, id, source.EntityMode));
+				persister.SetIdentifier(copy, id, source.EntityMode);
 			}
 			else
 			{
-				copy = await (source.InstantiateAsync(persister, id));
+				copy = source.Instantiate(persister, id);
 				((EventCache)copyCache).Add(entity, copy, true); // before cascade!
 			}
 
@@ -254,13 +254,13 @@ namespace NHibernate.Event.Default
 			object id = @event.RequestedId;
 			if (id == null)
 			{
-				id = await (persister.GetIdentifierAsync(entity, source.EntityMode));
+				id = persister.GetIdentifier(entity, source.EntityMode);
 			}
 			else
 			{
 				// check that entity id = requestedId
-				object entityId = await (persister.GetIdentifierAsync(entity, source.EntityMode));
-				if (!await (persister.IdentifierType.IsEqualAsync(id, entityId, source.EntityMode, source.Factory)))
+				object entityId = persister.GetIdentifier(entity, source.EntityMode);
+				if (!persister.IdentifierType.IsEqual(id, entityId, source.EntityMode, source.Factory))
 				{
 					throw new HibernateException("merge requested with id not matching id of passed entity");
 				}
@@ -270,7 +270,7 @@ namespace NHibernate.Event.Default
 			source.FetchProfile = "merge";
 			//we must clone embedded composite identifiers, or
 			//we will get back the same instance that we pass in
-			object clonedIdentifier = await (persister.IdentifierType.DeepCopyAsync(id, source.EntityMode, source.Factory));
+			object clonedIdentifier = persister.IdentifierType.DeepCopy(id, source.EntityMode, source.Factory);
 			object result = await (source.GetAsync(persister.EntityName, clonedIdentifier));
 			source.FetchProfile = previousFetchProfile;
 			if (result == null)
@@ -295,7 +295,7 @@ namespace NHibernate.Event.Default
 				{
 					throw new WrongClassException("class of the given object did not match class of persistent copy", @event.RequestedId, persister.EntityName);
 				}
-				else if (await (IsVersionChangedAsync(entity, source, persister, target)))
+				else if (IsVersionChanged(entity, source, persister, target))
 				{
 					if (source.Factory.Statistics.IsStatisticsEnabled)
 					{
@@ -310,55 +310,6 @@ namespace NHibernate.Event.Default
 				//copyValues works by reflection, so explicitly mark the entity instance dirty
 				MarkInterceptorDirty(entity, target);
 				@event.Result = result;
-			}
-		}
-
-		private static async Task<bool> IsVersionChangedAsync(object entity, IEventSource source, IEntityPersister persister, object target)
-		{
-			if (!persister.IsVersioned)
-			{
-				return false;
-			}
-
-			// for merging of versioned entities, we consider the version having
-			// been changed only when:
-			// 1) the two version values are different;
-			//      *AND*
-			// 2) The target actually represents database state!
-			//
-			// This second condition is a special case which allows
-			// an entity to be merged during the same transaction
-			// (though during a separate operation) in which it was
-			// originally persisted/saved
-			bool changed = !await (persister.VersionType.IsSameAsync(persister.GetVersion(target, source.EntityMode), persister.GetVersion(entity, source.EntityMode), source.EntityMode));
-			// TODO : perhaps we should additionally require that the incoming entity
-			// version be equivalent to the defined unsaved-value?
-			return changed && await (ExistsInDatabaseAsync(target, source, persister));
-		}
-
-		private static async Task<bool> ExistsInDatabaseAsync(object entity, IEventSource source, IEntityPersister persister)
-		{
-			EntityEntry entry = source.PersistenceContext.GetEntry(entity);
-			if (entry == null)
-			{
-				object id = await (persister.GetIdentifierAsync(entity, source.EntityMode));
-				if (id != null)
-				{
-					EntityKey key = source.GenerateEntityKey(id, persister);
-					object managedEntity = source.PersistenceContext.GetEntity(key);
-					entry = source.PersistenceContext.GetEntry(managedEntity);
-				}
-			}
-
-			if (entry == null)
-			{
-				// perhaps this should be an exception since it is only ever used
-				// in the above method?
-				return false;
-			}
-			else
-			{
-				return entry.ExistsInDatabase;
 			}
 		}
 
@@ -474,6 +425,18 @@ namespace NHibernate.Event.Default
 				else
 					await (MergeTransientEntityAsync(entity, copyEntry.EntityName, copyEntry.Id, @event.Session, copyCache));
 			}
+		}
+
+		/// <summary> Cascade behavior is redefined by this subclass, disable superclass behavior</summary>
+		protected override Task CascadeAfterSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything)
+		{
+			return TaskHelper.CompletedTask;
+		}
+
+		/// <summary> Cascade behavior is redefined by this subclass, disable superclass behavior</summary>
+		protected override Task CascadeBeforeSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything)
+		{
+			return TaskHelper.CompletedTask;
 		}
 	}
 }

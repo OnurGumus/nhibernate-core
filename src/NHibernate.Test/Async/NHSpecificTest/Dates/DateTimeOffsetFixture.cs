@@ -67,15 +67,6 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 		}
 
 		[Test]
-		public async Task HashCodeShouldHaveSameBehaviorOfNetTypeAsync()
-		{
-			var type = new DateTimeOffsetType();
-			var now = DateTimeOffset.Now;
-			var exactClone = new DateTimeOffset(now.Ticks, now.Offset);
-			Assert.That((now.GetHashCode() == exactClone.GetHashCode()), Is.EqualTo(now.GetHashCode() == await (type.GetHashCodeAsync(exactClone, EntityMode.Poco))));
-		}
-
-		[Test]
 		public async Task NextAsync()
 		{
 			var type = NHibernateUtil.DateTimeOffset;

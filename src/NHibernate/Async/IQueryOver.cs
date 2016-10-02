@@ -11,18 +11,6 @@ using NHibernate.Util;
 
 namespace NHibernate
 {
-	/// <summary>
-	/// QueryOver&lt;TRoot&gt; is an API for retrieving entities by composing
-	/// <see cref = "Criterion.Expression"/> objects expressed using Lambda expression syntax.
-	/// </summary>
-	/// <remarks>
-	/// <code>
-	/// IList&lt;Cat&gt; cats = session.QueryOver&lt;Cat&gt;()
-	/// 	.Where( c =&gt; c.Name == "Tigger" )
-	///		.And( c =&gt; c.Weight > minWeight ) )
-	///		.List();
-	/// </code>
-	/// </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface IQueryOver<TRoot> : IQueryOver
 	{

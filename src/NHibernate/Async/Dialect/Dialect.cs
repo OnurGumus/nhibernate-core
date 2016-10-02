@@ -21,14 +21,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Dialect
 {
-	/// <summary>
-	/// Represents a dialect of SQL implemented by a particular RDBMS. Subclasses
-	/// implement NHibernate compatibility with different systems.
-	/// </summary>
-	/// <remarks>
-	/// Subclasses should provide a public default constructor that <c>Register()</c>
-	/// a set of type mappings and default Hibernate properties.
-	/// </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class Dialect
 	{

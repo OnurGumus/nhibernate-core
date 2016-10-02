@@ -103,7 +103,7 @@ namespace NHibernate.AsyncGenerator
 		private MethodDeclarationSyntax RewiteMethod(MethodInfo methodInfo)
 		{
 			// TODO: if a method cannot be converted to async we should not convert dependencies too
-			if (!methodInfo.CanBeAsnyc && !methodInfo.Dependencies.Any() && !methodInfo.Missing)
+			if (!methodInfo.CanBeAsnyc && !methodInfo.RelatedMethods.Any() && !methodInfo.Missing)
 			{
 				if (methodInfo.TypeInfo.TypeTransformation == TypeTransformation.Partial)
 				{
@@ -115,10 +115,11 @@ namespace NHibernate.AsyncGenerator
 			var taskConflict = !DocumentInfo.ProjectInfo.IsNameUniqueInsideNamespace(methodInfo.TypeInfo.NamespaceInfo.Symbol, "Task");
 			if (!methodInfo.HasBody)
 			{
-				return methodInfo.Node
-								 .WithoutAttribute("Async")
-								 .ReturnAsTask(methodInfo.Symbol, taskConflict)
-								 .WithIdentifier(Identifier(methodInfo.Node.Identifier.Value + "Async"));
+				return RemoveLeadingRegions(
+					methodInfo.Node
+							  .WithoutAttribute("Async")
+							  .ReturnAsTask(methodInfo.Symbol, taskConflict)
+							  .WithIdentifier(Identifier(methodInfo.Node.Identifier.Value + "Async")));
 			}
 
 			var methodNode = methodInfo.Node.WithoutTrivia(); // references have spans without trivia
@@ -473,15 +474,6 @@ namespace NHibernate.AsyncGenerator
 
 					var removeNode = methodInfo.Ignore;
 
-					//TODO: REMOVE THIS
-					/*
-					if (typeInfo.TypeTransformation == TypeTransformation.NewType &&
-						methodInfo.ReferenceResults.Any(o => !o.CanBeAsync && o.DeclaredWithinSameType))
-					{
-						//TODO: handle dependencies and methods from other types
-						removeNode = true;
-					}*/
-
 					metadata.TaskUsed |= methodInfo.CanSkipAsync || methodInfo.IsEmpty || methodInfo.HasYields || !methodInfo.CanBeAsnyc;
 					result.TaskUsed |= metadata.TaskUsed;
 					metadata.AsyncLockUsed |= methodInfo.MustRunSynchronized;
@@ -619,7 +611,9 @@ namespace NHibernate.AsyncGenerator
 			}
 
 			// remove all regions as not all methods will be written in the type
-			result.Node = RemoveLeadingRegions(rootTypeNode);
+			result.Node = rootTypeNode != null 
+				? RemoveLeadingRegions(rootTypeNode)
+				: null;
 				/*.WithTriviaFrom(rootTypeInfo.Node)*/;
 			return result;
 		}

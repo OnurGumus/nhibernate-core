@@ -34,11 +34,25 @@ namespace NHibernate.AsyncGenerator
 
 		public bool Missing { get; set; }
 
-		public Dictionary<ReferenceLocation, MethodInfo> InvokedBy { get; } = new Dictionary<ReferenceLocation, MethodInfo>();
+		public HashSet<MethodInfo> InvokedBy { get; } = new HashSet<MethodInfo>();
 
-		public HashSet<MethodInfo> Dependencies { get; } = new HashSet<MethodInfo>();
+		/// <summary>
+		/// Implementation/derived/base/interface methods
+		/// </summary>
+		public HashSet<MethodInfo> RelatedMethods { get; } = new HashSet<MethodInfo>();
 
-		public HashSet<IMethodSymbol> ExternalDependencies { get; } = new HashSet<IMethodSymbol>();
+		/// <summary>
+		/// Related and invoked by methods
+		/// </summary>
+		public IEnumerable<MethodInfo> Dependencies
+		{
+			get { return InvokedBy.Union(RelatedMethods); }
+		}
+
+		/// <summary>
+		/// External Base/derivered or interface/implementation methods
+		/// </summary>
+		public HashSet<IMethodSymbol> ExternalRelatedMethods { get; } = new HashSet<IMethodSymbol>();
 
 		// async methods that have the same parameters and name and are external
 		public HashSet<IMethodSymbol> ExternalAsyncMethods { get; } = new HashSet<IMethodSymbol>();
@@ -47,6 +61,13 @@ namespace NHibernate.AsyncGenerator
 		/// When true the method will not be generated. Example would be a test method (never invoked in code) that does not have any async calls 
 		/// or a method that is only called by that test method. If there are some references (methods invoked) we need to check them as they can be
 		/// 
+		/// Steps:
+		/// 1. Check if the method is missing or implements an abstract method
+		///   a) If true then we cannot ignore this method
+		/// 3. Calculate the Ignore property for all dependant methods
+		///   a) If there is a method that is not ignored then this wont be too
+		///     i) Calculate ignore property for all current references
+		/// 2. Calculate the Ignore property for all current references
 		/// </summary>
 		public void CalculateIgnore(int deep = 0, HashSet<MethodInfo> processedMethodInfos = null)
 		{
@@ -59,56 +80,58 @@ namespace NHibernate.AsyncGenerator
 				throw new Exception("_ignoreCalculating");
 			}
 			_ignoreCalculating = true;
-			
-			
+
+
 			if (processedMethodInfos == null)
 			{
 				processedMethodInfos = new HashSet<MethodInfo> {this};
 			}
+			else
+			{
+				processedMethodInfos.Add(this);
+			}
 
 			deep++;
-			if (deep > 20)
+			if (deep > 100)
 			{
-				Ignore = false;
-				_ignoreCalculating = false;
-				_ignoreCalculated = true;
-				return;
-			}
-			/*
-			foreach (var refResult in ReferenceResults)
-			{
-				refResult.CalculateIgnore(deep, processedMethodInfos);
-			}*/
-
-			if (Missing || IsRequired)
-			{
-				Ignore = false;
-				_ignoreCalculating = false;
-				_ignoreCalculated = true;
-				return;
-			}
-			var config = TypeInfo.NamespaceInfo.DocumentInfo.ProjectInfo.Configuration;
-
-			//if (TypeInfo.TypeTransformation == TypeTransformation.NewType)
-			//{
-				
-			//}
-
-			// If method is used elsewhere then we should generante the method (TODO: check if methods that invoke this one are ignored... problem with circular calls)
-			if (InvokedBy.Any())
-			{
-				Ignore = false;
+				foreach (var refResult in ReferenceResults)
+				{
+					refResult.CalculateIgnore(deep, processedMethodInfos);
+				}
 				_ignoreCalculating = false;
 				_ignoreCalculated = true;
 				return;
 			}
 
-			/*
-			foreach (var methodInfo in InvokedBy.Values)
+			if (Missing || ImplementsAbstractMethod)
+			{
+				foreach (var refResult in ReferenceResults)
+				{
+					refResult.CalculateIgnore(deep, processedMethodInfos);
+				}
+				_ignoreCalculating = false;
+				_ignoreCalculated = true;
+				return;
+			}
+
+			// Calculate the ignore property for all dependent methods. 
+			// If any of above methods is required then this will be too
+			foreach (var methodInfo in Dependencies)
 			{
 				if (methodInfo == this)
 				{
 					continue;
+				}
+				// If we detect a circular dependency we assume that the method is required
+				if (methodInfo._ignoreCalculating)
+				{
+					foreach (var refResult in ReferenceResults)
+					{
+						refResult.CalculateIgnore(deep, processedMethodInfos);
+					}
+					_ignoreCalculating = false;
+					_ignoreCalculated = true;
+					return;
 				}
 
 				methodInfo.CalculateIgnore(deep, processedMethodInfos);
@@ -116,18 +139,19 @@ namespace NHibernate.AsyncGenerator
 				{
 					continue;
 				}
-				Ignore = false;
+				foreach (var refResult in ReferenceResults)
+				{
+					refResult.CalculateIgnore(deep, processedMethodInfos);
+				}
+				_ignoreCalculating = false;
+				_ignoreCalculated = true;
 				return;
-			}*/
+			}
 
 			var dependencies = ReferenceResults
-				.Union(GetAllDependencies().ToList().SelectMany(o => o.ReferenceResults))
-				.ToList();/*
-			if (!dependencies.Any() && config.CanGenerateMethod != null)
-			{
-				return !config.CanGenerateMethod(this);
-			}
-			*/
+				.Union(GetAllRelatedMethods().ToList().SelectMany(o => o.ReferenceResults))
+				.ToList();
+
 			foreach (var refResult in dependencies)
 			{
 				// if the reference cannot be async we should preserve the original method. TODO: what if the method has dependecies that are async
@@ -136,23 +160,6 @@ namespace NHibernate.AsyncGenerator
 					refResult.MethodInfo.CanBeAsnyc = false;
 				}
 				refResult.CalculateIgnore(deep, processedMethodInfos);
-
-				/*
-				var ignore = false;
-				if (refResult.MethodInfo != null)
-				{
-					if (processedMethodInfos.Contains(refResult.MethodInfo))
-					{
-						continue;
-					}
-					processedMethodInfos.Add(refResult.MethodInfo);
-					ignore |= refResult.MethodInfo.CanIgnore(deep, processedMethodInfos);
-				}
-				ignore |= refResult.UserIgnore;
-				if (!ignore)
-				{
-					return false;
-				}*/
 			}
 			Ignore = dependencies.All(o => o.Ignore);
 			_ignoreCalculating = false;
@@ -163,7 +170,7 @@ namespace NHibernate.AsyncGenerator
 		{
 			get
 			{
-				return References.Any() || GetAllDependencies().Any(o => o.References.Any());
+				return References.Any() || GetAllRelatedMethods().Any(o => o.References.Any());
 			}
 		}
 
@@ -179,13 +186,13 @@ namespace NHibernate.AsyncGenerator
 				processedMethodInfos = new HashSet<MethodInfo> { this };
 			}
 
-			if (ExternalDependencies.Select(o => o.ContainingType.GetFullName())
+			if (ExternalRelatedMethods.Select(o => o.ContainingType.GetFullName())
 									.Except(ExternalAsyncMethods.Select(o => o.ContainingType.GetFullName()))
 									.Any())
 			{
 				return true;
 			}
-			foreach (var depednency in GetAllDependencies())
+			foreach (var depednency in GetAllRelatedMethods())
 			{
 				if (processedMethodInfos.Contains(depednency))
 				{
@@ -200,7 +207,7 @@ namespace NHibernate.AsyncGenerator
 			return false;
 		}
 
-		public bool IsRequired
+		public bool ImplementsAbstractMethod
 		{
 			get { return OverridenMethod != null && OverridenMethod.IsAbstract; }
 		}
@@ -208,7 +215,7 @@ namespace NHibernate.AsyncGenerator
 		public IMethodSymbol OverridenMethod { get; set; }
 
 		/// <summary>
-		/// references that are candidates to be async
+		/// References to other methods that are invoked inside this method and are candidates to be async
 		/// </summary>
 		internal HashSet<ReferenceLocation> References { get; } = new HashSet<ReferenceLocation>();
 
@@ -216,6 +223,29 @@ namespace NHibernate.AsyncGenerator
 		/// Type references that need to be renamed
 		/// </summary>
 		public HashSet<ReferenceLocation> TypeReferences { get; } = new HashSet<ReferenceLocation>();
+
+		public IEnumerable<MethodInfo> GetAllRelatedMethods()
+		{
+			var deps = new HashSet<MethodInfo>();
+			var depsQueue = new Queue<MethodInfo>(RelatedMethods);
+			while (depsQueue.Count > 0)
+			{
+				var dependency = depsQueue.Dequeue();
+				if (deps.Contains(dependency))
+				{
+					continue;
+				}
+				deps.Add(dependency);
+				foreach (var subDependency in dependency.RelatedMethods)
+				{
+					if (!deps.Contains(subDependency))
+					{
+						depsQueue.Enqueue(subDependency);
+					}
+				}
+				yield return dependency;
+			}
+		}
 
 		public IEnumerable<MethodInfo> GetAllDependencies()
 		{
@@ -231,11 +261,10 @@ namespace NHibernate.AsyncGenerator
 				deps.Add(dependency);
 				foreach (var subDependency in dependency.Dependencies)
 				{
-					if (deps.Contains(subDependency))
+					if (!deps.Contains(subDependency))
 					{
-						continue;
+						depsQueue.Enqueue(subDependency);
 					}
-					depsQueue.Enqueue(subDependency);
 				}
 				yield return dependency;
 			}
@@ -559,16 +588,38 @@ namespace NHibernate.AsyncGenerator
 			{
 				TypeInfo.MethodInfos.Remove(Node);
 			}
+
+			// Remove all references as the method wont be transformed to asnyc
+			if (!CanBeAsnyc && !RelatedMethods.Any() && !Missing)
+			{
+				foreach (var invoked in InvokedBy)
+				{
+					var toRemove = invoked.ReferenceResults.Where(o => o.MethodInfo == this).ToList();
+					while (toRemove.Count > 0)
+					{
+						invoked.ReferenceResults.Remove(toRemove[0]);
+						toRemove.RemoveAt(0);
+					}
+				}
+			}
 		}
 
 		// check if all the references can be converted to async
 		public void Analyze()
 		{
+			var solutionConfig = TypeInfo.NamespaceInfo.DocumentInfo.ProjectInfo.SolutionInfo.Configuration;
+
 			foreach (var reference in References)
 			{
 				ReferenceResults.Add(AnalyzeReference(reference));
 			}
 			CanBeAsnyc = ReferenceResults.Any(o => o.CanBeAsync);
+
+			// TODO: check if this is correct
+			if (TypeInfo.TypeTransformation == TypeTransformation.Partial && GetAllRelatedMethods().ToList().Any(o => o.InvokedBy.Any()))
+			{
+				Missing = true;
+			}
 
 			var counter = new MethodStatementsCounterVisitior();
 			counter.Visit(Node.Body);
@@ -582,7 +633,6 @@ namespace NHibernate.AsyncGenerator
 				IsEmpty = true;
 			}
 
-			var solutionConfig = TypeInfo.NamespaceInfo.DocumentInfo.ProjectInfo.SolutionInfo.Configuration;
 			if (Node.AttributeLists
 					.SelectMany(o => o.Attributes.Where(a => a.Name.ToString() == "MethodImpl"))
 					.Any(o => o.ArgumentList.Arguments.Any(a => a.Expression.ToString() == "MethodImplOptions.Synchronized")))

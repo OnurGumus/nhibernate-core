@@ -2,7 +2,7 @@
 using System.Data.Common;
 using NHibernate.SqlCommand;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Driver

@@ -19,30 +19,6 @@ namespace NHibernate.Type
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class CollectionType : AbstractType, IAssociationType
 	{
-		public override Task<bool> IsEqualAsync(object x, object y, EntityMode entityMode)
-		{
-			try
-			{
-				return Task.FromResult<bool>(IsEqual(x, y, entityMode));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<bool>(ex);
-			}
-		}
-
-		public override Task<int> GetHashCodeAsync(object x, EntityMode entityMode)
-		{
-			try
-			{
-				return Task.FromResult<int>(GetHashCode(x, entityMode));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<int>(ex);
-			}
-		}
-
 		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			return NullSafeGetAsync(rs, new string[]{name}, session, owner);
@@ -62,34 +38,6 @@ namespace NHibernate.Type
 		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			return TaskHelper.CompletedTask;
-		}
-
-		public override async Task<string> ToLoggableStringAsync(object value, ISessionFactoryImplementor factory)
-		{
-			if (value == null)
-			{
-				return "null";
-			}
-			else if (!NHibernateUtil.IsInitialized(value))
-			{
-				return "<uninitialized>";
-			}
-			else
-			{
-				return await (RenderLoggableStringAsync(value, factory));
-			}
-		}
-
-		public override Task<object> DeepCopyAsync(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
-		{
-			try
-			{
-				return Task.FromResult<object>(DeepCopy(value, entityMode, factory));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
 		}
 
 		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner)
@@ -164,7 +112,7 @@ namespace NHibernate.Type
 			}
 
 			// check if collection is currently being loaded
-			IPersistentCollection collection = await (persistenceContext.LoadContexts.LocateLoadingCollectionAsync(persister, key));
+			IPersistentCollection collection = persistenceContext.LoadContexts.LocateLoadingCollection(persister, key);
 			if (collection == null)
 			{
 				// check if it is already completely loaded, but unowned
@@ -193,7 +141,7 @@ namespace NHibernate.Type
 
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Created collection wrapper: " + await (MessageHelper.CollectionInfoStringAsync(persister, collection, key, session)));
+					log.Debug("Created collection wrapper: " + MessageHelper.CollectionInfoString(persister, collection, key, session));
 				}
 			}
 
@@ -285,67 +233,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <summary> 
-		/// Get the id value from the owning entity key, usually the same as the key, but might be some
-		/// other property, in the case of property-ref 
-		/// </summary>
-		/// <param name = "key">The collection owner key </param>
-		/// <param name = "session">The session from which the request is originating. </param>
-		/// <returns> 
-		/// The collection owner's id, if it can be obtained from the key;
-		/// otherwise, null is returned
-		/// </returns>
-		public virtual async Task<object> GetIdOfOwnerOrNullAsync(object key, ISessionImplementor session)
-		{
-			object ownerId = null;
-			if (foreignKeyPropertyName == null)
-			{
-				ownerId = key;
-			}
-			else
-			{
-				IType keyType = GetPersister(session).KeyType;
-				IEntityPersister ownerPersister = GetPersister(session).OwnerEntityPersister;
-				// TODO: Fix this so it will work for non-POJO entity mode
-				System.Type ownerMappedClass = ownerPersister.GetMappedClass(session.EntityMode);
-				if (ownerMappedClass.IsAssignableFrom(keyType.ReturnedClass) && keyType.ReturnedClass.IsInstanceOfType(key))
-				{
-					// the key is the owning entity itself, so get the ID from the key
-					ownerId = await (ownerPersister.GetIdentifierAsync(key, session.EntityMode));
-				}
-				else
-				{
-				// TODO: check if key contains the owner ID
-				}
-			}
-
-			return ownerId;
-		}
-
-		public override Task<bool[]> ToColumnNullnessAsync(object value, IMapping mapping)
-		{
-			try
-			{
-				return Task.FromResult<bool[]>(ToColumnNullness(value, mapping));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<bool[]>(ex);
-			}
-		}
-
-		public override Task<int> CompareAsync(object x, object y, EntityMode? entityMode)
-		{
-			try
-			{
-				return Task.FromResult<int>(Compare(x, y, entityMode));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<int>(ex);
-			}
-		}
-
 		public virtual async Task<bool> ContainsAsync(object collection, object childObject, ISessionImplementor session)
 		{
 			// we do not have to worry about queued additions to uninitialized
@@ -368,16 +255,6 @@ namespace NHibernate.Type
 			}
 
 			return false;
-		}
-
-		protected internal virtual async Task<string> RenderLoggableStringAsync(object value, ISessionFactoryImplementor factory)
-		{
-			IList list = new List<object>();
-			IType elemType = GetElementType(factory);
-			IEnumerable iter = GetElementsIterator(value);
-			foreach (object o in iter)
-				list.Add(await (elemType.ToLoggableStringAsync(o, factory)));
-			return CollectionPrinter.ToString(list);
 		}
 	}
 }

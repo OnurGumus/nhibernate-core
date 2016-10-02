@@ -11,11 +11,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Id
 {
-	/// <summary> 
-	/// A generator that selects the just inserted row to determine the identifier
-	/// value assigned by the database. The correct row is located using a unique key.
-	/// </summary>
-	/// <remarks>One mapping parameter is required: key (unless a natural-id is defined in the mapping).</remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class SelectGenerator : AbstractPostInsertGenerator, IConfigurable
 	{

@@ -5,9 +5,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Connection
 {
-	/// <summary>
-	/// A ConnectionProvider that uses an IDriver to create connections.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class DriverConnectionProvider : ConnectionProvider
 	{

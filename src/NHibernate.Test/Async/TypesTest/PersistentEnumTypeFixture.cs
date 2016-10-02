@@ -3,6 +3,7 @@ using System;
 using NHibernate.Type;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -23,37 +24,6 @@ namespace NHibernate.Test.TypesTest
 		{
 			await (base.OnSetUpAsync());
 			p = new PersistentEnumClass(1, A.One, B.Two);
-		}
-
-		[Test]
-		public async Task EqualsTrueAsync()
-		{
-			IType type = NHibernateUtil.Enum(typeof (A));
-			A lhs = A.One;
-			A rhs = A.One;
-			Assert.IsTrue(await (type.IsEqualAsync(lhs, rhs, EntityMode.Poco)));
-		}
-
-		/// <summary>
-		/// Verify that even if the Enum have the same underlying value but they
-		/// are different Enums that they are not considered Equal.
-		/// </summary>
-		[Test]
-		public async Task EqualsFalseSameUnderlyingValueAsync()
-		{
-			IType type = NHibernateUtil.Enum(typeof (A));
-			A lhs = A.One;
-			B rhs = B.One;
-			Assert.IsFalse(await (type.IsEqualAsync(lhs, rhs, EntityMode.Poco)));
-		}
-
-		[Test]
-		public async Task EqualsFalseAsync()
-		{
-			IType type = NHibernateUtil.Enum(typeof (A));
-			A lhs = A.One;
-			A rhs = A.Two;
-			Assert.IsFalse(await (type.IsEqualAsync(lhs, rhs, EntityMode.Poco)));
 		}
 
 		[Test]

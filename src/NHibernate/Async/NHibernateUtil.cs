@@ -15,11 +15,6 @@ namespace NHibernate
 	using System.Collections.Generic;
 	using System.Reflection;
 
-	/// <summary>
-	/// Provides access to the full range of NHibernate built-in types.
-	/// IType instances may be used to bind values to query parameters.
-	/// Also a factory for new Blobs and Clobs.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public static partial class NHibernateUtil
 	{

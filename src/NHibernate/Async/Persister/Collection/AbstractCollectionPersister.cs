@@ -29,9 +29,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Persister.Collection
 {
-	/// <summary>
-	/// Summary description for AbstractCollectionPersister.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class AbstractCollectionPersister : ICollectionMetadata, ISqlLoadableCollection, IPostInsertIdentityPersister
 	{
@@ -135,7 +132,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Deleting collection: " + await (MessageHelper.CollectionInfoStringAsync(this, id, Factory)));
+					log.Debug("Deleting collection: " + MessageHelper.CollectionInfoString(this, id, Factory));
 				}
 
 				// Remove all the old entries
@@ -193,7 +190,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Inserting collection: " + await (MessageHelper.CollectionInfoStringAsync(this, collection, id, session)));
+					log.Debug("Inserting collection: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 
 				try
@@ -246,7 +243,7 @@ namespace NHibernate.Persister.Collection
 				}
 				catch (DbException sqle)
 				{
-					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle, "could not insert collection: " + await (MessageHelper.CollectionInfoStringAsync(this, collection, id, session)));
+					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle, "could not insert collection: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 			}
 		}
@@ -257,7 +254,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Deleting rows of collection: " + await (MessageHelper.CollectionInfoStringAsync(this, collection, id, session)));
+					log.Debug("Deleting rows of collection: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 
 				bool deleteByIndex = !IsOneToMany && hasIndex && !indexContainsFormula;
@@ -350,7 +347,7 @@ namespace NHibernate.Persister.Collection
 				}
 				catch (DbException sqle)
 				{
-					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle, "could not delete collection rows: " + await (MessageHelper.CollectionInfoStringAsync(this, collection, id, session)));
+					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle, "could not delete collection rows: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 			}
 		}
@@ -361,7 +358,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Inserting rows of collection: " + await (MessageHelper.CollectionInfoStringAsync(this, collection, id, session)));
+					log.Debug("Inserting rows of collection: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 
 				try
@@ -403,7 +400,7 @@ namespace NHibernate.Persister.Collection
 				}
 				catch (DbException sqle)
 				{
-					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle, "could not insert collection rows: " + await (MessageHelper.CollectionInfoStringAsync(this, collection, id, session)));
+					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle, "could not insert collection rows: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 			}
 		}
@@ -451,7 +448,7 @@ namespace NHibernate.Persister.Collection
 				}
 				catch (DbException sqle)
 				{
-					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not retrieve collection size: " + await (MessageHelper.CollectionInfoStringAsync(this, key, Factory)), GenerateSelectSizeString(session));
+					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not retrieve collection size: " + MessageHelper.CollectionInfoString(this, key, Factory), GenerateSelectSizeString(session));
 				}
 		}
 
@@ -499,7 +496,7 @@ namespace NHibernate.Persister.Collection
 				}
 				catch (DbException sqle)
 				{
-					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not check row existence: " + await (MessageHelper.CollectionInfoStringAsync(this, key, Factory)), GenerateSelectSizeString(session));
+					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not check row existence: " + MessageHelper.CollectionInfoString(this, key, Factory), GenerateSelectSizeString(session));
 				}
 		}
 
@@ -540,7 +537,7 @@ namespace NHibernate.Persister.Collection
 				}
 				catch (DbException sqle)
 				{
-					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not read row: " + await (MessageHelper.CollectionInfoStringAsync(this, key, Factory)), GenerateSelectSizeString(session));
+					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not read row: " + MessageHelper.CollectionInfoString(this, key, Factory), GenerateSelectSizeString(session));
 				}
 		}
 

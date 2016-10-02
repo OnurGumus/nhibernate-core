@@ -7,13 +7,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
-	/// <summary>
-	/// Generates translators which uses the Antlr-based parser to perform
-	/// the translation.
-	/// 
-	/// Author: Gavin King
-	/// Ported by: Steve Strong
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class ASTQueryTranslatorFactory : IQueryTranslatorFactory
 	{

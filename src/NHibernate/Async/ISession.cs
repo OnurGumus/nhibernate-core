@@ -11,69 +11,6 @@ using NHibernate.Util;
 
 namespace NHibernate
 {
-	/// <summary>
-	/// The main runtime interface between a .NET application and NHibernate. This is the central
-	/// API class abstracting the notion of a persistence service.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// The lifecycle of a <c>ISession</c> is bounded by the beginning and end of a logical
-	/// transaction. (Long transactions might span several database transactions.)
-	/// </para>
-	/// <para>
-	/// The main function of the <c>ISession</c> is to offer create, find, update, and delete operations
-	/// for instances of mapped entity classes. Instances may exist in one of two states:
-	/// <list type = "bullet">
-	/// <item>transient: not associated with any <c>ISession</c></item>
-	/// <item>persistent: associated with a <c>ISession</c></item>
-	/// </list>
-	/// </para>
-	/// <para>
-	/// Transient instances may be made persistent by calling <c>Save()</c>, <c>Insert()</c>,
-	/// or <c>Update()</c>. Persistent instances may be made transient by calling <c>Delete()</c>.
-	/// Any instance returned by a <c>List()</c>, <c>Enumerable()</c>, <c>Load()</c>, or <c>Create()</c>
-	/// method is persistent.
-	/// </para>
-	/// <para>
-	/// <c>Save()</c> results in an SQL <c>INSERT</c>, <c>Delete()</c>
-	/// in an SQL <c>DELETE</c> and <c>Update()</c> in an SQL <c>UPDATE</c>. Changes to
-	/// <em>persistent</em> instances are detected at flush time and also result in an SQL
-	/// <c>UPDATE</c>.
-	/// </para>
-	/// <para>
-	/// It is not intended that implementors be threadsafe. Instead each thread/transaction should obtain
-	/// its own instance from an <c>ISessionFactory</c>.
-	/// </para>
-	/// <para>
-	/// A <c>ISession</c> instance is serializable if its persistent classes are serializable
-	/// </para>
-	/// <para>
-	/// A typical transaction should use the following idiom:
-	/// <code>
-	///		using (ISession session = factory.OpenSession())
-	///		using (ITransaction tx = session.BeginTransaction())
-	///		{
-	///			try
-	///			{
-	///				// do some work
-	///				...
-	///				tx.Commit();
-	///			}
-	///			catch (Exception e)
-	///			{
-	///				if (tx != null) tx.Rollback();
-	///				throw;
-	///			}
-	///		}
-	/// </code>
-	/// </para>
-	/// <para>
-	/// If the <c>ISession</c> throws an exception, the transaction must be rolled back and the session
-	/// discarded. The internal state of the <c>ISession</c> might not be consistent with the database
-	/// after the exception occurs.
-	/// </para>
-	/// <seealso cref = "ISessionFactory"/>
-	/// </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface ISession : IDisposable
 	{
@@ -501,12 +438,6 @@ namespace NHibernate
 		/// <param name = "obj">a persistent or transient instance</param>
 		/// <param name = "lockMode">the lock mode to use</param>
 		Task RefreshAsync(object obj, LockMode lockMode);
-		/// <summary>
-		/// Determine the current lock mode of the given object
-		/// </summary>
-		/// <param name = "obj">A persistent instance</param>
-		/// <returns>The current lock mode</returns>
-		Task<LockMode> GetCurrentLockModeAsync(object obj);
 		/// <summary>
 		/// Create a new instance of <c>Query</c> for the given collection and filter string
 		/// </summary>

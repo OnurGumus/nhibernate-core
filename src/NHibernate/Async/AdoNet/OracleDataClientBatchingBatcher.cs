@@ -10,10 +10,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.AdoNet
 {
-	/// <summary>
-	/// Summary description for OracleDataClientBatchingBatcher.
-	/// By Tomer Avissar
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class OracleDataClientBatchingBatcher : AbstractBatcher
 	{

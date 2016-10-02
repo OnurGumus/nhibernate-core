@@ -7,23 +7,6 @@ using NHibernate.Util;
 
 namespace NHibernate.Id
 {
-	/// <summary>
-	/// An <see cref = "IIdentifierGenerator"/> that returns a string of length
-	/// 16.  
-	/// </summary>
-	/// <remarks>
-	/// <p>
-	///	This id generation strategy is specified in the mapping file as 
-	///	<code>&lt;generator class="uuid.string" /&gt;</code>
-	/// </p>
-	/// <para>
-	/// The identifier string will NOT consist of only alphanumeric characters.  Use
-	/// this only if you don't mind unreadable identifiers.
-	/// </para>
-	/// <para>
-	/// This impelementation was known to be incompatible with Postgres.
-	/// </para>
-	/// </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class UUIDStringGenerator : IIdentifierGenerator
 	{

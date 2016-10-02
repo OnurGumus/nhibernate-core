@@ -12,11 +12,6 @@ namespace NHibernate.Event
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface IEventSource : ISessionImplementor, ISession
 	{
-		/// <summary> 
-		/// Instantiate an entity instance, using either an interceptor,
-		/// or the given persister
-		/// </summary>
-		Task<object> InstantiateAsync(IEntityPersister persister, object id);
 		/// <summary> Force an immediate flush</summary>
 		Task ForceFlushAsync(EntityEntry e);
 		/// <summary> Cascade merge an entity instance</summary>

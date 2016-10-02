@@ -4,17 +4,11 @@ using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Type;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Cache
 {
-	/// <summary>
-	/// Defines the contract for caches capable of storing query results.  These
-	/// caches should only concern themselves with storing the matching result ids.
-	/// The transactional semantics are necessarily less strict than the semantics
-	/// of an item cache.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface IQueryCache
 	{

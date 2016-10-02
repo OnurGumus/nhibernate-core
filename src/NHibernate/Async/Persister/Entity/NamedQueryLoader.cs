@@ -6,9 +6,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Persister.Entity
 {
-	/// <summary> 
-	/// Not really a <tt>Loader</tt>, just a wrapper around a named query.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class NamedQueryLoader : IUniqueEntityLoader
 	{

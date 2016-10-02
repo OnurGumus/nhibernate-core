@@ -116,7 +116,7 @@ namespace NHibernate.Type
 
 		public override async Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session)
 		{
-			if (await (IsSameAsync(old, current, session.EntityMode)))
+			if (IsSame(old, current, session.EntityMode))
 			{
 				return false;
 			}
@@ -134,7 +134,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				if (await (IsSameAsync(old, current, session.EntityMode)))
+				if (IsSame(old, current, session.EntityMode))
 				{
 					return false;
 				}
@@ -142,18 +142,6 @@ namespace NHibernate.Type
 				object oldid = await (GetIdentifierAsync(old, session));
 				object newid = await (GetIdentifierAsync(current, session));
 				return await (GetIdentifierType(session).IsDirtyAsync(oldid, newid, checkable, session));
-			}
-		}
-
-		public override Task<bool[]> ToColumnNullnessAsync(object value, IMapping mapping)
-		{
-			try
-			{
-				return Task.FromResult<bool[]>(ToColumnNullness(value, mapping));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<bool[]>(ex);
 			}
 		}
 	}

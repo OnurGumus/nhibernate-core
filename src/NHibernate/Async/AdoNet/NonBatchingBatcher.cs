@@ -8,10 +8,6 @@ using NHibernate.Util;
 
 namespace NHibernate.AdoNet
 {
-	/// <summary>
-	/// An implementation of the <see cref = "IBatcher"/> 
-	/// interface that does no batching.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class NonBatchingBatcher : AbstractBatcher
 	{

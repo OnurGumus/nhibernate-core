@@ -4,19 +4,11 @@ using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Type;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Id
 {
-	/// <summary>
-	/// An <see cref = "IIdentifierGenerator"/> that returns the current identifier
-	/// assigned to an instance.
-	/// </summary>
-	/// <remarks>
-	/// <p>
-	///	This id generation strategy is specified in the mapping file as 
-	///	<code>&lt;generator class="assigned" /&gt;</code>
-	/// </p>
-	/// </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class Assigned : IIdentifierGenerator, IConfigurable
 	{
@@ -31,20 +23,16 @@ namespace NHibernate.Id
 		/// Thrown when a <see cref = "IPersistentCollection"/> is passed in as the <c>obj</c> or
 		/// if the identifier of <c>obj</c> is null.
 		/// </exception>
-		public async Task<object> GenerateAsync(ISessionImplementor session, object obj)
+		public Task<object> GenerateAsync(ISessionImplementor session, object obj)
 		{
-			if (obj is IPersistentCollection)
+			try
 			{
-				throw new IdentifierGenerationException("Illegal use of assigned id generation for a toplevel collection");
+				return Task.FromResult<object>(Generate(session, obj));
 			}
-
-			object id = await (session.GetEntityPersister(entityName, obj).GetIdentifierAsync(obj, session.EntityMode));
-			if (id == null)
+			catch (Exception ex)
 			{
-				throw new IdentifierGenerationException("ids for this class must be manually assigned before calling save(): " + obj.GetType().FullName);
+				return TaskHelper.FromException<object>(ex);
 			}
-
-			return id;
 		}
 	}
 }

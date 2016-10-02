@@ -11,9 +11,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Connection
 {
-	/// <summary>
-	/// The base class for the ConnectionProvider.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class ConnectionProvider : IConnectionProvider
 	{

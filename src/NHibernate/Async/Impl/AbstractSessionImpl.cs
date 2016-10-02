@@ -89,7 +89,6 @@ namespace NHibernate.Impl
 		public abstract Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters);
 		public abstract Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters);
 		public abstract Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters);
-		public abstract Task<object> InstantiateAsync(string clazz, object id);
 		public virtual async Task<IList> ListAsync(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
 		{
 			using (new SessionIdLoggingContext(SessionId))

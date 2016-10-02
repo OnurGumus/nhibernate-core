@@ -155,7 +155,6 @@
     <Compile Include="Async\ConnectionTest\AggressiveReleaseTest.cs" />
     <Compile Include="Async\ConnectionTest\ConnectionManagementTestCase.cs" />
     <Compile Include="Async\ConnectionTest\ThreadLocalCurrentSessionTest.cs" />
-    <Compile Include="Async\Criteria\AddNumberProjection.cs" />
     <Compile Include="Async\Criteria\CriteriaQueryTest.cs" />
     <Compile Include="Async\Criteria\DetachedCriteriaSerializable.cs" />
     <Compile Include="Async\Criteria\Lambda\FunctionsIntegrationFixture.cs" />
@@ -193,21 +192,9 @@
     <Compile Include="Async\Events\PostEvents\PostUpdateFixture.cs" />
     <Compile Include="Async\ExceptionsTest\NullQueryTest.cs" />
     <Compile Include="Async\ExceptionsTest\SQLExceptionConversionTest.cs" />
-    <Compile Include="Async\ExpressionTest\BetweenExpressionFixture.cs" />
     <Compile Include="Async\ExpressionTest\DetachedCriteriaFixture.cs" />
-    <Compile Include="Async\ExpressionTest\InExpressionFixture.cs" />
-    <Compile Include="Async\ExpressionTest\InsensitiveLikeExpressionFixture.cs" />
-    <Compile Include="Async\ExpressionTest\JunctionFixture.cs" />
-    <Compile Include="Async\ExpressionTest\LogicalExpressionFixture.cs" />
-    <Compile Include="Async\ExpressionTest\NotExpressionFixture.cs" />
-    <Compile Include="Async\ExpressionTest\NotNullExpressionFixture.cs" />
-    <Compile Include="Async\ExpressionTest\NullExpressionFixture.cs" />
-    <Compile Include="Async\ExpressionTest\Projection\ProjectionFixture.cs" />
     <Compile Include="Async\ExpressionTest\Projection\ProjectionSqlFixture.cs" />
-    <Compile Include="Async\ExpressionTest\PropertyExpressionFixture.cs" />
     <Compile Include="Async\ExpressionTest\QueryByExampleTest.cs" />
-    <Compile Include="Async\ExpressionTest\SimpleExpressionFixture.cs" />
-    <Compile Include="Async\ExpressionTest\SQLExpressionFixture.cs" />
     <Compile Include="Async\ExpressionTest\SubQueries\SubQueriesSqlFixture.cs" />
     <Compile Include="Async\Extendshbm\ExtendsFixture.cs" />
     <Compile Include="Async\Extralazy\ExtraLazyFixture.cs" />
@@ -341,7 +328,6 @@
     <Compile Include="Async\NHSpecificTest\DtcFailures\DtcFailuresFixture.cs" />
     <Compile Include="Async\NHSpecificTest\ElementsEnums\AbstractIntEnumsBagFixture.cs" />
     <Compile Include="Async\NHSpecificTest\EmptyMappingsFixture.cs" />
-    <Compile Include="Async\NHSpecificTest\EntityModeToTuplizerPerf\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\EntityNameAndCompositeId\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\EntityNameAndInheritance\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\EntityNameWithFullName\Fixture.cs" />
@@ -965,7 +951,6 @@
     <Compile Include="Async\TypesTest\DateTypeTest.cs" />
     <Compile Include="Async\TypesTest\DecimalTypeFixture.cs" />
     <Compile Include="Async\TypesTest\DoubleTypeFixture.cs" />
-    <Compile Include="Async\TypesTest\EntityTypeFixture.cs" />
     <Compile Include="Async\TypesTest\EnumCharTypeFixture.cs" />
     <Compile Include="Async\TypesTest\EnumStringTypeFixture.cs" />
     <Compile Include="Async\TypesTest\GenericEnumStringTypeFixture.cs" />

@@ -17,82 +17,9 @@ namespace NHibernate.Type
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class EntityType : AbstractType, IAssociationType
 	{
-		public override async Task<bool> IsEqualAsync(object x, object y, EntityMode entityMode, ISessionFactoryImplementor factory)
-		{
-			IEntityPersister persister = factory.GetEntityPersister(associatedEntityName);
-			if (!persister.CanExtractIdOutOfEntity)
-			{
-				return await (base.IsEqualAsync(x, y, entityMode));
-			}
-
-			object xid;
-			if (x.IsProxy())
-			{
-				INHibernateProxy proxy = x as INHibernateProxy;
-				xid = proxy.HibernateLazyInitializer.Identifier;
-			}
-			else
-			{
-				xid = await (persister.GetIdentifierAsync(x, entityMode));
-			}
-
-			object yid;
-			if (y.IsProxy())
-			{
-				INHibernateProxy proxy = y as INHibernateProxy;
-				yid = proxy.HibernateLazyInitializer.Identifier;
-			}
-			else
-			{
-				yid = await (persister.GetIdentifierAsync(y, entityMode));
-			}
-
-			return await (persister.IdentifierType.IsEqualAsync(xid, yid, entityMode, factory));
-		}
-
-		/// <summary> Two entities are considered the same when their instances are the same. </summary>
-		/// <param name = "x">One entity instance </param>
-		/// <param name = "y">Another entity instance </param>
-		/// <param name = "entityMode">The entity mode. </param>
-		/// <returns> True if x == y; false otherwise. </returns>
-		public override Task<bool> IsSameAsync(object x, object y, EntityMode entityMode)
-		{
-			try
-			{
-				return Task.FromResult<bool>(IsSame(x, y, entityMode));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<bool>(ex);
-			}
-		}
-
 		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			return NullSafeGetAsync(rs, new string[]{name}, session, owner);
-		}
-
-		/// <summary> 
-		/// Get the identifier value of an instance or proxy.
-		/// <p/>
-		/// Intended only for loggin purposes!!!
-		/// </summary>
-		/// <param name = "obj">The object from which to extract the identifier.</param>
-		/// <param name = "persister">The entity persister </param>
-		/// <param name = "entityMode">The entity mode </param>
-		/// <returns> The extracted identifier. </returns>
-		private static async Task<object> GetIdentifierAsync(object obj, IEntityPersister persister, EntityMode entityMode)
-		{
-			if (obj.IsProxy())
-			{
-				INHibernateProxy proxy = obj as INHibernateProxy;
-				ILazyInitializer li = proxy.HibernateLazyInitializer;
-				return li.Identifier;
-			}
-			else
-			{
-				return await (persister.GetIdentifierAsync(obj, entityMode));
-			}
 		}
 
 		protected internal async Task<object> GetIdentifierAsync(object value, ISessionImplementor session)
@@ -137,48 +64,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override async Task<string> ToLoggableStringAsync(object value, ISessionFactoryImplementor factory)
-		{
-			if (value == null)
-			{
-				return "null";
-			}
-
-			IEntityPersister persister = factory.GetEntityPersister(associatedEntityName);
-			StringBuilder result = new StringBuilder().Append(associatedEntityName);
-			if (persister.HasIdentifierProperty)
-			{
-				EntityMode? entityMode = persister.GuessEntityMode(value);
-				object id;
-				if (!entityMode.HasValue)
-				{
-					if (isEmbeddedInXML)
-						throw new InvalidCastException(value.GetType().FullName);
-					id = value;
-				}
-				else
-				{
-					id = await (GetIdentifierAsync(value, persister, entityMode.Value));
-				}
-
-				result.Append('#').Append(await (persister.IdentifierType.ToLoggableStringAsync(id, factory)));
-			}
-
-			return result.ToString();
-		}
-
-		public override Task<object> DeepCopyAsync(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
-		{
-			try
-			{
-				return Task.FromResult<object>(DeepCopy(value, entityMode, factory));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
-		}
-
 		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache)
 		{
 			if (original == null)
@@ -200,7 +85,7 @@ namespace NHibernate.Type
 
 				if (session.GetContextEntityIdentifier(original) == null && await (ForeignKeys.IsTransientAsync(associatedEntityName, original, false, session)))
 				{
-					object copy = await (session.Factory.GetEntityPersister(associatedEntityName).InstantiateAsync(null, session.EntityMode));
+					object copy = session.Factory.GetEntityPersister(associatedEntityName).Instantiate(null, session.EntityMode);
 					//TODO: should this be Session.instantiate(Persister, ...)?
 					copyCache.Add(original, copy);
 					return copy;
@@ -288,28 +173,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override async Task<int> GetHashCodeAsync(object x, EntityMode entityMode, ISessionFactoryImplementor factory)
-		{
-			IEntityPersister persister = factory.GetEntityPersister(associatedEntityName);
-			if (!persister.CanExtractIdOutOfEntity)
-			{
-				return await (base.GetHashCodeAsync(x, entityMode));
-			}
-
-			object id;
-			if (x.IsProxy())
-			{
-				INHibernateProxy proxy = x as INHibernateProxy;
-				id = proxy.HibernateLazyInitializer.Identifier;
-			}
-			else
-			{
-				id = await (persister.GetIdentifierAsync(x, entityMode));
-			}
-
-			return await (persister.IdentifierType.GetHashCodeAsync(id, entityMode, factory));
-		}
-
 		/// <summary> 
 		/// Load an instance by a unique key that is not the primary key. 
 		/// </summary>
@@ -343,18 +206,6 @@ namespace NHibernate.Type
 			catch (Exception sqle)
 			{
 				throw ADOExceptionHelper.Convert(factory.SQLExceptionConverter, sqle, "Error performing LoadByUniqueKey");
-			}
-		}
-
-		public override Task<int> CompareAsync(object x, object y, EntityMode? entityMode)
-		{
-			try
-			{
-				return Task.FromResult<int>(Compare(x, y, entityMode));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<int>(ex);
 			}
 		}
 	}

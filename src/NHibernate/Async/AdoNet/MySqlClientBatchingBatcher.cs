@@ -5,7 +5,7 @@ using System.Text;
 using NHibernate.AdoNet.Util;
 using NHibernate.Exceptions;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.AdoNet

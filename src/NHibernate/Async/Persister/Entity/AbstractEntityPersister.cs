@@ -32,13 +32,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Persister.Entity
 {
-	/// <summary>
-	/// Superclass for built-in mapping strategies. Implements functionalty common to both mapping
-	/// strategies
-	/// </summary>
-	/// <remarks>
-	/// May be considered an immutable view of the mapping object
-	/// </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata, IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable
 	{
@@ -100,7 +93,7 @@ namespace NHibernate.Persister.Entity
 						for (int j = 0; j < lazyPropertyNames.Length; j++)
 						{
 							object propValue = await (lazyPropertyTypes[j].NullSafeGetAsync(rs, lazyPropertyColumnAliases[j], session, entity));
-							if (await (InitializeLazyPropertyAsync(fieldName, entity, session, snapshot, j, propValue)))
+							if (InitializeLazyProperty(fieldName, entity, session, snapshot, j, propValue))
 							{
 								result = propValue;
 							}
@@ -130,7 +123,7 @@ namespace NHibernate.Persister.Entity
 			for (int j = 0; j < lazyPropertyNames.Length; j++)
 			{
 				object propValue = await (lazyPropertyTypes[j].AssembleAsync(disassembledValues[lazyPropertyNumbers[j]], session, entity));
-				if (await (InitializeLazyPropertyAsync(fieldName, entity, session, snapshot, j, propValue)))
+				if (InitializeLazyProperty(fieldName, entity, session, snapshot, j, propValue))
 				{
 					result = propValue;
 				}
@@ -138,18 +131,6 @@ namespace NHibernate.Persister.Entity
 
 			log.Debug("done initializing lazy properties");
 			return result;
-		}
-
-		private async Task<bool> InitializeLazyPropertyAsync(string fieldName, object entity, ISessionImplementor session, object[] snapshot, int j, object propValue)
-		{
-			SetPropertyValue(entity, lazyPropertyNumbers[j], propValue, session.EntityMode);
-			if (snapshot != null)
-			{
-				// object have been loaded with setReadOnly(true); HHH-2236
-				snapshot[lazyPropertyNumbers[j]] = await (lazyPropertyTypes[j].DeepCopyAsync(propValue, session.EntityMode, factory));
-			}
-
-			return fieldName.Equals(lazyPropertyNames[j]);
 		}
 
 		public async Task<object[]> GetDatabaseSnapshotAsync(object id, ISessionImplementor session)
@@ -214,7 +195,7 @@ namespace NHibernate.Persister.Entity
 			object nextVersion = await (VersionType.NextAsync(currentVersion, session));
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("Forcing version increment [" + MessageHelper.InfoString(this, id, Factory) + "; " + await (VersionType.ToLoggableStringAsync(currentVersion, Factory)) + " -> " + await (VersionType.ToLoggableStringAsync(nextVersion, Factory)) + "]");
+				log.Debug("Forcing version increment [" + MessageHelper.InfoString(this, id, Factory) + "; " + VersionType.ToLoggableString(currentVersion, Factory) + " -> " + VersionType.ToLoggableString(nextVersion, Factory) + "]");
 			}
 
 			IExpectation expectation = Expectations.AppropriateExpectation(updateResultCheckStyles[0]);
@@ -295,81 +276,6 @@ namespace NHibernate.Persister.Entity
 		public async Task<object> LoadByUniqueKeyAsync(string propertyName, object uniqueKey, ISessionImplementor session)
 		{
 			return await (GetAppropriateUniqueKeyLoader(propertyName, session.EnabledFilters).LoadByUniqueKeyAsync(session, uniqueKey));
-		}
-
-		protected virtual Task<SqlCommandInfo> GenerateUpdateStringAsync(bool[] includeProperty, int j, bool useRowId)
-		{
-			return GenerateUpdateStringAsync(includeProperty, j, null, useRowId);
-		}
-
-		/// <summary> Generate the SQL that updates a row by id (and version)</summary>
-		protected internal async Task<SqlCommandInfo> GenerateUpdateStringAsync(bool[] includeProperty, int j, object[] oldFields, bool useRowId)
-		{
-			SqlUpdateBuilder updateBuilder = new SqlUpdateBuilder(Factory.Dialect, Factory).SetTableName(GetTableName(j));
-			// select the correct row by either pk or rowid
-			if (useRowId)
-				updateBuilder.SetIdentityColumn(new[]{rowIdName}, NHibernateUtil.Int32); //TODO: eventually, rowIdName[j]
-			else
-				updateBuilder.SetIdentityColumn(GetKeyColumns(j), GetIdentifierType(j));
-			bool hasColumns = false;
-			for (int i = 0; i < entityMetamodel.PropertySpan; i++)
-			{
-				if (includeProperty[i] && IsPropertyOfTable(i, j))
-				{
-					// this is a property of the table, which we are updating
-					updateBuilder.AddColumns(GetPropertyColumnNames(i), propertyColumnUpdateable[i], PropertyTypes[i]);
-					hasColumns = hasColumns || GetPropertyColumnSpan(i) > 0;
-				}
-			}
-
-			if (j == 0 && IsVersioned && entityMetamodel.OptimisticLockMode == Versioning.OptimisticLock.Version)
-			{
-				// this is the root (versioned) table, and we are using version-based
-				// optimistic locking;  if we are not updating the version, also don't
-				// check it (unless this is a "generated" version column)!
-				if (CheckVersion(includeProperty))
-				{
-					updateBuilder.SetVersionColumn(new string[]{VersionColumnName}, VersionType);
-					hasColumns = true;
-				}
-			}
-			else if (entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version && oldFields != null)
-			{
-				// we are using "all" or "dirty" property-based optimistic locking
-				bool[] includeInWhere = OptimisticLockMode == Versioning.OptimisticLock.All ? PropertyUpdateability : includeProperty; //optimistic-lock="dirty", include all properties we are updating this time
-				bool[] versionability = PropertyVersionability;
-				IType[] types = PropertyTypes;
-				for (int i = 0; i < entityMetamodel.PropertySpan; i++)
-				{
-					bool include = includeInWhere[i] && IsPropertyOfTable(i, j) && versionability[i];
-					if (include)
-					{
-						// this property belongs to the table, and it is not specifically
-						// excluded from optimistic locking by optimistic-lock="false"
-						string[] _propertyColumnNames = GetPropertyColumnNames(i);
-						bool[] propertyNullness = await (types[i].ToColumnNullnessAsync(oldFields[i], Factory));
-						SqlType[] sqlt = types[i].SqlTypes(Factory);
-						for (int k = 0; k < propertyNullness.Length; k++)
-						{
-							if (propertyNullness[k])
-							{
-								updateBuilder.AddWhereFragment(_propertyColumnNames[k], sqlt[k], " = ");
-							}
-							else
-							{
-								updateBuilder.AddWhereFragment(_propertyColumnNames[k] + " is null");
-							}
-						}
-					}
-				}
-			}
-
-			if (Factory.Settings.IsCommentsEnabled)
-			{
-				updateBuilder.SetComment("update " + EntityName);
-			}
-
-			return hasColumns ? updateBuilder.ToSqlCommandInfo() : null;
 		}
 
 		protected Task<int> DehydrateAsync(object id, object[] fields, bool[] includeProperty, bool[][] includeColumns, int j, DbCommand st, ISessionImplementor session)
@@ -640,7 +546,7 @@ namespace NHibernate.Persister.Entity
 				{
 					//if all fields are null, we might need to delete existing row
 					isRowToUpdate = true;
-					Delete(tableId, oldVersion, j, obj, SqlDeleteStrings[j], session, null);
+					await (DeleteAsync(tableId, oldVersion, j, obj, SqlDeleteStrings[j], session, null));
 				}
 				else
 				{
@@ -696,7 +602,7 @@ namespace NHibernate.Persister.Entity
 							bool include = includeOldField[i] && IsPropertyOfTable(i, j) && versionability[i];
 							if (include)
 							{
-								bool[] settable = await (types[i].ToColumnNullnessAsync(oldFields[i], Factory));
+								bool[] settable = types[i].ToColumnNullness(oldFields[i], Factory);
 								await (types[i].NullSafeSetAsync(statement, oldFields[i], index, settable, session));
 								index += ArrayHelper.CountTrue(settable);
 							}
@@ -818,7 +724,7 @@ namespace NHibernate.Persister.Entity
 							{
 								// this property belongs to the table and it is not specifically
 								// excluded from optimistic locking by optimistic-lock="false"
-								bool[] settable = await (types[i].ToColumnNullnessAsync(loadedState[i], Factory));
+								bool[] settable = types[i].ToColumnNullness(loadedState[i], Factory);
 								await (types[i].NullSafeSetAsync(statement, loadedState[i], index, settable, session));
 								index += ArrayHelper.CountTrue(settable);
 							}
@@ -879,7 +785,7 @@ namespace NHibernate.Persister.Entity
 				updateStrings = new SqlCommandInfo[span];
 				for (int j = 0; j < span; j++)
 				{
-					updateStrings[j] = tableUpdateNeeded[j] ? await (GenerateUpdateStringAsync(propsToUpdate, j, oldFields, j == 0 && rowId != null)) : null;
+					updateStrings[j] = tableUpdateNeeded[j] ? GenerateUpdateString(propsToUpdate, j, oldFields, j == 0 && rowId != null) : null;
 				}
 			}
 			else if (!IsModifiableEntity(entry))
@@ -896,7 +802,7 @@ namespace NHibernate.Persister.Entity
 				updateStrings = new SqlCommandInfo[span];
 				for (int j = 0; j < span; j++)
 				{
-					updateStrings[j] = tableUpdateNeeded[j] ? await (GenerateUpdateStringAsync(propsToUpdate, j, oldFields, j == 0 && rowId != null)) : null;
+					updateStrings[j] = tableUpdateNeeded[j] ? GenerateUpdateString(propsToUpdate, j, oldFields, j == 0 && rowId != null) : null;
 				}
 			}
 			else
@@ -989,7 +895,7 @@ namespace NHibernate.Persister.Entity
 			if (isImpliedOptimisticLocking && loadedState != null)
 			{
 				// we need to utilize dynamic delete statements
-				deleteStrings = await (GenerateSQLDeleteStringsAsync(loadedState));
+				deleteStrings = GenerateSQLDeleteStrings(loadedState);
 			}
 			else
 			{
@@ -999,111 +905,8 @@ namespace NHibernate.Persister.Entity
 
 			for (int j = span - 1; j >= 0; j--)
 			{
-				Delete(id, version, j, obj, deleteStrings[j], session, loadedState);
+				await (DeleteAsync(id, version, j, obj, deleteStrings[j], session, loadedState));
 			}
-		}
-
-		protected async Task<SqlCommandInfo[]> GenerateSQLDeleteStringsAsync(object[] loadedState)
-		{
-			int span = TableSpan;
-			SqlCommandInfo[] deleteStrings = new SqlCommandInfo[span];
-			for (int j = span - 1; j >= 0; j--)
-			{
-				SqlDeleteBuilder delete = new SqlDeleteBuilder(Factory.Dialect, Factory).SetTableName(GetTableName(j)).SetIdentityColumn(GetKeyColumns(j), GetIdentifierType(j));
-				if (Factory.Settings.IsCommentsEnabled)
-				{
-					delete.SetComment("delete " + EntityName + " [" + j + "]");
-				}
-
-				bool[] versionability = PropertyVersionability;
-				IType[] types = PropertyTypes;
-				for (int i = 0; i < entityMetamodel.PropertySpan; i++)
-				{
-					bool include = versionability[i] && IsPropertyOfTable(i, j);
-					if (include)
-					{
-						// this property belongs to the table and it is not specifically
-						// excluded from optimistic locking by optimistic-lock="false"
-						string[] _propertyColumnNames = GetPropertyColumnNames(i);
-						bool[] propertyNullness = await (types[i].ToColumnNullnessAsync(loadedState[i], Factory));
-						SqlType[] sqlt = types[i].SqlTypes(Factory);
-						for (int k = 0; k < propertyNullness.Length; k++)
-						{
-							if (propertyNullness[k])
-							{
-								delete.AddWhereFragment(_propertyColumnNames[k], sqlt[k], " = ");
-							}
-							else
-							{
-								delete.AddWhereFragment(_propertyColumnNames[k] + " is null");
-							}
-						}
-					}
-				}
-
-				deleteStrings[j] = delete.ToSqlCommandInfo();
-			}
-
-			return deleteStrings;
-		}
-
-		public virtual async Task PostInstantiateAsync()
-		{
-			// this section was moved from PostConstruct() method (know difference in NH)
-			int joinSpan = TableSpan;
-			sqlDeleteStrings = new SqlCommandInfo[joinSpan];
-			sqlInsertStrings = new SqlCommandInfo[joinSpan];
-			sqlUpdateStrings = new SqlCommandInfo[joinSpan];
-			sqlLazyUpdateStrings = new SqlCommandInfo[joinSpan];
-			sqlUpdateByRowIdString = rowIdName == null ? null : await (GenerateUpdateStringAsync(PropertyUpdateability, 0, true));
-			sqlLazyUpdateByRowIdString = rowIdName == null ? null : await (GenerateUpdateStringAsync(NonLazyPropertyUpdateability, 0, true));
-			for (int j = 0; j < joinSpan; j++)
-			{
-				SqlCommandInfo defaultInsert = GenerateInsertString(PropertyInsertability, j);
-				SqlCommandInfo defaultUpdate = await (GenerateUpdateStringAsync(PropertyUpdateability, j, false));
-				SqlCommandInfo defaultDelete = GenerateDeleteString(j);
-				sqlInsertStrings[j] = customSQLInsert[j] != null ? new SqlCommandInfo(customSQLInsert[j], defaultInsert.ParameterTypes) : defaultInsert;
-				sqlUpdateStrings[j] = customSQLUpdate[j] != null ? new SqlCommandInfo(customSQLUpdate[j], defaultUpdate.ParameterTypes) : defaultUpdate;
-				// NH: in practice for lazy update de update sql is the same any way.
-				sqlLazyUpdateStrings[j] = customSQLUpdate[j] != null ? new SqlCommandInfo(customSQLUpdate[j], defaultUpdate.ParameterTypes) : await (GenerateUpdateStringAsync(NonLazyPropertyUpdateability, j, false));
-				sqlDeleteStrings[j] = customSQLDelete[j] != null ? new SqlCommandInfo(customSQLDelete[j], defaultDelete.ParameterTypes) : defaultDelete;
-			}
-
-			tableHasColumns = new bool[joinSpan];
-			for (int j = 0; j < joinSpan; j++)
-			{
-				tableHasColumns[j] = sqlUpdateStrings[j] != null;
-			}
-
-			//select SQL
-			sqlSnapshotSelectString = GenerateSnapshotSelectString();
-			sqlLazySelectString = GenerateLazySelectString();
-			sqlVersionSelectString = GenerateSelectVersionString();
-			if (HasInsertGeneratedProperties)
-			{
-				sqlInsertGeneratedValuesSelectString = GenerateInsertGeneratedValuesSelectString();
-			}
-
-			if (HasUpdateGeneratedProperties)
-			{
-				sqlUpdateGeneratedValuesSelectString = GenerateUpdateGeneratedValuesSelectString();
-			}
-
-			if (IsIdentifierAssignedByInsert)
-			{
-				identityDelegate = ((IPostInsertIdentifierGenerator)IdentifierGenerator).GetInsertGeneratedIdentifierDelegate(this, Factory, UseGetGeneratedKeys());
-				SqlCommandInfo defaultInsert = GenerateIdentityInsertString(PropertyInsertability);
-				sqlIdentityInsertString = customSQLInsert[0] != null ? new SqlCommandInfo(customSQLInsert[0], defaultInsert.ParameterTypes) : defaultInsert;
-			}
-			else
-			{
-				sqlIdentityInsertString = null;
-			}
-
-			LogStaticSQL();
-			CreateLoaders();
-			CreateUniqueKeyLoaders();
-			CreateQueryLoader();
 		}
 
 		/// <summary>
@@ -1146,85 +949,6 @@ namespace NHibernate.Persister.Entity
 				LogDirtyProperties(props);
 				return props;
 			}
-		}
-
-		public virtual async Task<bool ? > IsTransientAsync(object entity, ISessionImplementor session)
-		{
-			object id;
-			if (CanExtractIdOutOfEntity)
-			{
-				id = await (GetIdentifierAsync(entity, session.EntityMode));
-			}
-			else
-			{
-				id = null;
-			}
-
-			// we *always* assume an instance with a null
-			// identifier or no identifier property is unsaved!
-			if (id == null)
-			{
-				return true;
-			}
-
-			// check the id unsaved-value
-			// We do this first so we don't have to hydrate the version property if the id property already gives us the info we need (NH-3505).
-			bool ? result2 = entityMetamodel.IdentifierProperty.UnsavedValue.IsUnsaved(id);
-			if (result2.HasValue)
-			{
-				if (IdentifierGenerator is Assigned)
-				{
-					// if using assigned identifier, we can only make assumptions
-					// if the value is a known unsaved-value
-					if (result2.Value)
-						return true;
-				}
-				else
-				{
-					return result2;
-				}
-			}
-
-			// check the version unsaved-value, if appropriate
-			if (IsVersioned)
-			{
-				object version = GetVersion(entity, session.EntityMode);
-				bool ? result = entityMetamodel.VersionProperty.UnsavedValue.IsUnsaved(version);
-				if (result.HasValue)
-				{
-					return result;
-				}
-			}
-
-			// check to see if it is in the second-level cache
-			if (HasCache)
-			{
-				CacheKey ck = session.GenerateCacheKey(id, IdentifierType, RootEntityName);
-				if (Cache.Get(ck, session.Timestamp) != null)
-					return false;
-			}
-
-			return null;
-		}
-
-		public virtual async Task<object> GetIdentifierAsync(object obj, EntityMode entityMode)
-		{
-			return await (GetTuplizer(entityMode).GetIdentifierAsync(obj));
-		}
-
-		public virtual async Task SetIdentifierAsync(object obj, object id, EntityMode entityMode)
-		{
-			await (GetTuplizer(entityMode).SetIdentifierAsync(obj, id));
-		}
-
-		public virtual async Task<object> InstantiateAsync(object id, EntityMode entityMode)
-		{
-			return await (GetTuplizer(entityMode).InstantiateAsync(id));
-		}
-
-		public virtual async Task ResetIdentifierAsync(object entity, object currentId, object currentVersion, EntityMode entityMode)
-		{
-			await (GetTuplizer(entityMode).ResetIdentifierAsync(entity, currentId, currentVersion));
 		}
 
 		public virtual async Task<object[]> GetPropertyValuesToInsertAsync(object obj, IDictionary mergeMap, ISessionImplementor session)

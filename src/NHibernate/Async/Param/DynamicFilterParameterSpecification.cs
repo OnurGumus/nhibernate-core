@@ -151,30 +151,6 @@ namespace NHibernate.Param
 				}
 			}
 
-			public Task<string> ToLoggableStringAsync(object value, ISessionFactoryImplementor factory)
-			{
-				try
-				{
-					return Task.FromResult<string>(ToLoggableString(value, factory));
-				}
-				catch (Exception ex)
-				{
-					return TaskHelper.FromException<string>(ex);
-				}
-			}
-
-			public Task<object> DeepCopyAsync(object val, EntityMode entityMode, ISessionFactoryImplementor factory)
-			{
-				try
-				{
-					return Task.FromResult<object>(DeepCopy(val, entityMode, factory));
-				}
-				catch (Exception ex)
-				{
-					return TaskHelper.FromException<object>(ex);
-				}
-			}
-
 			public Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 			{
 				try
@@ -232,90 +208,6 @@ namespace NHibernate.Param
 				catch (Exception ex)
 				{
 					return TaskHelper.FromException<object>(ex);
-				}
-			}
-
-			public Task<bool> IsSameAsync(object x, object y, EntityMode entityMode)
-			{
-				try
-				{
-					return Task.FromResult<bool>(IsSame(x, y, entityMode));
-				}
-				catch (Exception ex)
-				{
-					return TaskHelper.FromException<bool>(ex);
-				}
-			}
-
-			public Task<bool> IsEqualAsync(object x, object y, EntityMode entityMode)
-			{
-				try
-				{
-					return Task.FromResult<bool>(IsEqual(x, y, entityMode));
-				}
-				catch (Exception ex)
-				{
-					return TaskHelper.FromException<bool>(ex);
-				}
-			}
-
-			public Task<bool> IsEqualAsync(object x, object y, EntityMode entityMode, ISessionFactoryImplementor factory)
-			{
-				try
-				{
-					return Task.FromResult<bool>(IsEqual(x, y, entityMode, factory));
-				}
-				catch (Exception ex)
-				{
-					return TaskHelper.FromException<bool>(ex);
-				}
-			}
-
-			public Task<int> GetHashCodeAsync(object x, EntityMode entityMode)
-			{
-				try
-				{
-					return Task.FromResult<int>(GetHashCode(x, entityMode));
-				}
-				catch (Exception ex)
-				{
-					return TaskHelper.FromException<int>(ex);
-				}
-			}
-
-			public Task<int> GetHashCodeAsync(object x, EntityMode entityMode, ISessionFactoryImplementor factory)
-			{
-				try
-				{
-					return Task.FromResult<int>(GetHashCode(x, entityMode, factory));
-				}
-				catch (Exception ex)
-				{
-					return TaskHelper.FromException<int>(ex);
-				}
-			}
-
-			public Task<int> CompareAsync(object x, object y, EntityMode? entityMode)
-			{
-				try
-				{
-					return Task.FromResult<int>(Compare(x, y, entityMode));
-				}
-				catch (Exception ex)
-				{
-					return TaskHelper.FromException<int>(ex);
-				}
-			}
-
-			public Task<bool[]> ToColumnNullnessAsync(object value, IMapping mapping)
-			{
-				try
-				{
-					return Task.FromResult<bool[]>(ToColumnNullness(value, mapping));
-				}
-				catch (Exception ex)
-				{
-					return TaskHelper.FromException<bool[]>(ex);
 				}
 			}
 		}

@@ -7,12 +7,6 @@ using NHibernate.Util;
 
 namespace NHibernate.Driver
 {
-	/// <summary>
-	/// A NHibernate Driver for using the OleDb DataProvider
-	/// </summary>
-	/// <remarks>
-	/// Always look for a native .NET DataProvider before using the OleDb DataProvider.
-	/// </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class OleDbDriver : DriverBase
 	{

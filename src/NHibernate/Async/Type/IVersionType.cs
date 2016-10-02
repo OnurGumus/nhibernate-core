@@ -2,14 +2,11 @@
 using System.Collections;
 using NHibernate.Engine;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Type
 {
-	/// <summary>
-	/// An <see cref = "IType"/> that may be used to version data.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface IVersionType : IType
 	{

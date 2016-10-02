@@ -5,14 +5,11 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Param
 {
-	/// <summary>
-	/// Maintains information relating to parameters which need to get bound into a <see cref = "DbCommand"/>.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface IParameterSpecification
 	{

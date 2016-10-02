@@ -6,16 +6,6 @@ using NHibernate.Util;
 
 namespace NHibernate.Id
 {
-	/// <summary>
-	/// An <see cref = "IIdentifierGenerator"/> that generates <see cref = "Guid"/> values 
-	/// using <see cref = "System.Guid.NewGuid()">Guid.NewGuid()</see>. 
-	/// </summary>
-	/// <remarks>
-	/// <p>
-	///	This id generation strategy is specified in the mapping file as 
-	///	<code>&lt;generator class="guid" /&gt;</code>
-	/// </p>
-	/// </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class GuidGenerator : IIdentifierGenerator
 	{

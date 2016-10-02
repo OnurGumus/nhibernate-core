@@ -22,18 +22,6 @@ namespace NHibernate.Type
 				return TaskHelper.FromException<object>(ex);
 			}
 		}
-
-		public override Task<object> DeepCopyAsync(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
-		{
-			try
-			{
-				return Task.FromResult<object>(DeepCopy(value, entityMode, factory));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
-		}
 	}
 }
 #endif

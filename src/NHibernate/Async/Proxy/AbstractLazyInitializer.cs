@@ -3,7 +3,6 @@ using System;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Proxy
 {
@@ -87,23 +86,6 @@ namespace NHibernate.Proxy
 		{
 			await (InitializeAsync());
 			return _target;
-		}
-
-		/// <summary>
-		/// Return the Underlying Persistent Object in a given <see cref = "ISession"/>, or null.
-		/// </summary>
-		/// <param name = "s">The Session to get the object from.</param>
-		/// <returns>The Persistent Object this proxy is Proxying, or <see langword = "null"/>.</returns>
-		public Task<object> GetImplementationAsync(ISessionImplementor s)
-		{
-			try
-			{
-				return Task.FromResult<object>(GetImplementation(s));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
 		}
 
 		private async Task SetReadOnlyAsync(bool readOnly)

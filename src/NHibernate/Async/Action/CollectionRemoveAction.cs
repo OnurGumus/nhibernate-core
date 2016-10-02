@@ -30,7 +30,7 @@ namespace NHibernate.Action
 			IPersistentCollection collection = Collection;
 			if (collection != null)
 			{
-				await (Session.PersistenceContext.GetCollectionEntry(collection).AfterActionAsync(collection));
+				Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
 			}
 
 			Evict();

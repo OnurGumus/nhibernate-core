@@ -53,31 +53,6 @@ namespace NHibernate.Engine
 			processed = false;
 		}
 
-		/// <summary>
-		/// Updates the CollectionEntry to reflect that the <see cref = "IPersistentCollection"/>
-		/// has been initialized.
-		/// </summary>
-		/// <param name = "collection">The initialized <see cref = "AbstractPersistentCollection"/> that this Entry is for.</param>
-		public async Task PostInitializeAsync(IPersistentCollection collection)
-		{
-			snapshot = LoadedPersister.IsMutable ? await (collection.GetSnapshotAsync(LoadedPersister)) : null;
-			collection.SetSnapshot(loadedKey, role, snapshot);
-		}
-
-		public async Task AfterActionAsync(IPersistentCollection collection)
-		{
-			loadedKey = CurrentKey;
-			SetLoadedPersister(CurrentPersister);
-			bool resnapshot = collection.WasInitialized && (IsDoremove || IsDorecreate || IsDoupdate);
-			if (resnapshot)
-			{
-				//re-snapshot
-				snapshot = loadedPersister == null || !loadedPersister.IsMutable ? null : await (collection.GetSnapshotAsync(loadedPersister));
-			}
-
-			collection.PostAction();
-		}
-
 		public async Task<ICollection> GetOrphansAsync(string entityName, IPersistentCollection collection)
 		{
 			if (snapshot == null)

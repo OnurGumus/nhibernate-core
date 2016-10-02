@@ -53,50 +53,9 @@ namespace NHibernate.Event.Default
 					await (EntityIsDetachedAsync(@event));
 					return null;
 				case EntityState.Persistent:
-					return await (EntityIsPersistentAsync(@event));
+					return EntityIsPersistent(@event);
 				default: //TRANSIENT or DELETED
 					return await (EntityIsTransientAsync(@event));
-			}
-		}
-
-		protected virtual async Task<object> EntityIsPersistentAsync(SaveOrUpdateEvent @event)
-		{
-			log.Debug("ignoring persistent instance");
-			EntityEntry entityEntry = @event.Entry;
-			if (entityEntry == null)
-			{
-				throw new AssertionFailure("entity was transient or detached");
-			}
-			else
-			{
-				if (entityEntry.Status == Status.Deleted)
-				{
-					throw new AssertionFailure("entity was deleted");
-				}
-
-				ISessionFactoryImplementor factory = @event.Session.Factory;
-				object requestedId = @event.RequestedId;
-				object savedId;
-				if (requestedId == null)
-				{
-					savedId = entityEntry.Id;
-				}
-				else
-				{
-					if (!await (entityEntry.Persister.IdentifierType.IsEqualAsync(requestedId, entityEntry.Id, EntityMode.Poco)))
-					{
-						throw new PersistentObjectException("object passed to save() was already persistent: " + MessageHelper.InfoString(entityEntry.Persister, requestedId, factory));
-					}
-
-					savedId = requestedId;
-				}
-
-				if (log.IsDebugEnabled)
-				{
-					log.Debug("object already associated with session: " + MessageHelper.InfoString(entityEntry.Persister, savedId, factory));
-				}
-
-				return savedId;
 			}
 		}
 
@@ -161,30 +120,8 @@ namespace NHibernate.Event.Default
 
 			object entity = @event.Entity;
 			IEntityPersister persister = @event.Session.GetEntityPersister(@event.EntityName, entity);
-			@event.RequestedId = await (GetUpdateIdAsync(entity, persister, @event.RequestedId, @event.Session.EntityMode));
+			@event.RequestedId = GetUpdateId(entity, persister, @event.RequestedId, @event.Session.EntityMode);
 			await (PerformUpdateAsync(@event, entity, persister));
-		}
-
-		/// <summary> Determine the id to use for updating. </summary>
-		/// <param name = "entity">The entity. </param>
-		/// <param name = "persister">The entity persister </param>
-		/// <param name = "requestedId">The requested identifier </param>
-		/// <param name = "entityMode">The entity mode. </param>
-		/// <returns> The id. </returns>
-		protected virtual async Task<object> GetUpdateIdAsync(object entity, IEntityPersister persister, object requestedId, EntityMode entityMode)
-		{
-			// use the id assigned to the instance
-			object id = await (persister.GetIdentifierAsync(entity, entityMode));
-			if (id == null)
-			{
-				// assume this is a newly instantiated transient object
-				// which should be saved rather than updated
-				throw new TransientObjectException("The given object has a null identifier: " + persister.EntityName);
-			}
-			else
-			{
-				return id;
-			}
 		}
 
 		protected virtual async Task PerformUpdateAsync(SaveOrUpdateEvent @event, object entity, IEntityPersister persister)

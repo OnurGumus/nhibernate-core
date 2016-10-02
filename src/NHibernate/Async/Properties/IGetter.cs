@@ -3,14 +3,11 @@ using System.Collections;
 using System.Reflection;
 using NHibernate.Engine;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Properties
 {
-	/// <summary>
-	/// Gets values of a particular mapped property.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface IGetter
 	{

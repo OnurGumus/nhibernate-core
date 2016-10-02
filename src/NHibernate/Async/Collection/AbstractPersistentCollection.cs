@@ -153,40 +153,6 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Associate the collection with the given session.
-		/// </summary>
-		/// <param name = "session"></param>
-		/// <returns>false if the collection was already associated with the session</returns>
-		public virtual async Task<bool> SetCurrentSessionAsync(ISessionImplementor session)
-		{
-			if (session == this.session // NH: added to fix NH-704
- && session.PersistenceContext.ContainsCollection(this))
-			{
-				return false;
-			}
-			else
-			{
-				if (IsConnectedToSession)
-				{
-					CollectionEntry ce = session.PersistenceContext.GetCollectionEntry(this);
-					if (ce == null)
-					{
-						throw new HibernateException("Illegal attempt to associate a collection with two open sessions");
-					}
-					else
-					{
-						throw new HibernateException("Illegal attempt to associate a collection with two open sessions: " + await (MessageHelper.CollectionInfoStringAsync(ce.LoadedPersister, this, ce.LoadedKey, session)));
-					}
-				}
-				else
-				{
-					this.session = session;
-					return true;
-				}
-			}
-		}
-
-		/// <summary>
 		/// To be called internally by the session, forcing
 		/// immediate initialization.
 		/// </summary>
@@ -317,7 +283,7 @@ namespace NHibernate.Collection
 					}
 
 					object idOfOld = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, current, session));
-					if (await (idType.IsEqualAsync(idOfCurrent, idOfOld, session.EntityMode, session.Factory)))
+					if (idType.IsEqual(idOfCurrent, idOfOld, session.EntityMode, session.Factory))
 					{
 						toRemove.Add(current);
 					}
@@ -340,7 +306,6 @@ namespace NHibernate.Collection
 		/// Get all the elements that need deleting
 		/// </summary>
 		public abstract Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula);
-		public abstract Task<object> GetSnapshotAsync(ICollectionPersister persister);
 		public abstract Task<bool> EqualsSnapshotAsync(ICollectionPersister persister);
 		/// <summary>
 		/// Read the state of the collection from a disassembled cached value.

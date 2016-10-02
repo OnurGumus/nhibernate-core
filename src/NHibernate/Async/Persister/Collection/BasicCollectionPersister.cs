@@ -21,9 +21,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Persister.Collection
 {
-	/// <summary>
-	/// Collection persister for collections of values and many-to-many associations.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class BasicCollectionPersister : AbstractCollectionPersister
 	{
@@ -114,7 +111,7 @@ namespace NHibernate.Persister.Collection
 			}
 			catch (DbException sqle)
 			{
-				throw ADOExceptionHelper.Convert(SQLExceptionConverter, sqle, "could not update collection rows: " + await (MessageHelper.CollectionInfoStringAsync(this, collection, id, session)), SqlUpdateRowString.Text);
+				throw ADOExceptionHelper.Convert(SQLExceptionConverter, sqle, "could not update collection rows: " + MessageHelper.CollectionInfoString(this, collection, id, session), SqlUpdateRowString.Text);
 			}
 		}
 	}

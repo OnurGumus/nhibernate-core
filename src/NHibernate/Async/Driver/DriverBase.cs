@@ -13,9 +13,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Driver
 {
-	/// <summary>
-	/// Base class for the implementation of IDriver
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class DriverBase : IDriver, ISqlParameterFormatter
 	{

@@ -33,12 +33,12 @@ namespace NHibernate.Engine
 			CollectionEntry entry = persistenceContext.GetCollectionEntry(coll);
 			ICollectionPersister loadedPersister = entry.LoadedPersister;
 			if (log.IsDebugEnabled && loadedPersister != null)
-				log.Debug("Collection dereferenced: " + await (MessageHelper.CollectionInfoStringAsync(loadedPersister, coll, entry.LoadedKey, session)));
+				log.Debug("Collection dereferenced: " + MessageHelper.CollectionInfoString(loadedPersister, coll, entry.LoadedKey, session));
 			// do a check
 			bool hasOrphanDelete = loadedPersister != null && loadedPersister.HasOrphanDelete;
 			if (hasOrphanDelete)
 			{
-				object ownerId = await (loadedPersister.OwnerEntityPersister.GetIdentifierAsync(coll.Owner, session.EntityMode));
+				object ownerId = loadedPersister.OwnerEntityPersister.GetIdentifier(coll.Owner, session.EntityMode);
 				// TODO NH Different behavior
 				//if (ownerId == null)
 				//{
@@ -82,7 +82,7 @@ namespace NHibernate.Engine
 		private static async Task ProcessNeverReferencedCollectionAsync(IPersistentCollection coll, ISessionImplementor session)
 		{
 			CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(coll);
-			log.Debug("Found collection with unloaded owner: " + await (MessageHelper.CollectionInfoStringAsync(entry.LoadedPersister, coll, entry.LoadedKey, session)));
+			log.Debug("Found collection with unloaded owner: " + MessageHelper.CollectionInfoString(entry.LoadedPersister, coll, entry.LoadedKey, session));
 			entry.CurrentPersister = entry.LoadedPersister;
 			entry.CurrentKey = entry.LoadedKey;
 			await (PrepareCollectionForUpdateAsync(coll, entry, session.EntityMode, session.Factory));
@@ -120,7 +120,7 @@ namespace NHibernate.Engine
 			ce.CurrentKey = type.GetKeyOfOwner(entity, session); //TODO: better to pass the id in as an argument?
 			if (log.IsDebugEnabled)
 			{
-				log.Debug("Collection found: " + await (MessageHelper.CollectionInfoStringAsync(persister, collection, ce.CurrentKey, session)) + ", was: " + await (MessageHelper.CollectionInfoStringAsync(ce.LoadedPersister, collection, ce.LoadedKey, session)) + (collection.WasInitialized ? " (initialized)" : " (uninitialized)"));
+				log.Debug("Collection found: " + MessageHelper.CollectionInfoString(persister, collection, ce.CurrentKey, session) + ", was: " + MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, session) + (collection.WasInitialized ? " (initialized)" : " (uninitialized)"));
 			}
 
 			await (PrepareCollectionForUpdateAsync(collection, ce, session.EntityMode, factory));
@@ -138,7 +138,7 @@ namespace NHibernate.Engine
 			if (loadedPersister != null || currentPersister != null)
 			{
 				// it is or was referenced _somewhere_
-				bool ownerChanged = loadedPersister != currentPersister || !await (currentPersister.KeyType.IsEqualAsync(entry.LoadedKey, entry.CurrentKey, entityMode, factory));
+				bool ownerChanged = loadedPersister != currentPersister || !currentPersister.KeyType.IsEqual(entry.LoadedKey, entry.CurrentKey, entityMode, factory);
 				if (ownerChanged)
 				{
 					// do a check

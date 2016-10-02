@@ -160,7 +160,7 @@ namespace NHibernate.Impl
 						}
 
 						results.Add(tmpResults);
-						reader.NextResult();
+						await (reader.NextResultAsync());
 					}
 
 					for (int i = 0; i < loaders.Count; i++)

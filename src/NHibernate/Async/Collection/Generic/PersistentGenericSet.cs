@@ -19,18 +19,6 @@ namespace NHibernate.Collection.Generic
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>
 	{
-		public override Task<object> GetSnapshotAsync(ICollectionPersister persister)
-		{
-			try
-			{
-				return Task.FromResult<object>(GetSnapshot(persister));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
-		}
-
 		public override async Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
 		{
 			var sn = new SetSnapShot<T>((IEnumerable<T>)snapshot);

@@ -13,13 +13,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Tool.hbm2ddl
 {
-	/// <summary>
-	/// Generates ddl to export table schema for a configured <c>Configuration</c> to the database
-	/// </summary>
-	/// <remarks>
-	/// This Class can be used directly or the command line wrapper NHibernate.Tool.hbm2ddl.exe can be
-	/// used when a dll can not be directly used.
-	/// </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class SchemaExport
 	{

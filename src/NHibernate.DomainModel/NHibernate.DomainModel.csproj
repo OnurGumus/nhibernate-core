@@ -79,7 +79,6 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Assignable.cs" />
     <Compile Include="Async\CustomPersister.cs" />
-    <Compile Include="Async\NHSpecific\NullableInt32Type.cs" />
     <Compile Include="B.cs" />
     <Compile Include="Bar.cs" />
     <Compile Include="BarProxy.cs" />

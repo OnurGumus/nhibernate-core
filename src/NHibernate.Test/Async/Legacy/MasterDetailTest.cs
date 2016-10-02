@@ -1120,12 +1120,6 @@ namespace NHibernate.Test.Legacy
 		}
 
 		[Test]
-		public async Task ToStringWithNoIdentifierAsync()
-		{
-			await (NHibernateUtil.Entity(typeof (Master)).ToLoggableStringAsync(new Master(), (ISessionFactoryImplementor)sessions));
-		}
-
-		[Test]
 		public async Task NH741Async()
 		{
 			using (ISession s = OpenSession())

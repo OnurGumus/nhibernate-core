@@ -7,16 +7,11 @@ using NHibernate.Impl;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Id.Insert
 {
-	/// <summary> 
-	/// Abstract InsertGeneratedIdentifierDelegate implementation where the
-	/// underlying strategy requires an subsequent select after the insert
-	/// to determine the generated identifier. 
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class AbstractSelectingDelegate : IInsertGeneratedIdentifierDelegate
 	{

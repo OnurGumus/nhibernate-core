@@ -7,16 +7,11 @@ using NHibernate.Persister.Collection;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Loader.Collection
 {
-	/// <summary>
-	/// Superclass for loaders that initialize collections
-	/// <seealso cref = "OneToManyLoader"/>
-	/// <seealso cref = "BasicCollectionLoader"/>
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class CollectionLoader : OuterJoinLoader, ICollectionInitializer
 	{

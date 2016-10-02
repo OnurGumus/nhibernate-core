@@ -5,12 +5,11 @@ using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Event.Default
 {
-	/// <summary> 
-	/// Wrap collections in a Hibernate collection wrapper.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class WrapVisitor : ProxyVisitor
 	{
@@ -26,22 +25,15 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		internal override async Task<object> ProcessCollectionAsync(object collection, CollectionType collectionType)
+		internal override Task<object> ProcessCollectionAsync(object collection, CollectionType collectionType)
 		{
-			IPersistentCollection coll = collection as IPersistentCollection;
-			if (coll != null)
+			try
 			{
-				ISessionImplementor session = Session;
-				if (await (coll.SetCurrentSessionAsync(session)))
-				{
-					ReattachCollection(coll, collectionType);
-				}
-
-				return null;
+				return Task.FromResult<object>(ProcessCollection(collection, collectionType));
 			}
-			else
+			catch (Exception ex)
 			{
-				return ProcessArrayOrNewCollection(collection, collectionType);
+				return TaskHelper.FromException<object>(ex);
 			}
 		}
 

@@ -7,14 +7,11 @@ using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Driver
 {
-	/// <summary>
-	/// A NHibernate Driver for using the SqlClient DataProvider
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class SqlClientDriver : DriverBase, IEmbeddedBatcherFactoryProvider
 	{

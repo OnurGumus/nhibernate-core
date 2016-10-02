@@ -8,17 +8,12 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Loader.Collection
 {
-	/// <summary>
-	/// "Batch" loads collections, using multiple foreign key values in the SQL Where clause
-	/// </summary>
-	/// <seealso cref = "BasicCollectionLoader"/>
-	/// <seealso cref = "OneToManyLoader"/>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class BatchingCollectionInitializer : ICollectionInitializer
 	{
 		public async Task InitializeAsync(object id, ISessionImplementor session)
 		{
-			object[] batch = await (session.PersistenceContext.BatchFetchQueue.GetCollectionBatchAsync(collectionPersister, id, batchSizes[0]));
+			object[] batch = session.PersistenceContext.BatchFetchQueue.GetCollectionBatch(collectionPersister, id, batchSizes[0]);
 			for (int i = 0; i < batchSizes.Length; i++)
 			{
 				int smallBatchSize = batchSizes[i];

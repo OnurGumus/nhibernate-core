@@ -28,21 +28,8 @@ namespace NHibernate.Driver
 			}
 
 			log.Info(command.CommandText);
-			await (BindParametersAsync(command));
+			BindParameters(command);
 			return new BatcherDataReaderWrapper(batcher, command);
-		}
-
-		protected virtual Task BindParametersAsync(DbCommand command)
-		{
-			try
-			{
-				BindParameters(command);
-				return TaskHelper.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
 		}
 	}
 }

@@ -2,16 +2,11 @@
 using NHibernate.Engine;
 using NHibernate.Id.Insert;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Id
 {
-	/// <summary>
-	/// A generator which combines sequence generation with immediate retrieval
-	/// by attaching a output parameter to the SQL command
-	/// In this respect it works much like ANSI-SQL IDENTITY generation.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class SequenceIdentityGenerator : SequenceGenerator, IPostInsertIdentifierGenerator
 	{

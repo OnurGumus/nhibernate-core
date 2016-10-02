@@ -17,18 +17,6 @@ namespace NHibernate.Type
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class AnyType : AbstractType, IAbstractComponentType, IAssociationType
 	{
-		public override Task<object> DeepCopyAsync(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
-		{
-			try
-			{
-				return Task.FromResult<object>(DeepCopy(value, entityMode, factory));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
-		}
-
 		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			try
@@ -109,11 +97,6 @@ namespace NHibernate.Type
 			return NullSafeSetAsync(st, value, index, null, session);
 		}
 
-		public override async Task<string> ToLoggableStringAsync(object value, ISessionFactoryImplementor factory)
-		{
-			return value == null ? "null" : await (NHibernateUtil.Entity(NHibernateProxyHelper.GetClassWithoutInitializingProxy(value)).ToLoggableStringAsync(value, factory));
-		}
-
 		public override async Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner)
 		{
 			ObjectTypeCacheEntry e = cached as ObjectTypeCacheEntry;
@@ -142,18 +125,6 @@ namespace NHibernate.Type
 		public async Task<object> GetPropertyValueAsync(Object component, int i, ISessionImplementor session)
 		{
 			return i == 0 ? await (session.BestGuessEntityNameAsync(component)) : await (IdAsync(component, session));
-		}
-
-		public Task<object[]> GetPropertyValuesAsync(Object component, EntityMode entityMode)
-		{
-			try
-			{
-				return Task.FromResult<object[]>(GetPropertyValues(component, entityMode));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object[]>(ex);
-			}
 		}
 
 		public async Task<object[]> GetPropertyValuesAsync(object component, ISessionImplementor session)
@@ -191,45 +162,9 @@ namespace NHibernate.Type
 			return (checkable[0] && !holder.entityName.Equals(await (session.BestGuessEntityNameAsync(current)))) || await (identifierType.IsModifiedAsync(holder.id, await (IdAsync(current, session)), idcheckable, session));
 		}
 
-		public override Task<int> CompareAsync(object x, object y, EntityMode? entityMode)
-		{
-			try
-			{
-				return Task.FromResult<int>(Compare(x, y, entityMode));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<int>(ex);
-			}
-		}
-
-		public override Task<bool> IsSameAsync(object x, object y, EntityMode entityMode)
-		{
-			try
-			{
-				return Task.FromResult<bool>(IsSame(x, y, entityMode));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<bool>(ex);
-			}
-		}
-
 		private Task<object> ResolveAnyAsync(string entityName, object id, ISessionImplementor session)
 		{
 			return entityName == null || id == null ? Task.FromResult<object>(null) : session.InternalLoadAsync(entityName, id, false, false);
-		}
-
-		public override Task<bool[]> ToColumnNullnessAsync(object value, IMapping mapping)
-		{
-			try
-			{
-				return Task.FromResult<bool[]>(ToColumnNullness(value, mapping));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<bool[]>(ex);
-			}
 		}
 	}
 }

@@ -29,79 +29,34 @@ namespace NHibernate.Collection.Generic
 			return result;
 		}
 
-		public override async Task<bool> EqualsSnapshotAsync(ICollectionPersister persister)
+		public override Task<bool> EqualsSnapshotAsync(ICollectionPersister persister)
 		{
-			var elementType = persister.ElementType;
-			var entityMode = Session.EntityMode;
-			var sn = (IList)GetSnapshot();
-			if (sn.Count != _gbag.Count)
+			try
 			{
-				return false;
+				return Task.FromResult<bool>(EqualsSnapshot(persister));
 			}
-
-			foreach (var elt in _gbag)
+			catch (Exception ex)
 			{
-				if (await (CountOccurrencesAsync(elt, _gbag, elementType, entityMode)) != await (CountOccurrencesAsync(elt, sn, elementType, entityMode)))
-				{
-					return false;
-				}
+				return TaskHelper.FromException<bool>(ex);
 			}
-
-			return true;
 		}
 
-		public override async Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula)
+		public override Task<IEnumerable> GetDeletesAsync(ICollectionPersister persister, bool indexIsFormula)
 		{
-			var elementType = persister.ElementType;
-			var entityMode = Session.EntityMode;
-			var deletes = new List<object>();
-			var sn = (IList)GetSnapshot();
-			var i = 0;
-			foreach (var old in sn)
+			try
 			{
-				var found = false;
-				if (_gbag.Count > i && await (elementType.IsSameAsync(old, _gbag[i++], entityMode)))
-				{
-					//a shortcut if its location didn't change!
-					found = true;
-				}
-				else
-				{
-					foreach (object newObject in _gbag)
-					{
-						if (await (elementType.IsSameAsync(old, newObject, entityMode)))
-						{
-							found = true;
-							break;
-						}
-					}
-				}
-
-				if (!found)
-				{
-					deletes.Add(old);
-				}
+				return Task.FromResult<IEnumerable>(GetDeletes(persister, indexIsFormula));
 			}
-
-			return deletes;
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<IEnumerable>(ex);
+			}
 		}
 
 		public override async Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
 		{
 			var sn = (ICollection)snapshot;
 			return await (GetOrphansAsync(sn, (ICollection)_gbag, entityName, Session));
-		}
-
-		public override async Task<object> GetSnapshotAsync(ICollectionPersister persister)
-		{
-			var entityMode = Session.EntityMode;
-			var clonedList = new List<object>(_gbag.Count);
-			foreach (object current in _gbag)
-			{
-				clonedList.Add(await (persister.ElementType.DeepCopyAsync(current, entityMode, persister.Factory)));
-			}
-
-			return clonedList;
 		}
 
 		/// <summary>
@@ -125,26 +80,16 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override async Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType)
+		public override Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType)
 		{
-			var sn = (IList)GetSnapshot();
-			var entityMode = Session.EntityMode;
-			if (sn.Count > i && await (elemType.IsSameAsync(sn[i], entry, entityMode)))
+			try
 			{
-				// a shortcut if its location didn't change
-				return false;
+				return Task.FromResult<bool>(NeedsInserting(entry, i, elemType));
 			}
-
-			//search for it
-			foreach (var old in sn)
+			catch (Exception ex)
 			{
-				if (await (elemType.IsEqualAsync(old, entry, entityMode)))
-				{
-					return false;
-				}
+				return TaskHelper.FromException<bool>(ex);
 			}
-
-			return true;
 		}
 
 		public override Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType)
@@ -170,31 +115,6 @@ namespace NHibernate.Collection.Generic
 			//if (element != null)
 			_gbag.Add((T)element);
 			return element;
-		}
-
-		/// <summary>
-		/// Counts the number of times that the <paramref name = "element"/> occurs
-		/// in the <paramref name = "list"/>.
-		/// </summary>
-		/// <param name = "element">The element to find in the list.</param>
-		/// <param name = "list">The <see cref = "IList"/> to search.</param>
-		/// <param name = "elementType">The <see cref = "IType"/> that can determine equality.</param>
-		/// <param name = "entityMode">The entity mode.</param>
-		/// <returns>
-		/// The number of occurrences of the element in the list.
-		/// </returns>
-		private static async Task<int> CountOccurrencesAsync(object element, IEnumerable list, IType elementType, EntityMode entityMode)
-		{
-			var result = 0;
-			foreach (var obj in list)
-			{
-				if (await (elementType.IsSameAsync(element, obj, entityMode)))
-				{
-					result++;
-				}
-			}
-
-			return result;
 		}
 	}
 }

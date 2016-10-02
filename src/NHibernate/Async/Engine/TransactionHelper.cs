@@ -4,15 +4,11 @@ using System.Data.Common;
 using NHibernate.Engine.Transaction;
 using NHibernate.Exceptions;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
-	/// <summary>
-	/// Allows work to be done outside the current transaction, by suspending it,
-	/// and performing work in a new transaction
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public abstract partial class TransactionHelper
 	{

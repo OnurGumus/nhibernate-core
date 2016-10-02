@@ -1,12 +1,11 @@
 #if NET_4_5
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Event
 {
-	/// <summary> Defines the contract for handling of deletion events generated from a session. </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface IDeleteEventListener
 	{

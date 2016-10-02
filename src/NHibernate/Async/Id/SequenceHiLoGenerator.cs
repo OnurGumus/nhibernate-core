@@ -10,30 +10,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Id
 {
-	/// <summary>
-	/// An <see cref = "IIdentifierGenerator"/> that combines a hi/lo algorithm with an underlying
-	/// oracle-style sequence that generates hi values.
-	/// </summary>
-	/// <remarks>
-	/// <p>
-	///	This id generation strategy is specified in the mapping file as 
-	///	<code>
-	///	&lt;generator class="seqhilo"&gt;
-	///		&lt;param name="sequence"&gt;uid_sequence&lt;/param&gt;
-	///		&lt;param name="max_lo"&gt;max_lo_value&lt;/param&gt;
-	///		&lt;param name="schema"&gt;db_schema&lt;/param&gt;
-	///	&lt;/generator&gt;
-	///	</code>
-	/// </p>
-	/// <p>
-	/// The <c>sequence</c> parameter is required, the <c>max_lo</c> and <c>schema</c> are optional.
-	/// </p>
-	/// <p>
-	/// The user may specify a <c>max_lo</c> value to determine how often new hi values are
-	/// fetched. If sequences are not avaliable, <c>TableHiLoGenerator</c> might be an
-	/// alternative.
-	/// </p>
-	/// </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class SequenceHiLoGenerator : SequenceGenerator
 	{

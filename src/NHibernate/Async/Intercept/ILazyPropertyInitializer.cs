@@ -6,7 +6,6 @@ using NHibernate.Util;
 
 namespace NHibernate.Intercept
 {
-	/// <summary> Contract for controlling how lazy properties get initialized. </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface ILazyPropertyInitializer
 	{

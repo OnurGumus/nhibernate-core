@@ -17,19 +17,6 @@ namespace NHibernate.Collection.Generic
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IList
 	{
-		public override async Task<object> GetSnapshotAsync(ICollectionPersister persister)
-		{
-			EntityMode entityMode = Session.EntityMode;
-			var clonedList = new List<T>(WrappedList.Count);
-			foreach (T current in WrappedList)
-			{
-				var deepCopy = (T)await (persister.ElementType.DeepCopyAsync(current, entityMode, persister.Factory));
-				clonedList.Add(deepCopy);
-			}
-
-			return clonedList;
-		}
-
 		public override async Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
 		{
 			var sn = (IList<T>)snapshot;

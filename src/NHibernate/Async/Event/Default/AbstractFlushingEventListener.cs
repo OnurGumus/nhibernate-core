@@ -54,7 +54,7 @@ namespace NHibernate.Event.Default
 				sb = new StringBuilder(100);
 				sb.Append("Flushed: ").Append(session.ActionQueue.CollectionCreationsCount).Append(" (re)creations, ").Append(session.ActionQueue.CollectionUpdatesCount).Append(" updates, ").Append(session.ActionQueue.CollectionRemovalsCount).Append(" removals to ").Append(persistenceContext.CollectionEntries.Count).Append(" collections");
 				log.Debug(sb.ToString());
-				await (new Printer(session.Factory).ToStringAsync(persistenceContext.EntitiesByKey.Values.ToArray().GetEnumerator(), session.EntityMode));
+				new Printer(session.Factory).ToString(persistenceContext.EntitiesByKey.Values.ToArray().GetEnumerator(), session.EntityMode);
 			}
 		}
 

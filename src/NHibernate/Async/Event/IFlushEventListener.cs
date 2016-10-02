@@ -1,11 +1,10 @@
 #if NET_4_5
 using System.Threading.Tasks;
-using System;
+using Exception = System.Exception;
 using NHibernate.Util;
 
 namespace NHibernate.Event
 {
-	/// <summary> Defines the contract for handling of session flush events. </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface IFlushEventListener
 	{

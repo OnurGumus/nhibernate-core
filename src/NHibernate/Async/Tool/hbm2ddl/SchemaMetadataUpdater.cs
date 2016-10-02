@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Tool.hbm2ddl
 {
-	// Candidate to be exstensions of ISessionFactory and Configuration
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public static partial class SchemaMetadataUpdater
 	{

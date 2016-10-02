@@ -50,30 +50,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<string> ToLoggableStringAsync(object value, ISessionFactoryImplementor factory)
-		{
-			try
-			{
-				return Task.FromResult<string>(ToLoggableString(value, factory));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<string>(ex);
-			}
-		}
-
-		public override Task<object> DeepCopyAsync(object value, EntityMode entityMode, ISessionFactoryImplementor factory)
-		{
-			try
-			{
-				return Task.FromResult<object>(DeepCopy(value, entityMode, factory));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<object>(ex);
-			}
-		}
-
 		public override async Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
 			return checkable[0] && await (IsDirtyAsync(old, current, session));
@@ -88,18 +64,6 @@ namespace NHibernate.Type
 			catch (Exception ex)
 			{
 				return TaskHelper.FromException<object>(ex);
-			}
-		}
-
-		public override Task<bool[]> ToColumnNullnessAsync(object value, IMapping mapping)
-		{
-			try
-			{
-				return Task.FromResult<bool[]>(ToColumnNullness(value, mapping));
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<bool[]>(ex);
 			}
 		}
 	}

@@ -19,10 +19,6 @@ using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
-	/// <summary>
-	/// Defines the internal contract between the <c>Session</c> and other parts of NHibernate
-	/// such as implementors of <c>Type</c> or <c>ClassPersister</c>
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface ISessionImplementor
 	{
@@ -126,10 +122,6 @@ namespace NHibernate.Engine
 		/// Strongly-typed version of <see cref = "EnumerableFilter(object, string, QueryParameters)"/>
 		/// </summary>
 		Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters);
-		/// <summary>
-		/// Instantiate the entity class, initializing with the given identifier
-		/// </summary>
-		Task<object> InstantiateAsync(string entityName, object id);
 		/// <summary>
 		/// Execute an SQL Query
 		/// </summary>

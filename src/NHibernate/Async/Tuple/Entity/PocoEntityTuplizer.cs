@@ -16,7 +16,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Tuple.Entity
 {
-	/// <summary> An <see cref = "IEntityTuplizer"/> specific to the POCO entity mode. </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class PocoEntityTuplizer : AbstractEntityTuplizer
 	{

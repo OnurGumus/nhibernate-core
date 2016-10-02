@@ -142,64 +142,6 @@ namespace NHibernate.Engine
 			return maybeProxy;
 		}
 
-		/// <summary> Get the entity that owned this persistent collection when it was loaded </summary>
-		/// <param name = "collection">The persistent collection </param>
-		/// <returns>
-		/// The owner, if its entity ID is available from the collection's loaded key
-		/// and the owner entity is in the persistence context; otherwise, returns null
-		/// </returns>
-		public virtual async Task<object> GetLoadedCollectionOwnerOrNullAsync(IPersistentCollection collection)
-		{
-			CollectionEntry ce = GetCollectionEntry(collection);
-			if (ce.LoadedPersister == null)
-			{
-				return null; // early exit...
-			}
-
-			object loadedOwner = null;
-			// TODO: an alternative is to check if the owner has changed; if it hasn't then
-			// return collection.getOwner()
-			object entityId = await (GetLoadedCollectionOwnerIdOrNullAsync(ce));
-			if (entityId != null)
-			{
-				loadedOwner = GetCollectionOwner(entityId, ce.LoadedPersister);
-			}
-
-			return loadedOwner;
-		}
-
-		/// <summary> Get the ID for the entity that owned this persistent collection when it was loaded </summary>
-		/// <param name = "collection">The persistent collection </param>
-		/// <returns> the owner ID if available from the collection's loaded key; otherwise, returns null </returns>
-		public virtual async Task<object> GetLoadedCollectionOwnerIdOrNullAsync(IPersistentCollection collection)
-		{
-			return await (GetLoadedCollectionOwnerIdOrNullAsync(GetCollectionEntry(collection)));
-		}
-
-		/// <summary> Get the ID for the entity that owned this persistent collection when it was loaded </summary>
-		/// <param name = "ce">The collection entry </param>
-		/// <returns> the owner ID if available from the collection's loaded key; otherwise, returns null </returns>
-		private async Task<object> GetLoadedCollectionOwnerIdOrNullAsync(CollectionEntry ce)
-		{
-			if (ce == null || ce.LoadedKey == null || ce.LoadedPersister == null)
-			{
-				return null;
-			}
-
-			// TODO: an alternative is to check if the owner has changed; if it hasn't then
-			// get the ID from collection.getOwner()
-			return await (ce.LoadedPersister.CollectionType.GetIdOfOwnerOrNullAsync(ce.LoadedKey, session));
-		}
-
-		/// <summary> add a collection we just pulled out of the cache (does not need initializing)</summary>
-		public async Task<CollectionEntry> AddInitializedCollectionAsync(ICollectionPersister persister, IPersistentCollection collection, object id)
-		{
-			CollectionEntry ce = new CollectionEntry(collection, persister, id, flushing);
-			await (ce.PostInitializeAsync(collection));
-			AddCollection(collection, ce, id);
-			return ce;
-		}
-
 		/// <summary>
 		/// Force initialization of all non-lazy collections encountered during
 		/// the current two-phase load (actually, this is a no-op, unless this

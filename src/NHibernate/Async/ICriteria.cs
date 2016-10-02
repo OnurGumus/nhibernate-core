@@ -10,51 +10,6 @@ using NHibernate.Util;
 
 namespace NHibernate
 {
-	/// <summary>
-	/// Criteria is a simplified API for retrieving entities by composing
-	/// <see cref = "Expression"/> objects.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// Using criteria is a very convenient approach for functionality like "search" screens
-	/// where there is a variable number of conditions to be placed upon the result set.
-	/// </para>
-	/// <para>
-	/// The Session is a factory for ICriteria. Expression instances are usually obtained via
-	/// the factory methods on <see cref = "Expression"/>. eg:
-	/// </para>
-	/// <code>
-	/// IList cats = session.CreateCriteria(typeof(Cat))
-	/// 	.Add(Expression.Like("name", "Iz%"))
-	/// 	.Add(Expression.Gt("weight", minWeight))
-	/// 	.AddOrder(Order.Asc("age"))
-	/// 	.List();
-	/// </code>
-	/// You may navigate associations using <see cref = "CreateAlias(string, string)"/>
-	/// or <see cref = "CreateCriteria(string)"/>. eg:
-	/// <code>
-	/// 	IList&lt;Cat&gt; cats = session.CreateCriteria&lt;Cat&gt;
-	/// 		.CreateCriteria("kittens")
-	/// 		.Add(Expression.like("name", "Iz%"))
-	/// 		.List&lt;Cat&gt;();
-	/// </code>
-	/// <para>
-	/// You may specify projection and aggregation using <c>Projection</c> instances obtained
-	/// via the factory methods on <c>Projections</c>. eg:
-	/// <code>
-	/// 	IList&lt;Cat&gt; cats = session.CreateCriteria&lt;Cat&gt;
-	/// 		.SetProjection(
-	/// 			Projections.ProjectionList()
-	/// 				.Add(Projections.RowCount())
-	/// 				.Add(Projections.Avg("weight"))
-	/// 				.Add(Projections.Max("weight"))
-	/// 				.Add(Projections.Min("weight"))
-	/// 				.Add(Projections.GroupProperty("color")))
-	/// 		.AddOrder(Order.Asc("color"))
-	/// 		.List&lt;Cat&gt;();
-	/// </code>
-	/// </para>
-	/// </remarks>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial interface ICriteria : ICloneable
 	{

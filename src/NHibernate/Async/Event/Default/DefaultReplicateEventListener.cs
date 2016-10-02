@@ -4,6 +4,7 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Event.Default
 {
@@ -32,7 +33,7 @@ namespace NHibernate.Event.Default
 			/*if ( persister.isUnsaved(entity, source) ) {
 			throw new TransientObjectException("transient instance passed to replicate()");
 			}*/
-			object id = await (persister.GetIdentifierAsync(entity, source.EntityMode));
+			object id = persister.GetIdentifier(entity, source.EntityMode);
 			if (id == null)
 			{
 				throw new TransientObjectException("instance with null id passed to replicate()");
@@ -108,6 +109,18 @@ namespace NHibernate.Event.Default
 			finally
 			{
 				source.PersistenceContext.DecrementCascadeLevel();
+			}
+		}
+
+		protected override Task<bool> SubstituteValuesIfNecessaryAsync(object entity, object id, object[] values, IEntityPersister persister, ISessionImplementor source)
+		{
+			try
+			{
+				return Task.FromResult<bool>(SubstituteValuesIfNecessary(entity, id, values, persister, source));
+			}
+			catch (Exception ex)
+			{
+				return TaskHelper.FromException<bool>(ex);
 			}
 		}
 

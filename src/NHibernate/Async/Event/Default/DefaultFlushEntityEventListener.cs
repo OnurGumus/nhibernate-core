@@ -67,44 +67,13 @@ namespace NHibernate.Event.Default
 			}
 			else
 			{
-				await (CheckIdAsync(entity, persister, entry.Id, entityMode));
+				CheckId(entity, persister, entry.Id, entityMode);
 				// grab its current state
 				values = persister.GetPropertyValues(entity, entityMode);
 				await (CheckNaturalIdAsync(persister, entry, values, loadedState, entityMode, session));
 			}
 
 			return values;
-		}
-
-		/// <summary>
-		/// make sure user didn't mangle the id
-		/// </summary>
-		/// <param name = "obj">The obj.</param>
-		/// <param name = "persister">The persister.</param>
-		/// <param name = "id">The id.</param>
-		/// <param name = "entityMode">The entity mode.</param>
-		public virtual async Task CheckIdAsync(object obj, IEntityPersister persister, object id, EntityMode entityMode)
-		{
-			if (id != null && id is DelayedPostInsertIdentifier)
-			{
-				// this is a situation where the entity id is assigned by a post-insert generator
-				// and was saved outside the transaction forcing it to be delayed
-				return;
-			}
-
-			if (persister.CanExtractIdOutOfEntity)
-			{
-				if (id == null)
-				{
-					throw new AssertionFailure("null id in " + persister.EntityName + " entry (don't flush the Session after an exception occurs)");
-				}
-
-				object oid = await (persister.GetIdentifierAsync(obj, entityMode));
-				if (!await (persister.IdentifierType.IsEqualAsync(id, oid, EntityMode.Poco)))
-				{
-					throw new HibernateException("identifier of an instance of " + persister.EntityName + " was altered from " + id + " to " + oid);
-				}
-			}
 		}
 
 		private async Task CheckNaturalIdAsync(IEntityPersister persister, EntityEntry entry, object[] current, object[] loaded, EntityMode entityMode, ISessionImplementor session)
@@ -135,7 +104,7 @@ namespace NHibernate.Event.Default
 							loadedVal = loaded[prop];
 						}
 
-						if (!await (types[prop].IsEqualAsync(current[prop], loadedVal, entityMode)))
+						if (!types[prop].IsEqual(current[prop], loadedVal, entityMode))
 						{
 							throw new HibernateException("immutable natural identifier of an instance of " + persister.EntityName + " was altered");
 						}
@@ -249,7 +218,7 @@ namespace NHibernate.Event.Default
 
 			// check nullability but do not perform command execute
 			// we'll use scheduled updates for that.
-			await (new Nullability(session).CheckNullabilityAsync(values, persister, true));
+			new Nullability(session).CheckNullability(values, persister, true);
 			// schedule the update
 			// note that we intentionally do _not_ pass in currentPersistentState!
 			session.ActionQueue.AddAction(new EntityUpdateAction(entry.Id, values, dirtyProperties, @event.HasDirtyCollection, status == Status.Deleted && !entry.IsModifiableEntity() ? persister.GetPropertyValues(entity, entityMode) : entry.LoadedState, entry.Version, nextVersion, entity, persister, session));

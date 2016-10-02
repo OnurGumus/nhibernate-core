@@ -10,9 +10,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Id.Enhanced
 {
-	/// <summary>
-	/// Describes a sequence.
-	/// </summary>
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class SequenceStructure : IDatabaseStructure
 	{
