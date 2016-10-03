@@ -10,7 +10,7 @@ namespace NHibernate.Context
 	/// Provides a <see cref="ISessionFactory.GetCurrentSession()">current session</see>
 	/// for the current OperationContext in WCF. Works only during the lifetime of a WCF operation.
 	/// </summary>
-	public partial class WcfOperationSessionContext : MapBasedSessionContext
+	public class WcfOperationSessionContext : MapBasedSessionContext
 	{
 		public WcfOperationSessionContext(ISessionFactoryImplementor factory) : base(factory) {}
 
@@ -41,7 +41,7 @@ namespace NHibernate.Context
 		}
 	}
 
-	public partial class WcfStateExtension : IExtension<OperationContext>
+	public class WcfStateExtension : IExtension<OperationContext>
 	{
 		public IDictionary Map { get; set; }
 

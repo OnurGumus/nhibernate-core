@@ -7,7 +7,7 @@ namespace NHibernate.Tuple.Component
 {
 	/// <summary> Support for tuplizers relating to components. </summary>
 	[Serializable]
-	public abstract partial class AbstractComponentTuplizer : IComponentTuplizer
+	public abstract class AbstractComponentTuplizer : IComponentTuplizer
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AbstractComponentTuplizer));
 

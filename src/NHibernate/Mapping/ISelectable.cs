@@ -3,7 +3,7 @@ using NHibernate.Dialect.Function;
 
 namespace NHibernate.Mapping
 {
-	public partial interface ISelectable
+	public interface ISelectable
 	{
 		string GetAlias(Dialect.Dialect dialect);
 		string GetAlias(Dialect.Dialect dialect, Table table);

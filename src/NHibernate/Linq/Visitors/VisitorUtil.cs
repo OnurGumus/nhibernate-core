@@ -8,7 +8,7 @@ using Remotion.Linq.Clauses.Expressions;
 
 namespace NHibernate.Linq.Visitors
 {
-	public static partial class VisitorUtil
+	public static class VisitorUtil
 	{
 		public static bool IsDynamicComponentDictionaryGetter(MethodInfo method, Expression targetObject, IEnumerable<Expression> arguments, ISessionFactory sessionFactory, out string memberName)
 		{

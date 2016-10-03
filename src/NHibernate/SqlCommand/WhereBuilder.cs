@@ -6,7 +6,7 @@ namespace NHibernate.SqlCommand
 	/// <summary>
 	/// Allows us to construct SQL WHERE fragments
 	/// </summary>
-	public partial class WhereBuilder : SqlBaseBuilder
+	public class WhereBuilder : SqlBaseBuilder
 	{
 		public WhereBuilder(Dialect.Dialect dialect, ISessionFactoryImplementor factory)
 			: base(dialect, factory) {}

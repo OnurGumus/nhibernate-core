@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2603
 	{
 		#region Scenarios
 
-		private class ListScenario : IDisposable
+		private partial class ListScenario : IDisposable
 		{
 			private readonly ISessionFactory factory;
 
@@ -38,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2603
 			}
 		}
 
-		private class MapScenario : IDisposable
+		private partial class MapScenario : IDisposable
 		{
 			private readonly ISessionFactory factory;
 

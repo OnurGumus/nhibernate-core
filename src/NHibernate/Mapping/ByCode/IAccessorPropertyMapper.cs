@@ -9,7 +9,7 @@ namespace NHibernate.Mapping.ByCode
 		None
 	}
 
-	public partial interface IAccessorPropertyMapper
+	public interface IAccessorPropertyMapper
 	{
 		void Access(Accessor accessor);
 		void Access(System.Type accessorType);

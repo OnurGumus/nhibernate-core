@@ -75,7 +75,7 @@ namespace NHibernate.Impl
 	{
 		#region Default entity not found delegate
 
-		private class DefaultEntityNotFoundDelegate : IEntityNotFoundDelegate
+		private partial class DefaultEntityNotFoundDelegate : IEntityNotFoundDelegate
 		{
 			#region IEntityNotFoundDelegate Members
 

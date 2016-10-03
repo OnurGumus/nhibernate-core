@@ -13,7 +13,7 @@ namespace NHibernate.Dialect
 	/// <summary>
 	/// A dialect for SQL Server Everywhere (SQL Server CE).
 	/// </summary>
-	public partial class MsSqlCeDialect : Dialect
+	public class MsSqlCeDialect : Dialect
 	{
 		public MsSqlCeDialect()
 		{

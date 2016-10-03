@@ -6,7 +6,7 @@ namespace NHibernate.Proxy
 	/// <summary>
 	/// Proxeability validator.
 	/// </summary>
-	public partial interface IProxyValidator
+	public interface IProxyValidator
 	{
 		/// <summary>
 		/// Validates whether <paramref name="type"/> can be specified as the base class

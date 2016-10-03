@@ -10,7 +10,7 @@ namespace NHibernate.Util
 	// instead to avoid requiring UnmanagedCode permission.
 	[DebuggerTypeProxy(typeof(DictionaryProxy))]
 	[Serializable]
-	public partial class WeakRefWrapper
+	public class WeakRefWrapper
 	{
 		private WeakReference reference;
 		private int hashCode;
@@ -76,7 +76,7 @@ namespace NHibernate.Util
 		}
 	}
 
-	public partial class WeakEnumerator : IDictionaryEnumerator
+	public class WeakEnumerator : IDictionaryEnumerator
 	{
 		private IDictionaryEnumerator innerEnumerator;
 
@@ -142,7 +142,7 @@ namespace NHibernate.Util
 	}
 
 	[Serializable]
-	public partial class WeakHashtable : IDictionary
+	public class WeakHashtable : IDictionary
 	{
 		private Hashtable innerHashtable = new Hashtable();
 

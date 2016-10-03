@@ -8,7 +8,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// </summary>
 	[Serializable]
 	[CLSCompliant(false)]
-	public partial class InsertStatement : AbstractStatement
+	public class InsertStatement : AbstractStatement
 	{
 		public InsertStatement(IToken token) : base(token) {}
 		public override bool NeedsExecutor

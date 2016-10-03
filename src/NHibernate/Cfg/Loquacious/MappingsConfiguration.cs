@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Cfg.Loquacious
 {
-	internal partial class MappingsConfiguration : IMappingsConfiguration
+	internal class MappingsConfiguration : IMappingsConfiguration
 	{
 		private readonly FluentSessionFactoryConfiguration fc;
 
@@ -28,7 +28,7 @@ namespace NHibernate.Cfg.Loquacious
 		#endregion
 	}
 
-	internal partial class MappingsConfigurationProperties:IMappingsConfigurationProperties
+	internal class MappingsConfigurationProperties:IMappingsConfigurationProperties
 	{
 		private readonly Configuration configuration;
 

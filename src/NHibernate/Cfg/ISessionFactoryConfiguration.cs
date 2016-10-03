@@ -3,7 +3,7 @@ using NHibernate.Cfg.ConfigurationSchema;
 
 namespace NHibernate.Cfg
 {
-	public partial interface ISessionFactoryConfiguration
+	public interface ISessionFactoryConfiguration
 	{
 		/// <summary>
 		/// The session factory name.

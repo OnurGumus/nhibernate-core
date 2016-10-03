@@ -8,7 +8,7 @@ namespace NHibernate.Linq.ReWriters
     /// <summary>
     /// Result of <see cref="ResultOperatorRewriter.Rewrite" />.
     /// </summary>
-    public partial class ResultOperatorRewriterResult
+    public class ResultOperatorRewriterResult
     {
         public ResultOperatorRewriterResult(IEnumerable<ResultOperatorBase> rewrittenOperators, IStreamedDataInfo evaluationType)
         {

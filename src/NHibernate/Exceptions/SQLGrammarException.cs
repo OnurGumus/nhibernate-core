@@ -8,7 +8,7 @@ namespace NHibernate.Exceptions
 	/// server was invalid (syntax error, invalid object references, etc). 
 	/// </summary>
 	[Serializable]
-	public partial class SQLGrammarException : ADOException
+	public class SQLGrammarException : ADOException
 	{
 		public SQLGrammarException(SerializationInfo info, StreamingContext context) : base(info, context) {}
 		public SQLGrammarException(string message, Exception innerException, string sql) : base(message, innerException, sql) {}

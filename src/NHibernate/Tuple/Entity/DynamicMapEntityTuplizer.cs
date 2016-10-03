@@ -9,7 +9,7 @@ using NHibernate.Proxy.Map;
 
 namespace NHibernate.Tuple.Entity
 {
-	public partial class DynamicMapEntityTuplizer : AbstractEntityTuplizer
+	public class DynamicMapEntityTuplizer : AbstractEntityTuplizer
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(PocoEntityTuplizer));
 

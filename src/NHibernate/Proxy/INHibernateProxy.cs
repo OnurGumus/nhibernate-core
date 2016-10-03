@@ -15,7 +15,7 @@ namespace NHibernate.Proxy
 	/// the Proxies are created in a separate DLL than NHibernate. 
 	/// </para> 
 	/// </remarks>
-	public partial interface INHibernateProxy
+	public interface INHibernateProxy
 	{
 		/// <summary> Get the underlying lazy initialization handler. </summary>
 		ILazyInitializer HibernateLazyInitializer { get;}

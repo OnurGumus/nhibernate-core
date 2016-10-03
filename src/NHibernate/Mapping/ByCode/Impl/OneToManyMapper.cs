@@ -3,7 +3,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public partial class OneToManyMapper : IOneToManyMapper
+	public class OneToManyMapper : IOneToManyMapper
 	{
 		private readonly System.Type collectionElementType;
 		private readonly HbmMapping mapDoc;

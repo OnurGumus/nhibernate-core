@@ -4,11 +4,11 @@ using NHibernate.Engine;
 
 namespace NHibernate.AdoNet
 {
-	public partial class Expectations
+	public class Expectations
 	{
 		private const int UsualExpectedCount = 1;
 
-		public partial class BasicExpectation : IExpectation
+		public class BasicExpectation : IExpectation
 		{
 			private readonly int expectedRowCount;
 
@@ -53,7 +53,7 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		public partial class NoneExpectation : IExpectation
+		public class NoneExpectation : IExpectation
 		{
 			public void VerifyOutcomeNonBatched(int rowCount, DbCommand statement)
 			{

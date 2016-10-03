@@ -7,7 +7,7 @@ namespace NHibernate.Cache
 	/// Standard Hibernate implementation of the IQueryCacheFactory interface.  Returns
 	/// instances of <see cref="StandardQueryCache" />.
 	/// </summary>
-	public partial class StandardQueryCacheFactory : IQueryCacheFactory
+	public class StandardQueryCacheFactory : IQueryCacheFactory
 	{
 		public IQueryCache GetQueryCache(string regionName,
 																		 UpdateTimestampsCache updateTimestampsCache,

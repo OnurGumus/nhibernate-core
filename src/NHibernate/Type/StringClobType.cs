@@ -13,7 +13,7 @@ namespace NHibernate.Type
 	/// would work just fine.
 	/// </remarks>
 	[Serializable]
-	public partial class StringClobType : StringType
+	public class StringClobType : StringType
 	{
 		/// <summary></summary>
 		internal StringClobType() : base(new StringClobSqlType())

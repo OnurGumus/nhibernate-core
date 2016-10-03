@@ -5,7 +5,7 @@ using NHibernate.Engine;
 namespace NHibernate.Intercept
 {
 	[Serializable]
-	public partial class DefaultFieldInterceptor : AbstractFieldInterceptor
+	public class DefaultFieldInterceptor : AbstractFieldInterceptor
 	{
 		public DefaultFieldInterceptor(ISessionImplementor session, ISet<string> uninitializedFields, ISet<string> unwrapProxyFieldNames, string entityName, System.Type mappedClass)
 			: base(session, uninitializedFields, unwrapProxyFieldNames, entityName, mappedClass)

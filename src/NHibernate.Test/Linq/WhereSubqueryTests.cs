@@ -652,12 +652,12 @@ where c.Order.Customer.CustomerId = 'VINET'
 			Assert.That(result.Count, Is.EqualTo(45));
 		}
 
-		private class Pr2
+		private partial class Pr2
 		{
 			public int ReorderLevel { get; set; }
 		}
 
-		private class Pr1
+		private partial class Pr1
 		{
 			public string Name { get; set; }
 			public Pr2 Pr2 { get; set; }

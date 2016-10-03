@@ -13,7 +13,7 @@ using IASTNode=NHibernate.Hql.Ast.ANTLR.Tree.IASTNode;
 namespace NHibernate.Hql.Ast.ANTLR
 {
 	[CLSCompliant(false)]
-	public partial class SessionFactoryHelperExtensions
+	public class SessionFactoryHelperExtensions
 	{
 		private readonly ISessionFactoryImplementor _sfi;
 		private readonly NullableDictionary<string, IPropertyMapping> _collectionPropertyMappingByRole;

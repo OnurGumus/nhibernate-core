@@ -6,7 +6,7 @@ using NHibernate.Param;
 
 namespace NHibernate.Linq.Visitors
 {
-	public partial class VisitorParameters
+	public class VisitorParameters
 	{
 		public ISessionFactoryImplementor SessionFactory { get; private set; }
 

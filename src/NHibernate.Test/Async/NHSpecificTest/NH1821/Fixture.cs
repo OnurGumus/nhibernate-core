@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using System.Text.RegularExpressions;
 using NHibernate.Dialect;
 using NUnit.Framework;

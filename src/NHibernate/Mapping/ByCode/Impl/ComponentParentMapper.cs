@@ -4,7 +4,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public partial class ComponentParentMapper : IComponentParentMapper
+	public class ComponentParentMapper : IComponentParentMapper
 	{
 		private readonly AccessorPropertyMapper accessorPropertyMapper;
 

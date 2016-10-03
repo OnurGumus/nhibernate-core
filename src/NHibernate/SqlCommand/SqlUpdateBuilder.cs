@@ -10,7 +10,7 @@ namespace NHibernate.SqlCommand
 	/// <summary>
 	/// A class that builds an <c>UPDATE</c> sql statement.
 	/// </summary>
-	public partial class SqlUpdateBuilder : SqlBaseBuilder, ISqlStringBuilder
+	public class SqlUpdateBuilder : SqlBaseBuilder, ISqlStringBuilder
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SqlUpdateBuilder));
 

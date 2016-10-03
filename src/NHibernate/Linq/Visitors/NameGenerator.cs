@@ -2,7 +2,7 @@
 
 namespace NHibernate.Linq.Visitors
 {
-    public partial class NameGenerator
+    public class NameGenerator
     {
         private readonly QueryModel _model;
 

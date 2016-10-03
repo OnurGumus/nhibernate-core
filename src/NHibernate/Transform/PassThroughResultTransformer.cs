@@ -5,7 +5,7 @@ using NHibernate.Util;
 namespace NHibernate.Transform
 {
 	[Serializable]
-	public partial class PassThroughResultTransformer : IResultTransformer, ITupleSubsetResultTransformer
+	public class PassThroughResultTransformer : IResultTransformer, ITupleSubsetResultTransformer
 	{
 		private static readonly object Hasher = new object();
 

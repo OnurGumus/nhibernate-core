@@ -6,7 +6,7 @@ namespace NHibernate.Event
 	/// Represents a <tt>pre-delete</tt> event, which occurs just prior to
 	/// performing the deletion of an entity from the database.
 	/// </summary>
-	public partial class PreDeleteEvent : AbstractPreDatabaseOperationEvent
+	public class PreDeleteEvent : AbstractPreDatabaseOperationEvent
 	{
 		/// <summary> 
 		/// Constructs an event containing the pertinent information. 

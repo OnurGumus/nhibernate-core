@@ -1,6 +1,6 @@
 namespace NHibernate.AdoNet.Util
 {
-	public partial interface IFormatter
+	public interface IFormatter
 	{
 		string Format(string source);
 	}

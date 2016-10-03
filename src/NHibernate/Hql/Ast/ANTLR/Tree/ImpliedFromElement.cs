@@ -5,7 +5,7 @@ using Antlr.Runtime;
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
-	public partial class ImpliedFromElement : FromElement
+	public class ImpliedFromElement : FromElement
 	{
 	    private bool _impliedInFromClause;
         private bool _inProjectionList;

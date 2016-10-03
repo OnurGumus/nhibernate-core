@@ -13,7 +13,7 @@ namespace NHibernate.Criterion
 	/// This interface might be implemented by application classes but, more commonly, application 
 	/// criterion types would extend <c>AbstractCriterion</c>.
 	/// </remarks>
-	public partial interface ICriterion
+	public interface ICriterion
 	{
 		/// <summary>
 		/// Render a SqlString fragment for the expression.

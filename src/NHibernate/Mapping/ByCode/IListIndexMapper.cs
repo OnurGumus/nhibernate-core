@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface IListIndexMapper
+	public interface IListIndexMapper
 	{
 		void Column(string columnName);
 		void Base(int baseIndex);

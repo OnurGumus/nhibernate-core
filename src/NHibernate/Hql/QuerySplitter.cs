@@ -8,7 +8,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Hql
 {
-	public partial class QuerySplitter
+	public class QuerySplitter
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(QuerySplitter));
 

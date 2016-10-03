@@ -21,7 +21,7 @@ namespace NHibernate.SqlTypes
 	/// </p>
 	/// </remarks>
 	[Serializable]
-	public partial class SqlType
+	public class SqlType
 	{
 		private readonly DbType dbType;
 		private readonly int length;

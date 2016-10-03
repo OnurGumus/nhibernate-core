@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1642
 	[TestFixture]
 	public partial class TrafficRuleSetDAOTest : BugTestCase
 	{
-		private class Scenario : IDisposable
+		private partial class Scenario : IDisposable
 		{
 			private readonly ISessionFactory sessionFactory;
 			private int ruleSetId;

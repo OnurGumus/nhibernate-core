@@ -1,7 +1,7 @@
 namespace NHibernate.Loader.Custom
 {
 	/// <summary> Represents some non-scalar (entity/collection) return within the query result. </summary>
-	public abstract partial class NonScalarReturn : IReturn
+	public abstract class NonScalarReturn : IReturn
 	{
 		private readonly string alias;
 		private readonly LockMode lockMode;

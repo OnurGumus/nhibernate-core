@@ -3,7 +3,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Linq
 {
-	static partial class QueryProviderFactory
+	static class QueryProviderFactory
 	{
 		/// <summary>
 		/// Builds a new query provider.

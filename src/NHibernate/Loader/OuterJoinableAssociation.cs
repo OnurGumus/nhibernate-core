@@ -9,7 +9,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Loader
 {
-	public sealed partial class OuterJoinableAssociation
+	public sealed class OuterJoinableAssociation
 	{
 		private readonly IAssociationType joinableType;
 		private readonly IJoinable joinable;

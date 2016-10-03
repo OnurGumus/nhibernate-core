@@ -1,8 +1,8 @@
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface IComposedIdMapper : IMinimalPlainPropertyContainerMapper {}
+	public interface IComposedIdMapper : IMinimalPlainPropertyContainerMapper {}
 
-	public partial interface IComponentAsIdAttributesMapper : IAccessorPropertyMapper
+	public interface IComponentAsIdAttributesMapper : IAccessorPropertyMapper
 	{
 		/// <summary>
 		/// Force the component to a different type than the one of the property.
@@ -16,18 +16,18 @@ namespace NHibernate.Mapping.ByCode
 		void UnsavedValue(UnsavedValueType unsavedValueType);
 	}
 
-	public partial interface IComponentAsIdMapper : IComponentAsIdAttributesMapper, IMinimalPlainPropertyContainerMapper { }
+	public interface IComponentAsIdMapper : IComponentAsIdAttributesMapper, IMinimalPlainPropertyContainerMapper { }
 
-	public partial interface IComposedIdMapper<TEntity> : IMinimalPlainPropertyContainerMapper<TEntity> where TEntity : class { }
+	public interface IComposedIdMapper<TEntity> : IMinimalPlainPropertyContainerMapper<TEntity> where TEntity : class { }
 
-	public partial interface IComponentAsIdAttributesMapper<TComponent> : IAccessorPropertyMapper
+	public interface IComponentAsIdAttributesMapper<TComponent> : IAccessorPropertyMapper
 	{
 		void Class<TConcrete>() where TConcrete : TComponent;
 
 		void UnsavedValue(UnsavedValueType unsavedValueType);
 	}
 
-	public partial interface IComponentAsIdMapper<TComponent> : IComponentAsIdAttributesMapper<TComponent>, IMinimalPlainPropertyContainerMapper<TComponent>
+	public interface IComponentAsIdMapper<TComponent> : IComponentAsIdAttributesMapper<TComponent>, IMinimalPlainPropertyContainerMapper<TComponent>
 	{ }
 
 }

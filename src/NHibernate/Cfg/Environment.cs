@@ -34,7 +34,7 @@ namespace NHibernate.Cfg
 	/// Properties in hibernate.cfg.xml override/merge properties in application configuration file where same
 	/// property is found. For others configuration a merge is applied.
 	/// </remarks>
-	public static partial class Environment
+	public static class Environment
 	{
 		private static string cachedVersion;
 

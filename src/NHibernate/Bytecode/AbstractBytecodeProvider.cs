@@ -4,7 +4,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Bytecode
 {
-	public abstract partial class AbstractBytecodeProvider : IBytecodeProvider, IInjectableProxyFactoryFactory, IInjectableCollectionTypeFactoryClass
+	public abstract class AbstractBytecodeProvider : IBytecodeProvider, IInjectableProxyFactoryFactory, IInjectableCollectionTypeFactoryClass
 	{
 		private readonly IObjectsFactory objectsFactory = new ActivatorObjectsFactory();
 		protected System.Type proxyFactoryFactory;

@@ -16,7 +16,7 @@ namespace NHibernate.Criterion
 	/// <c>ICriteria</c> interface.
 	/// </summary>
 	[Serializable]
-	public partial class DetachedCriteria
+	public class DetachedCriteria
 	{
 		private readonly CriteriaImpl impl;
 		private readonly ICriteria criteria;

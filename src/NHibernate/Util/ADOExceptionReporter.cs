@@ -3,7 +3,7 @@ using System;
 
 namespace NHibernate.Util
 {
-	public partial class ADOExceptionReporter
+	public class ADOExceptionReporter
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ADOExceptionReporter));
 		public const string DefaultExceptionMsg = "SQL Exception";

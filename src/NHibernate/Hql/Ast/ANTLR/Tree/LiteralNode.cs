@@ -12,7 +12,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public partial class LiteralNode : AbstractSelectExpression
+	public class LiteralNode : AbstractSelectExpression
 	{
 		public LiteralNode(IToken token) : base(token)
 		{

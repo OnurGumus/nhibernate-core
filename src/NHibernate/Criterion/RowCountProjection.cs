@@ -7,7 +7,7 @@ namespace NHibernate.Criterion
 	using System.Collections.Generic;
 
 	[Serializable]
-	public partial class RowCountProjection : SimpleProjection
+	public class RowCountProjection : SimpleProjection
 	{
 		protected internal RowCountProjection()
 		{

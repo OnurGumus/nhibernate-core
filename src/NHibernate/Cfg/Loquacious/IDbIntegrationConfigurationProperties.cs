@@ -8,7 +8,7 @@ using NHibernate.Transaction;
 
 namespace NHibernate.Cfg.Loquacious
 {
-	public partial interface IDbIntegrationConfigurationProperties
+	public interface IDbIntegrationConfigurationProperties
 	{
 		void Dialect<TDialect>() where TDialect : Dialect.Dialect;
 		Hbm2DDLKeyWords KeywordsAutoImport { set; }

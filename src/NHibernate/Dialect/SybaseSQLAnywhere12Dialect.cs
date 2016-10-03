@@ -51,7 +51,7 @@ namespace NHibernate.Dialect
 	///	</item>
 	/// </list>
 	/// </remarks>
-	public partial class SybaseSQLAnywhere12Dialect : SybaseSQLAnywhere11Dialect
+	public class SybaseSQLAnywhere12Dialect : SybaseSQLAnywhere11Dialect
 	{
 		public SybaseSQLAnywhere12Dialect()
 			: base()

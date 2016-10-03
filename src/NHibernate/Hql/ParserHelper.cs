@@ -1,6 +1,6 @@
 namespace NHibernate.Hql
 {
-	public static partial class ParserHelper
+	public static class ParserHelper
 	{
 		public const string HqlVariablePrefix = ":";
 

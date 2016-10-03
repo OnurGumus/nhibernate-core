@@ -4,7 +4,7 @@ namespace NHibernate.Event
 {
 	/// <summary>  Defines an event class for the evicting of an entity. </summary>
 	[Serializable]
-	public partial class EvictEvent : AbstractEvent
+	public class EvictEvent : AbstractEvent
 	{
 		private object entity;
 

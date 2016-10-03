@@ -4,7 +4,7 @@ namespace NHibernate.Cfg.Loquacious
 	/// Properties of TypeDef configuration.
 	/// </summary>
 	/// <seealso cref="ConfigurationExtensions.TypeDefinition{TDef}"/>
-	public partial interface ITypeDefConfigurationProperties
+	public interface ITypeDefConfigurationProperties
 	{
 		/// <summary>
 		/// The key to use the type-definition inside not strongly typed mappings (XML mapping).
@@ -30,7 +30,7 @@ namespace NHibernate.Cfg.Loquacious
 		object Properties { get; set; }
 	}
 
-	internal partial class TypeDefConfigurationProperties<T> : ITypeDefConfigurationProperties
+	internal class TypeDefConfigurationProperties<T> : ITypeDefConfigurationProperties
 		where T: class
 	{
 		public TypeDefConfigurationProperties()

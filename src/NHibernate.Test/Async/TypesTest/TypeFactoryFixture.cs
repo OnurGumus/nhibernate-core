@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using System;
 using log4net;
 using log4net.Repository.Hierarchy;

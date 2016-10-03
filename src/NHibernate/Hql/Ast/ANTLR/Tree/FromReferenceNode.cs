@@ -6,7 +6,7 @@ using Antlr.Runtime;
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
-	public abstract partial class FromReferenceNode : AbstractSelectExpression, IResolvableNode, IDisplayableNode, IPathNode
+	public abstract class FromReferenceNode : AbstractSelectExpression, IResolvableNode, IDisplayableNode, IPathNode
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(FromReferenceNode));
 

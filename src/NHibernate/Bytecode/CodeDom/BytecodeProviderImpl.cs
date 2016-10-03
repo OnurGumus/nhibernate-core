@@ -11,7 +11,7 @@ namespace NHibernate.Bytecode.CodeDom
 	/// <summary>
 	/// CodeDOM-based bytecode provider.
 	/// </summary>
-	public partial class BytecodeProviderImpl : AbstractBytecodeProvider
+	public class BytecodeProviderImpl : AbstractBytecodeProvider
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (BytecodeProviderImpl));
 
@@ -32,7 +32,7 @@ namespace NHibernate.Bytecode.CodeDom
 
 		#region Nested type: Generator
 
-		public partial class Generator
+		public class Generator
 		{
 			private const string classDef =
 				@"public partial class GetSetHelper_{0} : IReflectionOptimizer, IAccessOptimizer {{

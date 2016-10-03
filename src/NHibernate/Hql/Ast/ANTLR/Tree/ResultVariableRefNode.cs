@@ -17,7 +17,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// </example>
 	/// Author: Gail Badner
 	[CLSCompliant(false)]
-	public partial class ResultVariableRefNode : HqlSqlWalkerNode
+	public class ResultVariableRefNode : HqlSqlWalkerNode
 	{
 		private ISelectExpression _selectExpression;
 		

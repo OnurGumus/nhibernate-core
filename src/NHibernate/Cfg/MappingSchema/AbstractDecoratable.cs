@@ -7,7 +7,7 @@ using NHibernate.Util;
 namespace NHibernate.Cfg.MappingSchema
 {
 	[Serializable]
-	public abstract partial class AbstractDecoratable : IDecoratable
+	public abstract class AbstractDecoratable : IDecoratable
 	{
 		private static readonly IDictionary<string, MetaAttribute> EmptyMetaData = new CollectionHelper.EmptyMapClass<string, MetaAttribute>();
 

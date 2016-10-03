@@ -7,7 +7,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public partial class ValuePropertyBinder : Binder
+	public class ValuePropertyBinder : Binder
 	{
 		private readonly SimpleValue value;
 

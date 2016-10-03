@@ -13,7 +13,7 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.SByte"/> column.
 	/// </summary>
 	[Serializable]
-	public partial class SByteType : PrimitiveType, IDiscriminatorType
+	public class SByteType : PrimitiveType, IDiscriminatorType
 	{
 		/// <summary></summary>
 		public SByteType() : base(SqlTypeFactory.SByte)

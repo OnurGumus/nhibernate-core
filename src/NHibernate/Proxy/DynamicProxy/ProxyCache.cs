@@ -11,7 +11,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
-	public partial class ProxyCache : IProxyCache
+	public class ProxyCache : IProxyCache
 	{
 		private static readonly IDictionary<ProxyCacheEntry, System.Type> cache = new ThreadSafeDictionary<ProxyCacheEntry, System.Type>(new Dictionary<ProxyCacheEntry, System.Type>());
 

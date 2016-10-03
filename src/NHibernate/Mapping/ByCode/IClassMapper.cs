@@ -5,7 +5,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface IClassAttributesMapper : IEntityAttributesMapper, IEntitySqlsMapper
+	public interface IClassAttributesMapper : IEntityAttributesMapper, IEntitySqlsMapper
 	{
 		void Id(Action<IIdMapper> idMapper);
 		void Id(MemberInfo idProperty, Action<IIdMapper> idMapper);
@@ -31,7 +31,7 @@ namespace NHibernate.Mapping.ByCode
 		void OptimisticLock(OptimisticLockMode mode);
 	}
 
-	public partial interface IClassMapper : IClassAttributesMapper, IPropertyContainerMapper
+	public interface IClassMapper : IClassAttributesMapper, IPropertyContainerMapper
 	{
 		/// <summary>
 		/// Using the Join, it is possible to split properties of one class to several tables, when there's a 1-to-1 relationship between the table
@@ -41,7 +41,7 @@ namespace NHibernate.Mapping.ByCode
 		void Join(string splitGroupId, Action<IJoinMapper> splitMapping);
 	}
 
-	public partial interface IClassAttributesMapper<TEntity> : IEntityAttributesMapper, IEntitySqlsMapper where TEntity : class
+	public interface IClassAttributesMapper<TEntity> : IEntityAttributesMapper, IEntitySqlsMapper where TEntity : class
 	{
 		void Id<TProperty>(Expression<Func<TEntity, TProperty>> idProperty);
 		void Id<TProperty>(Expression<Func<TEntity, TProperty>> idProperty, Action<IIdMapper> idMapper);
@@ -73,7 +73,7 @@ namespace NHibernate.Mapping.ByCode
 		void OptimisticLock(OptimisticLockMode mode);
 	}
 
-	public partial interface IClassMapper<TEntity> : IClassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class
+	public interface IClassMapper<TEntity> : IClassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class
 	{
 		void Join(string splitGroupId, Action<IJoinMapper<TEntity>> splitMapping);
 	}

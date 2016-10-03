@@ -9,7 +9,7 @@ namespace NHibernate.Transform
 	/// you end up with is a <see cref="IList"/> of <see cref="IList"/>.
 	/// </summary>
 	[Serializable]
-	public partial class ToListResultTransformer : IResultTransformer
+	public class ToListResultTransformer : IResultTransformer
 	{
 		private static readonly object Hasher = new object();
 

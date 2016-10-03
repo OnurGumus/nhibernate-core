@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public partial class DefaultCandidatePersistentMembersProvider : ICandidatePersistentMembersProvider
+	public class DefaultCandidatePersistentMembersProvider : ICandidatePersistentMembersProvider
 	{
 		internal const BindingFlags SubClassPropertiesBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 		internal const BindingFlags RootClassPropertiesBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy;

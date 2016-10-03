@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using System.Linq;
 using NHibernate.Linq;
 using NHibernate.Test.NHSpecificTest.NH0000;

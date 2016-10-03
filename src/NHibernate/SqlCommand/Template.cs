@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.SqlCommand
 {
-	public static partial class Template
+	public static class Template
 	{
 		private static readonly HashSet<string> Keywords = new HashSet<string>();
 		private static readonly HashSet<string> BeforeTableKeywords = new HashSet<string>();

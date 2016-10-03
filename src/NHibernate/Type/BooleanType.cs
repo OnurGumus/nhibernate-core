@@ -10,7 +10,7 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Boolean"/> column.
 	/// </summary>
 	[Serializable]
-	public partial class BooleanType : PrimitiveType, IDiscriminatorType
+	public class BooleanType : PrimitiveType, IDiscriminatorType
 	{
 		/// <summary>
 		/// Initialize a new instance of the BooleanType

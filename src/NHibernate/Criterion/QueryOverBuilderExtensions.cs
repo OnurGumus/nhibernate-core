@@ -5,7 +5,7 @@ using NHibernate.Impl;
 
 namespace NHibernate.Criterion
 {
-	public static partial class QueryOverBuilderExtensions
+	public static class QueryOverBuilderExtensions
 	{
 		// Fetch builder
 		public static QueryOver<TRoot, TSubType> Default<TRoot, TSubType>(this Lambda.QueryOverFetchBuilder<TRoot, TSubType> builder)

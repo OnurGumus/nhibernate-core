@@ -3,7 +3,7 @@ using System.Data;
 
 namespace NHibernate.Dialect.Schema
 {
-	public static partial class SchemaHelper
+	public static class SchemaHelper
 	{
 
 		/// <summary>

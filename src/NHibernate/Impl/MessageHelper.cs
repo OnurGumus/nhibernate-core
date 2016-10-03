@@ -12,7 +12,7 @@ namespace NHibernate.Impl
 	/// <summary>
 	/// Helper methods for rendering log messages and exception messages
 	/// </summary>
-	public static partial class MessageHelper
+	public static class MessageHelper
 	{
 		/// <summary>
 		/// Generate small message that can be used in traces and exception messages.

@@ -7,7 +7,7 @@ namespace NHibernate
 	/// Indicates that an expected getter or setter method could not be found on a class
 	/// </summary>
 	[Serializable]
-	public partial class FKUnmatchingColumnsException : MappingException
+	public class FKUnmatchingColumnsException : MappingException
 	{
 				/// <summary>
 		/// Initializes a new instance of the <see cref="MappingException"/> class.

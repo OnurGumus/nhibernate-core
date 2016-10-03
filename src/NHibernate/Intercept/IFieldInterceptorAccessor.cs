@@ -1,6 +1,6 @@
 ﻿namespace NHibernate.Intercept
 {
-	public partial interface IFieldInterceptorAccessor
+	public interface IFieldInterceptorAccessor
 	{
 		IFieldInterceptor FieldInterceptor { get; set; }
 	}

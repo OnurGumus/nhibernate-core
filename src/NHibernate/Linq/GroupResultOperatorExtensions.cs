@@ -8,7 +8,7 @@ using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq
 {
-	internal static partial class GroupResultOperatorExtensions
+	internal static class GroupResultOperatorExtensions
 	{
 		public static IEnumerable<Expression> ExtractKeyExpressions(this GroupResultOperator groupResult)
 		{

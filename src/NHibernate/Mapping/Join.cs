@@ -7,7 +7,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Mapping
 {
 	[Serializable]
-	public partial class Join : ISqlCustomizable
+	public class Join : ISqlCustomizable
 	{
 		private static readonly Alias PK_ALIAS = new Alias(15, "PK");
 

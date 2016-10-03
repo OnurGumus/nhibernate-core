@@ -21,14 +21,14 @@ namespace NHibernate.Collection
 		protected internal static readonly object Unknown = new object(); //place holder
 		protected internal static readonly object NotFound = new object(); //place holder
 
-		protected interface IDelayedOperation
+		protected partial interface IDelayedOperation
 		{
 			object AddedInstance { get; }
 			object Orphan { get; }
 			void Operate();
 		}
 
-		private class AdditionEnumerable : IEnumerable
+		private partial class AdditionEnumerable : IEnumerable
 		{
 			private readonly AbstractPersistentCollection enclosingInstance;
 
@@ -42,7 +42,7 @@ namespace NHibernate.Collection
 				return new AdditionEnumerator(enclosingInstance);
 			}
 
-			private class AdditionEnumerator : IEnumerator
+			private partial class AdditionEnumerator : IEnumerator
 			{
 				private readonly AbstractPersistentCollection enclosingInstance;
 				private int position = -1;

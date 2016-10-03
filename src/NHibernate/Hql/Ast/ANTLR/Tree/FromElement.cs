@@ -16,7 +16,7 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
-	public partial class FromElement : HqlSqlWalkerNode, IDisplayableNode, IParameterContainer
+	public class FromElement : HqlSqlWalkerNode, IDisplayableNode, IParameterContainer
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(FromElement));
 

@@ -4,7 +4,7 @@ using NHibernate.Type;
 namespace NHibernate.Engine.Query
 {
 	[Serializable]
-	public partial class OrdinalParameterDescriptor
+	public class OrdinalParameterDescriptor
 	{
 		private readonly int ordinalPosition;
 		private readonly IType expectedType;

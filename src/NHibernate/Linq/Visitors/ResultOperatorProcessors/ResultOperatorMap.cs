@@ -4,7 +4,7 @@ using Remotion.Linq.Clauses;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
-    public partial class ResultOperatorMap
+    public class ResultOperatorMap
     {
         readonly Dictionary<System.Type, ResultOperatorProcessorBase> _map = new Dictionary<System.Type, ResultOperatorProcessorBase>();
 

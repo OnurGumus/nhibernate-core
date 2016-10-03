@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using System.Collections;
 using System.Linq;
 using NHibernate.Transform;
@@ -458,7 +458,7 @@ namespace NHibernate.Test.SqlTest.Query
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		class TestResultSetTransformer : IResultTransformer
+		partial class TestResultSetTransformer : IResultTransformer
 		{
 			public bool TransformTupleCalled
 			{

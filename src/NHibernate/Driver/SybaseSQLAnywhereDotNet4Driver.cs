@@ -28,7 +28,7 @@
 	/// Sybase SQL Anywhere 12 using the versioned ADO.NET driver 
 	/// iAnywhere.Data.SQLAnywhere.v4.0.
 	/// </remarks>
-	public partial class SybaseSQLAnywhereDotNet4Driver : ReflectionBasedDriver
+	public class SybaseSQLAnywhereDotNet4Driver : ReflectionBasedDriver
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SybaseSQLAnywhereDotNet4Driver"/> class.

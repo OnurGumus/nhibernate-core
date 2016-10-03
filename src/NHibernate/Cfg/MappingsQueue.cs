@@ -8,7 +8,7 @@ namespace NHibernate.Cfg
 	/// <summary>
 	/// Queues mapping files according to their dependency order.
 	/// </summary>
-	public partial class MappingsQueue
+	public class MappingsQueue
 	{
 		private readonly Queue availableEntries = new Queue();
 		private readonly ISet<string> processedClassNames = new HashSet<string>();

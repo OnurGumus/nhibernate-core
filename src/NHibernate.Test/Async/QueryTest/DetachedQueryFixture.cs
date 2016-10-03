@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -420,7 +420,7 @@ namespace NHibernate.Test.QueryTest
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		private class TestDetachedQuery : AbstractDetachedQuery
+		private partial class TestDetachedQuery : AbstractDetachedQuery
 		{
 			public Dictionary<int, object> PosUntypeParams
 			{

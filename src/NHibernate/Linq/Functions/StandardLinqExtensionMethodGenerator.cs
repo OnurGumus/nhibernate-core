@@ -8,7 +8,7 @@ using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Linq.Functions
 {
-	public partial class StandardLinqExtensionMethodGenerator : IRuntimeMethodHqlGenerator
+	public class StandardLinqExtensionMethodGenerator : IRuntimeMethodHqlGenerator
 	{
 		#region IRuntimeMethodHqlGenerator Members
 
@@ -25,7 +25,7 @@ namespace NHibernate.Linq.Functions
 		#endregion
 	}
 
-	public partial class HqlGeneratorForExtensionMethod : BaseHqlGeneratorForMethod
+	public class HqlGeneratorForExtensionMethod : BaseHqlGeneratorForMethod
 	{
 		private readonly string _name;
 
@@ -44,7 +44,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	internal static partial class UnionExtension
+	internal static class UnionExtension
 	{
 		public static IEnumerable<HqlTreeNode> Union(this HqlTreeNode first, IEnumerable<HqlTreeNode> rest)
 		{

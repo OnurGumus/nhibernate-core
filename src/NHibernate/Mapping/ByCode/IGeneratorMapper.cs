@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface IGeneratorMapper
+	public interface IGeneratorMapper
 	{
 		void Params(object generatorParameters);
 

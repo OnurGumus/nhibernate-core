@@ -7,7 +7,7 @@ namespace NHibernate.Tuple.Component
 	/// A <see cref="IComponentTuplizer"/> specific to the dynamic-map entity mode. 
 	/// </summary>
 	[Serializable]
-	public partial class DynamicMapComponentTuplizer : AbstractComponentTuplizer
+	public class DynamicMapComponentTuplizer : AbstractComponentTuplizer
 	{
 		public DynamicMapComponentTuplizer(Mapping.Component component)
 			: base(component)

@@ -10,7 +10,7 @@ namespace NHibernate.Engine
 	/// Uniquely identifies a collection instance in a particular session. 
 	/// </summary>
 	[Serializable]
-	public sealed partial class CollectionKey
+	public sealed class CollectionKey
 	{
 		private readonly string role;
 		private readonly object key;

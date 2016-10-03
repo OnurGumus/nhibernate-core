@@ -8,7 +8,7 @@ namespace NHibernate.Mapping
 	/// A simple-point association (ie. a reference to another entity).
 	/// </summary>
 	[Serializable]
-	public abstract partial class ToOne : SimpleValue, IFetchable
+	public abstract class ToOne : SimpleValue, IFetchable
 	{
 		private FetchMode fetchMode;
 		private bool lazy = true;

@@ -6,7 +6,7 @@ namespace NHibernate.SqlCommand
 	/// <summary>
 	/// Summary description for QueryJoinFragment.
 	/// </summary>
-	public partial class QueryJoinFragment : JoinFragment
+	public class QueryJoinFragment : JoinFragment
 	{
 		private SqlStringBuilder afterFrom = new SqlStringBuilder();
 		private SqlStringBuilder afterWhere = new SqlStringBuilder();

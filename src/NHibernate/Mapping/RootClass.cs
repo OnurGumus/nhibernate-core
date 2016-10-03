@@ -13,7 +13,7 @@ namespace NHibernate.Mapping
 	/// inheritance hierarchy.
 	/// </summary>
 	[Serializable]
-	public partial class RootClass : PersistentClass, ITableOwner
+	public class RootClass : PersistentClass, ITableOwner
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(RootClass));
 

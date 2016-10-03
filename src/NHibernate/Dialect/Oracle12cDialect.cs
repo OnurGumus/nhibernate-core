@@ -9,7 +9,7 @@ namespace NHibernate.Dialect
 	/// The main difference between this dialect and <see cref="Oracle12cDialect"/>
 	/// is the use of "ANSI join syntax" here...
 	/// </remarks>
-	public partial class Oracle12cDialect : Oracle10gDialect
+	public class Oracle12cDialect : Oracle10gDialect
 	{
 		/// <summary>
 		/// Oracle 12c supports a query statement that provides <c>LIMIT</c>

@@ -12,7 +12,7 @@ namespace NHibernate.Dialect.Function
 	/// with an unlimited number of arguments.
 	/// </summary>
 	[Serializable]
-	public partial class VarArgsSQLFunction : ISQLFunction
+	public class VarArgsSQLFunction : ISQLFunction
 	{
 		private readonly string begin;
 		private readonly string sep;

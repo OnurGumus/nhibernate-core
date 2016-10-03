@@ -11,7 +11,7 @@ namespace NHibernate.Criterion
 	/// A property value, or grouped property value
 	/// </summary>
 	[Serializable]
-	public partial class SubqueryProjection : SimpleProjection
+	public class SubqueryProjection : SimpleProjection
 	{
 		private readonly SelectSubqueryExpression _subQuery;
 

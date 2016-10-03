@@ -16,7 +16,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public partial class BinaryLogicOperatorNode : HqlSqlWalkerNode, IBinaryOperatorNode, IParameterContainer
+	public class BinaryLogicOperatorNode : HqlSqlWalkerNode, IBinaryOperatorNode, IParameterContainer
 	{
 		private List<IParameterSpecification> embeddedParameters;
 

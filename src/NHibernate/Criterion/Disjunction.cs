@@ -8,7 +8,7 @@ namespace NHibernate.Criterion
 	/// <see cref="ICriterion"/>s with an <c>or</c>
 	/// </summary>
 	[Serializable]
-	public partial class Disjunction : Junction
+	public class Disjunction : Junction
 	{
 		/// <summary>
 		/// Get the Sql operator to put between multiple <see cref="ICriterion"/>s.

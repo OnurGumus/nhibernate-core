@@ -6,7 +6,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg.Loquacious
 {
-	internal partial class EntityCacheConfigurationProperties<TEntity> : IEntityCacheConfigurationProperties<TEntity>
+	internal class EntityCacheConfigurationProperties<TEntity> : IEntityCacheConfigurationProperties<TEntity>
 		where TEntity : class
 	{
 		private readonly Dictionary<string, IEntityCollectionCacheConfigurationProperties> collections;
@@ -48,7 +48,7 @@ namespace NHibernate.Cfg.Loquacious
 		}
 	}
 
-	internal partial class EntityCollectionCacheConfigurationProperties : IEntityCollectionCacheConfigurationProperties
+	internal class EntityCollectionCacheConfigurationProperties : IEntityCollectionCacheConfigurationProperties
 	{
 		public EntityCollectionCacheConfigurationProperties()
 		{

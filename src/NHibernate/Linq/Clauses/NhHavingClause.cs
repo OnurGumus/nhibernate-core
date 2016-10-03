@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace NHibernate.Linq.Clauses
 {
-	public partial class NhHavingClause : WhereClause
+	public class NhHavingClause : WhereClause
 	{
 		public NhHavingClause(Expression predicate) 
 			: base(predicate)

@@ -9,7 +9,7 @@ namespace NHibernate
 	/// Thrown if Hibernate can't instantiate an entity or component class at runtime.
 	/// </summary>
 	[Serializable]
-	public partial class InstantiationException : HibernateException
+	public class InstantiationException : HibernateException
 	{
 		private readonly System.Type type;
 

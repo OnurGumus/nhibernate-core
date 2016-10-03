@@ -4,7 +4,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace NHibernate.Util
 {
-	public partial class SerializationHelper
+	public class SerializationHelper
 	{
 		private SerializationHelper()
 		{

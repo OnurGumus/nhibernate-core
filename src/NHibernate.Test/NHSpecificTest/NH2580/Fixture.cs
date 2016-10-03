@@ -4,7 +4,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2580
 {
 	public partial class Fixture: BugTestCase
 	{
-		private class MyClass
+		private partial class MyClass
 		{
 			
 		}

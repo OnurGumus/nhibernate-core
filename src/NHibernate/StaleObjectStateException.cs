@@ -12,7 +12,7 @@ namespace NHibernate
 	/// versioning).
 	/// </summary>
 	[Serializable]
-	public partial class StaleObjectStateException : StaleStateException
+	public class StaleObjectStateException : StaleStateException
 	{
 		private readonly string entityName;
 		private readonly object identifier;

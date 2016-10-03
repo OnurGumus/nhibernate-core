@@ -22,7 +22,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 	/// Ported by: Steve Strong
  	/// </summary>
 	[CLSCompliant(false)]
-	public partial class JoinProcessor
+	public class JoinProcessor
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(JoinProcessor));
 

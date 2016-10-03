@@ -8,7 +8,7 @@ namespace NHibernate
 	/// transient instance
 	/// </summary>
 	[Serializable]
-	public partial class PersistentObjectException : HibernateException
+	public class PersistentObjectException : HibernateException
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PersistentObjectException"/> class.

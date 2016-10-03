@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using NHibernate.Cfg;
 using NHibernate.Intercept;
 using System.Threading.Tasks;

@@ -45,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2632
 			configuration.DataBaseIntegration(di => di.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote);
 		}
 
-		private class Scenario : IDisposable
+		private partial class Scenario : IDisposable
 		{
 			private readonly ISessionFactory factory;
 			private object customerId;

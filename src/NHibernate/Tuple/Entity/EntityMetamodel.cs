@@ -12,7 +12,7 @@ using Array = NHibernate.Mapping.Array;
 namespace NHibernate.Tuple.Entity
 {
 	[Serializable]
-	public partial class EntityMetamodel
+	public class EntityMetamodel
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(EntityMetamodel));
 

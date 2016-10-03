@@ -80,7 +80,7 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// Datareader wrapper with the same life cycle of its command (through the batcher)
 	/// </summary>
-	public partial class BatcherDataReaderWrapper: DbDataReader
+	public class BatcherDataReaderWrapper: DbDataReader
 	{
 		private readonly IBatcher batcher;
 		private readonly DbCommand command;

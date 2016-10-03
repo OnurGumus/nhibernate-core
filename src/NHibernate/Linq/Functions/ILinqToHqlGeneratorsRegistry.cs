@@ -2,7 +2,7 @@ using System.Reflection;
 
 namespace NHibernate.Linq.Functions
 {
-	public partial interface ILinqToHqlGeneratorsRegistry
+	public interface ILinqToHqlGeneratorsRegistry
 	{
 		bool TryGetGenerator(MethodInfo method, out IHqlGeneratorForMethod generator);
 		bool TryGetGenerator(MemberInfo property, out IHqlGeneratorForProperty generator);

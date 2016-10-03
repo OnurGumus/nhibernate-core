@@ -6,7 +6,7 @@ namespace NHibernate.Test.DriverTest
 {
 	public partial class ReflectionBasedDriverTest
 	{
-		private class MyDriverWithWrongClassesAndGoodDbProviderFactory : ReflectionBasedDriver
+		private partial class MyDriverWithWrongClassesAndGoodDbProviderFactory : ReflectionBasedDriver
 		{
 			public MyDriverWithWrongClassesAndGoodDbProviderFactory()
 				: base("System.Data.OracleClient", "pizza1", "pizza2", "pizza3")
@@ -32,7 +32,7 @@ namespace NHibernate.Test.DriverTest
 				get { throw new NotImplementedException(); }
 			}
 		}
-		private class MyDriverWithNoDbProviderFactory : ReflectionBasedDriver
+		private partial class MyDriverWithNoDbProviderFactory : ReflectionBasedDriver
 		{
 			public MyDriverWithNoDbProviderFactory():
 			base(null,

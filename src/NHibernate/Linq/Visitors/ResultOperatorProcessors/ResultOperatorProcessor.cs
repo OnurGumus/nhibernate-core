@@ -2,7 +2,7 @@
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
-    public partial class ResultOperatorProcessor<T> : ResultOperatorProcessorBase
+    public class ResultOperatorProcessor<T> : ResultOperatorProcessorBase
         where T : ResultOperatorBase
     {
         private readonly IResultOperatorProcessor<T> _processor;

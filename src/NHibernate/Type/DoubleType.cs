@@ -10,7 +10,7 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Double"/> column.
 	/// </summary>
 	[Serializable]
-	public partial class DoubleType : PrimitiveType
+	public class DoubleType : PrimitiveType
 	{
 		/// <summary></summary>
 		public DoubleType() : base(SqlTypeFactory.Double)

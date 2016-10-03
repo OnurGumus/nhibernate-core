@@ -14,7 +14,7 @@ namespace NHibernate.SqlTypes
 	/// setting the properties on the <see cref="DbParameter"/> correctly.
 	/// </remarks>
 	[Serializable]
-	public partial class StringFixedLengthSqlType : SqlType
+	public class StringFixedLengthSqlType : SqlType
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StringFixedLengthSqlType"/> class.

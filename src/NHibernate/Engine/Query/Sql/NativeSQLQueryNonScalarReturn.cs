@@ -9,7 +9,7 @@ namespace NHibernate.Engine.Query.Sql
 	/// a native sql query. 
 	/// </summary>
 	[Serializable]
-	public abstract partial class NativeSQLQueryNonScalarReturn : INativeSQLQueryReturn
+	public abstract class NativeSQLQueryNonScalarReturn : INativeSQLQueryReturn
 	{
 		private readonly string alias;
 		private readonly Dictionary<string, string[]> propertyResults = new Dictionary<string, string[]>();

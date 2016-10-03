@@ -14,7 +14,7 @@ namespace NHibernate.Util
 	/// <summary>
 	/// Helper class for Reflection related code.
 	/// </summary>
-	public static partial class ReflectHelper
+	public static class ReflectHelper
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ReflectHelper));
 

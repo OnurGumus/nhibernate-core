@@ -4,7 +4,7 @@ using Antlr.Runtime.Tree;
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
-	public partial class ASTFactory : IASTFactory
+	public class ASTFactory : IASTFactory
 	{
 		private readonly ITreeAdaptor _adaptor;
 

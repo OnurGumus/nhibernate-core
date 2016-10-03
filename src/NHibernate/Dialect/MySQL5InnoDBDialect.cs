@@ -1,6 +1,6 @@
 namespace NHibernate.Dialect
 {
-	public partial class MySQL5InnoDBDialect : MySQL5Dialect
+	public class MySQL5InnoDBDialect : MySQL5Dialect
 	{
 		public override bool SupportsCascadeDelete
 		{

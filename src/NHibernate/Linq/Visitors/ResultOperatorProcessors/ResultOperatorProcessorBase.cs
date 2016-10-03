@@ -2,7 +2,7 @@
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
-    public abstract partial class ResultOperatorProcessorBase
+    public abstract class ResultOperatorProcessorBase
     {
         public abstract void Process(ResultOperatorBase resultOperator, QueryModelVisitor queryModel, IntermediateHqlTree tree);
     }

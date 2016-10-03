@@ -9,7 +9,7 @@ using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.GroupBy
 {
-	public static partial class NonAggregatingGroupByRewriter
+	public static class NonAggregatingGroupByRewriter
 	{
 		public static void ReWrite(QueryModel queryModel)
 		{
@@ -84,7 +84,7 @@ namespace NHibernate.Linq.GroupBy
 		}
 	}
 
-	public partial class ClientSideSelect : ClientSideTransformOperator
+	public class ClientSideSelect : ClientSideTransformOperator
 	{
 		public LambdaExpression SelectClause { get; private set; }
 
@@ -94,7 +94,7 @@ namespace NHibernate.Linq.GroupBy
 		}
 	}
 
-	public partial class ClientSideSelect2 : ClientSideTransformOperator
+	public class ClientSideSelect2 : ClientSideTransformOperator
 	{
 		public LambdaExpression SelectClause { get; private set; }
 

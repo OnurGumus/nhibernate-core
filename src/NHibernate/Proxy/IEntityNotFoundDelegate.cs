@@ -3,7 +3,7 @@ namespace NHibernate.Proxy
 	/// <summary> 
 	/// Delegate to handle the scenario of an entity not found by a specified id. 
 	/// </summary>
-	public partial interface IEntityNotFoundDelegate
+	public interface IEntityNotFoundDelegate
 	{
 		/// <summary>
 		/// Delegate method to handle the scenario of an entity not found.

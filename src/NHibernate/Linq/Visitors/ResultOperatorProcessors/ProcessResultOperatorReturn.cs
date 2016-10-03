@@ -6,7 +6,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
-    public partial class ProcessResultOperatorReturn
+    public class ProcessResultOperatorReturn
     {
         public HqlTreeNode TreeNode { get; set;}
         public Action<IQuery, IDictionary<string, Tuple<object, IType>>> AdditionalCriteria { get; set; }

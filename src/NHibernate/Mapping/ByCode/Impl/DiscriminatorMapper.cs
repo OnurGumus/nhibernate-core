@@ -6,7 +6,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public partial class DiscriminatorMapper : IDiscriminatorMapper
+	public class DiscriminatorMapper : IDiscriminatorMapper
 	{
 		private readonly HbmDiscriminator discriminatorMapping;
 

@@ -8,7 +8,7 @@ namespace NHibernate.Mapping.ByCode
 	/// <summary>
 	/// A <see cref="IModelInspector"/> which allows customization of conditions with explicitly declared members.
 	/// </summary>
-	public partial class SimpleModelInspector : IModelInspector, IModelExplicitDeclarationsHolder
+	public class SimpleModelInspector : IModelInspector, IModelExplicitDeclarationsHolder
 	{
 		private class MixinDeclaredModel : AbstractExplicitlyDeclaredModel
 		{

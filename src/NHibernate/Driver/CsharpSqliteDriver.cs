@@ -14,7 +14,7 @@ namespace NHibernate.Driver
     /// Please check <a href="http://code.google.com/p/csharp-sqlite/"> http://code.google.com/p/csharp-sqlite/ </a> for more information regarding csharp-sqlite.
     /// </p>
     /// </remarks>
-    public partial class CsharpSqliteDriver : ReflectionBasedDriver
+    public class CsharpSqliteDriver : ReflectionBasedDriver
     {
         /// <summary>
         /// Initializes a new instance of <see cref="CsharpSqliteDriver"/>.

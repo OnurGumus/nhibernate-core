@@ -2,7 +2,7 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface IEntityAttributesMapper
+	public interface IEntityAttributesMapper
 	{
 		void EntityName(string value);
 		void Proxy(System.Type proxy);

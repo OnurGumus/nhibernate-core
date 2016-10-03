@@ -5,7 +5,7 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
 {
-	public partial class MsSql2005Dialect : MsSql2000Dialect
+	public class MsSql2005Dialect : MsSql2000Dialect
 	{
 		public MsSql2005Dialect()
 		{

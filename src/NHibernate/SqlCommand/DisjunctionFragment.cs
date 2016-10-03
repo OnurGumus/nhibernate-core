@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.SqlCommand
 {
-	public partial class DisjunctionFragment
+	public class DisjunctionFragment
 	{
 		private SqlStringBuilder buffer = new SqlStringBuilder();
 

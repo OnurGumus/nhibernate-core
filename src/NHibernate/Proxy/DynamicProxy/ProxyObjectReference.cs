@@ -14,7 +14,7 @@ using System.Security;
 namespace NHibernate.Proxy.DynamicProxy
 {
 	[Serializable]
-	public partial class ProxyObjectReference : IObjectReference, ISerializable
+	public class ProxyObjectReference : IObjectReference, ISerializable
 	{
 		private readonly System.Type _baseType;
 		private readonly IProxy _proxy;

@@ -12,7 +12,7 @@ using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 namespace NHibernate.Linq.GroupBy
 {
 	//This should be renamed. It handles entire querymodels, not just select clauses
-	internal partial class GroupBySelectClauseRewriter : ExpressionTreeVisitor
+	internal class GroupBySelectClauseRewriter : ExpressionTreeVisitor
 	{
 		public static Expression ReWrite(Expression expression, GroupResultOperator groupBy, QueryModel model)
 		{

@@ -17,7 +17,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public partial class FromElementType
+	public class FromElementType
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(FromElementType));
 

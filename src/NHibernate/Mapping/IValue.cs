@@ -11,7 +11,7 @@ namespace NHibernate.Mapping
 	/// higher level semantics, for example properties, collections, 
 	/// classes.
 	/// </summary>
-	public partial interface IValue
+	public interface IValue
 	{
 		/// <summary>
 		/// Gets the number of columns that this value spans in the table.

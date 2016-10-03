@@ -13,7 +13,7 @@
     /// for any updates and/or documentation regarding dotConnect for MySQL.
     /// </para>
     /// </remarks>
-    public partial class DotConnectMySqlDriver : ReflectionBasedDriver
+    public class DotConnectMySqlDriver : ReflectionBasedDriver
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DotConnectMySqlDriver"/> class.

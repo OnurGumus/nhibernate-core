@@ -7,7 +7,7 @@ namespace NHibernate.Engine
 	/// transient instance or a previously persistent transient instance. The strategy
 	/// is determined by the <c>Unsaved-Value</c> attribute in the mapping file.
 	/// </summary>
-	public partial class IdentifierValue
+	public class IdentifierValue
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(IdentifierValue));
 
@@ -107,7 +107,7 @@ namespace NHibernate.Engine
 		/// <summary> Assume nothing.</summary>
 		public static readonly IdentifierValue Undefined = new UndefinedClass();
 
-		public partial class UndefinedClass : IdentifierValue
+		public class UndefinedClass : IdentifierValue
 		{
 			public override bool? IsUnsaved(object id)
 			{

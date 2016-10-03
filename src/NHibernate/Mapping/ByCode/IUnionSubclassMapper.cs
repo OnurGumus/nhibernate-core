@@ -1,6 +1,6 @@
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface IUnionSubclassAttributesMapper : IEntityAttributesMapper, IEntitySqlsMapper
+	public interface IUnionSubclassAttributesMapper : IEntityAttributesMapper, IEntitySqlsMapper
 	{
 		void Table(string tableName);
 		void Catalog(string catalogName);
@@ -9,9 +9,9 @@ namespace NHibernate.Mapping.ByCode
 		void Abstract(bool isAbstract);
 	}
 
-	public partial interface IUnionSubclassMapper : IUnionSubclassAttributesMapper, IPropertyContainerMapper {}
+	public interface IUnionSubclassMapper : IUnionSubclassAttributesMapper, IPropertyContainerMapper {}
 
-	public partial interface IUnionSubclassAttributesMapper<TEntity> : IEntityAttributesMapper, IEntitySqlsMapper where TEntity : class
+	public interface IUnionSubclassAttributesMapper<TEntity> : IEntityAttributesMapper, IEntitySqlsMapper where TEntity : class
 	{
 		void Table(string tableName);
 		void Catalog(string catalogName);
@@ -20,5 +20,5 @@ namespace NHibernate.Mapping.ByCode
 		void Abstract(bool isAbstract);
 	}
 
-	public partial interface IUnionSubclassMapper<TEntity> : IUnionSubclassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class {}
+	public interface IUnionSubclassMapper<TEntity> : IUnionSubclassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class {}
 }

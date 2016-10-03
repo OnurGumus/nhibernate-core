@@ -11,7 +11,7 @@ namespace NHibernate.Mapping
 	/// Represents the mapping to a column in a database.
 	/// </summary>
 	[Serializable]
-	public partial class Column : ISelectable, ICloneable
+	public class Column : ISelectable, ICloneable
 	{
 		public const int DefaultLength = 255;
 		public const int DefaultPrecision = 19;

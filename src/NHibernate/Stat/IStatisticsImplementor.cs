@@ -2,7 +2,7 @@ using System;
 namespace NHibernate.Stat
 {
 	/// <summary> Statistics SPI for the NHibernate core </summary>
-	public partial interface IStatisticsImplementor
+	public interface IStatisticsImplementor
 	{
 		void OpenSession();
 		void CloseSession();

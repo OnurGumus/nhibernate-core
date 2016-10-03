@@ -11,7 +11,7 @@ namespace NHibernate.Mapping
 	/// An Index in the database.
 	/// </summary>
 	[Serializable]
-	public partial class Index : IRelationalModel
+	public class Index : IRelationalModel
 	{
 		private Table table;
 		private readonly List<Column> columns = new List<Column>();

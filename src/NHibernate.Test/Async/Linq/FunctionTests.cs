@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ namespace NHibernate.Test.Linq
 	public partial class FunctionTestsAsync : LinqTestCaseAsync
 	{
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		private static class SqlMethods
+		private static partial class SqlMethods
 		{
 			public static bool Like(string expression, string pattern)
 			{

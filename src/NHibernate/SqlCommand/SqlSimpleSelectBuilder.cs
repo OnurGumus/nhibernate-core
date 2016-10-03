@@ -8,7 +8,7 @@ namespace NHibernate.SqlCommand
 	/// <summary>
 	/// Summary description for SqlSimpleSelectBuilder.
 	/// </summary>
-	public partial class SqlSimpleSelectBuilder : SqlBaseBuilder, ISqlStringBuilder
+	public class SqlSimpleSelectBuilder : SqlBaseBuilder, ISqlStringBuilder
 	{
 		private string tableName;
 

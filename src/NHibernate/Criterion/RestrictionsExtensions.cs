@@ -5,7 +5,7 @@ using NHibernate.Impl;
 
 namespace NHibernate.Criterion
 {
-	public static partial class RestrictionExtensions
+	public static class RestrictionExtensions
 	{
 		/// <summary>
 		/// Apply a "like" restriction in a QueryOver expression
@@ -79,7 +79,7 @@ namespace NHibernate.Criterion
 			throw new Exception("Not to be used directly - use inside QueryOver expression");
 		}
 
-		public partial class RestrictionBetweenBuilder
+		public class RestrictionBetweenBuilder
 		{
 			public bool And(object hi)
 			{

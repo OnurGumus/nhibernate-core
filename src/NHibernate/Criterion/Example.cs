@@ -27,7 +27,7 @@ namespace NHibernate.Criterion
 	/// </remarks>
 	/// <seealso cref="ICriteria"/>
 	[Serializable]
-	public partial class Example : AbstractCriterion
+	public class Example : AbstractCriterion
 	{
 		private readonly object _entity;
 		private readonly HashSet<string> _excludedProperties = new HashSet<string>();
@@ -40,7 +40,7 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// A strategy for choosing property values for inclusion in the query criteria
 		/// </summary>
-		public partial interface IPropertySelector
+		public interface IPropertySelector
 		{
 			/// <summary>
 			/// Determine if the Property should be included.

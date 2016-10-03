@@ -22,7 +22,7 @@ namespace NHibernate.Dialect
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public partial class DB2Dialect : Dialect
+	public class DB2Dialect : Dialect
 	{
 		/// <summary></summary>
 		public DB2Dialect()

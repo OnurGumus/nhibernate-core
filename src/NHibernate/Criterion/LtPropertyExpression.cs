@@ -7,7 +7,7 @@ namespace NHibernate.Criterion
 	/// between two properties.
 	/// </summary>
 	[Serializable]
-	public partial class LtPropertyExpression : PropertyExpression
+	public class LtPropertyExpression : PropertyExpression
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LtPropertyExpression"/> class.

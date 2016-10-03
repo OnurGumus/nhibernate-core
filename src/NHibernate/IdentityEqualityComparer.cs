@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 namespace NHibernate
 {
 	[Serializable]
-	public partial class IdentityEqualityComparer: IEqualityComparer
+	public class IdentityEqualityComparer: IEqualityComparer
 	{
 		#region IEqualityComparer Members
 

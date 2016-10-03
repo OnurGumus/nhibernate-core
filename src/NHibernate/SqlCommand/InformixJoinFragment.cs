@@ -6,7 +6,7 @@ namespace NHibernate.SqlCommand
 	/// <summary>
 	/// An Informix-style (theta) Join
 	/// </summary>
-	public partial class InformixJoinFragment : JoinFragment
+	public class InformixJoinFragment : JoinFragment
 	{
 		private readonly SqlStringBuilder afterFrom = new SqlStringBuilder();
 		private readonly SqlStringBuilder afterWhere = new SqlStringBuilder();

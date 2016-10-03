@@ -8,7 +8,7 @@ namespace NHibernate.Type
 	/// <see cref="IType"/> that will be used in a discriminator column must implement
 	/// both the <see cref="IIdentifierType"/> and <see cref="ILiteralType"/> interfaces.
 	/// </remarks>
-	public partial interface IDiscriminatorType : IIdentifierType, ILiteralType
+	public interface IDiscriminatorType : IIdentifierType, ILiteralType
 	{
 	}
 }

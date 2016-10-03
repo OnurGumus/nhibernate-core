@@ -2,7 +2,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Cache.Entry
 {
-	public partial interface ICacheEntryStructure
+	public interface ICacheEntryStructure
 	{
 		object Structure(object item);
 		object Destructure(object map, ISessionFactoryImplementor factory);

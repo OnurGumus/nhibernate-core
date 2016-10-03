@@ -5,7 +5,7 @@ namespace NHibernate.Event.Default
 {
 	/// <summary> Call <see cref="ILifecycle"/> interface if necessary </summary>
 	[Serializable]
-	public partial class DefaultPostLoadEventListener : IPostLoadEventListener
+	public class DefaultPostLoadEventListener : IPostLoadEventListener
 	{
 		public virtual void OnPostLoad(PostLoadEvent @event)
 		{

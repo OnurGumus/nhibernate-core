@@ -8,7 +8,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	/// Author: josh
 	/// Ported by: Steve Strong
 	/// </summary>
-	internal static partial class CollectionProperties
+	internal static class CollectionProperties
 	{
 
 		public static Dictionary<string, string> HQL_COLLECTION_PROPERTIES;

@@ -5,7 +5,7 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 
 namespace NHibernate
 {
-	public partial interface IQueryExpression
+	public interface IQueryExpression
 	{
 		IASTNode Translate(ISessionFactoryImplementor sessionFactory, bool filter);
 		string Key { get; }

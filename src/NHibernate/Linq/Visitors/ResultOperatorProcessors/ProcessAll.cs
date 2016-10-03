@@ -3,7 +3,7 @@ using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
-    public partial class ProcessAll : IResultOperatorProcessor<AllResultOperator>
+    public class ProcessAll : IResultOperatorProcessor<AllResultOperator>
     {
         public void Process(AllResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
         {

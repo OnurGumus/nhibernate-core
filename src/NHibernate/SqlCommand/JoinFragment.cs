@@ -15,7 +15,7 @@ namespace NHibernate.SqlCommand
 	/// <summary>
 	/// Represents a SQL <c>JOIN</c>
 	/// </summary>
-	public abstract partial class JoinFragment
+	public abstract class JoinFragment
 	{
 		public abstract void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType);
 

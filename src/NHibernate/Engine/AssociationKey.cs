@@ -8,7 +8,7 @@ namespace NHibernate.Engine
 	/// is null during loading. 
 	/// </summary>
 	[Serializable]
-	internal sealed partial class AssociationKey
+	internal sealed class AssociationKey
 	{
 		private readonly EntityKey ownerKey;
 		private readonly string propertyName;

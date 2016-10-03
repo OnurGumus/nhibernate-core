@@ -12,7 +12,7 @@ namespace NHibernate.Driver
 	/// <li>sybdrvado20.dll</li>
 	/// </ul>
 	/// </remarks>
-	public partial class SybaseAseClientDriver : ReflectionBasedDriver
+	public class SybaseAseClientDriver : ReflectionBasedDriver
 	{
 		public SybaseAseClientDriver() : base("Sybase.AdoNet2.AseClient", "Sybase.Data.AseClient.AseConnection", "Sybase.Data.AseClient.AseCommand")
 		{

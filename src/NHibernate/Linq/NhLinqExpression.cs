@@ -11,7 +11,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Linq
 {
-	public partial class NhLinqExpression : IQueryExpression
+	public class NhLinqExpression : IQueryExpression
 	{
 		public string Key { get; private set; }
 

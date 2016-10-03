@@ -6,7 +6,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Loader.Criteria
 {
-	public partial class ComponentCollectionCriteriaInfoProvider : ICriteriaInfoProvider
+	public class ComponentCollectionCriteriaInfoProvider : ICriteriaInfoProvider
 	{
 		private readonly IQueryableCollection persister;
 		private readonly IDictionary<string, IType> subTypes = new Dictionary<string, IType>();

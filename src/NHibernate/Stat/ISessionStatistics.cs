@@ -6,7 +6,7 @@ namespace NHibernate.Stat
 	/// <summary> 
 	/// Information about the first-level (session) cache for a particular session instance
 	/// </summary>
-	public partial interface ISessionStatistics
+	public interface ISessionStatistics
 	{
 		/// <summary> Get the number of entity instances associated with the session</summary>
 		int EntityCount { get;}

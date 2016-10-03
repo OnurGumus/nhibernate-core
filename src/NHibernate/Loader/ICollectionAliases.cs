@@ -3,7 +3,7 @@ namespace NHibernate.Loader
 	/// <summary>
 	/// Type definition of CollectionAliases.
 	/// </summary>
-	public partial interface ICollectionAliases
+	public interface ICollectionAliases
 	{
 		/// <summary>
 		/// Returns the suffixed result-set column-aliases for columns making

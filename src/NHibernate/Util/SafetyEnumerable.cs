@@ -7,7 +7,7 @@ namespace NHibernate.Util
 	/// Used to ensure a collection filtering a given IEnumerable by a certain type.
 	/// </summary>
 	/// <typeparam name="T">The type used like filter.</typeparam>
-	public partial class SafetyEnumerable<T> : IEnumerable<T>
+	public class SafetyEnumerable<T> : IEnumerable<T>
 	{
 		/*
 		 * This class was created to filter List<ISelectable> to an IEnumerable<Column>

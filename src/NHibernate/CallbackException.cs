@@ -5,7 +5,7 @@ namespace NHibernate
 {
 	/// <summary></summary>
 	[Serializable]
-	public partial class CallbackException : HibernateException
+	public class CallbackException : HibernateException
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CallbackException"/> class.

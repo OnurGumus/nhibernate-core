@@ -36,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 								});
 		}
 
-		private class Scenario: IDisposable
+		private partial class Scenario: IDisposable
 		{
 			private readonly ISessionFactory factory;
 
@@ -107,13 +107,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 			}
 		}
 
-		private class BlogAuthorDto
+		private partial class BlogAuthorDto
 		{
 			public string BlogName { get; set; }
 			public string AuthorName { get; set; }
 		}
 
-		private class BlogAuthorTransformer : IResultTransformer
+		private partial class BlogAuthorTransformer : IResultTransformer
 		{
 			public object TransformTuple(object[] tuple, string[] aliases)
 			{

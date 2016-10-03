@@ -3,7 +3,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public partial class CollectionElementCustomizer : IElementMapper
+	public class CollectionElementCustomizer : IElementMapper
 	{
 		private readonly PropertyPath propertyPath;
 

@@ -16,7 +16,7 @@ namespace NHibernate.Driver
 	/// This is a completely off-line DataReader - the underlying DbDataReader that was used to create
 	/// this has been closed and no connections to the Db exists.
 	/// </remarks>
-	public partial class NDataReader : DbDataReader
+	public class NDataReader : DbDataReader
 	{
 		private NResult[] results;
 

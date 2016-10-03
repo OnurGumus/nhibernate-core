@@ -8,7 +8,7 @@ namespace NHibernate.Criterion
 	///  result of a subquery
 	/// </summary>
 	[Serializable]
-	public partial class SelectSubqueryExpression : SubqueryExpression
+	public class SelectSubqueryExpression : SubqueryExpression
 	{
 		internal SelectSubqueryExpression(DetachedCriteria dc)
 			: base(null, null, dc)

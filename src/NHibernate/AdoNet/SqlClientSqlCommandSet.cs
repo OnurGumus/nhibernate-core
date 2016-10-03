@@ -15,7 +15,7 @@ namespace NHibernate.AdoNet
 	/// 
 	/// Observable performance benefits are 50%+ when used, so it is really worth it.
 	/// </summary>
-	public partial class SqlClientSqlCommandSet : IDisposable
+	public class SqlClientSqlCommandSet : IDisposable
 	{
 		private static readonly System.Type sqlCmdSetType;
 		private readonly object instance;

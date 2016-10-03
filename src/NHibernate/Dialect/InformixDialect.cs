@@ -456,7 +456,7 @@ namespace NHibernate.Dialect
 		}
 	}
 
-	public partial class IfxViolatedConstraintExtracter : TemplatedViolatedConstraintNameExtracter
+	public class IfxViolatedConstraintExtracter : TemplatedViolatedConstraintNameExtracter
 	{
 		/// <summary> 
 		/// Extract the name of the violated constraint from the given DbException.

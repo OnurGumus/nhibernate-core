@@ -1,7 +1,7 @@
 namespace NHibernate.SqlCommand
 {
 	/// <summary></summary>
-	public partial interface ISqlStringBuilder
+	public interface ISqlStringBuilder
 	{
 		/// <summary>
 		/// Builds a SqlString from the internal data.

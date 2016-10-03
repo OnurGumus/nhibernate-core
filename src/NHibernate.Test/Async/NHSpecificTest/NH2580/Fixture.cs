@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using NUnit.Framework;
 using System.Threading.Tasks;
 
@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2580
 	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		private class MyClass
+		private partial class MyClass
 		{
 		}
 

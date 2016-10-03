@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace NHibernate.Persister.Entity
 {
-	public partial class UnionSubclassEntityPersister : AbstractEntityPersister
+	public class UnionSubclassEntityPersister : AbstractEntityPersister
 	{
 		private readonly string subquery;
 		private readonly string tableName;

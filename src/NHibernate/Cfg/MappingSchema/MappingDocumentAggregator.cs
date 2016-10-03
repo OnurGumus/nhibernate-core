@@ -9,7 +9,7 @@ namespace NHibernate.Cfg.MappingSchema
 	/// Responsible for building a list of <see cref="HbmMapping" /> objects from a range of acceptable
 	/// sources.
 	/// </summary>
-	public partial class MappingDocumentAggregator
+	public class MappingDocumentAggregator
 	{
 		private readonly IAssemblyResourceFilter defaultFilter;
 		private readonly List<HbmMapping> documents = new List<HbmMapping>();

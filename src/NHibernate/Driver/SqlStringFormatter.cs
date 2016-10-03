@@ -7,7 +7,7 @@ using NHibernate.Engine.Query;
 
 namespace NHibernate.Driver
 {
-	public partial class SqlStringFormatter : ISqlStringVisitor
+	public class SqlStringFormatter : ISqlStringVisitor
 	{
 		private readonly StringBuilder result = new StringBuilder();
 		private int parameterIndex = 0;

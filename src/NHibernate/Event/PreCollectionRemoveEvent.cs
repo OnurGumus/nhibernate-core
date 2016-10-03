@@ -6,7 +6,7 @@ namespace NHibernate.Event
 {
 	/// <summary> An event that occurs before a collection is removed </summary>
 	[Serializable]
-	public partial class PreCollectionRemoveEvent : AbstractCollectionEvent
+	public class PreCollectionRemoveEvent : AbstractCollectionEvent
 	{
 		public PreCollectionRemoveEvent(ICollectionPersister collectionPersister, IPersistentCollection collection,
 		                                IEventSource source, object loadedOwner)

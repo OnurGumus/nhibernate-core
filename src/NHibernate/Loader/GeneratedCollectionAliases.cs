@@ -8,7 +8,7 @@ namespace NHibernate.Loader
 	/// CollectionAliases which handles the logic of selecting user provided aliases (via return-property),
 	/// before using the default aliases.
 	/// </summary>
-	public partial class GeneratedCollectionAliases : ICollectionAliases
+	public class GeneratedCollectionAliases : ICollectionAliases
 	{
 		private readonly string suffix;
 		private readonly string[] keyAliases;

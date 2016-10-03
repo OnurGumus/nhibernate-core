@@ -9,7 +9,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Loader.Custom.Sql
 {
-	public partial class SQLQueryReturnProcessor
+	public class SQLQueryReturnProcessor
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (SQLQueryReturnProcessor));
 
@@ -50,7 +50,7 @@ namespace NHibernate.Loader.Custom.Sql
 			this.factory = factory;
 		}
 
-		public partial class ResultAliasContext
+		public class ResultAliasContext
 		{
 			private readonly SQLQueryReturnProcessor parent;
 

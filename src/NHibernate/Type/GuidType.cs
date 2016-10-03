@@ -10,7 +10,7 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Guid"/> column.
 	/// </summary>
 	[Serializable]
-	public partial class GuidType : PrimitiveType, IDiscriminatorType
+	public class GuidType : PrimitiveType, IDiscriminatorType
 	{
 		/// <summary></summary>
 		public GuidType() : base(SqlTypeFactory.Guid)

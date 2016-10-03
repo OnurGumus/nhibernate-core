@@ -5,7 +5,7 @@ namespace NHibernate.Proxy.Map
 {
 	/// <summary> Proxy for "dynamic-map" entity representations. </summary>
 	[Serializable]
-	public partial class MapProxy : INHibernateProxy, IDictionary
+	public class MapProxy : INHibernateProxy, IDictionary
 	{
 		private readonly MapLazyInitializer li;
 

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace NHibernate.Mapping
 {
 	[Serializable]
-	public partial class DenormalizedTable : Table
+	public class DenormalizedTable : Table
 	{
 		private readonly Table includedTable;
 

@@ -6,7 +6,7 @@ namespace NHibernate.Event
 	/// Represents a <tt>pre-insert</tt> event, which occurs just prior to
 	/// performing the insert of an entity into the database.
 	/// </summary>
-	public partial class PreInsertEvent : AbstractPreDatabaseOperationEvent
+	public class PreInsertEvent : AbstractPreDatabaseOperationEvent
 	{
 		public PreInsertEvent(object entity, object id, object[] state, IEntityPersister persister, IEventSource source)
 			: base(source, entity, id, persister)

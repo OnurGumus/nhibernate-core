@@ -10,7 +10,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
-	public sealed partial class Printer
+	public sealed class Printer
 	{
 		private readonly ISessionFactoryImplementor _factory;
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Printer));

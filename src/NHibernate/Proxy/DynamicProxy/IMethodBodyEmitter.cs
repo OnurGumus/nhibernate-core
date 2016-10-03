@@ -11,7 +11,7 @@ using System.Reflection.Emit;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
-	public partial interface IMethodBodyEmitter
+	public interface IMethodBodyEmitter
 	{
 		void EmitMethodBody(MethodBuilder proxyMethod, MethodBuilder callbackMethod, MethodInfo method, FieldInfo field);
 	}

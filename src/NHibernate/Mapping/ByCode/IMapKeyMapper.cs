@@ -2,7 +2,7 @@
 
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface IMapKeyMapper : IColumnsMapper
+	public interface IMapKeyMapper : IColumnsMapper
 	{
 		void Type(IType persistentType);
 		void Type<TPersistentType>();

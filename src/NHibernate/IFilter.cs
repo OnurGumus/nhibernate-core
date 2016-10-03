@@ -7,7 +7,7 @@ namespace NHibernate
 	/// Type definition of Filter.  Filter defines the user's view into enabled dynamic filters,
 	/// allowing them to set filter parameter values.
 	/// </summary>
-	public partial interface IFilter
+	public interface IFilter
 	{
 		/// <summary>
 		/// Get the name of this filter. 

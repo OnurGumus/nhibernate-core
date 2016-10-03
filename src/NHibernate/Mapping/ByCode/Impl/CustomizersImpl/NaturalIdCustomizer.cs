@@ -2,7 +2,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public partial class NaturalIdCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IBasePlainPropertyContainerMapper<TEntity> where TEntity : class
+	public class NaturalIdCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IBasePlainPropertyContainerMapper<TEntity> where TEntity : class
 	{
 		public NaturalIdCustomizer(IModelExplicitDeclarationsHolder explicitDeclarationsHolder, ICustomizersHolder customizersHolder)
 			: base(explicitDeclarationsHolder, customizersHolder, null) {}

@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface ICollectionPropertiesContainerMapper
+	public interface ICollectionPropertiesContainerMapper
 	{
 		void Set(MemberInfo property, Action<ISetPropertiesMapper> collectionMapping,
 		         Action<ICollectionElementRelation> mapping);
@@ -24,9 +24,9 @@ namespace NHibernate.Mapping.ByCode
 						 Action<ICollectionElementRelation> mapping);
 	}
 
-	public partial interface IPropertyContainerMapper : ICollectionPropertiesContainerMapper, IPlainPropertyContainerMapper {}
+	public interface IPropertyContainerMapper : ICollectionPropertiesContainerMapper, IPlainPropertyContainerMapper {}
 
-	public partial interface ICollectionPropertiesContainerMapper<TEntity>
+	public interface ICollectionPropertiesContainerMapper<TEntity>
 	{
 		void Set<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
 		                   Action<ISetPropertiesMapper<TEntity, TElement>> collectionMapping,
@@ -92,6 +92,6 @@ namespace NHibernate.Mapping.ByCode
 											 Action<IIdBagPropertiesMapper<TEntity, TElement>> collectionMapping);
 	}
 
-	public partial interface IPropertyContainerMapper<TEntity> : ICollectionPropertiesContainerMapper<TEntity>, IPlainPropertyContainerMapper<TEntity>
+	public interface IPropertyContainerMapper<TEntity> : ICollectionPropertiesContainerMapper<TEntity>, IPlainPropertyContainerMapper<TEntity>
 	{}
 }

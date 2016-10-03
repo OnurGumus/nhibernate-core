@@ -1,6 +1,6 @@
 ﻿namespace NHibernate.Cfg
 {
-	public partial interface IHibernateConfiguration
+	public interface IHibernateConfiguration
 	{
 		string ByteCodeProviderType { get; }
 		bool UseReflectionOptimizer { get; }

@@ -2,7 +2,7 @@ using NHibernate.Properties;
 
 namespace NHibernate.Bytecode
 {
-	public partial interface IBytecodeProvider
+	public interface IBytecodeProvider
 	{
 		/// <summary> 
 		/// The specific factory for this provider capable of

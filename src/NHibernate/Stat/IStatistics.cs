@@ -7,7 +7,7 @@ namespace NHibernate.Stat
 	/// Statistics for a particular <see cref="ISessionFactory"/>.
 	/// Beware of metrics, they are dependent of the <see cref="Stopwatch"/> precision:
 	/// </summary>
-	public partial interface IStatistics
+	public interface IStatistics
 	{
 		/// <summary> Global number of entity deletes</summary>
 		long EntityDeleteCount { get;}

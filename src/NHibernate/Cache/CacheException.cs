@@ -7,7 +7,7 @@ namespace NHibernate.Cache
 	/// Represents any exception from an <see cref="ICache"/>.
 	/// </summary>
 	[Serializable]
-	public partial class CacheException : HibernateException
+	public class CacheException : HibernateException
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CacheException"/> class.

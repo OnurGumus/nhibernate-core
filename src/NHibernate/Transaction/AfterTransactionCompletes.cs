@@ -2,7 +2,7 @@
 
 namespace NHibernate.Transaction
 {
-	public partial class AfterTransactionCompletes : ISynchronization
+	public class AfterTransactionCompletes : ISynchronization
 	{
 		#region Fields
 

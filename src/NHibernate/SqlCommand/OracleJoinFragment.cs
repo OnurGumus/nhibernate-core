@@ -8,7 +8,7 @@ namespace NHibernate.SqlCommand
 	/// <summary>
 	/// An Oracle-style (theta) Join
 	/// </summary>
-	public partial class OracleJoinFragment : JoinFragment
+	public class OracleJoinFragment : JoinFragment
 	{
 		private SqlStringBuilder afterFrom = new SqlStringBuilder();
 		private SqlStringBuilder afterWhere = new SqlStringBuilder();

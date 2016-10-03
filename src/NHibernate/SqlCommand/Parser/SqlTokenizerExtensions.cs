@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.SqlCommand.Parser
 {
-	internal static partial class SqlTokenizerExtensions
+	internal static class SqlTokenizerExtensions
 	{
 		public static bool TryParseUntil(this IEnumerator<SqlToken> tokenEnum, string keyword)
 		{

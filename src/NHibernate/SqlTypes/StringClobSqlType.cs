@@ -22,7 +22,7 @@ namespace NHibernate.SqlTypes
 	/// </p>
 	/// </remarks>
 	[Serializable]
-	public partial class StringClobSqlType : StringSqlType
+	public class StringClobSqlType : StringSqlType
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StringClobSqlType"/> class.

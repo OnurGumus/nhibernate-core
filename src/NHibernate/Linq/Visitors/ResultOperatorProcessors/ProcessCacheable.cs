@@ -2,7 +2,7 @@
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
-    public partial class ProcessCacheable : IResultOperatorProcessor<CacheableResultOperator>
+    public class ProcessCacheable : IResultOperatorProcessor<CacheableResultOperator>
     {
         public void Process(CacheableResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
         {

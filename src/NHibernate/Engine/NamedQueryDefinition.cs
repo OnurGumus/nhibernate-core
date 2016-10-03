@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace NHibernate.Engine
 {
 	[Serializable]
-	public partial class NamedQueryDefinition
+	public class NamedQueryDefinition
 	{
 		private readonly string query;
 		private readonly bool cacheable;

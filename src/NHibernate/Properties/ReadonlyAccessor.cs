@@ -12,7 +12,7 @@ namespace NHibernate.Properties
 	/// be recovered from the DB but can be used for querying.
 	/// </remarks>
 	[Serializable]
-	public partial class ReadOnlyAccessor : IPropertyAccessor
+	public class ReadOnlyAccessor : IPropertyAccessor
 	{
 		/// <summary>
 		/// Initializes a new instance of <see cref="ReadOnlyAccessor"/>.

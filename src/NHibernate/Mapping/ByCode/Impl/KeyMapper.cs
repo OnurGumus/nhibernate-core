@@ -6,7 +6,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public partial class KeyMapper : IKeyMapper
+	public class KeyMapper : IKeyMapper
 	{
 		private readonly HbmKey mapping;
 		private readonly System.Type ownerEntityType;

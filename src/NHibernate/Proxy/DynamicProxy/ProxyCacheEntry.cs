@@ -12,7 +12,7 @@ using System.Collections.Generic;
 namespace NHibernate.Proxy.DynamicProxy
 {
 	[Serializable]
-	public partial class ProxyCacheEntry
+	public class ProxyCacheEntry
 	{
 		private readonly int hashCode;
 

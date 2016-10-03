@@ -25,7 +25,7 @@ namespace NHibernate.UserTypes
 	/// to classes or interfaces in the package.
 	/// </para>
 	/// </remarks>
-	public partial interface IUserType
+	public interface IUserType
 	{
 		/// <summary>
 		/// The SQL types for the columns mapped by this type. 

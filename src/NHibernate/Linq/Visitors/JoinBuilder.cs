@@ -8,14 +8,14 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
-	public partial interface IJoiner
+	public interface IJoiner
 	{
 		Expression AddJoin(Expression expression, string key);
 		bool CanAddJoin(Expression expression);
 		void MakeInnerIfJoined(string key);
 	}
 
-	public partial class Joiner : IJoiner
+	public class Joiner : IJoiner
 	{
 		private readonly Dictionary<string, NhJoinClause> _joins = new Dictionary<string, NhJoinClause>();
 		private readonly NameGenerator _nameGenerator;

@@ -8,7 +8,7 @@ using NHibernate.Util;
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
-	public partial class ComponentJoin : FromElement
+	public class ComponentJoin : FromElement
 	{
 		private readonly string columns;
 		private readonly string componentPath;
@@ -61,7 +61,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		#region Nested type: ComponentFromElementType
 
-		public partial class ComponentFromElementType : FromElementType
+		public class ComponentFromElementType : FromElementType
 		{
 			private readonly ComponentJoin fromElement;
 			private readonly IPropertyMapping propertyMapping;

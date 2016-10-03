@@ -2,7 +2,7 @@ using System.Collections;
 
 namespace NHibernate.Transform
 {
-	public static partial class Transformers
+	public static class Transformers
 	{
 		/// <summary>
 		/// Each row of results is a map (<see cref="IDictionary" />) from alias to values/entities

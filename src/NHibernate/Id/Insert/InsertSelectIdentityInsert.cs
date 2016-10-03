@@ -8,7 +8,7 @@ namespace NHibernate.Id.Insert
 	/// specific clause which signifies to return generated IDENTITY values
 	/// to the end of the insert statement. 
 	/// </summary>
-	public partial class InsertSelectIdentityInsert : IdentifierGeneratingInsert
+	public class InsertSelectIdentityInsert : IdentifierGeneratingInsert
 	{
 		public InsertSelectIdentityInsert(ISessionFactoryImplementor factory)
 			: base(factory)

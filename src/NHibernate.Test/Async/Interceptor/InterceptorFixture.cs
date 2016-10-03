@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using System.Collections;
 using NUnit.Framework;
 using NHibernate.Type;
@@ -66,7 +66,7 @@ namespace NHibernate.Test.Interceptor
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		private class HHH1921Interceptor : EmptyInterceptor
+		private partial class HHH1921Interceptor : EmptyInterceptor
 		{
 			public override bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types)
 			{
@@ -105,7 +105,7 @@ namespace NHibernate.Test.Interceptor
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		private class MyComponentInterceptor : EmptyInterceptor
+		private partial class MyComponentInterceptor : EmptyInterceptor
 		{
 			readonly int checkPerm;
 			readonly string checkComment;

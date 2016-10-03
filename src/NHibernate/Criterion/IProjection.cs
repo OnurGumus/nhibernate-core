@@ -7,7 +7,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Criterion
 {
-	public partial interface IProjection
+	public interface IProjection
 	{
 		/// <summary>
 		/// Render the SQL Fragment.

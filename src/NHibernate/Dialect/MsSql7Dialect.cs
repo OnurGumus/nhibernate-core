@@ -9,7 +9,7 @@ namespace NHibernate.Dialect
 	/// Ms Sql 7 with NHibernate.  As issues with Ms Sql 7 and NHibernate become known
 	/// this Dialect will be updated.
 	/// </remarks>
-	public partial class MsSql7Dialect : MsSql2000Dialect
+	public class MsSql7Dialect : MsSql2000Dialect
 	{
 		/// <summary>
 		/// Uses @@identity to get the Id value.

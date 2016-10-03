@@ -7,7 +7,7 @@ namespace NHibernate.Mapping
 	/// 
 	/// </summary>
 	[Serializable]
-	public partial class ReferenceDependantValue : DependantValue
+	public class ReferenceDependantValue : DependantValue
 	{
 		private readonly SimpleValue _prototype;
 

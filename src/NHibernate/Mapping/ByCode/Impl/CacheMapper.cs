@@ -3,7 +3,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public partial class CacheMapper : ICacheMapper
+	public class CacheMapper : ICacheMapper
 	{
 		private readonly HbmCache cacheMapping;
 

@@ -3,7 +3,7 @@
 	/// <summary>
 	/// The SybaseSQLAnywhereDriver Driver provides a database driver for Sybase SQL Anywhere 10 and above
 	/// </summary>
-	public partial class SybaseSQLAnywhereDriver : ReflectionBasedDriver
+	public class SybaseSQLAnywhereDriver : ReflectionBasedDriver
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SybaseSQLAnywhereDriver"/> class.

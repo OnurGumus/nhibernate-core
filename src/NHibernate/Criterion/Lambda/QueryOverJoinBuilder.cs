@@ -9,7 +9,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion.Lambda
 {
 	
-	public partial class QueryOverJoinBuilder<TRoot,TSubType> : QueryOverJoinBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
+	public class QueryOverJoinBuilder<TRoot,TSubType> : QueryOverJoinBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
 		public QueryOverJoinBuilder(QueryOver<TRoot,TSubType> root, JoinType joinType) : base(root, joinType) { }
 
@@ -115,7 +115,7 @@ namespace NHibernate.Criterion.Lambda
 
 	}
 
-	public partial class IQueryOverJoinBuilder<TRoot,TSubType> : QueryOverJoinBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
+	public class IQueryOverJoinBuilder<TRoot,TSubType> : QueryOverJoinBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
 		public IQueryOverJoinBuilder(IQueryOver<TRoot,TSubType> root, JoinType joinType) : base(root, joinType) { }
 
@@ -221,7 +221,7 @@ namespace NHibernate.Criterion.Lambda
 
 	}
 
-	public partial class QueryOverJoinBuilderBase<TReturn, TRoot, TSubType> where TReturn : IQueryOver<TRoot,TSubType>
+	public class QueryOverJoinBuilderBase<TReturn, TRoot, TSubType> where TReturn : IQueryOver<TRoot,TSubType>
 	{
 
 		protected TReturn root;

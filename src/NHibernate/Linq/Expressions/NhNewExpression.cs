@@ -6,7 +6,7 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Expressions
 {
-	public partial class NhNewExpression : ExtensionExpression
+	public class NhNewExpression : ExtensionExpression
 	{
 		private readonly ReadOnlyCollection<string> _members;
 		private readonly ReadOnlyCollection<Expression> _arguments;
@@ -38,7 +38,7 @@ namespace NHibernate.Linq.Expressions
 		}
 	}
 
-	public partial class NhStarExpression : ExtensionExpression
+	public class NhStarExpression : ExtensionExpression
 	{
 		public NhStarExpression(Expression expression)
 			: base(expression.Type, (ExpressionType)NhExpressionType.Star)

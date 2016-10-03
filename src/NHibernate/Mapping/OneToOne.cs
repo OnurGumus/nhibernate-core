@@ -9,7 +9,7 @@ namespace NHibernate.Mapping
 	/// A mapping for a <c>one-to-one</c> association.
 	/// </summary>
 	[Serializable]
-	public partial class OneToOne : ToOne
+	public class OneToOne : ToOne
 	{
 		private bool constrained;
 		private ForeignKeyDirection foreignKeyType;

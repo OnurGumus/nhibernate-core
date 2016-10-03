@@ -5,7 +5,7 @@
 	/// Author: josh
 	/// Ported by: Steve Strong
 	/// </summary>
-	public partial interface IPathNode
+	public interface IPathNode
 	{
 		/// <summary>
 		/// Returns the full path name represented by the node.

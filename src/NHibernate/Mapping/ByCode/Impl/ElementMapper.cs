@@ -8,7 +8,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public partial class ElementMapper : IElementMapper
+	public class ElementMapper : IElementMapper
 	{
 		private const string DefaultColumnName = "element";
 		private readonly HbmElement elementMapping;

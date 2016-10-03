@@ -8,7 +8,7 @@ using Remotion.Linq.Clauses.Expressions;
 
 namespace NHibernate.Linq.GroupJoin
 {
-	internal partial class GroupJoinAggregateDetectionVisitor : NhExpressionTreeVisitor
+	internal class GroupJoinAggregateDetectionVisitor : NhExpressionTreeVisitor
 	{
 		private readonly HashSet<GroupJoinClause> _groupJoinClauses;
 		private readonly StackFlag _inAggregate = new StackFlag();
@@ -83,7 +83,7 @@ namespace NHibernate.Linq.GroupJoin
 			return base.VisitQuerySourceReferenceExpression(expression);
 		}
 
-		internal partial class StackFlag
+		internal class StackFlag
 		{
 			public bool FlagIsTrue { get; private set; }
 
@@ -94,7 +94,7 @@ namespace NHibernate.Linq.GroupJoin
 				return new StackFlagDisposable(this);
 			}
 
-			internal partial class StackFlagDisposable : IDisposable
+			internal class StackFlagDisposable : IDisposable
 			{
 				private readonly StackFlag _parent;
 				private readonly bool _old;

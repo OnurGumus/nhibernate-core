@@ -4,7 +4,7 @@ using NHibernate.Type;
 namespace NHibernate.Engine.Query
 {
 	[Serializable]
-	public partial class ReturnMetadata
+	public class ReturnMetadata
 	{
 		private readonly string[] returnAliases;
 		private readonly IType[] returnTypes;

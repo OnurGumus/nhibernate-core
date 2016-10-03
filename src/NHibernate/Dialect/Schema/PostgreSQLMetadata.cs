@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace NHibernate.Dialect.Schema
 {
-	public partial class PostgreSQLDataBaseMetadata : AbstractDataBaseSchema
+	public class PostgreSQLDataBaseMetadata : AbstractDataBaseSchema
 	{
 		public PostgreSQLDataBaseMetadata(DbConnection connection) : base(connection) { }
 
@@ -76,7 +76,7 @@ namespace NHibernate.Dialect.Schema
 
 	}
 
-	public partial class PostgreSQLTableMetadata : AbstractTableMetadata
+	public class PostgreSQLTableMetadata : AbstractTableMetadata
 	{
 		public PostgreSQLTableMetadata(DataRow rs, IDataBaseSchema meta, bool extras) : base(rs, meta, extras) { }
 
@@ -126,7 +126,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public partial class PostgreSQLColumnMetadata : AbstractColumnMetaData
+	public class PostgreSQLColumnMetadata : AbstractColumnMetaData
 	{
 		public PostgreSQLColumnMetadata(DataRow rs)
 			: base(rs)
@@ -141,7 +141,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public partial class PostgreSQLIndexMetadata : AbstractIndexMetadata
+	public class PostgreSQLIndexMetadata : AbstractIndexMetadata
 	{
 		public PostgreSQLIndexMetadata(DataRow rs)
 			: base(rs)
@@ -150,7 +150,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public partial class PostgreSQLForeignKeyMetadata : AbstractForeignKeyMetadata
+	public class PostgreSQLForeignKeyMetadata : AbstractForeignKeyMetadata
 	{
 		public PostgreSQLForeignKeyMetadata(DataRow rs)
 			: base(rs)

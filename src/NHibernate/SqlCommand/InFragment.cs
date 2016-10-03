@@ -8,7 +8,7 @@ namespace NHibernate.SqlCommand
 	/// <summary>
 	/// Represents an <c>... in (...)</c> expression
 	/// </summary>
-	public partial class InFragment
+	public class InFragment
 	{
 		public static readonly string NotNull = "not null";
 		public static readonly string Null = "null";

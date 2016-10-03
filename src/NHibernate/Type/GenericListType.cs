@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	/// to the database using list semantics.
 	/// </summary>
 	[Serializable]
-	public partial class GenericListType<T> : CollectionType
+	public class GenericListType<T> : CollectionType
 	{
 		/// <summary>
 		/// Initializes a new instance of a <see cref="GenericListType{T}"/> class for

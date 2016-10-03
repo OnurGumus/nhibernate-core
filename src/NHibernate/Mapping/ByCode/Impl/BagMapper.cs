@@ -8,7 +8,7 @@ using NHibernate.UserTypes;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public partial class BagMapper : IBagPropertiesMapper
+	public class BagMapper : IBagPropertiesMapper
 	{
 		private readonly IAccessorPropertyMapper entityPropertyMapper;
 		private readonly KeyMapper keyMapper;

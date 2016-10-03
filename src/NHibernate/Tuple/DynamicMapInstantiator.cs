@@ -6,7 +6,7 @@ using NHibernate.Mapping;
 namespace NHibernate.Tuple
 {
 	[Serializable]
-	public partial class DynamicMapInstantiator : IInstantiator
+	public class DynamicMapInstantiator : IInstantiator
 	{
 		public const string KEY = "$type$";
 

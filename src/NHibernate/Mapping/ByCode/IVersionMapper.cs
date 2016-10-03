@@ -3,7 +3,7 @@ using NHibernate.UserTypes;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface IVersionMapper : IAccessorPropertyMapper, IColumnsMapper
+	public interface IVersionMapper : IAccessorPropertyMapper, IColumnsMapper
 	{
 		void Type(IVersionType persistentType);
 		void Type<TPersistentType>() where TPersistentType : IUserVersionType;

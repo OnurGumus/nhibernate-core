@@ -8,7 +8,7 @@ namespace NHibernate.Context
 	/// To avoid if there are two session factories in the same thread.
 	/// </summary>
 	[Serializable]
-	public partial class ThreadStaticSessionContext : CurrentSessionContext
+	public class ThreadStaticSessionContext : CurrentSessionContext
 	{
 		[ThreadStatic]
 		private static ISession _session;

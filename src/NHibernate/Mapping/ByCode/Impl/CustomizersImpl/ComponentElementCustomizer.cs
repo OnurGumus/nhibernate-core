@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public partial class ComponentElementCustomizer<TComponent> : IComponentElementMapper<TComponent>
+	public class ComponentElementCustomizer<TComponent> : IComponentElementMapper<TComponent>
 	{
 		private readonly ICustomizersHolder _customizersHolder;
 		private readonly IModelExplicitDeclarationsHolder _explicitDeclarationsHolder;

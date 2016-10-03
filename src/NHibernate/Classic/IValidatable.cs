@@ -4,7 +4,7 @@ namespace NHibernate.Classic
 	/// Implemented by persistent classes with invariants that must be checked before inserting
 	/// into or updating the database
 	/// </summary>
-	public partial interface IValidatable
+	public interface IValidatable
 	{
 		/// <summary>
 		/// Validate the state of the object before persisting it. If a violation occurs,

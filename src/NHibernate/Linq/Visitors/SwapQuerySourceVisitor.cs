@@ -5,7 +5,7 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
-	public partial class SwapQuerySourceVisitor : ExpressionTreeVisitor
+	public class SwapQuerySourceVisitor : ExpressionTreeVisitor
 	{
 		private readonly IQuerySource _oldClause;
 		private readonly IQuerySource _newClause;

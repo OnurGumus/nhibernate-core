@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using NHibernate.Context;
 using NHibernate.Engine;
 using NUnit.Framework;

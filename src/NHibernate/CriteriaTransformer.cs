@@ -7,7 +7,7 @@ namespace NHibernate
 	/// <summary>
 	/// Transforms Criteria queries
 	/// </summary>
-	public static partial class CriteriaTransformer
+	public static class CriteriaTransformer
 	{
 		///<summary>
 		/// Returns a clone of the original criteria, which will return the count 

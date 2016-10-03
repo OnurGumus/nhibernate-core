@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public partial class DynamicComponentCustomizer<TComponent> : PropertyContainerCustomizer<TComponent>, IDynamicComponentMapper<TComponent>
+	public class DynamicComponentCustomizer<TComponent> : PropertyContainerCustomizer<TComponent>, IDynamicComponentMapper<TComponent>
 	{
 		public DynamicComponentCustomizer(IModelExplicitDeclarationsHolder explicitDeclarationsHolder, ICustomizersHolder customizersHolder, PropertyPath propertyPath)
 			: base(explicitDeclarationsHolder, customizersHolder, propertyPath)

@@ -10,7 +10,7 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
-	public partial class NonAggregatingGroupJoinRewriter
+	public class NonAggregatingGroupJoinRewriter
 	{
 		private readonly QueryModel _model;
 		private readonly IEnumerable<GroupJoinClause> _groupJoinClauses;
@@ -154,7 +154,7 @@ namespace NHibernate.Linq.Visitors
 
 	}
 
-	internal partial class QuerySourceUsageLocator : ExpressionTreeVisitor
+	internal class QuerySourceUsageLocator : ExpressionTreeVisitor
 	{
 		private readonly IQuerySource _querySource;
 		private bool _references;

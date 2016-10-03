@@ -14,7 +14,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public partial class ParameterNode : HqlSqlWalkerNode, IDisplayableNode, IExpectedTypeAwareNode, ISelectExpression
+	public class ParameterNode : HqlSqlWalkerNode, IDisplayableNode, IExpectedTypeAwareNode, ISelectExpression
 	{
 		private string _alias;
 		private IParameterSpecification _parameterSpecification;

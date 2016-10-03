@@ -42,12 +42,12 @@ namespace NHibernate.Persister.Entity
 	{
 		#region InclusionChecker
 
-		protected internal interface IInclusionChecker
+		protected internal partial interface IInclusionChecker
 		{
 			bool IncludeProperty(int propertyNumber);
 		}
 
-		private class NoneInclusionChecker : IInclusionChecker
+		private partial class NoneInclusionChecker : IInclusionChecker
 		{
 			private readonly ValueInclusion[] inclusions;
 
@@ -66,7 +66,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		private class FullInclusionChecker : IInclusionChecker
+		private partial class FullInclusionChecker : IInclusionChecker
 		{
 			private readonly bool[] includeProperty;
 
@@ -3300,7 +3300,7 @@ namespace NHibernate.Persister.Entity
 			return dict;
 		}
 
-		private class PropertyKey
+		private partial class PropertyKey
 		{
 			public string Column { get; set; }
 			public int TableNumber { get; set; }

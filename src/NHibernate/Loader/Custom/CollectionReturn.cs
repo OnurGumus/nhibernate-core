@@ -6,7 +6,7 @@ namespace NHibernate.Loader.Custom
 	/// collection in non-fetching scenarios (i.e., loading the collection
 	/// itself as the "root" of the result). 
 	/// </summary>
-	public partial class CollectionReturn : NonScalarReturn
+	public class CollectionReturn : NonScalarReturn
 	{
 		private readonly string ownerEntityName;
 		private readonly string ownerProperty;

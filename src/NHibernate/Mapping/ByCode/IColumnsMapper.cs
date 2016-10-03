@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface IColumnsMapper
+	public interface IColumnsMapper
 	{
 		void Column(Action<IColumnMapper> columnMapper);
 		void Columns(params Action<IColumnMapper>[] columnMapper);

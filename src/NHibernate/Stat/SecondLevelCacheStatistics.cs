@@ -7,7 +7,7 @@ namespace NHibernate.Stat
 {
 	/// <summary> Second level cache statistics of a specific region </summary>
 	[Serializable]
-	public partial class SecondLevelCacheStatistics : CategorizedStatistics
+	public class SecondLevelCacheStatistics : CategorizedStatistics
 	{
 		[NonSerialized]
 		private readonly ICache cache;

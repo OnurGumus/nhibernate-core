@@ -8,7 +8,7 @@ namespace NHibernate.Cache
 	/// when it was unlocked
 	/// </summary>
 	[Serializable]
-	public partial class CachedItem : ReadWriteCache.ILockable
+	public class CachedItem : ReadWriteCache.ILockable
 	{
 		private readonly long freshTimestamp;
 		private readonly object value;

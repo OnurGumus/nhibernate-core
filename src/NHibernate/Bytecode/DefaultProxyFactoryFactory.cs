@@ -2,7 +2,7 @@ using NHibernate.Proxy;
 
 namespace NHibernate.Bytecode
 {
-	public partial class DefaultProxyFactoryFactory : IProxyFactoryFactory
+	public class DefaultProxyFactoryFactory : IProxyFactoryFactory
 	{
 		#region IProxyFactoryFactory Members
 

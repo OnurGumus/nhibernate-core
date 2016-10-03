@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface IModelInspector
+	public interface IModelInspector
 	{
 		bool IsRootEntity(System.Type type);
 		bool IsComponent(System.Type type);

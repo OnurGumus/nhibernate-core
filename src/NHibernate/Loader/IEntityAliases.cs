@@ -6,7 +6,7 @@ namespace NHibernate.Loader
 	/// Metadata describing the SQL result set column aliases
 	/// for a particular entity
 	/// </summary>
-	public partial interface IEntityAliases
+	public interface IEntityAliases
 	{
 		/// <summary>
 		/// The result set column aliases for the primary key columns

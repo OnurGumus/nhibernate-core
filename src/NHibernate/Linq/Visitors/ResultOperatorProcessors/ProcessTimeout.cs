@@ -1,7 +1,7 @@
 ﻿
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
-    internal partial class ProcessTimeout : IResultOperatorProcessor<TimeoutResultOperator>
+    internal class ProcessTimeout : IResultOperatorProcessor<TimeoutResultOperator>
     {
         public void Process(TimeoutResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
         {

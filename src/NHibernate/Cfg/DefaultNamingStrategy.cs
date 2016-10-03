@@ -8,7 +8,7 @@ namespace NHibernate.Cfg
 	/// </summary>
 	/// <remarks>See <cref name="ImprovedNamingStrategy"/> for a better alternative</remarks>
 	[Serializable]
-	public partial class DefaultNamingStrategy : INamingStrategy
+	public class DefaultNamingStrategy : INamingStrategy
 	{
 		/// <summary>
 		/// The singleton instance

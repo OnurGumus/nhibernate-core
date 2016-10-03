@@ -5,7 +5,7 @@ using System.Xml.Schema;
 
 namespace NHibernate.Cfg
 {
-	internal partial class XmlSchemas
+	internal class XmlSchemas
 	{
 		private const string CfgSchemaResource = "NHibernate.nhibernate-configuration.xsd";
 		private const string MappingSchemaResource = "NHibernate.nhibernate-mapping.xsd";

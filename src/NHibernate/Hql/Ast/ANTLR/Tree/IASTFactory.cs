@@ -3,7 +3,7 @@
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
-	public partial interface IASTFactory
+	public interface IASTFactory
 	{
 		IASTNode CreateNode(int type, string text, params IASTNode[] children);
 	}

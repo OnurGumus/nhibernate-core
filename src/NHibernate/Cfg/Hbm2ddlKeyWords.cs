@@ -1,6 +1,6 @@
 namespace NHibernate.Cfg
 {
-	public partial class Hbm2DDLKeyWords
+	public class Hbm2DDLKeyWords
 	{
 		private readonly string value;
 

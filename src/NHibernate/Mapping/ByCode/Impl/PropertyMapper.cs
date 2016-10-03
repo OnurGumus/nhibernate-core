@@ -9,7 +9,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public partial class PropertyMapper : IPropertyMapper
+	public class PropertyMapper : IPropertyMapper
 	{
 		private readonly IAccessorPropertyMapper entityPropertyMapper;
 		private readonly MemberInfo member;

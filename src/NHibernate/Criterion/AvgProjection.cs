@@ -9,7 +9,7 @@ using NHibernate.Util;
 namespace NHibernate.Criterion
 {
 	[Serializable]
-	public partial class AvgProjection : AggregateProjection
+	public class AvgProjection : AggregateProjection
 	{
 		public AvgProjection(IProjection projection) : base("avg", projection) {}
 		public AvgProjection(string propertyName) : base("avg", propertyName) {}

@@ -1,7 +1,7 @@
 namespace NHibernate.Event
 {
 	/// <summary> Called after removing a collection </summary>
-	public partial interface IPostCollectionRemoveEventListener
+	public interface IPostCollectionRemoveEventListener
 	{
 		void OnPostRemoveCollection(PostCollectionRemoveEvent @event);
 	}

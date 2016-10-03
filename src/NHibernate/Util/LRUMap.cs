@@ -25,7 +25,7 @@ namespace NHibernate.Util
 	/// algorithm to remove items from the Map when the maximum size is reached and new items are added.
 	/// </summary> 	
 	[Serializable]
-	public partial class LRUMap : SequencedHashMap
+	public class LRUMap : SequencedHashMap
 	{
 		private int maximumSize;
 

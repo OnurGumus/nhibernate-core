@@ -1,6 +1,6 @@
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial interface IEntityDiscriminableMapping
+	public interface IEntityDiscriminableMapping
 	{
 		string DiscriminatorValue { get; }
 	}

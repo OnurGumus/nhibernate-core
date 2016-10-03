@@ -12,7 +12,7 @@ namespace NHibernate.Cache
 	/// This class was named Lock in H2.1
 	/// </remarks>
 	[Serializable]
-	public partial class CacheLock : ReadWriteCache.ILockable, ISoftLock
+	public class CacheLock : ReadWriteCache.ILockable, ISoftLock
 	{
 		private long unlockTimestamp = -1;
 		private int multiplicity = 1;

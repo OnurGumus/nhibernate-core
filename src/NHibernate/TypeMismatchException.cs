@@ -7,7 +7,7 @@ namespace NHibernate
 	/// Used when a user provided type does not match the expected one 
 	/// </summary>
 	[Serializable]
-	public partial class TypeMismatchException : HibernateException
+	public class TypeMismatchException : HibernateException
 	{
 		public TypeMismatchException(string message) : base(message) { }
 		public TypeMismatchException(string message, Exception inner) : base(message, inner) { }

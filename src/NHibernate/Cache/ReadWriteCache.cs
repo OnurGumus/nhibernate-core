@@ -20,9 +20,9 @@ namespace NHibernate.Cache
 	/// <seealso cref="NonstrictReadWriteCache"/> for a faster algorithm
 	/// <seealso cref="ICacheConcurrencyStrategy"/>
 	/// </remarks>
-	public partial class ReadWriteCache : ICacheConcurrencyStrategy
+	public class ReadWriteCache : ICacheConcurrencyStrategy
 	{
-		public partial interface ILockable
+		public interface ILockable
 		{
 			CacheLock Lock(long timeout, int id);
 			bool IsLock { get; }

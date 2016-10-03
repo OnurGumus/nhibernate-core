@@ -434,7 +434,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		}
 	}
 
-	public partial class HqlParseEngine
+	public class HqlParseEngine
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(HqlParseEngine));
 
@@ -578,7 +578,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		}
 	}
 
-	internal partial class HqlSqlGenerator
+	internal class HqlSqlGenerator
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(HqlSqlGenerator));
 

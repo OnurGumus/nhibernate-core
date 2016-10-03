@@ -9,7 +9,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion.Lambda
 {
 
-	public partial class QueryOverSubqueryPropertyBuilder<TRoot,TSubType> : QueryOverSubqueryPropertyBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
+	public class QueryOverSubqueryPropertyBuilder<TRoot,TSubType> : QueryOverSubqueryPropertyBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
 
 		public QueryOverSubqueryPropertyBuilder()
@@ -17,7 +17,7 @@ namespace NHibernate.Criterion.Lambda
 
 	}
 
-	public partial class IQueryOverSubqueryPropertyBuilder<TRoot,TSubType> : QueryOverSubqueryPropertyBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
+	public class IQueryOverSubqueryPropertyBuilder<TRoot,TSubType> : QueryOverSubqueryPropertyBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
 
 		public IQueryOverSubqueryPropertyBuilder()
@@ -25,14 +25,14 @@ namespace NHibernate.Criterion.Lambda
 
 	}
 
-	public abstract partial class QueryOverSubqueryPropertyBuilderBase
+	public abstract class QueryOverSubqueryPropertyBuilderBase
 	{
 		protected QueryOverSubqueryPropertyBuilderBase() { }
 
 		internal abstract QueryOverSubqueryPropertyBuilderBase Set(object root, string path, object value);
 	}
 
-	public partial class QueryOverSubqueryPropertyBuilderBase<TReturn, TRoot, TSubType> : QueryOverSubqueryPropertyBuilderBase
+	public class QueryOverSubqueryPropertyBuilderBase<TReturn, TRoot, TSubType> : QueryOverSubqueryPropertyBuilderBase
 		where TReturn : IQueryOver<TRoot,TSubType>
 	{
 

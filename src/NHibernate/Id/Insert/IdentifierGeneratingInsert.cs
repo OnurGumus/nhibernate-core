@@ -9,7 +9,7 @@ namespace NHibernate.Id.Insert
 	/// Some subclasses of this also provided some additional
 	/// functionality or semantic to the generated SQL statement string.
 	///  </summary>
-	public partial class IdentifierGeneratingInsert : SqlInsertBuilder
+	public class IdentifierGeneratingInsert : SqlInsertBuilder
 	{
 		public IdentifierGeneratingInsert(ISessionFactoryImplementor factory) : base(factory) { }
 	}

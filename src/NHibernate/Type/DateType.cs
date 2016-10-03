@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	/// <see cref="DbType.Date"/> column
 	/// </summary>
 	[Serializable]
-	public partial class DateType : PrimitiveType, IIdentifierType, ILiteralType, IParameterizedType
+	public class DateType : PrimitiveType, IIdentifierType, ILiteralType, IParameterizedType
 	{
 		public const string BaseValueParameterName = "BaseValue";
 		public static readonly DateTime BaseDateValue = new DateTime(1753, 01, 01);

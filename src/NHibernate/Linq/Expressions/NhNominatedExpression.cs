@@ -13,7 +13,7 @@ namespace NHibernate.Linq.Expressions
 	/// Used in the nomination of GroupBy key expressions to ensure that matching select clauses
 	/// are generated the same way.
 	/// </remarks>
-	internal partial class NhNominatedExpression : ExtensionExpression
+	internal class NhNominatedExpression : ExtensionExpression
 	{
 		public Expression Expression { get; private set; }
 

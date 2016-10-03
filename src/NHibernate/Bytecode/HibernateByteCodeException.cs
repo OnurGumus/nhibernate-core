@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace NHibernate.Bytecode
 {
 	[Serializable]
-	public partial class HibernateByteCodeException : HibernateException
+	public class HibernateByteCodeException : HibernateException
 	{
 		public HibernateByteCodeException() {}
 		public HibernateByteCodeException(string message) : base(message) {}

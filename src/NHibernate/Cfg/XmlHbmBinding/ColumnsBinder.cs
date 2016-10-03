@@ -6,7 +6,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public partial class ColumnsBinder: Binder
+	public class ColumnsBinder: Binder
 	{
 		private readonly SimpleValue value;
 

@@ -8,7 +8,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 	/// <summary>
 	/// Configuration parsed values for a event XML node.
 	/// </summary>
-	public partial class EventConfiguration
+	public class EventConfiguration
 	{
 		internal EventConfiguration(XPathNavigator eventElement)
 		{

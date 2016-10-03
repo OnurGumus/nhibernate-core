@@ -11,7 +11,7 @@ namespace NHibernate.Dialect
 	/// Treats bitwise operations as native operations.
 	/// </summary>
 	[Serializable]
-	public partial class BitwiseNativeOperation : ISQLFunction
+	public class BitwiseNativeOperation : ISQLFunction
 	{
 		private readonly string _sqlOpToken;
 		private readonly bool _isNot;

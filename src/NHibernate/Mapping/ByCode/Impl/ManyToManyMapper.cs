@@ -6,7 +6,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public partial class ManyToManyMapper : IManyToManyMapper
+	public class ManyToManyMapper : IManyToManyMapper
 	{
 		private readonly System.Type elementType;
 		private readonly HbmManyToMany manyToMany;

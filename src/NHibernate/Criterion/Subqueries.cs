@@ -13,7 +13,7 @@ namespace NHibernate.Criterion
 	/// <c>Projection</c>
 	/// <c>AbstractCriterion</c>
 	/// </summary>
-	public partial class Subqueries
+	public class Subqueries
 	{
 		public static AbstractCriterion Exists(DetachedCriteria dc)
 		{

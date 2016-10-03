@@ -4,7 +4,7 @@ using System.Data.Common;
 
 namespace NHibernate.Dialect.Schema
 {
-	public partial class OracleDataBaseSchema : AbstractDataBaseSchema
+	public class OracleDataBaseSchema : AbstractDataBaseSchema
 	{
 		public OracleDataBaseSchema(DbConnection connection) : base(connection) { }
 
@@ -54,7 +54,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public partial class OracleTableMetadata : AbstractTableMetadata
+	public class OracleTableMetadata : AbstractTableMetadata
 	{
 		public OracleTableMetadata(DataRow rs, IDataBaseSchema meta, bool extras) : base(rs, meta, extras) { }
 
@@ -97,7 +97,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public partial class OracleColumnMetadata : AbstractColumnMetaData
+	public class OracleColumnMetadata : AbstractColumnMetaData
 	{
 		public OracleColumnMetadata(DataRow rs)
 			: base(rs)
@@ -112,7 +112,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public partial class OracleIndexMetadata : AbstractIndexMetadata
+	public class OracleIndexMetadata : AbstractIndexMetadata
 	{
 		public OracleIndexMetadata(DataRow rs)
 			: base(rs)
@@ -121,7 +121,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public partial class OracleForeignKeyMetadata : AbstractForeignKeyMetadata
+	public class OracleForeignKeyMetadata : AbstractForeignKeyMetadata
 	{
 		public OracleForeignKeyMetadata(DataRow rs)
 			: base(rs)

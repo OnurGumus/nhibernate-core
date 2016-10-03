@@ -7,7 +7,7 @@ namespace NHibernate.Id
 	/// <summary>
 	/// An <c>IdentiferGenerator</c> that supports "configuration".
 	/// </summary>
-	public partial interface IConfigurable
+	public interface IConfigurable
 	{
 		/// <summary>
 		/// Configure this instance, given the values of parameters

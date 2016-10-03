@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -35,7 +35,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		private class Pr2
+		private partial class Pr2
 		{
 			public int ReorderLevel
 			{
@@ -45,7 +45,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		private class Pr1
+		private partial class Pr1
 		{
 			public string Name
 			{

@@ -25,7 +25,7 @@ namespace NHibernate.Linq.GroupJoin
 	///    };
 	/// 
 	/// </summary>
-	public static partial class AggregatingGroupJoinRewriter
+	public static class AggregatingGroupJoinRewriter
 	{
 		public static void ReWrite(QueryModel model)
 		{

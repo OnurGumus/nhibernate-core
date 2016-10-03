@@ -2,7 +2,7 @@ using NHibernate.Mapping.ByCode.Impl;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface IConformistHoldersProvider
+	public interface IConformistHoldersProvider
 	{
 		ICustomizersHolder CustomizersHolder { get; }
 		IModelExplicitDeclarationsHolder ExplicitDeclarationsHolder { get; }

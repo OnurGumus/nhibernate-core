@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public partial class JoinedSubclassBinder : ClassBinder
+	public class JoinedSubclassBinder : ClassBinder
 	{
 		public JoinedSubclassBinder(Mappings mappings, Dialect.Dialect dialect)
 			: base(mappings, dialect)

@@ -5,10 +5,10 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Engine.Query
 {
-	public static partial class CallableParser
+	public static class CallableParser
 	{
 
-		public partial class Detail
+		public class Detail
 		{
 			public bool IsCallable;
 			public bool HasReturn;

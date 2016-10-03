@@ -10,7 +10,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// A base AST node for the intermediate tree.
 	/// </summary>
 	[CLSCompliant(false)]
-	public partial class SqlNode : ASTNode
+	public class SqlNode : ASTNode
 	{
 		/**
 		 * The original text for the node, mostly for debugging.

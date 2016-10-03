@@ -13,7 +13,7 @@ namespace NHibernate.Criterion
 	/// </summary>
 	//TODO:H2.0.3 renamed this to ILikeExpression
 	[Serializable]
-	public partial class InsensitiveLikeExpression : AbstractCriterion
+	public class InsensitiveLikeExpression : AbstractCriterion
 	{
 		private readonly string propertyName;
 		private readonly object value;

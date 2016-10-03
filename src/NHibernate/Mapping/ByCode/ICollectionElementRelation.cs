@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface ICollectionElementRelation
+	public interface ICollectionElementRelation
 	{
 		void Element(Action<IElementMapper> mapping);
 		void OneToMany(Action<IOneToManyMapper> mapping);
@@ -11,7 +11,7 @@ namespace NHibernate.Mapping.ByCode
 		void ManyToAny(System.Type idTypeOfMetaType, Action<IManyToAnyMapper> mapping);
 	}
 
-	public partial interface ICollectionElementRelation<TElement>
+	public interface ICollectionElementRelation<TElement>
 	{
 		void Element();
 		void Element(Action<IElementMapper> mapping);

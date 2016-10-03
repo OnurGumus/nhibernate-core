@@ -597,7 +597,7 @@ namespace NHibernate.Test.SqlTest.Query
 			              target.FullName + ">"
 				);
 		}
-
+partial 
 		class TestResultSetTransformer : IResultTransformer
 		{
 			public bool TransformTupleCalled { get; set; }

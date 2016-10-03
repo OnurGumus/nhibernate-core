@@ -5,7 +5,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Proxy
 {
-	public static partial class DefaultDynamicProxyMethodCheckerExtensions
+	public static class DefaultDynamicProxyMethodCheckerExtensions
 	{
 		public static bool IsProxiable(this MethodInfo method)
 		{

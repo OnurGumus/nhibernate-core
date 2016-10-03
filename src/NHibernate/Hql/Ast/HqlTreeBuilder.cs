@@ -5,7 +5,7 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 
 namespace NHibernate.Hql.Ast
 {
-	public partial class HqlTreeBuilder
+	public class HqlTreeBuilder
 	{
 		private readonly IASTFactory _factory;
 

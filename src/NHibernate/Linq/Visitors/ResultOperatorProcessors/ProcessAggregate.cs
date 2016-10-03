@@ -8,7 +8,7 @@ using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
-    public partial class ProcessAggregate : IResultOperatorProcessor<AggregateResultOperator>
+    public class ProcessAggregate : IResultOperatorProcessor<AggregateResultOperator>
     {
         public void Process(AggregateResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
         {

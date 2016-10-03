@@ -1,4 +1,4 @@
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface IComponentParentMapper : IAccessorPropertyMapper {}
+	public interface IComponentParentMapper : IAccessorPropertyMapper {}
 }

@@ -11,7 +11,7 @@ using System.Text;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
-	internal static partial class HqlFilterPreprocessor
+	internal static class HqlFilterPreprocessor
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(HqlFilterPreprocessor));
 

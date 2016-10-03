@@ -7,7 +7,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public partial class IdMapper : IIdMapper
+	public class IdMapper : IIdMapper
 	{
 		private readonly IAccessorPropertyMapper accessorMapper;
 		private readonly MemberInfo member;

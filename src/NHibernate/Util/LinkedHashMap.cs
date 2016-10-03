@@ -19,10 +19,10 @@ namespace NHibernate.Util
 	/// </remarks>
 	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
 	[Serializable]
-	public partial class LinkedHashMap<TKey, TValue> : IDictionary<TKey, TValue>, IDeserializationCallback
+	public class LinkedHashMap<TKey, TValue> : IDictionary<TKey, TValue>, IDeserializationCallback
 	{
 		[Serializable]
-		protected partial class Entry
+		protected class Entry
 		{
 			private readonly TKey key;
 			private TValue evalue;
@@ -566,7 +566,7 @@ namespace NHibernate.Util
 			}
 		}
 
-		private abstract partial class ForwardEnumerator<T> : IEnumerator<T>
+		private abstract class ForwardEnumerator<T> : IEnumerator<T>
 		{
 			protected readonly LinkedHashMap<TKey, TValue> dictionary;
 			protected Entry current;
@@ -637,7 +637,7 @@ namespace NHibernate.Util
 			}
 		}
 
-		protected abstract partial class BackwardEnumerator<T> : IEnumerator<T>
+		protected abstract class BackwardEnumerator<T> : IEnumerator<T>
 		{
 			protected readonly LinkedHashMap<TKey, TValue> dictionary;
 			private Entry current;

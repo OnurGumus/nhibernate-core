@@ -5,7 +5,7 @@ namespace NHibernate.Bytecode
 	/// <summary>
 	/// Represents optimized entity instantiation.
 	/// </summary>
-	public partial interface IInstantiationOptimizer
+	public interface IInstantiationOptimizer
 	{
 		/// <summary>
 		/// Perform instantiation of an instance of the underlying class.

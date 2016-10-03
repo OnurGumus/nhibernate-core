@@ -1,6 +1,6 @@
 namespace NHibernate.Properties
 {
-	public partial class BackFieldStrategy : IFieldNamingStrategy
+	public class BackFieldStrategy : IFieldNamingStrategy
 	{
 		#region Implementation of IFieldNamingStrategy
 

@@ -13,7 +13,7 @@ namespace NHibernate.Criterion
 	/// to a value.
 	/// </summary>
 	[Serializable]
-	public partial class SimpleExpression : AbstractCriterion
+	public class SimpleExpression : AbstractCriterion
 	{
 		private readonly IProjection _projection;
 		private readonly string propertyName;

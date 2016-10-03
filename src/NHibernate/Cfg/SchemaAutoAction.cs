@@ -1,6 +1,6 @@
 namespace NHibernate.Cfg
 {
-	public partial class SchemaAutoAction
+	public class SchemaAutoAction
 	{
 		private readonly string value;
 

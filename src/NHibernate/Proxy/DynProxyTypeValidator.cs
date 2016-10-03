@@ -4,7 +4,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Proxy
 {
-	public partial class DynProxyTypeValidator : IProxyValidator
+	public class DynProxyTypeValidator : IProxyValidator
 	{
 		private readonly List<string> errors = new List<string>();
 

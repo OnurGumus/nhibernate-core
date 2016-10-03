@@ -10,7 +10,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion.Lambda
 {
 
-	public partial class LambdaNaturalIdentifierBuilder
+	public class LambdaNaturalIdentifierBuilder
 	{
 		private NaturalIdentifier naturalIdentifier;
 		private string propertyName;

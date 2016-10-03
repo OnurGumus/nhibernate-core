@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using NHibernate.Dialect;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Util;

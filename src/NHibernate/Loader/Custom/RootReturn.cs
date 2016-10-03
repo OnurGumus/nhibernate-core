@@ -7,7 +7,7 @@ namespace NHibernate.Loader.Custom
 	/// A root entity means it is explicitly a "column" in the result, as opposed to
 	/// a fetched association.
 	/// </remarks>
-	public partial class RootReturn : NonScalarReturn
+	public class RootReturn : NonScalarReturn
 	{
 		private readonly string entityName;
 		private readonly IEntityAliases entityAliases;

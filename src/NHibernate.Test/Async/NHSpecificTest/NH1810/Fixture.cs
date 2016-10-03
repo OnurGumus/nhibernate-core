@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using System.Data;
 using log4net;
 using NUnit.Framework;

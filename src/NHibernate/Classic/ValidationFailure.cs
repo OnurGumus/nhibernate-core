@@ -8,7 +8,7 @@ namespace NHibernate.Classic
 	/// might subclass this exception in order to provide more information about the violation
 	/// </summary>
 	[Serializable]
-	public partial class ValidationFailure : HibernateException
+	public class ValidationFailure : HibernateException
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ValidationFailure"/> class.

@@ -2,7 +2,7 @@
 
 namespace NHibernate.Linq.Expressions
 {
-	public partial class NhMaxExpression : NhAggregatedExpression
+	public class NhMaxExpression : NhAggregatedExpression
 	{
 		public NhMaxExpression(Expression expression)
 			: base(expression, NhExpressionType.Max)

@@ -5,7 +5,7 @@ namespace NHibernate.Cfg
 	/// <summary>
 	/// Holds information about mapped classes found in an embedded resource
 	/// </summary>
-	public partial class MappingsQueueEntry
+	public class MappingsQueueEntry
 	{
 		private readonly HashSet<string> containedClassNames;
 		private readonly NamedXmlDocument document;
@@ -77,7 +77,7 @@ namespace NHibernate.Cfg
 			return result;
 		}
 
-		public partial class RequiredEntityName
+		public class RequiredEntityName
 		{
 			public RequiredEntityName(string entityName, string fullClassName)
 			{

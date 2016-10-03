@@ -1,6 +1,6 @@
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface ICacheMapper
+	public interface ICacheMapper
 	{
 		void Usage(CacheUsage cacheUsage);
 		void Region(string regionName);

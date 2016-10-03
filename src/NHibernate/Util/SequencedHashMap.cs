@@ -79,7 +79,7 @@ namespace NHibernate.Util
 	/// </remarks>
 	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
 	[Serializable]
-	public partial class SequencedHashMap : IDictionary, IDeserializationCallback
+	public class SequencedHashMap : IDictionary, IDeserializationCallback
 	{
 		[Serializable]
 		private class Entry

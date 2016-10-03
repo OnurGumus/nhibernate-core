@@ -7,7 +7,7 @@ namespace NHibernate.Id
 	/// Thrown by <see cref="IIdentifierGenerator" /> implementation class when ID generation fails
 	/// </summary>
 	[Serializable]
-	public partial class IdentifierGenerationException : HibernateException
+	public class IdentifierGenerationException : HibernateException
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IdentifierGenerationException"/> class.

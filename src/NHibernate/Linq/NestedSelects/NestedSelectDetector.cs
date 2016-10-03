@@ -9,7 +9,7 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.NestedSelects
 {
-	internal partial class NestedSelectDetector : ExpressionTreeVisitor
+	internal class NestedSelectDetector : ExpressionTreeVisitor
 	{
 		private readonly ISessionFactory sessionFactory;
 		private readonly ICollection<Expression> _expressions = new List<Expression>();

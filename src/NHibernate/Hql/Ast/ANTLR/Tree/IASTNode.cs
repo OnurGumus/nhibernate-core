@@ -5,7 +5,7 @@ using Antlr.Runtime;
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
-	public partial interface IASTNode : IEnumerable<IASTNode>
+	public interface IASTNode : IEnumerable<IASTNode>
 	{
 		bool IsNil { get; }
 		int Type { get; set; }

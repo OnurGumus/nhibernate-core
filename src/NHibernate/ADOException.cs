@@ -14,7 +14,7 @@ namespace NHibernate
 	/// is used instead in NHibernate.
 	/// </remarks>
 	[Serializable]
-	public partial class ADOException : HibernateException
+	public class ADOException : HibernateException
 	{
 		private readonly string sql;
 

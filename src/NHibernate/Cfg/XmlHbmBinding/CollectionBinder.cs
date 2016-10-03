@@ -10,7 +10,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public partial class CollectionBinder : ClassBinder
+	public class CollectionBinder : ClassBinder
 	{
 		public CollectionBinder(Mappings mappings, Dialect.Dialect dialect) : base(mappings, dialect)
 		{

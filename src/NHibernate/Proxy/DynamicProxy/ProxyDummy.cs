@@ -8,7 +8,7 @@
 
 namespace NHibernate.Proxy.DynamicProxy
 {
-	public partial class ProxyDummy
+	public class ProxyDummy
 	{
 		/* No Implementation */
 	}

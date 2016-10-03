@@ -4,7 +4,7 @@ using Remotion.Linq.Clauses.ExpressionTreeVisitors;
 
 namespace NHibernate.Linq.Clauses
 {
-	public partial class NhWithClause : WhereClause
+	public class NhWithClause : WhereClause
 	{
 		public NhWithClause(Expression predicate)
 			: base(predicate)

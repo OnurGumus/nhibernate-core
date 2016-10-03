@@ -3,7 +3,7 @@ using NHibernate.Mapping;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial interface IDecoratable
+	public interface IDecoratable
 	{
 		IDictionary<string, MetaAttribute> MappedMetaData { get; }
 		IDictionary<string, MetaAttribute> InheritableMetaData { get; }

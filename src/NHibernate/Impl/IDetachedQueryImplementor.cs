@@ -9,7 +9,7 @@ namespace NHibernate.Impl
 	/// When you are working with queries in "detached mode" you may need some additional services like clone, 
 	/// copy of parameters from another query and so on.
 	/// </remarks>
-	public partial interface IDetachedQueryImplementor
+	public interface IDetachedQueryImplementor
 	{
 		/// <summary>
 		/// Copy all properties to a given <see cref="IDetachedQuery"/>.

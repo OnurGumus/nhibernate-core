@@ -28,7 +28,7 @@ namespace NHibernate.Dialect
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public partial class MySQLDialect : Dialect
+	public class MySQLDialect : Dialect
 	{
 		private readonly TypeNames castTypeNames = new TypeNames();
 

@@ -6,7 +6,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 	/// <summary>
 	/// Configuration parsed values for a session-factory XML node.
 	/// </summary>
-	public partial class SessionFactoryConfiguration : SessionFactoryConfigurationBase
+	public class SessionFactoryConfiguration : SessionFactoryConfigurationBase
 	{
 		//private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(SessionFactoryConfiguration));
 

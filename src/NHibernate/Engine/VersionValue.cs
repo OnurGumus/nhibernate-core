@@ -9,7 +9,7 @@ namespace NHibernate.Engine
 	/// a new transient instance or a previously persistent transient instance.
 	/// The strategy is determined by the <c>Unsaved-Value</c> attribute in the mapping file.
 	/// </summary>
-	public partial class VersionValue
+	public class VersionValue
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(VersionValue));
 

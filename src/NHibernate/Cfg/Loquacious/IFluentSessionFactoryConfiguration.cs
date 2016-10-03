@@ -2,7 +2,7 @@ using NHibernate.Hql;
 using NHibernate.Linq;
 namespace NHibernate.Cfg.Loquacious
 {
-	public partial interface IFluentSessionFactoryConfiguration
+	public interface IFluentSessionFactoryConfiguration
 	{
 		/// <summary>
 		/// Set the SessionFactory mnemonic name.

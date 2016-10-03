@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Util
 {
-	public static partial class TypeExtensions
+	public static class TypeExtensions
 	{
 		public static bool IsEnumerableOfT(this System.Type type)
 		{

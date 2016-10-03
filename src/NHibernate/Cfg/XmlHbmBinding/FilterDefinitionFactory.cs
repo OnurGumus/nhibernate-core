@@ -6,7 +6,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public partial class FilterDefinitionFactory
+	public class FilterDefinitionFactory
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (FilterDefinitionFactory));
 

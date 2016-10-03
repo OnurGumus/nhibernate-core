@@ -10,7 +10,7 @@ namespace NHibernate.Exceptions
 	/// specific). Use of a ErrorCode-based converter should be preferred approach
 	/// for converting/interpreting SQLExceptions. 
 	/// </summary>
-	public partial class SQLStateConverter : ISQLExceptionConverter
+	public class SQLStateConverter : ISQLExceptionConverter
 	{
 		public SQLStateConverter(IViolatedConstraintNameExtracter extracter)
 		{

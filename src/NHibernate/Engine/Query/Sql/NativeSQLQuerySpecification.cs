@@ -3,7 +3,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Engine.Query.Sql
 {
-	public partial class NativeSQLQuerySpecification
+	public class NativeSQLQuerySpecification
 	{
 		private readonly string queryString;
 		private readonly INativeSQLQueryReturn[] sqlQueryReturns;

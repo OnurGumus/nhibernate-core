@@ -8,7 +8,7 @@ using NHibernate.Type;
 namespace NHibernate.Criterion
 {
 	[Serializable]
-	public partial class AliasedProjection : IProjection
+	public class AliasedProjection : IProjection
 	{
 		private readonly IProjection projection;
 		private readonly string alias;

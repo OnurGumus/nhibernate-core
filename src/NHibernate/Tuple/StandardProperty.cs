@@ -10,7 +10,7 @@ namespace NHibernate.Tuple
 	/// <remarks>
 	/// Author: Steve Ebersole
 	/// </remarks>
-	public partial class StandardProperty : Property
+	public class StandardProperty : Property
 	{
 		private readonly bool lazy;
 		private readonly bool insertable;

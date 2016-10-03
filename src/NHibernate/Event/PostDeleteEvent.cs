@@ -7,7 +7,7 @@ namespace NHibernate.Event
 	/// Occurs after deleting an item from the datastore 
 	/// </summary>
 	[Serializable]
-	public partial class PostDeleteEvent : AbstractPostDatabaseOperationEvent
+	public class PostDeleteEvent : AbstractPostDatabaseOperationEvent
 	{
 		public PostDeleteEvent(object entity, object id, object[] deletedState, IEntityPersister persister, IEventSource source)
 			: base(source, entity, id, persister)

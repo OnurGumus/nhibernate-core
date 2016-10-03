@@ -8,7 +8,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Loader
 {
-	public abstract partial class AbstractEntityJoinWalker : JoinWalker
+	public abstract class AbstractEntityJoinWalker : JoinWalker
 	{
 		private readonly IOuterJoinLoadable persister;
 		private readonly string alias;

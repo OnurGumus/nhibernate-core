@@ -17,7 +17,7 @@ namespace NHibernate.Mapping
 	/// collection style.
 	/// </remarks>
 	[Serializable]
-	public abstract partial class Collection : IFetchable, IValue, IFilterable
+	public abstract class Collection : IFetchable, IValue, IFilterable
 	{
 		private static readonly IEnumerable<ISelectable> EmptyColumns = new ISelectable[0];
 

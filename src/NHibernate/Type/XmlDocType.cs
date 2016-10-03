@@ -6,7 +6,7 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	[Serializable]
-	public partial class XmlDocType : MutableType
+	public class XmlDocType : MutableType
 	{
 		public XmlDocType()
 			: base(new XmlSqlType())

@@ -1,6 +1,6 @@
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial interface IRelationship
+	public interface IRelationship
 	{
 		string EntityName { get; }
 		string Class { get; }

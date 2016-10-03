@@ -3,7 +3,7 @@ using NHibernate.Util;
 namespace NHibernate.SqlCommand
 {
 	/// <summary></summary>
-	public partial class ConditionalFragment
+	public class ConditionalFragment
 	{
 		private string tableAlias;
 		private string[] lhs;

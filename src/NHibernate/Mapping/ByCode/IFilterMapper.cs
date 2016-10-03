@@ -1,6 +1,6 @@
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface IFilterMapper
+	public interface IFilterMapper
 	{
 		void Condition(string sqlCondition);
 	}

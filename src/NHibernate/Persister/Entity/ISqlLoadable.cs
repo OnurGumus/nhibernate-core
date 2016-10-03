@@ -5,7 +5,7 @@ namespace NHibernate.Persister.Entity
 	/// <summary>
 	/// A class persister that supports queries expressed in the platform native SQL dialect.
 	/// </summary>
-	public partial interface ISqlLoadable : ILoadable
+	public interface ISqlLoadable : ILoadable
 	{
 		/// <summary>
 		/// Get the type

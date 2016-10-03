@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace NHibernate.Mapping
 {
 	/// <summary> Common interface for things that can handle meta attributes. </summary>
-	public partial interface IMetaAttributable
+	public interface IMetaAttributable
 	{
 		/// <summary>
 		/// Meta-Attribute collection.

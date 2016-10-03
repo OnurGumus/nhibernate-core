@@ -8,7 +8,7 @@ namespace NHibernate.Loader
 	/// EntityAliases which handles the logic of selecting user provided aliases (via return-property),
 	/// before using the default aliases.
 	/// </summary>
-	public partial class DefaultEntityAliases : IEntityAliases
+	public class DefaultEntityAliases : IEntityAliases
 	{
 		private readonly string[] suffixedKeyColumns;
 		private readonly string[] suffixedVersionColumn;

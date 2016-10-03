@@ -10,7 +10,7 @@ namespace NHibernate.SqlCommand
 	/// <summary>
 	/// A class that builds an <c>INSERT</c> sql statement.
 	/// </summary>
-	public partial class SqlInsertBuilder : ISqlStringBuilder
+	public class SqlInsertBuilder : ISqlStringBuilder
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SqlInsertBuilder));
 

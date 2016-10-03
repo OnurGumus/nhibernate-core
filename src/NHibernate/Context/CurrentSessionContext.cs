@@ -16,7 +16,7 @@ namespace NHibernate.Context
 	/// through <see cref="ISessionFactory.GetCurrentSession()"/> calls.
 	/// </remarks>
 	[Serializable]
-	public abstract partial class CurrentSessionContext : ICurrentSessionContext
+	public abstract class CurrentSessionContext : ICurrentSessionContext
 	{
 		/// <summary> Gets or sets the currently bound session. </summary>
 		protected abstract ISession Session { get; set; }

@@ -10,7 +10,7 @@ using System.Collections.ObjectModel;
 
 namespace NHibernate.Linq.Functions
 {
-	public abstract partial class ConvertToGenerator<T> : BaseHqlGeneratorForMethod
+	public abstract class ConvertToGenerator<T> : BaseHqlGeneratorForMethod
 	{
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
@@ -19,7 +19,7 @@ namespace NHibernate.Linq.Functions
 	}
 
 	//NH-3720
-	public partial class ConvertToDateTimeGenerator : ConvertToGenerator<DateTime>
+	public class ConvertToDateTimeGenerator : ConvertToGenerator<DateTime>
 	{
 		public ConvertToDateTimeGenerator()
 		{
@@ -32,7 +32,7 @@ namespace NHibernate.Linq.Functions
 	}
 
 	//NH-3720
-	public partial class ConvertToBooleanGenerator : ConvertToGenerator<Boolean>
+	public class ConvertToBooleanGenerator : ConvertToGenerator<Boolean>
 	{
 		public ConvertToBooleanGenerator()
 		{
@@ -45,7 +45,7 @@ namespace NHibernate.Linq.Functions
 	}
 
 
-	public partial class ConvertToInt32Generator : ConvertToGenerator<int>
+	public class ConvertToInt32Generator : ConvertToGenerator<int>
 	{
 		public ConvertToInt32Generator()
 		{
@@ -71,7 +71,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public partial class ConvertToDecimalGenerator : ConvertToGenerator<decimal>
+	public class ConvertToDecimalGenerator : ConvertToGenerator<decimal>
 	{
 		public ConvertToDecimalGenerator()
 		{
@@ -96,7 +96,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public partial class ConvertToDoubleGenerator : ConvertToGenerator<double>
+	public class ConvertToDoubleGenerator : ConvertToGenerator<double>
 	{
 		public ConvertToDoubleGenerator()
 		{

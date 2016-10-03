@@ -4,7 +4,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public partial class ListIndexMapper : IListIndexMapper
+	public class ListIndexMapper : IListIndexMapper
 	{
 		private const string DefaultIndexColumnName = "ListIdx";
 		private readonly HbmListIndex mapping;

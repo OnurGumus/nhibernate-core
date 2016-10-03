@@ -1,7 +1,7 @@
 using NHibernate.Cache;
 namespace NHibernate.Cfg.Loquacious
 {
-	public partial interface ICacheConfiguration
+	public interface ICacheConfiguration
 	{
 		ICacheConfiguration Through<TProvider>() where TProvider : ICacheProvider;
 		ICacheConfiguration PrefixingRegionsWith(string regionPrefix);
@@ -10,7 +10,7 @@ namespace NHibernate.Cfg.Loquacious
 		IQueryCacheConfiguration Queries { get; }
 	}
 
-	public partial interface ICacheConfigurationProperties
+	public interface ICacheConfigurationProperties
 	{
 		bool UseMinimalPuts { set; }
 		bool UseQueryCache { set; }

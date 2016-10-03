@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Cfg
 {
-	public partial class HbmConstants
+	public class HbmConstants
 	{
 		// Make consts of all of these to avoid interning the strings at run-time
 		public const string nsPrefix = "hbm";

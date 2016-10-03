@@ -1,7 +1,7 @@
 namespace NHibernate.Event
 {
 	/// <summary> Called before recreating a collection </summary>
-	public partial interface IPreCollectionRecreateEventListener
+	public interface IPreCollectionRecreateEventListener
 	{
 		void OnPreRecreateCollection(PreCollectionRecreateEvent @event);
 	}

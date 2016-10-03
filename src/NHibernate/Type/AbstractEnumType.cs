@@ -11,7 +11,7 @@ namespace NHibernate.Type
 	/// Base class for enum types.
 	/// </summary>
 	[Serializable]
-	public abstract partial class AbstractEnumType : PrimitiveType, IDiscriminatorType
+	public abstract class AbstractEnumType : PrimitiveType, IDiscriminatorType
 	{
 		protected AbstractEnumType(SqlType sqlType,System.Type enumType)
 			: base(sqlType)

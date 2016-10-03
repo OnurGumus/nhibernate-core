@@ -9,7 +9,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Linq
 {
-	public partial class IntermediateHqlTree
+	public class IntermediateHqlTree
 	{
 		/* NOTE:
 		 * Because common understanding of our users, we are flatting the behavior of Skip and Take methods.

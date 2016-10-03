@@ -11,7 +11,7 @@ namespace NHibernate.Tuple
 {
 	/// <summary> Defines a POCO-based instantiator for use from the tuplizers.</summary>
 	[Serializable]
-	public partial class PocoInstantiator : IInstantiator, IDeserializationCallback
+	public class PocoInstantiator : IInstantiator, IDeserializationCallback
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(PocoInstantiator));
 

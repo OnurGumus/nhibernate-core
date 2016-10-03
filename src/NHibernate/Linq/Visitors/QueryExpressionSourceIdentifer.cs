@@ -4,7 +4,7 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
-	public partial class QueryExpressionSourceIdentifer : ExpressionTreeVisitor
+	public class QueryExpressionSourceIdentifer : ExpressionTreeVisitor
 	{
 		private readonly QuerySourceIdentifier _identifier;
 

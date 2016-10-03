@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Linq.Functions
 {
-	public static partial class LinqToHqlGeneratorsRegistryExtensions
+	public static class LinqToHqlGeneratorsRegistryExtensions
 	{
 		public static void Merge(this ILinqToHqlGeneratorsRegistry registry, IHqlGeneratorForMethod generator)
 		{

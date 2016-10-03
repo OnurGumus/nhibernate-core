@@ -1,6 +1,6 @@
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface IManyToManyMapper : IColumnsMapper
+	public interface IManyToManyMapper : IColumnsMapper
 	{
 		void Class(System.Type entityType);
 		void EntityName(string entityName);

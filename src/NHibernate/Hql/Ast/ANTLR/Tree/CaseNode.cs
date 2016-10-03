@@ -12,7 +12,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public partial class CaseNode : AbstractSelectExpression, ISelectExpression 
+	public class CaseNode : AbstractSelectExpression, ISelectExpression 
 	{
 		public CaseNode(IToken token) : base(token)
 		{

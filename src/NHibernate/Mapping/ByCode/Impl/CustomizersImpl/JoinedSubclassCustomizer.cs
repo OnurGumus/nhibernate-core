@@ -3,7 +3,7 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public partial class JoinedSubclassCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IJoinedSubclassMapper<TEntity>, IConformistHoldersProvider where TEntity : class
+	public class JoinedSubclassCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IJoinedSubclassMapper<TEntity>, IConformistHoldersProvider where TEntity : class
 	{
 		private readonly IKeyMapper<TEntity> keyMapper;
 

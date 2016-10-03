@@ -7,7 +7,7 @@ using NHibernate.Type;
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
-	public partial class QueryNode : AbstractRestrictableStatement, ISelectExpression
+	public class QueryNode : AbstractRestrictableStatement, ISelectExpression
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(QueryNode));
 

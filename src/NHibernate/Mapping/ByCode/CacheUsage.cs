@@ -2,7 +2,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public abstract partial class CacheUsage
+	public abstract class CacheUsage
 	{
 		public static CacheUsage ReadOnly = new ReadOnlyUsage();
 		public static CacheUsage ReadWrite = new ReadWriteUsage();

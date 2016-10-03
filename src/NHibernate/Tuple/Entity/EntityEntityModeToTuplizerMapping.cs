@@ -13,7 +13,7 @@ namespace NHibernate.Tuple.Entity
 	/// the tuplizers and add them to the superclass
 	/// </remarks>
 	[Serializable]
-	public partial class EntityEntityModeToTuplizerMapping : EntityModeToTuplizerMapping
+	public class EntityEntityModeToTuplizerMapping : EntityModeToTuplizerMapping
 	{
 		private static readonly System.Type[] entityTuplizerCTORSignature = new System.Type[] { typeof(EntityMetamodel), typeof(PersistentClass) };
 

@@ -10,7 +10,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public partial class HqlSqlWalkerNode : SqlNode, IInitializableNode
+	public class HqlSqlWalkerNode : SqlNode, IInitializableNode
 	{
 		/**
 		 * A pointer back to the phase 2 processor.

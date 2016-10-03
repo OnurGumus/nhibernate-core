@@ -6,7 +6,7 @@ using Remotion.Linq;
 
 namespace NHibernate.Linq.Visitors
 {
-	public partial interface IQueryModelRewriterFactory
+	public interface IQueryModelRewriterFactory
 	{
 		QueryModelVisitorBase CreateVisitor(VisitorParameters parameters);
 	}

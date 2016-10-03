@@ -9,7 +9,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Linq
 {
-	public partial class ExpressionToHqlTranslationResults
+	public class ExpressionToHqlTranslationResults
 	{
 		public HqlTreeNode Statement { get; private set; }
 		public ResultTransformer ResultTransformer { get; private set; }

@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 namespace NHibernate.Dialect.Function
 {
 	[Serializable]
-	public partial class AnsiTrimFunction : SQLFunctionTemplate, IFunctionGrammar
+	public class AnsiTrimFunction : SQLFunctionTemplate, IFunctionGrammar
 	{
 		public AnsiTrimFunction()
 			: base(NHibernateUtil.String, "trim(?1 ?2 ?3 ?4)")

@@ -476,7 +476,7 @@ namespace NHibernate.Collection.Generic
 		}
 
 		[Serializable]
-		private class SnapshotElement : IEquatable<SnapshotElement>
+		private partial class SnapshotElement : IEquatable<SnapshotElement>
 		{
 			public object Id { get; set; }
 			public object Value { get; set; }

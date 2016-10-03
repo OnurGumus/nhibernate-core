@@ -4,7 +4,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public abstract partial class AbstractBasePropertyContainerMapper
+	public abstract class AbstractBasePropertyContainerMapper
 	{
 		protected System.Type container;
 		protected HbmMapping mapDoc;

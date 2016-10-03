@@ -27,7 +27,7 @@ namespace NHibernate.Util
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	public sealed partial class IdentityMap : IDictionary, IDeserializationCallback
+	public sealed class IdentityMap : IDictionary, IDeserializationCallback
 	{
 		// key = IdentityKey of the passed in Key
 		// value = object passed in

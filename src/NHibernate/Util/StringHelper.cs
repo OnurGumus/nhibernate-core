@@ -8,7 +8,7 @@ using System.Text;
 namespace NHibernate.Util
 {
 	/// <summary></summary>
-	public static partial class StringHelper
+	public static class StringHelper
 	{
 		/// <summary>
 		/// This allows for both CRLF and lone LF line separators.

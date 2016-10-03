@@ -8,7 +8,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public abstract partial class Binder
+	public abstract class Binder
 	{
 		protected static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (Binder));
 

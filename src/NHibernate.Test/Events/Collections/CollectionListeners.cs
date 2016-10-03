@@ -128,7 +128,7 @@ namespace NHibernate.Test.Events.Collections
 
 		#region Nested type: IListener
 
-		public interface IListener
+		public partial interface IListener
 		{
 			void AddEvent(AbstractCollectionEvent @event, IListener listener);
 		}

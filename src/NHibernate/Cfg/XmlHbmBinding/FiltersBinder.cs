@@ -6,7 +6,7 @@ using System;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public partial class FiltersBinder: Binder
+	public class FiltersBinder: Binder
 	{
 		private readonly IFilterable filterable;
 

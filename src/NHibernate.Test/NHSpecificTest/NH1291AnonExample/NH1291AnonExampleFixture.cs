@@ -48,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1291AnonExample
 			}
 		}
 
-		protected class PersonIQAnon
+		protected partial class PersonIQAnon
 		{
 			private int _iq;
 			public PersonIQAnon(int iq)
@@ -82,7 +82,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1291AnonExample
 			}
 		}
 
-		protected class PersonNameAnon
+		protected partial class PersonNameAnon
 		{
 			private string name;
 
@@ -140,7 +140,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1291AnonExample
 			}
 		}
 
-		protected class HomeAnon
+		protected partial class HomeAnon
 		{
 			private int zip;
 

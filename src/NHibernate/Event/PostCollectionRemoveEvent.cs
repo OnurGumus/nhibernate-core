@@ -6,7 +6,7 @@ namespace NHibernate.Event
 {
 	/// <summary> An event that occurs after a collection is removed </summary>
 	[Serializable]
-	public partial class PostCollectionRemoveEvent : AbstractCollectionEvent
+	public class PostCollectionRemoveEvent : AbstractCollectionEvent
 	{
 		public PostCollectionRemoveEvent(ICollectionPersister collectionPersister, IPersistentCollection collection,
 		                                 IEventSource source, object loadedOwner)

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public abstract partial class AbstractExplicitlyDeclaredModel : IModelExplicitDeclarationsHolder
+	public abstract class AbstractExplicitlyDeclaredModel : IModelExplicitDeclarationsHolder
 	{
 		private readonly HashSet<MemberInfo> any = new HashSet<MemberInfo>();
 		private readonly HashSet<MemberInfo> arrays = new HashSet<MemberInfo>();

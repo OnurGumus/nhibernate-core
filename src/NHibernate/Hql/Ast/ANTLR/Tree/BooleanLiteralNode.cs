@@ -10,7 +10,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Represents a boolean literal within a query.
 	///</summary>
 	[CLSCompliant(false)]
-	public partial class BooleanLiteralNode : LiteralNode, IExpectedTypeAwareNode 
+	public class BooleanLiteralNode : LiteralNode, IExpectedTypeAwareNode 
 	{
 		public BooleanLiteralNode(IToken token) : base(token)
 		{

@@ -5,7 +5,7 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public partial class SubclassBinder : ClassBinder
+	public class SubclassBinder : ClassBinder
 	{
 		public SubclassBinder(Binder parent, Dialect.Dialect dialect)
 			: base(parent.Mappings, dialect)

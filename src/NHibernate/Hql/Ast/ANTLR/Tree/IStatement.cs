@@ -8,7 +8,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public partial interface IStatement
+	public interface IStatement
 	{
 		/// <summary>
 		/// The "phase 2" walker which generated this statement tree.

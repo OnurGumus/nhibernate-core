@@ -9,7 +9,7 @@ namespace NHibernate.Context
 	/// This class allows access to the HttpContext without referring to HttpContext at compile time.
 	/// The accessors are cached as delegates for performance.
 	/// </summary>
-	public static partial class ReflectiveHttpContext
+	public static class ReflectiveHttpContext
 	{
 		static ReflectiveHttpContext()
 		{

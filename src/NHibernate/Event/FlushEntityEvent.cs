@@ -4,7 +4,7 @@ using NHibernate.Engine;
 namespace NHibernate.Event
 {
 	[Serializable]
-	public partial class FlushEntityEvent : AbstractEvent
+	public class FlushEntityEvent : AbstractEvent
 	{
 		private readonly object entity;
 		private readonly EntityEntry entityEntry;

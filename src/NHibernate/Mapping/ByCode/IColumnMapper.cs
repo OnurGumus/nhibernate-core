@@ -1,6 +1,6 @@
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface IColumnMapper
+	public interface IColumnMapper
 	{
 		void Name(string name);
 		void Length(int length);

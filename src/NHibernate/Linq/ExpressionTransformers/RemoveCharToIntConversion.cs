@@ -13,7 +13,7 @@ namespace NHibernate.Linq.ExpressionTransformers
 	/// tree. Converting this directly to a HQL/SQL statement would yield <code>CAST(x AS INT)</code> which does not work in MSSQLSERVER, and possibly
 	/// other databases.
 	/// </remarks> 
-	public partial class RemoveCharToIntConversion : IExpressionTransformer<BinaryExpression>
+	public class RemoveCharToIntConversion : IExpressionTransformer<BinaryExpression>
 	{
 		private static readonly ExpressionType[] _supportedExpressionTypes = new[]
 			{

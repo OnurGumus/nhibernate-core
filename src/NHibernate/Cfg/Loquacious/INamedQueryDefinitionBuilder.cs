@@ -3,7 +3,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Cfg.Loquacious
 {
-	public partial interface INamedQueryDefinitionBuilder
+	public interface INamedQueryDefinitionBuilder
 	{
 		bool IsCacheable { get; set; }
 		string CacheRegion { get; set; }
@@ -16,7 +16,7 @@ namespace NHibernate.Cfg.Loquacious
 		CacheMode? CacheMode { get; set; }
 	}
 
-	internal partial class NamedQueryDefinitionBuilder : INamedQueryDefinitionBuilder
+	internal class NamedQueryDefinitionBuilder : INamedQueryDefinitionBuilder
 	{
 		private int fetchSize = -1;
 		private int timeout = -1;

@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using System;
 using NHibernate.Cache;
 using NHibernate.Cfg;
@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2510
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		private class Scenario : IDisposable
+		private partial class Scenario : IDisposable
 		{
 			private readonly ISessionFactory factory;
 			public Scenario(ISessionFactory factory)

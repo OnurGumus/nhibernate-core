@@ -4,7 +4,7 @@ namespace NHibernate.Properties
 	/// Implementation of <see cref="IFieldNamingStrategy"/> for fields that are prefixed with
 	/// an <c>m_</c> and the PropertyName is changed to camelCase.
 	/// </summary>
-	public partial class CamelCaseMUnderscoreStrategy : IFieldNamingStrategy
+	public class CamelCaseMUnderscoreStrategy : IFieldNamingStrategy
 	{
 		#region IFieldNamingStrategy Members
 

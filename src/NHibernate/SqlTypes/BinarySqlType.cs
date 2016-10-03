@@ -14,7 +14,7 @@ namespace NHibernate.SqlTypes
 	/// setting the properties on the <see cref="DbParameter"/> correctly.
 	/// </remarks>
 	[Serializable]
-	public partial class BinarySqlType : SqlType
+	public class BinarySqlType : SqlType
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="BinarySqlType"/> class.

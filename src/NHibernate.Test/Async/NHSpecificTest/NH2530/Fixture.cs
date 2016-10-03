@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using System.Collections.Generic;
 using System.Text;
 using NHibernate.Dialect;

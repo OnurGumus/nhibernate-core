@@ -7,7 +7,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 	/// Appends child nodes to a parent efficiently.
 	/// </summary>
 	[CLSCompliant(false)]
-	public partial class ASTAppender
+	public class ASTAppender
 	{
 		private readonly IASTFactory factory;
 		private readonly IASTNode parent;

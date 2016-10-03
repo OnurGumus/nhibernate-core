@@ -3,7 +3,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public partial class ManyToAnyCustomizer : IManyToAnyMapper
+	public class ManyToAnyCustomizer : IManyToAnyMapper
 	{
 		private readonly ICustomizersHolder customizersHolder;
 		private readonly PropertyPath propertyPath;

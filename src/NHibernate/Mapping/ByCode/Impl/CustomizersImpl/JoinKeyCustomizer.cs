@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public partial class JoinKeyCustomizer<TEntity> : IKeyMapper<TEntity>
+	public class JoinKeyCustomizer<TEntity> : IKeyMapper<TEntity>
 		where TEntity : class
 	{
 		public JoinKeyCustomizer(ICustomizersHolder customizersHolder)

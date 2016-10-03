@@ -2,7 +2,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public abstract partial class FetchKind
+	public abstract class FetchKind
 	{
 		public static FetchKind Select = new SelectFetchMode();
 		public static FetchKind Join = new JoinFetchMode();

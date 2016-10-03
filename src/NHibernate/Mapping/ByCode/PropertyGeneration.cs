@@ -2,7 +2,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public abstract partial class PropertyGeneration
+	public abstract class PropertyGeneration
 	{
 		public static PropertyGeneration Never = new NeverPropertyGeneration();
 		public static PropertyGeneration Insert = new InsertPropertyGeneration();
@@ -10,7 +10,7 @@ namespace NHibernate.Mapping.ByCode
 
 		internal abstract HbmPropertyGeneration ToHbm();
 
-		public partial class AlwaysPropertyGeneration : PropertyGeneration
+		public class AlwaysPropertyGeneration : PropertyGeneration
 		{
 			internal override HbmPropertyGeneration ToHbm()
 			{
@@ -18,7 +18,7 @@ namespace NHibernate.Mapping.ByCode
 			}
 		}
 
-		public partial class InsertPropertyGeneration : PropertyGeneration
+		public class InsertPropertyGeneration : PropertyGeneration
 		{
 			internal override HbmPropertyGeneration ToHbm()
 			{
@@ -26,7 +26,7 @@ namespace NHibernate.Mapping.ByCode
 			}
 		}
 
-		public partial class NeverPropertyGeneration : PropertyGeneration
+		public class NeverPropertyGeneration : PropertyGeneration
 		{
 			internal override HbmPropertyGeneration ToHbm()
 			{

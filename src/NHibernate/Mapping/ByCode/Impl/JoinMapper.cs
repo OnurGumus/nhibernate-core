@@ -4,7 +4,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public partial class TableNameChangedEventArgs
+	public class TableNameChangedEventArgs
 	{
 		public TableNameChangedEventArgs(string oldName, string newName)
 		{
@@ -16,7 +16,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 	}
 	public delegate void TableNameChangedHandler(IJoinMapper mapper, TableNameChangedEventArgs args);
 
-	public partial class JoinMapper: AbstractPropertyContainerMapper,IJoinMapper
+	public class JoinMapper: AbstractPropertyContainerMapper,IJoinMapper
 	{
 		private readonly HbmJoin hbmJoin;
 		private readonly KeyMapper keyMapper;

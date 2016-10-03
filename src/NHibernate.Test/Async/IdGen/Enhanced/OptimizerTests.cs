@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using NUnit.Framework;
 using NHibernate.Id.Enhanced;
 using System.Threading.Tasks;

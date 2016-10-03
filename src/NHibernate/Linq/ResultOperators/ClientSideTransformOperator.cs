@@ -5,7 +5,7 @@ using Remotion.Linq.Clauses.StreamedData;
 
 namespace NHibernate.Linq.ResultOperators
 {
-	public partial class ClientSideTransformOperator : ResultOperatorBase
+	public class ClientSideTransformOperator : ResultOperatorBase
 	{
 		public override IStreamedData ExecuteInMemory(IStreamedData input)
 		{

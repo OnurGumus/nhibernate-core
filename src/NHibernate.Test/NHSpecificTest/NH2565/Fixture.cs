@@ -5,7 +5,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2565
 {
 	public partial class Fixture: BugTestCase
 	{
-		private class TaskSavedScenario: IDisposable
+		private partial class TaskSavedScenario: IDisposable
 		{
 			private readonly ISessionFactory factory;
 			private readonly Guid taskId;

@@ -17,7 +17,7 @@ using NHibernate.AsyncGenerator.Extensions;
 using Nito.AsyncEx;
 
 
-[assembly: log4net.Config.XmlConfigurator()]
+[assembly: log4net.Config.XmlConfigurator]
 namespace NHibernate.AsyncGenerator
 {
 	public class AsyncLockConfiguration
@@ -73,73 +73,96 @@ namespace NHibernate.AsyncGenerator
 
 		public Solution Solution { get; private set; }
 
+		private Solution OriginalSolution { get; set; }
+
 		internal List<ProjectInfo> ProjectInfos { get; } = new List<ProjectInfo>();
 
-		public async Task Open()
+		private async Task Initialize()
 		{
-			Solution = await Workspace.OpenSolutionAsync(Configuration.Path).ConfigureAwait(false);
+			OriginalSolution = Solution = await Workspace.OpenSolutionAsync(Configuration.Path).ConfigureAwait(false);
+			//var projectConfigs = Configuration.ProjectConfigurations.ToDictionary(o => o.Name);
+			//foreach (var project in OriginalSolution.Projects.Where(o => !Configuration.IgnoreProjectNames.Contains(o.Name)))
+			//{
+			//	if (!projectConfigs.ContainsKey(project.Name))
+			//	{
+			//		continue;
+			//	}
+			//	var config = projectConfigs[project.Name];
+			//	var projectInfo = new ProjectInfo(this, project.Id, config);
+			//	ProjectInfos.Add(projectInfo);
+			//}
+		}
+
+		public async Task Generate(WriterConfiguration configuration)
+		{
+			await Initialize().ConfigureAwait(false);
+
 			var projectConfigs = Configuration.ProjectConfigurations.ToDictionary(o => o.Name);
-			foreach (var project in Solution.Projects.Where(o => !Configuration.IgnoreProjectNames.Contains(o.Name)))
+			foreach (var projectOrig in OriginalSolution.Projects.Where(o => !Configuration.IgnoreProjectNames.Contains(o.Name)))
 			{
-				if (!projectConfigs.ContainsKey(project.Name))
+				if (!projectConfigs.ContainsKey(projectOrig.Name))
 				{
 					continue;
 				}
-				var config = projectConfigs[project.Name];
-				config.SolutionConfiguration = Configuration;
-				ProjectInfos.Add(new ProjectInfo(project, config) { SolutionInfo = this });
-			}
-		}
-
-		public async Task Analyze()
-		{
-			foreach (var projectInfo in ProjectInfos)
-			{
+				var config = projectConfigs[projectOrig.Name];
+				var projectInfo = new ProjectInfo(this, projectOrig.Id, config);
+				ProjectInfos.Add(projectInfo);
+				var modifiedProject = projectInfo.RemoveGeneratedDocuments();
+				Solution = modifiedProject.Solution; // update solution as it is immutable
 				await projectInfo.Analyze().ConfigureAwait(false);
-			}
-		}
+				projectInfo.PostAnalyze();
 
-		public void PostAnalyze()
-		{
-			var methodInfos = new HashSet<MethodInfo>();
-			foreach (var projectInfo in ProjectInfos)
-			{
+				var project = projectInfo.Project;
+
 				foreach (var pair in projectInfo.Where(o => o.Value.Any()))
 				{
-					foreach (var namespaceInfo in pair.Value.Values)
+					var docInfo = pair.Value;
+					var writer = new DocumentWriter(docInfo, configuration);
+					var result = writer.Transform();
+					if (result == null)
 					{
-						foreach (var rootTypeInfo in namespaceInfo.Values.Where(o => o.TypeTransformation != TypeTransformation.None))
-						{
-							foreach (var typeInfo in rootTypeInfo.GetDescendantTypeInfosAndSelf()
-																 .Where(o => o.TypeTransformation != TypeTransformation.None))
-							{
-								foreach (var methodInfo in typeInfo.MethodInfos.Values)
-								{
-									methodInfos.Add(methodInfo);
-									methodInfo.Analyze();
-								}
-							}
-						}
+						continue;
 					}
+					if (result.OriginalRootNode != null)
+					{
+						project = project.GetDocument(docInfo.Document.Id).WithSyntaxRoot(result.OriginalRootNode).Project;
+					}
+					var folders = new List<string> { projectInfo.Configuration.AsyncFolder }.Union(docInfo.Folders);
+					project = project.AddDocument(docInfo.Name, result.NewRootNode, folders, $"{writer.DestinationFolder}\\{docInfo.Name}").Project;
+					Solution = project.Solution;
 				}
+
+				ProjectInfos.Clear();
 			}
 
-			foreach (var methodInfo in methodInfos)
-			{
-				methodInfo.PostAnalyze();
-			}
-		}
+			//foreach (var projectInfo in ProjectInfos)
+			//{
+			//	var modifiedProject = projectInfo.RemoveGeneratedDocuments();
+			//	Solution = modifiedProject.Solution; // update solution as it is immutable
+			//	await projectInfo.Analyze().ConfigureAwait(false);
+			//	projectInfo.PostAnalyze();
 
-		public void Write(WriterConfiguration configuration)
-		{
-			foreach (var projectInfo in ProjectInfos)
-			{
-				foreach (var pair in projectInfo.Where(o => o.Value.Any()))
-				{
-					var writer = new DocumentWriter(pair.Value, configuration);
-					writer.Write();
-				}
-			}
+			//	var project = projectInfo.Project;
+
+			//	foreach (var pair in projectInfo.Where(o => o.Value.Any()))
+			//	{
+			//		var docInfo = pair.Value;
+			//		var writer = new DocumentWriter(docInfo, configuration);
+			//		var result = writer.Transform();
+			//		if (result == null)
+			//		{
+			//			continue;
+			//		}
+			//		if (result.OriginalRootNode != null)
+			//		{
+			//			project = project.GetDocument(docInfo.Document.Id).WithSyntaxRoot(result.OriginalRootNode).Project;
+			//		}
+			//		var folders = new List<string> { projectInfo.Configuration.AsyncFolder }.Union(docInfo.Folders);
+			//		project = project.AddDocument(docInfo.Name, result.NewRootNode, folders, $"{writer.DestinationFolder}\\{docInfo.Name}").Project;
+			//		Solution = project.Solution;
+			//	}
+			//}
+			Workspace.TryApplyChanges(Solution);
 		}
 	}
 
@@ -202,7 +225,7 @@ namespace NHibernate.AsyncGenerator
 			Name = name;
 		}
 
-		internal SolutionConfiguration SolutionConfiguration { get; set; }
+		//internal SolutionConfiguration SolutionConfiguration { get; set; }
 
 		/// <summary>
 		/// Name of the project
@@ -297,20 +320,20 @@ namespace NHibernate.AsyncGenerator
 			{
 				ProjectConfigurations =
 				{
-					new ProjectConfiguration("NHibernate")
-					{
-						ScanMethodsBody = true,
-						IgnoreExternalReferences = true,
-						MethodConversionFunc = symbol =>
-						{
-							if (symbol.GetAttributes().Any(a => a.AttributeClass.Name == "AsyncAttribute"))
-							{
-								return MethodAsyncConversion.ToAsync;
-							}
-							return MethodAsyncConversion.None;
-						},
-						FindAsyncCounterpart = findAsyncFn
-					},
+					//new ProjectConfiguration("NHibernate")
+					//{
+					//	ScanMethodsBody = true,
+					//	IgnoreExternalReferences = true,
+					//	MethodConversionFunc = symbol =>
+					//	{
+					//		if (symbol.GetAttributes().Any(a => a.AttributeClass.Name == "AsyncAttribute"))
+					//		{
+					//			return MethodAsyncConversion.ToAsync;
+					//		}
+					//		return MethodAsyncConversion.None;
+					//	},
+					//	FindAsyncCounterpart = findAsyncFn
+					//},
 
 					//new ProjectConfiguration("NHibernate.DomainModel")
 					//{
@@ -320,70 +343,70 @@ namespace NHibernate.AsyncGenerator
 					//	FindAsyncCounterpart = findAsyncFn
 					//},
 
-					//new ProjectConfiguration("NHibernate.Test")
-					//{
-					//	ScanForMissingAsyncMembers = true,
-					//	IgnoreExternalReferences = true,
-					//	ScanMethodsBody = true,
-					//	MethodConversionFunc = symbol =>
-					//	{
-					//		if (symbol.GetAttributes().Any(a => a.AttributeClass.Name == "TestAttribute"))
-					//		{
-					//			return MethodAsyncConversion.ToAsync;
-					//		}
-					//		return MethodAsyncConversion.Smart;
-					//	},
-					//	CanGenerateMethod = m =>
-					//	{
-					//		return
-					//			m.ReferenceResults.Any(o => o.Symbol.ContainingAssembly.ToString().StartsWith("NHibernate"));
-					//	},
-					//	CanConvertReferenceFunc = m =>
-					//	{
-					//		return m.ContainingNamespace.ToString() != "System.IO";
-					//	},
-					//	//CanScanDocumentFunc = doc =>
-					//	//{
-					//	//	//return !doc.FilePath.Contains("NHSpecificTest") && (
-					//	//	//	doc.FilePath.EndsWith(@"MultiPathCircleCascadeTest.cs") ||
-					//	//	//	doc.FilePath.EndsWith(@"ComponentTest.cs") ||
-					//	//	//	doc.FilePath.EndsWith(@"\TestCase.cs")
-					//	//	//	);
+					new ProjectConfiguration("NHibernate.Test")
+					{
+						ScanForMissingAsyncMembers = true,
+						IgnoreExternalReferences = true,
+						ScanMethodsBody = true,
+						MethodConversionFunc = symbol =>
+						{
+							if (symbol.GetAttributes().Any(a => a.AttributeClass.Name == "TestAttribute"))
+							{
+								return MethodAsyncConversion.ToAsync;
+							}
+							return MethodAsyncConversion.Smart;
+						},
+						CanGenerateMethod = m =>
+						{
+							return
+								m.ReferenceResults.Any(o => o.Symbol.ContainingAssembly.ToString().StartsWith("NHibernate"));
+						},
+						CanConvertReferenceFunc = m =>
+						{
+							return m.ContainingNamespace.ToString() != "System.IO";
+						},
+						//CanScanDocumentFunc = doc =>
+						//{
+						//	//return !doc.FilePath.Contains("NHSpecificTest") && (
+						//	//	doc.FilePath.EndsWith(@"MultiPathCircleCascadeTest.cs") ||
+						//	//	doc.FilePath.EndsWith(@"ComponentTest.cs") ||
+						//	//	doc.FilePath.EndsWith(@"\TestCase.cs")
+						//	//	);
 							
-					//	//	return doc.FilePath.EndsWith(@"Insertordering\InsertOrderingFixture.cs") ||
-					//	//	//doc.FilePath.EndsWith(@"NH2583\AbstractMassTestingFixture.cs") ||
-					//	//	//doc.FilePath.EndsWith(@"NHSpecificTest\BugTestCase.cs") ||
-					//	//	//doc.FilePath.EndsWith(@"NH2583\Domain.cs") ||
-					//	//	doc.FilePath.EndsWith(@"\TestCase.cs");
+						//	return doc.FilePath.EndsWith(@"Insertordering\InsertOrderingFixture.cs") ||
+						//	//doc.FilePath.EndsWith(@"NH2583\AbstractMassTestingFixture.cs") ||
+						//	//doc.FilePath.EndsWith(@"NHSpecificTest\BugTestCase.cs") ||
+						//	//doc.FilePath.EndsWith(@"NH2583\Domain.cs") ||
+						//	doc.FilePath.EndsWith(@"\TestCase.cs");
 							
-					//	//	//return
-					//	//	//doc.FilePath.EndsWith(@"NHSpecificTest\BasicClassFixture.cs") ||
-					//	//	//doc.FilePath.EndsWith(@"\ObjectAssertion.cs") ||
-					//	//	//doc.FilePath.EndsWith(@"\TestCase.cs");
-					//	//},
-					//	FindAsyncCounterpart = findAsyncFn,
-					//	TypeTransformationFunc = type =>
-					//	{
-					//		if (type.Name == "LinqReadonlyTestsContext")
-					//		{
-					//			return TypeTransformation.None;
-					//		}
-					//		if (type.GetAttributes().Any(o => o.AttributeClass.Name == "TestFixtureAttribute") || type.Name == "TestCase")
-					//		{
-					//			return TypeTransformation.NewType;
-					//		}
-					//		var baseType = type.BaseType;
-					//		while (baseType != null)
-					//		{
-					//			if (baseType.Name == "TestCase")
-					//			{
-					//				return TypeTransformation.NewType;
-					//			}
-					//			baseType = baseType.BaseType;
-					//		}
-					//		return TypeTransformation.Partial;
-					//	}
-					//}
+						//	//return
+						//	//doc.FilePath.EndsWith(@"NHSpecificTest\BasicClassFixture.cs") ||
+						//	//doc.FilePath.EndsWith(@"\ObjectAssertion.cs") ||
+						//	//doc.FilePath.EndsWith(@"\TestCase.cs");
+						//},
+						FindAsyncCounterpart = findAsyncFn,
+						TypeTransformationFunc = type =>
+						{
+							if (type.Name == "LinqReadonlyTestsContext")
+							{
+								return TypeTransformation.None;
+							}
+							if (type.GetAttributes().Any(o => o.AttributeClass.Name == "TestFixtureAttribute") || type.Name == "TestCase")
+							{
+								return TypeTransformation.NewType;
+							}
+							var baseType = type.BaseType;
+							while (baseType != null)
+							{
+								if (baseType.Name == "TestCase")
+								{
+									return TypeTransformation.NewType;
+								}
+								baseType = baseType.BaseType;
+							}
+							return TypeTransformation.Partial;
+						}
+					}
 				},
 				IgnoreProjectNames = new HashSet<string> { "NHibernate.TestDatabaseSetup" },
 				TestAttributeNames = new HashSet<string>{ "TestAttribute" },
@@ -399,9 +422,6 @@ namespace NHibernate.AsyncGenerator
 			};
 
 			var solutionInfo = new SolutionInfo(solutionConfig);
-			AsyncContext.Run(() => solutionInfo.Open());
-			AsyncContext.Run(() => solutionInfo.Analyze());
-			solutionInfo.PostAnalyze();
 
 			var configuration = new WriterConfiguration
 			{
@@ -426,8 +446,7 @@ namespace NHibernate.AsyncGenerator
 				Directive = "NET_4_5"
 			};
 
-
-			solutionInfo.Write(configuration);
+			AsyncContext.Run(() => solutionInfo.Generate(configuration));
 		}
 	}
 }

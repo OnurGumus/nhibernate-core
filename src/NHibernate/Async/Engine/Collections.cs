@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using NHibernate.Collection;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;

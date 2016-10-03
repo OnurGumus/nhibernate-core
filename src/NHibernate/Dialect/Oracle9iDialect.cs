@@ -4,7 +4,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Dialect
 {
-	public partial class Oracle9iDialect : Oracle8iDialect
+	public class Oracle9iDialect : Oracle8iDialect
 	{
 		public override string CurrentTimestampSelectString
 		{

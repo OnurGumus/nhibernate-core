@@ -3,7 +3,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Cfg
 {
-	public partial class BindMappingEventArgs: EventArgs
+	public class BindMappingEventArgs: EventArgs
 	{
 		public BindMappingEventArgs(Dialect.Dialect dialect, HbmMapping mapping, string fileName)
 		{

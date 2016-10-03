@@ -38,7 +38,7 @@ namespace NHibernate.Dialect
 	///		Names.Get(DbType,10000)	// --> "VARCHAR(10000)"
 	/// </code>
 	/// </remarks>
-	public partial class TypeNames
+	public class TypeNames
 	{
 		public const string LengthPlaceHolder = "$l";
 		public const string PrecisionPlaceHolder = "$p";

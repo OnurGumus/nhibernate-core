@@ -10,7 +10,7 @@ namespace NHibernate.SqlCommand
 	/// <summary>
 	/// A class that builds an <c>DELETE</c> sql statement.
 	/// </summary>
-	public partial class SqlDeleteBuilder : SqlBaseBuilder, ISqlStringBuilder
+	public class SqlDeleteBuilder : SqlBaseBuilder, ISqlStringBuilder
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SqlDeleteBuilder));
 		private string tableName;

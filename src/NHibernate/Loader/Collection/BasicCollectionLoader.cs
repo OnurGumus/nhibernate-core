@@ -14,7 +14,7 @@ namespace NHibernate.Loader.Collection
 	/// other collections, create a customized subclass of <seealso cref="Loader"/>
 	/// </remarks>
 	/// <seealso cref="OneToManyLoader"/>
-	public partial class BasicCollectionLoader : CollectionLoader
+	public class BasicCollectionLoader : CollectionLoader
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (BasicCollectionLoader));
 

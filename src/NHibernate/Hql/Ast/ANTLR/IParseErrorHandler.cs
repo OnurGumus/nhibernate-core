@@ -8,7 +8,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public partial interface IParseErrorHandler : IErrorReporter 
+	public interface IParseErrorHandler : IErrorReporter 
 	{
 		int GetErrorCount();
 

@@ -6,7 +6,7 @@ namespace NHibernate.Cfg
 	/// Represents a mapping queued for delayed processing to await
 	/// processing of an extends entity upon which it depends. 
 	/// </summary>
-	public partial class ExtendsQueueEntry
+	public class ExtendsQueueEntry
 	{
 		private readonly string explicitName;
 		private readonly string mappingPackage;

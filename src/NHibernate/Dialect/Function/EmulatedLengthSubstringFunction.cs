@@ -14,7 +14,7 @@ namespace NHibernate.Dialect.Function
 	/// parameter as (len(expr) + 1 - start).
 	/// </summary>
 	[Serializable]
-	public partial class EmulatedLengthSubstringFunction : StandardSQLFunction
+	public class EmulatedLengthSubstringFunction : StandardSQLFunction
 	{
 		/// <summary>
 		/// Initializes a new instance of the EmulatedLengthSubstringFunction class.

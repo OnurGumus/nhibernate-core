@@ -11,7 +11,7 @@ namespace NHibernate
 	/// wish to explicitly specify lock levels.
 	/// </remarks>
 	[Serializable]
-	public sealed partial class LockMode
+	public sealed class LockMode
 	{
 		private readonly int level;
 		private readonly string name;

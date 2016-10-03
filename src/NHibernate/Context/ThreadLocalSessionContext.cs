@@ -28,7 +28,7 @@ namespace NHibernate.Context
 	/// <p/>
 	/// </summary>
 	[Serializable]
-	public partial class ThreadLocalSessionContext : ICurrentSessionContext
+	public class ThreadLocalSessionContext : ICurrentSessionContext
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ThreadLocalSessionContext));
 

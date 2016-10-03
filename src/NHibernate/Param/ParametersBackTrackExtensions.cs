@@ -7,7 +7,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Param
 {
-	public static partial class ParametersBackTrackExtensions
+	public static class ParametersBackTrackExtensions
 	{
 		public static IEnumerable<int> GetEffectiveParameterLocations(this IList<Parameter> sqlParameters, string backTrackId)
 		{

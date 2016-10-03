@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public partial class JoinCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IJoinMapper<TEntity>
+	public class JoinCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IJoinMapper<TEntity>
 		where TEntity : class
 	{
 		private readonly string splitGroupId;

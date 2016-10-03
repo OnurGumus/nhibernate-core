@@ -6,7 +6,7 @@ namespace NHibernate.Mapping.ByCode
 	/// <summary>
 	/// Immutable value class. By-value equality.
 	/// </summary>
-	public partial class PropertyPath
+	public class PropertyPath
 	{
 		private readonly int hashCode;
 		private readonly MemberInfo localMember;

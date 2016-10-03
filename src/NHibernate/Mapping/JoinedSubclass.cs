@@ -5,7 +5,7 @@ using NHibernate.Engine;
 namespace NHibernate.Mapping
 {
 	[Serializable]
-	public partial class JoinedSubclass : Subclass, ITableOwner
+	public class JoinedSubclass : Subclass, ITableOwner
 	{
 		private Table table;
 		private IKeyValue key;

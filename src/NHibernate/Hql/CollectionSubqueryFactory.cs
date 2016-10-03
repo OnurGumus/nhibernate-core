@@ -7,7 +7,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Hql
 {
-	public partial class CollectionSubqueryFactory
+	public class CollectionSubqueryFactory
 	{
 		public static string CreateCollectionSubquery(
 			JoinSequence joinSequence,

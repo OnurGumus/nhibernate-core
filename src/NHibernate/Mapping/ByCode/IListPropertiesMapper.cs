@@ -2,12 +2,12 @@ using System;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface IListPropertiesMapper : ICollectionPropertiesMapper
+	public interface IListPropertiesMapper : ICollectionPropertiesMapper
 	{
 		void Index(Action<IListIndexMapper> listIndexMapping);
 	}
 
-	public partial interface IListPropertiesMapper<TEntity, TElement> : ICollectionPropertiesMapper<TEntity, TElement>
+	public interface IListPropertiesMapper<TEntity, TElement> : ICollectionPropertiesMapper<TEntity, TElement>
 	{
 		void Index(Action<IListIndexMapper> listIndexMapping);
 	}

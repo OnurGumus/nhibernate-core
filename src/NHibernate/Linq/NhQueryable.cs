@@ -17,7 +17,7 @@ namespace NHibernate.Linq
 	/// <summary>
 	/// Provides the main entry point to a LINQ query.
 	/// </summary>
-	public partial class NhQueryable<T> : QueryableBase<T>, IEntityNameProvider
+	public class NhQueryable<T> : QueryableBase<T>, IEntityNameProvider
 	{
 		// This constructor is called by our users, create a new IQueryExecutor.
 		public NhQueryable(ISessionImplementor session)

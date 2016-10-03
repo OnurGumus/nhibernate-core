@@ -9,7 +9,7 @@ namespace NHibernate
 	/// A problem occurred translating a Hibernate query to SQL due to invalid query syntax, etc.
 	/// </summary>
 	[Serializable]
-	public partial class QueryException : HibernateException, ISerializable
+	public class QueryException : HibernateException, ISerializable
 	{
 		private string queryString;
 

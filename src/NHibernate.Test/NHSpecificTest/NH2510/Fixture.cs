@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2510
 			configuration.Cache(x=> x.Provider<HashtableCacheProvider>());
 		}
 
-		private class Scenario: IDisposable
+		private partial class Scenario: IDisposable
 		{
 			private readonly ISessionFactory factory;
 

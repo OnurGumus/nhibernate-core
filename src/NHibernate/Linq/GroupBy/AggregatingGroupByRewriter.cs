@@ -29,7 +29,7 @@ namespace NHibernate.Linq.GroupBy
 	/// This class takes such queries, flattens out the re-linq sub-query and re-writes the outer select
 	/// </para>
 	/// </summary>
-	public static partial class AggregatingGroupByRewriter
+	public static class AggregatingGroupByRewriter
 	{
 		private static readonly ICollection<System.Type> AcceptableOuterResultOperators = new HashSet<System.Type>
 			{

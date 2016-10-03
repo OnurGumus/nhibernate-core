@@ -4,7 +4,7 @@ using NHibernate.Properties;
 namespace NHibernate.Mapping
 {
 	[Serializable]
-	public partial class Backref : Property
+	public class Backref : Property
 	{
 		private string collectionRole;
 		private string entityName;

@@ -3,7 +3,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Id
 {
-	public partial interface IPostInsertIdentifierGenerator : IIdentifierGenerator
+	public interface IPostInsertIdentifierGenerator : IIdentifierGenerator
 	{
 		IInsertGeneratedIdentifierDelegate GetInsertGeneratedIdentifierDelegate(IPostInsertIdentityPersister persister, ISessionFactoryImplementor factory, bool isGetGeneratedKeysEnabled);
 	}

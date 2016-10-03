@@ -7,7 +7,7 @@ namespace NHibernate.Transaction
 	/// This is used as a marker interface for the different 
 	/// transaction context required for each session
 	/// </summary>
-	public partial interface ITransactionContext : IDisposable
+	public interface ITransactionContext : IDisposable
 	{
 		bool ShouldCloseSessionOnDistributedTransactionCompleted { get; set; }
 	}

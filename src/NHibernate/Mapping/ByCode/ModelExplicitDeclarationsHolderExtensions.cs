@@ -2,7 +2,7 @@ using System.Linq;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public static partial class ModelExplicitDeclarationsHolderExtensions
+	public static class ModelExplicitDeclarationsHolderExtensions
 	{
 		public static void Merge(this IModelExplicitDeclarationsHolder destination, IModelExplicitDeclarationsHolder source)
 		{

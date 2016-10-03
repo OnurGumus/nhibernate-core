@@ -3,7 +3,7 @@ namespace NHibernate.Persister.Collection
 	/// <summary>
 	/// The names of all the collection properties.
 	/// </summary>
-	public partial class CollectionPropertyNames
+	public class CollectionPropertyNames
 	{
 		public const string Size = "size";
 		public const string Elements = "elements";

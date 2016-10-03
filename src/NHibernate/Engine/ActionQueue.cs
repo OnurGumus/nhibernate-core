@@ -379,7 +379,7 @@ namespace NHibernate.Engine
 		}
 		
 		[Serializable]
-		private class BeforeTransactionCompletionProcessQueue 
+		private partial class BeforeTransactionCompletionProcessQueue 
 		{
 			private ISessionImplementor session;
 			private IList<BeforeTransactionCompletionProcessDelegate> processes = new List<BeforeTransactionCompletionProcessDelegate>();
@@ -427,7 +427,7 @@ namespace NHibernate.Engine
 		}
 
 		[Serializable]
-		private class AfterTransactionCompletionProcessQueue 
+		private partial class AfterTransactionCompletionProcessQueue 
 		{
 			private ISessionImplementor session;
 			private HashSet<string> querySpacesToInvalidate = new HashSet<string>();
@@ -501,7 +501,7 @@ namespace NHibernate.Engine
 		}
 
 		[Serializable]
-		private class InsertActionSorter
+		private partial class InsertActionSorter
 		{
 			private readonly ActionQueue _actionQueue;
 

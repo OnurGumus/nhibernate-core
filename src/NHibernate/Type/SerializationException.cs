@@ -7,7 +7,7 @@ namespace NHibernate.Type
 	/// Thrown when a property cannot be serialized/deserialized
 	/// </summary>
 	[Serializable]
-	public partial class SerializationException : HibernateException
+	public class SerializationException : HibernateException
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SerializationException"/> class.

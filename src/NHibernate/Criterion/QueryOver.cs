@@ -13,7 +13,7 @@ namespace NHibernate.Criterion
 {
 
 	[Serializable]
-	public abstract partial class QueryOver
+	public abstract class QueryOver
 	{
 
 		protected ICriteria criteria;
@@ -276,7 +276,7 @@ namespace NHibernate.Criterion
 	/// Implementation of the <see cref="IQueryOver&lt;TRoot, TSubType&gt;"/> interface
 	/// </summary>
 	[Serializable]
-	public partial class QueryOver<TRoot,TSubType> : QueryOver<TRoot>, IQueryOver<TRoot,TSubType>
+	public class QueryOver<TRoot,TSubType> : QueryOver<TRoot>, IQueryOver<TRoot,TSubType>
 	{
 
 		protected internal QueryOver()

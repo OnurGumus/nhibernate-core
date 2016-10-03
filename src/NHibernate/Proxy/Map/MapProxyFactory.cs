@@ -6,7 +6,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Proxy.Map
 {
-	public partial class MapProxyFactory : IProxyFactory
+	public class MapProxyFactory : IProxyFactory
 	{
 		private string entityName;
 

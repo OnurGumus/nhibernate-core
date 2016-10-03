@@ -61,7 +61,7 @@ namespace NHibernate.Test.Interceptor
 			s.Close();
 		}
 
-		private class HHH1921Interceptor : EmptyInterceptor
+		private partial class HHH1921Interceptor : EmptyInterceptor
 		{
 			public override bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types)
 			{
@@ -101,7 +101,7 @@ namespace NHibernate.Test.Interceptor
 			s.Close();
 		}
 
-		private class MyComponentInterceptor : EmptyInterceptor
+		private partial class MyComponentInterceptor : EmptyInterceptor
 		{
 			readonly int checkPerm;
 			readonly string checkComment;

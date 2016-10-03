@@ -5,7 +5,7 @@ using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
-	public partial class ProcessSkip : IResultOperatorProcessor<SkipResultOperator>
+	public class ProcessSkip : IResultOperatorProcessor<SkipResultOperator>
 	{
 		#region IResultOperatorProcessor<SkipResultOperator> Members
 

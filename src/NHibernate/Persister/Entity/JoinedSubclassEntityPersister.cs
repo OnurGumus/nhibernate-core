@@ -13,7 +13,7 @@ namespace NHibernate.Persister.Entity
 	/// <summary>
 	/// A <c>IEntityPersister</c> implementing the normalized "table-per-subclass" mapping strategy
 	/// </summary>
-	public partial class JoinedSubclassEntityPersister : AbstractEntityPersister
+	public class JoinedSubclassEntityPersister : AbstractEntityPersister
 	{
 		// the class hierarchy structure
 		private readonly int tableSpan;

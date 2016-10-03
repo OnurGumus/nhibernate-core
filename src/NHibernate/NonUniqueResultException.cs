@@ -10,7 +10,7 @@ namespace NHibernate
 	/// exceptions, this one is recoverable!
 	/// </summary>
 	[Serializable]
-	public partial class NonUniqueResultException : HibernateException
+	public class NonUniqueResultException : HibernateException
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NonUniqueResultException"/> class.

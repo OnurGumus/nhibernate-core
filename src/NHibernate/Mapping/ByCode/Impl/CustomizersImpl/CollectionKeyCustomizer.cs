@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public partial class CollectionKeyCustomizer<TEntity> : IKeyMapper<TEntity>
+	public class CollectionKeyCustomizer<TEntity> : IKeyMapper<TEntity>
 	{
 		private readonly PropertyPath propertyPath;
 

@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface ISubclassAttributesMapper : IEntityAttributesMapper, IEntitySqlsMapper
+	public interface ISubclassAttributesMapper : IEntityAttributesMapper, IEntitySqlsMapper
 	{
 		void DiscriminatorValue(object value);
 		void Extends(System.Type baseType);
@@ -10,12 +10,12 @@ namespace NHibernate.Mapping.ByCode
 		void Abstract(bool isAbstract);
 	}
 
-	public partial interface ISubclassMapper : ISubclassAttributesMapper, IPropertyContainerMapper
+	public interface ISubclassMapper : ISubclassAttributesMapper, IPropertyContainerMapper
 	{
 		void Join(string splitGroupId, Action<IJoinMapper> splitMapping);
 	}
 
-	public partial interface ISubclassAttributesMapper<TEntity> : IEntityAttributesMapper, IEntitySqlsMapper where TEntity : class
+	public interface ISubclassAttributesMapper<TEntity> : IEntityAttributesMapper, IEntitySqlsMapper where TEntity : class
 	{
 		void DiscriminatorValue(object value);
 		void Filter(string filterName, Action<IFilterMapper> filterMapping);
@@ -23,7 +23,7 @@ namespace NHibernate.Mapping.ByCode
 		void Abstract(bool isAbstract);
 	}
 
-	public partial interface ISubclassMapper<TEntity> : ISubclassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class
+	public interface ISubclassMapper<TEntity> : ISubclassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class
 	{
 		void Join(string splitGroupId, Action<IJoinMapper<TEntity>> splitMapping);
 	}

@@ -45,7 +45,7 @@ namespace NHibernate.Properties
 
 		/// <summary> The Setter implementation for id backrefs.</summary>
 		[Serializable]
-		private class BackrefSetter : ISetter
+		private partial class BackrefSetter : ISetter
 		{
 			#region ISetter Members
 

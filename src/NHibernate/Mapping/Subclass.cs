@@ -12,7 +12,7 @@ namespace NHibernate.Mapping
 	/// <c>&lt;joined-subclass&gt;</c> element.
 	/// </summary>
 	[Serializable]
-	public partial class Subclass : PersistentClass
+	public class Subclass : PersistentClass
 	{
 		private PersistentClass superclass;
 		private System.Type classPersisterClass;

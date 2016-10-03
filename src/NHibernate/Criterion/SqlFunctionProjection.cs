@@ -10,7 +10,7 @@ using NHibernate.Util;
 namespace NHibernate.Criterion
 {
 	[Serializable]
-	public partial class SqlFunctionProjection : SimpleProjection
+	public class SqlFunctionProjection : SimpleProjection
 	{
 		private readonly IProjection[] args;
 		private readonly ISQLFunction function;

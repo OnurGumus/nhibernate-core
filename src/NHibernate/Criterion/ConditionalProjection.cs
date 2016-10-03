@@ -8,7 +8,7 @@ namespace NHibernate.Criterion
 	using Util;
 
 	[Serializable]
-	public partial class ConditionalProjection : SimpleProjection
+	public class ConditionalProjection : SimpleProjection
 	{
 		private readonly ICriterion criterion;
 		private readonly IProjection whenTrue;

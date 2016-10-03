@@ -4,7 +4,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public partial class NaturalIdMapper : AbstractBasePropertyContainerMapper, INaturalIdMapper
+	public class NaturalIdMapper : AbstractBasePropertyContainerMapper, INaturalIdMapper
 	{
 		private readonly HbmClass classMapping;
 		private readonly HbmNaturalId naturalIdmapping;

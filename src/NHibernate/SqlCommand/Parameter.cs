@@ -8,7 +8,7 @@ namespace NHibernate.SqlCommand
 	/// A placeholder for an ADO.NET parameter in an <see cref="SqlString" />.
 	/// </summary>
 	[Serializable]
-	public partial class Parameter
+	public class Parameter
 	{
 		private Parameter() {}
 

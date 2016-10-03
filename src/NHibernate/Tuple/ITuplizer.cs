@@ -31,7 +31,7 @@ namespace NHibernate.Tuple
 	/// </remarks>
 	/// <seealso cref="Entity.IEntityTuplizer"/>
 	/// <seealso cref="Component.IComponentTuplizer"/>
-	public partial interface ITuplizer
+	public interface ITuplizer
 	{
 		// TODO : be really nice to not have this here since it is essentially pojo specific...
 

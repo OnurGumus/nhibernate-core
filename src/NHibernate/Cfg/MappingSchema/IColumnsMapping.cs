@@ -5,7 +5,7 @@ namespace NHibernate.Cfg.MappingSchema
 	/// <summary>
 	/// Implemented by any mapping elemes supports simple and/or multicolumn mapping.
 	/// </summary>
-	public partial interface IColumnsMapping
+	public interface IColumnsMapping
 	{
 		IEnumerable<HbmColumn> Columns { get; }
 	}

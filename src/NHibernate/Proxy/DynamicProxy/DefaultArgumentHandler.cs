@@ -11,7 +11,7 @@ using System.Reflection.Emit;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
-	internal partial class DefaultArgumentHandler : IArgumentHandler
+	internal class DefaultArgumentHandler : IArgumentHandler
 	{
 		#region IArgumentHandler Members
 

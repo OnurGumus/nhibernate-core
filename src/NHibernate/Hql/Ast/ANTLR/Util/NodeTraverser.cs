@@ -4,7 +4,7 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 namespace NHibernate.Hql.Ast.ANTLR.Util
 {
 	[CLSCompliant(false)]
-	public partial class NodeTraverser
+	public class NodeTraverser
 	{
 		private readonly IVisitationStrategy _visitor;
 

@@ -3,7 +3,7 @@ namespace NHibernate.Event
 	/// <summary>
 	/// Occurs after an an entity instance is fully loaded.
 	/// </summary>
-	public partial interface IPostLoadEventListener
+	public interface IPostLoadEventListener
 	{
 		/// <summary>
 		/// 

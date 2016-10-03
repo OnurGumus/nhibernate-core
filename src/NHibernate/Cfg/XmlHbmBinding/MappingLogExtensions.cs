@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public static partial class MappingLogExtensions
+	public static class MappingLogExtensions
 	{
 		public static void LogMapped(this Mapping.Property property, IInternalLogger log)
 		{

@@ -4,7 +4,7 @@ using System.Reflection.Emit;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
-	public static partial class OpCodesMap
+	public static class OpCodesMap
 	{
 		private static readonly Dictionary<System.Type, OpCode> LdindMap = new Dictionary<System.Type, OpCode>
 		                                                                   {

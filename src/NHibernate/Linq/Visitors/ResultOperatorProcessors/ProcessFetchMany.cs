@@ -2,7 +2,7 @@
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
-    public partial class ProcessFetchMany : ProcessFetch, IResultOperatorProcessor<FetchManyRequest>
+    public class ProcessFetchMany : ProcessFetch, IResultOperatorProcessor<FetchManyRequest>
     {
         public void Process(FetchManyRequest resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
         {

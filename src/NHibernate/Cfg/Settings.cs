@@ -16,7 +16,7 @@ namespace NHibernate.Cfg
 	/// <summary>
 	/// Settings that affect the behavior of NHibernate at runtime.
 	/// </summary>
-	public sealed partial class Settings
+	public sealed class Settings
 	{
 		public Settings()
 		{

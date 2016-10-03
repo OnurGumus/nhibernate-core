@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,7 +47,7 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		private class FamilyMap<T> : ClassMapping<Family<T>> where T : Animal
+		private partial class FamilyMap<T> : ClassMapping<Family<T>> where T : Animal
 		{
 			public FamilyMap()
 			{

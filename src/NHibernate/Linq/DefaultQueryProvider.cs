@@ -10,7 +10,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Linq
 {
-	public partial interface INhQueryProvider : IQueryProvider
+	public interface INhQueryProvider : IQueryProvider
 	{
 		object ExecuteFuture(Expression expression);
 		void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters);

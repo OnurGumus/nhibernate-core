@@ -7,7 +7,7 @@ namespace NHibernate.Mapping
 	/// A list has a primary key consisting of the key columns + index column
 	/// </summary>
 	[Serializable]
-	public partial class List : IndexedCollection
+	public class List : IndexedCollection
 	{
 		private int baseIndex;
 

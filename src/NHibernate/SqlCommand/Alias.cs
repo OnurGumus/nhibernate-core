@@ -11,7 +11,7 @@ namespace NHibernate.SqlCommand
 	/// consider dialect-specific rules, such as escaping closing brackets in
 	/// identifiers on MS SQL 2000.
 	/// </remarks>
-	public partial class Alias
+	public class Alias
 	{
 		private readonly int length;
 		private readonly string suffix;

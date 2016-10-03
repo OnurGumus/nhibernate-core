@@ -9,7 +9,7 @@ namespace NHibernate
 		OnClose
 	}
 
-	public static partial class ConnectionReleaseModeParser
+	public static class ConnectionReleaseModeParser
 	{
 		public static ConnectionReleaseMode Convert(string value)
 		{

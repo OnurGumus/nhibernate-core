@@ -14,7 +14,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public partial class MethodNode : AbstractSelectExpression 
+	public class MethodNode : AbstractSelectExpression 
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(MethodNode));
 

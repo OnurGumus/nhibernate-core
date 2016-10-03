@@ -21,7 +21,7 @@ namespace NHibernate.Dialect
 	///		</item>
 	/// </list>
 	/// </remarks>
-	public partial class OracleLiteDialect : Oracle9iDialect
+	public class OracleLiteDialect : Oracle9iDialect
 	{
 		/// <summary></summary>
 		public OracleLiteDialect()

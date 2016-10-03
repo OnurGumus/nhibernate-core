@@ -8,7 +8,7 @@ namespace NHibernate.Engine.Query
 	/// being filtered. 
 	/// </summary>
 	[Serializable]
-	public partial class FilterQueryPlan : QueryExpressionPlan
+	public class FilterQueryPlan : QueryExpressionPlan
 	{
 		private readonly string collectionRole;
 

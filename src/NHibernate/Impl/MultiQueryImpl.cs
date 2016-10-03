@@ -781,7 +781,7 @@ namespace NHibernate.Impl
 		#endregion
 	}
 
-	public partial interface ITranslator
+	public interface ITranslator
 	{
 		Loader.Loader Loader { get; }
 		IType[] ReturnTypes { get; }
@@ -789,7 +789,7 @@ namespace NHibernate.Impl
 		ICollection<string> QuerySpaces { get; }
 	}
 
-	internal partial class HqlTranslatorWrapper : ITranslator
+	internal class HqlTranslatorWrapper : ITranslator
 	{
 		private readonly IQueryTranslator innerTranslator;
 
@@ -819,7 +819,7 @@ namespace NHibernate.Impl
 		}
 	}
 
-	internal partial class SqlTranslator : ITranslator
+	internal class SqlTranslator : ITranslator
 	{
 		private readonly CustomLoader loader;
 

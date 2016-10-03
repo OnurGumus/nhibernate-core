@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace NHibernate.DebugHelpers
 {
-	public partial class CollectionProxy
+	public class CollectionProxy
 	{
 		private readonly ICollection set;
 
@@ -25,7 +25,7 @@ namespace NHibernate.DebugHelpers
 		}
 	}
 
-	public partial class CollectionProxy<T>
+	public class CollectionProxy<T>
 	{
 		private readonly ICollection<T> set;
 

@@ -12,7 +12,7 @@ namespace NHibernate.Dialect.Schema
 	/// .NET 2.0.
 	/// </remarks>
 	/// <seealso cref="DbConnection.GetSchema()"/>
-	public abstract partial class AbstractDataBaseSchema : IDataBaseSchema
+	public abstract class AbstractDataBaseSchema : IDataBaseSchema
 	{
 		private readonly DbConnection connection;
 

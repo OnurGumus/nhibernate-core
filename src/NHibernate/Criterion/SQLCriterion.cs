@@ -16,7 +16,7 @@ namespace NHibernate.Criterion
 	/// write a correct <see cref="SqlString"/>.
 	/// </remarks>
 	[Serializable]
-	public partial class SQLCriterion : AbstractCriterion
+	public class SQLCriterion : AbstractCriterion
 	{
 		private readonly SqlString _sql;
 		private readonly TypedValue[] _typedValues;

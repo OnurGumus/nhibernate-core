@@ -9,7 +9,7 @@ namespace NHibernate.SqlCommand
 	/// <c>FROM</c>, up to and not including <c>ORDER BY</c> (known collectively
 	/// as a subselect clause).
 	/// </summary>
-	public partial class SubselectClauseExtractor
+	public class SubselectClauseExtractor
 	{
 		/* 
 		 * NH TODO: this implementation will break, for MsSQL2005Dialect, a when the query is an HQL with skip/take because the last "ORDER BY" is there for pagination.

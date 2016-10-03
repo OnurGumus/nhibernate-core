@@ -5,7 +5,7 @@ using NHibernate.Tuple.Component;
 namespace NHibernate.Type
 {
 	[Serializable]
-	public partial class EmbeddedComponentType : ComponentType
+	public class EmbeddedComponentType : ComponentType
 	{
 		public EmbeddedComponentType(ComponentMetamodel metamodel)
 			: base(metamodel)

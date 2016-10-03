@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Bytecode
 {
-	public partial class ActivatorObjectsFactory: IObjectsFactory
+	public class ActivatorObjectsFactory: IObjectsFactory
 	{
 		public object CreateInstance(System.Type type)
 		{

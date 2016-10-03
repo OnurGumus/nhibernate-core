@@ -9,12 +9,12 @@ namespace NHibernate.Cfg
 	/// Extracts the names of classes mapped in a given file,
 	/// and the names of the classes they extend.
 	/// </summary>
-	public partial class ClassExtractor
+	public class ClassExtractor
 	{
 		/// <summary>
 		/// Holds information about mapped classes found in the <c>hbm.xml</c> files.
 		/// </summary>
-		public partial class ClassEntry
+		public class ClassEntry
 		{
 			private readonly string entityName;
 			private readonly string extendsEntityName;

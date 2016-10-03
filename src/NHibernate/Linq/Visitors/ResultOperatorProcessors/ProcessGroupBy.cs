@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
-    public partial class ProcessGroupBy : IResultOperatorProcessor<GroupResultOperator>
+    public class ProcessGroupBy : IResultOperatorProcessor<GroupResultOperator>
     {
         public void Process(GroupResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
         {

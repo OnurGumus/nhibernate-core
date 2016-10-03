@@ -6,7 +6,7 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Linq.Functions
 {
-	public sealed partial class LinqToHqlGeneratorsRegistryFactory
+	public sealed class LinqToHqlGeneratorsRegistryFactory
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (LinqToHqlGeneratorsRegistryFactory));
 

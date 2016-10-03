@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial interface IFormulasMapping
+	public interface IFormulasMapping
 	{
 		IEnumerable<HbmFormula> Formulas { get; }
 	}

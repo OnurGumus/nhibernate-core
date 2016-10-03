@@ -6,7 +6,7 @@ using NHibernate.Util;
 namespace NHibernate.Hql.Ast.ANTLR.Util
 {
 	[CLSCompliant(false)]
-	public static partial class PathHelper
+	public static class PathHelper
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(PathHelper));
 

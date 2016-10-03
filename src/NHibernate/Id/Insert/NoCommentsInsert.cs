@@ -6,7 +6,7 @@ namespace NHibernate.Id.Insert
 	/// <summary>
 	/// Disable comments on insert.
 	/// </summary>
-	public partial class NoCommentsInsert : IdentifierGeneratingInsert
+	public class NoCommentsInsert : IdentifierGeneratingInsert
 	{
 		public NoCommentsInsert(ISessionFactoryImplementor factory) : base(factory) {}
 		public override SqlInsertBuilder SetComment(string comment)

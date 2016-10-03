@@ -9,7 +9,7 @@ using NHibernate.Util;
 namespace NHibernate.Dialect.Function
 {
 	[Serializable]
-	public partial class ClassicAggregateFunction : ISQLFunction, IFunctionGrammar
+	public class ClassicAggregateFunction : ISQLFunction, IFunctionGrammar
 	{
 		private IType returnType = null;
 		private readonly string name;

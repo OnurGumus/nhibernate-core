@@ -3,7 +3,7 @@ using NHibernate.Transform;
 
 namespace NHibernate.Criterion
 {
-	public static partial class CriteriaSpecification
+	public static class CriteriaSpecification
 	{
 		/// <summary> The alias that refers to the "root" entity of the criteria query.</summary>
 		public readonly static string RootAlias = "this";

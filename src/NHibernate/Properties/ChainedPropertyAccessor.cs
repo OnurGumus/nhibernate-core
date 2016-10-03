@@ -3,7 +3,7 @@ using System;
 namespace NHibernate.Properties
 {
 	[Serializable]
-	public partial class ChainedPropertyAccessor : IPropertyAccessor
+	public class ChainedPropertyAccessor : IPropertyAccessor
 	{
 		private readonly IPropertyAccessor[] chain;
 

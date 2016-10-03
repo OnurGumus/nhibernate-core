@@ -9,7 +9,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// </summary>
 	[Serializable]
 	[CLSCompliant(false)]
-	public partial class DeleteStatement : AbstractRestrictableStatement
+	public class DeleteStatement : AbstractRestrictableStatement
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(DeleteStatement));
 

@@ -12,7 +12,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 	/// 2 - file only: NHibernate will read the mapping from the file.
 	/// 3 - assembly only: NHibernate will find all the resources ending in hbm.xml from the assembly.
 	/// </remarks>
-	public partial class MappingConfiguration: IEquatable<MappingConfiguration>
+	public class MappingConfiguration: IEquatable<MappingConfiguration>
 	{
 		internal MappingConfiguration(XPathNavigator mappingElement)
 		{

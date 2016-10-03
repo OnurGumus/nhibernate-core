@@ -6,7 +6,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Criterion
 {
-	public static partial class ProjectionsExtensions
+	public static class ProjectionsExtensions
 	{
 		/// <summary>
 		/// Create an alias for a projection

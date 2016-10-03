@@ -4,7 +4,7 @@ using System.Data;
 namespace NHibernate.SqlTypes
 {
 	[Serializable]
-	public partial class XmlSqlType : SqlType
+	public class XmlSqlType : SqlType
 	{
 		public XmlSqlType()
 			: base(DbType.Xml)

@@ -18,7 +18,7 @@ namespace NHibernate.Cfg
 	/// <summary>
 	/// Helper to parse <see cref="EntityCacheUsage"/> to and from XML string value.
 	/// </summary>
-	public static partial class EntityCacheUsageParser
+	public static class EntityCacheUsageParser
 	{
 		private const string ReadOnlyXmlValue = "read-only";
 		private const string ReadWriteXmlValue = "read-write";

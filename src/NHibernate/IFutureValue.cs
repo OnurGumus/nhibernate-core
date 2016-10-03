@@ -1,6 +1,6 @@
 namespace NHibernate
 {
-	public partial interface IFutureValue<T>
+	public interface IFutureValue<T>
 	{
 		T Value { get; }
 	}

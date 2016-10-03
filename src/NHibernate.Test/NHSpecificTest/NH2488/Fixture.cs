@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 	{
 		#region Scenarios
 
-		private class FetchSelectScenario: IDisposable
+		private partial class FetchSelectScenario: IDisposable
 		{
 			private readonly ISessionFactory factory;
 
@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 				}
 			}
 		}
-		private class FetchJoinScenario : IDisposable
+		private partial class FetchJoinScenario : IDisposable
 		{
 			private readonly ISessionFactory factory;
 
@@ -76,7 +76,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 				}
 			}
 		}
-		private class JoinedSubclassScenario : IDisposable
+		private partial class JoinedSubclassScenario : IDisposable
 		{
 			private readonly ISessionFactory factory;
 

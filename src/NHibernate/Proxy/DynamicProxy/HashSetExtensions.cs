@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
-	public static partial class HashSetExtensions
+	public static class HashSetExtensions
 	{
 		public static HashSet<T> Merge<T>(this HashSet<T> source, IEnumerable<T> toMerge)
 		{

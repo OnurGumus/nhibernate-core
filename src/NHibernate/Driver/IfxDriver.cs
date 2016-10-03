@@ -3,7 +3,7 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// A NHibernate Driver for using the Informix DataProvider
 	/// </summary>
-	public partial class IfxDriver : ReflectionBasedDriver
+	public class IfxDriver : ReflectionBasedDriver
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IfxDriver"/> class.

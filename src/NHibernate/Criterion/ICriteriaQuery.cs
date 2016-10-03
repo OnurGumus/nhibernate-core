@@ -12,7 +12,7 @@ namespace NHibernate.Criterion
 	/// executing the query. This interface is not used by application
 	/// code. 
 	/// </summary>
-	public partial interface ICriteriaQuery
+	public interface ICriteriaQuery
 	{
 		ISessionFactoryImplementor Factory { get; }
 

@@ -14,7 +14,7 @@ namespace NHibernate.Driver
 	/// A NHibernate Driver for using the Firebird data provider located in
 	/// <c>FirebirdSql.Data.FirebirdClient</c> assembly.
 	/// </summary>
-	public partial class FirebirdClientDriver : ReflectionBasedDriver
+	public class FirebirdClientDriver : ReflectionBasedDriver
 	{
 		private const string SELECT_CLAUSE_EXP = @"(?<=\bselect|\bwhere).*";
 		private const string CAST_PARAMS_EXP = @"(?<![=<>]\s?|first\s?|skip\s?|between\s|between\s@\bp\w+\b\sand\s)@\bp\w+\b(?!\s?[=<>])";

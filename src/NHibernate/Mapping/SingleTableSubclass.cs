@@ -5,7 +5,7 @@ using NHibernate.Util;
 namespace NHibernate.Mapping
 {
 	[Serializable]
-	public partial class SingleTableSubclass : Subclass
+	public class SingleTableSubclass : Subclass
 	{
 		public SingleTableSubclass(PersistentClass superclass)
 			: base(superclass) { }

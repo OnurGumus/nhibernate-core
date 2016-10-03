@@ -6,7 +6,7 @@ namespace NHibernate.Exceptions
     /// Knows how to extract a violated constraint name from an error message based on the
     /// fact that the constraint name is templated within the message.
     /// </summary>
-    public abstract partial class TemplatedViolatedConstraintNameExtracter : IViolatedConstraintNameExtracter
+    public abstract class TemplatedViolatedConstraintNameExtracter : IViolatedConstraintNameExtracter
     {
 
         /// <summary>

@@ -2,7 +2,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Param
 {
-	public partial class NamedParameter
+	public class NamedParameter
 	{
 		public NamedParameter(string name, object value, IType type)
 		{

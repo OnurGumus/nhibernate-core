@@ -9,7 +9,7 @@ namespace NHibernate.Cfg.MappingSchema
 	/// <see cref="HbmMapping" />.
 	/// </summary>
 	/// <remarks>Uses an <see cref="XmlSerializer" /> to deserialize HBM.</remarks>
-	public partial class MappingDocumentParser : IMappingDocumentParser
+	public class MappingDocumentParser : IMappingDocumentParser
 	{
 		private readonly XmlSerializer serializer = new XmlSerializer(typeof (HbmMapping));
 

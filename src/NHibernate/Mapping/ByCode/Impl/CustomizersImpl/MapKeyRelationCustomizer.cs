@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public partial class MapKeyRelationCustomizer<TKey> : IMapKeyRelation<TKey>
+	public class MapKeyRelationCustomizer<TKey> : IMapKeyRelation<TKey>
 	{
 		private readonly ICustomizersHolder customizersHolder;
 		private readonly IModelExplicitDeclarationsHolder explicitDeclarationsHolder;

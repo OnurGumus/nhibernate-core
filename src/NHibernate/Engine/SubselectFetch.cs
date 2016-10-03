@@ -5,7 +5,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
-	public partial class SubselectFetch
+	public class SubselectFetch
 	{
 		private readonly string alias;
 		private readonly ILoadable loadable;

@@ -6,7 +6,7 @@ namespace NHibernate.Cfg.MappingSchema
 	/// Responsible for checking that a resource name matches the default pattern of "*.hbm.xml". This is the
 	/// default filter for <see cref="MappingDocumentAggregator" />.
 	/// </summary>
-	public partial class EndsWithHbmXmlFilter : IAssemblyResourceFilter
+	public class EndsWithHbmXmlFilter : IAssemblyResourceFilter
 	{
 		public bool ShouldParse(string resourceName)
 		{

@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public partial class MapKeyManyToManyCustomizer : IMapKeyManyToManyMapper
+	public class MapKeyManyToManyCustomizer : IMapKeyManyToManyMapper
 	{
 		private readonly ICustomizersHolder customizersHolder;
 		private readonly PropertyPath propertyPath;

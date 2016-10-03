@@ -9,7 +9,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion
 {
 	[Serializable]
-	public partial class NaturalIdentifier: ICriterion
+	public class NaturalIdentifier: ICriterion
 	{
 		private readonly Junction conjunction = new Conjunction();
 

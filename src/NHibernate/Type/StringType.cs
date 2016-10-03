@@ -8,7 +8,7 @@ namespace NHibernate.Type
 	/// Maps a <see cref="System.String" /> to a <see cref="DbType.String" /> column.
 	/// </summary>
 	[Serializable]
-	public partial class StringType : AbstractStringType
+	public class StringType : AbstractStringType
 	{
 		internal StringType() : base(new StringSqlType())
 		{

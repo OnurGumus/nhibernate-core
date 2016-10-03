@@ -13,7 +13,7 @@ namespace NHibernate.Linq.Visitors
 	/// the HQL expression tree) means a query source may be referenced by a <c>QuerySourceReference</c>
 	/// before it has been identified - and named.
 	/// </remarks>
-	public partial class QuerySourceIdentifier : QueryModelVisitorBase
+	public class QuerySourceIdentifier : QueryModelVisitorBase
 	{
 		private readonly QuerySourceNamer _namer;
 

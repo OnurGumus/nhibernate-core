@@ -6,7 +6,7 @@ namespace NHibernate.Event
 {
 	/// <summary> An event that occurs before a collection is updated </summary>
 	[Serializable]
-	public partial class PreCollectionUpdateEvent : AbstractCollectionEvent
+	public class PreCollectionUpdateEvent : AbstractCollectionEvent
 	{
 		public PreCollectionUpdateEvent(ICollectionPersister collectionPersister, IPersistentCollection collection,
 		                                IEventSource source)

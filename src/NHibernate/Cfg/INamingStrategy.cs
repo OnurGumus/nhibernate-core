@@ -4,7 +4,7 @@ namespace NHibernate.Cfg
 	/// A set of rules for determining the physical column and table names given the information in the mapping
 	/// document. May be used to implement project-scoped naming standards for database objects.
 	/// </summary>
-	public partial interface INamingStrategy
+	public interface INamingStrategy
 	{
 		/// <summary>
 		/// Return a table name for an entity class

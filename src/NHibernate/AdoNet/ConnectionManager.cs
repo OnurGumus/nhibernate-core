@@ -393,7 +393,7 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		private class StopFlushingFromDtcTransaction : IDisposable
+		private partial class StopFlushingFromDtcTransaction : IDisposable
 		{
 			private readonly ConnectionManager manager;
 

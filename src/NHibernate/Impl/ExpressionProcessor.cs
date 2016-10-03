@@ -29,9 +29,9 @@ namespace NHibernate.Impl
 	/// <summary>
 	/// Converts lambda expressions to NHibernate criterion/order
 	/// </summary>
-	public static partial class ExpressionProcessor
+	public static class ExpressionProcessor
 	{
-		public partial class ProjectionInfo
+		public class ProjectionInfo
 		{
 			private string _property;
 			private IProjection _projection;

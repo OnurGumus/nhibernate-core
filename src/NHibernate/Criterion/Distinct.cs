@@ -7,7 +7,7 @@ using NHibernate.Type;
 namespace NHibernate.Criterion
 {
 	[Serializable]
-	public partial class Distinct : IProjection
+	public class Distinct : IProjection
 	{
 		private readonly IProjection projection;
 

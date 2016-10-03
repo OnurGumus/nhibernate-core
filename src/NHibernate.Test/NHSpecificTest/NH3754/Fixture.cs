@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3754
 			get { return "NH3754"; }
 		}
 
-		private class TestEntity
+		private partial class TestEntity
 		{
 			public string Name { get; set; }
 		}

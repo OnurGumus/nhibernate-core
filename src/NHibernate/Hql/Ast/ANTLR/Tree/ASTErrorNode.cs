@@ -4,7 +4,7 @@ using Antlr.Runtime;
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
-	public partial class ASTErrorNode : ASTNode
+	public class ASTErrorNode : ASTNode
 	{
 		public ASTErrorNode(ITokenStream input, IToken start, IToken stop, RecognitionException e) : base(start)
 		{

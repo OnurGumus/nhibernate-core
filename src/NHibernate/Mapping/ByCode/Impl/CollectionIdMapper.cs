@@ -5,7 +5,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public partial class CollectionIdMapper: ICollectionIdMapper
+	public class CollectionIdMapper: ICollectionIdMapper
 	{
 		private readonly HbmCollectionId hbmId;
 		private const string DefaultColumnName = "collection_key";

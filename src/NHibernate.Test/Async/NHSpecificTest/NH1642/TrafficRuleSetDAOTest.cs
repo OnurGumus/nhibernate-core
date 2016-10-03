@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1642
 	public partial class TrafficRuleSetDAOTestAsync : BugTestCaseAsync
 	{
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		private class Scenario : IDisposable
+		private partial class Scenario : IDisposable
 		{
 			private readonly ISessionFactory sessionFactory;
 			private int ruleSetId;

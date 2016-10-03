@@ -3,7 +3,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public static partial class HbmExtensions
+	public static class HbmExtensions
 	{
 		public static Versioning.OptimisticLock ToOptimisticLock(this HbmOptimisticLockMode hbmOptimisticLockMode)
 		{

@@ -9,7 +9,7 @@ namespace NHibernate.Connection
 	/// <summary>
 	/// Instantiates a connection provider given configuration properties.
 	/// </summary>
-	public static partial class ConnectionProviderFactory
+	public static class ConnectionProviderFactory
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ConnectionProviderFactory));
 

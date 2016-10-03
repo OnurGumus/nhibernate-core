@@ -1,7 +1,7 @@
 namespace NHibernate.Loader.Custom
 {
 	/// <summary> Represents a return which names a fetched association. </summary>
-	public abstract partial class FetchReturn : NonScalarReturn
+	public abstract class FetchReturn : NonScalarReturn
 	{
 		private readonly NonScalarReturn owner;
 		private readonly string ownerProperty;

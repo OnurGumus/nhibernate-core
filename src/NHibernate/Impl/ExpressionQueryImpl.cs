@@ -12,7 +12,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
-	internal partial class ExpressionQueryImpl : AbstractQueryImpl2
+	internal class ExpressionQueryImpl : AbstractQueryImpl2
 	{
 		public ExpressionQueryImpl(IQueryExpression queryExpression, ISessionImplementor session, ParameterMetadata parameterMetadata)
 			: base(queryExpression.Key, FlushMode.Unspecified, session, parameterMetadata)
@@ -82,7 +82,7 @@ namespace NHibernate.Impl
 		}
 	}
 
-	internal partial class ExpandedQueryExpression : IQueryExpression
+	internal class ExpandedQueryExpression : IQueryExpression
 	{
 		private readonly IASTNode _tree;
 
@@ -110,7 +110,7 @@ namespace NHibernate.Impl
 		#endregion
 	}
 
-	internal partial class ParameterExpander
+	internal class ParameterExpander
 	{
 		private readonly Dictionary<string, IList<string>> _map;
 		private readonly IASTNode _tree;
@@ -180,7 +180,7 @@ namespace NHibernate.Impl
 		}
 	}
 
-	internal partial class ParameterDetector : IVisitationStrategy
+	internal class ParameterDetector : IVisitationStrategy
 	{
 		private readonly List<IASTNode> _nodes;
 		private readonly HashSet<string> _parameterNames;

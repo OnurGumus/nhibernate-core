@@ -10,7 +10,7 @@ namespace NHibernate.Dialect.Function
 	/// Summary description for NoArgSQLFunction.
 	/// </summary>
 	[Serializable]
-	public partial class NoArgSQLFunction : ISQLFunction
+	public class NoArgSQLFunction : ISQLFunction
 	{
 		public NoArgSQLFunction(string name, IType returnType)
 			: this(name, returnType, true)

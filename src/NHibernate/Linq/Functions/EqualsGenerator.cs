@@ -8,7 +8,7 @@ using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Linq.Functions
 {
-	public partial class EqualsGenerator : BaseHqlGeneratorForMethod
+	public class EqualsGenerator : BaseHqlGeneratorForMethod
 	{
 		public EqualsGenerator()
 		{
@@ -51,7 +51,7 @@ namespace NHibernate.Linq.Functions
 		}
 	}
 
-	public partial class BoolEqualsGenerator : BaseHqlGeneratorForMethod
+	public class BoolEqualsGenerator : BaseHqlGeneratorForMethod
 	{
 		public BoolEqualsGenerator()
 		{

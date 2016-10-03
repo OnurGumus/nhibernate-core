@@ -25,7 +25,7 @@ namespace NHibernate.Transform
 	/// </code>
 	/// </example>
 	[Serializable]
-	public partial class AliasToBeanResultTransformer : AliasedTupleSubsetResultTransformer
+	public class AliasToBeanResultTransformer : AliasedTupleSubsetResultTransformer
 	{
 		private const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 		private readonly System.Type resultClass;

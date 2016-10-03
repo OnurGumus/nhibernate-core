@@ -5,7 +5,7 @@ namespace NHibernate.SqlCommand.Parser
 	/// <summary>
 	/// A SQL query token as returned by <see cref="SqlTokenizer"/>
 	/// </summary>
-	public partial class SqlToken
+	public class SqlToken
 	{
 		private readonly SqlTokenType _tokenType;
 		private readonly SqlString _sql;

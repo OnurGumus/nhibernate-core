@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;

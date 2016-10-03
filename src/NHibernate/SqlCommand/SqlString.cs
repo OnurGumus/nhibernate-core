@@ -39,7 +39,7 @@ namespace NHibernate.SqlCommand
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	public partial class SqlString : ICollection, IEnumerable<object>
+	public class SqlString : ICollection, IEnumerable<object>
 	{
 		/// <summary>
 		/// Empty <see cref="SqlString"/> instance.

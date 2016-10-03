@@ -5,7 +5,7 @@ namespace NHibernate.Cache
 	/// <summary>
 	/// Support for pluggable caches
 	/// </summary>
-	public partial interface ICacheProvider
+	public interface ICacheProvider
 	{
 		/// <summary>
 		/// Configure the cache

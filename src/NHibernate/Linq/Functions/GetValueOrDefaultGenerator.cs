@@ -9,7 +9,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Linq.Functions
 {
-	internal partial class GetValueOrDefaultGenerator : IHqlGeneratorForMethod, IRuntimeMethodHqlGenerator
+	internal class GetValueOrDefaultGenerator : IHqlGeneratorForMethod, IRuntimeMethodHqlGenerator
 	{
 		public bool SupportsMethod(MethodInfo method)
 		{

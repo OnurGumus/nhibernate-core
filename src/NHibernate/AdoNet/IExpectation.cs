@@ -2,7 +2,7 @@ using System.Data.Common;
 
 namespace NHibernate.AdoNet
 {
-	public partial interface IExpectation
+	public interface IExpectation
 	{
 		void VerifyOutcomeNonBatched(int rowCount, DbCommand statement);
 		bool CanBeBatched { get; }

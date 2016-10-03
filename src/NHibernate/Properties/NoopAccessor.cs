@@ -64,7 +64,7 @@ namespace NHibernate.Properties
 
 		/// <summary> A Setter which will just do nothing.</summary>
 		[Serializable]
-		private class NoopSetter : ISetter
+		private partial class NoopSetter : ISetter
 		{
 			#region ISetter Members
 

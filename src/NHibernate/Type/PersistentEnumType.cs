@@ -40,7 +40,7 @@ namespace NHibernate.Type
 			public abstract SqlType SqlType { get; }
 		}
 		[Serializable]
-		private class SystemByteEnumConverter : AbstractEnumConverter<Byte>
+		private partial class SystemByteEnumConverter : AbstractEnumConverter<Byte>
 		{
 			public override byte Convert(object input)
 			{
@@ -53,7 +53,7 @@ namespace NHibernate.Type
 			}
 		}
 		[Serializable]
-		private class SystemSByteEnumConverter : AbstractEnumConverter<SByte>
+		private partial class SystemSByteEnumConverter : AbstractEnumConverter<SByte>
 		{
 			public override sbyte Convert(object input)
 			{
@@ -66,7 +66,7 @@ namespace NHibernate.Type
 			}
 		}
 		[Serializable]
-		private class SystemInt16EnumConverter : AbstractEnumConverter<Int16>
+		private partial class SystemInt16EnumConverter : AbstractEnumConverter<Int16>
 		{
 			public override short Convert(object input)
 			{
@@ -79,7 +79,7 @@ namespace NHibernate.Type
 			}
 		}
 		[Serializable]
-		private class SystemInt32EnumConverter : AbstractEnumConverter<Int32>
+		private partial class SystemInt32EnumConverter : AbstractEnumConverter<Int32>
 		{
 			public override int Convert(object input)
 			{
@@ -92,7 +92,7 @@ namespace NHibernate.Type
 			}
 		}
 		[Serializable]
-		private class SystemInt64EnumConverter : AbstractEnumConverter<Int64>
+		private partial class SystemInt64EnumConverter : AbstractEnumConverter<Int64>
 		{
 			public override long Convert(object input)
 			{
@@ -105,7 +105,7 @@ namespace NHibernate.Type
 			}
 		}
 		[Serializable]
-		private class SystemUInt16EnumConverter : AbstractEnumConverter<UInt16>
+		private partial class SystemUInt16EnumConverter : AbstractEnumConverter<UInt16>
 		{
 			public override ushort Convert(object input)
 			{
@@ -118,7 +118,7 @@ namespace NHibernate.Type
 			}
 		}
 		[Serializable]
-		private class SystemUInt32EnumConverter : AbstractEnumConverter<UInt32>
+		private partial class SystemUInt32EnumConverter : AbstractEnumConverter<UInt32>
 		{
 			public override uint Convert(object input)
 			{
@@ -131,7 +131,7 @@ namespace NHibernate.Type
 			}
 		}
 		[Serializable]
-		private class SystemUInt64EnumConverter : AbstractEnumConverter<UInt64>
+		private partial class SystemUInt64EnumConverter : AbstractEnumConverter<UInt64>
 		{
 			public override ulong Convert(object input)
 			{
@@ -280,7 +280,7 @@ namespace NHibernate.Type
 	}
 
 	[Serializable]
-	public partial class EnumType<T> : PersistentEnumType
+	public class EnumType<T> : PersistentEnumType
 	{
 		private readonly string typeName;
 

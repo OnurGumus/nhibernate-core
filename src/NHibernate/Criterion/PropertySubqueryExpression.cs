@@ -8,7 +8,7 @@ namespace NHibernate.Criterion
 	///  result of a subquery
 	/// </summary>
 	[Serializable]
-	public partial class PropertySubqueryExpression : SubqueryExpression
+	public class PropertySubqueryExpression : SubqueryExpression
 	{
 		private String propertyName;
 

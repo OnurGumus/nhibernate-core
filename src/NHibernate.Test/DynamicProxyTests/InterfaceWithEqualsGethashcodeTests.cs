@@ -6,12 +6,12 @@ namespace NHibernate.Test.DynamicProxyTests
 {
 	public partial class InterfaceWithEqualsGethashcodeTests
 	{
-		public interface IMyBaseObject
+		public partial interface IMyBaseObject
 		{
 			bool Equals(object that);
 			int GetHashCode();
 		}
-		public interface IHasSomething : IMyBaseObject
+		public partial interface IHasSomething : IMyBaseObject
 		{
 			string Something { get; set; }
 		}

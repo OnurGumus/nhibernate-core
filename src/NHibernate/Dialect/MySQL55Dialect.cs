@@ -2,7 +2,7 @@ using System.Data;
 
 namespace NHibernate.Dialect
 {
-	public partial class MySQL55Dialect : MySQL5Dialect
+	public class MySQL55Dialect : MySQL5Dialect
 	{
 		public MySQL55Dialect()
 		{

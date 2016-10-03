@@ -13,7 +13,7 @@ namespace NHibernate.Action
 	/// the entity instance or returned to the client...
 	/// </summary>
 	[Serializable]
-	public partial class DelayedPostInsertIdentifier
+	public class DelayedPostInsertIdentifier
 	{
 		[ThreadStatic]
 		private static long _Sequence = 0;

@@ -49,7 +49,7 @@ namespace NHibernate.Cfg
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	public partial class Configuration : ISerializable
+	public class Configuration : ISerializable
 	{
 		/// <summary>Default name for hibernate configuration file.</summary>
 		public const string DefaultHibernateCfgFileName = "hibernate.cfg.xml";

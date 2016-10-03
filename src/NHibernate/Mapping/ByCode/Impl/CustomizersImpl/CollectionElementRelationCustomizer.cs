@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public partial class CollectionElementRelationCustomizer<TElement> : ICollectionElementRelation<TElement>
+	public class CollectionElementRelationCustomizer<TElement> : ICollectionElementRelation<TElement>
 	{
 		private readonly ICustomizersHolder customizersHolder;
 		private readonly IModelExplicitDeclarationsHolder explicitDeclarationsHolder;

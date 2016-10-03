@@ -14,7 +14,7 @@ namespace NHibernate.Util
 	/// <typeparam name="TKey">The type of keys in the dictionary.</typeparam>
 	/// <typeparam name="TValue">The type of values in the dictionary.</typeparam>
 	[Serializable]
-	public partial class UnmodifiableDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+	public class UnmodifiableDictionary<TKey, TValue> : IDictionary<TKey, TValue>
 	{
 		private readonly IDictionary<TKey, TValue> dictionary;
 

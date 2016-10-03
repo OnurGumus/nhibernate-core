@@ -6,7 +6,7 @@ namespace NHibernate.SqlCommand
 	/// <summary>
 	/// The base class for all of the SqlBuilders.
 	/// </summary>
-	public abstract partial class SqlBaseBuilder
+	public abstract class SqlBaseBuilder
 	{
 		private readonly Dialect.Dialect dialect;
 		private readonly IMapping mapping;

@@ -8,7 +8,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Contract for nodes representing logical BETWEEN (ternary) operators.
 	/// </summary>
 	[CLSCompliant(false)]
-	public partial class BetweenOperatorNode : SqlNode, IOperatorNode
+	public class BetweenOperatorNode : SqlNode, IOperatorNode
 	{
 		public BetweenOperatorNode(IToken token)
 			: base(token)

@@ -11,7 +11,7 @@ namespace NHibernate.Dialect.Function
 	/// Emulation of locate() on Sybase
 	/// </summary>
 	[Serializable]
-	public partial class CharIndexFunction : ISQLFunction
+	public class CharIndexFunction : ISQLFunction
 	{
 		public CharIndexFunction()
 		{

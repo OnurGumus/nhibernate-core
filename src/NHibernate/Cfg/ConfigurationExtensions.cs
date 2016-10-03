@@ -9,7 +9,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg
 {
-	public static partial class ConfigurationExtensions
+	public static class ConfigurationExtensions
 	{
 		public static IFluentSessionFactoryConfiguration SessionFactory(this Configuration configuration)
 		{

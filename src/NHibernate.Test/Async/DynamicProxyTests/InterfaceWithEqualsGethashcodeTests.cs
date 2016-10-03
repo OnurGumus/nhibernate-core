@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using System.Collections.Generic;
 using NHibernate.Proxy.DynamicProxy;
 using NUnit.Framework;

@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 				configuration.SetProperty(Environment.UseSecondLevelCache, "false");
 
 			}
-        private class ValueTuple<T1, T2, T3, T4, T5, T6, T7>
+        private partial class ValueTuple<T1, T2, T3, T4, T5, T6, T7>
         {
             public T1 Item1;
             public T2 Item2;

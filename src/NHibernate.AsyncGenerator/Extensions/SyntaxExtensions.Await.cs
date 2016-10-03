@@ -46,19 +46,38 @@ namespace NHibernate.AsyncGenerator.Extensions
 				.WithAttributes(List(new List<AttributeListSyntax> { attrList }));
 		}
 
-		public static TypeDeclarationSyntax AddPartial(this TypeDeclarationSyntax typeDeclaration)
+		public static bool IsPartial(this TypeDeclarationSyntax typeDeclaration)
+		{
+			var interfaceDeclaration = typeDeclaration as InterfaceDeclarationSyntax;
+			if (interfaceDeclaration != null)
+			{
+				return typeDeclaration.Modifiers.Any(o => o.IsKind(SyntaxKind.PartialKeyword));
+			}
+			var classDeclaration = typeDeclaration as ClassDeclarationSyntax;
+			if (classDeclaration != null)
+			{
+				return typeDeclaration.Modifiers.Any(o => o.IsKind(SyntaxKind.PartialKeyword));
+			}
+			return false;
+		}
+
+		public static TypeDeclarationSyntax AddPartial(this TypeDeclarationSyntax typeDeclaration, Func<SyntaxToken, SyntaxToken> partialTokenFun = null)
 		{
 			var interfaceDeclaration = typeDeclaration as InterfaceDeclarationSyntax;
 			if (interfaceDeclaration != null && !typeDeclaration.Modifiers.Any(o => o.IsKind(SyntaxKind.PartialKeyword)))
 			{
+				var token = Token(SyntaxKind.PartialKeyword);
+				token = partialTokenFun?.Invoke(token) ?? token;
 				return interfaceDeclaration
-					.AddModifiers(Token(SyntaxKind.PartialKeyword));
+					.AddModifiers(token);
 			}
 			var classDeclaration = typeDeclaration as ClassDeclarationSyntax;
 			if (classDeclaration != null && !classDeclaration.Modifiers.Any(o => o.IsKind(SyntaxKind.PartialKeyword)))
 			{
+				var token = Token(SyntaxKind.PartialKeyword);
+				token = partialTokenFun?.Invoke(token) ?? token;
 				return classDeclaration
-					.AddModifiers(Token(SyntaxKind.PartialKeyword));
+					.AddModifiers(token);
 			}
 			return typeDeclaration;
 		}

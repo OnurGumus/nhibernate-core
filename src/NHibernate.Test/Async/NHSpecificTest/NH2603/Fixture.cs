@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2603
 	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		private class ListScenario : IDisposable
+		private partial class ListScenario : IDisposable
 		{
 			private readonly ISessionFactory factory;
 			public ListScenario(ISessionFactory factory)
@@ -40,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2603
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		private class MapScenario : IDisposable
+		private partial class MapScenario : IDisposable
 		{
 			private readonly ISessionFactory factory;
 			public MapScenario(ISessionFactory factory)

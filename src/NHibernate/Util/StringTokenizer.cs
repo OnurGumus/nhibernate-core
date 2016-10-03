@@ -6,7 +6,7 @@ namespace NHibernate.Util
 	/// <summary>
 	/// A StringTokenizer java like object 
 	/// </summary>
-	public partial class StringTokenizer : IEnumerable<string>
+	public class StringTokenizer : IEnumerable<string>
 	{
 		private const string _defaultDelim = " \t\n\r\f";
 		private string _origin;

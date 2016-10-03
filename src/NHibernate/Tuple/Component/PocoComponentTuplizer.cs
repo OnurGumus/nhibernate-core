@@ -11,7 +11,7 @@ namespace NHibernate.Tuple.Component
 	/// A <see cref="IComponentTuplizer"/> specific to the POCO entity mode. 
 	/// </summary>
 	[Serializable]
-	public partial class PocoComponentTuplizer : AbstractComponentTuplizer
+	public class PocoComponentTuplizer : AbstractComponentTuplizer
 	{
 		private readonly System.Type componentClass;
 		private readonly ISetter parentSetter;

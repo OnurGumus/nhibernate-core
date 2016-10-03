@@ -7,7 +7,7 @@ namespace NHibernate.Stat
 	/// collection role, second level cache region or query). 
 	/// </summary>
 	[Serializable]
-	public partial class CategorizedStatistics
+	public class CategorizedStatistics
 	{
 		private readonly string categoryName;
 

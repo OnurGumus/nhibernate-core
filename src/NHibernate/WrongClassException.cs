@@ -10,7 +10,7 @@ namespace NHibernate
 	/// but the row's discriminator value specifies a different subclass from the one requested
 	/// </summary>
 	[Serializable]
-	public partial class WrongClassException : HibernateException, ISerializable
+	public class WrongClassException : HibernateException, ISerializable
 	{
 		private readonly object identifier;
 		private readonly string entityName;

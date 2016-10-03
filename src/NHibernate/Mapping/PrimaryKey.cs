@@ -8,7 +8,7 @@ namespace NHibernate.Mapping
 	/// A Primary Key constraint in the database.
 	/// </summary>
 	[Serializable]
-	public partial class PrimaryKey : Constraint
+	public class PrimaryKey : Constraint
 	{
 		/// <summary>
 		/// Generates the SQL string to create the Primary Key Constraint in the database.

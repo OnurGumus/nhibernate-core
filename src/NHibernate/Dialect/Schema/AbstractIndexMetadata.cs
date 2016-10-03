@@ -4,7 +4,7 @@ using System.Data;
 
 namespace NHibernate.Dialect.Schema
 {
-	public abstract partial class AbstractIndexMetadata : IIndexMetadata
+	public abstract class AbstractIndexMetadata : IIndexMetadata
 	{
 		private String name;
 		private readonly List<IColumnMetadata> columns = new List<IColumnMetadata>();

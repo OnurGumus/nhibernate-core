@@ -22,7 +22,7 @@ namespace NHibernate.Dialect.Function
 	///]]>
 	/// </remarks>
 	[Serializable]
-	public partial class AnsiSubstringFunction : ISQLFunction
+	public class AnsiSubstringFunction : ISQLFunction
 	{
 		#region ISQLFunction Members
 

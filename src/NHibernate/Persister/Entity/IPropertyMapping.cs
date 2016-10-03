@@ -5,7 +5,7 @@ namespace NHibernate.Persister.Entity
 	/// <summary>
 	/// Abstraction of all mappings that define properties: entities, collection elements.
 	/// </summary>
-	public partial interface IPropertyMapping
+	public interface IPropertyMapping
 	{
 		// TODO: It would be really, really nice to use this to also model components!
 

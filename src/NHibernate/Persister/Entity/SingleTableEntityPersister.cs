@@ -15,7 +15,7 @@ namespace NHibernate.Persister.Entity
 	/// Default implementation of the <c>ClassPersister</c> interface. Implements the
 	/// "table-per-class hierarchy" mapping strategy for an entity class.
 	/// </summary>
-	public partial class SingleTableEntityPersister : AbstractEntityPersister, IQueryable
+	public class SingleTableEntityPersister : AbstractEntityPersister, IQueryable
 	{
 		// the class hierarchy structure
 		private readonly int joinSpan;

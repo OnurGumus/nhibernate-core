@@ -3,7 +3,7 @@ using System;
 namespace NHibernate.Type
 {
 	[Serializable]
-	public partial class LocalDateTimeType : AbstractDateTimeSpecificKindType
+	public class LocalDateTimeType : AbstractDateTimeSpecificKindType
 	{
 		protected override DateTimeKind DateTimeKind
 		{

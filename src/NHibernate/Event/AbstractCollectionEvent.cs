@@ -7,7 +7,7 @@ namespace NHibernate.Event
 {
 	/// <summary> Defines a base class for events involving collections. </summary>
 	[Serializable]
-	public abstract partial class AbstractCollectionEvent : AbstractEvent
+	public abstract class AbstractCollectionEvent : AbstractEvent
 	{
 		private readonly object affectedOwner;
 		private readonly string affectedOwnerEntityName;

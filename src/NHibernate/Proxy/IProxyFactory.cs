@@ -6,7 +6,7 @@ using NHibernate.Type;
 namespace NHibernate.Proxy
 {
 	/// <summary> Contract for run-time, proxy-based lazy initialization proxies. </summary>
-	public partial interface IProxyFactory
+	public interface IProxyFactory
 	{
 		/// <summary> Called immediately after instantiation of this factory. </summary>
 		/// <param name="entityName">

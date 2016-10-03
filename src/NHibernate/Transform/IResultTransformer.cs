@@ -8,7 +8,7 @@ namespace NHibernate.Transform
 	/// results into the actual application-visible query result list.
 	/// </summary>
 	/// <seealso cref="NHibernate.ICriteria.SetResultTransformer(IResultTransformer)" />
-	public partial interface IResultTransformer
+	public interface IResultTransformer
 	{
 		/// <summary>
 		/// 

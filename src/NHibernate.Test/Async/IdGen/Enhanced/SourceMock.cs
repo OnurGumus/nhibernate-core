@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using NHibernate.Id.Enhanced;
 using System.Threading.Tasks;
 using Exception = System.Exception;

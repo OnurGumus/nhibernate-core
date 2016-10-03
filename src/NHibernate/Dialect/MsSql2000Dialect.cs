@@ -40,7 +40,7 @@ namespace NHibernate.Dialect
 	///	</item>
 	/// </list>
 	/// </remarks>
-	public partial class MsSql2000Dialect : Dialect
+	public class MsSql2000Dialect : Dialect
 	{
 		public MsSql2000Dialect()
 		{
@@ -462,7 +462,7 @@ namespace NHibernate.Dialect
 		}
 		
 		[Serializable]
-		protected partial class CountBigQueryFunction : ClassicAggregateFunction
+		protected class CountBigQueryFunction : ClassicAggregateFunction
 		{
 			public CountBigQueryFunction() : base("count_big", true) { }
 

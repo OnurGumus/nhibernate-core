@@ -14,7 +14,7 @@ using Remotion.Linq.Clauses.Expressions;
 
 namespace NHibernate.Linq.NestedSelects
 {
-	static partial class NestedSelectRewriter
+	static class NestedSelectRewriter
 	{
 		private static readonly MethodInfo CastMethod = EnumerableHelper.GetMethod("Cast", new[] { typeof (IEnumerable) }, new[] { typeof (object[]) });
 

@@ -12,7 +12,7 @@ namespace NHibernate.Linq.ReWriters
 		bool IsIdentifier(System.Type type, string propertyName);
 	}
 
-	public partial class AddJoinsReWriter : QueryModelVisitorBase, IIsEntityDecider
+	public class AddJoinsReWriter : QueryModelVisitorBase, IIsEntityDecider
 	{
 		private readonly ISessionFactoryImplementor _sessionFactory;
 		private readonly MemberExpressionJoinDetector _memberExpressionJoinDetector;

@@ -8,7 +8,7 @@ namespace NHibernate.SqlCommand
 	/// A list of <see cref="Parameter"/> that maintains a cache of backtrace positions for performance purpose.
 	/// See https://nhibernate.jira.com/browse/NH-3489.
 	/// </summary>
-	internal partial class BackTrackCacheParameterList : Collection<Parameter>
+	internal class BackTrackCacheParameterList : Collection<Parameter>
 	{
 		private Dictionary<string, SortedSet<int>> _indexesByBackTrace;
 

@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace NHibernate.Bytecode
 {
 	[Serializable]
-	public partial class UnableToLoadProxyFactoryFactoryException : HibernateByteCodeException
+	public class UnableToLoadProxyFactoryFactoryException : HibernateByteCodeException
 	{
 		private readonly string typeName;
 		public UnableToLoadProxyFactoryFactoryException(string typeName, Exception inner)

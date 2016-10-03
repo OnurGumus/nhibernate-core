@@ -15,7 +15,7 @@ namespace NHibernate.Util
 	/// the cache.  Thus the size of this cache never grows beyond the stated size. 
 	/// </remarks>
 	[Serializable]
-	public partial class SimpleMRUCache : IDeserializationCallback
+	public class SimpleMRUCache : IDeserializationCallback
 	{
 		private const int DefaultStrongRefCount = 128;
 

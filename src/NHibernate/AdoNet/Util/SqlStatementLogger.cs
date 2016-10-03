@@ -6,7 +6,7 @@ using System.Text;
 namespace NHibernate.AdoNet.Util
 {
 	/// <summary> Centralize logging handling for SQL statements. </summary>
-	public partial class SqlStatementLogger
+	public class SqlStatementLogger
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor("NHibernate.SQL");
 

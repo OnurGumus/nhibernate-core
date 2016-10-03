@@ -5,7 +5,7 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	[Serializable]
-	public abstract partial class AbstractStringType: ImmutableType, IDiscriminatorType
+	public abstract class AbstractStringType: ImmutableType, IDiscriminatorType
 	{
 		public AbstractStringType(SqlType sqlType)
 			: base(sqlType)

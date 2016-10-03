@@ -220,7 +220,7 @@ namespace NHibernate.Type
 	}
 
 	[Serializable]
-	public partial class EnumStringType<T> : EnumStringType
+	public class EnumStringType<T> : EnumStringType
 	{
 		private readonly string typeName;
 

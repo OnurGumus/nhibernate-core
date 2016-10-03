@@ -9,7 +9,7 @@ namespace NHibernate.Type
 	/// to the database.
 	/// </summary>
 	[Serializable]
-	public partial class GenericOrderedSetType<T> : GenericSetType<T>
+	public class GenericOrderedSetType<T> : GenericSetType<T>
 	{
 		/// <summary>
 		/// Initializes a new instance of a <see cref="GenericOrderedSetType{T}"/> class for

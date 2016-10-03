@@ -11,7 +11,7 @@ namespace NHibernate.Criterion
 	/// This is useful if we want to send a value to the database
 	/// </summary>
 	[Serializable]
-	public partial class ConstantProjection : SimpleProjection
+	public class ConstantProjection : SimpleProjection
 	{
 		private readonly object value;
 		private readonly TypedValue typedValue;

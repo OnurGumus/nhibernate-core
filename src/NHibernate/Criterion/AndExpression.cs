@@ -7,7 +7,7 @@ namespace NHibernate.Criterion
 	/// with an <c>and</c> between them.
 	/// </summary>
 	[Serializable]
-	public partial class AndExpression : LogicalExpression
+	public class AndExpression : LogicalExpression
 	{
 		/// <summary>
 		/// Get the Sql operator to put between the two <see cref="ICriterion"/>s.

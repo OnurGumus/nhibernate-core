@@ -3,7 +3,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// An <see cref="IType"/> that may appear as an SQL literal
 	/// </summary>
-	public partial interface ILiteralType
+	public interface ILiteralType
 	{
 		/// <summary>
 		/// When implemented by a class, return a <see cref="string"/> representation 

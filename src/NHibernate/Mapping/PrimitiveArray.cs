@@ -7,7 +7,7 @@ namespace NHibernate.Mapping
 	/// of the key columns + index column.
 	/// </summary>
 	[Serializable]
-	public partial class PrimitiveArray : Array
+	public class PrimitiveArray : Array
 	{
 		public PrimitiveArray(PersistentClass owner) : base(owner)
 		{

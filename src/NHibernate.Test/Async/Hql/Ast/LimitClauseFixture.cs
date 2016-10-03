@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.Hql.Ast.ANTLR;

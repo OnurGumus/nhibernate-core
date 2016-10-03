@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Cfg.Loquacious
 {
-	public partial interface IDbIntegrationConfiguration
+	public interface IDbIntegrationConfiguration
 	{
 		/// <summary>
 		/// Define and configure the dialect to use.

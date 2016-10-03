@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using NHibernate.Cfg;
 using NHibernate.Linq;
 using NUnit.Framework;
@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		private class ValueTuple<T1, T2, T3, T4, T5, T6, T7>
+		private partial class ValueTuple<T1, T2, T3, T4, T5, T6, T7>
 		{
 			public T1 Item1;
 			public T2 Item2;

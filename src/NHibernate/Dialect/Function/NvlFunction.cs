@@ -10,7 +10,7 @@ namespace NHibernate.Dialect.Function
 	/// Emulation of coalesce() on Oracle, using multiple nvl() calls
 	/// </summary>
 	[Serializable]
-	public partial class NvlFunction : ISQLFunction
+	public class NvlFunction : ISQLFunction
 	{
 		public NvlFunction()
 		{

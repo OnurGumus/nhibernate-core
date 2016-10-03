@@ -8,7 +8,7 @@ namespace NHibernate.Mapping
 	/// An array has a primary key consisting of the key columns + index column
 	/// </summary>
 	[Serializable]
-	public partial class Array : List
+	public class Array : List
 	{
 		private System.Type elementClass;
 		private string elementClassName;

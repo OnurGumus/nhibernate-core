@@ -4,7 +4,7 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Driver
 {
-	public partial class ReflectionDriveConnectionCommandProvider : IDriveConnectionCommandProvider
+	public class ReflectionDriveConnectionCommandProvider : IDriveConnectionCommandProvider
 	{
 		private readonly System.Type commandType;
 		private readonly System.Type connectionType;

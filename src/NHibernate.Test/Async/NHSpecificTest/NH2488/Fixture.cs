@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 	public partial class FixtureAsync : BugTestCaseAsync
 	{
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		private class FetchSelectScenario : IDisposable
+		private partial class FetchSelectScenario : IDisposable
 		{
 			private readonly ISessionFactory factory;
 			public FetchSelectScenario(ISessionFactory factory)
@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		private class FetchJoinScenario : IDisposable
+		private partial class FetchJoinScenario : IDisposable
 		{
 			private readonly ISessionFactory factory;
 			public FetchJoinScenario(ISessionFactory factory)
@@ -72,7 +72,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		private class JoinedSubclassScenario : IDisposable
+		private partial class JoinedSubclassScenario : IDisposable
 		{
 			private readonly ISessionFactory factory;
 			public JoinedSubclassScenario(ISessionFactory factory)

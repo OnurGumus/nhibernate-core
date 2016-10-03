@@ -11,7 +11,7 @@ namespace NHibernate.Hql.Util
 	/// <summary>
 	/// Wraps SessionFactoryImpl, adding more lookup behaviors and encapsulating some of the error handling.
 	/// </summary>
-	public partial class SessionFactoryHelper
+	public class SessionFactoryHelper
 	{
 		private readonly ISessionFactoryImplementor sfi;
 		private readonly IDictionary<string,CollectionPropertyMapping> collectionPropertyMappingByRole = 

@@ -8,7 +8,7 @@ using NHibernate.Util;
 namespace NHibernate.Cache
 {
 	[Serializable]
-	public partial class FilterKey
+	public class FilterKey
 	{
 		private readonly string _filterName;
 		private readonly Dictionary<string, TypedValue> _filterParameters = new Dictionary<string, TypedValue>();

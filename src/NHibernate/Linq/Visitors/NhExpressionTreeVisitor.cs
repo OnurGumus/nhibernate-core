@@ -5,7 +5,7 @@ using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
-	public partial class NhExpressionTreeVisitor : ExpressionTreeVisitor
+	public class NhExpressionTreeVisitor : ExpressionTreeVisitor
 	{
 		public override Expression VisitExpression(Expression expression)
 		{

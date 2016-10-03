@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Criterion;
@@ -55,7 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1291AnonExample
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		protected class PersonIQAnon
+		protected partial class PersonIQAnon
 		{
 			private int _iq;
 			public PersonIQAnon(int iq)
@@ -94,7 +94,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1291AnonExample
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		protected class PersonNameAnon
+		protected partial class PersonNameAnon
 		{
 			private string name;
 			public PersonNameAnon(string name)
@@ -155,7 +155,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1291AnonExample
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		protected class HomeAnon
+		protected partial class HomeAnon
 		{
 			private int zip;
 			public HomeAnon(int zip)

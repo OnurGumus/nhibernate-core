@@ -7,7 +7,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 	/// <summary>
 	/// Configuration parsed values for a listener XML node
 	/// </summary>
-	public partial class ListenerConfiguration
+	public class ListenerConfiguration
 	{
 		internal ListenerConfiguration(XPathNavigator listenerElement)
 		{

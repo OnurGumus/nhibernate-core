@@ -11,7 +11,7 @@ namespace NHibernate.Criterion
 	/// constraint between two properties (with SQL binary operators).
 	/// </summary>
 	[Serializable]
-	public abstract partial class PropertyExpression : AbstractCriterion
+	public abstract class PropertyExpression : AbstractCriterion
 	{
 		private static readonly TypedValue[] NoTypedValues = new TypedValue[0];
 		private readonly string _lhsPropertyName;

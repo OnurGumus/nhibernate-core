@@ -6,7 +6,7 @@ namespace NHibernate.Dialect.Function
 	/// Classic SUM sqlfunction that return types as it was done in Hibernate 3.1
 	/// </summary>
 	[Serializable]
-	public partial class ClassicSumFunction : ClassicAggregateFunction
+	public class ClassicSumFunction : ClassicAggregateFunction
 	{
 		public ClassicSumFunction() : base("sum", false)
 		{

@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using NHibernate.Test.Events.Collections.Association.Bidirectional.ManyToMany;
 using NUnit.Framework;
 using System.Threading.Tasks;

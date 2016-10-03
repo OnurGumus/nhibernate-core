@@ -7,7 +7,7 @@ namespace NHibernate.UserTypes
 	/// <summary>
 	/// A user type that may be used for a version property.
 	/// </summary>
-	public partial interface IUserVersionType : IUserType, IComparer
+	public interface IUserVersionType : IUserType, IComparer
 	{
 		/// <summary>
 		/// Generate an initial version.

@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public partial class MapKeyComponentCustomizer<TKey> : IComponentMapKeyMapper<TKey>
+	public class MapKeyComponentCustomizer<TKey> : IComponentMapKeyMapper<TKey>
 	{
 		private readonly ICustomizersHolder customizersHolder;
 		private readonly PropertyPath propertyPath;

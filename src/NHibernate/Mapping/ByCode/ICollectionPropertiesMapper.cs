@@ -6,7 +6,7 @@ using NHibernate.UserTypes;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface ICollectionPropertiesMapper : IEntityPropertyMapper, ICollectionSqlsMapper
+	public interface ICollectionPropertiesMapper : IEntityPropertyMapper, ICollectionSqlsMapper
 	{
 		void Inverse(bool value);
 		void Mutable(bool value);
@@ -31,7 +31,7 @@ namespace NHibernate.Mapping.ByCode
 		void Persister(System.Type persister);
 	}
 
-	public partial interface ICollectionPropertiesMapper<TEntity, TElement> : IEntityPropertyMapper, ICollectionSqlsMapper
+	public interface ICollectionPropertiesMapper<TEntity, TElement> : IEntityPropertyMapper, ICollectionSqlsMapper
 	{
 		void Inverse(bool value);
 		void Mutable(bool value);

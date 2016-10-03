@@ -10,7 +10,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public partial class IsNotNullLogicOperatorNode : AbstractNullnessCheckNode
+	public class IsNotNullLogicOperatorNode : AbstractNullnessCheckNode
 	{
 		public IsNotNullLogicOperatorNode(IToken token) : base(token)
 		{

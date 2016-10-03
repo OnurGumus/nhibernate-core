@@ -21,7 +21,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 	/// <summary>
 	/// Configuration parsed values for hibernate-configuration section.
 	/// </summary>
-	public partial class HibernateConfiguration : IHibernateConfiguration
+	public class HibernateConfiguration : IHibernateConfiguration
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(HibernateConfiguration));
 

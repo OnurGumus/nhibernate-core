@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.SqlCommand
 {
-	public partial class InsertSelect : ISqlStringBuilder
+	public class InsertSelect : ISqlStringBuilder
 	{
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(InsertSelect));
 

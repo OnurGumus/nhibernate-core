@@ -2,7 +2,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public abstract partial class NotFoundMode
+	public abstract class NotFoundMode
 	{
 		public static NotFoundMode Ignore = new IgnoreNotFoundMode();
 		public static NotFoundMode Exception = new ExceptionNotFoundMode();

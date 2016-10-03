@@ -1,6 +1,6 @@
 namespace NHibernate.Cfg.Loquacious
 {
-	public partial interface IDbSchemaIntegrationConfiguration
+	public interface IDbSchemaIntegrationConfiguration
 	{
 		IDbIntegrationConfiguration Recreating();
 		IDbIntegrationConfiguration Creating();

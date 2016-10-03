@@ -23,7 +23,7 @@ namespace NHibernate.Mapping
 	/// Represents a Table in a database that an object gets mapped against.
 	/// </summary>
 	[Serializable]
-	public partial class Table : IRelationalModel
+	public class Table : IRelationalModel
 	{
 		private static int tableCounter;
 		private readonly List<string> checkConstraints = new List<string>();
@@ -1003,7 +1003,7 @@ namespace NHibernate.Mapping
 
 		#region Nested type: ForeignKeyKey
 		[Serializable]
-		internal partial class ForeignKeyKey : IEqualityComparer<ForeignKeyKey>
+		internal class ForeignKeyKey : IEqualityComparer<ForeignKeyKey>
 		{
 			internal List<Column> columns;
 			internal string referencedClassName;

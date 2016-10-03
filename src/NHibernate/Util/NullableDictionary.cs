@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Util
 {
-	public partial class NullableDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+	public class NullableDictionary<TKey, TValue> : IDictionary<TKey, TValue>
 		where TKey : class
 	{
 		private TValue _nullValue;

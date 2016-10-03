@@ -10,9 +10,9 @@ namespace NHibernate.Engine.Query
 	/// relation to parameters (either named, ejb3-style, or ordinal) and
 	/// providing callbacks about such recognitions.
 	/// </summary>
-	public partial class ParameterParser
+	public class ParameterParser
 	{
-		public partial interface IRecognizer
+		public interface IRecognizer
 		{
 			void OutParameter(int position);
 			void OrdinalParameter(int position);

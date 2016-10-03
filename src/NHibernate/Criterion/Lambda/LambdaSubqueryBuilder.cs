@@ -9,7 +9,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Criterion.Lambda
 {
 
-	public partial class LambdaSubqueryBuilder
+	public class LambdaSubqueryBuilder
 	{
 		private string propertyName;
 		private object value;

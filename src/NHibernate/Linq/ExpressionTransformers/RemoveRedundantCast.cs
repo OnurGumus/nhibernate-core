@@ -7,7 +7,7 @@ namespace NHibernate.Linq.ExpressionTransformers
 	/// Remove redundant casts to the same type or to superclass (upcast) in <see cref="ExpressionType.Convert"/>, <see cref=" ExpressionType.ConvertChecked"/> 
 	/// and <see cref="ExpressionType.TypeAs"/> <see cref="UnaryExpression"/>s  
 	/// </summary>
-	public partial class RemoveRedundantCast : IExpressionTransformer<UnaryExpression>
+	public class RemoveRedundantCast : IExpressionTransformer<UnaryExpression>
 	{
 		private static readonly ExpressionType[] _supportedExpressionTypes = new[]
 			{

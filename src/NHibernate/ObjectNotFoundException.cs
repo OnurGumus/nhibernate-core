@@ -12,7 +12,7 @@ namespace NHibernate
 	/// a row exists in the database.
 	/// </summary>
 	[Serializable]
-	public partial class ObjectNotFoundException : UnresolvableObjectException
+	public class ObjectNotFoundException : UnresolvableObjectException
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ObjectNotFoundException"/> class.

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Dialect.Function
 {
-	public partial class SQLFunctionRegistry
+	public class SQLFunctionRegistry
 	{
 		private readonly Dialect dialect;
 		private readonly IDictionary<string, ISQLFunction> userFunctions;

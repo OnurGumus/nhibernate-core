@@ -2,7 +2,7 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
 {
-	public partial class Ingres9Dialect : IngresDialect
+	public class Ingres9Dialect : IngresDialect
 	{
 		/// <summary>
 		/// Does this Dialect have some kind of <c>LIMIT</c> syntax?

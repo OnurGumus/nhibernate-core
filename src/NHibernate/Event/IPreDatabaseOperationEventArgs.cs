@@ -2,7 +2,7 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Event
 {
-	public partial interface IPreDatabaseOperationEventArgs : IDatabaseEventArgs
+	public interface IPreDatabaseOperationEventArgs : IDatabaseEventArgs
 	{
 		/// <summary> The entity involved in the database operation. </summary>
 		object Entity { get; }

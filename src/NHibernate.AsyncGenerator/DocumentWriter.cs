@@ -380,6 +380,8 @@ namespace NHibernate.AsyncGenerator
 
 			public List<RewrittenNode> RewrittenNodes { get; } = new List<RewrittenNode>();
 
+			public bool MissingPartialKeyword { get; set; }
+
 			public bool TaskUsed { get; set; }
 
 			public bool AsyncLockUsed { get; set; }
@@ -387,11 +389,22 @@ namespace NHibernate.AsyncGenerator
 
 		private class RewriteTypeResult
 		{
+			public bool ReplaceOriginalNode { get; set; }
+
+			public TypeDeclarationSyntax OriginalNode { get; set; }
+
 			public TypeDeclarationSyntax Node { get; set; }
 
 			public bool TaskUsed { get; set; }
 
 			public bool AsyncLockUsed { get; set; }
+		}
+
+		public class TransformDocumentResult
+		{
+			public CompilationUnitSyntax NewRootNode { get; set; }
+
+			public CompilationUnitSyntax OriginalRootNode { get; set; }
 		}
 
 		private RewriteTypeResult RewriteType(TypeInfo rootTypeInfo, bool onlyMissingMembers = false)
@@ -411,7 +424,8 @@ namespace NHibernate.AsyncGenerator
 				var annotation = Guid.NewGuid().ToString();
 				var metadata = new TypeInfoMetadata
 				{
-					NodeAnnotation = annotation
+					NodeAnnotation = annotation,
+					MissingPartialKeyword = typeInfo.TypeTransformation == TypeTransformation.Partial && !typeInfo.Node.IsPartial()
 				};
 
 				var typeSpanStart = typeInfo.Node.SpanStart - startRootTypeSpan;
@@ -490,19 +504,21 @@ namespace NHibernate.AsyncGenerator
 				typeInfoMetadatas.Add(typeInfo, metadata);
 			}
 
+			result.OriginalNode = rootTypeNode.WithTriviaFrom(rootTypeInfo.Node);
 
 			foreach (var typeInfo in rootTypeInfo.GetDescendantTypeInfosAndSelf()
 				.Where(o => o.TypeTransformation != TypeTransformation.None)
 				.OrderByDescending(o => o.Node.SpanStart))
 			{
 				var metadata = typeInfoMetadatas[typeInfo];
-				// add partial to the original file
-				//var partialTypeDeclaration = typeDeclaration.AddPartial();
-				//if (partialTypeDeclaration != typeDeclaration)
-				//{
-				//	partialTypeDeclaration = partialTypeDeclaration.NormalizeWhitespace("	");
-				//	rootChanged = true;
-
+				// add partial to the original node
+				if (metadata.MissingPartialKeyword)
+				{
+					result.ReplaceOriginalNode = true;
+					var typeNode = result.OriginalNode.GetAnnotatedNodes(metadata.NodeAnnotation).OfType<TypeDeclarationSyntax>().First();
+					result.OriginalNode = result.OriginalNode.ReplaceNode(typeNode, typeNode
+						.AddPartial(t => t.WithTrailingTrivia(SyntaxTrivia(SyntaxKind.WhitespaceTrivia, " "))));
+				}
 
 				// if the root type has to be a new type then all nested types have to be new types
 				if (!onlyMissingMembers && rootTypeInfo.TypeTransformation == TypeTransformation.NewType)
@@ -618,19 +634,21 @@ namespace NHibernate.AsyncGenerator
 			return result;
 		}
 
-		public void Write()
+		public TransformDocumentResult Transform()
 		{
-			var rootNode = DocumentInfo.RootNode;
+			var result = new TransformDocumentResult();
+			var rootNode = DocumentInfo.RootNode.WithoutTrivia();
 			var namespaceNodes = new List<MemberDeclarationSyntax>();
 			var customTask = Configuration.Async.CustomTaskType;
 			var tasksUsed = false;
 			var taskConflict = false;
 			var asyncLockUsed = false;
+			var rewrittenNodes = new List<RewrittenNode>();
+
 			// TODO: handle global namespace
 			foreach (var namespaceInfo in DocumentInfo.Values.OrderBy(o => o.Node.SpanStart))
 			{
 				var namespaceNode = namespaceInfo.Node;
-
 				taskConflict |= !DocumentInfo.ProjectInfo.IsNameUniqueInsideNamespace(namespaceInfo.Symbol, "Task");
 
 				var typeNodes = new List<MemberDeclarationSyntax>();
@@ -649,6 +667,22 @@ namespace NHibernate.AsyncGenerator
 					tasksUsed |= rewriteResult.TaskUsed;
 					asyncLockUsed |= rewriteResult.AsyncLockUsed;
 					typeNodes.Add(rewriteResult.Node);
+
+					if (rewriteResult.ReplaceOriginalNode)
+					{
+						var rewritenNode = new RewrittenNode
+						{
+							Annotation = Guid.NewGuid().ToString(),
+							Rewritten = rewriteResult.OriginalNode
+						};
+						var typeSpanStart = typeInfo.Node.SpanStart;
+						var typeSpanLength = typeInfo.Node.Span.Length;
+						var typeNode = rootNode.DescendantNodesAndSelf().OfType<TypeDeclarationSyntax>()
+							.First(o => o.SpanStart == typeSpanStart && o.Span.Length == typeSpanLength);
+						rootNode = rootNode.ReplaceNode(typeNode, typeNode.WithAdditionalAnnotations(new SyntaxAnnotation(rewritenNode.Annotation)));
+						rewrittenNodes.Add(rewritenNode);
+					}
+
 					if (typeInfo.TypeTransformation == TypeTransformation.NewType && typeInfo.HasMissingMembers)
 					{
 						rewriteResult = RewriteType(typeInfo, true);
@@ -667,8 +701,21 @@ namespace NHibernate.AsyncGenerator
 			}
 			if (!namespaceNodes.Any())
 			{
-				return;
+				return null;
 			}
+
+			rootNode = rootNode.WithTriviaFrom(DocumentInfo.RootNode);
+
+			var origRootNode = rootNode;
+			foreach (var rewrittenNode in rewrittenNodes)
+			{
+				origRootNode = rootNode.ReplaceNode(rootNode.GetAnnotatedNodes(rewrittenNode.Annotation).First(), rewrittenNode.Rewritten);
+			}
+			if (rootNode != origRootNode)
+			{
+				result.OriginalRootNode = origRootNode;
+			}
+
 
 			var lockNamespace = Configuration.Async.Lock.Namespace;
 			if (asyncLockUsed && rootNode.Usings.All(o => o.Name.ToString() != lockNamespace))
@@ -723,15 +770,8 @@ namespace NHibernate.AsyncGenerator
 			var rewriter = new TransactionScopeRewriter();
 			rootNode = (CompilationUnitSyntax)rewriter.VisitCompilationUnit(rootNode);
 
-			var content = rootNode
-				.NormalizeWhitespace("	")
-				.ToFullString();
-
-			if (!Directory.Exists(DestinationFolder))
-			{
-				Directory.CreateDirectory(DestinationFolder);
-			}
-			File.WriteAllText($"{DestinationFolder}\\{DocumentInfo.Name}", content);
+			result.NewRootNode = rootNode.NormalizeWhitespace("	");
+			return result;
 		}
 	}
 }

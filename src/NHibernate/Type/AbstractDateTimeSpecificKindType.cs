@@ -4,7 +4,7 @@ using System.Data.Common;
 namespace NHibernate.Type
 {
 	[Serializable]
-	public abstract partial class AbstractDateTimeSpecificKindType : DateTimeType
+	public abstract class AbstractDateTimeSpecificKindType : DateTimeType
 	{
 		protected abstract DateTimeKind DateTimeKind { get; }
 

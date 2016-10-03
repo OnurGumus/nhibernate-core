@@ -36,7 +36,7 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 
 		#region Nested type: FamilyMap
 
-		private class FamilyMap<T> : ClassMapping<Family<T>> where T : Animal
+		private partial class FamilyMap<T> : ClassMapping<Family<T>> where T : Animal
 		{
 			public FamilyMap()
 			{

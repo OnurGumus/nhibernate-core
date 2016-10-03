@@ -13,7 +13,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 	public delegate bool FilterPredicate(IASTNode node);
 
 	[CLSCompliant(false)]
-	public partial class CollectingNodeVisitor : IVisitationStrategy
+	public class CollectingNodeVisitor : IVisitationStrategy
 	{
 		private readonly List<IASTNode> collectedNodes = new List<IASTNode>();
 		private readonly FilterPredicate predicate;

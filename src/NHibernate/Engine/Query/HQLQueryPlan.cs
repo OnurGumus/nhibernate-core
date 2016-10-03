@@ -22,7 +22,7 @@ namespace NHibernate.Engine.Query
         IEnumerable PerformIterate(QueryParameters queryParameters, IEventSource session);
     }
 
-    public partial interface IQueryExpressionPlan : IQueryPlan
+    public interface IQueryExpressionPlan : IQueryPlan
     {
         IQueryExpression QueryExpression { get; }
     }

@@ -4,13 +4,13 @@ using System.Collections;
 
 namespace NHibernate.Cfg.Loquacious
 {
-	public partial interface IEntityCollectionCacheConfigurationProperties
+	public interface IEntityCollectionCacheConfigurationProperties
 	{
 		EntityCacheUsage Strategy { get; set; }
 		string RegionName { get; set; }
 	}
 
-	public partial interface IEntityCacheConfigurationProperties<TEntity> where TEntity: class
+	public interface IEntityCacheConfigurationProperties<TEntity> where TEntity: class
 	{
 		EntityCacheUsage? Strategy { get; set; }
 		string RegionName { get; set; }

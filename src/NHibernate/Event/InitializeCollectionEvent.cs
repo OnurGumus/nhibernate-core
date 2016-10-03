@@ -7,7 +7,7 @@ namespace NHibernate.Event
 	/// An event that occurs when a collection wants to be initialized
 	/// </summary>
 	[Serializable]
-	public partial class InitializeCollectionEvent : AbstractCollectionEvent
+	public class InitializeCollectionEvent : AbstractCollectionEvent
 	{
 		public InitializeCollectionEvent(IPersistentCollection collection, IEventSource source)
 			: base(

@@ -1,7 +1,7 @@
 namespace NHibernate.AdoNet.Util
 {
 	/// <summary> Represents the the understood types or styles of formatting.  </summary>
-	public partial class FormatStyle
+	public class FormatStyle
 	{
 		public static readonly FormatStyle Basic = new FormatStyle("basic", new BasicFormatter());
 		public static readonly FormatStyle Ddl = new FormatStyle("ddl", new DdlFormatter());
@@ -42,7 +42,7 @@ namespace NHibernate.AdoNet.Util
 
 		#region Nested type: NoFormatImpl
 
-		private partial class NoFormatImpl : IFormatter
+		private class NoFormatImpl : IFormatter
 		{
 			#region IFormatter Members
 

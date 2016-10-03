@@ -6,7 +6,7 @@ namespace NHibernate
 	/// Represents a replication strategy. 
 	/// </summary>
 	/// <seealso cref="ISession.Replicate(object, ReplicationMode)"/>
-	public abstract partial class ReplicationMode
+	public abstract class ReplicationMode
 	{
 		public static readonly ReplicationMode Exception = new ExceptionReplicationMode("EXCEPTION");
 		public static readonly ReplicationMode Ignore = new IgnoreReplicationMode("IGNORE");
@@ -29,7 +29,7 @@ namespace NHibernate
 
 		#region Nested type: ExceptionReplicationMode
 
-		private sealed partial class ExceptionReplicationMode : ReplicationMode
+		private sealed class ExceptionReplicationMode : ReplicationMode
 		{
 			public ExceptionReplicationMode(string name) : base(name) {}
 
@@ -47,7 +47,7 @@ namespace NHibernate
 
 		#region Nested type: IgnoreReplicationMode
 
-		private sealed partial class IgnoreReplicationMode : ReplicationMode
+		private sealed class IgnoreReplicationMode : ReplicationMode
 		{
 			public IgnoreReplicationMode(string name) : base(name) {}
 
@@ -65,7 +65,7 @@ namespace NHibernate
 
 		#region Nested type: LatestVersionReplicationMode
 
-		private sealed partial class LatestVersionReplicationMode : ReplicationMode
+		private sealed class LatestVersionReplicationMode : ReplicationMode
 		{
 			public LatestVersionReplicationMode(string name) : base(name) {}
 
@@ -89,7 +89,7 @@ namespace NHibernate
 
 		#region Nested type: OverwriteReplicationMode
 
-		private sealed partial class OverwriteReplicationMode : ReplicationMode
+		private sealed class OverwriteReplicationMode : ReplicationMode
 		{
 			public OverwriteReplicationMode(string name) : base(name) {}
 

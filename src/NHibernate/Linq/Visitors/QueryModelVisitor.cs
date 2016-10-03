@@ -18,7 +18,7 @@ using Remotion.Linq.EagerFetching;
 
 namespace NHibernate.Linq.Visitors
 {
-	public partial class QueryModelVisitor : QueryModelVisitorBase
+	public class QueryModelVisitor : QueryModelVisitorBase
 	{
 		public static ExpressionToHqlTranslationResults GenerateHqlQuery(QueryModel queryModel, VisitorParameters parameters, bool root)
 		{

@@ -4,7 +4,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Context
 {
-	public abstract partial class MapBasedSessionContext : CurrentSessionContext
+	public abstract class MapBasedSessionContext : CurrentSessionContext
 	{
 		private readonly ISessionFactoryImplementor _factory;
 

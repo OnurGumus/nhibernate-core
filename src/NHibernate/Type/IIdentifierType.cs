@@ -3,7 +3,7 @@ namespace NHibernate.Type
 	/// <summary>
 	/// An <see cref="IType"/> that may be used as an identifier.
 	/// </summary>
-	public partial interface IIdentifierType : IType
+	public interface IIdentifierType : IType
 	{
 		/// <summary>
 		/// When implemented by a class, converts the xml string from the 

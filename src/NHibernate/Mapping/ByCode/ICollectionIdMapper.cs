@@ -3,7 +3,7 @@ using NHibernate.Type;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface ICollectionIdMapper
+	public interface ICollectionIdMapper
 	{
 		void Generator(IGeneratorDef generator);
 		void Generator(IGeneratorDef generator, Action<IGeneratorMapper> generatorMapping);

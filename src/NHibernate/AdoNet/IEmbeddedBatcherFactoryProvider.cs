@@ -11,7 +11,7 @@ namespace NHibernate.AdoNet
 	/// This interface was added in NHibernate for backdraw compatibility to have the ability
 	/// to specify a default <see cref="IBatcherFactory"/> for a specific <see cref="Driver.IDriver"/>.
 	/// </remarks>
-	public partial interface IEmbeddedBatcherFactoryProvider
+	public interface IEmbeddedBatcherFactoryProvider
 	{
 		System.Type BatcherFactoryClass { get;}
 	}

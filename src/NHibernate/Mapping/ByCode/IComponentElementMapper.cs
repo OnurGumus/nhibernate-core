@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public partial interface IComponentElementMapper : IComponentAttributesMapper
+	public interface IComponentElementMapper : IComponentAttributesMapper
 	{
 		void Property(MemberInfo property, Action<IPropertyMapper> mapping);
 
@@ -13,7 +13,7 @@ namespace NHibernate.Mapping.ByCode
 		void ManyToOne(MemberInfo property, Action<IManyToOneMapper> mapping);
 	}
 
-	public partial interface IComponentElementMapper<TComponent> : IComponentAttributesMapper<TComponent>
+	public interface IComponentElementMapper<TComponent> : IComponentAttributesMapper<TComponent>
 	{
 		void Property<TProperty>(Expression<Func<TComponent, TProperty>> property, Action<IPropertyMapper> mapping);
 		void Property<TProperty>(Expression<Func<TComponent, TProperty>> property);

@@ -4,7 +4,7 @@ using System.Collections;
 namespace NHibernate.Transform
 {
 	[Serializable]
-	public partial class AliasToEntityMapResultTransformer : AliasedTupleSubsetResultTransformer
+	public class AliasToEntityMapResultTransformer : AliasedTupleSubsetResultTransformer
 	{
 		private static readonly object Hasher = new object();
 

@@ -15,7 +15,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: Steve Ebersole
 	/// Ported by: Steve Strong
 	/// </summary>
-	public partial interface IParameterContainer
+	public interface IParameterContainer
 	{
 		/// <summary>
 		/// Set the renderable text of this node.

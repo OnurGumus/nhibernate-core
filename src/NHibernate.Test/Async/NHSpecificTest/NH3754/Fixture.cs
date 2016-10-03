@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Criterion;
@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3754
 		}
 
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-		private class TestEntity
+		private partial class TestEntity
 		{
 			public string Name
 			{

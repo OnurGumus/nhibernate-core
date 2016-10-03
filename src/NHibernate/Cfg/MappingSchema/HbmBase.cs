@@ -4,7 +4,7 @@ namespace NHibernate.Cfg.MappingSchema
 {
 	/// <summary>A base class for HBM schema classes that provides helper methods.</summary>
 	[Serializable]
-	public abstract partial class HbmBase
+	public abstract class HbmBase
 	{
 		protected static T Find<T>(object[] array)
 		{

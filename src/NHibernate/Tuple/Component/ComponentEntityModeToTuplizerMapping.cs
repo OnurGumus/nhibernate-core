@@ -12,7 +12,7 @@ namespace NHibernate.Tuple.Component
 	/// the tuplizers and add them to the superclass
 	/// </summary>
 	[Serializable]
-	public partial class ComponentEntityModeToTuplizerMapping : EntityModeToTuplizerMapping
+	public class ComponentEntityModeToTuplizerMapping : EntityModeToTuplizerMapping
 	{
 		private static readonly System.Type[] componentTuplizerCTORSignature = new System.Type[] { typeof(Mapping.Component) };
 

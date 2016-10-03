@@ -5,7 +5,7 @@ using NHibernate.Util;
 
 namespace NHibernate.AdoNet.Util
 {
-	public partial class BasicFormatter : IFormatter
+	public class BasicFormatter : IFormatter
 	{
 		protected const string IndentString = "    ";
 		protected const string Initial = "\n    ";

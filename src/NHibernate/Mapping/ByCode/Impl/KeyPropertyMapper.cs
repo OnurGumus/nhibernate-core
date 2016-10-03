@@ -12,7 +12,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 	/// Manage the mapping of a HbmKeyProperty but implementing <see cref="IPropertyMapper"/>
 	/// instead a more limitated KeyProperty.
 	/// </summary>
-	public partial class KeyPropertyMapper : IPropertyMapper
+	public class KeyPropertyMapper : IPropertyMapper
 	{
 		private readonly IAccessorPropertyMapper entityPropertyMapper;
 		private readonly MemberInfo member;

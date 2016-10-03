@@ -9,7 +9,7 @@ namespace NHibernate.Criterion
 	/// An <see cref="ICriterion"/> that represents "null" constraint.
 	/// </summary>
 	[Serializable]
-	public partial class NullExpression : AbstractCriterion
+	public class NullExpression : AbstractCriterion
 	{
 		private readonly string _propertyName;
 		private readonly IProjection _projection;

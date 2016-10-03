@@ -8,7 +8,7 @@ namespace NHibernate.DebugHelpers
 	/// <summary>
 	/// Used to show a better debug display for dictionaries
 	/// </summary>
-	public partial class DictionaryProxy
+	public class DictionaryProxy
 	{
 		private readonly IDictionary set;
 
@@ -29,7 +29,7 @@ namespace NHibernate.DebugHelpers
 		}
 	}
 
-	public partial class DictionaryProxy<K, V>
+	public class DictionaryProxy<K, V>
 	{
 		private readonly IDictionary<K, V> dic;
 

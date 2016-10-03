@@ -9,7 +9,7 @@ namespace NHibernate.Loader.Custom
 	/// <see cref="ICollectionAliases" /> that uses columnnames instead of generated aliases.
 	/// Aliases can still be overwritten via <c>&lt;return-property&gt;</c>
 	/// </summary>
-	public partial class ColumnCollectionAliases : ICollectionAliases
+	public class ColumnCollectionAliases : ICollectionAliases
 	{
 		private readonly string[] keyAliases;
 		private readonly string[] indexAliases;

@@ -7,7 +7,7 @@ namespace NHibernate.Criterion
 	using Type;
 	using Util;
 
-	public static partial class CriterionUtil
+	public static class CriterionUtil
 	{
 		public static SqlString[] GetColumnNames(
 			string propertyName,

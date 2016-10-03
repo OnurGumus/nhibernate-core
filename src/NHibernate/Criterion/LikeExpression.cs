@@ -16,7 +16,7 @@ namespace NHibernate.Criterion
 	/// string comparison should not be case sensitive.
 	/// </remarks>
 	[Serializable]
-	public partial class LikeExpression : AbstractCriterion
+	public class LikeExpression : AbstractCriterion
 	{
 		private readonly string value;
 		private char? escapeChar;

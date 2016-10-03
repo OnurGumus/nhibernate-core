@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.SqlCommand
 {
-	public partial interface ISqlStringVisitor
+	public interface ISqlStringVisitor
 	{
 		void String(string text);
 		void String(SqlString sqlString);

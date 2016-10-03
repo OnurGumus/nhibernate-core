@@ -3,7 +3,7 @@ using System.Data.Common;
 
 namespace NHibernate.Driver
 {
-	public partial class DbProviderFactoryDriveConnectionCommandProvider : IDriveConnectionCommandProvider
+	public class DbProviderFactoryDriveConnectionCommandProvider : IDriveConnectionCommandProvider
 	{
 		private readonly DbProviderFactory dbProviderFactory;
 

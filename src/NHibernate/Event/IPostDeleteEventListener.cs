@@ -1,7 +1,7 @@
 namespace NHibernate.Event
 {
 	/// <summary> Called after deleting an item from the datastore </summary>
-	public partial interface IPostDeleteEventListener
+	public interface IPostDeleteEventListener
 	{
 		/// <summary>
 		/// 

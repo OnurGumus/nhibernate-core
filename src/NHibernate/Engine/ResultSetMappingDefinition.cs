@@ -6,7 +6,7 @@ using System;
 namespace NHibernate.Engine
 {
 	[Serializable]
-	public partial class ResultSetMappingDefinition
+	public class ResultSetMappingDefinition
 	{
 		private readonly string name;
 		private readonly List<INativeSQLQueryReturn> queryReturns = new List<INativeSQLQueryReturn>();

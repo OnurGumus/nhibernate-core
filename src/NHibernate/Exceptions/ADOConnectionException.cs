@@ -8,7 +8,7 @@ namespace NHibernate.Exceptions
 	/// database (can also include incorrect ADO setup). 
 	/// </summary>
 	[Serializable]
-	public partial class ADOConnectionException : ADOException
+	public class ADOConnectionException : ADOException
 	{
 		public ADOConnectionException(SerializationInfo info, StreamingContext context) : base(info, context) {}
 		public ADOConnectionException(string message, Exception innerException, string sql) : base(message, innerException, sql) {}

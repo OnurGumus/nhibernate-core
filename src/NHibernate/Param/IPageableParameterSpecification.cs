@@ -5,7 +5,7 @@ namespace NHibernate.Param
 	/// <summary>
 	/// Additional information for potential paging parameters in HQL/LINQ
 	/// </summary>
-	public partial interface IPageableParameterSpecification : IExplicitParameterSpecification
+	public interface IPageableParameterSpecification : IExplicitParameterSpecification
 	{
 		/// <summary>
 		/// Notifies the parameter that it is a 'skip' parameter, and should calculate its value using the dialect settings

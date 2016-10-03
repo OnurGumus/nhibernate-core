@@ -1,4 +1,4 @@
-#if NET_4_5
+﻿#if NET_4_5
 /*
     The documentation for NHibernate likes to work with cats / kittens for examples or demonstrations.  
 */

@@ -2,7 +2,7 @@ using NHibernate.Engine;
 
 namespace NHibernate.Cache.Entry
 {
-	public partial class UnstructuredCacheEntry : ICacheEntryStructure
+	public class UnstructuredCacheEntry : ICacheEntryStructure
 	{
 		public object Structure(object item)
 		{

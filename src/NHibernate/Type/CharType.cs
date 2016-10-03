@@ -8,7 +8,7 @@ namespace NHibernate.Type
 	/// to a <c>DbType.StringFixedLength</c> column.
 	/// </summary>
 	[Serializable]
-	public partial class CharType : AbstractCharType
+	public class CharType : AbstractCharType
 	{
 		internal CharType() : base(new StringFixedLengthSqlType(1))
 		{

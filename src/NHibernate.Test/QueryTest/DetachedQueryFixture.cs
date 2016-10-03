@@ -465,7 +465,7 @@ namespace NHibernate.Test.QueryTest
 												(sDQStop - sDQStart) - (sQStop - sQStart));
 		}
 
-		private class TestDetachedQuery : AbstractDetachedQuery
+		private partial class TestDetachedQuery : AbstractDetachedQuery
 		{
 			public Dictionary<int, object> PosUntypeParams
 			{

@@ -10,7 +10,7 @@ using NHibernate.Type;
 namespace NHibernate.Criterion
 {
 	[Serializable]
-	public abstract partial class AbstractEmptinessExpression : AbstractCriterion
+	public abstract class AbstractEmptinessExpression : AbstractCriterion
 	{
 		private readonly TypedValue[] NO_VALUES = new TypedValue[0];
 		private readonly string propertyName;

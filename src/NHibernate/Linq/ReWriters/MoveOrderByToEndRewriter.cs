@@ -7,7 +7,7 @@ using Remotion.Linq.Clauses;
 
 namespace NHibernate.Linq.ReWriters
 {
-	public partial class MoveOrderByToEndRewriter
+	public class MoveOrderByToEndRewriter
 	{
 		public static void ReWrite(QueryModel queryModel)
 		{

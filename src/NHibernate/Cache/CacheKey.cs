@@ -10,7 +10,7 @@ namespace NHibernate.Cache
 	/// keys which do not properly implement equals()/hashCode().
 	/// </summary>
 	[Serializable]
-	public partial class CacheKey
+	public class CacheKey
 	{
 		private readonly object key;
 		private readonly IType type;

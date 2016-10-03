@@ -7,7 +7,7 @@ namespace NHibernate.Engine
 {
 	/// <summary> An ordered pair of a value and its Hibernate type. </summary>
 	[Serializable]
-	public sealed partial class TypedValue
+	public sealed class TypedValue
 	{
 		// Because NH-875 we have a different implementation
 		// The DefaultComparer is the comparer used in H3.2.5
@@ -59,7 +59,7 @@ namespace NHibernate.Engine
 		}
 
 		[Serializable]
-		public partial class ParameterListComparer : IEqualityComparer<TypedValue>
+		public class ParameterListComparer : IEqualityComparer<TypedValue>
 		{
 			private readonly EntityMode entityMode;
 
@@ -123,7 +123,7 @@ namespace NHibernate.Engine
 		}
 
 		[Serializable]
-		public partial class DefaultComparer : IEqualityComparer<TypedValue>
+		public class DefaultComparer : IEqualityComparer<TypedValue>
 		{
 			private readonly EntityMode entityMode;
 

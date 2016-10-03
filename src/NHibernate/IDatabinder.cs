@@ -23,7 +23,7 @@ namespace NHibernate
 	/// It is not intended that implementors be threadsafe
 	/// </para>
 	/// </remarks>
-	public partial interface IDatabinder
+	public interface IDatabinder
 	{
 		/// <summary>
 		/// Add an object to the output document.

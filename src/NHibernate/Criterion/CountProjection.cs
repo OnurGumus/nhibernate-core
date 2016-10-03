@@ -10,7 +10,7 @@ namespace NHibernate.Criterion
 	/// A Count
 	/// </summary>
 	[Serializable]
-	public partial class CountProjection : AggregateProjection
+	public class CountProjection : AggregateProjection
 	{
 		private bool distinct;
 

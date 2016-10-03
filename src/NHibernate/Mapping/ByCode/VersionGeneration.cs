@@ -2,7 +2,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Mapping.ByCode
 {
-	public abstract partial class VersionGeneration
+	public abstract class VersionGeneration
 	{
 		public static VersionGeneration Never = new NeverGeneration();
 		public static VersionGeneration Always = new AlwaysGeneration();

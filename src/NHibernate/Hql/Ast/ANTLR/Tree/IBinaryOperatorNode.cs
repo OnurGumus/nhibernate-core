@@ -8,7 +8,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public partial interface IBinaryOperatorNode : IOperatorNode
+	public interface IBinaryOperatorNode : IOperatorNode
 	{
 		/// <summary>
 		/// The left-hand operand of the operator.

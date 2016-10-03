@@ -37,7 +37,7 @@ namespace NHibernate.Transform
 	/// </remarks>
 	/// 
 	/// @author Gail Badner
-	public partial interface ITupleSubsetResultTransformer : IResultTransformer
+	public interface ITupleSubsetResultTransformer : IResultTransformer
 	{
 		/// <summary>
 		/// When a tuple is transformed, is the result a single element of the tuple?

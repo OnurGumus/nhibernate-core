@@ -23,7 +23,7 @@ namespace NHibernate.Test.Linq
 			Assert.That(query[0].FirstName, Is.EqualTo("Margaret"));
 		}
 
-		private static class SqlMethods
+		private static partial class SqlMethods
 		{
 			public static bool Like(string expression, string pattern)
 			{

@@ -3,7 +3,7 @@ using NHibernate.Mapping;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public partial class ClassDiscriminatorBinder: Binder
+	public class ClassDiscriminatorBinder: Binder
 	{
 		private readonly PersistentClass rootClass;
 
