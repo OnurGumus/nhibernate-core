@@ -13,6 +13,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.CodeAnalysis.MSBuild;
+using Microsoft.CodeAnalysis.Text;
 using NHibernate.AsyncGenerator.Extensions;
 using Nito.AsyncEx;
 
@@ -104,6 +105,7 @@ namespace NHibernate.AsyncGenerator
 				{
 					continue;
 				}
+
 				var config = projectConfigs[projectOrig.Name];
 				var projectInfo = new ProjectInfo(this, projectOrig.Id, config);
 				ProjectInfos.Add(projectInfo);
@@ -128,40 +130,23 @@ namespace NHibernate.AsyncGenerator
 						project = project.GetDocument(docInfo.Document.Id).WithSyntaxRoot(result.OriginalRootNode).Project;
 					}
 					var folders = new List<string> { projectInfo.Configuration.AsyncFolder }.Union(docInfo.Folders);
-					project = project.AddDocument(docInfo.Name, result.NewRootNode, folders, $"{writer.DestinationFolder}\\{docInfo.Name}").Project;
+					project = project.AddDocument(docInfo.Name, result.NewRootNode.GetText(Encoding.UTF8), folders, $"{writer.DestinationFolder}\\{docInfo.Name}").Project;
 					Solution = project.Solution;
 				}
 
+				//var origCompilation = await projectOrig.GetCompilationAsync();
+				//var origEmit = origCompilation.Emit("output.exe", "output.pdb");
+				//var origDiagnostincs = origEmit.Diagnostics;
+				//var compilation = await project.GetCompilationAsync();
+				//var emit = compilation.Emit("output2.exe", "output2.pdb");
+				//var diagnostincs = emit.Diagnostics;
+				////var diagnostincs = compilation.GetDeclarationDiagnostics();
+				//foreach (var diagnostic in diagnostincs)
+				//{
+				//}
+
 				ProjectInfos.Clear();
 			}
-
-			//foreach (var projectInfo in ProjectInfos)
-			//{
-			//	var modifiedProject = projectInfo.RemoveGeneratedDocuments();
-			//	Solution = modifiedProject.Solution; // update solution as it is immutable
-			//	await projectInfo.Analyze().ConfigureAwait(false);
-			//	projectInfo.PostAnalyze();
-
-			//	var project = projectInfo.Project;
-
-			//	foreach (var pair in projectInfo.Where(o => o.Value.Any()))
-			//	{
-			//		var docInfo = pair.Value;
-			//		var writer = new DocumentWriter(docInfo, configuration);
-			//		var result = writer.Transform();
-			//		if (result == null)
-			//		{
-			//			continue;
-			//		}
-			//		if (result.OriginalRootNode != null)
-			//		{
-			//			project = project.GetDocument(docInfo.Document.Id).WithSyntaxRoot(result.OriginalRootNode).Project;
-			//		}
-			//		var folders = new List<string> { projectInfo.Configuration.AsyncFolder }.Union(docInfo.Folders);
-			//		project = project.AddDocument(docInfo.Name, result.NewRootNode, folders, $"{writer.DestinationFolder}\\{docInfo.Name}").Project;
-			//		Solution = project.Solution;
-			//	}
-			//}
 			Workspace.TryApplyChanges(Solution);
 		}
 	}
@@ -320,28 +305,28 @@ namespace NHibernate.AsyncGenerator
 			{
 				ProjectConfigurations =
 				{
-					//new ProjectConfiguration("NHibernate")
-					//{
-					//	ScanMethodsBody = true,
-					//	IgnoreExternalReferences = true,
-					//	MethodConversionFunc = symbol =>
-					//	{
-					//		if (symbol.GetAttributes().Any(a => a.AttributeClass.Name == "AsyncAttribute"))
-					//		{
-					//			return MethodAsyncConversion.ToAsync;
-					//		}
-					//		return MethodAsyncConversion.None;
-					//	},
-					//	FindAsyncCounterpart = findAsyncFn
-					//},
+					new ProjectConfiguration("NHibernate")
+					{
+						ScanMethodsBody = true,
+						IgnoreExternalReferences = true,
+						MethodConversionFunc = symbol =>
+						{
+							if (symbol.GetAttributes().Any(a => a.AttributeClass.Name == "AsyncAttribute"))
+							{
+								return MethodAsyncConversion.ToAsync;
+							}
+							return MethodAsyncConversion.None;
+						},
+						FindAsyncCounterpart = findAsyncFn
+					},
 
-					//new ProjectConfiguration("NHibernate.DomainModel")
-					//{
-					//	ScanMethodsBody = true,
-					//	IgnoreExternalReferences = true,
-					//	ScanForMissingAsyncMembers = true,
-					//	FindAsyncCounterpart = findAsyncFn
-					//},
+					new ProjectConfiguration("NHibernate.DomainModel")
+					{
+						ScanMethodsBody = true,
+						IgnoreExternalReferences = true,
+						ScanForMissingAsyncMembers = true,
+						FindAsyncCounterpart = findAsyncFn
+					},
 
 					new ProjectConfiguration("NHibernate.Test")
 					{

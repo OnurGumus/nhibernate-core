@@ -122,6 +122,7 @@
     <Compile Include="Extensions\SyntaxExtensions.Async.cs" />
     <Compile Include="Extensions\SyntaxExtensions.cs" />
     <Compile Include="Extensions\SyntaxExtensions.Trivia.cs" />
+    <Compile Include="Extensions\SyntaxHelper.cs" />
     <Compile Include="Extensions\SyntaxNodeExtensions.cs" />
     <Compile Include="MethodAnalyzeResult.cs" />
     <Compile Include="MethodInfo.cs" />

@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.FindSymbols;
 using NHibernate.AsyncGenerator.Extensions;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using static NHibernate.AsyncGenerator.Extensions.SyntaxHelper;
 
 namespace NHibernate.AsyncGenerator
 {
@@ -634,6 +635,8 @@ namespace NHibernate.AsyncGenerator
 			return result;
 		}
 
+		
+
 		public TransformDocumentResult Transform()
 		{
 			var result = new TransformDocumentResult();
@@ -720,27 +723,24 @@ namespace NHibernate.AsyncGenerator
 			var lockNamespace = Configuration.Async.Lock.Namespace;
 			if (asyncLockUsed && rootNode.Usings.All(o => o.Name.ToString() != lockNamespace))
 			{
-				rootNode = rootNode.AddUsings(UsingDirective(IdentifierName(lockNamespace)));
+				rootNode = rootNode.AddUsings(UsingDirective(NameSyntax(lockNamespace)));
 			}
 
 			if (!taskConflict && rootNode.Usings.All(o => o.Name.ToString() != "System.Threading.Tasks"))
 			{
-				rootNode = rootNode.AddUsings(UsingDirective(IdentifierName("System.Threading.Tasks")));
+				rootNode = rootNode.AddUsings(UsingDirective(NameSyntax("System.Threading.Tasks")));
 			}
 			if (tasksUsed && rootNode.Usings.All(o => o.Name.ToString() != "System"))
 			{
 				rootNode = rootNode.AddUsings( // using Exception = System.Exception
-					UsingDirective(
-						QualifiedName(
-							IdentifierName("System"),
-							IdentifierName("Exception")))
+					UsingDirective(NameSyntax("System.Exception"))
 						.WithAlias(
 							NameEquals(
 								IdentifierName("Exception"))));
 			}
 			if (tasksUsed && !string.IsNullOrEmpty(customTask.Namespace) && rootNode.Usings.All(o => o.Name.ToString() != customTask.Namespace))
 			{
-				rootNode = rootNode.AddUsings(UsingDirective(IdentifierName(customTask.Namespace)));
+				rootNode = rootNode.AddUsings(UsingDirective(NameSyntax(customTask.Namespace)));
 			}
 
 			if (!string.IsNullOrEmpty(Configuration.Directive))

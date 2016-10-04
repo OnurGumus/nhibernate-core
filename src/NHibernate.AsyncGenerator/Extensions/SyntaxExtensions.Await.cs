@@ -12,6 +12,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using static NHibernate.AsyncGenerator.Extensions.SyntaxHelper;
 
 namespace NHibernate.AsyncGenerator.Extensions
 {
@@ -32,7 +33,21 @@ namespace NHibernate.AsyncGenerator.Extensions
 				SeparatedList(
 					new List<AttributeSyntax>
 					{
-						Attribute(IdentifierName("System.CodeDom.Compiler.GeneratedCode(\"AsyncGenerator\", \"1.0.0\")"))
+						Attribute(NameSyntax("System.CodeDom.Compiler.GeneratedCode"))
+						.WithArgumentList(
+							AttributeArgumentList(
+								SeparatedList<AttributeArgumentSyntax>(
+									new SyntaxNodeOrToken[]{
+										AttributeArgument(
+											LiteralExpression(
+												SyntaxKind.StringLiteralExpression,
+												Literal("AsyncGenerator"))),
+										Token(SyntaxKind.CommaToken),
+										AttributeArgument(
+											LiteralExpression(
+												SyntaxKind.StringLiteralExpression,
+												Literal("1.0.0")))
+									})))
 					}
 				),
 				Token(SyntaxKind.CloseBracketToken)
