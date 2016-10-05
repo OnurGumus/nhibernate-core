@@ -82,7 +82,7 @@ namespace NHibernate.AdoNet
 				int arraySize = 0;
 				_countOfCommands = 0;
 				Log.Info("Executing batch");
-				CheckReaders();
+				await (CheckReadersAsync());
 				await (PrepareAsync(_currentBatch));
 				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
 				{

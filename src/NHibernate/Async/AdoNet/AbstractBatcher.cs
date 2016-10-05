@@ -91,7 +91,7 @@ namespace NHibernate.AdoNet
 
 		public async Task<int> ExecuteNonQueryAsync(DbCommand cmd)
 		{
-			CheckReaders();
+			await (CheckReadersAsync());
 			LogCommand(cmd);
 			await (PrepareAsync(cmd));
 			Stopwatch duration = null;
@@ -116,7 +116,7 @@ namespace NHibernate.AdoNet
 
 		public virtual async Task<DbDataReader> ExecuteReaderAsync(DbCommand cmd)
 		{
-			CheckReaders();
+			await (CheckReadersAsync());
 			LogCommand(cmd);
 			await (PrepareAsync(cmd));
 			Stopwatch duration = null;
@@ -144,12 +144,30 @@ namespace NHibernate.AdoNet
 
 			if (!_factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders)
 			{
-				reader = new NHybridDataReader(reader);
+				reader = await (new NHybridDataReader().InitializeAsync(reader));
 			}
 
 			_readersToClose.Add(reader);
 			LogOpenReader();
 			return reader;
+		}
+
+		/// <summary>
+		/// Ensures that the Driver's rules for Multiple Open DataReaders are being followed.
+		/// </summary>
+		protected async Task CheckReadersAsync()
+		{
+			// early exit because we don't need to move an open DbDataReader into memory
+			// since the Driver supports mult open readers.
+			if (_factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders)
+			{
+				return;
+			}
+
+			foreach (NHybridDataReader reader in _readersToClose)
+			{
+				await (reader.ReadIntoMemoryAsync());
+			}
 		}
 
 		public async Task ExecuteBatchAsync()

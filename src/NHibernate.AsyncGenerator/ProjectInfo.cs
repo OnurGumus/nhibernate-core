@@ -19,7 +19,6 @@ namespace NHibernate.AsyncGenerator
 	public class ProjectInfo : Dictionary<string, DocumentInfo>
 	{
 		private static readonly ILog Logger = LogManager.GetLogger(typeof(ProjectInfo));
-		//private readonly string _asyncProjectFolder;
 		private IImmutableSet<string> _ignoredProjectNames;
 		private IImmutableSet<Document> _searchDocuments;
 		private IImmutableSet<Project> _searchProjects;
@@ -109,11 +108,13 @@ namespace NHibernate.AsyncGenerator
 		{
 			if (_searchDocuments == null)
 			{
-				_searchDocuments = SolutionInfo
-					.ProjectInfos
-					.Where(o => !_ignoredProjectNames.Contains(o.Project.Name))
-					.SelectMany(o => o.GetDocuments())
-					.ToImmutableHashSet();
+				_searchDocuments = Configuration.IgnoreExternalReferences
+					? GetDocuments().ToImmutableHashSet()
+					: SolutionInfo
+						.ProjectInfos
+						.Where(o => !_ignoredProjectNames.Contains(o.Project.Name))
+						.SelectMany(o => o.GetDocuments())
+						.ToImmutableHashSet();
 			}
 			return _searchDocuments;
 		}
@@ -126,18 +127,20 @@ namespace NHibernate.AsyncGenerator
 		{
 			if (_searchProjects == null)
 			{
-				_searchProjects = SolutionInfo
-					.ProjectInfos
-					.Where(o => !_ignoredProjectNames.Contains(o.Project.Name))
-					.Select(o => o.Project)
-					.ToImmutableHashSet();
+				_searchProjects = Configuration.IgnoreExternalReferences
+					? new[] {Project}.ToImmutableHashSet()
+					: SolutionInfo
+						.ProjectInfos
+						.Where(o => !_ignoredProjectNames.Contains(o.Project.Name))
+						.Select(o => o.Project)
+						.ToImmutableHashSet();
 			}
 			return _searchProjects;
 		}
 
 		public IEnumerable<Document> GetDocuments()
 		{
-			return Project.Documents/*.Where(o => !o.FilePath.StartsWith(_asyncProjectFolder))*/;
+			return Project.Documents;
 		}
 
 		public async Task Analyze()
@@ -218,7 +221,6 @@ namespace NHibernate.AsyncGenerator
 
 				foreach (var memberSymbol in declaredSymbol
 					.GetMembers()
-					//.Where(o => o.Locations.All(l => !l.SourceTree.FilePath.StartsWith(_asyncProjectFolder)))
 					.OfType<IMethodSymbol>()
 					.Where(o => !AnalyzedMethodSymbols.Contains(o.OriginalDefinition)))
 				{
@@ -302,8 +304,7 @@ namespace NHibernate.AsyncGenerator
 			// references for ctor of the type and the type itself wont have any locations
 			var references = await SymbolFinder.FindReferencesAsync(symbol, Project.Solution, GetSearchableDocuments()).ConfigureAwait(false);
 			foreach (var refLocation in references.SelectMany(o => o.Locations)
-												  .Where(o => !_scannedTypeReferenceLocations.Contains(o))
-												  /*.Where(o => !o.Location.SourceTree.FilePath.StartsWith(_asyncProjectFolder))*/)
+												  .Where(o => !_scannedTypeReferenceLocations.Contains(o)))
 			{
 				_scannedTypeReferenceLocations.Add(refLocation);
 				var info = await GetOrCreateDocumentInfo(refLocation.Document).ConfigureAwait(false);
@@ -369,13 +370,11 @@ namespace NHibernate.AsyncGenerator
 		private async Task ScanForTypeMissingAsyncMethods(DocumentInfo docInfo, INamedTypeSymbol typeSymbol)
 		{
 			var members = typeSymbol.GetMembers()
-				//.Where(o => o.Locations.All(l => !l.SourceTree.FilePath.StartsWith(_asyncProjectFolder)))
 				.OfType<IMethodSymbol>().ToLookup(o => o.Name);
 			var methodInfos = new List<MethodInfo>();
 
 			foreach (var asyncMember in typeSymbol.AllInterfaces
 												  .SelectMany(o => o.GetMembers().OfType<IMethodSymbol>()
-												  //.Where(m => m.Locations.All(l => l.SourceTree == null || !l.SourceTree.FilePath.StartsWith(_asyncProjectFolder)))
 												  .Where(m => m.Name.EndsWith("Async"))))
 			{
 				var bug = asyncMember.Parameters; // An NullReferenceException exception will be thrown if this line will be removed. 
@@ -396,13 +395,7 @@ namespace NHibernate.AsyncGenerator
 				{
 					continue;
 				}
-				var nonAsyncMember = members[nonAsyncName].FirstOrDefault(o => o.HaveSameParameters(asyncMember));
-
-				if (nonAsyncMember == null)
-				{
-					//TODO: fix NullSafeGet problem and remove
-					continue;
-				}
+				var nonAsyncMember = members[nonAsyncName].First(o => o.HaveSameParameters(asyncMember));
 				var methodInfo = docInfo.GetOrCreateMethodInfo(nonAsyncMember);
 				methodInfo.Missing = true;
 				methodInfos.Add(methodInfo);
@@ -418,7 +411,6 @@ namespace NHibernate.AsyncGenerator
 				}
 				foreach (var asyncMember in baseType.GetMembers()
 					.OfType<IMethodSymbol>()
-					//.Where(o => o.Locations.All(l => l.SourceTree == null || !l.SourceTree.FilePath.StartsWith(_asyncProjectFolder)))
 					.Where(o => o.IsAbstract && o.Name.EndsWith("Async")))
 				{
 					var nonAsyncName = asyncMember.Name.Remove(asyncMember.Name.LastIndexOf("Async", StringComparison.InvariantCulture));
@@ -503,6 +495,10 @@ namespace NHibernate.AsyncGenerator
 			if (document.Project == Project)
 			{
 				return ContainsKey(document.FilePath) ? this[document.FilePath] : null;
+			}
+			if (Configuration.IgnoreExternalReferences)
+			{
+				return null;
 			}
 			var projectInfo = SolutionInfo.ProjectInfos.FirstOrDefault(o => o.Project == document.Project);
 			return projectInfo?.GetDocumentInfo(document);
@@ -599,7 +595,6 @@ namespace NHibernate.AsyncGenerator
 						var asyncConterPart = interfaceMember.ContainingType.GetMembers()
 															 .OfType<IMethodSymbol>()
 															 .Where(o => o.Name == methodSymbol.Name + "Async")
-															 //.Where(o => o.Locations.All(l => l.SourceTree == null || !l.SourceTree.FilePath.StartsWith(_asyncProjectFolder)))
 															 .SingleOrDefault(o => o.HaveSameParameters(methodSymbol));
 						if (asyncConterPart == null)
 						{
@@ -633,7 +628,6 @@ namespace NHibernate.AsyncGenerator
 					var asyncConterPart = overridenMethod.ContainingType.GetMembers()
 														 .OfType<IMethodSymbol>()
 														 .Where(o => o.Name == methodSymbol.Name + "Async" && !o.IsSealed && (o.IsVirtual || o.IsAbstract || o.IsOverride))
-														 //.Where(o => o.Locations.All(l => l.SourceTree == null || !l.SourceTree.FilePath.StartsWith(_asyncProjectFolder)))
 														 .SingleOrDefault(o => o.HaveSameParameters(methodSymbol));
 					if (asyncConterPart == null)
 					{
@@ -691,7 +685,6 @@ namespace NHibernate.AsyncGenerator
 					var asyncConterPart = interfaceMember.ContainingType.GetMembers()
 														 .OfType<IMethodSymbol>()
 														 .Where(o => o.Name == methodSymbol.Name + "Async")
-														 //.Where(o => o.Locations.All(l => l.SourceTree == null || !l.SourceTree.FilePath.StartsWith(_asyncProjectFolder)))
 														 .SingleOrDefault(o => o.HaveSameParameters(methodSymbol));
 					if (asyncConterPart == null)
 					{
@@ -780,8 +773,7 @@ namespace NHibernate.AsyncGenerator
 				
 
 				var implementations = await SymbolFinder.FindImplementationsAsync(interfaceMethod, Project.Solution, GetSearchableProjects()).ConfigureAwait(false);
-				foreach (var implementation in implementations.OfType<IMethodSymbol>()
-					/*.Where(o => o.Locations.All(l => !l.SourceTree.FilePath.StartsWith(_asyncProjectFolder)))*/)
+				foreach (var implementation in implementations.OfType<IMethodSymbol>())
 				{
 					syntax = implementation.DeclaringSyntaxReferences.Single();
 					docInfo = await GetOrCreateDocumentInfo(syntax).ConfigureAwait(false);
@@ -823,8 +815,7 @@ namespace NHibernate.AsyncGenerator
 				}
 				
 				var overrides = await SymbolFinder.FindOverridesAsync(baseMethod, Project.Solution, GetSearchableProjects()).ConfigureAwait(false);
-				foreach (var overriddenMethod in overrides.OfType<IMethodSymbol>()
-					/*.Where(o => o.Locations.All(l => !l.SourceTree.FilePath.StartsWith(_asyncProjectFolder)))*/)
+				foreach (var overriddenMethod in overrides.OfType<IMethodSymbol>())
 				{
 					syntax = overriddenMethod.DeclaringSyntaxReferences.Single();
 					docInfo = await GetOrCreateDocumentInfo(syntax).ConfigureAwait(false);
@@ -891,8 +882,7 @@ namespace NHibernate.AsyncGenerator
 			depth++;
 			foreach (var refLocation in references.SelectMany(o => o.Locations)
 				.Where(o => !IgnoredReferenceLocation.Contains(o))
-				.Where(o => !ScannedReferenceLocations.Contains(o))
-				/*.Where(o => !o.Location.SourceTree.FilePath.StartsWith(_asyncProjectFolder))*/)
+				.Where(o => !ScannedReferenceLocations.Contains(o)))
 			{
 				if (IgnoredReferenceLocation.Contains(refLocation))
 				{

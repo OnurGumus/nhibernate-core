@@ -16,7 +16,7 @@ namespace NHibernate.Driver
 	/// This is a completely off-line DataReader - the underlying DbDataReader that was used to create
 	/// this has been closed and no connections to the Db exists.
 	/// </remarks>
-	public class NDataReader : DbDataReader
+	public partial class NDataReader : DbDataReader
 	{
 		private NResult[] results;
 
@@ -43,7 +43,7 @@ namespace NHibernate.Driver
 		/// pick up the <see cref="DbDataReader"/> midstream so that the underlying <see cref="DbDataReader"/> can be closed 
 		/// so a new one can be opened.
 		/// </remarks>
-		public NDataReader(DbDataReader reader, bool isMidstream)
+		public NDataReader Initialize(DbDataReader reader, bool isMidstream)
 		{
 			var resultList = new List<NResult>(2);
 
@@ -57,12 +57,12 @@ namespace NHibernate.Driver
 				}
 
 				// there will be atleast one result 
-				resultList.Add(new NResult(reader, isMidstream));
+				resultList.Add(new NResult().Initialize(reader, isMidstream));
 
 				while (reader.NextResult())
 				{
 					// the second, third, nth result is not processed midstream
-					resultList.Add(new NResult(reader, false));
+					resultList.Add(new NResult().Initialize(reader, false));
 				}
 
 				results = resultList.ToArray();
@@ -75,6 +75,7 @@ namespace NHibernate.Driver
 			{
 				reader.Close();
 			}
+			return this;
 		}
 
 		/// <summary>
@@ -460,13 +461,13 @@ namespace NHibernate.Driver
 		/// <summary>
 		/// Stores a Result from a DataReader in memory.
 		/// </summary>
-		private class NResult
+		private partial class NResult
 		{
 			// [row][column]
-			private readonly object[][] records;
+			private object[][] records;
 			private int colCount = 0;
 
-			private readonly DataTable schemaTable;
+			private DataTable schemaTable;
 
 			// key = field name
 			// index = field index
@@ -483,7 +484,7 @@ namespace NHibernate.Driver
 			/// <see langword="true" /> if the <see cref="DbDataReader"/> is already positioned on the record
 			/// to start reading from.
 			/// </param>
-			internal NResult(DbDataReader reader, bool isMidstream)
+			internal NResult Initialize(DbDataReader reader, bool isMidstream)
 			{
 				schemaTable = reader.GetSchemaTable();
 
@@ -520,6 +521,7 @@ namespace NHibernate.Driver
 				}
 
 				records = recordsList.ToArray();
+				return this;
 			}
 
 			/// <summary>

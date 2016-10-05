@@ -25,17 +25,18 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <include file = 'IType.cs.xmldoc'
-		///path = '//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
-		////> 
+
+		/// <include file='..\..\Type\IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
+		/// /> 
 		/// <remarks>
 		/// <para>
-		/// This implementation forwards the call to <see cref = "NullSafeSet(DbCommand, object, int)"/>.
+		/// This implementation forwards the call to <see cref="NullSafeSet(DbCommand, object, int)" />.
 		/// </para>
 		/// <para>
-		/// It has been "sealed" because the Types inheriting from <see cref = "NullableType"/>
+		/// It has been "sealed" because the Types inheriting from <see cref="NullableType"/>
 		/// do not need to and should not override this method.  All of their implementation
-		/// should be in <see cref = "NullSafeSet(DbCommand, object, int)"/>.
+		/// should be in <see cref="NullSafeSet(DbCommand, object, int)" />.
 		/// </para>
 		/// </remarks>
 		public override sealed Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session)
@@ -51,12 +52,13 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <include file = 'IType.cs.xmldoc'
-		///path = '//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, String[], ISessionImplementor, Object)"]/*'
-		////> 
+
+		/// <include file='..\..\Type\IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, String[], ISessionImplementor, Object)"]/*'
+		/// /> 
 		/// <remarks>
 		/// This has been sealed because no other class should override it.  This 
-		/// method calls <see cref = "NullSafeGet(DbDataReader, String)"/> for a single value.  
+		/// method calls <see cref="NullSafeGet(DbDataReader, String)" /> for a single value.  
 		/// It only takes the first name from the string[] names parameter - that is a 
 		/// safe thing to do because a Nullable Type only has one field.
 		/// </remarks>
@@ -136,17 +138,18 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <include file = 'IType.cs.xmldoc'
-		///path = '//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, String, ISessionImplementor, Object)"]/*'
-		////> 
+
+		/// <include file='..\..\Type\IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, String, ISessionImplementor, Object)"]/*'
+		/// /> 
 		/// <remarks>
 		/// <para>
-		/// This implementation forwards the call to <see cref = "NullSafeGet(DbDataReader, String)"/>.
+		/// This implementation forwards the call to <see cref="NullSafeGet(DbDataReader, String)" />.
 		/// </para>
 		/// <para>
-		/// It has been "sealed" because the Types inheriting from <see cref = "NullableType"/>
+		/// It has been "sealed" because the Types inheriting from <see cref="NullableType"/>
 		/// do not need to and should not override this method.  All of their implementation
-		/// should be in <see cref = "NullSafeGet(DbDataReader, String)"/>.
+		/// should be in <see cref="NullSafeGet(DbDataReader, String)" />.
 		/// </para>
 		/// </remarks>
 		public override sealed Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)

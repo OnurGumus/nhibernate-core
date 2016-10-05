@@ -79,5 +79,24 @@ namespace NHibernate.AsyncGenerator.Extensions
 		{
 			return node.WithLeadingTrivia(leadingTrivia).WithTrailingTrivia(trailingTrivia);
 		}
+
+		public static SyntaxTriviaList RemoveRegions(this SyntaxTriviaList list)
+		{
+			var toRemove = new List<int>();
+			for (var i = list.Count - 1; i >= 0; i--)
+			{
+				var trivia = list[i];
+				if (trivia.IsKind(SyntaxKind.RegionDirectiveTrivia) || trivia.IsKind(SyntaxKind.EndRegionDirectiveTrivia))
+				{
+					toRemove.Add(i);
+				}
+			}
+			while (toRemove.Count > 0)
+			{
+				list = list.RemoveAt(toRemove[0]);
+				toRemove.RemoveAt(0);
+			}
+			return list;
+		}
 	}
 }

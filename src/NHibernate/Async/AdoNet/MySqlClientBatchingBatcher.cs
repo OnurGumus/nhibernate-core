@@ -5,8 +5,6 @@ using System.Text;
 using NHibernate.AdoNet.Util;
 using NHibernate.Exceptions;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.AdoNet
 {
@@ -41,17 +39,30 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		protected override Task DoExecuteBatchAsync(DbCommand ps)
+		protected override async Task DoExecuteBatchAsync(DbCommand ps)
 		{
+			Log.DebugFormat("Executing batch");
+			await (CheckReadersAsync());
+			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
+			{
+				Factory.Settings.SqlStatementLogger.LogBatchCommand(currentBatchCommandsLog.ToString());
+				currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
+			}
+
+			int rowsAffected;
 			try
 			{
-				DoExecuteBatch(ps);
-				return TaskHelper.CompletedTask;
+				rowsAffected = currentBatch.ExecuteNonQuery();
 			}
-			catch (Exception ex)
+			catch (DbException e)
 			{
-				return TaskHelper.FromException<object>(ex);
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
 			}
+
+			Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected);
+			currentBatch.Dispose();
+			totalExpectedRowsAffected = 0;
+			currentBatch = CreateConfiguredBatch();
 		}
 	}
 }

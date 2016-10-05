@@ -163,21 +163,25 @@ namespace NHibernate.Type
 		}
 
 		public abstract Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, IDictionary copiedAlready);
-		/// <include file = 'IType.cs.xmldoc'
-		///path = '//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, string[], ISessionImplementor, object)"]/*'
-		////> 
+
+		/// <include file='..\..\Type\IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, string[], ISessionImplementor, object)"]/*'
+		/// /> 
 		public abstract Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner);
-		/// <include file = 'IType.cs.xmldoc'
-		///path = '//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, string, ISessionImplementor, object)"]/*'
-		////> 
+
+		/// <include file='..\..\Type\IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, string, ISessionImplementor, object)"]/*'
+		/// /> 
 		public abstract Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, Object owner);
-		/// <include file = 'IType.cs.xmldoc'
-		///path = '//members[@type="IType"]/member[@name="M:IType.NullSafeSet(settable)"]/*'
-		////> 
+
+		/// <include file='..\..\Type\IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet(settable)"]/*'
+		/// /> 
 		public abstract Task NullSafeSetAsync(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session);
-		/// <include file = 'IType.cs.xmldoc'
-		///path = '//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
-		////> 
+
+		/// <include file='..\..\Type\IType.cs.xmldoc' 
+		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeSet"]/*'
+		/// /> 
 		public abstract Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session);
 		public abstract Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session);
 	}

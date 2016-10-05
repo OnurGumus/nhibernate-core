@@ -43,7 +43,7 @@ namespace NHibernate.AdoNet
 		protected override async Task DoExecuteBatchAsync(DbCommand ps)
 		{
 			Log.DebugFormat("Executing batch");
-			CheckReaders();
+			await (CheckReadersAsync());
 			await (PrepareAsync(_currentBatch.BatchCommand));
 			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
 			{

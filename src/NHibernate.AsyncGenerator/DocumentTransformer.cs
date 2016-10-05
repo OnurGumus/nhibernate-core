@@ -14,25 +14,75 @@ using static NHibernate.AsyncGenerator.Extensions.SyntaxHelper;
 
 namespace NHibernate.AsyncGenerator
 {
-	public class DocumentWriter
+	public class DocumentTransformer
 	{
-		public DocumentWriter(DocumentInfo info, WriterConfiguration configuration)
+		private List<ITransformerPlugin> _plugins = new List<ITransformerPlugin>();
+
+		private class TransformedNode
+		{
+			public SyntaxNode Original { get; set; }
+
+			public SyntaxNode Transformed { get; set; }
+
+			public string Annotation { get; set; }
+
+			public MethodInfo MethodInfo { get; set; }
+		}
+
+		private class TypeInfoMetadata
+		{
+			public string NodeAnnotation { get; set; }
+
+			public List<TransformedNode> TransformedNodes { get; } = new List<TransformedNode>();
+
+			public bool MissingPartialKeyword { get; set; }
+
+			public bool TaskUsed { get; set; }
+
+			public bool AsyncLockUsed { get; set; }
+		}
+
+		private class TransformTypeResult
+		{
+			public bool ReplaceOriginalNode { get; set; }
+
+			public TypeDeclarationSyntax OriginalNode { get; set; }
+
+			public TypeDeclarationSyntax Node { get; set; }
+
+			public bool TaskUsed { get; set; }
+
+			public bool AsyncLockUsed { get; set; }
+		}
+
+		public DocumentTransformer(DocumentInfo info, TransformerConfiguration configuration)
 		{
 			DocumentInfo = info;
 			Configuration = configuration;
 			var path = "";
+			RelativePathToOriginal = @"..\";
 			for (var i = 0; i < DocumentInfo.Folders.Count; i++)
 			{
 				path += @"..\";
+				RelativePathToOriginal += @"..\";
 			}
+			RelativePathToOriginal += string.Join(@"\", DocumentInfo.Folders);
 			path += @"Async\";
 			path += string.Join(@"\", DocumentInfo.Folders);
 			DestinationFolder = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(DocumentInfo.Path), path));
+
+			foreach (var plugin in Configuration.PluginFactories)
+			{
+				_plugins.Add(plugin(this));
+			}
+
 		}
 
 		public DocumentInfo DocumentInfo { get; }
 
-		public WriterConfiguration Configuration { get; }
+		public TransformerConfiguration Configuration { get; }
+
+		public string RelativePathToOriginal { get; }
 
 		public string DestinationFolder { get; }
 
@@ -101,7 +151,7 @@ namespace NHibernate.AsyncGenerator
 			);
 		}
 
-		private MethodDeclarationSyntax RewiteMethod(MethodInfo methodInfo)
+		private MethodDeclarationSyntax TransformMethod(MethodInfo methodInfo)
 		{
 			// TODO: if a method cannot be converted to async we should not convert dependencies too
 			if (!methodInfo.CanBeAsnyc && !methodInfo.RelatedMethods.Any() && !methodInfo.Missing)
@@ -116,11 +166,11 @@ namespace NHibernate.AsyncGenerator
 			var taskConflict = !DocumentInfo.ProjectInfo.IsNameUniqueInsideNamespace(methodInfo.TypeInfo.NamespaceInfo.Symbol, "Task");
 			if (!methodInfo.HasBody)
 			{
-				return RemoveLeadingRegions(
-					methodInfo.Node
+				return methodInfo.Node
 							  .WithoutAttribute("Async")
 							  .ReturnAsTask(methodInfo.Symbol, taskConflict)
-							  .WithIdentifier(Identifier(methodInfo.Node.Identifier.Value + "Async")));
+							  .WithIdentifier(Identifier(methodInfo.Node.Identifier.Value + "Async"))
+							  .RemoveLeadingRegions();
 			}
 
 			var methodNode = methodInfo.Node.WithoutTrivia(); // references have spans without trivia
@@ -323,94 +373,15 @@ namespace NHibernate.AsyncGenerator
 				methodNode = methodNode.AddAsync(methodNode);
 			}
 
-			return RemoveLeadingRegions(methodNode.WithLeadingTrivia(methodInfo.Node.GetLeadingTrivia()))
+			return methodNode
+				.WithLeadingTrivia(methodInfo.Node.GetLeadingTrivia())
+				.RemoveLeadingRegions()
 				.WithTrailingTrivia(methodInfo.Node.GetTrailingTrivia());
 		}
 
-		private SyntaxTriviaList RemoveRegions(SyntaxTriviaList list) 
+		private TransformTypeResult TransformType(TypeInfo rootTypeInfo, bool onlyMissingMembers = false)
 		{
-			var toRemove = new List<int>();
-			for (var i = list.Count - 1; i >= 0; i--)
-			{
-				var trivia = list[i];
-				if (trivia.IsKind(SyntaxKind.RegionDirectiveTrivia) || trivia.IsKind(SyntaxKind.EndRegionDirectiveTrivia))
-				{
-					toRemove.Add(i);
-				}
-			}
-			while (toRemove.Count > 0)
-			{
-				list = list.RemoveAt(toRemove[0]);
-				toRemove.RemoveAt(0);
-			}
-			return list;
-		}
-
-		private T RemoveLeadingRegions<T>(T memberNode) where T : MemberDeclarationSyntax
-		{
-			// remove all regions as not all methods will be written in the type
-			var leadingTrivia = memberNode.GetLeadingTrivia();
-			memberNode = memberNode.WithLeadingTrivia(RemoveRegions(leadingTrivia));
-
-			var baseTypeNode = memberNode as BaseTypeDeclarationSyntax;
-			if (baseTypeNode == null)
-			{
-				return memberNode;
-			}
-			return memberNode
-				.ReplaceToken(
-					baseTypeNode.CloseBraceToken,
-					baseTypeNode.CloseBraceToken
-								.WithLeadingTrivia(RemoveRegions(baseTypeNode.CloseBraceToken.LeadingTrivia)));
-		}
-
-		private class RewrittenNode
-		{
-			public SyntaxNode Original { get; set; }
-
-			public SyntaxNode Rewritten { get; set; }
-
-			public string Annotation { get; set; }
-
-			public MethodInfo MethodInfo { get; set; }
-		}
-
-		private class TypeInfoMetadata
-		{
-			public string NodeAnnotation { get; set; }
-
-			public List<RewrittenNode> RewrittenNodes { get; } = new List<RewrittenNode>();
-
-			public bool MissingPartialKeyword { get; set; }
-
-			public bool TaskUsed { get; set; }
-
-			public bool AsyncLockUsed { get; set; }
-		}
-
-		private class RewriteTypeResult
-		{
-			public bool ReplaceOriginalNode { get; set; }
-
-			public TypeDeclarationSyntax OriginalNode { get; set; }
-
-			public TypeDeclarationSyntax Node { get; set; }
-
-			public bool TaskUsed { get; set; }
-
-			public bool AsyncLockUsed { get; set; }
-		}
-
-		public class TransformDocumentResult
-		{
-			public CompilationUnitSyntax NewRootNode { get; set; }
-
-			public CompilationUnitSyntax OriginalRootNode { get; set; }
-		}
-
-		private RewriteTypeResult RewriteType(TypeInfo rootTypeInfo, bool onlyMissingMembers = false)
-		{
-			var result = new RewriteTypeResult();
+			var result = new TransformTypeResult();
 			var rootTypeNode = rootTypeInfo.Node;
 			var startRootTypeSpan = rootTypeInfo.Node.SpanStart;
 
@@ -466,11 +437,11 @@ namespace NHibernate.AsyncGenerator
 						annotation = Guid.NewGuid().ToString();
 						rootTypeNode = rootTypeNode.ReplaceNode(nameNode, nameNode.WithAdditionalAnnotations(new SyntaxAnnotation(annotation)));
 
-						metadata.RewrittenNodes.Add(new RewrittenNode
+						metadata.TransformedNodes.Add(new TransformedNode
 						{
 							Annotation = annotation,
 							Original = nameNode,
-							Rewritten = nameNode.WithIdentifier(Identifier(nameNode.Identifier.ValueText + "Async"))
+							Transformed = nameNode.WithIdentifier(Identifier(nameNode.Identifier.ValueText + "Async"))
 						});
 					}
 				}
@@ -493,10 +464,10 @@ namespace NHibernate.AsyncGenerator
 					result.TaskUsed |= metadata.TaskUsed;
 					metadata.AsyncLockUsed |= methodInfo.MustRunSynchronized;
 					result.AsyncLockUsed |= metadata.AsyncLockUsed;
-					metadata.RewrittenNodes.Add(new RewrittenNode
+					metadata.TransformedNodes.Add(new TransformedNode
 					{
 						Original = methodNode,
-						Rewritten = removeNode ? null : RewiteMethod(methodInfo),
+						Transformed = removeNode ? null : TransformMethod(methodInfo),
 						MethodInfo = methodInfo,
 						Annotation = annotation
 					});
@@ -525,30 +496,30 @@ namespace NHibernate.AsyncGenerator
 				if (!onlyMissingMembers && rootTypeInfo.TypeTransformation == TypeTransformation.NewType)
 				{
 					// replace all rewritten nodes
-					foreach (var rewNode in metadata.RewrittenNodes
+					foreach (var rewNode in metadata.TransformedNodes
 						.Where(o => o.MethodInfo == null || (!o.MethodInfo.Missing /*&& !o.MethodInfo.HasRequiredExternalMethods()*/))
 						.OrderByDescending(o => o.Original.SpanStart))
 					{
 						var node = rootTypeNode.GetAnnotatedNodes(rewNode.Annotation).First();
-						if (rewNode.Rewritten == null)
+						if (rewNode.Transformed == null)
 						{
 							rootTypeNode = rootTypeNode.RemoveNode(node, SyntaxRemoveOptions.KeepNoTrivia);
 						}
 						else
 						{
-							rootTypeNode = rootTypeNode.ReplaceNode(node, rewNode.Rewritten);
+							rootTypeNode = rootTypeNode.ReplaceNode(node, rewNode.Transformed);
 						}
 					}
 					// add missing members
 					var typeNode = rootTypeNode.GetAnnotatedNodes(metadata.NodeAnnotation).OfType<TypeDeclarationSyntax>().First();
 
 					rootTypeNode = rootTypeNode.ReplaceNode(typeNode, typeNode.WithMembers(
-							typeNode.Members.Select(RemoveLeadingRegions).ToSyntaxList()
+							typeNode.Members.Select(o => o.RemoveLeadingRegions()).ToSyntaxList()
 							.AddRange(
-								metadata.RewrittenNodes
+								metadata.TransformedNodes
 									.OrderBy(o => o.Original.SpanStart)
 									.Where(o => o.MethodInfo != null && o.MethodInfo.Missing)
-									.Select(o => o.Rewritten)
+									.Select(o => o.Transformed)
 									.OfType<MethodDeclarationSyntax>())));
 
 					typeNode = rootTypeNode.GetAnnotatedNodes(metadata.NodeAnnotation).OfType<TypeDeclarationSyntax>().First();
@@ -581,16 +552,16 @@ namespace NHibernate.AsyncGenerator
 				{
 					var typeNode = rootTypeNode.GetAnnotatedNodes(metadata.NodeAnnotation).OfType<TypeDeclarationSyntax>().First();
 					var newNodes = (onlyMissingMembers
-						? metadata.RewrittenNodes
-							.Where(o => o.Rewritten != null)
+						? metadata.TransformedNodes
+							.Where(o => o.Transformed != null)
 							.Where(o => o.MethodInfo != null && o.MethodInfo.Missing)
 							.OrderBy(o => o.Original.SpanStart)
-							.Select(o => o.Rewritten)
-						: metadata.RewrittenNodes
-							.Where(o => o.Rewritten != null)
+							.Select(o => o.Transformed)
+						: metadata.TransformedNodes
+							.Where(o => o.Transformed != null)
 							.Where(o => o.MethodInfo == null || (o.MethodInfo != null && (!o.MethodInfo.HasRequiredExternalMethods() || o.MethodInfo.Missing))) // for partials we wont have onlyMissingMembers = true 
 							.OrderBy(o => o.Original.SpanStart)
-							.Select(o => o.Rewritten))
+							.Select(o => o.Transformed))
 						.Union(typeNode.DescendantNodes().OfType<TypeDeclarationSyntax>())
 						.ToList();
 
@@ -614,7 +585,7 @@ namespace NHibernate.AsyncGenerator
 								newTypeNode.DescendantNodes(descendIntoTrivia: true).OfType<DirectiveTriviaSyntax>(), SyntaxRemoveOptions.KeepNoTrivia); // remove invalid #endregion
 						*/
 						rootTypeNode = rootTypeNode
-							.ReplaceNode(typeNode, RemoveLeadingRegions(newTypeNode));
+							.ReplaceNode(typeNode, newTypeNode.RemoveLeadingRegions());
 					}
 				}
 
@@ -629,24 +600,22 @@ namespace NHibernate.AsyncGenerator
 
 			// remove all regions as not all methods will be written in the type
 			result.Node = rootTypeNode != null 
-				? RemoveLeadingRegions(rootTypeNode)
+				? rootTypeNode.RemoveLeadingRegions()
 				: null;
 				/*.WithTriviaFrom(rootTypeInfo.Node)*/;
 			return result;
 		}
 
-		
-
-		public TransformDocumentResult Transform()
+		public DocumentTransformationResult Transform()
 		{
-			var result = new TransformDocumentResult();
+			var result = new DocumentTransformationResult();
 			var rootNode = DocumentInfo.RootNode.WithoutTrivia();
 			var namespaceNodes = new List<MemberDeclarationSyntax>();
 			var customTask = Configuration.Async.CustomTaskType;
 			var tasksUsed = false;
 			var taskConflict = false;
 			var asyncLockUsed = false;
-			var rewrittenNodes = new List<RewrittenNode>();
+			var rewrittenNodes = new List<TransformedNode>();
 
 			// TODO: handle global namespace
 			foreach (var namespaceInfo in DocumentInfo.Values.OrderBy(o => o.Node.SpanStart))
@@ -662,21 +631,21 @@ namespace NHibernate.AsyncGenerator
 						continue;
 					}
 
-					var rewriteResult = RewriteType(typeInfo);
-					if (rewriteResult.Node == null)
+					var transformResult = TransformType(typeInfo);
+					if (transformResult.Node == null)
 					{
 						continue;
 					}
-					tasksUsed |= rewriteResult.TaskUsed;
-					asyncLockUsed |= rewriteResult.AsyncLockUsed;
-					typeNodes.Add(rewriteResult.Node);
+					tasksUsed |= transformResult.TaskUsed;
+					asyncLockUsed |= transformResult.AsyncLockUsed;
+					typeNodes.Add(transformResult.Node);
 
-					if (rewriteResult.ReplaceOriginalNode)
+					if (transformResult.ReplaceOriginalNode)
 					{
-						var rewritenNode = new RewrittenNode
+						var rewritenNode = new TransformedNode
 						{
 							Annotation = Guid.NewGuid().ToString(),
-							Rewritten = rewriteResult.OriginalNode
+							Transformed = transformResult.OriginalNode
 						};
 						var typeSpanStart = typeInfo.Node.SpanStart;
 						var typeSpanLength = typeInfo.Node.Span.Length;
@@ -688,12 +657,12 @@ namespace NHibernate.AsyncGenerator
 
 					if (typeInfo.TypeTransformation == TypeTransformation.NewType && typeInfo.HasMissingMembers)
 					{
-						rewriteResult = RewriteType(typeInfo, true);
-						if (rewriteResult.Node == null)
+						transformResult = TransformType(typeInfo, true);
+						if (transformResult.Node == null)
 						{
 							continue;
 						}
-						typeNodes.Add(rewriteResult.Node);
+						typeNodes.Add(transformResult.Node);
 					}
 				}
 				if (typeNodes.Any())
@@ -712,7 +681,7 @@ namespace NHibernate.AsyncGenerator
 			var origRootNode = rootNode;
 			foreach (var rewrittenNode in rewrittenNodes)
 			{
-				origRootNode = rootNode.ReplaceNode(rootNode.GetAnnotatedNodes(rewrittenNode.Annotation).First(), rewrittenNode.Rewritten);
+				origRootNode = rootNode.ReplaceNode(rootNode.GetAnnotatedNodes(rewrittenNode.Annotation).First(), rewrittenNode.Transformed);
 			}
 			if (rootNode != origRootNode)
 			{
@@ -766,11 +735,20 @@ namespace NHibernate.AsyncGenerator
 			rootNode = rootNode
 					.WithMembers(List(namespaceNodes));
 
-			//TODO: configurable custom rewriters
-			var rewriter = new TransactionScopeRewriter();
-			rootNode = (CompilationUnitSyntax)rewriter.VisitCompilationUnit(rootNode);
+			foreach (var plugin in _plugins)
+			{
+				rootNode = plugin.BeforeNormalization(rootNode);
+			}
 
-			result.NewRootNode = rootNode.NormalizeWhitespace("	");
+			rootNode = rootNode.NormalizeWhitespace(Configuration.Indentation);
+
+			foreach (var plugin in _plugins)
+			{
+				rootNode = plugin.AfterNormalization(rootNode);
+			}
+
+			result.TransformedNode = rootNode;
+
 			return result;
 		}
 	}

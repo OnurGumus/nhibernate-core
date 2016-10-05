@@ -10,7 +10,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace NHibernate.AsyncGenerator
 {
-	public class TransactionScopeRewriter : CSharpSyntaxRewriter
+	public class TransactionScopeRewriter : CSharpSyntaxRewriter, ITransformerPlugin
 	{
 		public override SyntaxNode VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
 		{
@@ -31,6 +31,16 @@ namespace NHibernate.AsyncGenerator
 								SyntaxKind.SimpleMemberAccessExpression,
 								IdentifierName("TransactionScopeAsyncFlowOption"),
 								IdentifierName("Enabled"))))));
+		}
+
+		public CompilationUnitSyntax BeforeNormalization(CompilationUnitSyntax syntax)
+		{
+			return (CompilationUnitSyntax)VisitCompilationUnit(syntax);
+		}
+
+		public CompilationUnitSyntax AfterNormalization(CompilationUnitSyntax syntax)
+		{
+			return syntax;
 		}
 	}
 }

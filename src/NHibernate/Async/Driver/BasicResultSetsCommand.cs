@@ -29,7 +29,17 @@ namespace NHibernate.Driver
 
 			log.Info(command.CommandText);
 			BindParameters(command);
-			return new BatcherDataReaderWrapper(batcher, command);
+			return await (new BatcherDataReaderWrapper(batcher, command).InitializeAsync());
+		}
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+	public partial class BatcherDataReaderWrapper : DbDataReader
+	{
+		public async Task<BatcherDataReaderWrapper> InitializeAsync()
+		{
+			reader = await (batcher.ExecuteReaderAsync(command));
+			return this;
 		}
 	}
 }

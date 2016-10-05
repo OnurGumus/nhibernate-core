@@ -146,6 +146,8 @@
     <Compile Include="Async\Driver\DriverBase.cs" />
     <Compile Include="Async\Driver\IDriver.cs" />
     <Compile Include="Async\Driver\IResultSetsCommand.cs" />
+    <Compile Include="Async\Driver\NDataReader.cs" />
+    <Compile Include="Async\Driver\NHybridDataReader.cs" />
     <Compile Include="Async\Driver\OdbcDriver.cs" />
     <Compile Include="Async\Driver\OleDbDriver.cs" />
     <Compile Include="Async\Driver\ReflectionBasedDriver.cs" />
