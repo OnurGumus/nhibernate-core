@@ -54,19 +54,19 @@ namespace NHibernate.Test.NHSpecificTest.NH2500
 				using (ITransaction transaction = session.BeginTransaction())
 				{
 					this.count = 1;
-					var foos1 = session.Query<Foo>().Where(x => x.Name == "Banana").Select(x => new
+					var foos1 = await (session.Query<Foo>().Where(x => x.Name == "Banana").Select(x => new
 					{
 					x.Name, count, User = "abc"
 					}
 
-					).First();
+					).FirstAsync());
 					this.count = 2;
-					var foos2 = session.Query<Foo>().Where(x => x.Name == "Egg").Select(x => new
+					var foos2 = await (session.Query<Foo>().Where(x => x.Name == "Egg").Select(x => new
 					{
 					x.Name, count, User = "def"
 					}
 
-					).First();
+					).FirstAsync());
 					Assert.AreEqual(1, foos1.count);
 					Assert.AreEqual(2, foos2.count);
 					Assert.AreEqual("abc", foos1.User);

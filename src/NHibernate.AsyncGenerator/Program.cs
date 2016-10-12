@@ -28,12 +28,61 @@ namespace NHibernate.AsyncGenerator
 			var currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 			var basePath = Path.GetFullPath(Path.Combine(currentPath, @"..\..\..\"));
 
-			Func<IMethodSymbol, IMethodSymbol> findAsyncFn = symbol =>
+			Func<Project, IMethodSymbol, Task<IMethodSymbol>> findAsyncFn = async (project, symbol) =>
 			{
 				var ns = symbol.ContainingNamespace?.ToString() ?? "";
+				var isToList = project.Name != "NHibernate" && symbol.ContainingType.Name == "Enumerable" && symbol.Name == "ToList";
+				if ((isToList || symbol.ContainingType.Name == "Queryable") && ns.StartsWith("System.Linq"))
+				{
+					var  nhProject = project.Solution.Projects.First(o => o.Name == "NHibernate");
+					var doc = nhProject.Documents.First(o => o.Name == "LinqExtensionMethods.cs");
+					var rootNode = await doc.GetSyntaxRootAsync().ConfigureAwait(false);
+					var semanticModel = await doc.GetSemanticModelAsync().ConfigureAwait(false);
+					var candidateNodes = rootNode.DescendantNodes()
+										.OfType<MethodDeclarationSyntax>()
+										.Where(
+											o =>
+												o.Identifier.ValueText == symbol.Name + "Async" &&
+												o.ParameterList.Parameters.Count - 1 == symbol.Parameters.Length &&
+												(o.TypeParameterList?.Parameters.Count ?? 0) == symbol.TypeParameters.Length)
+										.ToList();
+					foreach (var candidateNode in candidateNodes)
+					{
+						var candidateSymbol = semanticModel.GetDeclaredSymbol(candidateNode);
+						ITypeSymbol symbolType;
+						ITypeSymbol candidateType;
+
+						// For average we need to check the expression type argument
+						if (symbol.Name == "Average")
+						{
+							if (!symbol.Parameters.Any())
+							{
+								symbolType = ((INamedTypeSymbol)symbol.ReceiverType).TypeArguments.First();
+								candidateType = ((INamedTypeSymbol) candidateSymbol.Parameters.First().Type).TypeArguments.First();
+							}
+							else
+							{
+								symbolType = ((INamedTypeSymbol)((INamedTypeSymbol)symbol.Parameters.First().Type).TypeArguments.First())
+								.TypeArguments.Last();
+								candidateType = ((INamedTypeSymbol)((INamedTypeSymbol)candidateSymbol.Parameters.Last().Type).TypeArguments.First())
+									.TypeArguments.Last();
+							}
+						}
+						else
+						{
+							symbolType = symbol.ReturnType;
+							candidateType = ((INamedTypeSymbol)candidateSymbol.ReturnType).TypeArguments.First();
+						}
+						if (symbolType.ToString() == candidateType.ToString())
+						{
+							return candidateSymbol;
+						}
+
+					}
+				}
+
 				if (ns.StartsWith("System") && !ns.StartsWith("System.Data"))
 				{
-					// TODO: handle Linq
 					return null;
 				}
 
@@ -61,9 +110,31 @@ namespace NHibernate.AsyncGenerator
 						IgnoreExternalReferences = true,
 						MethodConversionFunc = symbol =>
 						{
-							if (symbol.GetAttributes().Any(a => a.AttributeClass.Name == "AsyncAttribute"))
+							switch (symbol.ContainingType.Name)
 							{
-								return MethodAsyncConversion.ToAsync;
+								case "IBatcher":
+									if (symbol.Name == "ExecuteReader" || symbol.Name == "ExecuteNonQuery")
+									{
+										return MethodAsyncConversion.ToAsync;
+									}
+									break;
+								case "IAutoFlushEventListener":
+								case "IFlushEventListener":
+								case "IDeleteEventListener":
+								case "ISaveOrUpdateEventListener":
+								case "IPostCollectionRecreateEventListener":
+								case "IPostCollectionRemoveEventListener":
+								case "IPostCollectionUpdateEventListener":
+								case "IPostDeleteEventListener":
+								case "IPostInsertEventListener":
+								case "IPostUpdateEventListener":
+								case "IPreCollectionRecreateEventListener":
+								case "IPreCollectionRemoveEventListener":
+								case "IPreCollectionUpdateEventListener":
+								case "IPreDeleteEventListener":
+								case "IPreInsertEventListener":
+								case "IPreUpdateEventListener":
+									return MethodAsyncConversion.ToAsync;
 							}
 							return MethodAsyncConversion.None;
 						},
@@ -85,40 +156,45 @@ namespace NHibernate.AsyncGenerator
 						ScanMethodsBody = true,
 						MethodConversionFunc = symbol =>
 						{
-							if (symbol.GetAttributes().Any(a => a.AttributeClass.Name == "TestAttribute"))
-							{
-								return MethodAsyncConversion.ToAsync;
-							}
-							return MethodAsyncConversion.Smart;
+							// TODO: here should be only Smart
+							return symbol.GetAttributes().Any(a => a.AttributeClass.Name == "TestAttribute")
+								? MethodAsyncConversion.ToAsync
+								: MethodAsyncConversion.Smart;
 						},
 						CanGenerateMethod = m =>
 						{
-							return
-								m.ReferenceResults.Any(o => o.Symbol.ContainingAssembly.ToString().StartsWith("NHibernate"));
+							return m.ReferenceResults.Any(o => o.Symbol.ContainingAssembly.ToString().StartsWith("NHibernate"));
 						},
 						CanConvertReferenceFunc = m =>
 						{
 							return m.ContainingNamespace.ToString() != "System.IO";
 						},
-						//CanScanDocumentFunc = doc =>
-						//{
-						//	//return !doc.FilePath.Contains("NHSpecificTest") && (
-						//	//	doc.FilePath.EndsWith(@"MultiPathCircleCascadeTest.cs") ||
-						//	//	doc.FilePath.EndsWith(@"ComponentTest.cs") ||
-						//	//	doc.FilePath.EndsWith(@"\TestCase.cs")
-						//	//	);
-							
-						//	return doc.FilePath.EndsWith(@"Insertordering\InsertOrderingFixture.cs") ||
-						//	//doc.FilePath.EndsWith(@"NH2583\AbstractMassTestingFixture.cs") ||
-						//	//doc.FilePath.EndsWith(@"NHSpecificTest\BugTestCase.cs") ||
-						//	//doc.FilePath.EndsWith(@"NH2583\Domain.cs") ||
-						//	doc.FilePath.EndsWith(@"\TestCase.cs");
-							
-						//	//return
-						//	//doc.FilePath.EndsWith(@"NHSpecificTest\BasicClassFixture.cs") ||
-						//	//doc.FilePath.EndsWith(@"\ObjectAssertion.cs") ||
-						//	//doc.FilePath.EndsWith(@"\TestCase.cs");
-						//},
+						CanScanDocumentFunc = doc =>
+						{
+							// MathTests is ignored as AsQueryable method is called on a retrieved list from db and the result is used elsewhere in code
+							// As we only check if ToList is called on IQueryable we need to ignore it
+							//
+							// ExpressionSessionLeakTest is also ignored as it looks like that GC.Collect works differently with async.
+							// if "await Task.Yield();" is added after DoLinqInSeparateSessionAsync then the test runs successfully (TODO: discover why)
+							return !doc.FilePath.EndsWith(@"Linq\MathTests.cs") &&
+								   !doc.FilePath.EndsWith(@"Linq\ExpressionSessionLeakTest.cs");
+
+							//return
+							//	doc.FilePath.EndsWith(@"NH2322\PostUpdateEventListener.cs") /*||
+							//	doc.FilePath.EndsWith(@"\TestCaseMappingByCode.cs") ||
+							//	doc.FilePath.EndsWith(@"\TestCase.cs")*/
+							//	;
+
+							//return doc.FilePath.EndsWith(@"Linq\JoinTests.cs") ||
+							//doc.FilePath.EndsWith(@"Linq\LinqTestCase.cs") ||
+							//doc.FilePath.EndsWith(@"Linq\ReadonlyTestCase.cs") ||
+							//doc.FilePath.EndsWith(@"\TestCase.cs");
+
+							//return
+							//doc.FilePath.EndsWith(@"NHSpecificTest\BasicClassFixture.cs") ||
+							//doc.FilePath.EndsWith(@"\ObjectAssertion.cs") ||
+							//doc.FilePath.EndsWith(@"\TestCase.cs");
+						},
 						FindAsyncCounterpart = findAsyncFn,
 						TypeTransformationFunc = type =>
 						{
@@ -140,6 +216,14 @@ namespace NHibernate.AsyncGenerator
 								baseType = baseType.BaseType;
 							}
 							return TypeTransformation.Partial;
+						},
+						GetAdditionalUsings = doc =>
+						{
+							return doc.DescendantNodes()
+									  .OfType<NamespaceDeclarationSyntax>()
+									  .Any(o => o.Name.ToString().StartsWith("NHibernate.Test.Linq"))
+								? new[] {"NHibernate.Linq"}
+								: null;
 						}
 					}
 				},
@@ -148,11 +232,7 @@ namespace NHibernate.AsyncGenerator
 
 				IsSymbolValidFunc = (projectInfo, methodSymbol) =>
 				{
-					if (methodSymbol.ContainingType.Name == "NorthwindDbCreator")
-					{
-						return false;
-					}
-					return true;
+					return methodSymbol.ContainingType.Name != "NorthwindDbCreator";
 				}
 			};
 
@@ -175,8 +255,7 @@ namespace NHibernate.AsyncGenerator
 						HasCompletedTask = true,
 						TypeName = "TaskHelper",
 						Namespace = "NHibernate.Util"
-					},
-					AttributeName = "Async"
+					}
 				},
 				Directive = "NET_4_5",
 				PluginFactories = new List<Func<DocumentTransformer, ITransformerPlugin>>

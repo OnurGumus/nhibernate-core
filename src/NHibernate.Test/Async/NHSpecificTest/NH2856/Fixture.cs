@@ -6,8 +6,6 @@ using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2856
 {
@@ -41,6 +39,25 @@ namespace NHibernate.Test.NHSpecificTest.NH2856
 
 			);
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
+		}
+
+		[Test]
+		public async Task EntityIsReturnedFromCacheOnSubsequentQueriesWhenUsingCacheableFetchQueryAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var query = session.Query<Person>().Fetch(p => p.Address).Cacheable();
+				sessions.Statistics.Clear();
+				var result = await (query.ToListAsync()); // Execute the query
+				Assert.That(result.Count, Is.EqualTo(1));
+				Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(1));
+				Assert.That(sessions.Statistics.QueryCacheHitCount, Is.EqualTo(0));
+				sessions.Statistics.Clear();
+				var cachedResult = await (query.ToListAsync()); // Re-execute the query
+				Assert.That(cachedResult.Count, Is.EqualTo(1));
+				Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(0));
+				Assert.That(sessions.Statistics.QueryCacheHitCount, Is.EqualTo(1));
+			}
 		}
 
 		protected override async Task OnSetUpAsync()

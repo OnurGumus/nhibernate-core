@@ -5,7 +5,6 @@ using NHibernate.Cfg;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2439
 {
@@ -46,6 +45,28 @@ namespace NHibernate.Test.NHSpecificTest.NH2439
 				await (session.DeleteAsync("from Organisation"));
 				await (session.DeleteAsync("from TrainingComponent"));
 				await (session.FlushAsync());
+			}
+		}
+
+		[Test]
+		public async Task TheTestAsync()
+		{
+			using (var session = OpenSession())
+			{
+				const string filter = "ABC";
+				var scopes = session.Query<RtoScope>().Where(s => s.StartDate <= DateTime.Today && (s.EndDate == null || s.EndDate >= DateTime.Today) && !s.IsRefused).Where(t => t.Nrt.Title.Contains(filter) || t.Nrt.Code == filter);
+				var query = session.Query<OrganisationSearchResult>();
+				var finalQuery = query.Where(r => scopes.Any(s => s.Rto == r.Organisation));
+				var organisations = scopes.Select(s => s.Rto);
+				var rtoScopes = await (scopes.ToListAsync());
+				var organisations1 = await (organisations.ToListAsync());
+				Assert.That(rtoScopes.Count == 0);
+				Assert.That(organisations1.Count == 0);
+				//the SQL in below fails - the organisations part of the query is not included at all..
+				var organisationSearchResults = await (query.Where(r => organisations.Contains(r.Organisation)).ToListAsync());
+				Assert.That(organisationSearchResults.Count == 0);
+				var list = await (finalQuery.ToListAsync());
+				Assert.That(list.Count == 0);
 			}
 		}
 	}

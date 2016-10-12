@@ -510,7 +510,7 @@ namespace NHibernate.Test.Linq
 		{
 			return string.Format("User {0} logged in at {1}", name, lastLoginDate);
 		}
-
+partial 
 
 		/// <summary>
 		/// This mimic classes in System.Data.Services.Internal.
@@ -521,7 +521,7 @@ namespace NHibernate.Test.Linq
 			public string Description { get; set; }
 			public string ReferenceDescription { get; set; }
 		}
-
+partial 
 		/// <summary>
 		/// This mimic classes in System.Data.Services.Internal.
 		/// </summary>

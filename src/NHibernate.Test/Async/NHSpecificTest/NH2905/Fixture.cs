@@ -101,7 +101,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2905
 			using (ISession session = OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					var result = session.Query<Entity1>().Select(x => x.Entity2).SelectMany(x => x.Entity3s).Where(x => x.Id == _entity3Id).ToList();
+					var result = await (session.Query<Entity1>().Select(x => x.Entity2).SelectMany(x => x.Entity3s).Where(x => x.Id == _entity3Id).ToListAsync());
 					await (tx.CommitAsync());
 					Assert.That(result.Count, Is.EqualTo(1));
 					Assert.That(result[0].Id, Is.EqualTo(_entity3Id));
@@ -114,7 +114,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2905
 			using (ISession session = OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					var result = session.Query<Entity1>().SelectMany(x => x.Entity2.Entity3s).Where(x => x.Id == _entity3Id).ToList();
+					var result = await (session.Query<Entity1>().SelectMany(x => x.Entity2.Entity3s).Where(x => x.Id == _entity3Id).ToListAsync());
 					await (tx.CommitAsync());
 					Assert.That(result.Count, Is.EqualTo(1));
 					Assert.That(result[0].Id, Is.EqualTo(_entity3Id));
@@ -127,11 +127,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2905
 			using (ISession session = OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					var result = (
+					var result = await ((
 						from e1 in session.Query<Entity1>()let e2 = e1.Entity2
 						from e3 in e2.Entity3s
 						where e3.Id == _entity3Id
-						select e3).ToList();
+						select e3).ToListAsync());
 					await (tx.CommitAsync());
 					Assert.That(result.Count, Is.EqualTo(1));
 					Assert.That(result[0].Id, Is.EqualTo(_entity3Id));
@@ -144,10 +144,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2905
 			using (ISession session = OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					var result = (
+					var result = await ((
 						from e1 in session.Query<Entity1>()from e3 in e1.Entity2.Entity3s
 						where e3.Id == _entity3Id
-						select e3).ToList();
+						select e3).ToListAsync());
 					await (tx.CommitAsync());
 					Assert.That(result.Count, Is.EqualTo(1));
 					Assert.That(result[0].Id, Is.EqualTo(_entity3Id));

@@ -26,7 +26,7 @@ namespace NHibernate.Action
 				stopwatch = Stopwatch.StartNew();
 			}
 
-			bool veto = PreInsert();
+			bool veto = await (PreInsertAsync());
 			// Don't need to lock the cache here, since if someone
 			// else inserted the same pk first, the insert would fail
 			if (!veto)
@@ -64,12 +64,74 @@ namespace NHibernate.Action
 				}
 			}
 
-			PostInsert();
+			await (PostInsertAsync());
 			if (statsEnabled && !veto)
 			{
 				stopwatch.Stop();
 				factory.StatisticsImplementor.InsertEntity(Persister.EntityName, stopwatch.Elapsed);
 			}
+		}
+
+		protected override async Task AfterTransactionCompletionProcessImplAsync(bool success)
+		{
+			//Make 100% certain that this is called before any subsequent ScheduledUpdate.afterTransactionCompletion()!!
+			IEntityPersister persister = Persister;
+			if (success && IsCachePutEnabled(persister))
+			{
+				CacheKey ck = Session.GenerateCacheKey(Id, persister.IdentifierType, persister.RootEntityName);
+				bool put = persister.Cache.AfterInsert(ck, cacheEntry, version);
+				if (put && Session.Factory.Statistics.IsStatisticsEnabled)
+				{
+					Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+				}
+			}
+
+			if (success)
+			{
+				await (PostCommitInsertAsync());
+			}
+		}
+
+		private async Task PostInsertAsync()
+		{
+			IPostInsertEventListener[] postListeners = Session.Listeners.PostInsertEventListeners;
+			if (postListeners.Length > 0)
+			{
+				PostInsertEvent postEvent = new PostInsertEvent(Instance, Id, state, Persister, (IEventSource)Session);
+				foreach (IPostInsertEventListener listener in postListeners)
+				{
+					await (listener.OnPostInsertAsync(postEvent));
+				}
+			}
+		}
+
+		private async Task PostCommitInsertAsync()
+		{
+			IPostInsertEventListener[] postListeners = Session.Listeners.PostCommitInsertEventListeners;
+			if (postListeners.Length > 0)
+			{
+				PostInsertEvent postEvent = new PostInsertEvent(Instance, Id, state, Persister, (IEventSource)Session);
+				foreach (IPostInsertEventListener listener in postListeners)
+				{
+					await (listener.OnPostInsertAsync(postEvent));
+				}
+			}
+		}
+
+		private async Task<bool> PreInsertAsync()
+		{
+			IPreInsertEventListener[] preListeners = Session.Listeners.PreInsertEventListeners;
+			bool veto = false;
+			if (preListeners.Length > 0)
+			{
+				var preEvent = new PreInsertEvent(Instance, Id, state, Persister, (IEventSource)Session);
+				foreach (IPreInsertEventListener listener in preListeners)
+				{
+					veto |= await (listener.OnPreInsertAsync(preEvent));
+				}
+			}
+
+			return veto;
 		}
 	}
 }

@@ -5,8 +5,6 @@ using NHibernate.Dialect;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2214
 {
@@ -69,6 +67,22 @@ namespace NHibernate.Test.NHSpecificTest.NH2214
 				var criteria = DetachedCriteria.For<DomainClass>("d").SetProjection(Projections.Distinct(Projections.ProjectionList().Add(Projections.Property("Name")))).SetFirstResult((page - 1) * rows).SetMaxResults(rows).AddOrder(Order.Asc("Id"));
 				var query = criteria.GetExecutableCriteria(session);
 				Assert.ThrowsAsync<HibernateException>(async () => await (query.ListAsync()));
+			}
+		}
+
+		[Test]
+		public async Task PagedLinqQueryWithDistinctAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				const int page = 2;
+				const int rows = 2;
+				var query = (
+					from t in session.Query<DomainClass>()orderby t.Name
+					select t.Name).Distinct().Skip((page - 1) * rows).Take(rows);
+				var result = await (query.ToListAsync());
+				Assert.AreEqual("Name2", result[0]);
+				Assert.AreEqual("Name3", result[1]);
 			}
 		}
 	}

@@ -189,6 +189,7 @@
     <Compile Include="Async\Events\Collections\Association\Bidirectional\OneToMany\BidirectionalOneToManyBagCollectionEventFixture.cs" />
     <Compile Include="Async\Events\Collections\CollectionListeners.cs" />
     <Compile Include="Async\Events\DisposableListenersTest.cs" />
+    <Compile Include="Async\Events\PostEvents\AssertOldStatePostListener.cs" />
     <Compile Include="Async\Events\PostEvents\PostUpdateFixture.cs" />
     <Compile Include="Async\ExceptionsTest\NullQueryTest.cs" />
     <Compile Include="Async\ExceptionsTest\SQLExceptionConversionTest.cs" />
@@ -278,18 +279,47 @@
     <Compile Include="Async\Legacy\SimpleTest.cs" />
     <Compile Include="Async\Legacy\SQLFunctionsTest.cs" />
     <Compile Include="Async\Legacy\SQLLoaderTest.cs" />
+    <Compile Include="Async\Linq\BinaryBooleanExpressionTests.cs" />
+    <Compile Include="Async\Linq\BinaryExpressionOrdererTests.cs" />
+    <Compile Include="Async\Linq\BooleanMethodExtensionExample.cs" />
+    <Compile Include="Async\Linq\ByMethod\AnyTests.cs" />
+    <Compile Include="Async\Linq\ByMethod\AverageTests.cs" />
+    <Compile Include="Async\Linq\ByMethod\CastTests.cs" />
+    <Compile Include="Async\Linq\ByMethod\CountTests.cs" />
+    <Compile Include="Async\Linq\ByMethod\GetValueOrDefaultTests.cs" />
+    <Compile Include="Async\Linq\ByMethod\GroupByHavingTests.cs" />
+    <Compile Include="Async\Linq\ByMethod\GroupByTests.cs" />
+    <Compile Include="Async\Linq\ByMethod\OrderByTests.cs" />
+    <Compile Include="Async\Linq\ByMethod\SumTests.cs" />
+    <Compile Include="Async\Linq\CasingTest.cs" />
     <Compile Include="Async\Linq\CharComparisonTests.cs" />
+    <Compile Include="Async\Linq\CustomExtensionsExample.cs" />
+    <Compile Include="Async\Linq\CustomQueryModelRewriterTests.cs" />
+    <Compile Include="Async\Linq\DateTimeTests.cs" />
+    <Compile Include="Async\Linq\DynamicQueryTests.cs" />
     <Compile Include="Async\Linq\EagerLoadTests.cs" />
+    <Compile Include="Async\Linq\EnumTests.cs" />
     <Compile Include="Async\Linq\FunctionTests.cs" />
+    <Compile Include="Async\Linq\JoinTests.cs" />
     <Compile Include="Async\Linq\LinqQuerySamples.cs" />
     <Compile Include="Async\Linq\LinqTestCase.cs" />
     <Compile Include="Async\Linq\LoggingTests.cs" />
-    <Compile Include="Async\Linq\MathTests.cs" />
+    <Compile Include="Async\Linq\MethodCallTests.cs" />
     <Compile Include="Async\Linq\MiscellaneousTextFixture.cs" />
+    <Compile Include="Async\Linq\NestedSelectsTests.cs" />
     <Compile Include="Async\Linq\NullComparisonTests.cs" />
+    <Compile Include="Async\Linq\OperatorTests.cs" />
+    <Compile Include="Async\Linq\PagingTests.cs" />
+    <Compile Include="Async\Linq\PatientTests.cs" />
+    <Compile Include="Async\Linq\ProjectionsTests.cs" />
+    <Compile Include="Async\Linq\PropertyMethodMappingTests.cs" />
+    <Compile Include="Async\Linq\QueryCacheableTests.cs" />
     <Compile Include="Async\Linq\QueryReuseTests.cs" />
     <Compile Include="Async\Linq\QueryTimeoutTests.cs" />
     <Compile Include="Async\Linq\ReadonlyTestCase.cs" />
+    <Compile Include="Async\Linq\RegresstionTests.cs" />
+    <Compile Include="Async\Linq\SelectionTests.cs" />
+    <Compile Include="Async\Linq\StatelessSessionQueringTest.cs" />
     <Compile Include="Async\Linq\WhereSubqueryTests.cs" />
     <Compile Include="Async\Linq\WhereTests.cs" />
     <Compile Include="Async\ListIndex\ListIndexFixture.cs" />
@@ -385,6 +415,7 @@
     <Compile Include="Async\NHSpecificTest\NH1192\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1217\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1230\Fixture.cs" />
+    <Compile Include="Async\NHSpecificTest\NH1230\PreSaveDoVeto.cs" />
     <Compile Include="Async\NHSpecificTest\NH1235\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1250\PolymorphicJoinFetchFixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH1252\NH1252Fixture.cs" />
@@ -593,6 +624,7 @@
     <Compile Include="Async\NHSpecificTest\NH2224\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2228\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2230\Fixture.cs" />
+    <Compile Include="Async\NHSpecificTest\NH2234\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2242\FormulaTest.cs" />
     <Compile Include="Async\NHSpecificTest\NH2243\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2244\Fixture.cs" />
@@ -601,6 +633,7 @@
     <Compile Include="Async\NHSpecificTest\NH2257\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2278\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2279\Fixture.cs" />
+    <Compile Include="Async\NHSpecificTest\NH2280\InvalidSqlTest.cs" />
     <Compile Include="Async\NHSpecificTest\NH2287\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2288\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2293\Fixture.cs" />
@@ -610,6 +643,7 @@
     <Compile Include="Async\NHSpecificTest\NH2317\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2318\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2322\Fixture.cs" />
+    <Compile Include="Async\NHSpecificTest\NH2322\PostUpdateEventListener.cs" />
     <Compile Include="Async\NHSpecificTest\NH2324\BulkUpdateWithCustomCompositeType.cs" />
     <Compile Include="Async\NHSpecificTest\NH2328\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2331\Nh2331Test.cs" />
@@ -617,6 +651,7 @@
     <Compile Include="Async\NHSpecificTest\NH2344\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2347\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2361\Fixture.cs" />
+    <Compile Include="Async\NHSpecificTest\NH2362\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2366\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2374\NH2374Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2378\Fixture.cs" />
@@ -636,6 +671,7 @@
     <Compile Include="Async\NHSpecificTest\NH2467\NH2467Test.cs" />
     <Compile Include="Async\NHSpecificTest\NH2469\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2470\Class1Class2Tests.cs" />
+    <Compile Include="Async\NHSpecificTest\NH2477\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH247\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2484\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2488\Fixture.cs" />
@@ -643,6 +679,7 @@
     <Compile Include="Async\NHSpecificTest\NH2490\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2491\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2500\Fixture.cs" />
+    <Compile Include="Async\NHSpecificTest\NH2505\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2507\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2510\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH251\CustomAccessDO.cs" />
@@ -653,6 +690,7 @@
     <Compile Include="Async\NHSpecificTest\NH2580\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2583\AbstractMassTestingFixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2583\Domain.cs" />
+    <Compile Include="Async\NHSpecificTest\NH2583\InnerJoinFixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2583\ManualTestFixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2583\MassTestingMoreOperatorsFixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2583\MassTestingNotAndDeMorganFixture.cs" />
@@ -662,6 +700,7 @@
     <Compile Include="Async\NHSpecificTest\NH2583\MassTestingThreeOrTreesSideBySideFixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2583\MassTestingTwoOrTreesSideBySideFixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2583\SelfJoinTestFixture.cs" />
+    <Compile Include="Async\NHSpecificTest\NH2587\CachingWithLinq.cs" />
     <Compile Include="Async\NHSpecificTest\NH2603\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2632\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH2651\Fixture.cs" />
@@ -769,6 +808,7 @@
     <Compile Include="Async\NHSpecificTest\NH3392\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3401\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3405\Fixture.cs" />
+    <Compile Include="Async\NHSpecificTest\NH3408\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3428\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3436\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3453\Fixture.cs" />
@@ -4614,6 +4654,7 @@
     <EmbeddedResource Include="DynamicEntity\Tuplizer\Customer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Async\NHSpecificTest\NH3436\" />
     <Folder Include="Cascade\OneToOneCascadeDelete\Pk\Unidirectional\Hbm\" />
     <Folder Include="Properties\" />
   </ItemGroup>

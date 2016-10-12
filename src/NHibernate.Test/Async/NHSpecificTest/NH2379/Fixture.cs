@@ -6,7 +6,6 @@ using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2379
 {
@@ -83,6 +82,206 @@ namespace NHibernate.Test.NHSpecificTest.NH2379
 					await (session.DeleteAsync("from System.Object"));
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
+				}
+		}
+
+		[Test]
+		public async Task InnerJoinAsync()
+		{
+			// 
+			// select
+			//     order0_.Id as col_0_0_,
+			//     orderlines1_.Id as col_1_0_ 
+			// from
+			//     Orders order0_ 
+			// inner join
+			//     OrderLines orderlines1_ 
+			//         on order0_.Id=orderlines1_.OrderId
+			// 
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result = await ((
+						from o in session.Query<Order>()from ol in o.OrderLines
+						select new
+						{
+						OrderId = o.Id, OrderLineId = (Guid? )ol.Id
+						}
+
+					).ToListAsync());
+					Assert.AreEqual(6, result.Count);
+				}
+		}
+
+		[Test]
+		public async Task InnerJoinWithRestrictionAsync()
+		{
+			// 
+			// select
+			//     order0_.Id as col_0_0_,
+			//     orderlines1_.Id as col_1_0_ 
+			// from
+			//     Orders order0_ 
+			// inner join
+			//     OrderLines orderlines1_ 
+			//         on order0_.Id=orderlines1_.OrderId
+			//         and orderlines1_.Name like ('Order Line 3') 
+			// 
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result = await ((
+						from o in session.Query<Order>()from ol in o.OrderLines.Where(x => x.Name.StartsWith("Order Line 3"))select new
+						{
+						OrderId = o.Id, OrderLineId = (Guid? )ol.Id
+						}
+
+					).ToListAsync());
+					Assert.AreEqual(2, result.Count);
+				}
+		}
+
+		[Test]
+		public async Task InnerJoinWithOutermostRestrictionAsync()
+		{
+			// 
+			// select
+			//     order0_.Id as col_0_0_,
+			//     orderlines1_.Id as col_1_0_ 
+			// from
+			//     Orders order0_ 
+			// inner join
+			//     OrderLines orderlines1_ 
+			//         on order0_.Id=orderlines1_.OrderId
+			// where
+			//     orderlines1_.Name like ('Order Line 3')
+			// 
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result = await ((
+						from o in session.Query<Order>()from ol in o.OrderLines
+						where ol.Name.StartsWith("Order Line 3")select new
+						{
+						OrderId = o.Id, OrderLineId = (Guid? )ol.Id
+						}
+
+					).ToListAsync());
+					Assert.AreEqual(2, result.Count);
+				}
+		}
+
+		[Test]
+		public async Task LeftOuterJoinAsync()
+		{
+			// 
+			// select
+			//     order0_.Id as col_0_0_,
+			//     orderlines1_.Id as col_1_0_ 
+			// from
+			//     Orders order0_ 
+			// left outer join
+			//     OrderLines orderlines1_ 
+			//         on order0_.Id=orderlines1_.OrderId
+			// 
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result = await ((
+						from o in session.Query<Order>()from ol in o.OrderLines.DefaultIfEmpty()select new
+						{
+						OrderId = o.Id, OrderLineId = (Guid? )ol.Id
+						}
+
+					).ToListAsync());
+					Assert.AreEqual(7, result.Count);
+				}
+		}
+
+		[Test]
+		public async Task LeftOuterJoinWithInnerRestrictionAsync()
+		{
+			// 
+			// select
+			//     order0_.Id as col_0_0_,
+			//     orderlines1_.Id as col_1_0_ 
+			// from
+			//     Orders order0_ 
+			// left outer join
+			//     OrderLines orderlines1_ 
+			//         on order0_.Id=orderlines1_.OrderId
+			//         and orderlines1_.Name like ('Order Line 3') 
+			// 
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result = await ((
+						from o in session.Query<Order>()from ol in o.OrderLines.Where(x => x.Name.StartsWith("Order Line 3")).DefaultIfEmpty()select new
+						{
+						OrderId = o.Id, OrderLineId = (Guid? )ol.Id
+						}
+
+					).ToListAsync());
+					Assert.AreEqual(5, result.Count);
+				}
+		}
+
+		[Test]
+		public async Task LeftOuterJoinWithOuterRestrictionAsync()
+		{
+			//TODO: should it be an inner join? As .DefaultIfEmpty() does not make any sense here.
+			// 
+			// select
+			//     order0_.Id as col_0_0_,
+			//     orderlines1_.Id as col_1_0_ 
+			// from
+			//     Orders order0_ 
+			// left outer join
+			//     OrderLines orderlines1_ 
+			//         on order0_.Id=orderlines1_.OrderId
+			// where
+			//     orderlines1_.Name like ('Order Line 3')
+			// 
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result = await ((
+						from o in session.Query<Order>()from ol in o.OrderLines.DefaultIfEmpty().Where(x => x.Name.StartsWith("Order Line 3"))select new
+						{
+						OrderId = o.Id, OrderLineId = (Guid? )ol.Id
+						}
+
+					).ToListAsync());
+					Assert.AreEqual(2, result.Count);
+				}
+		}
+
+		[Test]
+		public async Task LeftOuterJoinWithOutermostRestrictionAsync()
+		{
+			// 
+			// select
+			//     order0_.Id as col_0_0_,
+			//     orderlines1_.Id as col_1_0_ 
+			// from
+			//     Orders order0_ 
+			// left outer join
+			//     OrderLines orderlines1_ 
+			//         on order0_.Id=orderlines1_.OrderId
+			// where
+			//     orderlines1_.Name like ('Order Line 3')
+			// 
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result = await ((
+						from o in session.Query<Order>()from ol in o.OrderLines.DefaultIfEmpty()where ol.Name.StartsWith("Order Line 3")select new
+						{
+						OrderId = o.Id, OrderLineId = (Guid? )ol.Id
+						}
+
+					).ToListAsync());
+					Assert.AreEqual(2, result.Count);
 				}
 		}
 	}

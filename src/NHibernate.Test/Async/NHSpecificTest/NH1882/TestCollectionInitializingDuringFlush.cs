@@ -94,6 +94,28 @@ namespace NHibernate.Test.NHSpecificTest.NH1882
 
 				return true;
 			}
+
+			public async Task<bool> OnPreUpdateAsync(PreUpdateEvent @event)
+			{
+				Executed = true;
+				Object[] oldValues = @event.OldState;
+				String[] properties = @event.Persister.PropertyNames;
+				// Iterate through all fields of the updated object
+				for (int i = 0; i < properties.Length; i++)
+				{
+					if (oldValues != null && oldValues[i] != null)
+					{
+						if (!NHibernateUtil.IsInitialized(oldValues[i]))
+						{
+							// force any proxies and/or collections to initialize to illustrate HHH-2763
+							FoundAny = true;
+							await (NHibernateUtil.InitializeAsync(oldValues[i]));
+						}
+					}
+				}
+
+				return true;
+			}
 		}
 
 		[Test]
@@ -126,6 +148,36 @@ namespace NHibernate.Test.NHSpecificTest.NH1882
 			s.Close();
 			Assert.That(listener.Executed, Is.True);
 			Assert.That(listener.FoundAny, Is.True);
+		}
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+	public partial class TestCollectionInitializingDuringFlush : TestCaseMappingByCode
+	{
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		public partial class InitializingPreUpdateEventListener : IPreUpdateEventListener
+		{
+			public async Task<bool> OnPreUpdateAsync(PreUpdateEvent @event)
+			{
+				Executed = true;
+				Object[] oldValues = @event.OldState;
+				String[] properties = @event.Persister.PropertyNames;
+				// Iterate through all fields of the updated object
+				for (int i = 0; i < properties.Length; i++)
+				{
+					if (oldValues != null && oldValues[i] != null)
+					{
+						if (!NHibernateUtil.IsInitialized(oldValues[i]))
+						{
+							// force any proxies and/or collections to initialize to illustrate HHH-2763
+							FoundAny = true;
+							await (NHibernateUtil.InitializeAsync(oldValues[i]));
+						}
+					}
+				}
+
+				return true;
+			}
 		}
 	}
 }

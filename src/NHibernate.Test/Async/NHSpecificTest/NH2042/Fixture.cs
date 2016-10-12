@@ -3,8 +3,6 @@ using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2042
 {
@@ -31,6 +29,19 @@ namespace NHibernate.Test.NHSpecificTest.NH2042
 					await (session.DeleteAsync("from System.Object"));
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
+				}
+		}
+
+		[Test]
+		public async Task TestPropertyOfOwnerShouldBeOneAsync()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result = await ((
+						from e in session.Query<Person>()where e.Name == "Bob"
+						select e).SingleAsync());
+					Assert.That(((Owner)result).Test, Is.EqualTo(1));
 				}
 		}
 	}

@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3401
 					var result =
 						from e in session.Query<Entity>()where e.YesNo
 						select e;
-					Assert.AreEqual(1, result.ToList().Count);
+					Assert.AreEqual(1, (await (result.ToListAsync())).Count);
 				}
 		}
 	}

@@ -3,8 +3,6 @@ using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3641
 {
@@ -38,6 +36,26 @@ namespace NHibernate.Test.NHSpecificTest.NH3641
 		{
 			await (session.CreateQuery("delete from " + typeof (T).Name + " where ChildInterface is not null").ExecuteUpdateAsync());
 			await (session.CreateQuery("delete from " + typeof (T).Name).ExecuteUpdateAsync());
+		}
+
+		[Test]
+		public async Task TrueOrChildPropertyConcreteAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var result = await (session.Query<IEntity>().Where(x => x.ChildConcrete == null || x.ChildConcrete.Flag).ToListAsync());
+				Assert.That(result, Has.Count.EqualTo(2));
+			}
+		}
+
+		[Test]
+		public async Task TrueOrChildPropertyInterfaceAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var result = await (session.Query<IEntity>().Where(x => x.ChildInterface == null || ((Entity)x.ChildInterface).Flag).ToListAsync());
+				Assert.That(result, Has.Count.EqualTo(2));
+			}
 		}
 	}
 }

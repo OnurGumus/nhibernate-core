@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2691
 					var baseQuery =
 						from cat in session.Query<Cat>()orderby cat.BirthDate
 						select cat;
-					Assert.That(() => baseQuery.Count(), Throws.Nothing);
+					Assert.That(async () => await (baseQuery.CountAsync()), Throws.Nothing);
 					await (session.Transaction.CommitAsync());
 				}
 		}
@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2691
 					var baseQuery =
 						from cat in session.Query<Cat>()orderby cat.BirthDate
 						select cat;
-					Assert.That(() => baseQuery.LongCount(), Throws.Nothing);
+					Assert.That(async () => await (baseQuery.LongCountAsync()), Throws.Nothing);
 					await (session.Transaction.CommitAsync());
 				}
 		}

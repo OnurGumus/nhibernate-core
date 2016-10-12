@@ -62,6 +62,21 @@ namespace NHibernate.Test.NHSpecificTest.NH3604
 					await (transaction.CommitAsync());
 				}
 		}
+
+		[Test]
+		public async Task CanPerformQueryOnMappedClassWithProtectedPropertyAsync()
+		{
+			using (ISession session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result =
+						from e in session.Query<Entity>()where e.Name == "Sally"
+						select e;
+					var entities = await (result.ToListAsync());
+					Assert.AreEqual(1, entities.Count);
+					Assert.AreEqual("Jo", entities[0].Detail.ExtraInfo);
+				}
+		}
 	}
 }
 #endif

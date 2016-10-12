@@ -3,8 +3,6 @@ using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2118
 {
@@ -23,6 +21,17 @@ namespace NHibernate.Test.NHSpecificTest.NH2118
 					await (s.InsertAsync(new Person{FirstName = "Apu", LastName = "Nahasapeemapetilon"}));
 					await (s.InsertAsync(new Person{FirstName = "Montgomery ", LastName = "Burns"}));
 					await (tx.CommitAsync());
+				}
+		}
+
+		[Test]
+		public async Task CanGroupByWithoutSelectAsync()
+		{
+			using (var s = sessions.OpenSession())
+				using (s.BeginTransaction())
+				{
+					var groups = await (s.Query<Person>().GroupBy(p => p.LastName).ToListAsync());
+					Assert.AreEqual(3, groups.Count);
 				}
 		}
 

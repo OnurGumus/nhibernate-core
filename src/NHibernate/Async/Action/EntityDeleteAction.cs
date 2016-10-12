@@ -26,7 +26,7 @@ namespace NHibernate.Action
 				stopwatch = Stopwatch.StartNew();
 			}
 
-			bool veto = PreDelete();
+			bool veto = await (PreDeleteAsync());
 			object tmpVersion = version;
 			if (persister.IsVersionPropertyGenerated)
 			{
@@ -69,11 +69,67 @@ namespace NHibernate.Action
 			persistenceContext.RemoveProxy(key);
 			if (persister.HasCache)
 				persister.Cache.Evict(ck);
-			PostDelete();
+			await (PostDeleteAsync());
 			if (statsEnabled && !veto)
 			{
 				stopwatch.Stop();
 				Session.Factory.StatisticsImplementor.DeleteEntity(Persister.EntityName, stopwatch.Elapsed);
+			}
+		}
+
+		private async Task PostDeleteAsync()
+		{
+			IPostDeleteEventListener[] postListeners = Session.Listeners.PostDeleteEventListeners;
+			if (postListeners.Length > 0)
+			{
+				PostDeleteEvent postEvent = new PostDeleteEvent(Instance, Id, state, Persister, (IEventSource)Session);
+				foreach (IPostDeleteEventListener listener in postListeners)
+				{
+					await (listener.OnPostDeleteAsync(postEvent));
+				}
+			}
+		}
+
+		private async Task<bool> PreDeleteAsync()
+		{
+			IPreDeleteEventListener[] preListeners = Session.Listeners.PreDeleteEventListeners;
+			bool veto = false;
+			if (preListeners.Length > 0)
+			{
+				var preEvent = new PreDeleteEvent(Instance, Id, state, Persister, (IEventSource)Session);
+				foreach (IPreDeleteEventListener listener in preListeners)
+				{
+					veto |= await (listener.OnPreDeleteAsync(preEvent));
+				}
+			}
+
+			return veto;
+		}
+
+		protected override async Task AfterTransactionCompletionProcessImplAsync(bool success)
+		{
+			if (Persister.HasCache)
+			{
+				CacheKey ck = Session.GenerateCacheKey(Id, Persister.IdentifierType, Persister.RootEntityName);
+				Persister.Cache.Release(ck, sLock);
+			}
+
+			if (success)
+			{
+				await (PostCommitDeleteAsync());
+			}
+		}
+
+		private async Task PostCommitDeleteAsync()
+		{
+			IPostDeleteEventListener[] postListeners = Session.Listeners.PostCommitDeleteEventListeners;
+			if (postListeners.Length > 0)
+			{
+				PostDeleteEvent postEvent = new PostDeleteEvent(Instance, Id, state, Persister, (IEventSource)Session);
+				foreach (IPostDeleteEventListener listener in postListeners)
+				{
+					await (listener.OnPostDeleteAsync(postEvent));
+				}
 			}
 		}
 	}

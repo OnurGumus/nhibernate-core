@@ -16,6 +16,16 @@ namespace NHibernate.Test.Linq
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class FunctionTestsAsync : LinqTestCaseAsync
 	{
+		[Test]
+		public async Task LikeFunctionAsync()
+		{
+			var query = await ((
+				from e in db.Employees
+				where NHibernate.Linq.SqlMethods.Like(e.FirstName, "Ma%et")select e).ToListAsync());
+			Assert.That(query.Count, Is.EqualTo(1));
+			Assert.That(query[0].FirstName, Is.EqualTo("Margaret"));
+		}
+
 		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 		private static partial class SqlMethods
 		{
@@ -23,6 +33,75 @@ namespace NHibernate.Test.Linq
 			{
 				throw new NotImplementedException();
 			}
+		}
+
+		[Test]
+		public async Task LikeFunctionUserDefinedAsync()
+		{
+			// Verify that any method named Like, in a class named SqlMethods, will be translated.
+			var query = await ((
+				from e in db.Employees
+				where NHibernate.Test.Linq.FunctionTestsAsync.SqlMethods.Like(e.FirstName, "Ma%et")select e).ToListAsync());
+			Assert.That(query.Count, Is.EqualTo(1));
+			Assert.That(query[0].FirstName, Is.EqualTo("Margaret"));
+		}
+
+		[Test]
+		public async Task SubstringFunction2Async()
+		{
+			var query = await ((
+				from e in db.Employees
+				where e.FirstName.Substring(0, 2) == "An"
+				select e).ToListAsync());
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+
+		[Test]
+		public async Task SubstringFunction1Async()
+		{
+			var query = await ((
+				from e in db.Employees
+				where e.FirstName.Substring(3) == "rew"
+				select e).ToListAsync());
+			Assert.That(query.Count, Is.EqualTo(1));
+			Assert.That(query[0].FirstName, Is.EqualTo("Andrew"));
+		}
+
+		[Test]
+		public async Task LeftFunctionAsync()
+		{
+			var query = await ((
+				from e in db.Employees
+				where e.FirstName.Substring(0, 2) == "An"
+				select e.FirstName.Substring(3)).ToListAsync());
+			Assert.That(query.Count, Is.EqualTo(2));
+			Assert.That(query[0], Is.EqualTo("rew")); //Andrew
+			Assert.That(query[1], Is.EqualTo("e")); //Anne
+		}
+
+		[Test]
+		public async Task ToStringFunctionAsync()
+		{
+			var query =
+				from ol in db.OrderLines
+				where ol.Quantity.ToString() == "4"
+				select ol;
+			Assert.AreEqual(55, await (query.CountAsync()));
+		}
+
+		[Test]
+		public async Task ToStringWithContainsAsync()
+		{
+			var query =
+				from ol in db.OrderLines
+				where ol.Quantity.ToString().Contains("5")select ol;
+			Assert.AreEqual(498, await (query.CountAsync()));
+		}
+
+		[Test]
+		public async Task CoalesceAsync()
+		{
+			Assert.AreEqual(2, await (session.Query<AnotherEntity>().Where(e => (e.Input ?? "hello") == "hello").CountAsync()));
 		}
 
 		[Test]
@@ -37,12 +116,12 @@ namespace NHibernate.Test.Linq
 				await (session.SaveAsync(ae2));
 				await (session.SaveAsync(ae3));
 				await (session.FlushAsync());
-				Assert.AreEqual(2, session.Query<AnotherEntity>().Where(e => e.Input.Trim() == "hi").Count());
-				Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.TrimEnd() == " hi").Count());
+				Assert.AreEqual(2, await (session.Query<AnotherEntity>().Where(e => e.Input.Trim() == "hi").CountAsync()));
+				Assert.AreEqual(1, await (session.Query<AnotherEntity>().Where(e => e.Input.TrimEnd() == " hi").CountAsync()));
 				// Emulated trim does not support multiple trim characters, but for many databases it should work fine anyways.
-				Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.Trim('h') == "e").Count());
-				Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.TrimStart('h') == "eh").Count());
-				Assert.AreEqual(1, session.Query<AnotherEntity>().Where(e => e.Input.TrimEnd('h') == "he").Count());
+				Assert.AreEqual(1, await (session.Query<AnotherEntity>().Where(e => e.Input.Trim('h') == "e").CountAsync()));
+				Assert.AreEqual(1, await (session.Query<AnotherEntity>().Where(e => e.Input.TrimStart('h') == "eh").CountAsync()));
+				Assert.AreEqual(1, await (session.Query<AnotherEntity>().Where(e => e.Input.TrimEnd('h') == "he").CountAsync()));
 			// Let it rollback to get rid of temporary changes.
 			}
 		}
@@ -56,9 +135,36 @@ namespace NHibernate.Test.Linq
 				await (session.SaveAsync(new AnotherEntity{Input = "hi"}));
 				await (session.SaveAsync(new AnotherEntity{Input = "heh"}));
 				await (session.FlushAsync());
-				Assert.AreEqual(TestDialect.IgnoresTrailingWhitespace ? 2 : 1, session.Query<AnotherEntity>().Where(e => e.Input.TrimStart() == "hi ").Count());
+				Assert.AreEqual(TestDialect.IgnoresTrailingWhitespace ? 2 : 1, await (session.Query<AnotherEntity>().Where(e => e.Input.TrimStart() == "hi ").CountAsync()));
 			// Let it rollback to get rid of temporary changes.
 			}
+		}
+
+		[Test]
+		public async Task WhereStringEqualAsync()
+		{
+			var query = await ((
+				from item in db.Users
+				where item.Name.Equals("ayende")select item).ToListAsync());
+			ObjectDumper.Write(query);
+		}
+
+		[Test, Description("NH-3367")]
+		public async Task WhereStaticStringEqualAsync()
+		{
+			var query = await ((
+				from item in db.Users
+				where string.Equals(item.Name, "ayende")select item).ToListAsync());
+			ObjectDumper.Write(query);
+		}
+
+		[Test]
+		public async Task WhereIntEqualAsync()
+		{
+			var query = await ((
+				from item in db.Users
+				where item.Id.Equals(-1)select item).ToListAsync());
+			ObjectDumper.Write(query);
 		}
 	}
 }

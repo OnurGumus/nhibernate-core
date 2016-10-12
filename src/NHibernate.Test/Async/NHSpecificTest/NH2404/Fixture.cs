@@ -4,8 +4,6 @@ using NHibernate.Linq;
 using NHibernate.Transform;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2404
 {
@@ -31,6 +29,21 @@ namespace NHibernate.Test.NHSpecificTest.NH2404
 				{
 					await (session.DeleteAsync("from System.Object"));
 					await (transaction.CommitAsync());
+				}
+		}
+
+		[Test]
+		public async Task ProjectionsShouldWorkWithLinqProviderAndFuturesAsync()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var query1 = await ((
+						from entity in session.Query<TestEntity>()select new TestEntityDto{EntityId = entity.Id, EntityName = entity.Name}).ToListAsync());
+					Assert.AreEqual(2, query1.Count());
+					var query2 = (
+						from entity in session.Query<TestEntity>()select new TestEntityDto{EntityId = entity.Id, EntityName = entity.Name}).ToFuture();
+					Assert.AreEqual(2, query2.Count());
 				}
 		}
 

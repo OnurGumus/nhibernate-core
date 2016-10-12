@@ -95,6 +95,33 @@ namespace NHibernate.Test.NHSpecificTest.NH3093
 					await (transaction.CommitAsync());
 				}
 		}
+
+		[Test]
+		public async Task Linq11Async()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var cultivationsId = session.Query<Cultivation>().Select(c => c.Id).ToArray();
+					var products = await ((
+						from p in session.Query<Product>()where p.Family.Cultivations.Any(c => cultivationsId.Contains(c.Id)) && p.Family.Segment.Name == "segment 1"
+						select p).ToListAsync());
+					Assert.AreEqual(1, products.Count);
+				}
+		}
+
+		[Test]
+		public async Task Linq2Async()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var products = await ((
+						from p in session.Query<Product>()where p.Family.Cultivations.Any(c => c.Name == "Sample") && p.Family.Segment.Name == "segment 1"
+						select p).ToListAsync());
+					Assert.AreEqual(1, products.Count);
+				}
+		}
 	}
 }
 #endif

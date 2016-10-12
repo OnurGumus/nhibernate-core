@@ -70,6 +70,41 @@ namespace NHibernate.Test.NHSpecificTest.NH3571
 				}
 			}
 		}
+
+		[Test]
+		public async Task CanQueryDynamicComponentInComponentAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var query = session.CreateQuery("from Product p where p.Details.Properties.Name=:name");
+				query.SetString("name", "First Product");
+				//var product = query.List<Product>().FirstOrDefault();
+				var product = await ((
+					from p in session.Query<Product>()where (string)p.Details.Properties["Name"] == "First Product"
+					select p).SingleAsync());
+				Assert.IsNotNull(product);
+				Assert.AreEqual("First Product", product.Details.Properties["Name"]);
+			}
+		}
+
+		[Test]
+		public async Task MultipleQueriesShouldNotCacheAsync()
+		{
+			using (var session = OpenSession())
+			{
+				// Query by name
+				var product1 = await ((
+					from p in session.Query<Product>()where (string)p.Details.Properties["Name"] == "First Product"
+					select p).SingleAsync());
+				Assert.That(product1.ProductId, Is.EqualTo("1"));
+				// Query by description (this test is to verify that the dictionary
+				// index isn't cached from the query above.
+				var product2 = await ((
+					from p in session.Query<Product>()where (string)p.Details.Properties["Description"] == "Second Description"
+					select p).SingleAsync());
+				Assert.That(product2.ProductId, Is.EqualTo("2"));
+			}
+		}
 	}
 }
 #endif

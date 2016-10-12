@@ -16,7 +16,7 @@ namespace NHibernate.AsyncGenerator
 {
 	public class DocumentTransformer
 	{
-		private List<ITransformerPlugin> _plugins = new List<ITransformerPlugin>();
+		private readonly List<ITransformerPlugin> _plugins = new List<ITransformerPlugin>();
 
 		private class TransformedNode
 		{
@@ -167,7 +167,6 @@ namespace NHibernate.AsyncGenerator
 			if (!methodInfo.HasBody)
 			{
 				return methodInfo.Node
-							  .WithoutAttribute("Async")
 							  .ReturnAsTask(methodInfo.Symbol, taskConflict)
 							  .WithIdentifier(Identifier(methodInfo.Node.Identifier.Value + "Async"))
 							  .RemoveLeadingRegions();
@@ -327,13 +326,26 @@ namespace NHibernate.AsyncGenerator
 									methodInfo.Node.TypeParameterList.Parameters.Select(o => IdentifierName(o.Identifier.ValueText))
 									)))
 					: (SimpleNameSyntax)IdentifierName(methodInfo.Node.Identifier.ValueText);
+				MemberAccessExpressionSyntax accessExpression = null;
+				if (methodInfo.Symbol.MethodKind == MethodKind.ExplicitInterfaceImplementation)
+				{
+					// Explicit implementations needs an explicit cast (ie. ((Type)this).SyncMethod() )
+					accessExpression = MemberAccessExpression(
+										SyntaxKind.SimpleMemberAccessExpression,
+										ParenthesizedExpression(
+											CastExpression(
+												IdentifierName(methodInfo.Symbol.ExplicitInterfaceImplementations.Single().ContainingType.Name),
+												ThisExpression())),
+										name);
+				}
 
-				var invocation = InvocationExpression(name)
+
+				var invocation = InvocationExpression(accessExpression ?? (ExpressionSyntax)name)
 					.WithArgumentList(
 						ArgumentList(
 							SeparatedList(
 								methodInfo.Node.ParameterList.Parameters
-										  .Select(o => Argument(IdentifierName(o.Identifier.ValueText)))
+										  .Select(o => Argument(IdentifierName(o.Identifier.Text)))
 								)));
 				if (methodInfo.Symbol.ReturnsVoid)
 				{
@@ -364,7 +376,6 @@ namespace NHibernate.AsyncGenerator
 					.WithoutAttribute("MethodImpl");
 			}
 			methodNode = methodNode
-				.WithoutAttribute("Async")
 				.ReturnAsTask(methodInfo.Symbol, taskConflict)
 				.WithIdentifier(Identifier(methodNode.Identifier.Value + "Async"));
 
@@ -416,7 +427,7 @@ namespace NHibernate.AsyncGenerator
 						var refSpanLength = reference.Location.SourceSpan.Length;
 						if (refSpanStart < 0)
 						{
-							// cref
+							// TODO: cref
 							//var startSpan = reference.Location.SourceSpan.Start - rootTypeInfo.Node.GetLeadingTrivia().Span.Start;
 							//var crefNode = leadingTrivia.First(o => o.SpanStart == startSpan && o.Span.Length == refSpanLength);
 							continue;
@@ -512,7 +523,7 @@ namespace NHibernate.AsyncGenerator
 					}
 					// add missing members
 					var typeNode = rootTypeNode.GetAnnotatedNodes(metadata.NodeAnnotation).OfType<TypeDeclarationSyntax>().First();
-
+					// TODO: we should not include all members, we need to skip the methods that are not required
 					rootTypeNode = rootTypeNode.ReplaceNode(typeNode, typeNode.WithMembers(
 							typeNode.Members.Select(o => o.RemoveLeadingRegions()).ToSyntaxList()
 							.AddRange(
@@ -616,6 +627,7 @@ namespace NHibernate.AsyncGenerator
 			var taskConflict = false;
 			var asyncLockUsed = false;
 			var rewrittenNodes = new List<TransformedNode>();
+			var projectConfig = DocumentInfo.ProjectInfo.Configuration;
 
 			// TODO: handle global namespace
 			foreach (var namespaceInfo in DocumentInfo.Values.OrderBy(o => o.Node.SpanStart))
@@ -694,6 +706,16 @@ namespace NHibernate.AsyncGenerator
 			{
 				rootNode = rootNode.AddUsings(UsingDirective(NameSyntax(lockNamespace)));
 			}
+
+			var usingList = projectConfig.GetAdditionalUsings?.Invoke(DocumentInfo.RootNode);
+			if (usingList != null)
+			{
+				foreach (var us in usingList.Where(o => DocumentInfo.RootNode.Usings.All(u => u.Name.ToString() != o)))
+				{
+					rootNode = rootNode.AddUsings(UsingDirective(NameSyntax(us)));
+				}
+			}
+
 
 			if (!taskConflict && rootNode.Usings.All(o => o.Name.ToString() != "System.Threading.Tasks"))
 			{

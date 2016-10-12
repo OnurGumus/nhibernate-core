@@ -12,12 +12,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class MassTestingSelectFixtureAsync : AbstractMassTestingFixtureAsync
 	{
-		protected override int TestAndAssert(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds)
+		protected override async Task<int> TestAndAssertAsync(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds)
 		{
 			IQueryable<int ? > result = session.Query<MyBO>().Where(condition).Select(bo => (int ? )bo.BO1.Id);
-			var forceDBRun = result.ToList();
+			var forceDBRun = await (result.ToListAsync());
 			IEnumerable<int> resultNullTo0 = forceDBRun.Select(i => i ?? 0);
-			var expectedBO1Ids = session.Query<MyBO>().Where(bo => expectedIds.Contains(bo.Id)).Select(bo => bo.BO1 == null ? 0 : bo.BO1.Id).ToList();
+			var expectedBO1Ids = await (session.Query<MyBO>().Where(bo => expectedIds.Contains(bo.Id)).Select(bo => bo.BO1 == null ? 0 : bo.BO1.Id).ToListAsync());
 			AreEqual(expectedBO1Ids, resultNullTo0.ToArray());
 			// Unused result.
 			return -1;

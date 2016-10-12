@@ -44,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2914
 			using (ISession session = OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					var result = session.Query<Entity>().Where(x => x.CreationTime.Year == DateTime.Today.Year).ToList();
+					var result = await (session.Query<Entity>().Where(x => x.CreationTime.Year == DateTime.Today.Year).ToListAsync());
 					await (tx.CommitAsync());
 					Assert.AreEqual(1, result.Count);
 				}
@@ -56,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2914
 			using (ISession session = OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					var result = session.Query<Entity>().Where(x => x.CreationTime.Month == DateTime.Today.Month).ToList();
+					var result = await (session.Query<Entity>().Where(x => x.CreationTime.Month == DateTime.Today.Month).ToListAsync());
 					await (tx.CommitAsync());
 					Assert.AreEqual(1, result.Count);
 				}
@@ -68,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2914
 			using (ISession session = OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					var result = session.Query<Entity>().Where(x => x.CreationTime.Day == DateTime.Today.Day).ToList();
+					var result = await (session.Query<Entity>().Where(x => x.CreationTime.Day == DateTime.Today.Day).ToListAsync());
 					await (tx.CommitAsync());
 					Assert.AreEqual(1, result.Count);
 				}
@@ -80,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2914
 			using (ISession session = OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					var result = session.Query<Entity>().Where(x => x.CreationTime.Hour <= 24).ToList();
+					var result = await (session.Query<Entity>().Where(x => x.CreationTime.Hour <= 24).ToListAsync());
 					await (tx.CommitAsync());
 					Assert.AreEqual(1, result.Count);
 				}
@@ -92,7 +92,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2914
 			using (ISession session = OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					var result = session.Query<Entity>().Where(x => x.CreationTime.Minute <= 60).ToList();
+					var result = await (session.Query<Entity>().Where(x => x.CreationTime.Minute <= 60).ToListAsync());
 					await (tx.CommitAsync());
 					Assert.AreEqual(1, result.Count);
 				}
@@ -104,7 +104,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2914
 			using (ISession session = OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					var result = session.Query<Entity>().Where(x => x.CreationTime.Second <= 60).ToList();
+					var result = await (session.Query<Entity>().Where(x => x.CreationTime.Second <= 60).ToListAsync());
 					await (tx.CommitAsync());
 					Assert.AreEqual(1, result.Count);
 				}
@@ -116,7 +116,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2914
 			using (ISession session = OpenSession())
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					var result = session.Query<Entity>().Where(x => x.CreationTime.Date == DateTime.Today).ToList();
+					var result = await (session.Query<Entity>().Where(x => x.CreationTime.Date == DateTime.Today).ToListAsync());
 					await (tx.CommitAsync());
 					Assert.AreEqual(1, result.Count);
 				}

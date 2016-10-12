@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2477
 			return mapper.CompileMappingFor(new[] { typeof(Something) });
 		}
 
-		private class Scenario : IDisposable
+		private partial class Scenario : IDisposable
 		{
 			private readonly ISessionFactory factory;
 

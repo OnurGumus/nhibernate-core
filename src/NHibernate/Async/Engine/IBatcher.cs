@@ -50,7 +50,25 @@ namespace NHibernate.Engine
 		/// Execute the batch
 		/// </summary>
 		Task ExecuteBatchAsync();
+		/// <summary>
+		/// Gets an <see cref = "DbDataReader"/> by calling ExecuteReader on the <see cref = "DbCommand"/>.
+		/// </summary>
+		/// <param name = "cmd">The <see cref = "DbCommand"/> to execute to get the <see cref = "DbDataReader"/>.</param>
+		/// <returns>The <see cref = "DbDataReader"/> from the <see cref = "DbCommand"/>.</returns>
+		/// <remarks>
+		/// The Batcher is responsible for ensuring that all of the Drivers rules for how many open
+		/// <see cref = "DbDataReader"/>s it can have are followed.
+		/// </remarks>
 		Task<DbDataReader> ExecuteReaderAsync(DbCommand cmd);
+		/// <summary>
+		/// Executes the <see cref = "DbCommand"/>. 
+		/// </summary>
+		/// <param name = "cmd">The <see cref = "DbCommand"/> to execute.</param>
+		/// <returns>The number of rows affected.</returns>
+		/// <remarks>
+		/// The Batcher is responsible for ensuring that all of the Drivers rules for how many open
+		/// <see cref = "DbDataReader"/>s it can have are followed.
+		/// </remarks>
 		Task<int> ExecuteNonQueryAsync(DbCommand cmd);
 	}
 }

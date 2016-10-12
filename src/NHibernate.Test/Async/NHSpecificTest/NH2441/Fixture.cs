@@ -4,8 +4,6 @@ using NHibernate.Dialect;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2441
 {
@@ -42,6 +40,19 @@ namespace NHibernate.Test.NHSpecificTest.NH2441
 				}
 
 			await (base.OnTearDownAsync());
+		}
+
+		[Test]
+		public async Task LinqQueryBooleanSQLiteAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				var query1 = session.Query<Person>().Where(p => true);
+				var query2 = session.Query<Person>().Where(p => p.Id != null);
+				var query3 = session.Query<Person>();
+				Assert.That(await (query1.CountAsync()), Is.EqualTo(await (query2.CountAsync())));
+				Assert.That(await (query3.CountAsync()), Is.EqualTo(await (query1.CountAsync())));
+			}
 		}
 	}
 }

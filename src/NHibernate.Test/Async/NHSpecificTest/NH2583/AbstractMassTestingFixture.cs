@@ -8,6 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Environment = NHibernate.Cfg.Environment;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2583
 {
@@ -154,7 +155,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 					session.DefaultReadOnly = true;
 					using (session.BeginTransaction())
 					{
-						return TestAndAssert(condition, session, expectedIds);
+						return await (TestAndAssertAsync(condition, session, expectedIds));
 					}
 				}
 			}
@@ -175,7 +176,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 			}
 		}
 
-		protected abstract int TestAndAssert(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds);
+		protected abstract Task<int> TestAndAssertAsync(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds);
 		protected static SetterTuple<T1, T2, T3, T4, T5, T6, T7> Setters<T1, T2, T3, T4, T5, T6, T7>(Action<MyBO, ISession, T1> set1, Action<MyBO, ISession, T2> set2, Action<MyBO, ISession, T3> set3, Action<MyBO, ISession, T4> set4, Action<MyBO, ISession, T5> set5, Action<MyBO, ISession, T6> set6, Action<MyBO, ISession, T7> set7)
 		{
 			return new SetterTuple<T1, T2, T3, T4, T5, T6, T7>(set1, set2, set3, set4, set5, set6, set7);

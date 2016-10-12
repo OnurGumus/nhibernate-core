@@ -3,7 +3,6 @@ using System;
 using NHibernate.Driver;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.DriverTest
 {

@@ -754,7 +754,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			}
 		}
 
-		private class TupGrouping<TKey1, TKey2, TElement> : IGrouping<Tup<TKey1, TKey2>, TElement>
+		private partial class TupGrouping<TKey1, TKey2, TElement> : IGrouping<Tup<TKey1, TKey2>, TElement>
 		{
 			private IEnumerable<TElement> Elements { get; set; }
 
@@ -777,7 +777,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			public Tup<TKey1, TKey2> Key { get; private set; }
 		}
 
-		private class Tup<T1, T2>
+		private partial class Tup<T1, T2>
 		{
 			public T1 Item1 { get; private set; }
 			public T2 Item2 { get; private set; }
@@ -835,7 +835,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.True(result.Any());
 		}
 
-		private class GroupInfo
+		private partial class GroupInfo
 		{
 			public object Key { get; set; }
 			public int ItemCount { get; set; }

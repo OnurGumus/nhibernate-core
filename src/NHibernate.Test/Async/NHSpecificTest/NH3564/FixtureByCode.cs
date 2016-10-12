@@ -11,7 +11,6 @@ using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3564
 {
@@ -62,6 +61,21 @@ namespace NHibernate.Test.NHSpecificTest.NH3564
 					await (session.DeleteAsync("from System.Object"));
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
+				}
+		}
+
+		[Test]
+		public async Task ShouldUseDifferentCacheAsync()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var bob = await (session.Query<Person>().Cacheable().Where(e => e.DateOfBirth == new DateTime(2015, 4, 22)).ToListAsync());
+					var sally = await (session.Query<Person>().Cacheable().Where(e => e.DateOfBirth == new DateTime(2014, 4, 22)).ToListAsync());
+					Assert.That(bob, Has.Count.EqualTo(1));
+					Assert.That(bob[0].Name, Is.EqualTo("Bob"));
+					Assert.That(sally, Has.Count.EqualTo(1));
+					Assert.That(sally[0].Name, Is.EqualTo("Sally"));
 				}
 		}
 	}

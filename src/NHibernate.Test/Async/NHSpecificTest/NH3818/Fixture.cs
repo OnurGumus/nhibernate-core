@@ -31,18 +31,18 @@ namespace NHibernate.Test.NHSpecificTest.NH3818
 						var cat = new MyLovelyCat{GUID = Guid.NewGuid(), Birthdate = DateTime.Now.AddDays(-days), Color = "Black", Name = "Kitty", Price = 0};
 						await (session.SaveAsync(cat));
 						await (session.FlushAsync());
-						var catInfo = session.Query<MyLovelyCat>().Select(o => new
+						var catInfo = await (session.Query<MyLovelyCat>().Select(o => new
 						{
 						o.Color, AliveDays = (int)(DateTime.Now - o.Birthdate).TotalDays, o.Name, o.Price, }
 
-						).Single();
+						).SingleAsync());
 						//Console.WriteLine(spy.ToString());
 						Assert.That(catInfo.AliveDays == days);
-						var catInfo2 = session.Query<MyLovelyCat>().Select(o => new
+						var catInfo2 = await (session.Query<MyLovelyCat>().Select(o => new
 						{
 						o.Color, AliveDays = o.Price > 0 ? (DateTime.Now - o.Birthdate).TotalDays : 0, o.Name, o.Price, }
 
-						).Single();
+						).SingleAsync());
 						//Console.WriteLine(spy.ToString());
 						Assert.That(catInfo2.AliveDays == 0);
 					}

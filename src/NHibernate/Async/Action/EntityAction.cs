@@ -14,6 +14,10 @@ namespace NHibernate.Action
 	public abstract partial class EntityAction : IExecutable, IComparable<EntityAction>, IDeserializationCallback
 	{
 		public abstract Task ExecuteAsync();
+		protected virtual Task AfterTransactionCompletionProcessImplAsync(bool success)
+		{
+			return TaskHelper.CompletedTask;
+		}
 	}
 }
 #endif

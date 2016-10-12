@@ -44,9 +44,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3583
 				{
 					var e1 = new Entity{Name = "Bob"};
 					await (session.SaveAsync(e1));
-					var result = (
+					var result = await ((
 						from e in session.Query<Entity>()where e.Name == "Bob"
-						select e).ToList();
+						select e).ToListAsync());
 					Assert.That(result.Count, Is.EqualTo(1));
 				}
 		}
@@ -59,9 +59,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3583
 				{
 					var e1 = new Entity{Name = "Bob"};
 					await (session.SaveAsync(e1));
-					var result = (
+					var result = await ((
 						from e in session.Query<Entity>()where e.Name == "Bob"
-						select e).ToList();
+						select e).ToListAsync());
 					Assert.That(result.Count, Is.EqualTo(1));
 				}
 		}

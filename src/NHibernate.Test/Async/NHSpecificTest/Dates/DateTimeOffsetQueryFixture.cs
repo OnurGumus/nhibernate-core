@@ -9,7 +9,6 @@ using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 using NHibernate.Linq;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.Dates
 {
@@ -75,6 +74,20 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 				using (s.BeginTransaction())
 				{
 					var datesRecovered = await (s.CreateQuery("select cast(min(Sql_datetimeoffset), datetimeoffset) from AllDates").UniqueResultAsync<DateTimeOffset>());
+					Assert.That(datesRecovered, Is.EqualTo(new DateTimeOffset(2012, 11, 1, 2, 0, 0, TimeSpan.FromHours(3))));
+				}
+		}
+
+		[Test(Description = "NH-3357")]
+		public async Task CanQueryWithAggregateInLinqAsync()
+		{
+			using (ISession s = OpenSession())
+				using (s.BeginTransaction())
+				{
+					// The Min() will generate a HqlCast, which requires that the linq
+					// provider can find a HQL name for datetimeoffset.
+					var datesRecovered = await ((
+						from allDates in s.Query<AllDates>()select allDates.Sql_datetimeoffset).MinAsync());
 					Assert.That(datesRecovered, Is.EqualTo(new DateTimeOffset(2012, 11, 1, 2, 0, 0, TimeSpan.FromHours(3))));
 				}
 		}

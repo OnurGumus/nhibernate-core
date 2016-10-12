@@ -29,7 +29,7 @@ namespace NHibernate.Action
 				stopwatch = Stopwatch.StartNew();
 			}
 
-			PreUpdate();
+			await (PreUpdateAsync());
 			if (!collection.WasInitialized)
 			{
 				if (!collection.HasQueuedOperations)
@@ -68,11 +68,37 @@ namespace NHibernate.Action
 
 			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
 			Evict();
-			PostUpdate();
+			await (PostUpdateAsync());
 			if (statsEnabled)
 			{
 				stopwatch.Stop();
 				Session.Factory.StatisticsImplementor.UpdateCollection(Persister.Role, stopwatch.Elapsed);
+			}
+		}
+
+		private async Task PreUpdateAsync()
+		{
+			IPreCollectionUpdateEventListener[] preListeners = Session.Listeners.PreCollectionUpdateEventListeners;
+			if (preListeners.Length > 0)
+			{
+				PreCollectionUpdateEvent preEvent = new PreCollectionUpdateEvent(Persister, Collection, (IEventSource)Session);
+				for (int i = 0; i < preListeners.Length; i++)
+				{
+					await (preListeners[i].OnPreUpdateCollectionAsync(preEvent));
+				}
+			}
+		}
+
+		private async Task PostUpdateAsync()
+		{
+			IPostCollectionUpdateEventListener[] postListeners = Session.Listeners.PostCollectionUpdateEventListeners;
+			if (postListeners.Length > 0)
+			{
+				PostCollectionUpdateEvent postEvent = new PostCollectionUpdateEvent(Persister, Collection, (IEventSource)Session);
+				for (int i = 0; i < postListeners.Length; i++)
+				{
+					await (postListeners[i].OnPostUpdateCollectionAsync(postEvent));
+				}
 			}
 		}
 	}

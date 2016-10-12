@@ -31,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3252
 			using (var session = OpenSession())
 				using (session.BeginTransaction())
 				{
-					var note = session.Query<Note>().First();
+					var note = await (session.Query<Note>().FirstAsync());
 					Assert.AreEqual(9000, note.Text.Length);
 				}
 		}

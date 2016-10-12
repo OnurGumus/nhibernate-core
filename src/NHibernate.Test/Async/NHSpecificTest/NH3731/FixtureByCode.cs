@@ -78,7 +78,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3731
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					var p = session.Query<Parent>().Single();
+					var p = await (session.Query<Parent>().SingleAsync());
 					var c = p.ChildrenList.Last();
 					p.ChildrenList.Remove(c);
 					p.ChildrenList.Insert(p.ChildrenList.Count - 1, c);
@@ -102,7 +102,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3731
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					var p = session.Query<Parent>().Single();
+					var p = await (session.Query<Parent>().SingleAsync());
 					p.ChildrenList.RemoveAt(0);
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
@@ -124,7 +124,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3731
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					var p = session.Query<Parent>().Single();
+					var p = await (session.Query<Parent>().SingleAsync());
 					var firstChild = p.ChildrenMap["first"];
 					var secondChild = p.ChildrenMap["second"];
 					p.ChildrenMap.Remove("first");

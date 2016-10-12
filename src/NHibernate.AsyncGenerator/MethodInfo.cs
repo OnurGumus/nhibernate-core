@@ -34,6 +34,10 @@ namespace NHibernate.AsyncGenerator
 
 		public bool Missing { get; set; }
 
+		public bool Required { get; set; }
+
+		public MethodAsyncConversion? Conversion { get; set; }
+
 		public HashSet<MethodInfo> InvokedBy { get; } = new HashSet<MethodInfo>();
 
 		/// <summary>
@@ -103,7 +107,7 @@ namespace NHibernate.AsyncGenerator
 				return;
 			}
 
-			if (Missing || ImplementsAbstractMethod)
+			if (Missing || ImplementsAbstractMethod || Required)
 			{
 				foreach (var refResult in ReferenceResults)
 				{
@@ -148,20 +152,30 @@ namespace NHibernate.AsyncGenerator
 				return;
 			}
 
-			var dependencies = ReferenceResults
+			var relRefResults = ReferenceResults
 				.Union(GetAllRelatedMethods().ToList().SelectMany(o => o.ReferenceResults))
 				.ToList();
 
-			foreach (var refResult in dependencies)
+			foreach (var refResult in relRefResults)
+			{
+				refResult.CalculateIgnore(deep, processedMethodInfos);
+			}
+			Ignore = relRefResults.All(o => o.Ignore);
+
+			if (Ignore)
+			{
+				relRefResults = relRefResults.Except(ReferenceResults).ToList();
+			}
+
+			foreach (var refResult in relRefResults)
 			{
 				// if the reference cannot be async we should preserve the original method. TODO: what if the method has dependecies that are async
 				if (!refResult.CanBeAsync && refResult.MethodInfo != null)
 				{
 					refResult.MethodInfo.CanBeAsnyc = false;
 				}
-				refResult.CalculateIgnore(deep, processedMethodInfos);
 			}
-			Ignore = dependencies.All(o => o.Ignore);
+
 			_ignoreCalculating = false;
 			_ignoreCalculated = true;
 		}
@@ -272,12 +286,13 @@ namespace NHibernate.AsyncGenerator
 
 		private void AnalyzeInvocationExpression(SyntaxNode node, SimpleNameSyntax nameNode, MethodReferenceResult result)
 		{
-			var selectClause = node.Ancestors()
-				.FirstOrDefault(o => o.IsKind(SyntaxKind.SelectClause));
-			if (selectClause != null) // await is not supported in select clause
+			var queryExpression = node.Ancestors()
+				.OfType<QueryExpressionSyntax>()
+				.FirstOrDefault();
+			if (queryExpression != null) // await is not supported in linq query
 			{
 				result.CanBeAsync = false;
-				Logger.Warn($"Cannot await async method in a select clause:\r\n{selectClause}\r\n");
+				Logger.Warn($"Cannot await async method in a query expression:\r\n{queryExpression}\r\n");
 				return;
 			}
 			var docInfo = TypeInfo.NamespaceInfo.DocumentInfo;
@@ -311,13 +326,31 @@ namespace NHibernate.AsyncGenerator
 				return;
 			}
 
+
+			// Custom code TODO: move
+			if (nameNode.Identifier.ToString() == "ToList")
+			{
+				var beforeToListExpression = ((MemberAccessExpressionSyntax)((InvocationExpressionSyntax)node).Expression).Expression;
+				var operation = docInfo.SemanticModel.GetOperation(beforeToListExpression);
+				if (operation == null)
+				{
+					result.CanBeAsync = false;
+					Logger.Warn($"Cannot find operation for previous node of ToList:\r\n{beforeToListExpression}\r\n");
+				}
+				else if(operation.Type.Name != "IQueryable")
+				{
+					result.CanBeAsync = false;
+					Logger.Warn($"Operation for previous node of ToList is not IQueryable:\r\n{operation.Type.Name}\r\n");
+				}
+			}
+			// End custom code
+
 			var anonFunctionNode = node.Ancestors()
 				.OfType<AnonymousFunctionExpressionSyntax>()
 				.FirstOrDefault();
 			if (anonFunctionNode?.AsyncKeyword.IsMissing == false)
 			{
-				// Custom code
-				
+				// Custom code TODO: move
 				var methodArgTypeInfo = ModelExtensions.GetTypeInfo(docInfo.SemanticModel, anonFunctionNode);
 				var convertedType = methodArgTypeInfo.ConvertedType;
 				if (convertedType != null && convertedType.ContainingAssembly.Name == "nunit.framework" && 
@@ -329,7 +362,7 @@ namespace NHibernate.AsyncGenerator
 					result.MakeAnonymousFunctionAsync = true;
 					return;
 				}
-				//end
+				// End custom code
 
 				result.CanBeAsync = false;
 				Logger.Warn($"Cannot await async method in an non async anonymous function:\r\n{anonFunctionNode}\r\n");
@@ -346,14 +379,14 @@ namespace NHibernate.AsyncGenerator
 				return;
 			}
 
-			// Custom code
+			// Custom code TODO: move
 			var convertedType = methodArgTypeInfo.ConvertedType;
 			if (convertedType.ContainingAssembly.Name == "nunit.framework" && convertedType.Name == "TestDelegate")
 			{
 				result.WrapInsideAsyncFunction = true;
 				return;
 			}
-			//end
+			// End custom code
 
 			var delegateMethod = (IMethodSymbol)methodArgTypeInfo.ConvertedType.GetMembers("Invoke").First();
 
@@ -479,7 +512,7 @@ namespace NHibernate.AsyncGenerator
 			return result;
 		}
 
-		public List<AsyncCounterpartMethod> FindAsyncCounterpartMethodsWhitinBody(Dictionary<IMethodSymbol, IMethodSymbol> methodAsyncConterparts = null)
+		public async Task<List<AsyncCounterpartMethod>> FindAsyncCounterpartMethodsWhitinBody(Dictionary<IMethodSymbol, IMethodSymbol> methodAsyncConterparts = null)
 		{
 			var result = new List<AsyncCounterpartMethod>();
 			if (Node.Body == null)
@@ -503,10 +536,11 @@ namespace NHibernate.AsyncGenerator
 				}
 				else
 				{
-					var config = TypeInfo.NamespaceInfo.DocumentInfo.ProjectInfo.Configuration;
+					var projectInfo = TypeInfo.NamespaceInfo.DocumentInfo.ProjectInfo;
+					var config = projectInfo.Configuration;
 					if (config.FindAsyncCounterpart != null)
 					{
-						asyncMethodSymbol = config.FindAsyncCounterpart.Invoke(methodSymbol.OriginalDefinition);
+						asyncMethodSymbol = await config.FindAsyncCounterpart.Invoke(projectInfo.Project, methodSymbol.OriginalDefinition).ConfigureAwait(false);
 					}
 					else
 					{
@@ -613,7 +647,9 @@ namespace NHibernate.AsyncGenerator
 			{
 				ReferenceResults.Add(AnalyzeReference(reference));
 			}
-			CanBeAsnyc = ReferenceResults.Any(o => o.CanBeAsync);
+			// TODO: TypeTransformation should be removed
+			CanBeAsnyc = ReferenceResults.Any(o => o.CanBeAsync) ||
+						 (Conversion == MethodAsyncConversion.ToAsync && TypeInfo.TypeTransformation == TypeTransformation.Partial);
 
 			// TODO: check if this is correct
 			if (TypeInfo.TypeTransformation == TypeTransformation.Partial && GetAllRelatedMethods().ToList().Any(o => o.InvokedBy.Any()))

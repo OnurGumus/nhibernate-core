@@ -75,7 +75,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2760
 					var query =
 						from ug in session.Query<UserGroup>()where ug.Users.Count() > 1
 						select ug;
-					var queryResults = query.ToList();
+					var queryResults = await (query.ToListAsync());
 					Assert.AreEqual(1, queryResults.Count);
 					Assert.AreEqual(1, queryResults[0].Id);
 					Assert.AreEqual(2, queryResults[0].Users.Count());
@@ -95,7 +95,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2760
 						id = ug.Id, count = ug.Users.Count(), }
 
 					;
-					var queryResults = query.ToList();
+					var queryResults = await (query.ToListAsync());
 					Assert.AreEqual(2, queryResults.Count);
 					Assert.AreEqual(1, queryResults[0].id);
 					Assert.AreEqual(2, queryResults[0].count);

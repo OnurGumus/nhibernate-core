@@ -10,7 +10,6 @@ using NHibernate.Mapping.ByCode;
 using NHibernate.Type;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3405
 {
@@ -74,6 +73,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3405
 					await (session.DeleteAsync("from System.Object"));
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
+				}
+		}
+
+		[Test]
+		public async Task CanLoadEntityWithXDocumentAsync()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var test = await (session.Query<XmlTest>().FirstAsync());
+					Assert.NotNull(test);
 				}
 		}
 	}

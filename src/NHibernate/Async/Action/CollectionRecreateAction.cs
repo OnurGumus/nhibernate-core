@@ -27,15 +27,41 @@ namespace NHibernate.Action
 			}
 
 			IPersistentCollection collection = Collection;
-			PreRecreate();
+			await (PreRecreateAsync());
 			await (Persister.RecreateAsync(collection, Key, Session));
 			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
 			Evict();
-			PostRecreate();
+			await (PostRecreateAsync());
 			if (statsEnabled)
 			{
 				stopwatch.Stop();
 				Session.Factory.StatisticsImplementor.RecreateCollection(Persister.Role, stopwatch.Elapsed);
+			}
+		}
+
+		private async Task PreRecreateAsync()
+		{
+			IPreCollectionRecreateEventListener[] preListeners = Session.Listeners.PreCollectionRecreateEventListeners;
+			if (preListeners.Length > 0)
+			{
+				PreCollectionRecreateEvent preEvent = new PreCollectionRecreateEvent(Persister, Collection, (IEventSource)Session);
+				for (int i = 0; i < preListeners.Length; i++)
+				{
+					await (preListeners[i].OnPreRecreateCollectionAsync(preEvent));
+				}
+			}
+		}
+
+		private async Task PostRecreateAsync()
+		{
+			IPostCollectionRecreateEventListener[] postListeners = Session.Listeners.PostCollectionRecreateEventListeners;
+			if (postListeners.Length > 0)
+			{
+				PostCollectionRecreateEvent postEvent = new PostCollectionRecreateEvent(Persister, Collection, (IEventSource)Session);
+				for (int i = 0; i < postListeners.Length; i++)
+				{
+					await (postListeners[i].OnPostRecreateCollectionAsync(postEvent));
+				}
 			}
 		}
 	}

@@ -22,7 +22,7 @@ namespace NHibernate.Action
 				stopwatch = Stopwatch.StartNew();
 			}
 
-			bool veto = PreInsert();
+			bool veto = await (PreInsertAsync());
 			// Don't need to lock the cache here, since if someone
 			// else inserted the same pk first, the insert would fail
 			if (!veto)
@@ -38,18 +38,72 @@ namespace NHibernate.Action
 				persister.SetIdentifier(instance, generatedId, Session.EntityMode);
 			}
 
-			//TODO from H3.2 : this bit actually has to be called after all cascades!
-			//      but since identity insert is called *synchronously*,
-			//      instead of asynchronously as other actions, it isn't
-			/*if ( persister.hasCache() && !persister.isCacheInvalidationRequired() ) {
-			cacheEntry = new CacheEntry(object, persister, session);
-			persister.getCache().insert(generatedId, cacheEntry);
-			}*/
-			PostInsert();
+			await (PostInsertAsync());
 			if (statsEnabled && !veto)
 			{
 				stopwatch.Stop();
 				Session.Factory.StatisticsImplementor.InsertEntity(Persister.EntityName, stopwatch.Elapsed);
+			}
+		}
+
+		private async Task PostInsertAsync()
+		{
+			if (isDelayed)
+			{
+				Session.PersistenceContext.ReplaceDelayedEntityIdentityInsertKeys(delayedEntityKey, generatedId);
+			}
+
+			IPostInsertEventListener[] postListeners = Session.Listeners.PostInsertEventListeners;
+			if (postListeners.Length > 0)
+			{
+				PostInsertEvent postEvent = new PostInsertEvent(Instance, generatedId, state, Persister, (IEventSource)Session);
+				foreach (IPostInsertEventListener listener in postListeners)
+				{
+					await (listener.OnPostInsertAsync(postEvent));
+				}
+			}
+		}
+
+		private async Task PostCommitInsertAsync()
+		{
+			IPostInsertEventListener[] postListeners = Session.Listeners.PostCommitInsertEventListeners;
+			if (postListeners.Length > 0)
+			{
+				var postEvent = new PostInsertEvent(Instance, generatedId, state, Persister, (IEventSource)Session);
+				foreach (IPostInsertEventListener listener in postListeners)
+				{
+					await (listener.OnPostInsertAsync(postEvent));
+				}
+			}
+		}
+
+		private async Task<bool> PreInsertAsync()
+		{
+			IPreInsertEventListener[] preListeners = Session.Listeners.PreInsertEventListeners;
+			bool veto = false;
+			if (preListeners.Length > 0)
+			{
+				var preEvent = new PreInsertEvent(Instance, null, state, Persister, (IEventSource)Session);
+				foreach (IPreInsertEventListener listener in preListeners)
+				{
+					veto |= await (listener.OnPreInsertAsync(preEvent));
+				}
+			}
+
+			return veto;
+		}
+
+		protected override async Task AfterTransactionCompletionProcessImplAsync(bool success)
+		{
+			//TODO Make 100% certain that this is called before any subsequent ScheduledUpdate.afterTransactionCompletion()!!
+			//TODO from H3.2: reenable if we also fix the above todo
+			/*EntityPersister persister = getEntityPersister();
+			if ( success && persister.hasCache() && !persister.isCacheInvalidationRequired() ) {
+			persister.getCache().afterInsert( getGeneratedId(), cacheEntry );
+			}*/
+			if (success)
+			{
+				await (PostCommitInsertAsync());
 			}
 		}
 	}

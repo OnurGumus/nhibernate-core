@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
+using NHibernate.Linq;
 using System.Threading.Tasks;
 using NHibernate.Util;
 

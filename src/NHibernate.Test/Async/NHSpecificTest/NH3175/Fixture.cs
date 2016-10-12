@@ -6,7 +6,6 @@ using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3175
 {
@@ -83,6 +82,82 @@ namespace NHibernate.Test.NHSpecificTest.NH3175
 					await (session.DeleteAsync("from System.Object"));
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
+				}
+		}
+
+		[Test]
+		public async Task LeftOuterJoinWithInnerRestrictionAsync()
+		{
+			// 
+			// select
+			//     order0_.Id as col_0_0_,
+			//     orderlines1_.Id as col_1_0_ 
+			// from
+			//     Orders order0_ 
+			// left outer join
+			//     OrderLines orderlines1_ 
+			//         on order0_.Id=orderlines1_.OrderId
+			//         and orderlines1_.Name like ('Order Line 3') 
+			// 
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result = await ((
+						from o in session.Query<Order>()from ol in o.OrderLines.Where(x => x.Name.StartsWith("Order Line 3")).DefaultIfEmpty()select new
+						{
+						OrderId = o.Id, OrderLineId = (Guid? )ol.Id
+						}
+
+					).ToListAsync());
+					Assert.AreEqual(5, result.Count);
+				}
+		}
+
+		[Test]
+		public async Task LeftOuterJoinWithOuterRestrictionAsync()
+		{
+			// 
+			// select
+			//     order0_.Id as col_0_0_,
+			//     orderlines1_.Id as col_1_0_ 
+			// from
+			//     Orders order0_ 
+			// left outer join
+			//     OrderLines orderlines1_ 
+			//         on order0_.Id=orderlines1_.OrderId
+			// where
+			//     orderlines1_.Name like ('Order Line 3')
+			// 
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result = await ((
+						from o in session.Query<Order>()from ol in o.OrderLines.DefaultIfEmpty().Where(x => x.Name.StartsWith("Order Line 3"))select new
+						{
+						OrderId = o.Id, OrderLineId = (Guid? )ol.Id
+						}
+
+					).ToListAsync());
+					Assert.AreEqual(2, result.Count);
+				}
+		}
+
+		[Test]
+		public async Task NestedSelectWithInnerRestrictionAsync()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var orders = await (session.Query<Order>().OrderBy(o => o.Name).Select(o => new
+					{
+					OrderId = o.Id, OrderLinesIds = o.OrderLines.Where(x => x.Name.StartsWith("Order Line 3")).Select(ol => ol.Id)}
+
+					).ToListAsync());
+					Assert.That(orders.Count, Is.EqualTo(4));
+					Assert.That(orders[0].OrderLinesIds, Is.Empty);
+					Assert.That(orders[1].OrderLinesIds, Is.Empty);
+					Assert.That(orders[2].OrderLinesIds.Count(), Is.EqualTo(2));
+					Assert.That(orders[3].OrderLinesIds, Is.Empty);
 				}
 		}
 	}

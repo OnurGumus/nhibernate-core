@@ -11,7 +11,5 @@ namespace NHibernate.AsyncGenerator
 		public AsyncLockConfiguration Lock { get; set; }
 
 		public AsyncCustomTaskTypeConfiguration CustomTaskType { get; set; } = new AsyncCustomTaskTypeConfiguration();
-
-		public string AttributeName { get; set; }
 	}
 }

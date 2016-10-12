@@ -36,18 +36,18 @@ namespace NHibernate.Test.NHSpecificTest.NH1908ThreadSafety
 			sessions.ConnectionProvider.CloseConnection(sillyConnection);
 		}
 
-		private void ScenarioRunningWithMultiThreading()
+		private async Task ScenarioRunningWithMultiThreadingAsync()
 		{
 			using (var session = sessions.OpenSession())
 			{
 				session.EnableFilter("CurrentOnly").SetParameter("date", DateTime.Now);
-				session.CreateQuery(@"
+				await (session.CreateQuery(@"
 				select u
 				from Order u
 					left join fetch u.ActiveOrderLines
 				where
 					u.Email = :email
-				").SetString("email", "stupid@bugs.com").UniqueResult<Order>();
+				").SetString("email", "stupid@bugs.com").UniqueResultAsync<Order>());
 			}
 		}
 	}

@@ -4,8 +4,6 @@ using NHibernate.Criterion;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2033
 {
@@ -66,6 +64,19 @@ namespace NHibernate.Test.NHSpecificTest.NH2033
 					Assert.That(results, Has.Count.EqualTo(1));
 					Assert.That(results[0].Address, Is.EqualTo("123 E West Ave."));
 					session.Clear();
+				}
+		}
+
+		[Test]
+		public async Task LinqJoinOnKeyManyToOneShouldGenerateInnerJoinAsync()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var query = session.Query<CustomerAddress>().Where(x => x.City == "New York").Where(x => x.Customer.Name == "John");
+					var results = await (query.ToListAsync());
+					Assert.That(results, Has.Count.EqualTo(1));
+					Assert.That(results[0].Address, Is.EqualTo("123 E West Ave."));
 				}
 		}
 

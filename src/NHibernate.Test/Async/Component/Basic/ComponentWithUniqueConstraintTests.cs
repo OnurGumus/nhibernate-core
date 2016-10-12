@@ -65,7 +65,7 @@ namespace NHibernate.Test.Component.Basic
 			using (var session = OpenSession())
 				using (session.BeginTransaction())
 				{
-					var employees = session.Query<Employee>().ToList();
+					var employees = await (session.Query<Employee>().ToListAsync());
 					Assert.That(employees.Count, Is.EqualTo(2));
 					Assert.That(employees.Select(employee => employee.Person.Name).ToArray(), Is.EquivalentTo(new[]{"Hillary", "Bill"}));
 				}

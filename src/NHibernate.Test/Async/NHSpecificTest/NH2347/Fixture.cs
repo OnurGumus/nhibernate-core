@@ -5,14 +5,25 @@ using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2347
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class FixtureAsync : TestCaseMappingByCodeAsync
 	{
+		[Test]
+		public async Task CanSumIntegersAsLongIntegersAsync()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var totalQuantity = await ((
+						from e in session.Query<Entity>()select e).SumAsync(x => (long)x.Quantity));
+					const long expected = (long)int.MaxValue + int.MaxValue;
+					Assert.That(totalQuantity, Is.EqualTo(expected));
+				}
+		}
+
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();

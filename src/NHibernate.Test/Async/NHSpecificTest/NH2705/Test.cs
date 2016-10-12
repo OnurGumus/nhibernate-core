@@ -14,12 +14,21 @@ namespace NHibernate.Test.NHSpecificTest.NH2705
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class TestAsync : BugTestCaseAsync
 	{
-		private static IEnumerable<T> GetAndFetch<T>(string name, ISession session)where T : ItemBase
+		private static async Task<IEnumerable<T>> GetAndFetchAsync<T>(string name, ISession session)where T : ItemBase
 		{
 			// this is a valid abstraction, the calling code should be able to ask that a property is eagerly loaded/available
 			// without having to know how it is mapped
-			return session.Query<T>().Fetch(p => p.SubItem).ThenFetch(p => p.Details) // should be able to fetch .Details when used with components (NH2615)
-			.Where(p => p.SubItem.Name == name).ToList();
+			return await (session.Query<T>().Fetch(p => p.SubItem).ThenFetch(p => p.Details) // should be able to fetch .Details when used with components (NH2615)
+			.Where(p => p.SubItem.Name == name).ToListAsync());
+		}
+
+		[Test]
+		public async Task Fetch_OnComponent_ShouldNotThrowAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				Assert.That(async () => await (GetAndFetchAsync<ItemWithComponentSubItem>("hello", s)), Throws.Nothing);
+			}
 		}
 
 		[Test]

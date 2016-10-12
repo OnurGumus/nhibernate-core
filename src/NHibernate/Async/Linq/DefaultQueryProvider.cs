@@ -8,8 +8,10 @@ using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Type;
+#if NET_4_5
 using System.Threading.Tasks;
 
+#endif
 namespace NHibernate.Linq
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]

@@ -100,7 +100,6 @@
     <Compile Include="AdoNet\MySqlClientSqlCommandSet.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AssertionFailure.cs" />
-    <Compile Include="AsyncAttribute.cs" />
     <Compile Include="Async\Action\BulkOperationCleanupAction.cs" />
     <Compile Include="Async\Action\CollectionAction.cs" />
     <Compile Include="Async\Action\CollectionRecreateAction.cs" />
@@ -213,6 +212,18 @@
     <Compile Include="Async\Event\ILockEventListener.cs" />
     <Compile Include="Async\Event\IMergeEventListener.cs" />
     <Compile Include="Async\Event\IPersistEventListener.cs" />
+    <Compile Include="Async\Event\IPostCollectionRecreateEventListener.cs" />
+    <Compile Include="Async\Event\IPostCollectionRemoveEventListener.cs" />
+    <Compile Include="Async\Event\IPostCollectionUpdateEventListener.cs" />
+    <Compile Include="Async\Event\IPostDeleteEventListener.cs" />
+    <Compile Include="Async\Event\IPostInsertEventListener.cs" />
+    <Compile Include="Async\Event\IPostUpdateEventListener.cs" />
+    <Compile Include="Async\Event\IPreCollectionRecreateEventListener.cs" />
+    <Compile Include="Async\Event\IPreCollectionRemoveEventListener.cs" />
+    <Compile Include="Async\Event\IPreCollectionUpdateEventListener.cs" />
+    <Compile Include="Async\Event\IPreDeleteEventListener.cs" />
+    <Compile Include="Async\Event\IPreInsertEventListener.cs" />
+    <Compile Include="Async\Event\IPreUpdateEventListener.cs" />
     <Compile Include="Async\Event\IRefreshEventListener.cs" />
     <Compile Include="Async\Event\IReplicateEventListener.cs" />
     <Compile Include="Async\Event\ISaveOrUpdateEventListener.cs" />
@@ -566,6 +577,7 @@
     <Compile Include="Id\TableHiLoGenerator.cs" />
     <Compile Include="Id\UUIDHexGenerator.cs" />
     <Compile Include="Id\UUIDStringGenerator.cs" />
+    <Compile Include="IFutureValueAsync.cs" />
     <Compile Include="IInterceptor.cs" />
     <Compile Include="Impl\AbstractQueryImpl.cs" />
     <Compile Include="AdoNet\AbstractBatcher.cs" />

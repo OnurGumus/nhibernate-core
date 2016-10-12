@@ -3,8 +3,6 @@ using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2328
 {
@@ -49,6 +47,19 @@ namespace NHibernate.Test.NHSpecificTest.NH2328
 			using (ISession s = OpenSession())
 			{
 				var boxes = await (s.QueryOver<ToyBox>().Where(t => t.Shape is Square).ListAsync());
+				Assert.That(boxes.Count, Is.EqualTo(1));
+				Assert.That(boxes[0].Name, Is.EqualTo("Box2"));
+			}
+		}
+
+		[Test]
+		public async Task AnyIs_LinqAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				var boxes = await ((
+					from t in s.Query<ToyBox>()where t.Shape is Square
+					select t).ToListAsync());
 				Assert.That(boxes.Count, Is.EqualTo(1));
 				Assert.That(boxes[0].Name, Is.EqualTo("Box2"));
 			}

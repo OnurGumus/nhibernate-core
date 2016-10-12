@@ -53,12 +53,19 @@ namespace NHibernate.Test.NHSpecificTest.NH3436
 				}
 		}
 
-		private void Run(ICollection<Guid> ids)
+		[Test]
+		public async Task TestQueryWithContainsAsync()
+		{
+			var ids = new List<Guid>{Guid.NewGuid(), Guid.NewGuid(), };
+			await (RunAsync(ids));
+		}
+
+		private async Task RunAsync(ICollection<Guid> ids)
 		{
 			using (var session = sessions.OpenSession())
 				using (session.BeginTransaction())
 				{
-					var result = session.Query<TestEntity>().Where(entity => ids.Contains(entity.Id)).ToList();
+					var result = await (session.Query<TestEntity>().Where(entity => ids.Contains(entity.Id)).ToListAsync());
 					Assert.That(result.Count, Is.EqualTo(0));
 				}
 		}

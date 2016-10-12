@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class MassTestingTwoOrTreesSideBySideFixtureAsync : AbstractMassTestingFixtureAsync
 	{
-		protected override int TestAndAssert(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds)
+		protected override async Task<int> TestAndAssertAsync(Expression<Func<MyBO, bool>> condition, ISession session, IEnumerable<int> expectedIds)
 		{
 			var result = session.Query<MyBO>().Where(condition);
 			AreEqual(expectedIds, result.Select(bo => bo.Id).ToArray());

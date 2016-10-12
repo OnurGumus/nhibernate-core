@@ -59,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 			{
 				var result = session.Query<MyBO>();
 				// 3.1.0/2011-03-19: OK - select mybo0_.Id as Id0_, mybo0_.Name as Name0_, mybo0_.BO1Key as BO3_0_, mybo0_.OtherBO1Key as OtherBO4_0_, mybo0_.BO2Key as BO5_0_ from MyBO mybo0_
-				var resultList = result.ToList();
+				var resultList = await (result.ToListAsync());
 				compareCt = resultList.Count;
 				Assert.IsTrue(compareCt > 0);
 			}
@@ -68,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 			{
 				var result = session.Query<MyBO>().Where(bo => true);
 				// 3.1.0/2011-03-19: OK - exec sp_executesql N'select mybo0_.Id as Id0_, mybo0_.Name as Name0_, mybo0_.BO1Key as BO3_0_, mybo0_.OtherBO1Key as OtherBO4_0_, mybo0_.BO2Key as BO5_0_ from MyBO mybo0_ where @p0=1',N'@p0 bit',@p0=1
-				var resultList = result.ToList();
+				var resultList = await (result.ToListAsync());
 				Assert.AreEqual(compareCt, resultList.Count);
 			}
 
@@ -76,7 +76,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 			{
 				var result = session.Query<MyBO>().Where(bo => bo.BO1 != null && bo.BO1.I2 == 101 || true);
 				// 3.1.0/2011-03-19: WRONG - exec sp_executesql N'select mybo0_.Id as Id0_, mybo0_.Name as Name0_, mybo0_.BO1Key as BO3_0_, mybo0_.OtherBO1Key as OtherBO4_0_, mybo0_.BO2Key as BO5_0_ from MyBO mybo0_, MyRef1 myref1x1_ where mybo0_.BO1Key=myref1x1_.Id and ((mybo0_.BO1Key is not null) and myref1x1_.I2=@p0 or @p1=1)',N'@p0 int,@p1 bit',@p0=101,@p1=1
-				var resultList = result.ToList();
+				var resultList = await (result.ToListAsync());
 				Assert.AreEqual(compareCt, resultList.Count);
 			}
 
@@ -84,7 +84,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 			{
 				var result = session.Query<MyBO>().Where(bo => bo.BO1 != null && bo.BO1.I2 == 101 || bo.Id == bo.Id + 0);
 				// 3.1.0/2011-03-19: WRONG - exec sp_executesql N'select mybo0_.Id as Id0_, mybo0_.Name as Name0_, mybo0_.BO1Key as BO3_0_, mybo0_.OtherBO1Key as OtherBO4_0_, mybo0_.BO2Key as BO5_0_ from MyBO mybo0_, MyRef1 myref1x1_ where mybo0_.BO1Key=myref1x1_.Id and ((mybo0_.BO1Key is not null) and myref1x1_.I2=@p0 or mybo0_.Id=mybo0_.Id+@p1)',N'@p0 int,@p1 int',@p0=101,@p1=0
-				var resultList = result.ToList();
+				var resultList = await (result.ToListAsync());
 				Assert.AreEqual(compareCt, resultList.Count);
 			}
 		}
@@ -97,21 +97,21 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 			{
 				var result = session.Query<MyBO>().Where(bo => bo.BO1 != null && bo.BO1.I2 == 101// || bo.BO2 != null && bo.BO2.J2 == 203 - is added below!
 				);
-				var resultList = result.ToList();
+				var resultList = await (result.ToListAsync());
 				Assert.IsTrue(resultList.Count > 0);
 			}
 
 			using (var session = OpenSession())
 			{
 				var result = session.Query<MyBO>().Where(bo => bo.BO1 != null && bo.BO1.I2 == 101 || bo.BO2 != null && bo.BO2.J2 == 203);
-				var resultList = result.ToList();
+				var resultList = await (result.ToListAsync());
 				Assert.IsTrue(resultList.Count > 0);
 			}
 
 			using (var session = OpenSession())
 			{
 				var result = session.Query<MyBO>().Where(bo => bo.BO1.I2 == 101 && bo.BO1 != null || bo.BO2.J2 == 203 && bo.BO2 != null);
-				var resultList = result.ToList();
+				var resultList = await (result.ToListAsync());
 				Assert.IsTrue(resultList.Count > 0);
 			}
 		}
@@ -182,10 +182,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 
 			using (var session = OpenSession())
 			{
-				var directResult = session.Query<MyRef1>().Where(bo => bo.I1 == null).ToList().Select(bo => bo.Id);
-				var resultViaProjection = (
+				var directResult = (await (session.Query<MyRef1>().Where(bo => bo.I1 == null).ToListAsync())).Select(bo => bo.Id);
+				var resultViaProjection = (await ((
 					from bo in session.Query<MyBO>()where bo.BO1.I1 == null || bo.BO2.J2 == 999
-					select bo.BO1).Distinct().ToList().Select(bo => bo.Id);
+					select bo.BO1).Distinct().ToListAsync())).Select(bo => bo.Id);
 				// With "projection anomaly", the previous Select will fail, as one "bo" is null,
 				// and hence bo.Id throws a NRE.
 				Assert.That(() => resultViaProjection.ToList(), Is.EquivalentTo(directResult.ToList()));
@@ -207,15 +207,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 				//result.ToList();
 				var result =
 					from r in session.Query<MyRef1>()orderby (r.Id == 1101 || r.Id == 1102 ? r.Id - 1000 : r.Id)select (r.Id == 1101 || r.Id == 1102 ? r.Id + 1000 : r.Id);
-				CollectionAssert.AreEqual(new[]{2101, 1001, 1002, 1003}, result.ToList());
+				CollectionAssert.AreEqual(new[]{2101, 1001, 1002, 1003}, await (result.ToListAsync()));
 				var someBos =
 					from r in session.Query<MyBO>()where r.BO1.BO2.J2 == 201
 					select r;
-				Assert.IsTrue(someBos.ToList().Count == 0);
+				Assert.IsTrue((await (someBos.ToListAsync())).Count == 0);
 				var someBos1 =
 					from r in session.Query<MyBO>()where (r.BO1.BO2 == null ? r.BO2 : r.BO1.BO2).J2 == 201
 					select r.Id;
-				Assert.That(() => someBos1.ToList(), Is.EquivalentTo(new[]{10}));
+				Assert.That(async () => await (someBos1.ToListAsync()), Is.EquivalentTo(new[]{10}));
 			}
 		}
 

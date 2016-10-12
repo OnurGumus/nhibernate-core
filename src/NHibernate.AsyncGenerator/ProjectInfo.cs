@@ -229,12 +229,12 @@ namespace NHibernate.AsyncGenerator
 					{
 						continue;
 					}
-					var symbolInfo = AnalyzeMethodSymbol(memberSymbol, true, conversion == MethodAsyncConversion.Smart);
+					var symbolInfo = AnalyzeMethodSymbol(memberSymbol, true, conversion);
 					if (!symbolInfo.IsValid)
 					{
 						continue;
 					}
-					if (conversion == MethodAsyncConversion.Smart && !SmartAnalyzeMethod(docInfo, memberSymbol, symbolInfo))
+					if (conversion == MethodAsyncConversion.Smart && !await SmartAnalyzeMethod(docInfo, typeInfo, memberSymbol, symbolInfo).ConfigureAwait(false))
 					{
 						continue;
 					}
@@ -244,7 +244,7 @@ namespace NHibernate.AsyncGenerator
 			return docInfo;
 		}
 
-		private bool SmartAnalyzeMethod(DocumentInfo docInfo, IMethodSymbol memberSymbol, MethodSymbolInfo symbolInfo)
+		private async Task<bool> SmartAnalyzeMethod(DocumentInfo docInfo, TypeInfo typeInfo, IMethodSymbol memberSymbol, MethodSymbolInfo symbolInfo)
 		{
 			var methodInfo = docInfo.GetMethodInfo(memberSymbol);
 			var created = false;
@@ -253,10 +253,17 @@ namespace NHibernate.AsyncGenerator
 				methodInfo = docInfo.GetOrCreateMethodInfo(memberSymbol);
 				created = true;
 			}
-			if (methodInfo.Missing || methodInfo.FindAsyncCounterpartMethodsWhitinBody(MethodAsyncConterparts).Any())
+			if (methodInfo.Missing || (await methodInfo.FindAsyncCounterpartMethodsWhitinBody(MethodAsyncConterparts).ConfigureAwait(false)).Any())
 			{
 				return true;
 			}
+			// Check if the method is required (ie implements an interface) but only if the result will be a new type
+			// because we do not want uneeded methods to be copied in a new type
+			//if (typeInfo.TypeTransformation == TypeTransformation.NewType && (symbolInfo.InterfaceMethods.Any() || symbolInfo.OverriddenMethods.Any()))
+			//{
+			//	methodInfo.Required = true;
+			//	return false;
+			//}
 			if (created)
 			{
 				methodInfo.TypeInfo.MethodInfos.Remove(methodInfo.Node);
@@ -370,7 +377,11 @@ namespace NHibernate.AsyncGenerator
 		private async Task ScanForTypeMissingAsyncMethods(DocumentInfo docInfo, INamedTypeSymbol typeSymbol)
 		{
 			var members = typeSymbol.GetMembers()
-				.OfType<IMethodSymbol>().ToLookup(o => o.Name);
+									.OfType<IMethodSymbol>()
+									.ToLookup(o =>
+										o.MethodKind == MethodKind.ExplicitInterfaceImplementation
+											? o.Name.Split('.').Last()
+											: o.Name);
 			var methodInfos = new List<MethodInfo>();
 
 			foreach (var asyncMember in typeSymbol.AllInterfaces
@@ -429,12 +440,22 @@ namespace NHibernate.AsyncGenerator
 			
 			if (Configuration.ScanMethodsBody)
 			{
-				foreach (var group in methodInfos
-					.SelectMany(o => o.FindAsyncCounterpartMethodsWhitinBody(MethodAsyncConterparts))
-					.GroupBy(o => o.MethodSymbol))
+				var asnycCounterparts = new List<AsyncCounterpartMethod>();
+				foreach (var methodInfo in methodInfos)
+				{
+					asnycCounterparts.AddRange(await methodInfo.FindAsyncCounterpartMethodsWhitinBody(MethodAsyncConterparts).ConfigureAwait(false));
+				}
+				foreach (var group in asnycCounterparts.GroupBy(o => o.MethodSymbol))
 				{
 					await ScanAllMethodReferenceLocations(group.Key).ConfigureAwait(false);
 				}
+
+				//foreach (var group in methodInfos
+				//	.SelectMany(o => o.FindAsyncCounterpartMethodsWhitinBody(MethodAsyncConterparts))
+				//	.GroupBy(o => o.MethodSymbol))
+				//{
+				//	await ScanAllMethodReferenceLocations(group.Key).ConfigureAwait(false);
+				//}
 			}
 		}
 
@@ -451,6 +472,8 @@ namespace NHibernate.AsyncGenerator
 			public IMethodSymbol BaseOverriddenMethod { get; set; }
 
 			public IMethodSymbol MethodSymbol { get; set; }
+
+			public MethodAsyncConversion? MethodConversion { get; set; }
 
 			public bool IsValid { get; set; }
 		}
@@ -536,7 +559,7 @@ namespace NHibernate.AsyncGenerator
 
 		private readonly Dictionary<IMethodSymbol, MethodSymbolInfo> _cachedMethodSymbolInfos = new Dictionary<IMethodSymbol, MethodSymbolInfo>();
 
-		private MethodSymbolInfo AnalyzeMethodSymbol(IMethodSymbol methodSymbol, bool memorize = true, bool skipLog =false)
+		private MethodSymbolInfo AnalyzeMethodSymbol(IMethodSymbol methodSymbol, bool memorize = true, MethodAsyncConversion? conversion = null)
 		{
 			if (_cachedMethodSymbolInfos.ContainsKey(methodSymbol.OriginalDefinition))
 			{
@@ -548,7 +571,7 @@ namespace NHibernate.AsyncGenerator
 			}
 			if (methodSymbol.Name.EndsWith("Async"))
 			{
-				if (!skipLog)
+				if (conversion != MethodAsyncConversion.Smart)
 				{
 					Logger.Debug($"Symbol {methodSymbol} is already async");
 				}
@@ -556,7 +579,7 @@ namespace NHibernate.AsyncGenerator
 			}
 			if (methodSymbol.MethodKind != MethodKind.Ordinary && methodSymbol.MethodKind != MethodKind.ExplicitInterfaceImplementation)
 			{
-				if (!skipLog)
+				if (conversion != MethodAsyncConversion.Smart)
 				{
 					Logger.Warn($"Method {methodSymbol} is a {methodSymbol.MethodKind} and cannot be made async");
 				}
@@ -565,7 +588,7 @@ namespace NHibernate.AsyncGenerator
 
 			if (methodSymbol.Parameters.Any(o => o.RefKind == RefKind.Out))
 			{
-				if (!skipLog)
+				if (conversion != MethodAsyncConversion.Smart)
 				{
 					Logger.Warn($"Method {methodSymbol} has out parameters and cannot be made async");
 				}
@@ -574,7 +597,7 @@ namespace NHibernate.AsyncGenerator
 
 			if (methodSymbol.DeclaringSyntaxReferences.SingleOrDefault() == null)
 			{
-				if (!skipLog)
+				if (conversion != MethodAsyncConversion.Smart)
 				{
 					Logger.Warn($"Method {methodSymbol} is external and cannot be made async");
 				}
@@ -728,7 +751,8 @@ namespace NHibernate.AsyncGenerator
 				BaseOverriddenMethod = overridenMethod?.DeclaringSyntaxReferences.Length > 0
 					? overridenMethod.OriginalDefinition
 					: null,
-				OverriddenMethods = overrrides,
+				MethodConversion = conversion,
+				OverriddenMethods = overrrides
 			};
 			_cachedMethodSymbolInfos.Add(methodSymbol, result);
 			return result;
@@ -746,6 +770,8 @@ namespace NHibernate.AsyncGenerator
 			_processedMethodSymbolInfos.Add(methodSymbolInfo);
 
 			var mainMethodInfo = methodDocInfo.GetOrCreateMethodInfo(methodSymbolInfo.MethodSymbol);
+			mainMethodInfo.Conversion = methodSymbolInfo.MethodConversion;
+
 			foreach (var asyncMethod in methodSymbolInfo.AsyncInterfaceMethods)
 			{
 				mainMethodInfo.ExternalAsyncMethods.Add(asyncMethod);
@@ -850,12 +876,21 @@ namespace NHibernate.AsyncGenerator
 
 			if (Configuration.ScanMethodsBody)
 			{
-				foreach (var group in bodyScanMethodInfos
-					.SelectMany(o => o.FindAsyncCounterpartMethodsWhitinBody(MethodAsyncConterparts))
-					.GroupBy(o => o.MethodSymbol))
+				var asnycCounterparts = new List<AsyncCounterpartMethod>();
+				foreach (var methodInfo in bodyScanMethodInfos)
+				{
+					asnycCounterparts.AddRange(await methodInfo.FindAsyncCounterpartMethodsWhitinBody(MethodAsyncConterparts).ConfigureAwait(false));
+				}
+				foreach (var group in asnycCounterparts.GroupBy(o => o.MethodSymbol))
 				{
 					await ScanAllMethodReferenceLocations(group.Key).ConfigureAwait(false);
 				}
+				//foreach (var group in bodyScanMethodInfos
+				//	.SelectMany(o => o.FindAsyncCounterpartMethodsWhitinBody(MethodAsyncConterparts))
+				//	.GroupBy(o => o.MethodSymbol))
+				//{
+				//	await ScanAllMethodReferenceLocations(group.Key).ConfigureAwait(false);
+				//}
 			}
 
 			foreach (var methodToScan in referenceScanMethods)

@@ -1,5 +1,6 @@
 using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Exceptions;
 using NHibernate.Linq;
 using NUnit.Framework;
 
@@ -29,8 +30,12 @@ namespace NHibernate.Test.Linq.ByMethod
 		public void CastDowncast()
 		{
 			var query = session.Query<Mammal>().Cast<Dog>();
-			// the list contains at least one Cat then should Throws
-			Assert.That(() => query.ToList(), Throws.Exception);
+			Assert.Throws<GenericADOException>(
+				() =>
+				{
+					// the list contains at least one Cat then should Throws
+					query.ToList();
+				});
 		}
 
 		[Test]

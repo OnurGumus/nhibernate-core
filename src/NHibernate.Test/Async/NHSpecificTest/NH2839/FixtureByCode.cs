@@ -10,7 +10,6 @@ using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2839
 {
@@ -53,6 +52,19 @@ namespace NHibernate.Test.NHSpecificTest.NH2839
 					await (session.DeleteAsync("from System.Object"));
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
+				}
+		}
+
+		[Test]
+		public async Task YourTestNameAsync()
+		{
+			using (ISession session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result =
+						from e in session.Query<Entity>()where e.IsActive
+						select e;
+					Assert.AreEqual(1, (await (result.ToListAsync())).Count);
 				}
 		}
 	}

@@ -3,14 +3,74 @@ using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2583
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class SelfJoinTestFixtureAsync : BugTestCaseAsync
 	{
+		[Test]
+		public async Task SelfJoinsWorkIfNothingJoinsAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var result = (await ((
+					from bo in session.Query<MyBO>()where bo.LeftSon.LeftSon.K2 == 2 || bo.RightSon.RightSon.K2 == 3
+					select bo).ToListAsync())).Select(bo => bo.Name);
+				Assert.AreEqual(0, result.Count());
+			}
+		}
+
+		[Test]
+		public async Task SelfJoinsWorkIfOneSideJoinsAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var result = (await ((
+					from bo in session.Query<MyBO>()where bo.LeftSon.LeftSon.K2 == 1 || bo.RightSon.RightSon.K2 == 2
+					select bo).ToListAsync())).Select(bo => bo.Name);
+				Assert.That(() => result.ToList(), Is.EquivalentTo(new[]{"1", "2"}));
+			}
+		}
+
+		[Test]
+		public async Task SelfJoinsWorkIfBothSidesJoinAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var result = (await ((
+					from bo in session.Query<MyBO>()where bo.LeftSon.LeftSon.K2 == 3 || bo.RightSon.RightSon.K2 == 4
+					select bo).ToListAsync())).Select(bo => bo.Name);
+				Assert.That(() => result.ToList(), Is.EquivalentTo(new[]{"3"}));
+			}
+		}
+
+		[Test]
+		public async Task SelfJoinsWorkForNullComparesAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var result = (await ((
+					from bo in session.Query<MyBO>()where bo.LeftSon.LeftSon.K1 == null || bo.RightSon.RightSon.K1 == null
+					select bo).ToListAsync())).Select(bo => bo.Name);
+				Assert.That(!result.Contains("1"));
+				Assert.That(result.Count(), Is.EqualTo(18));
+			}
+		}
+
+		[Test]
+		public async Task SelfJoinsWorkForNullCompares2Async()
+		{
+			using (var session = OpenSession())
+			{
+				var result = (await ((
+					from bo in session.Query<MyBO>()where bo.LeftSon.K1 == null || bo.RightSon.K1 == null
+					select bo).ToListAsync())).Select(bo => bo.Name);
+				Assert.That(!result.Contains("1"));
+				Assert.That(result.Count(), Is.EqualTo(18));
+			}
+		}
+
 		protected override async Task OnSetUpAsync()
 		{
 			using (var session = OpenSession())

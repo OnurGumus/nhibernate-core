@@ -5,7 +5,6 @@ using NHibernate.Dialect;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2507
 {
@@ -48,6 +47,40 @@ namespace NHibernate.Test.NHSpecificTest.NH2507
 				const string hql = "from System.Object";
 				await (session.DeleteAsync(hql));
 				await (session.FlushAsync());
+			}
+		}
+
+		/// <summary>
+		/// Test LINQ query that compares enumeration values while simulating projects with Advanced Build property
+		/// value for "Check for arithmetic overflow/underflow" as <b>checked</b>.
+		/// </summary>
+		[Test]
+		public async Task QueryEnumerationWithCheckedArithmeticOverflowTestAsync()
+		{
+			using (ISession session = this.OpenSession())
+			{
+				checked
+				{
+					var query = await (session.Query<Animal>().Where(item => item.Sex == Sex.Undefined).ToListAsync());
+					Assert.AreEqual(1, query.Count);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Test LINQ query that compares enumeration values while simulating projects with Advanced Build property
+		/// value for "Check for arithmetic overflow/underflow" as <b>unchecked</b>.
+		/// </summary>
+		[Test]
+		public async Task QueryEnumerationWithUncheckedArithmeticOverflowTestAsync()
+		{
+			using (ISession session = this.OpenSession())
+			{
+				unchecked
+				{
+					var query = await (session.Query<Animal>().Where(item => item.Sex == Sex.Undefined).ToListAsync());
+					Assert.AreEqual(1, query.Count);
+				}
 			}
 		}
 	}

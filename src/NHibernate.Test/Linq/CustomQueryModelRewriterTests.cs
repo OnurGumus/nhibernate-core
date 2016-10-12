@@ -47,7 +47,7 @@ namespace NHibernate.Test.Linq
 				whereClause.TransformExpressions(new Visitor().VisitExpression);
 			}
 
-			private class Visitor : ExpressionTreeVisitor
+			private partial class Visitor : ExpressionTreeVisitor
 			{
 				protected override Expression VisitBinaryExpression(BinaryExpression expression)
 				{

@@ -3,8 +3,6 @@ using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3187
 {
@@ -34,6 +32,22 @@ namespace NHibernate.Test.NHSpecificTest.NH3187
 					await (session.DeleteAsync("from System.Object"));
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
+				}
+		}
+
+		[Test]
+		public async Task CanGetCountOfPolicemenAsync()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var station = await (session.Query<Station>().SingleAsync());
+					var policemen = station.Policemen;
+					Assert.AreEqual(1, station.Policemen.Count());
+					foreach (var policeman in policemen)
+					{
+						Assert.NotNull(policeman);
+					}
 				}
 		}
 	}

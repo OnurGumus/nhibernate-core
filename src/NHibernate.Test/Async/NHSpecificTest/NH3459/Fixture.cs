@@ -6,7 +6,6 @@ using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3459
 {
@@ -79,6 +78,136 @@ namespace NHibernate.Test.NHSpecificTest.NH3459
 					await (session.DeleteAsync("from System.Object"));
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
+				}
+		}
+
+		[Test]
+		public async Task LeftOuterJoinAndGroupByAsync()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result = await ((
+						from o in session.Query<Order>()from ol in o.OrderLines.DefaultIfEmpty()group ol by ol.Manufacturer into grp
+							select new
+							{
+							grp.Key
+							}
+
+					).ToListAsync());
+					Assert.AreEqual(4, result.Count);
+				}
+		}
+
+		[Test]
+		public async Task LeftOuterJoinWithInnerRestrictionAndGroupByAsync()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result = await ((
+						from o in session.Query<Order>()from ol in o.OrderLines.Where(x => x.Manufacturer == "Manufacturer 1").DefaultIfEmpty()group o by o.Name into grp
+							select new
+							{
+							grp.Key
+							}
+
+					).ToListAsync());
+					Assert.AreEqual(3, result.Count);
+				}
+		}
+
+		[Test]
+		public async Task LeftOuterJoinWithOuterRestrictionAndGroupByAsync()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result = await ((
+						from o in session.Query<Order>()from ol in o.OrderLines.DefaultIfEmpty().Where(x => x.Manufacturer == "Manufacturer 1")group o by o.Name into grp
+							select new
+							{
+							grp.Key
+							}
+
+					).ToListAsync());
+					Assert.AreEqual(2, result.Count);
+				}
+		}
+
+		[Test]
+		public async Task LeftOuterJoinWithOutermostRestrictionAndGroupByAsync()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result = await ((
+						from o in session.Query<Order>()from ol in o.OrderLines.DefaultIfEmpty()where ol.Manufacturer == "Manufacturer 1"
+						group o by o.Name into grp
+							select new
+							{
+							grp.Key
+							}
+
+					).ToListAsync());
+					Assert.AreEqual(2, result.Count);
+				}
+		}
+
+		[Test]
+		public async Task InnerJoinAndGroupByAsync()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result = await ((
+						from o in session.Query<Order>()from ol in o.OrderLines
+						group ol by ol.Manufacturer into grp
+							select new
+							{
+							grp.Key
+							}
+
+					).ToListAsync());
+					Assert.AreEqual(3, result.Count);
+				}
+		}
+
+		[Test]
+		public async Task InnerJoinWithRestrictionAndGroupByAsync()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result = await ((
+						from o in session.Query<Order>()from ol in o.OrderLines.Where(x => x.Manufacturer == "Manufacturer 1")group o by o.Name into grp
+							select new
+							{
+							grp.Key
+							}
+
+					).ToListAsync());
+					Assert.AreEqual(2, result.Count);
+				}
+		}
+
+		[Test]
+		public async Task InnerJoinWithOutermostRestrictionAndGroupByAsync()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result = await ((
+						from o in session.Query<Order>()from ol in o.OrderLines
+						where ol.Manufacturer == "Manufacturer 1"
+						group o by o.Name into grp
+							select new
+							{
+							grp.Key
+							}
+
+					).ToListAsync());
+					Assert.AreEqual(2, result.Count);
 				}
 		}
 	}

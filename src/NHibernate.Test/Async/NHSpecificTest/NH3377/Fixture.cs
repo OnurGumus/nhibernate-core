@@ -5,7 +5,6 @@ using NUnit.Framework;
 using System;
 using NHibernate.Dialect;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3377
 {
@@ -39,6 +38,59 @@ namespace NHibernate.Test.NHSpecificTest.NH3377
 					await (session.DeleteAsync("from System.Object"));
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
+				}
+		}
+
+		[Test]
+		public async Task ShouldBeAbleToCallConvertToInt32FromStringParameterAsync()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result = await ((
+						from e in session.Query<Entity>()where e.Name == "Bob"
+						select Convert.ToInt32(e.Age)).ToListAsync());
+					Assert.That(result, Has.Count.EqualTo(1));
+					Assert.That(result[0], Is.EqualTo(17));
+				}
+		}
+
+		[Test]
+		public async Task ShouldBeAbleToCallConvertToInt32FromStringParameterInMaxAsync()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result = await (session.Query<Entity>().MaxAsync(e => Convert.ToInt32(e.Age)));
+					Assert.That(result, Is.EqualTo(17));
+				}
+		}
+
+		[Test]
+		public async Task ShouldBeAbleToCallConvertToBooleanFromStringParameterAsync()
+		{
+			if (Dialect is SQLiteDialect || Dialect is FirebirdDialect || Dialect is MySQLDialect || Dialect is Oracle8iDialect)
+				Assert.Ignore(Dialect.GetType() + " is not supported");
+			//NH-3720
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result = await (session.Query<Entity>().Where(x => x.Name == "true").Select(x => Convert.ToBoolean(x.Name)).SingleAsync());
+					Assert.That(result, Is.True);
+				}
+		}
+
+		[Test]
+		public async Task ShouldBeAbleToCallConvertToDateTimeFromStringParameterAsync()
+		{
+			if (Dialect is Oracle8iDialect)
+				Assert.Ignore(Dialect.GetType() + " is not supported");
+			//NH-3720
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var result = await (session.Query<Entity>().Where(x => x.Name == "2014-10-13").Select(x => Convert.ToDateTime(x.Name)).SingleAsync());
+					Assert.That(result, Is.EqualTo(new DateTime(2014, 10, 13)));
 				}
 		}
 	}

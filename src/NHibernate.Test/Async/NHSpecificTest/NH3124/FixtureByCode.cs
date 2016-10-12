@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3124
 			using (ISession session = OpenSession())
 				using (var transaction = session.BeginTransaction())
 				{
-					session.Query<Person>().Where(x => x.Type == 'A').ToList();
+					await (session.Query<Person>().Where(x => x.Type == 'A').ToListAsync());
 					await (transaction.CommitAsync());
 				}
 		}

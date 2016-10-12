@@ -8,7 +8,6 @@ using log4net.Repository.Hierarchy;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2459
 {
@@ -27,6 +26,20 @@ namespace NHibernate.Test.NHSpecificTest.NH2459
 				await (session.SaveAsync(skillSet));
 				await (session.SaveAsync(qualification));
 				await (session.FlushAsync());
+			}
+		}
+
+		[Test]
+		public async Task IsTypeOperatorAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				//first query is OK
+				IQueryable<TrainingComponent> query = session.Query<TrainingComponent>().Where(c => c is SkillSet);
+				Assert.That(!(await (query.ToListAsync())).Any(c => !(c is SkillSet)));
+				//Second time round the a cached version of the SQL for the query is used BUT the type parameter is not updated... 
+				query = session.Query<TrainingComponent>().Where(c => c is Qualification);
+				Assert.That(!(await (query.ToListAsync())).Any(c => !(c is Qualification)));
 			}
 		}
 

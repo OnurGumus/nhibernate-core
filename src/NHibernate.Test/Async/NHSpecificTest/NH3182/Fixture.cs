@@ -4,8 +4,6 @@ using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Exception = System.Exception;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3182
 {
@@ -37,6 +35,90 @@ namespace NHibernate.Test.NHSpecificTest.NH3182
 				{
 					await (session.DeleteAsync("from System.Object"));
 					await (transaction.CommitAsync());
+				}
+		}
+
+		[Test]
+		public async Task SelectManyPregnantStatusCast1Async()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var list = await ((session.Query<Animal>().SelectMany(o => o.Children).Where(o => o is Mammal).Select(o => ((Mammal)o).Pregnant)).ToListAsync());
+					var count = list.Count();
+					Assert.AreEqual(0, count);
+				}
+		}
+
+		[Test]
+		public async Task SelectManyPregnantStatusCast2Async()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var list = await ((session.Query<Animal>().SelectMany(o => o.Children).Where(o => o is Mammal).Select(o => ((Mammal)o).Pregnant)).ToListAsync());
+					var count = list.Count();
+					Assert.AreEqual(0, count);
+				}
+		}
+
+		[Test]
+		public async Task SelectManyPregnantStatusOfType1Async()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var list = await (session.Query<Animal>().SelectMany(o => o.Children, (animal, animal1) => animal1).OfType<Mammal>().Select(o => o.Pregnant).ToListAsync());
+					var count = list.Count();
+					Assert.AreEqual(0, count);
+				}
+		}
+
+		[Test]
+		public async Task SelectManyPregnantStatusOfType2Async()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var list = await (session.Query<Animal>().SelectMany(o => o.Children, (animal, animal1) => animal1).OfType<Mammal>().Select(o => o.Pregnant).ToListAsync());
+					var count = list.Count();
+					Assert.AreEqual(0, count);
+				}
+		}
+
+		[Test]
+		public async Task SelectPregnantStatusCastAsync()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var list = await ((session.Query<Animal>().Where(o => o is Mammal).Select(o => ((Mammal)o).Pregnant)).ToListAsync());
+					var count = list.Count();
+					Assert.AreEqual(0, count);
+				}
+		}
+
+		[Test]
+		public async Task SelectPregnantStatusOfTypeAsync()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var list = await (session.Query<Animal>().OfType<Mammal>().Select(o => o.Pregnant).ToListAsync());
+					var count = list.Count();
+					Assert.AreEqual(0, count);
+				}
+		}
+
+		[Test]
+		public async Task SelectPregnantStatusAsync()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var list = await (session.Query<Mammal>().Select(o => o.Pregnant).ToListAsync());
+					var count = list.Count();
+					Assert.AreEqual(0, count);
 				}
 		}
 	}

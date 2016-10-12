@@ -4,6 +4,8 @@ using NHibernate.Cfg;
 using NHibernate.Event;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH1332
 {
@@ -60,6 +62,40 @@ namespace NHibernate.Test.NHSpecificTest.NH1332
 			public void OnPostDelete(PostDeleteEvent @event)
 			{
 				log.Debug("PostCommitDelete fired.");
+			}
+
+			public Task OnPostDeleteAsync(PostDeleteEvent @event)
+			{
+				try
+				{
+					log.Debug("PostCommitDelete fired.");
+					return TaskHelper.CompletedTask;
+				}
+				catch (Exception ex)
+				{
+					return TaskHelper.FromException<object>(ex);
+				}
+			}
+		}
+	}
+
+	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+	public partial class Fixture : BugTestCase
+	{
+		[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+		public partial class PostCommitDelete : IPostDeleteEventListener
+		{
+			public Task OnPostDeleteAsync(PostDeleteEvent @event)
+			{
+				try
+				{
+					log.Debug("PostCommitDelete fired.");
+					return TaskHelper.CompletedTask;
+				}
+				catch (Exception ex)
+				{
+					return TaskHelper.FromException<object>(ex);
+				}
 			}
 		}
 	}

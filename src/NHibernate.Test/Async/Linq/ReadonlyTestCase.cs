@@ -8,6 +8,7 @@ using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR;
 using NUnit.Framework;
+using NHibernate.Linq;
 using System.Threading.Tasks;
 using NHibernate.Util;
 

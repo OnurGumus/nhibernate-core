@@ -52,5 +52,24 @@ namespace NHibernate.Test.NHSpecificTest.NH1714
 			}
 		}
 	}
+
+	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
+	public partial class MyCustomEventListener : IPreInsertEventListener
+	{
+		public async Task<bool> OnPreInsertAsync(PreInsertEvent e)
+		{
+			if (e.Entity is DomainClass == false)
+				return false;
+			// this will join into the parent's transaction
+			using (var session = e.Session.GetSession(EntityMode.Poco))
+			{
+				//should insert log record here
+				await (session.SaveAsync(new LogClass()));
+				await (session.FlushAsync());
+			}
+
+			return false;
+		}
+	}
 }
 #endif

@@ -7,7 +7,6 @@ using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2858
 {
@@ -52,6 +51,17 @@ namespace NHibernate.Test.NHSpecificTest.NH2858
 					await (session.DeleteAsync("from System.Object"));
 					await (session.FlushAsync());
 					await (transaction.CommitAsync());
+				}
+		}
+
+		[Test]
+		public async Task GuidToStringShouldBeRetrievedCorrectlyInLinqProjectionAsync()
+		{
+			using (var session = OpenSession())
+				using (session.BeginTransaction())
+				{
+					var guidToString = await (session.Query<Entity>().Select(x => x.TheGuid.ToString()).FirstAsync());
+					Assert.That(guidToString, Is.EqualTo(Guid.Empty.ToString()));
 				}
 		}
 	}
