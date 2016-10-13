@@ -95,6 +95,11 @@ namespace NHibernate.Impl
 			get { throw new NotSupportedException(); }
 		}
 
+		public override object UserData
+		{
+			get { throw new NotSupportedException(); }
+		}
+
 		public override IBatcher Batcher
 		{
 			get

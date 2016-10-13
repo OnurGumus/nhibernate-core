@@ -89,6 +89,8 @@ namespace NHibernate.Impl
 		private readonly bool ignoreExceptionBeforeTransactionCompletion;
 		[NonSerialized]
 		private readonly ConnectionReleaseMode connectionReleaseMode;
+		[NonSerialized]
+		private object userData;
 
 		#region System.Runtime.Serialization.ISerializable Members
 
@@ -115,6 +117,7 @@ namespace NHibernate.Impl
 
 			flushMode = (FlushMode)info.GetValue("flushMode", typeof(FlushMode));
 			cacheMode = (CacheMode)info.GetValue("cacheMode", typeof(CacheMode));
+			userData = info.GetValue("userData", typeof(object));
 
 			interceptor = (IInterceptor)info.GetValue("interceptor", typeof(IInterceptor));
 
@@ -154,6 +157,7 @@ namespace NHibernate.Impl
 			info.AddValue("timestamp", timestamp);
 			info.AddValue("flushMode", flushMode);
 			info.AddValue("cacheMode", cacheMode);
+			info.AddValue("userData", userData);
 
 			info.AddValue("interceptor", interceptor, typeof(IInterceptor));
 
@@ -207,6 +211,7 @@ namespace NHibernate.Impl
 		/// <param name="ignoreExceptionBeforeTransactionCompletion">Should we ignore exceptions in IInterceptor.BeforeTransactionCompletion</param>
 		/// <param name="connectionReleaseMode">The mode by which we should release JDBC connections.</param>
 		/// <param name="defaultFlushMode">The default flush mode for this session</param>
+		/// <param name="userData">The user provided data</param>
 		internal SessionImpl(
 			DbConnection connection,
 			SessionFactoryImpl factory,
@@ -218,7 +223,8 @@ namespace NHibernate.Impl
 			bool autoCloseSessionEnabled,
 			bool ignoreExceptionBeforeTransactionCompletion,
 			ConnectionReleaseMode connectionReleaseMode,
-			FlushMode defaultFlushMode)
+			FlushMode defaultFlushMode,
+			object userData = null)
 			: base(factory)
 		{
 			using (new SessionIdLoggingContext(SessionId))
@@ -239,6 +245,7 @@ namespace NHibernate.Impl
 				this.ignoreExceptionBeforeTransactionCompletion = ignoreExceptionBeforeTransactionCompletion;
 				connectionManager = new ConnectionManager(this, connection, connectionReleaseMode, interceptor);
 				this.flushMode = defaultFlushMode;
+				this.userData = userData;
 
 				if (factory.Statistics.IsStatisticsEnabled)
 				{
@@ -328,6 +335,11 @@ namespace NHibernate.Impl
 		public override long Timestamp
 		{
 			get { return timestamp; }
+		}
+
+		public override object UserData
+		{
+			get { return userData; }
 		}
 
 		public ConnectionReleaseMode ConnectionReleaseMode
@@ -1692,6 +1704,15 @@ namespace NHibernate.Impl
 				}
 
 				// free unmanaged resources here
+				if (userData != null)
+				{
+					var disposableContext = userData as IDisposable;
+					if (disposableContext != null)
+					{
+						disposableContext.Dispose();
+					}
+					userData = null;
+				}
 
 				IsAlreadyDisposed = true;
 				// nothing for Finalizer to do - so tell the GC to ignore it

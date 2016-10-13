@@ -340,5 +340,10 @@ namespace NHibernate.Engine
 		EntityKey GenerateEntityKey(object id, IEntityPersister persister);
 
 		CacheKey GenerateCacheKey(object id, IType type, string entityOrRoleName);
+
+		/// <summary>
+		/// The user provided data
+		/// </summary>
+		object UserData { get; }
 	}
 }

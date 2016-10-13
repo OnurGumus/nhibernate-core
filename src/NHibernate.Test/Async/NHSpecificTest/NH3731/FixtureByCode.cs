@@ -7,6 +7,8 @@ using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH3731
 {

@@ -72,6 +72,7 @@ namespace NHibernate.Impl
 		public abstract object InternalLoad(string entityName, object id, bool eager, bool isNullable);
 		public abstract object ImmediateLoad(string entityName, object id);
 		public abstract long Timestamp { get; }
+		public abstract object UserData { get; }
 
 		public EntityKey GenerateEntityKey(object id, IEntityPersister persister)
 		{
