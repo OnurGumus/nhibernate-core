@@ -1,6 +1,9 @@
 using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
+#if NET_4_5
+using System.Threading.Tasks;
+#endif
 
 namespace NHibernate.Test.NHSpecificTest.Futures
 {
@@ -20,6 +23,22 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 			}
 		}
 
+#if NET_4_5
+		[Test]
+		public async Task CanExecuteToFutureValueCountAsync()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var personsCount = session.Query<Person>()
+					.Where(x => x.Name == "Test1")
+					.ToFutureValueAsync(x => x.Count());
+
+				Assert.AreEqual(1, await personsCount.GetValue());
+			}
+		}
+#endif
+
 		[Test]
 		public void CanExecuteToFutureValueCountWithPredicate()
 		{
@@ -32,6 +51,21 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 				Assert.AreEqual(1, personsCount.Value);
 			}
 		}
+
+#if NET_4_5
+		[Test]
+		public async Task CanExecuteToFutureValueCountWithPredicateAsync()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var personsCount = session.Query<Person>()
+					.ToFutureValueAsync(q => q.Count(x => x.Name == "Test1"));
+
+				Assert.AreEqual(1, await personsCount.GetValue());
+			}
+		}
+#endif
 
 		protected override void OnSetUp()
 		{

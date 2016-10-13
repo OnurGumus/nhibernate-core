@@ -27,11 +27,11 @@ namespace NHibernate.AsyncGenerator.Extensions
 			}
 		}
 
-		public static T RemoveLeadingRegions<T>(this T memberNode) where T : MemberDeclarationSyntax
+		public static T RemoveLeadingDirectives<T>(this T memberNode) where T : MemberDeclarationSyntax
 		{
 			// remove all regions as not all methods will be written in the type
 			var leadingTrivia = memberNode.GetLeadingTrivia();
-			memberNode = memberNode.WithLeadingTrivia(leadingTrivia.RemoveRegions());
+			memberNode = memberNode.WithLeadingTrivia(leadingTrivia.RemoveDirectives());
 
 			var baseTypeNode = memberNode as BaseTypeDeclarationSyntax;
 			if (baseTypeNode == null)
@@ -42,7 +42,7 @@ namespace NHibernate.AsyncGenerator.Extensions
 				.ReplaceToken(
 					baseTypeNode.CloseBraceToken,
 					baseTypeNode.CloseBraceToken
-								.WithLeadingTrivia(baseTypeNode.CloseBraceToken.LeadingTrivia.RemoveRegions()));
+								.WithLeadingTrivia(baseTypeNode.CloseBraceToken.LeadingTrivia.RemoveDirectives()));
 		}
 	}
 }

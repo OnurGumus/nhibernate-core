@@ -1520,16 +1520,6 @@ namespace NHibernate.Linq
 
 		#endregion
 
-		//public static IAsyncEnumerable<TSource> ToFutureAsync<TSource>(this IQueryable<TSource> query)
-		//{
-		//	var nhQueryable = query as QueryableBase<T>;
-		//	if (nhQueryable == null)
-		//		throw new NotSupportedException("Query needs to be of type QueryableBase<T>");
-
-		//	var provider = (INhQueryProvider)nhQueryable.Provider;
-		//	return (IAsyncEnumerable<T>)provider.ExecuteFuture(nhQueryable.Expression, true);
-		//}
-
 		public static async Task<List<TSource>> ToListAsync<TSource>(this IQueryable<TSource> query)
 		{
 			var nhQueryable = query as QueryableBase<TSource>;
@@ -1537,25 +1527,50 @@ namespace NHibernate.Linq
 				throw new NotSupportedException("Query needs to be of type QueryableBase<TSource>");
 
 			var provider = (INhQueryProvider)nhQueryable.Provider;
-			var result = await provider.ExecuteAsync<IEnumerable<TSource>>(nhQueryable.Expression).ConfigureAwait(false);
+			var result = await provider.ExecuteAsync<IEnumerable<TSource>>(nhQueryable.Expression);
 			return result.ToList();
 		}
 
-		//public static IFutureValueAsync<TSource> ToFutureValueAsync<TSource>(this IQueryable<TSource> query)
-		//{
-		//	var nhQueryable = query as QueryableBase<TSource>;
-		//	if (nhQueryable == null)
-		//		throw new NotSupportedException("Query needs to be of type QueryableBase<TSource>");
+		public static IAsyncEnumerable<TSource> ToFutureAsync<TSource>(this IQueryable<TSource> query)
+		{
+			var nhQueryable = query as QueryableBase<TSource>;
+			if (nhQueryable == null)
+				throw new NotSupportedException("Query needs to be of type QueryableBase<TSource>");
 
-		//	var provider = (INhQueryProvider)nhQueryable.Provider;
-		//	var future = provider.ExecuteFuture(nhQueryable.Expression, true);
-		//	if (future is IAsyncEnumerable<TSource>)
-		//	{
-		//		return new FutureValueAsync<TSource>(async () => await ((IAsyncEnumerable<TSource>)future).ToList().ConfigureAwait(false));
-		//	}
+			var provider = (INhQueryProvider)nhQueryable.Provider;
+			return (IAsyncEnumerable<TSource>)provider.ExecuteFutureAsync(nhQueryable.Expression);
+		}
 
-		//	return (FutureValueAsync<TSource>)future;
-		//}
+		public static IFutureValueAsync<TSource> ToFutureValueAsync<TSource>(this IQueryable<TSource> query)
+		{
+			var nhQueryable = query as QueryableBase<TSource>;
+			if (nhQueryable == null)
+				throw new NotSupportedException("Query needs to be of type QueryableBase<TSource>");
+
+			var provider = (INhQueryProvider)nhQueryable.Provider;
+			var future = provider.ExecuteFutureAsync(nhQueryable.Expression);
+			if (future is IAsyncEnumerable<TSource>)
+			{
+				return new FutureValueAsync<TSource>(async () => await ((IAsyncEnumerable<TSource>)future).ToList());
+			}
+
+			return (FutureValueAsync<TSource>)future;
+		}
+
+		public static IFutureValueAsync<TResult> ToFutureValueAsync<TSource, TResult>(this IQueryable<TSource> query, 
+			Expression<Func<IQueryable<TSource>, TResult>> selector)
+		{
+			var nhQueryable = query as QueryableBase<TSource>;
+			if (nhQueryable == null)
+				throw new NotSupportedException("Query needs to be of type QueryableBase<TSource>");
+
+			var provider = (INhQueryProvider)query.Provider;
+			var expression = ReplacingExpressionTreeVisitor.Replace(selector.Parameters.Single(),
+																	query.Expression,
+																	selector.Body);
+
+			return (IFutureValueAsync<TResult>)provider.ExecuteFutureAsync(expression);
+		}
 
 #endif
 

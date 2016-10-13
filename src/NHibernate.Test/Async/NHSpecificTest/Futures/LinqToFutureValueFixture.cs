@@ -2,10 +2,12 @@
 using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
+#if NET_4_5
 using System.Threading.Tasks;
 using Exception = System.Exception;
 using NHibernate.Util;
 
+#endif
 namespace NHibernate.Test.NHSpecificTest.Futures
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]

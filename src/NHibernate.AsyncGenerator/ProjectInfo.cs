@@ -229,9 +229,15 @@ namespace NHibernate.AsyncGenerator
 					{
 						continue;
 					}
-					var symbolInfo = AnalyzeMethodSymbol(memberSymbol, true, conversion);
+					var symbolInfo = await AnalyzeMethodSymbol(memberSymbol, true, conversion).ConfigureAwait(false);
 					if (!symbolInfo.IsValid)
 					{
+						// For new types we need to register all method infos in order to copy only methods that are not ignored
+						if (symbolInfo == MethodSymbolInfo.Ignore && typeInfo.TypeTransformation == TypeTransformation.NewType)
+						{
+							docInfo.GetOrCreateMethodInfo(memberSymbol)?.SetIgnore(true);
+						}
+
 						continue;
 					}
 					if (conversion == MethodAsyncConversion.Smart && !await SmartAnalyzeMethod(docInfo, typeInfo, memberSymbol, symbolInfo).ConfigureAwait(false))
@@ -463,6 +469,8 @@ namespace NHibernate.AsyncGenerator
 		{
 			public static readonly MethodSymbolInfo Invalid = new MethodSymbolInfo();
 
+			public static readonly MethodSymbolInfo Ignore = new MethodSymbolInfo();
+
 			public HashSet<IMethodSymbol> InterfaceMethods { get; set; }
 
 			public HashSet<IMethodSymbol> AsyncInterfaceMethods { get; set; }
@@ -559,7 +567,7 @@ namespace NHibernate.AsyncGenerator
 
 		private readonly Dictionary<IMethodSymbol, MethodSymbolInfo> _cachedMethodSymbolInfos = new Dictionary<IMethodSymbol, MethodSymbolInfo>();
 
-		private MethodSymbolInfo AnalyzeMethodSymbol(IMethodSymbol methodSymbol, bool memorize = true, MethodAsyncConversion? conversion = null)
+		private async Task<MethodSymbolInfo> AnalyzeMethodSymbol(IMethodSymbol methodSymbol, bool memorize = true, MethodAsyncConversion? conversion = null)
 		{
 			if (_cachedMethodSymbolInfos.ContainsKey(methodSymbol.OriginalDefinition))
 			{
@@ -575,7 +583,7 @@ namespace NHibernate.AsyncGenerator
 				{
 					Logger.Debug($"Symbol {methodSymbol} is already async");
 				}
-				return MethodSymbolInfo.Invalid;
+				return MethodSymbolInfo.Ignore;
 			}
 			if (methodSymbol.MethodKind != MethodKind.Ordinary && methodSymbol.MethodKind != MethodKind.ExplicitInterfaceImplementation)
 			{
@@ -726,6 +734,23 @@ namespace NHibernate.AsyncGenerator
 					continue;
 				}
 				interfaceMethods.Add(interfaceMember.OriginalDefinition);
+			}
+
+			// Verify if there is already an async counterpart for this method
+			IMethodSymbol asyncCounterpart;
+			if (Configuration.FindAsyncCounterpart != null)
+			{
+				asyncCounterpart = await Configuration.FindAsyncCounterpart.Invoke(Project, methodSymbol.OriginalDefinition, false).ConfigureAwait(false);
+			}
+			else
+			{
+				asyncCounterpart = methodSymbol.GetAsyncCounterpart();
+			}
+			if (asyncCounterpart != null)
+			{
+				Logger.Debug($"Method {methodSymbol} has already an async counterpart {asyncCounterpart}");
+				_cachedMethodSymbolInfos.Add(methodSymbol.OriginalDefinition, MethodSymbolInfo.Ignore);
+				return MethodSymbolInfo.Ignore;
 			}
 
 			var isSymbolValidFunc = SolutionInfo.Configuration.IsSymbolValidFunc;
@@ -955,7 +980,7 @@ namespace NHibernate.AsyncGenerator
 					continue;
 				}
 				// dont check if the method was already analyzed as there can be many references inside one method
-				var symbolInfo = AnalyzeMethodSymbol(refMethodSymbol, false);
+				var symbolInfo = await AnalyzeMethodSymbol(refMethodSymbol, false).ConfigureAwait(false);
 				if (!symbolInfo.IsValid)
 				{
 					IgnoredReferenceLocation.Add(refLocation);

@@ -82,22 +82,6 @@ namespace NHibernate
 		/// <param name = "name">The name of the parameter</param>
 		/// <param name = "val">A non-null instance of a persistent class</param>
 		Task<IQuery> SetEntityAsync(string name, object val);
-		/// <summary>
-		/// Get a enumerable that when enumerated will execute
-		/// a batch of queries in a single database roundtrip
-		/// </summary>
-		/// <typeparam name = "T"></typeparam>
-		/// <returns></returns>
-		Task<IEnumerable<T>> FutureAsync<T>();
-		/// <summary>
-		/// Get an IFutureValue instance, whose value can be retrieved through
-		/// its Value property. The query is not executed until the Value property
-		/// is retrieved, which will execute other Future queries as well in a
-		/// single roundtrip
-		/// </summary>
-		/// <typeparam name = "T"></typeparam>
-		/// <returns></returns>
-		Task<IFutureValue<T>> FutureValueAsync<T>();
 	}
 }
 #endif

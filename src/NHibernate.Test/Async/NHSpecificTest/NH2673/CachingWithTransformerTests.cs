@@ -183,7 +183,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 				using (var session = OpenSession())
 					using (var tx = session.BeginTransaction())
 					{
-						var query = (await (session.CreateCriteria<Blog>().SetFetchMode("Posts", FetchMode.Eager).SetCacheable(true).FutureAsync<Blog>())).ToList();
+						var query = session.CreateCriteria<Blog>().SetFetchMode("Posts", FetchMode.Eager).SetCacheable(true).Future<Blog>().ToList();
 						await (tx.CommitAsync());
 					}
 			}

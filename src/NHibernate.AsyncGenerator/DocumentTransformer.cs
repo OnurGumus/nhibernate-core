@@ -169,7 +169,7 @@ namespace NHibernate.AsyncGenerator
 				return methodInfo.Node
 							  .ReturnAsTask(methodInfo.Symbol, taskConflict)
 							  .WithIdentifier(Identifier(methodInfo.Node.Identifier.Value + "Async"))
-							  .RemoveLeadingRegions();
+							  .RemoveLeadingDirectives();
 			}
 
 			var methodNode = methodInfo.Node.WithoutTrivia(); // references have spans without trivia
@@ -386,7 +386,7 @@ namespace NHibernate.AsyncGenerator
 
 			return methodNode
 				.WithLeadingTrivia(methodInfo.Node.GetLeadingTrivia())
-				.RemoveLeadingRegions()
+				.RemoveLeadingDirectives()
 				.WithTrailingTrivia(methodInfo.Node.GetTrailingTrivia());
 		}
 
@@ -525,7 +525,7 @@ namespace NHibernate.AsyncGenerator
 					var typeNode = rootTypeNode.GetAnnotatedNodes(metadata.NodeAnnotation).OfType<TypeDeclarationSyntax>().First();
 					// TODO: we should not include all members, we need to skip the methods that are not required
 					rootTypeNode = rootTypeNode.ReplaceNode(typeNode, typeNode.WithMembers(
-							typeNode.Members.Select(o => o.RemoveLeadingRegions()).ToSyntaxList()
+							typeNode.Members.Select(o => o.RemoveLeadingDirectives()).ToSyntaxList()
 							.AddRange(
 								metadata.TransformedNodes
 									.OrderBy(o => o.Original.SpanStart)
@@ -596,7 +596,7 @@ namespace NHibernate.AsyncGenerator
 								newTypeNode.DescendantNodes(descendIntoTrivia: true).OfType<DirectiveTriviaSyntax>(), SyntaxRemoveOptions.KeepNoTrivia); // remove invalid #endregion
 						*/
 						rootTypeNode = rootTypeNode
-							.ReplaceNode(typeNode, newTypeNode.RemoveLeadingRegions());
+							.ReplaceNode(typeNode, newTypeNode.RemoveLeadingDirectives());
 					}
 				}
 
@@ -611,7 +611,7 @@ namespace NHibernate.AsyncGenerator
 
 			// remove all regions as not all methods will be written in the type
 			result.Node = rootTypeNode != null 
-				? rootTypeNode.RemoveLeadingRegions()
+				? rootTypeNode.RemoveLeadingDirectives()
 				: null;
 				/*.WithTriviaFrom(rootTypeInfo.Node)*/;
 			return result;

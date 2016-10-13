@@ -40,7 +40,7 @@ namespace NHibernate.AsyncGenerator
 		/// <summary>
 		/// A custom method that will be called when for a method there is not an async counterpart with same parameters
 		/// </summary>
-		public Func<Project, IMethodSymbol, Task<IMethodSymbol>> FindAsyncCounterpart { get; set; } = null;
+		public Func<Project, IMethodSymbol, bool, Task<IMethodSymbol>> FindAsyncCounterpart { get; set; } = null;
 
 		/// <summary>
 		/// When enabled it will search all invocation expressions inside a method body and tries to find a async counterpart

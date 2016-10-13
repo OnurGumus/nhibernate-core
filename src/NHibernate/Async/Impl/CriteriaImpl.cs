@@ -55,29 +55,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public Task<IFutureValue<T>> FutureValueAsync<T>()
-		{
-			try
-			{
-				return Task.FromResult<IFutureValue<T>>(FutureValue<T>());
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<IFutureValue<T>>(ex);
-			}
-		}
-
-		public async Task<IEnumerable<T>> FutureAsync<T>()
-		{
-			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
-			{
-				return await (ListAsync<T>());
-			}
-
-			session.FutureCriteriaBatch.Add<T>(this);
-			return session.FutureCriteriaBatch.GetEnumerator<T>();
-		}
-
 		public async Task<object> UniqueResultAsync()
 		{
 			return AbstractQueryImpl.UniqueElement(await (ListAsync()));
@@ -89,16 +66,6 @@ namespace NHibernate.Impl
 			public Task<IList> ListAsync()
 			{
 				return root.ListAsync();
-			}
-
-			public Task<IFutureValue<T>> FutureValueAsync<T>()
-			{
-				return root.FutureValueAsync<T>();
-			}
-
-			public Task<IEnumerable<T>> FutureAsync<T>()
-			{
-				return root.FutureAsync<T>();
 			}
 
 			public Task ListAsync(IList results)

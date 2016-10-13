@@ -73,6 +73,9 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Interactive.Async">
+      <HintPath>..\..\lib\net\4.5\System.Interactive.Async.dll</HintPath>
+    </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml" />
@@ -589,8 +592,10 @@
     <Compile Include="Impl\AbstractQueryImpl2.cs" />
     <Compile Include="Impl\CriteriaImpl.cs" />
     <Compile Include="Engine\EntityEntry.cs" />
+    <Compile Include="Impl\DelayedAsyncEnumerator.cs" />
     <Compile Include="Impl\EnumerableImpl.cs" />
     <Compile Include="Impl\FilterImpl.cs" />
+    <Compile Include="Impl\FutureValueAsync.cs" />
     <Compile Include="Impl\MessageHelper.cs" />
     <Compile Include="AdoNet\NonBatchingBatcher.cs" />
     <Compile Include="Impl\Printer.cs" />

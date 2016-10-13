@@ -180,6 +180,12 @@ namespace NHibernate.AsyncGenerator
 			_ignoreCalculated = true;
 		}
 
+		public void SetIgnore(bool value)
+		{
+			_ignoreCalculated = true;
+			Ignore = value;
+		}
+
 		public bool HasReferences
 		{
 			get
@@ -540,15 +546,11 @@ namespace NHibernate.AsyncGenerator
 					var config = projectInfo.Configuration;
 					if (config.FindAsyncCounterpart != null)
 					{
-						asyncMethodSymbol = await config.FindAsyncCounterpart.Invoke(projectInfo.Project, methodSymbol.OriginalDefinition).ConfigureAwait(false);
+						asyncMethodSymbol = await config.FindAsyncCounterpart.Invoke(projectInfo.Project, methodSymbol.OriginalDefinition, true).ConfigureAwait(false);
 					}
 					else
 					{
-						asyncMethodSymbol = methodSymbol.ContainingType.EnumerateBaseTypesAndSelf()
-														.SelectMany(o => o.GetMembers(methodSymbol.Name + "Async"))
-														.OfType<IMethodSymbol>()
-														.Where(o => o.TypeParameters.Length == methodSymbol.TypeParameters.Length)
-														.FirstOrDefault(o => o.HaveSameParameters(methodSymbol));
+						asyncMethodSymbol = methodSymbol.GetAsyncCounterpart(true);
 					}
 					methodAsyncConterparts?.Add(methodSymbol.OriginalDefinition, asyncMethodSymbol?.OriginalDefinition);
 				}

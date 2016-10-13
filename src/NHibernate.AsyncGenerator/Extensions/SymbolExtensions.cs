@@ -355,6 +355,28 @@ namespace NHibernate.AsyncGenerator.Extensions
 			return symbol?.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T;
 		}
 
+		/// <summary>
+		/// Searches for an async counterpart within method containing type and its bases without checking the return type
+		/// </summary>
+		/// <param name="methodSymbol"></param>
+		/// <param name="inherit"></param>
+		/// <returns></returns>
+		public static IMethodSymbol GetAsyncCounterpart(this IMethodSymbol methodSymbol, bool inherit = false)
+		{
+			if (inherit)
+			{
+				return methodSymbol.ContainingType.EnumerateBaseTypesAndSelf()
+								   .SelectMany(o => o.GetMembers(methodSymbol.Name + "Async"))
+								   .OfType<IMethodSymbol>()
+								   .Where(o => o.TypeParameters.Length == methodSymbol.TypeParameters.Length)
+								   .FirstOrDefault(o => o.HaveSameParameters(methodSymbol));
+			}
+			return methodSymbol.ContainingType.GetMembers(methodSymbol.Name + "Async")
+							   .OfType<IMethodSymbol>()
+							   .Where(o => o.TypeParameters.Length == methodSymbol.TypeParameters.Length)
+							   .FirstOrDefault(o => o.HaveSameParameters(methodSymbol));
+		}
+
 		public static bool HaveSameParameters(this IMethodSymbol m1, IMethodSymbol m2, Func<IParameterSymbol, IParameterSymbol, bool> paramCompareFunc = null)
 		{
 			if (m1.Parameters.Length != m2.Parameters.Length)

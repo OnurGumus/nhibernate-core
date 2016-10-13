@@ -3,52 +3,14 @@ using System.Linq;
 using NUnit.Framework;
 using NHibernate.Criterion;
 using System.Threading.Tasks;
+using Exception = System.Exception;
+using NHibernate.Util;
 
 namespace NHibernate.Test.NHSpecificTest.NH2251
 {
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class FixtureAsync : BugTestCaseAsync
 	{
-		[Test]
-		public async Task WhenUseFutureSkipTakeThenNotThrowAsync()
-		{
-			using (var session = OpenSession())
-			{
-				var query = session.QueryOver<Foo>().Where(o => o.Name == "Graeme");
-				var rowcountQuery = await (query.ToRowCountQuery().FutureValueAsync<int>());
-				var resultsQuery = await (query.Skip(0).Take(50).FutureAsync());
-				int rowcount;
-				Foo[] items;
-				Assert.That(() =>
-				{
-					rowcount = rowcountQuery.Value;
-					items = resultsQuery.ToArray();
-				}
-
-				, Throws.Nothing);
-			}
-		}
-
-		[Test]
-		public async Task EnlistingFirstThePaginationAndThenTheRowCountDoesNotThrowsAsync()
-		{
-			using (var session = OpenSession())
-			{
-				var query = session.QueryOver<Foo>().Where(o => o.Name == "Graeme");
-				var resultsQuery = await (query.Skip(0).Take(50).FutureAsync());
-				var rowcountQuery = await (query.ToRowCountQuery().FutureValueAsync<int>());
-				int rowcount;
-				Foo[] items;
-				Assert.That(() =>
-				{
-					rowcount = rowcountQuery.Value;
-					items = resultsQuery.ToArray();
-				}
-
-				, Throws.Nothing);
-			}
-		}
-
 		[Test]
 		public async Task HqlWithOffsetAndLimitAsync()
 		{
@@ -86,8 +48,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2251
 					await (session.SaveAsync(new Foo()
 					{Name = "name4"}));
 					string stringParam = "name%";
-					var list1 = await (session.CreateQuery("from Foo f where f.Name like :stringParam order by f.Name").SetParameter("stringParam", stringParam).SetFirstResult(1).SetMaxResults(2).FutureAsync<Foo>());
-					var list2 = await (session.CreateQuery("from Foo f where f.Name like :stringParam order by f.Name").SetParameter("stringParam", stringParam).SetFirstResult(1).SetMaxResults(2).FutureAsync<Foo>());
+					var list1 = session.CreateQuery("from Foo f where f.Name like :stringParam order by f.Name").SetParameter("stringParam", stringParam).SetFirstResult(1).SetMaxResults(2).Future<Foo>();
+					var list2 = session.CreateQuery("from Foo f where f.Name like :stringParam order by f.Name").SetParameter("stringParam", stringParam).SetFirstResult(1).SetMaxResults(2).Future<Foo>();
 					Assert.That(list1.Count(), Is.EqualTo(2));
 					Assert.That(list1.ElementAt(0).Name, Is.EqualTo("name2"));
 					Assert.That(list1.ElementAt(1).Name, Is.EqualTo("name3"));

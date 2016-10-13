@@ -35,26 +35,6 @@ namespace NHibernate.Criterion
 			return criteria.UniqueResultAsync<U>();
 		}
 
-		private Task<IEnumerable<TRoot>> FutureAsync()
-		{
-			return criteria.FutureAsync<TRoot>();
-		}
-
-		private Task<IEnumerable<U>> FutureAsync<U>()
-		{
-			return criteria.FutureAsync<U>();
-		}
-
-		private Task<IFutureValue<TRoot>> FutureValueAsync()
-		{
-			return criteria.FutureValueAsync<TRoot>();
-		}
-
-		private Task<IFutureValue<U>> FutureValueAsync<U>()
-		{
-			return criteria.FutureValueAsync<U>();
-		}
-
 		Task<IList<TRoot>> IQueryOver<TRoot>.ListAsync()
 		{
 			return ListAsync();
@@ -83,26 +63,6 @@ namespace NHibernate.Criterion
 		Task<U> IQueryOver<TRoot>.SingleOrDefaultAsync<U>()
 		{
 			return SingleOrDefaultAsync<U>();
-		}
-
-		Task<IEnumerable<TRoot>> IQueryOver<TRoot>.FutureAsync()
-		{
-			return FutureAsync();
-		}
-
-		Task<IEnumerable<U>> IQueryOver<TRoot>.FutureAsync<U>()
-		{
-			return FutureAsync<U>();
-		}
-
-		Task<IFutureValue<TRoot>> IQueryOver<TRoot>.FutureValueAsync()
-		{
-			return FutureValueAsync();
-		}
-
-		Task<IFutureValue<U>> IQueryOver<TRoot>.FutureValueAsync<U>()
-		{
-			return FutureValueAsync<U>();
 		}
 	}
 }

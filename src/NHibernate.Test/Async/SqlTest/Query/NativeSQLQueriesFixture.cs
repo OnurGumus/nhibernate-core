@@ -495,7 +495,7 @@ namespace NHibernate.Test.SqlTest.Query
 					await (s.SaveAsync(new Person("Ricardo")));
 					await (s.FlushAsync());
 					var transformer = new TestResultSetTransformer();
-					var l = await (s.CreateSQLQuery("select Name from Person").SetResultTransformer(transformer).FutureAsync<object[]>());
+					var l = s.CreateSQLQuery("select Name from Person").SetResultTransformer(transformer).Future<object[]>();
 					Assert.AreEqual(l.Count(), 1);
 					Assert.AreEqual("Ricardo", l.ElementAt(0)[0]);
 					Assert.IsTrue(transformer.TransformListCalled);
@@ -513,7 +513,7 @@ namespace NHibernate.Test.SqlTest.Query
 					await (s.SaveAsync(new Person("Ricardo")));
 					await (s.FlushAsync());
 					var transformer = new TestResultSetTransformer();
-					var l = await (s.CreateSQLQuery("select Name from Person").SetResultTransformer(transformer).FutureValueAsync<object[]>());
+					var l = s.CreateSQLQuery("select Name from Person").SetResultTransformer(transformer).FutureValue<object[]>();
 					var v = l.Value;
 					Assert.AreEqual("Ricardo", v[0]);
 					Assert.IsTrue(transformer.TransformListCalled);
@@ -530,7 +530,7 @@ namespace NHibernate.Test.SqlTest.Query
 				{
 					await (s.SaveAsync(new Person("Ricardo")));
 					await (s.FlushAsync());
-					var l = await (s.CreateSQLQuery("select Name from Person").FutureAsync<string>());
+					var l = s.CreateSQLQuery("select Name from Person").Future<string>();
 					Assert.AreEqual(l.Count(), 1);
 					Assert.AreEqual("Ricardo", l.ElementAt(0));
 				}
@@ -545,7 +545,7 @@ namespace NHibernate.Test.SqlTest.Query
 				{
 					await (s.SaveAsync(new Person("Ricardo")));
 					await (s.FlushAsync());
-					var l = await (s.CreateSQLQuery("select Name from Person").FutureValueAsync<string>());
+					var l = s.CreateSQLQuery("select Name from Person").FutureValue<string>();
 					var v = l.Value;
 					Assert.AreEqual("Ricardo", v);
 				}

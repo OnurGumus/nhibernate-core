@@ -2,6 +2,9 @@ using System.Linq;
 using NHibernate.Criterion;
 using NHibernate.Impl;
 using NUnit.Framework;
+#if NET_4_5
+using System.Threading.Tasks;
+#endif
 
 namespace NHibernate.Test.NHSpecificTest.Futures
 {
@@ -45,6 +48,22 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 			}
 		}
 
+#if NET_4_5
+		[Test]
+		public async Task DefaultReadOnlyTestAsync()
+		{
+			//NH-3575
+			using (var s = sessions.OpenSession())
+			{
+				s.DefaultReadOnly = true;
+
+				var persons = s.QueryOver<Person>().FutureAsync<Person>();
+
+				Assert.IsTrue(await persons.All(p => s.IsReadOnly(p)));
+			}
+		}
+#endif
+
 		[Test]
 		public void CanUseFutureCriteria()
 		{
@@ -79,6 +98,42 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 			}
 		}
 
+#if NET_4_5
+		[Test]
+		public async Task CanUseFutureCriteriaAsync()
+		{
+			using (var s = sessions.OpenSession())
+			{
+				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
+				var persons10 = s.QueryOver<Person>()
+					.Take(10)
+					.FutureAsync();
+				var persons5 = s.QueryOver<Person>()
+					.Select(p => p.Id)
+					.Take(5)
+					.FutureAsync<int>();
+
+				using (var logSpy = new SqlLogSpy())
+				{
+					int actualPersons5Count = 0;
+					foreach (var person in await persons5.ToList())
+						actualPersons5Count++;
+
+					int actualPersons10Count = 0;
+					foreach (var person in await persons10.ToList())
+						actualPersons10Count++;
+
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(1, events.Length);
+
+					Assert.That(actualPersons5Count, Is.EqualTo(1));
+					Assert.That(actualPersons10Count, Is.EqualTo(1));
+				}
+			}
+		}
+#endif
+
 		[Test]
 		public void TwoFuturesRunInTwoRoundTrips()
 		{
@@ -106,6 +161,36 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 				}
 			}
 		}
+
+#if NET_4_5
+		[Test]
+		public async Task TwoFuturesRunInTwoRoundTripsAsync()
+		{
+			using (var s = sessions.OpenSession())
+			{
+				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
+				using (var logSpy = new SqlLogSpy())
+				{
+					var persons10 = s.QueryOver<Person>()
+						.Take(10)
+						.FutureAsync();
+
+					foreach (var person in await persons10.ToList()) { } // fire first future round-trip
+
+					var persons5 = s.QueryOver<Person>()
+						.Select(p => p.Id)
+						.Take(5)
+						.FutureAsync<int>();
+
+					foreach (var person in await persons5.ToList()) { } // fire second future round-trip
+
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(2, events.Length);
+				}
+			}
+		}
+#endif
 
 		[Test]
 		public void CanCombineSingleFutureValueWithEnumerableFutures()
@@ -143,5 +228,44 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 				}
 			}
 		}
+
+#if NET_4_5
+		[Test]
+		public async Task CanCombineSingleFutureValueWithEnumerableFuturesAsync()
+		{
+			using (var s = sessions.OpenSession())
+			{
+				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
+				var persons = s.QueryOver<Person>()
+					.Take(10)
+					.FutureAsync();
+
+				var personIds = s.QueryOver<Person>()
+					.Select(p => p.Id)
+					.FutureValueAsync<int>();
+
+				var singlePerson = s.QueryOver<Person>()
+					.FutureValueAsync();
+
+				using (var logSpy = new SqlLogSpy())
+				{
+					Person singlePersonValue = await singlePerson.GetValue();
+					int personId = await personIds.GetValue();
+
+					foreach (var person in await persons.ToList())
+					{
+
+					}
+
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(1, events.Length);
+
+					Assert.That(singlePersonValue, Is.Not.Null);
+					Assert.That(personId, Is.Not.EqualTo(0));
+				}
+			}
+		}
+#endif
 	}
 }

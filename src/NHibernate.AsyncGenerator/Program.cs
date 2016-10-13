@@ -28,7 +28,7 @@ namespace NHibernate.AsyncGenerator
 			var currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 			var basePath = Path.GetFullPath(Path.Combine(currentPath, @"..\..\..\"));
 
-			Func<Project, IMethodSymbol, Task<IMethodSymbol>> findAsyncFn = async (project, symbol) =>
+			Func<Project, IMethodSymbol, bool, Task<IMethodSymbol>> findAsyncFn = async (project, symbol, inherit) =>
 			{
 				var ns = symbol.ContainingNamespace?.ToString() ?? "";
 				var isToList = project.Name != "NHibernate" && symbol.ContainingType.Name == "Enumerable" && symbol.Name == "ToList";
@@ -93,11 +93,19 @@ namespace NHibernate.AsyncGenerator
 					paramCompareFunc = (p1, p2) => p1.Type.Equals(p2.Type) ||
 												   (delegateNames.Contains(p1.Type.Name) && delegateNames.Contains(p2.Type.Name));
 				}
-				return symbol.ContainingType.EnumerateBaseTypesAndSelf()
-					.SelectMany(o => o.GetMembers(symbol.Name + "Async"))
-					.OfType<IMethodSymbol>()
-					.Where(o => o.TypeParameters.Length == symbol.TypeParameters.Length)
-					.FirstOrDefault(o => o.HaveSameParameters(symbol, paramCompareFunc));
+
+				if (inherit)
+				{
+					return symbol.ContainingType.EnumerateBaseTypesAndSelf()
+								 .SelectMany(o => o.GetMembers(symbol.Name + "Async"))
+								 .OfType<IMethodSymbol>()
+								 .Where(o => o.TypeParameters.Length == symbol.TypeParameters.Length)
+								 .FirstOrDefault(o => o.HaveSameParameters(symbol, paramCompareFunc));
+				}
+				return symbol.ContainingType.GetMembers(symbol.Name + "Async")
+							 .OfType<IMethodSymbol>()
+							 .Where(o => o.TypeParameters.Length == symbol.TypeParameters.Length)
+							 .FirstOrDefault(o => o.HaveSameParameters(symbol, paramCompareFunc));
 			};
 
 			var solutionConfig = new SolutionConfiguration(Path.Combine(basePath, @"NHibernate.sln"))
@@ -178,22 +186,6 @@ namespace NHibernate.AsyncGenerator
 							// if "await Task.Yield();" is added after DoLinqInSeparateSessionAsync then the test runs successfully (TODO: discover why)
 							return !doc.FilePath.EndsWith(@"Linq\MathTests.cs") &&
 								   !doc.FilePath.EndsWith(@"Linq\ExpressionSessionLeakTest.cs");
-
-							//return
-							//	doc.FilePath.EndsWith(@"NH2322\PostUpdateEventListener.cs") /*||
-							//	doc.FilePath.EndsWith(@"\TestCaseMappingByCode.cs") ||
-							//	doc.FilePath.EndsWith(@"\TestCase.cs")*/
-							//	;
-
-							//return doc.FilePath.EndsWith(@"Linq\JoinTests.cs") ||
-							//doc.FilePath.EndsWith(@"Linq\LinqTestCase.cs") ||
-							//doc.FilePath.EndsWith(@"Linq\ReadonlyTestCase.cs") ||
-							//doc.FilePath.EndsWith(@"\TestCase.cs");
-
-							//return
-							//doc.FilePath.EndsWith(@"NHSpecificTest\BasicClassFixture.cs") ||
-							//doc.FilePath.EndsWith(@"\ObjectAssertion.cs") ||
-							//doc.FilePath.EndsWith(@"\TestCase.cs");
 						},
 						FindAsyncCounterpart = findAsyncFn,
 						TypeTransformationFunc = type =>

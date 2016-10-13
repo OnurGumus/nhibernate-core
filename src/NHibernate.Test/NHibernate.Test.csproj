@@ -98,6 +98,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Data.OracleClient" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Interactive.Async">
+      <HintPath>..\..\lib\net\4.5\System.Interactive.Async.dll</HintPath>
+    </Reference>
     <Reference Include="System.Linq.Dynamic, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net\System.Linq.Dynamic.dll</HintPath>
@@ -364,11 +367,8 @@
     <Compile Include="Async\NHSpecificTest\Evicting\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\FileStreamSql2008\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\Futures\FallbackFixture.cs" />
-    <Compile Include="Async\NHSpecificTest\Futures\FutureCriteriaFixture.cs" />
     <Compile Include="Async\NHSpecificTest\Futures\FutureFixture.cs" />
-    <Compile Include="Async\NHSpecificTest\Futures\FutureQueryFixture.cs" />
     <Compile Include="Async\NHSpecificTest\Futures\FutureQueryOverFixture.cs" />
-    <Compile Include="Async\NHSpecificTest\Futures\LinqFutureFixture.cs" />
     <Compile Include="Async\NHSpecificTest\Futures\LinqToFutureValueFixture.cs" />
     <Compile Include="Async\NHSpecificTest\GetSetHelperFixture.cs" />
     <Compile Include="Async\NHSpecificTest\GetTest.cs" />
@@ -4654,7 +4654,6 @@
     <EmbeddedResource Include="DynamicEntity\Tuplizer\Customer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Async\NHSpecificTest\NH3436\" />
     <Folder Include="Cascade\OneToOneCascadeDelete\Pk\Unidirectional\Hbm\" />
     <Folder Include="Properties\" />
   </ItemGroup>

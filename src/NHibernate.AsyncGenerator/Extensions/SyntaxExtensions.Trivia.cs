@@ -10,6 +10,21 @@ namespace NHibernate.AsyncGenerator.Extensions
 {
 	internal static partial class SyntaxExtensions
 	{
+		private static readonly HashSet<SyntaxKind> DirectiveKinds;
+
+		static SyntaxExtensions()
+		{
+			DirectiveKinds = new HashSet<SyntaxKind>
+			{
+				SyntaxKind.RegionDirectiveTrivia,
+				SyntaxKind.EndRegionDirectiveTrivia,
+				SyntaxKind.EndIfDirectiveTrivia,
+				SyntaxKind.IfDirectiveTrivia,
+				SyntaxKind.ElseDirectiveTrivia,
+				SyntaxKind.ElifDirectiveTrivia
+			};
+		}
+
 		public static T WithPrependedLeadingTrivia<T>(
 			this T node,
 			params SyntaxTrivia[] trivia) where T : SyntaxNode
@@ -19,7 +34,7 @@ namespace NHibernate.AsyncGenerator.Extensions
 				return node;
 			}
 
-			return node.WithPrependedLeadingTrivia((IEnumerable<SyntaxTrivia>)trivia);
+			return node.WithPrependedLeadingTrivia((IEnumerable<SyntaxTrivia>) trivia);
 		}
 
 		public static T WithPrependedLeadingTrivia<T>(
@@ -50,7 +65,7 @@ namespace NHibernate.AsyncGenerator.Extensions
 				return node;
 			}
 
-			return node.WithAppendedTrailingTrivia((IEnumerable<SyntaxTrivia>)trivia);
+			return node.WithAppendedTrailingTrivia((IEnumerable<SyntaxTrivia>) trivia);
 		}
 
 		public static T WithAppendedTrailingTrivia<T>(
@@ -80,13 +95,13 @@ namespace NHibernate.AsyncGenerator.Extensions
 			return node.WithLeadingTrivia(leadingTrivia).WithTrailingTrivia(trailingTrivia);
 		}
 
-		public static SyntaxTriviaList RemoveRegions(this SyntaxTriviaList list)
+		public static SyntaxTriviaList RemoveDirectives(this SyntaxTriviaList list)
 		{
 			var toRemove = new List<int>();
 			for (var i = list.Count - 1; i >= 0; i--)
 			{
 				var trivia = list[i];
-				if (trivia.IsKind(SyntaxKind.RegionDirectiveTrivia) || trivia.IsKind(SyntaxKind.EndRegionDirectiveTrivia))
+				if (DirectiveKinds.Contains((SyntaxKind) trivia.RawKind))
 				{
 					toRemove.Add(i);
 				}

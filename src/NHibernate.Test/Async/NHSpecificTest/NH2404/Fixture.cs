@@ -55,7 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2404
 				{
 					var query1 = await (session.CreateQuery("select e.Id as EntityId, e.Name as EntityName from TestEntity e").SetResultTransformer(Transformers.AliasToBean(typeof (TestEntityDto))).ListAsync<TestEntityDto>());
 					Assert.AreEqual(2, query1.Count());
-					var query2 = await (session.CreateQuery("select e.Id as EntityId, e.Name as EntityName from TestEntity e").SetResultTransformer(Transformers.AliasToBean(typeof (TestEntityDto))).FutureAsync<TestEntityDto>());
+					var query2 = session.CreateQuery("select e.Id as EntityId, e.Name as EntityName from TestEntity e").SetResultTransformer(Transformers.AliasToBean(typeof (TestEntityDto))).Future<TestEntityDto>();
 					Assert.AreEqual(2, query2.Count());
 				}
 		}

@@ -30,29 +30,6 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public async Task<IEnumerable<T>> FutureAsync<T>()
-		{
-			if (!session.Factory.ConnectionProvider.Driver.SupportsMultipleQueries)
-			{
-				return await (ListAsync<T>());
-			}
-
-			session.FutureQueryBatch.Add<T>(this);
-			return session.FutureQueryBatch.GetEnumerator<T>();
-		}
-
-		public Task<IFutureValue<T>> FutureValueAsync<T>()
-		{
-			try
-			{
-				return Task.FromResult<IFutureValue<T>>(FutureValue<T>());
-			}
-			catch (Exception ex)
-			{
-				return TaskHelper.FromException<IFutureValue<T>>(ex);
-			}
-		}
-
 		public abstract Task<int> ExecuteUpdateAsync();
 		public abstract Task<IEnumerable> EnumerableAsync();
 		public abstract Task<IEnumerable<T>> EnumerableAsync<T>();

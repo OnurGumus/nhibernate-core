@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading;
 using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.Criterion;
@@ -6,8 +7,11 @@ using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Linq;
 using NUnit.Framework;
+#if NET_4_5
+using System.Threading.Tasks;
+#endif
 
-using Environment=NHibernate.Cfg.Environment;
+using Environment =NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.Futures
 {
@@ -66,6 +70,18 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 			}
 		}
 
+#if NET_4_5
+		[Test]
+		public async Task FutureOfCriteriaFallsBackToListImplementationWhenQueryBatchingIsNotSupportedAsync()
+		{
+			using (var session = sessions.OpenSession())
+			{
+				var results = session.CreateCriteria<Person>().FutureAsync<Person>();
+				await results.GetEnumerator().MoveNext(CancellationToken.None);
+			}
+		}
+#endif
+
 		[Test]
 		public void FutureValueOfCriteriaCanGetSingleEntityWhenQueryBatchingIsNotSupported()
 		{
@@ -79,6 +95,22 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 				Assert.IsNotNull(futurePerson.Value);
 			}
 		}
+
+#if NET_4_5
+		[Test]
+		public async Task FutureValueOfCriteriaCanGetSingleEntityWhenQueryBatchingIsNotSupportedAsync()
+		{
+			int personId = CreatePerson();
+
+			using (var session = sessions.OpenSession())
+			{
+				var futurePerson = session.CreateCriteria<Person>()
+					.Add(Restrictions.Eq("Id", personId))
+					.FutureValueAsync<Person>();
+				Assert.IsNotNull(await futurePerson.GetValue());
+			}
+		}
+#endif
 
 		[Test]
 		public void FutureValueOfCriteriaCanGetScalarValueWhenQueryBatchingIsNotSupported()
@@ -94,6 +126,22 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 			}
 		}
 
+#if NET_4_5
+		[Test]
+		public async Task FutureValueOfCriteriaCanGetScalarValueWhenQueryBatchingIsNotSupportedAsync()
+		{
+			CreatePerson();
+
+			using (var session = sessions.OpenSession())
+			{
+				var futureCount = session.CreateCriteria<Person>()
+					.SetProjection(Projections.RowCount())
+					.FutureValueAsync<int>();
+				Assert.That(await futureCount.GetValue(), Is.EqualTo(1));
+			}
+		}
+#endif
+
 		[Test]
 		public void FutureOfQueryFallsBackToListImplementationWhenQueryBatchingIsNotSupported()
 		{
@@ -103,6 +151,18 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 				results.GetEnumerator().MoveNext();
 			}
 		}
+
+#if NET_4_5
+		[Test]
+		public async Task FutureOfQueryFallsBackToListImplementationWhenQueryBatchingIsNotSupportedAsync()
+		{
+			using (var session = sessions.OpenSession())
+			{
+				var results = session.CreateQuery("from Person").FutureAsync<Person>();
+				await results.GetEnumerator().MoveNext(CancellationToken.None);
+			}
+		}
+#endif
 
 		[Test]
 		public void FutureValueOfQueryCanGetSingleEntityWhenQueryBatchingIsNotSupported()
@@ -118,6 +178,22 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 			}
 		}
 
+#if NET_4_5
+		[Test]
+		public async Task FutureValueOfQueryCanGetSingleEntityWhenQueryBatchingIsNotSupportedAsync()
+		{
+			int personId = CreatePerson();
+
+			using (var session = sessions.OpenSession())
+			{
+				var futurePerson = session.CreateQuery("from Person where Id = :id")
+					.SetInt32("id", personId)
+					.FutureValueAsync<Person>();
+				Assert.IsNotNull(await futurePerson.GetValue());
+			}
+		}
+#endif
+
 		[Test]
 		public void FutureValueOfQueryCanGetScalarValueWhenQueryBatchingIsNotSupported()
 		{
@@ -131,6 +207,21 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 			}
 		}
 
+#if NET_4_5
+		[Test]
+		public async Task FutureValueOfQueryCanGetScalarValueWhenQueryBatchingIsNotSupportedAsync()
+		{
+			CreatePerson();
+
+			using (var session = sessions.OpenSession())
+			{
+				var futureCount = session.CreateQuery("select count(*) from Person")
+					.FutureValueAsync<long>();
+				Assert.That(await futureCount.GetValue(), Is.EqualTo(1L));
+			}
+		}
+#endif
+
 		[Test]
 		public void FutureOfLinqFallsBackToListImplementationWhenQueryBatchingIsNotSupported()
 		{
@@ -140,6 +231,18 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 				results.GetEnumerator().MoveNext();
 			}
 		}
+
+#if NET_4_5
+		[Test]
+		public async Task FutureOfLinqFallsBackToListImplementationWhenQueryBatchingIsNotSupportedAsync()
+		{
+			using (var session = sessions.OpenSession())
+			{
+				var results = session.Query<Person>().ToFutureAsync();
+				await results.GetEnumerator().MoveNext(CancellationToken.None);
+			}
+		}
+#endif
 
 		[Test]
 		public void FutureValueOfLinqCanGetSingleEntityWhenQueryBatchingIsNotSupported()
@@ -154,6 +257,22 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 				Assert.IsNotNull(futurePerson.Value);
 			}
 		}
+
+#if NET_4_5
+		[Test]
+		public async Task FutureValueOfLinqCanGetSingleEntityWhenQueryBatchingIsNotSupportedAsync()
+		{
+			var personId = CreatePerson();
+
+			using (var session = sessions.OpenSession())
+			{
+				var futurePerson = session.Query<Person>()
+					.Where(x => x.Id == personId)
+					.ToFutureValueAsync();
+				Assert.IsNotNull(await futurePerson.GetValue());
+			}
+		}
+#endif
 
 		private int CreatePerson()
 		{

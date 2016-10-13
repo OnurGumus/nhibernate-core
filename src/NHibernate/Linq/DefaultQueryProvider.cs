@@ -82,6 +82,7 @@ namespace NHibernate.Linq
 			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query, out nhQuery);
 			return ExecuteFutureQuery(nhLinqExpression, query, nhQuery, true);
 		}
+
 		public async Task<TResult> ExecuteAsync<TResult>(Expression expression)
 		{
 			return (TResult)await ExecuteAsync(expression);
