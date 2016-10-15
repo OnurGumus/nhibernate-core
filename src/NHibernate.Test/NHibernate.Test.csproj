@@ -58,7 +58,7 @@
     <OutputPath>bin\Release-2.0\</OutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Release-2.0\</IntermediateOutputPath>
-    <DefineConstants>TRACE;NET,NET_2_0</DefineConstants>
+    <DefineConstants>TRACE;NET,NET_2_0;NET_4_5</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
@@ -809,6 +809,7 @@
     <Compile Include="Async\NHSpecificTest\NH3401\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3405\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3408\Fixture.cs" />
+    <Compile Include="Async\NHSpecificTest\NH3414\FixtureByCode.cs" />
     <Compile Include="Async\NHSpecificTest\NH3428\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3436\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3453\Fixture.cs" />
@@ -845,6 +846,7 @@
     <Compile Include="Async\NHSpecificTest\NH3795\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3800\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH3818\Fixture.cs" />
+    <Compile Include="Async\NHSpecificTest\NH3844\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH386\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH392\Fixture.cs" />
     <Compile Include="Async\NHSpecificTest\NH401\Fixture.cs" />
@@ -1169,7 +1171,7 @@
     <Compile Include="DynamicProxyTests\InterfaceProxySerializationTests\MyProxyImpl.cs" />
     <Compile Include="DynamicProxyTests\InterfaceProxySerializationTests\ProxyFixture.cs" />
     <Compile Include="DynamicProxyTests\InterfaceWithEqualsGethashcodeTests.cs" />
-    <Compile Include="DynamicProxyTests\LazyFieldInterceptorSerializable.cs" />
+    <Compile Include="DynamicProxyTests\LazyFieldInterceptorTests.cs" />
     <Compile Include="DynamicProxyTests\PassThroughInterceptor.cs" />
     <Compile Include="DynamicProxyTests\PeVerifier.cs" />
     <Compile Include="DynamicProxyTests\ProxiedMembers\Fixture.cs" />
@@ -1634,6 +1636,8 @@
     <Compile Include="NHSpecificTest\BagWithLazyExtraAndFilter\Fixture.cs" />
     <Compile Include="Linq\ByMethod\DistinctTests.cs" />
     <Compile Include="Component\Basic\ComponentWithUniqueConstraintTests.cs" />
+    <Compile Include="NHSpecificTest\NH3414\Entity.cs" />
+    <Compile Include="NHSpecificTest\NH3414\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH2218\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2931\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH2931\Mappings.cs" />
@@ -1801,6 +1805,8 @@
     <Compile Include="NHSpecificTest\NH3727\Entity.cs" />
     <Compile Include="NHSpecificTest\NH3727\FixtureByCode.cs" />
     <Compile Include="NHSpecificTest\NH3795\Fixture.cs" />
+    <Compile Include="NHSpecificTest\NH3844\Domain.cs" />
+    <Compile Include="NHSpecificTest\NH3844\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3818\Fixture.cs" />
     <Compile Include="NHSpecificTest\NH3818\MyLovelyCat.cs" />
     <Compile Include="NHSpecificTest\NH646\Domain.cs" />
@@ -4079,6 +4085,9 @@
     <EmbeddedResource Include="NHSpecificTest\NH2218\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3046\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3518\Mappings.hbm.xml" />
+    <EmbeddedResource Include="NHSpecificTest\NH3844\Mappings.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="NHSpecificTest\NH3609\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3818\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH3666\Mappings.hbm.xml">
@@ -4206,7 +4215,6 @@
     <EmbeddedResource Include="NHSpecificTest\NH2913\Mappings.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="TypesTest\StringClassWithLength.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2846\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH1007\Mappings.hbm.xml" />
     <EmbeddedResource Include="NHSpecificTest\NH2907\Mappings.hbm.xml" />

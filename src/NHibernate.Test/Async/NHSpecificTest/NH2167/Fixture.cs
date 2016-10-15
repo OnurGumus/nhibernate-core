@@ -1,6 +1,7 @@
 ﻿#if NET_4_5
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Criterion;
+using NHibernate.Dialect;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using System.Threading.Tasks;
@@ -10,6 +11,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2167
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
 	public partial class FixtureAsync : TestCaseMappingByCodeAsync
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return !(dialect is FirebirdDialect);
+		}
+
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();

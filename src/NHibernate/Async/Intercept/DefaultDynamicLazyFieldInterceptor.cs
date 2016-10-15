@@ -1,5 +1,6 @@
 ﻿#if NET_4_5
 using System;
+using System.Reflection;
 using NHibernate.Proxy.DynamicProxy;
 using NHibernate.Util;
 using System.Threading.Tasks;
@@ -49,7 +50,17 @@ namespace NHibernate.Intercept
 				}
 			}
 
-			return info.InvokeMethodOnTarget();
+			object returnValue;
+			try
+			{
+				returnValue = info.InvokeMethodOnTarget();
+			}
+			catch (TargetInvocationException ex)
+			{
+				throw ReflectHelper.UnwrapTargetInvocationException(ex);
+			}
+
+			return returnValue;
 		}
 	}
 }

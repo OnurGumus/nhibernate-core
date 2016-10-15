@@ -484,6 +484,34 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 #endif
 
 		[Test]
+		public void TwoFuturesRunInTwoRoundTrips()
+		{
+			IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
+			using (var s = sessions.OpenSession())
+			{
+				using (var logSpy = new SqlLogSpy())
+				{
+					var persons10 = s.Query<Person>()
+						.Take(10)
+						.ToFuture();
+
+					foreach (var person in persons10) { } // fire first future round-trip
+
+					var persons5 = s.Query<Person>()
+						.Take(5)
+						.ToFuture();
+
+					foreach (var person in persons5) { } // fire second future round-trip
+
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(2, events.Length);
+				}
+			}
+		}
+
+#if NET_4_5
+		[Test]
 		public async Task TwoFuturesRunInTwoRoundTripsAsync()
 		{
 			IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
@@ -509,9 +537,6 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 				}
 			}
 		}
-
-#if NET_4_5
-
 #endif
 
 		[Test]

@@ -475,7 +475,7 @@ namespace NHibernate.Test.Hql.Ast
 			Assert.That(count, Is.EqualTo(1), "Incorrect entity-updated count");
 			var tadpole = await (s.LoadAsync<Animal>(data.Polliwog.Id));
 			Assert.That(tadpole.Description, Is.EqualTo("Tadpole"), "Update did not take effect");
-			count = await (s.CreateQuery("update Animal set bodyWeight = bodyWeight + :w1 + :w2").SetDouble("w1", 1).SetDouble("w2", 2).ExecuteUpdateAsync());
+			count = await (s.CreateQuery("update Animal set bodyWeight = bodyWeight + :w1 + :w2").SetSingle("w1", 1).SetSingle("w2", 2).ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(6), "incorrect count on 'complex' update assignment");
 			if (!(Dialect is MySQLDialect))
 			{
@@ -496,7 +496,7 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					int count = await (s.CreateQuery("update Animal set description = :newDesc, bodyWeight = :w1 where description = :desc").SetString("desc", data.Polliwog.Description).SetString("newDesc", "Tadpole").SetDouble("w1", 3).ExecuteUpdateAsync());
+					int count = await (s.CreateQuery("update Animal set description = :newDesc, bodyWeight = :w1 where description = :desc").SetString("desc", data.Polliwog.Description).SetString("newDesc", "Tadpole").SetSingle("w1", 3).ExecuteUpdateAsync());
 					Assert.That(count, Is.EqualTo(1));
 					await (t.CommitAsync());
 				}

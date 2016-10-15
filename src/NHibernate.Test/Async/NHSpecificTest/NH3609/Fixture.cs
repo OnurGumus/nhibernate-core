@@ -1,5 +1,6 @@
 ﻿#if NET_4_5
 using NHibernate.Criterion;
+using NHibernate.Dialect;
 using NHibernate.Transform;
 using NUnit.Framework;
 using System.Threading.Tasks;
@@ -60,6 +61,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3609
 		[Test]
 		public async Task GroupByClauseHasParameterSetAsync()
 		{
+			if (Dialect is FirebirdDialect)
+				Assert.Ignore("Firebird does not support complex group by expressions");
 			using (var session = OpenSession())
 				using (session.BeginTransaction())
 				{

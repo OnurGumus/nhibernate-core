@@ -33,20 +33,18 @@ namespace NHibernate.Loader.Criteria
 			object[] result;
 			if (translator.HasProjection)
 			{
-				IType[] types = translator.ProjectedTypes;
-				result = new object[types.Length];
-				string[] columnAliases = translator.ProjectedColumnAliases;
+				result = new object[ResultTypes.Length];
 				for (int i = 0, position = 0; i < result.Length; i++)
 				{
-					int numColumns = types[i].GetColumnSpan(session.Factory);
+					int numColumns = ResultTypes[i].GetColumnSpan(session.Factory);
 					if (numColumns > 1)
 					{
-						string[] typeColumnAliases = ArrayHelper.Slice(columnAliases, position, numColumns);
-						result[i] = await (types[i].NullSafeGetAsync(rs, typeColumnAliases, session, null));
+						string[] typeColumnAliases = ArrayHelper.Slice(cachedProjectedColumnAliases, position, numColumns);
+						result[i] = await (ResultTypes[i].NullSafeGetAsync(rs, typeColumnAliases, session, null));
 					}
 					else
 					{
-						result[i] = await (types[i].NullSafeGetAsync(rs, columnAliases[position], session, null));
+						result[i] = await (ResultTypes[i].NullSafeGetAsync(rs, cachedProjectedColumnAliases[position], session, null));
 					}
 
 					position += numColumns;

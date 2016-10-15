@@ -1,11 +1,13 @@
 ﻿#if NET_4_5
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.Odbc;
 using NHibernate.SqlTypes;
-using System.Threading.Tasks;
 using NHibernate.Util;
+using Environment = NHibernate.Cfg.Environment;
+using System.Threading.Tasks;
 
 namespace NHibernate.Driver
 {

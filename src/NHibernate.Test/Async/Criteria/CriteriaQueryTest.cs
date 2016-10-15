@@ -127,7 +127,7 @@ namespace NHibernate.Test.Criteria
 			subcriteria.SetProjection(Projections.Avg("Semester"));
 			DetachedCriteria criteria = DetachedCriteria.For<Course>("c");
 			criteria.SetProjection(Projections.Count("id"));
-			criteria.Add(Expression.Or(Subqueries.Le(5, subcriteria), Subqueries.IsNull(subcriteria)));
+			criteria.Add(Expression.Or(Subqueries.Le(5D, subcriteria), Subqueries.IsNull(subcriteria)));
 			object o = await (criteria.GetExecutableCriteria(session).UniqueResultAsync());
 			Assert.AreEqual(1, o);
 			await (session.DeleteAsync(hibernateCourse));

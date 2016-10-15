@@ -55,7 +55,7 @@
     <OutputPath>bin\Release-2.0\</OutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Release-2.0\</IntermediateOutputPath>
-    <DefineConstants>TRACE;NET_2_0;NET_4_0</DefineConstants>
+    <DefineConstants>TRACE;NET_2_0;NET_4_0;NET_4_5</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>1591;3001;3002;3003;3004;3005</NoWarn>
@@ -461,6 +461,7 @@
     <Compile Include="Connection\DriverConnectionProvider.cs" />
     <Compile Include="Connection\IConnectionProvider.cs" />
     <Compile Include="Connection\UserSuppliedConnectionProvider.cs" />
+    <Compile Include="Util\DelegateHelper.cs" />
     <Compile Include="Dialect\BitwiseFunctionOperation.cs" />
     <Compile Include="Dialect\DB2Dialect.cs" />
     <Compile Include="Dialect\Dialect.cs" />

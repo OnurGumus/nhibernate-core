@@ -1,115 +1,163 @@
 ﻿#if NET_4_5
 using System;
-using System.Collections;
+using System.Linq;
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NHibernate.Driver;
+using NHibernate.Exceptions;
+using NHibernate.Linq;
+using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using NHibernate.Util;
 
 namespace NHibernate.Test.TypesTest
 {
 	[TestFixture]
 	[System.CodeDom.Compiler.GeneratedCode("AsyncGenerator", "1.0.0")]
-	public partial class StringTypeWithLengthFixtureAsync : TypeFixtureBaseAsync
+	public class StringTypeWithLengthFixtureAsync : TestCaseMappingByCodeAsync
 	{
-		protected override string TypeName
+		private int GetLongStringMappedLength()
 		{
-			get
-			{
-				return "String";
-			}
+			// This is a bit ugly...
+			//
+			// Return a value that should be the largest possible length of a string column
+			// in the corresponding database. Note that the actual column type selected by the dialect
+			// depends on this value, so it must be the largest possible value for the type
+			// that the dialect will pick. Doesn't matter if the dialect can pick another
+			// type for an even larger size.
+			if (Dialect is Oracle8iDialect)
+				return 2000;
+			if (Dialect is MySQLDialect)
+				return 65535;
+			return 4000;
 		}
 
-		protected override IList Mappings
+		protected override HbmMapping GetMappings()
 		{
-			get
+			var mapper = new ModelMapper();
+			mapper.Class<StringClass>(ca =>
 			{
-				return new string[]{String.Format("TypesTest.{0}ClassWithLength.hbm.xml", TypeName)};
+				ca.Lazy(false);
+				ca.Id(x => x.Id, map => map.Generator(Generators.Assigned));
+				ca.Property(x => x.StringValue, map => map.Length(10));
+				ca.Property(x => x.LongStringValue, map => map.Length(GetLongStringMappedLength()));
 			}
-		}
 
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			// this test only works where the driver has set an explicit length on the DbParameter
-			return dialect is MsSql2008Dialect;
+			);
+			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
 		[Test]
-		public async Task NhThrowsOnTooLongAsync()
+		[Description("Values longer than the maximum possible string length " + "should raise an exception if they would otherwise be truncated.")]
+		public async Task ShouldPreventInsertionOfVeryLongStringThatWouldBeTruncatedAsync()
 		{
-			int maxStringLength = 4000;
-			PropertyValueException ex = Assert.ThrowsAsync<PropertyValueException>(async () =>
+			// This test case is for when the current driver will use a parameter size
+			// that is significantly larger than the mapped column size (e.g. SqlClientDriver currently).
+			// Note: This test could possible be written as
+			//   "database must raise an error OR it must store and return the full value"
+			// to avoid this dialect specific exception.
+			if (Dialect is SQLiteDialect)
+				Assert.Ignore("SQLite does not enforce specified string lengths.");
+			int maxStringLength = GetLongStringMappedLength();
+			var ex = Assert.CatchAsync<Exception>(async () =>
 			{
 				using (ISession s = OpenSession())
 				{
-					StringClass b = new StringClass();
-					b.LongStringValue = new string ('x', maxStringLength + 1);
+					StringClass b = new StringClass{LongStringValue = new string ('x', maxStringLength + 1)};
 					await (s.SaveAsync(b));
 					await (s.FlushAsync());
 				}
 			}
 
 			);
-			Assert.That(ex.Message, Iz.EqualTo("Error dehydrating property value for NHibernate.Test.TypesTest.StringClass.LongStringValue"));
-			Assert.That(ex.InnerException, Iz.TypeOf<HibernateException>());
-			Assert.That(ex.InnerException.Message, Iz.EqualTo("The length of the string value exceeds the length configured in the mapping/parameter."));
+			await (AssertFailedInsertExceptionDetailsAndEmptyTableAsync(ex));
 		}
 
 		[Test]
-		public async Task DbThrowsOnTooLongAsync()
+		[Description("Values longer than the mapped string length " + "should raise an exception if they would otherwise be truncated.")]
+		public async Task ShouldPreventInsertionOfTooLongStringThatWouldBeTruncatedAsync()
 		{
-			bool dbThrewError = false;
-			try
+			// Note: This test could possible be written as
+			//   "database must raise an error OR it must store and return the full value"
+			// to avoid this dialect specific exception.
+			if (Dialect is SQLiteDialect)
+				Assert.Ignore("SQLite does not enforce specified string lengths.");
+			var ex = Assert.CatchAsync<Exception>(async () =>
 			{
 				using (ISession s = OpenSession())
 				{
-					StringClass b = new StringClass();
-					b.StringValue = "0123456789a";
+					StringClass b = new StringClass{StringValue = "0123456789a"};
 					await (s.SaveAsync(b));
 					await (s.FlushAsync());
 				}
 			}
-			catch
+
+			, "An exception was expected when trying to put too large a value into a column.");
+			await (AssertFailedInsertExceptionDetailsAndEmptyTableAsync(ex));
+		}
+
+		private async Task AssertFailedInsertExceptionDetailsAndEmptyTableAsync(Exception ex)
+		{
+			// We can get different sort of exceptions.
+			if (ex is PropertyValueException)
 			{
-				dbThrewError = true;
+				// Some drivers/dialects set explicit parameter sizes, in which case we expect NH to
+				// raise a PropertyValueException (to avoid ADO.NET from silently truncating).
+				Assert.That(ex.Message, Is.StringStarting("Error dehydrating property value for NHibernate.Test.TypesTest.StringClass."));
+				Assert.That(ex.InnerException, Is.TypeOf<HibernateException>());
+				Assert.That(ex.InnerException.Message, Is.EqualTo("The length of the string value exceeds the length configured in the mapping/parameter."));
+			}
+			else if (Dialect is MsSqlCeDialect && ex is InvalidOperationException)
+			{
+				Assert.That(ex.Message, Is.StringContaining("max=4000, len=4001"));
+			}
+			else
+			{
+				// In other cases, we expect the database itself to raise an error. This case
+				// will also happen if the driver does set an explicit parameter size, but that
+				// size is larger than the mapped column size.
+				Assert.That(ex, Is.TypeOf<GenericADOException>());
 			}
 
-			Assert.That(dbThrewError, "Database did not throw an error when trying to put too large a value into a column");
+			// In any case, nothing should have been inserted.
+			using (ISession s = OpenSession())
+			{
+				Assert.That(await (s.Query<StringClass>().ToListAsync()), Is.Empty);
+			}
 		}
 
-		[Test]
-		public async Task CriteriaLikeParameterCanExceedColumnSizeAsync()
+		/// <summary>
+		/// Some test cases doesn't work during some scenarios for well-known reasons. If the test
+		/// fails under these circumstances, mark it as IGNORED. If it _stops_ failing, mark it
+		/// as a FAILURE so that it can be investigated.
+		/// </summary>
+		private void AssertExpectedFailureOrNoException(Exception exception, bool requireExceptionAndIgnoreTest)
 		{
-			if (!(sessions.ConnectionProvider.Driver is SqlClientDriver))
-				Assert.Ignore("This test fails against the ODBC driver.  The driver would need to be override to allow longer parameter sizes than the column.");
-			using (ISession s = OpenSession())
-				using (ITransaction t = s.BeginTransaction())
-				{
-					await (s.SaveAsync(new StringClass()
-					{Id = 1, StringValue = "AAAAAAAAAB"}));
-					await (s.SaveAsync(new StringClass()
-					{Id = 2, StringValue = "BAAAAAAAAA"}));
-					var aaItems = await (s.CreateCriteria<StringClass>().Add(Restrictions.Like("StringValue", "%AAAAAAAAA%")).ListAsync());
-					Assert.That(aaItems.Count, Is.EqualTo(2));
-				}
+			if (requireExceptionAndIgnoreTest)
+			{
+				Assert.NotNull(exception, "Test was expected to have a well-known, but ignored, failure for the current configuration. If " + "that expected failure no longer occurs, it may now be possible to remove this exception.");
+				Assert.Ignore("This test is known to fail for the current configuration.");
+			}
+
+			// If the above didn't ignore the exception, it's for real - rethrow to trigger test failure.
+			if (exception != null)
+				throw new Exception("Wrapped exception.", exception);
 		}
 
-		[Test]
-		public async Task HqlLikeParameterCanExceedColumnSizeAsync()
+		private TException CatchException<TException>(System.Action action)where TException : Exception
 		{
-			if (!(sessions.ConnectionProvider.Driver is SqlClientDriver))
-				Assert.Ignore("This test fails against the ODBC driver.  The driver would need to be override to allow longer parameter sizes than the column.");
-			using (ISession s = OpenSession())
-				using (ITransaction t = s.BeginTransaction())
-				{
-					await (s.SaveAsync(new StringClass()
-					{Id = 1, StringValue = "AAAAAAAAAB"}));
-					await (s.SaveAsync(new StringClass()
-					{Id = 2, StringValue = "BAAAAAAAAA"}));
-					var aaItems = await (s.CreateQuery("from StringClass s where s.StringValue like :likeValue").SetParameter("likeValue", "%AAAAAAAAA%").ListAsync());
-					Assert.That(aaItems.Count, Is.EqualTo(2));
-				}
+			try
+			{
+				action();
+			}
+			catch (TException exception)
+			{
+				return exception;
+			}
+
+			return null;
 		}
 	}
 }

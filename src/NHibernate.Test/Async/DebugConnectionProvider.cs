@@ -1,9 +1,9 @@
 ﻿#if NET_4_5
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using NHibernate.Connection;
 using System.Threading.Tasks;
@@ -22,7 +22,6 @@ namespace NHibernate.Test
 				{
 					connections.Add(connection);
 				}
-
 				return connection;
 			}
 			catch (Exception e)

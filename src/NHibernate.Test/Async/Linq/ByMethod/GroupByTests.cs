@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using NHibernate.Dialect;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Driver;
 using NHibernate.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
@@ -377,6 +378,12 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test(Description = "NH-3797")]
 		public async Task GroupByComputedValueAsync()
 		{
+			if (Dialect is FirebirdDialect)
+				Assert.Ignore("Firebird does not support complex group by expressions");
+			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
+			if (Dialect is MsSqlCeDialect)
+				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 			var orderGroups = await (db.Orders.GroupBy(o => o.Customer.CustomerId == null ? 0 : 1).Select(g => new
 			{
 			Key = g.Key, Count = g.Count()}
@@ -388,6 +395,12 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test(Description = "NH-3797")]
 		public async Task GroupByComputedValueInAnonymousTypeAsync()
 		{
+			if (Dialect is FirebirdDialect)
+				Assert.Ignore("Firebird does not support complex group by expressions");
+			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
+			if (Dialect is MsSqlCeDialect)
+				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 			var orderGroups = await (db.Orders.GroupBy(o => new
 			{
 			Key = o.Customer.CustomerId == null ? 0 : 1
@@ -404,6 +417,12 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test(Description = "NH-3797")]
 		public async Task GroupByComputedValueInObjectArrayAsync()
 		{
+			if (Dialect is FirebirdDialect)
+				Assert.Ignore("Firebird does not support complex group by expressions");
+			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
+			if (Dialect is MsSqlCeDialect)
+				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 			var orderGroups = await (db.Orders.GroupBy(o => new[]{o.Customer.CustomerId == null ? 0 : 1, }).Select(g => new
 			{
 			Key = g.Key, Count = g.Count()}
@@ -588,6 +607,12 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test(Description = "NH-3801")]
 		public async Task GroupByComputedValueWithJoinOnObjectAsync()
 		{
+			if (Dialect is FirebirdDialect)
+				Assert.Ignore("Firebird does not support complex group by expressions");
+			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
+			if (Dialect is MsSqlCeDialect)
+				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 			var orderGroups = await (db.OrderLines.GroupBy(o => o.Order.Customer == null ? 0 : 1).Select(g => new
 			{
 			Key = g.Key, Count = g.Count()}
@@ -599,6 +624,12 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test(Description = "NH-3801")]
 		public async Task GroupByComputedValueWithJoinOnIdAsync()
 		{
+			if (Dialect is FirebirdDialect)
+				Assert.Ignore("Firebird does not support complex group by expressions");
+			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
+			if (Dialect is MsSqlCeDialect)
+				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 			var orderGroups = await (db.OrderLines.GroupBy(o => o.Order.Customer.CustomerId == null ? 0 : 1).Select(g => new
 			{
 			Key = g.Key, Count = g.Count()}
@@ -610,6 +641,12 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test(Description = "NH-3801")]
 		public async Task GroupByComputedValueInAnonymousTypeWithJoinOnObjectAsync()
 		{
+			if (Dialect is FirebirdDialect)
+				Assert.Ignore("Firebird does not support complex group by expressions");
+			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
+			if (Dialect is MsSqlCeDialect)
+				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 			var orderGroups = await (db.OrderLines.GroupBy(o => new
 			{
 			Key = o.Order.Customer == null ? 0 : 1
@@ -626,6 +663,12 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test(Description = "NH-3801")]
 		public async Task GroupByComputedValueInAnonymousTypeWithJoinOnIdAsync()
 		{
+			if (Dialect is FirebirdDialect)
+				Assert.Ignore("Firebird does not support complex group by expressions");
+			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
+			if (Dialect is MsSqlCeDialect)
+				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 			var orderGroups = await (db.OrderLines.GroupBy(o => new
 			{
 			Key = o.Order.Customer.CustomerId == null ? 0 : 1
@@ -642,6 +685,12 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test(Description = "NH-3801")]
 		public async Task GroupByComputedValueInObjectArrayWithJoinOnObjectAsync()
 		{
+			if (Dialect is FirebirdDialect)
+				Assert.Ignore("Firebird does not support complex group by expressions");
+			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
+			if (Dialect is MsSqlCeDialect)
+				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 			var orderGroups = await (db.OrderLines.GroupBy(o => new[]{o.Order.Customer == null ? 0 : 1}).Select(g => new
 			{
 			Key = g.Key, Count = g.Count()}
@@ -653,6 +702,12 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test(Description = "NH-3801")]
 		public async Task GroupByComputedValueInObjectArrayWithJoinOnIdAsync()
 		{
+			if (Dialect is FirebirdDialect)
+				Assert.Ignore("Firebird does not support complex group by expressions");
+			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
+			if (Dialect is MsSqlCeDialect)
+				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 			var orderGroups = await (db.OrderLines.GroupBy(o => new[]{o.Order.Customer.CustomerId == null ? 0 : 1}).Select(g => new
 			{
 			Key = g.Key, Count = g.Count()}
@@ -664,7 +719,52 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test(Description = "NH-3801")]
 		public async Task GroupByComputedValueInObjectArrayWithJoinInRightSideOfCaseAsync()
 		{
+			if (Dialect is FirebirdDialect)
+				Assert.Ignore("Firebird does not support complex group by expressions");
+			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
+			if (Dialect is MsSqlCeDialect)
+				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 			var orderGroups = await (db.OrderLines.GroupBy(o => new[]{o.Order.Customer.CustomerId == null ? "unknown" : o.Order.Customer.CompanyName}).Select(g => new
+			{
+			Key = g.Key, Count = g.Count()}
+
+			).ToListAsync());
+			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
+		}
+
+		[Test(Description = "NH-3844")]
+		public async Task GroupByComputedValueFromNestedArraySelectAsync()
+		{
+			if (Dialect is FirebirdDialect)
+				Assert.Ignore("Firebird does not support complex group by expressions");
+			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
+			if (Dialect is MsSqlCeDialect)
+				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
+			var orderGroups = await (db.OrderLines.Select(o => new object[]{o}).GroupBy(x => new object[]{((OrderLine)x[0]).Order.Customer == null ? 0 : 1}).Select(g => new
+			{
+			Key = g.Key, Count = g.Count()}
+
+			).ToListAsync());
+			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
+		}
+
+		[Test(Description = "NH-3844")]
+		public async Task GroupByComputedValueFromNestedObjectSelectAsync()
+		{
+			if (Dialect is FirebirdDialect)
+				Assert.Ignore("Firebird does not support complex group by expressions");
+			if (sessions.ConnectionProvider.Driver is OdbcDriver)
+				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
+			if (Dialect is MsSqlCeDialect)
+				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
+			var orderGroups = await (db.OrderLines.Select(o => new
+			{
+			OrderLine = (object)o
+			}
+
+			).GroupBy(x => new object[]{((OrderLine)x.OrderLine).Order.Customer == null ? 0 : 1}).Select(g => new
 			{
 			Key = g.Key, Count = g.Count()}
 
