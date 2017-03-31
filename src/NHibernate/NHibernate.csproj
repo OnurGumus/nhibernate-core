@@ -145,6 +145,11 @@
     <Compile Include="Connection\DriverConnectionProvider.cs" />
     <Compile Include="Connection\IConnectionProvider.cs" />
     <Compile Include="Connection\UserSuppliedConnectionProvider.cs" />
+    <Compile Include="IFutureValueAsync.cs" />
+    <Compile Include="Impl\DelayedAsyncEnumerator.cs" />
+    <Compile Include="Impl\FutureValueAsync.cs" />
+    <Compile Include="Util\AsyncLock.cs" />
+    <Compile Include="Util\AsyncSemaphore.cs" />
     <Compile Include="Util\DelegateHelper.cs" />
     <Compile Include="Dialect\BitwiseFunctionOperation.cs" />
     <Compile Include="Dialect\DB2Dialect.cs" />
