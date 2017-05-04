@@ -20,7 +20,6 @@ using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Impl;
 using NHibernate.Loader.Collection;
-using NHibernate.Loader.Entity;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
@@ -170,11 +169,6 @@ namespace NHibernate.Persister.Collection
 			{
 				throw ADOExceptionHelper.Convert(SQLExceptionConverter, sqle, "could not update collection rows: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 			}
-		}
-
-		public override async Task<object> GetElementByIndexAsync(object key, object index, ISessionImplementor session, object owner)
-		{
-			return await (new CollectionElementLoader(this, Factory, session.EnabledFilters).LoadElementAsync(session, key, IncrementIndexByBase(index))) .ConfigureAwait(false)?? NotFoundObject;
 		}
 
 		#region NH Specific
