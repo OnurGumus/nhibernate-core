@@ -109,19 +109,5 @@ namespace NHibernate.Persister.Collection
 		/// <param name="key"></param>
 		/// <param name="session"></param>
 		Task InsertRowsAsync(IPersistentCollection collection, object key, ISessionImplementor session);
-
-		Task<int> GetSizeAsync(object key, ISessionImplementor session);
-		Task<bool> IndexExistsAsync(object key, object index, ISessionImplementor session);
-		Task<bool> ElementExistsAsync(object key, object element, ISessionImplementor session);
-		
-		/// <summary>
-		/// Try to find an element by a given index.
-		/// </summary>
-		/// <param name="key">The key of the collection (collection-owner identifier)</param>
-		/// <param name="index">The given index.</param>
-		/// <param name="session">The active <see cref="ISession"/>.</param>
-		/// <param name="owner">The owner of the collection.</param>
-		/// <returns>The value of the element where available; otherwise <see cref="NotFoundObject"/>.</returns>
-		Task<object> GetElementByIndexAsync(object key, object index, ISessionImplementor session, object owner);
 	}
 }

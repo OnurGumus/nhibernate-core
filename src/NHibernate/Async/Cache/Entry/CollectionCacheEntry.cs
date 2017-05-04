@@ -18,6 +18,7 @@ namespace NHibernate.Cache.Entry
 	using System.Threading.Tasks;
 	public partial class CollectionCacheEntry
 	{
+
 		public virtual async Task AssembleAsync(IPersistentCollection collection, ICollectionPersister persister, object owner)
 		{
 			await (collection.InitializeFromCacheAsync(persister, state, owner)).ConfigureAwait(false);
