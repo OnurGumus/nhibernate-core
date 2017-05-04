@@ -130,14 +130,7 @@ namespace NHibernate.Type
 
 		public override Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner)
 		{
-			try
-			{
-				return Task.FromException<object>(new NotSupportedException("collection mappings may not form part of a property-ref"));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			throw new NotSupportedException("collection mappings may not form part of a property-ref");
 		}
 
 		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner,

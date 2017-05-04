@@ -66,9 +66,16 @@ namespace NHibernate.Impl
 		}
 
 		[Obsolete("Use overload with IQueryExpression")]
-		public virtual async Task<IList<T>> ListAsync<T>(string query, QueryParameters queryParameters)
+		public virtual Task<IList<T>> ListAsync<T>(string query, QueryParameters queryParameters)
 		{
-			return await (ListAsync<T>(query.ToQueryExpression(), queryParameters)).ConfigureAwait(false);
+			try
+			{
+				return ListAsync<T>(query.ToQueryExpression(), queryParameters);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<IList<T>>(ex);
+			}
 		}
 
 		public virtual async Task<IList> ListAsync(IQueryExpression queryExpression, QueryParameters parameters)
@@ -201,9 +208,16 @@ namespace NHibernate.Impl
 		}
 
 		[Obsolete("Use overload with IQueryExpression")]
-		public virtual async Task<IEnumerable<T>> EnumerableAsync<T>(string query, QueryParameters queryParameters)
+		public virtual Task<IEnumerable<T>> EnumerableAsync<T>(string query, QueryParameters queryParameters)
 		{
-			return await (EnumerableAsync<T>(query.ToQueryExpression(), queryParameters)).ConfigureAwait(false);
+			try
+			{
+				return EnumerableAsync<T>(query.ToQueryExpression(), queryParameters);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<IEnumerable<T>>(ex);
+			}
 		}
 
 		public abstract Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters);

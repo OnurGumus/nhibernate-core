@@ -25,44 +25,60 @@ namespace NHibernate.Criterion
 	public abstract partial class QueryOver<TRoot> : QueryOver, IQueryOver<TRoot>
 	{
 
-		private async Task<IList<TRoot>> ListAsync()
+		private Task<IList<TRoot>> ListAsync()
 		{
-			return await (criteria.ListAsync<TRoot>()).ConfigureAwait(false);
+			return criteria.ListAsync<TRoot>();
 		}
 
-		private async Task<IList<U>> ListAsync<U>()
+		private Task<IList<U>> ListAsync<U>()
 		{
-			return await (criteria.ListAsync<U>()).ConfigureAwait(false);
+			return criteria.ListAsync<U>();
 		}
 
-		private async Task<TRoot> SingleOrDefaultAsync()
+		private Task<TRoot> SingleOrDefaultAsync()
 		{
-			return await (criteria.UniqueResultAsync<TRoot>()).ConfigureAwait(false);
+			return criteria.UniqueResultAsync<TRoot>();
 		}
 
-		private async Task<U> SingleOrDefaultAsync<U>()
+		private Task<U> SingleOrDefaultAsync<U>()
 		{
-			return await (criteria.UniqueResultAsync<U>()).ConfigureAwait(false);
+			return criteria.UniqueResultAsync<U>();
 		}
 
 
 		Task<IList<TRoot>> IQueryOver<TRoot>.ListAsync()
 		{ return ListAsync(); }
-async 
+
 		Task<IList<U>> IQueryOver<TRoot>.ListAsync<U>()
-		{ return await (ListAsync<U>()).ConfigureAwait(false); }
-async 
+		{ return ListAsync<U>(); }
+
 		Task<int> IQueryOver<TRoot>.RowCountAsync()
-		{ return await (ToRowCountQuery().SingleOrDefaultAsync<int>()).ConfigureAwait(false); }
-async 
+		{ 			try
+			{
+				return ToRowCountQuery().SingleOrDefaultAsync<int>();
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<int>(ex);
+			}
+}
+
 		Task<long> IQueryOver<TRoot>.RowCountInt64Async()
-		{ return await (ToRowCountInt64Query().SingleOrDefaultAsync<long>()).ConfigureAwait(false); }
+		{ 			try
+			{
+				return ToRowCountInt64Query().SingleOrDefaultAsync<long>();
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<long>(ex);
+			}
+}
 
 		Task<TRoot> IQueryOver<TRoot>.SingleOrDefaultAsync()
 		{ return SingleOrDefaultAsync(); }
-async 
+
 		Task<U> IQueryOver<TRoot>.SingleOrDefaultAsync<U>()
-		{ return await (SingleOrDefaultAsync<U>()).ConfigureAwait(false); }
+		{ return SingleOrDefaultAsync<U>(); }
 
 	}
 

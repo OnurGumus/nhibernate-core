@@ -20,6 +20,7 @@ using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Impl;
 using NHibernate.Loader.Collection;
+using NHibernate.Loader.Entity;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Util;

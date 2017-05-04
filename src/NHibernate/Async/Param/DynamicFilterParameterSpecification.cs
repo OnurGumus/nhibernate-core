@@ -38,14 +38,7 @@ namespace NHibernate.Param
 
 			public Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner)
 			{
-				try
-				{
-					return Task.FromException<object>(new InvalidOperationException());
-				}
-				catch (Exception ex)
-				{
-					return Task.FromException<object>(ex);
-				}
+				throw new InvalidOperationException();
 			}
 
 			public Task BeforeAssembleAsync(object cached, ISessionImplementor session)
@@ -55,86 +48,37 @@ namespace NHibernate.Param
 
 			public Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 			{
-				try
-				{
-					return Task.FromException<object>(new InvalidOperationException());
-				}
-				catch (Exception ex)
-				{
-					return Task.FromException<object>(ex);
-				}
+				throw new InvalidOperationException();
 			}
 
 			public Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)
 			{
-				try
-				{
-					return Task.FromException<object>(new InvalidOperationException());
-				}
-				catch (Exception ex)
-				{
-					return Task.FromException<object>(ex);
-				}
+				throw new InvalidOperationException();
 			}
 
 			public Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 			{
-				try
-				{
-					return Task.FromException<object>(new InvalidOperationException());
-				}
-				catch (Exception ex)
-				{
-					return Task.FromException<object>(ex);
-				}
+				throw new InvalidOperationException();
 			}
 
 			public Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner)
 			{
-				try
-				{
-					return Task.FromException<object>(new InvalidOperationException());
-				}
-				catch (Exception ex)
-				{
-					return Task.FromException<object>(ex);
-				}
+				throw new InvalidOperationException();
 			}
 
 			public Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner)
 			{
-				try
-				{
-					return Task.FromException<object>(new InvalidOperationException());
-				}
-				catch (Exception ex)
-				{
-					return Task.FromException<object>(ex);
-				}
+				throw new InvalidOperationException();
 			}
 
 			public Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready)
 			{
-				try
-				{
-					return Task.FromException<object>(new InvalidOperationException());
-				}
-				catch (Exception ex)
-				{
-					return Task.FromException<object>(ex);
-				}
+				throw new InvalidOperationException();
 			}
 
 			public Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
 			{
-				try
-				{
-					return Task.FromException<object>(new InvalidOperationException());
-				}
-				catch (Exception ex)
-				{
-					return Task.FromException<object>(ex);
-				}
+				throw new InvalidOperationException();
 			}
 		}
 	}

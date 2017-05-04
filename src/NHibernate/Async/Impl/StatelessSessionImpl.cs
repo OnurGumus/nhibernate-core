@@ -86,14 +86,7 @@ namespace NHibernate.Impl
 
 		public override Task<object> ImmediateLoadAsync(string entityName, object id)
 		{
-			try
-			{
-				return Task.FromException<object>(new SessionException("proxies cannot be fetched by a stateless session"));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			throw new SessionException("proxies cannot be fetched by a stateless session");
 		}
 
 		public override async Task ListAsync(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
@@ -170,74 +163,32 @@ namespace NHibernate.Impl
 		
 		public override Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
-			try
-			{
-				return Task.FromException<IEnumerable>(new NotImplementedException());
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<IEnumerable>(ex);
-			}
+			throw new NotImplementedException();
 		}
 
 		public override Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters)
 		{
-			try
-			{
-				return Task.FromException<IEnumerable<T>>(new NotImplementedException());
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<IEnumerable<T>>(ex);
-			}
+			throw new NotImplementedException();
 		}
 
 		public override Task<IList> ListFilterAsync(object collection, string filter, QueryParameters parameters)
 		{
-			try
-			{
-				return Task.FromException<IList>(new NotSupportedException());
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<IList>(ex);
-			}
+			throw new NotSupportedException();
 		}
 
 		public override Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters)
 		{
-			try
-			{
-				return Task.FromException<IList<T>>(new NotSupportedException());
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<IList<T>>(ex);
-			}
+			throw new NotSupportedException();
 		}
 
 		public override Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters)
 		{
-			try
-			{
-				return Task.FromException<IEnumerable>(new NotSupportedException());
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<IEnumerable>(ex);
-			}
+			throw new NotSupportedException();
 		}
 
 		public override Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters)
 		{
-			try
-			{
-				return Task.FromException<IEnumerable<T>>(new NotSupportedException());
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<IEnumerable<T>>(ex);
-			}
+			throw new NotSupportedException();
 		}
 
 		public override async Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results)

@@ -27,14 +27,7 @@ namespace NHibernate.Type
 
 		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
-			try
-			{
-				return Task.FromException<object>(new NotSupportedException("object is a multicolumn type"));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			throw new NotSupportedException("object is a multicolumn type");
 		}
 
 		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
@@ -65,14 +58,7 @@ namespace NHibernate.Type
 
 		public override Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner)
 		{
-			try
-			{
-				return Task.FromException<object>(new NotSupportedException("any mappings may not form part of a property-ref"));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			throw new NotSupportedException("any mappings may not form part of a property-ref");
 		}
 
 		public override async Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner)

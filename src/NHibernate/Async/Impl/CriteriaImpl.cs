@@ -81,9 +81,9 @@ namespace NHibernate.Impl
 				return root.ListAsync(results);
 			}
 
-			public async Task<IList<T>> ListAsync<T>()
+			public Task<IList<T>> ListAsync<T>()
 			{
-				return await (root.ListAsync<T>()).ConfigureAwait(false);
+				return root.ListAsync<T>();
 			}
 
 			public async Task<T> UniqueResultAsync<T>()

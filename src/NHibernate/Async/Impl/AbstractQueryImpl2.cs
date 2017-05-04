@@ -65,18 +65,25 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task<IEnumerable<T>> EnumerableAsync<T>()
+		public override Task<IEnumerable<T>> EnumerableAsync<T>()
 		{
-			VerifyParameters();
-			var namedParams = NamedParams;
-			Before();
 			try
 			{
-				return await (Session.EnumerableAsync<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams))).ConfigureAwait(false);
+				VerifyParameters();
+				var namedParams = NamedParams;
+				Before();
+				try
+				{
+					return Session.EnumerableAsync<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams));
+				}
+				finally
+				{
+					After();
+				}
 			}
-			finally
+			catch (Exception ex)
 			{
-				After();
+				return Task.FromException<IEnumerable<T>>(ex);
 			}
 		}
 
@@ -117,18 +124,25 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task<IList<T>> ListAsync<T>()
+		public override Task<IList<T>> ListAsync<T>()
 		{
-			VerifyParameters();
-			var namedParams = NamedParams;
-			Before();
 			try
 			{
-				return await (Session.ListAsync<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams))).ConfigureAwait(false);
+				VerifyParameters();
+				var namedParams = NamedParams;
+				Before();
+				try
+				{
+					return Session.ListAsync<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams));
+				}
+				finally
+				{
+					After();
+				}
 			}
-			finally
+			catch (Exception ex)
 			{
-				After();
+				return Task.FromException<IList<T>>(ex);
 			}
 		}
 

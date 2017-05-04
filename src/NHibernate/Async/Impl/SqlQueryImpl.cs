@@ -78,46 +78,38 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task<IList<T>> ListAsync<T>()
+		public override Task<IList<T>> ListAsync<T>()
 		{
-			VerifyParameters();
-			IDictionary<string, TypedValue> namedParams = NamedParams;
-			NativeSQLQuerySpecification spec = GenerateQuerySpecification(namedParams);
-			QueryParameters qp = GetQueryParameters(namedParams);
-
-			Before();
 			try
 			{
-				return await (Session.ListAsync<T>(spec, qp)).ConfigureAwait(false);
+				VerifyParameters();
+				IDictionary<string, TypedValue> namedParams = NamedParams;
+				NativeSQLQuerySpecification spec = GenerateQuerySpecification(namedParams);
+				QueryParameters qp = GetQueryParameters(namedParams);
+				Before();
+				try
+				{
+					return Session.ListAsync<T>(spec, qp);
+				}
+				finally
+				{
+					After();
+				}
 			}
-			finally
+			catch (Exception ex)
 			{
-				After();
+				return Task.FromException<IList<T>>(ex);
 			}
 		}
 
 		public override Task<IEnumerable> EnumerableAsync()
 		{
-			try
-			{
-				return Task.FromException<IEnumerable>(new NotSupportedException("SQL queries do not currently support enumeration"));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<IEnumerable>(ex);
-			}
+			throw new NotSupportedException("SQL queries do not currently support enumeration");
 		}
 
 		public override Task<IEnumerable<T>> EnumerableAsync<T>()
 		{
-			try
-			{
-				return Task.FromException<IEnumerable<T>>(new NotSupportedException("SQL queries do not currently support enumeration"));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<IEnumerable<T>>(ex);
-			}
+			throw new NotSupportedException("SQL queries do not currently support enumeration");
 		}
 
 		public override Task<int> ExecuteUpdateAsync()

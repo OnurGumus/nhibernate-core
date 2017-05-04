@@ -36,14 +36,7 @@ namespace NHibernate.Param
 
 		public Task BindAsync(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
-			try
-			{
-				return Task.FromException<object>(new NotImplementedException());
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			throw new NotImplementedException();
 		}
 	}
 }

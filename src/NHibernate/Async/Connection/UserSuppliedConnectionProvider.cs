@@ -39,14 +39,7 @@ namespace NHibernate.Connection
 		/// </exception>
 		public override Task<DbConnection> GetConnectionAsync()
 		{
-			try
-			{
-				return Task.FromException<DbConnection>(new InvalidOperationException("The user must provide an ADO.NET connection - NHibernate is not creating it."));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<DbConnection>(ex);
-			}
+			throw new InvalidOperationException("The user must provide an ADO.NET connection - NHibernate is not creating it.");
 		}
 	}
 }

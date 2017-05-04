@@ -70,14 +70,7 @@ namespace NHibernate.Dialect
 		/// <throws>  SQLException Indicates problems extracting the result set. </throws>
 		public virtual Task<DbDataReader> GetResultSetAsync(DbCommand statement)
 		{
-			try
-			{
-				return Task.FromException<DbDataReader>(new NotSupportedException(GetType().FullName + " does not support resultsets via stored procedures"));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<DbDataReader>(ex);
-			}
+			throw new NotSupportedException(GetType().FullName + " does not support resultsets via stored procedures");
 		}
 
 		#endregion
