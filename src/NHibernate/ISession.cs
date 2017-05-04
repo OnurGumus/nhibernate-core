@@ -71,7 +71,7 @@ namespace NHibernate
 	/// </para>
 	/// <seealso cref="ISessionFactory"/>
 	/// </remarks>
-	public interface ISession : IDisposable
+	public partial interface ISession : IDisposable
 	{
 		/// <summary>
 		/// Force the <c>ISession</c> to flush.
