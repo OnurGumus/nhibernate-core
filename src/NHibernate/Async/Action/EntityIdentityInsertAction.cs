@@ -110,17 +110,26 @@ namespace NHibernate.Action
 			return veto;
 		}
 
-		protected override async Task AfterTransactionCompletionProcessImplAsync(bool success)
+		protected override Task AfterTransactionCompletionProcessImplAsync(bool success)
 		{
-			//TODO Make 100% certain that this is called before any subsequent ScheduledUpdate.afterTransactionCompletion()!!
-			//TODO from H3.2: reenable if we also fix the above todo
-			/*EntityPersister persister = getEntityPersister();
+			try
+			{
+				//TODO Make 100% certain that this is called before any subsequent ScheduledUpdate.afterTransactionCompletion()!!
+				//TODO from H3.2: reenable if we also fix the above todo
+				/*EntityPersister persister = getEntityPersister();
 			if ( success && persister.hasCache() && !persister.isCacheInvalidationRequired() ) {
 			persister.getCache().afterInsert( getGeneratedId(), cacheEntry );
 			}*/
-			if (success)
+				if (success)
+				{
+					return PostCommitInsertAsync();
+				}
+
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
 			{
-				await (PostCommitInsertAsync()).ConfigureAwait(false);
+				return Task.FromException<object>(ex);
 			}
 		}
 	}

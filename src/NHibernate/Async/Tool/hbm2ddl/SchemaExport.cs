@@ -199,16 +199,23 @@ namespace NHibernate.Tool.hbm2ddl
 		/// This overload is provided mainly to enable use of in memory databases. 
 		/// It does NOT close the given connection!
 		/// </remarks>
-		public async Task ExecuteAsync(bool useStdOut, bool execute, bool justDrop, DbConnection connection,
+		public Task ExecuteAsync(bool useStdOut, bool execute, bool justDrop, DbConnection connection,
 							TextWriter exportOutput)
 		{
-			if (useStdOut)
+			try
 			{
-				await (ExecuteAsync(Console.WriteLine, execute, justDrop, connection, exportOutput)).ConfigureAwait(false);
+				if (useStdOut)
+				{
+					return ExecuteAsync(Console.WriteLine, execute, justDrop, connection, exportOutput);
+				}
+				else
+				{
+					return ExecuteAsync(null, execute, justDrop, connection, exportOutput);
+				}
 			}
-			else
+			catch (Exception ex)
 			{
-				await (ExecuteAsync(null, execute, justDrop, connection, exportOutput)).ConfigureAwait(false);
+				return Task.FromException<object>(ex);
 			}
 		}
 
@@ -278,15 +285,22 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <remarks>
 		/// This method allows for both the drop and create ddl script to be executed.
 		/// </remarks>
-		public async Task ExecuteAsync(bool useStdOut, bool execute, bool justDrop)
+		public Task ExecuteAsync(bool useStdOut, bool execute, bool justDrop)
 		{
-			if (useStdOut)
+			try
 			{
-				await (ExecuteAsync(Console.WriteLine, execute, justDrop)).ConfigureAwait(false);
+				if (useStdOut)
+				{
+					return ExecuteAsync(Console.WriteLine, execute, justDrop);
+				}
+				else
+				{
+					return ExecuteAsync(null, execute, justDrop);
+				}
 			}
-			else
+			catch (Exception ex)
 			{
-				await (ExecuteAsync(null, execute, justDrop)).ConfigureAwait(false);
+				return Task.FromException<object>(ex);
 			}
 		}
 

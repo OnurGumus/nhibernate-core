@@ -118,30 +118,38 @@ namespace NHibernate.Action
 			}
 		}
 
-		protected override async Task AfterTransactionCompletionProcessImplAsync(bool success)
+		protected override Task AfterTransactionCompletionProcessImplAsync(bool success)
 		{
-			IEntityPersister persister = Persister;
-			if (persister.HasCache)
+			try
 			{
-				CacheKey ck = Session.GenerateCacheKey(Id, persister.IdentifierType, persister.RootEntityName);
-
-				if (success && cacheEntry != null)
+				IEntityPersister persister = Persister;
+				if (persister.HasCache)
 				{
-					bool put = persister.Cache.AfterUpdate(ck, cacheEntry, nextVersion, slock);
-
-					if (put && Session.Factory.Statistics.IsStatisticsEnabled)
+					CacheKey ck = Session.GenerateCacheKey(Id, persister.IdentifierType, persister.RootEntityName);
+					if (success && cacheEntry != null)
 					{
-						Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+						bool put = persister.Cache.AfterUpdate(ck, cacheEntry, nextVersion, slock);
+						if (put && Session.Factory.Statistics.IsStatisticsEnabled)
+						{
+							Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+						}
+					}
+					else
+					{
+						persister.Cache.Release(ck, slock);
 					}
 				}
-				else
+
+				if (success)
 				{
-					persister.Cache.Release(ck, slock);
+					return PostCommitUpdateAsync();
 				}
+
+				return Task.CompletedTask;
 			}
-			if (success)
+			catch (Exception ex)
 			{
-				await (PostCommitUpdateAsync()).ConfigureAwait(false);
+				return Task.FromException<object>(ex);
 			}
 		}
 		

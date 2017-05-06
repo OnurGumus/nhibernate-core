@@ -18,9 +18,16 @@ namespace NHibernate.Event.Default
 	{
 		public virtual Task OnPreLoadAsync(PreLoadEvent @event)
 		{
-			IEntityPersister persister = @event.Persister;
-			@event.Session.Interceptor.OnLoad(@event.Entity, @event.Id, @event.State, persister.PropertyNames, persister.PropertyTypes);
-			return Task.CompletedTask;
+			try
+			{
+				IEntityPersister persister = @event.Persister;
+				@event.Session.Interceptor.OnLoad(@event.Entity, @event.Id, @event.State, persister.PropertyNames, persister.PropertyTypes);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 	}
 }

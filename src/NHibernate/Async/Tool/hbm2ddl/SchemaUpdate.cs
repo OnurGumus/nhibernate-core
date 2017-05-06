@@ -87,15 +87,22 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <summary>
 		/// Execute the schema updates
 		/// </summary>
-		public async Task ExecuteAsync(bool useStdOut, bool doUpdate)
+		public Task ExecuteAsync(bool useStdOut, bool doUpdate)
 		{
-			if (useStdOut)
+			try
 			{
-				await (ExecuteAsync(Console.WriteLine, doUpdate)).ConfigureAwait(false);
+				if (useStdOut)
+				{
+					return ExecuteAsync(Console.WriteLine, doUpdate);
+				}
+				else
+				{
+					return ExecuteAsync(null, doUpdate);
+				}
 			}
-			else
+			catch (Exception ex)
 			{
-				await (ExecuteAsync(null, doUpdate)).ConfigureAwait(false);
+				return Task.FromException<object>(ex);
 			}
 		}
 

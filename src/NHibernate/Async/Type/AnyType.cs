@@ -61,10 +61,17 @@ namespace NHibernate.Type
 			throw new NotSupportedException("any mappings may not form part of a property-ref");
 		}
 
-		public override async Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner)
+		public override Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner)
 		{
-			ObjectTypeCacheEntry e = cached as ObjectTypeCacheEntry;
-			return (e == null) ? null : await (session.InternalLoadAsync(e.entityName, e.id, false, false)).ConfigureAwait(false);
+			try
+			{
+				ObjectTypeCacheEntry e = cached as ObjectTypeCacheEntry;
+				return (e == null) ? Task.FromResult<object>(null) : session.InternalLoadAsync(e.entityName, e.id, false, false);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner,
@@ -89,9 +96,9 @@ namespace NHibernate.Type
 			}
 		}
 
-		private async Task<object> ResolveAnyAsync(string entityName, object id, ISessionImplementor session)
+		private Task<object> ResolveAnyAsync(string entityName, object id, ISessionImplementor session)
 		{
-			return entityName == null || id == null ? null : await (session.InternalLoadAsync(entityName, id, false, false)).ConfigureAwait(false);
+			return entityName == null || id == null ? Task.FromResult<object >(null ): session.InternalLoadAsync(entityName, id, false, false);
 		}
 
 	}

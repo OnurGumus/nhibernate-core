@@ -24,7 +24,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Task.FromResult<object>(cached == null ? null : GetInstance(cached));
+				return cached == null ? Task.FromResult<object>(null) : Task.FromResult<object>(GetInstance(cached));
 			}
 			catch (Exception ex)
 			{

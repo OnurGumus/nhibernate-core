@@ -105,20 +105,28 @@ namespace NHibernate.Type
 			}
 		}
 
-		public virtual async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache,
+		public virtual Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache,
 							  ForeignKeyDirection foreignKeyDirection)
 		{
-			bool include;
-			if (IsAssociationType)
+			try
 			{
-				IAssociationType atype = (IAssociationType)this;
-				include = atype.ForeignKeyDirection == foreignKeyDirection;
+				bool include;
+				if (IsAssociationType)
+				{
+					IAssociationType atype = (IAssociationType)this;
+					include = atype.ForeignKeyDirection == foreignKeyDirection;
+				}
+				else
+				{
+					include = ForeignKeyDirection.ForeignKeyFromParent.Equals(foreignKeyDirection);
+				}
+
+				return include ? ReplaceAsync(original, target, session, owner, copyCache) : Task.FromResult<object>(target);
 			}
-			else
+			catch (Exception ex)
 			{
-				include = ForeignKeyDirection.ForeignKeyFromParent.Equals(foreignKeyDirection);
+				return Task.FromException<object>(ex);
 			}
-			return include ? await (ReplaceAsync(original, target, session, owner, copyCache)) .ConfigureAwait(false): target;
 		}
 
 		public abstract Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner,

@@ -21,9 +21,14 @@ namespace NHibernate.Type
 
 		public override Task<object> NextAsync(object current, Engine.ISessionImplementor session)
 		{
+			return SeedAsync(session);
+		}
+
+		public override Task<object> SeedAsync(Engine.ISessionImplementor session)
+		{
 			try
 			{
-				return Task.FromResult<object>(Seed(session));
+				return Task.FromResult<object>(DateTime.Now);
 			}
 			catch (Exception ex)
 			{

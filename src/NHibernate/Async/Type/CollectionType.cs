@@ -79,9 +79,9 @@ namespace NHibernate.Type
 			}
 		}
 
-		private async Task<object> ResolveKeyAsync(object key, ISessionImplementor session, object owner)
+		private Task<object> ResolveKeyAsync(object key, ISessionImplementor session, object owner)
 		{
-			return key == null ? null : await (GetCollectionAsync(key, session, owner)).ConfigureAwait(false);
+			return key == null ? Task.FromResult<object >(null ): GetCollectionAsync(key, session, owner);
 		}
 
 		public async Task<object> GetCollectionAsync(object key, ISessionImplementor session, object owner)

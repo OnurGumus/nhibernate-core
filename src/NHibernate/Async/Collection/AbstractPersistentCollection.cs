@@ -32,16 +32,26 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="writing">currently obsolete</param>
 		/// <exception cref="LazyInitializationException">if we cannot initialize</exception>
-		protected virtual async Task InitializeAsync(bool writing)
+		protected virtual Task InitializeAsync(bool writing)
 		{
-			if (!initialized)
+			try
 			{
-				if (initializing)
+				if (!initialized)
 				{
-					throw new LazyInitializationException("illegal access to loading collection");
+					if (initializing)
+					{
+						return Task.FromException<object>(new LazyInitializationException("illegal access to loading collection"));
+					}
+
+					ThrowLazyInitializationExceptionIfNotConnected();
+					return session.InitializeCollectionAsync(this, writing);
 				}
-				ThrowLazyInitializationExceptionIfNotConnected();
-				await (session.InitializeCollectionAsync(this, writing)).ConfigureAwait(false);
+
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
 			}
 		}
 
@@ -52,23 +62,35 @@ namespace NHibernate.Collection
 		/// <remarks>
 		/// This method is similar to <see cref="InitializeAsync(bool)" />, except that different exceptions are thrown.
 		/// </remarks>
-		public virtual async Task ForceInitializationAsync()
+		public virtual Task ForceInitializationAsync()
 		{
-			if (!initialized)
+			try
 			{
-				if (initializing)
+				if (!initialized)
 				{
-					throw new AssertionFailure("force initialize loading collection");
+					if (initializing)
+					{
+						return Task.FromException<object>(new AssertionFailure("force initialize loading collection"));
+					}
+
+					if (session == null)
+					{
+						return Task.FromException<object>(new HibernateException("collection is not associated with any session"));
+					}
+
+					if (!session.IsConnected)
+					{
+						return Task.FromException<object>(new HibernateException("disconnected session"));
+					}
+
+					return session.InitializeCollectionAsync(this, false);
 				}
-				if (session == null)
-				{
-					throw new HibernateException("collection is not associated with any session");
-				}
-				if (!session.IsConnected)
-				{
-					throw new HibernateException("disconnected session");
-				}
-				await (session.InitializeCollectionAsync(this, false)).ConfigureAwait(false);
+
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
 			}
 		}
 

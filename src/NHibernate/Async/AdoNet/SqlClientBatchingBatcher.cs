@@ -21,32 +21,39 @@ namespace NHibernate.AdoNet
 	public partial class SqlClientBatchingBatcher : AbstractBatcher
 	{
 
-		public override async Task AddToBatchAsync(IExpectation expectation)
+		public override Task AddToBatchAsync(IExpectation expectation)
 		{
-			_totalExpectedRowsAffected += expectation.ExpectedRowCount;
-			var batchUpdate = CurrentCommand;
-			Driver.AdjustCommand(batchUpdate);
-			string lineWithParameters = null;
-			var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
-			if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled)
+			try
 			{
-				lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
-				var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
-				lineWithParameters = formatStyle.Formatter.Format(lineWithParameters);
-				_currentBatchCommandsLog.Append("command ")
-					.Append(_currentBatch.CountOfCommands)
-					.Append(":")
-					.AppendLine(lineWithParameters);
-			}
-			if (Log.IsDebugEnabled)
-			{
-				Log.Debug("Adding to batch:" + lineWithParameters);
-			}
-			_currentBatch.Append((System.Data.SqlClient.SqlCommand) batchUpdate);
+				_totalExpectedRowsAffected += expectation.ExpectedRowCount;
+				var batchUpdate = CurrentCommand;
+				Driver.AdjustCommand(batchUpdate);
+				string lineWithParameters = null;
+				var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
+				if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled)
+				{
+					lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
+					var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
+					lineWithParameters = formatStyle.Formatter.Format(lineWithParameters);
+					_currentBatchCommandsLog.Append("command ").Append(_currentBatch.CountOfCommands).Append(":").AppendLine(lineWithParameters);
+				}
 
-			if (_currentBatch.CountOfCommands >= _batchSize)
+				if (Log.IsDebugEnabled)
+				{
+					Log.Debug("Adding to batch:" + lineWithParameters);
+				}
+
+				_currentBatch.Append((System.Data.SqlClient.SqlCommand)batchUpdate);
+				if (_currentBatch.CountOfCommands >= _batchSize)
+				{
+					return ExecuteBatchWithTimingAsync(batchUpdate);
+				}
+
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
 			{
-				await (ExecuteBatchWithTimingAsync(batchUpdate)).ConfigureAwait(false);
+				return Task.FromException<object>(ex);
 			}
 		}
 

@@ -275,19 +275,26 @@ namespace NHibernate.Event.Default
 			return copy;
 		}
 	
-		private async Task SaveTransientEntityAsync(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache)
+		private Task SaveTransientEntityAsync(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache)
 		{
-			// this bit is only *really* absolutely necessary for handling
-			// requestedId, but is also good if we merge multiple object
-			// graphs, since it helps ensure uniqueness
-			if (requestedId == null)
-			{
-				await (SaveWithGeneratedIdAsync(entity, entityName, copyCache, source, false)).ConfigureAwait(false);
-			}
-			else
-			{
-				await (SaveWithRequestedIdAsync(entity, requestedId, entityName, copyCache, source)).ConfigureAwait(false);
-			}
+try
+{
+// this bit is only *really* absolutely necessary for handling
+// requestedId, but is also good if we merge multiple object
+// graphs, since it helps ensure uniqueness
+if (requestedId == null)
+{
+return SaveWithGeneratedIdAsync(entity, entityName, copyCache, source, false);
+}
+else
+{
+return SaveWithRequestedIdAsync(entity, requestedId, entityName, copyCache, source);
+}
+}
+catch (Exception ex)
+{
+return Task.FromException<object>(ex);
+}
 		}
 
 		protected virtual async Task EntityIsDetachedAsync(MergeEvent @event, IDictionary copyCache)

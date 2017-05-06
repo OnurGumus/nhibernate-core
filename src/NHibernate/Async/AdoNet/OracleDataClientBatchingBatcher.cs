@@ -25,67 +25,74 @@ namespace NHibernate.AdoNet
 	public partial class OracleDataClientBatchingBatcher : AbstractBatcher
 	{
 
-		public override async Task AddToBatchAsync(IExpectation expectation)
+		public override Task AddToBatchAsync(IExpectation expectation)
 		{
-			bool firstOnBatch = true;
-			_totalExpectedRowsAffected += expectation.ExpectedRowCount;
-			string lineWithParameters = null;
-			var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
-			if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled)
+			try
 			{
-				lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(CurrentCommand);
-				var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
-				lineWithParameters = formatStyle.Formatter.Format(lineWithParameters);
-				_currentBatchCommandsLog.Append("command ")
-					.Append(_countOfCommands)
-					.Append(":")
-					.AppendLine(lineWithParameters);
-			}
-			if (Log.IsDebugEnabled)
-			{
-				Log.Debug("Adding to batch:" + lineWithParameters);
-			}
-
-			if (_currentBatch == null)
-			{
-				// use first command as the batching command
-				_currentBatch = CurrentCommand;
-				_parameterValueListHashTable = new Dictionary<string, List<object>>();
-				//oracle does not allow array containing all null values
-				// so this Dictionary is keeping track if all values are null or not
-				_parameterIsAllNullsHashTable = new Dictionary<string, bool>();
-			}
-			else
-			{
-				firstOnBatch = false;
-			}
-
-			foreach (DbParameter currentParameter in CurrentCommand.Parameters)
-			{
-				List<object> parameterValueList;
-				if (firstOnBatch)
+				bool firstOnBatch = true;
+				_totalExpectedRowsAffected += expectation.ExpectedRowCount;
+				string lineWithParameters = null;
+				var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
+				if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled)
 				{
-					parameterValueList = new List<object>();
-					_parameterValueListHashTable.Add(currentParameter.ParameterName, parameterValueList);
-					_parameterIsAllNullsHashTable.Add(currentParameter.ParameterName, true);
+					lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(CurrentCommand);
+					var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
+					lineWithParameters = formatStyle.Formatter.Format(lineWithParameters);
+					_currentBatchCommandsLog.Append("command ").Append(_countOfCommands).Append(":").AppendLine(lineWithParameters);
+				}
+
+				if (Log.IsDebugEnabled)
+				{
+					Log.Debug("Adding to batch:" + lineWithParameters);
+				}
+
+				if (_currentBatch == null)
+				{
+					// use first command as the batching command
+					_currentBatch = CurrentCommand;
+					_parameterValueListHashTable = new Dictionary<string, List<object>>();
+					//oracle does not allow array containing all null values
+					// so this Dictionary is keeping track if all values are null or not
+					_parameterIsAllNullsHashTable = new Dictionary<string, bool>();
 				}
 				else
 				{
-					parameterValueList = _parameterValueListHashTable[currentParameter.ParameterName];
+					firstOnBatch = false;
 				}
 
-				if (currentParameter.Value != DBNull.Value)
+				foreach (DbParameter currentParameter in CurrentCommand.Parameters)
 				{
-					_parameterIsAllNullsHashTable[currentParameter.ParameterName] = false;
+					List<object> parameterValueList;
+					if (firstOnBatch)
+					{
+						parameterValueList = new List<object>();
+						_parameterValueListHashTable.Add(currentParameter.ParameterName, parameterValueList);
+						_parameterIsAllNullsHashTable.Add(currentParameter.ParameterName, true);
+					}
+					else
+					{
+						parameterValueList = _parameterValueListHashTable[currentParameter.ParameterName];
+					}
+
+					if (currentParameter.Value != DBNull.Value)
+					{
+						_parameterIsAllNullsHashTable[currentParameter.ParameterName] = false;
+					}
+
+					parameterValueList.Add(currentParameter.Value);
 				}
-				parameterValueList.Add(currentParameter.Value);
+
+				_countOfCommands++;
+				if (_countOfCommands >= _batchSize)
+				{
+					return ExecuteBatchWithTimingAsync(_currentBatch);
+				}
+
+				return Task.CompletedTask;
 			}
-
-			_countOfCommands++;
-
-			if (_countOfCommands >= _batchSize)
+			catch (Exception ex)
 			{
-				await (ExecuteBatchWithTimingAsync(_currentBatch)).ConfigureAwait(false);
+				return Task.FromException<object>(ex);
 			}
 		}
 

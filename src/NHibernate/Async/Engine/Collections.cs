@@ -26,15 +26,22 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="coll">The collection to be updated by unreachability. </param>
 		/// <param name="session">The session.</param>
-		public static async Task ProcessUnreachableCollectionAsync(IPersistentCollection coll, ISessionImplementor session)
+		public static Task ProcessUnreachableCollectionAsync(IPersistentCollection coll, ISessionImplementor session)
 		{
-			if (coll.Owner == null)
+			try
 			{
-				await (ProcessNeverReferencedCollectionAsync(coll, session)).ConfigureAwait(false);
+				if (coll.Owner == null)
+				{
+					return ProcessNeverReferencedCollectionAsync(coll, session);
+				}
+				else
+				{
+					return ProcessDereferencedCollectionAsync(coll, session);
+				}
 			}
-			else
+			catch (Exception ex)
 			{
-				await (ProcessDereferencedCollectionAsync(coll, session)).ConfigureAwait(false);
+				return Task.FromException<object>(ex);
 			}
 		}
 
@@ -165,7 +172,7 @@ namespace NHibernate.Engine
 
 			if (entry.IsProcessed)
 				throw new AssertionFailure("collection was processed twice by flush()");
-			async Task InternalPrepareCollectionForUpdateAsync()
+			try
 			{
 				entry.IsProcessed = true;
 				ICollectionPersister loadedPersister = entry.LoadedPersister;
@@ -180,7 +187,7 @@ namespace NHibernate.Engine
 						bool orphanDeleteAndRoleChanged = loadedPersister != null && currentPersister != null && loadedPersister.HasOrphanDelete;
 						if (orphanDeleteAndRoleChanged)
 						{
-							throw new HibernateException("Don't change the reference to a collection with cascade=\"all-delete-orphan\": " + loadedPersister.Role);
+							return Task.FromException<object>(new HibernateException("Don't change the reference to a collection with cascade=\"all-delete-orphan\": " + loadedPersister.Role));
 						}
 
 						// do the work
@@ -195,7 +202,7 @@ namespace NHibernate.Engine
 							if (entry.IsDorecreate)
 							{
 								log.Debug("Forcing collection initialization");
-								await (collection.ForceInitializationAsync()).ConfigureAwait(false); // force initialize!
+								return collection.ForceInitializationAsync(); // force initialize!
 							}
 						}
 					}
@@ -205,8 +212,13 @@ namespace NHibernate.Engine
 						entry.IsDoupdate = true;
 					}
 				}
+
+				return Task.CompletedTask;
 			}
-			return InternalPrepareCollectionForUpdateAsync();
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 	}
 }

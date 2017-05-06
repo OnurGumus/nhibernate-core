@@ -44,15 +44,20 @@ namespace NHibernate.Impl
 			{
 				throw new SessionException("Collections cannot be fetched by a stateless session. You can eager load it through specific query.");
 			}
-			async Task InternalInitializeCollectionAsync()
+			try
 			{
 				CollectionEntry ce = temporaryPersistenceContext.GetCollectionEntry(collection);
 				if (!collection.WasInitialized)
 				{
-					await (ce.LoadedPersister.InitializeAsync(ce.LoadedKey, this)).ConfigureAwait(false);
+					return ce.LoadedPersister.InitializeAsync(ce.LoadedKey, this);
 				}
+
+				return Task.CompletedTask;
 			}
-			return InternalInitializeCollectionAsync();
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		public override Task<object> InternalLoadAsync(string entityName, object id, bool eager, bool isNullable)

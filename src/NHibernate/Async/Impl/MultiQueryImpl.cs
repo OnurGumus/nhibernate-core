@@ -38,31 +38,37 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Return the query results of all the queries
 		/// </summary>
-		public async Task<IList> ListAsync()
+		public Task<IList> ListAsync()
 		{
-			using (new SessionIdLoggingContext(session.SessionId))
+			try
 			{
-				bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
-				combinedParameters = CreateCombinedQueryParameters();
-
-				if (log.IsDebugEnabled)
+				using (new SessionIdLoggingContext(session.SessionId))
 				{
-					log.DebugFormat("Multi query with {0} queries.", queries.Count);
-					for (int i = 0; i < queries.Count; i++)
+					bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
+					combinedParameters = CreateCombinedQueryParameters();
+					if (log.IsDebugEnabled)
 					{
-						log.DebugFormat("Query #{0}: {1}", i, queries[i]);
+						log.DebugFormat("Multi query with {0} queries.", queries.Count);
+						for (int i = 0; i < queries.Count; i++)
+						{
+							log.DebugFormat("Query #{0}: {1}", i, queries[i]);
+						}
+					}
+
+					try
+					{
+						Before();
+						return cacheable ? ListUsingQueryCacheAsync() : ListIgnoreQueryCacheAsync();
+					}
+					finally
+					{
+						After();
 					}
 				}
-
-				try
-				{
-					Before();
-					return cacheable ? await (ListUsingQueryCacheAsync()) .ConfigureAwait(false): await (ListIgnoreQueryCacheAsync()).ConfigureAwait(false);
-				}
-				finally
-				{
-					After();
-				}
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<IList>(ex);
 			}
 		}
 

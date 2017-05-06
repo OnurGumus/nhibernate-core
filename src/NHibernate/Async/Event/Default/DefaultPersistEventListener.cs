@@ -110,19 +110,26 @@ namespace NHibernate.Event.Default
 		/// <summary> Handle the given create event. </summary>
 		/// <param name="event">The save event to be handled. </param>
 		/// <param name="createCache"></param>
-		protected virtual async Task EntityIsTransientAsync(PersistEvent @event, IDictionary createCache)
+		protected virtual Task EntityIsTransientAsync(PersistEvent @event, IDictionary createCache)
 		{
-			log.Debug("saving transient instance");
-
-			IEventSource source = @event.Session;
-			object entity = source.PersistenceContext.Unproxy(@event.Entity);
-
-			object tempObject;
-			tempObject = createCache[entity];
-			createCache[entity] = entity;
-			if (tempObject == null)
+			try
 			{
-				await (SaveWithGeneratedIdAsync(entity, @event.EntityName, createCache, source, false)).ConfigureAwait(false);
+				log.Debug("saving transient instance");
+				IEventSource source = @event.Session;
+				object entity = source.PersistenceContext.Unproxy(@event.Entity);
+				object tempObject;
+				tempObject = createCache[entity];
+				createCache[entity] = entity;
+				if (tempObject == null)
+				{
+					return SaveWithGeneratedIdAsync(entity, @event.EntityName, createCache, source, false);
+				}
+
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
 			}
 		}
 	}

@@ -120,16 +120,26 @@ namespace NHibernate.Action
 			return veto;
 		}
 		
-		protected override async Task AfterTransactionCompletionProcessImplAsync(bool success)
+		protected override Task AfterTransactionCompletionProcessImplAsync(bool success)
 		{
-			if (Persister.HasCache)
+			try
 			{
-				CacheKey ck = Session.GenerateCacheKey(Id, Persister.IdentifierType, Persister.RootEntityName);
-				Persister.Cache.Release(ck, sLock);
+				if (Persister.HasCache)
+				{
+					CacheKey ck = Session.GenerateCacheKey(Id, Persister.IdentifierType, Persister.RootEntityName);
+					Persister.Cache.Release(ck, sLock);
+				}
+
+				if (success)
+				{
+					return PostCommitDeleteAsync();
+				}
+
+				return Task.CompletedTask;
 			}
-			if (success)
+			catch (Exception ex)
 			{
-				await (PostCommitDeleteAsync()).ConfigureAwait(false);
+				return Task.FromException<object>(ex);
 			}
 		}
 

@@ -38,19 +38,28 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="proxy">a persistable object, proxy, persistent collection or null</param>
 		/// <exception cref="HibernateException">if we can't initialize the proxy at this time, eg. the Session was closed</exception>
-		public static async Task InitializeAsync(object proxy)
+		public static Task InitializeAsync(object proxy)
 		{
-			if (proxy == null)
+			try
 			{
-				return;
+				if (proxy == null)
+				{
+					return Task.CompletedTask;
+				}
+				else if (proxy.IsProxy())
+				{
+					return ((INHibernateProxy)proxy).HibernateLazyInitializer.InitializeAsync();
+				}
+				else if (proxy is IPersistentCollection)
+				{
+					return ((IPersistentCollection)proxy).ForceInitializationAsync();
+				}
+
+				return Task.CompletedTask;
 			}
-			else if (proxy.IsProxy())
+			catch (Exception ex)
 			{
-				await (((INHibernateProxy)proxy).HibernateLazyInitializer.InitializeAsync()).ConfigureAwait(false);
-			}
-			else if (proxy is IPersistentCollection)
-			{
-				await (((IPersistentCollection)proxy).ForceInitializationAsync()).ConfigureAwait(false);
+				return Task.FromException<object>(ex);
 			}
 		}
 

@@ -27,7 +27,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Task.FromResult<object>((cached == null) ? null : FromBytes((byte[])cached));
+				return (cached == null) ? Task.FromResult<object>(null) : Task.FromResult<object>(FromBytes((byte[])cached));
 			}
 			catch (Exception ex)
 			{

@@ -26,8 +26,15 @@ namespace NHibernate.Param
 
 		public Task BindAsync(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
-			Bind(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
-			return Task.CompletedTask;
+			try
+			{
+				Bind(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		#endregion
