@@ -22,12 +22,9 @@ using NHibernate.Type;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Provides an <see cref="IEnumerable"/> wrapper over the results of an <see cref="IQuery"/>.
-	/// </summary>
-	/// <remarks>
-	/// This is the IteratorImpl in H2.0.3
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class EnumerableImpl : IEnumerable, IEnumerator, IDisposable
 	{
 		

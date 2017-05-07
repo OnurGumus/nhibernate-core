@@ -18,29 +18,15 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// An <see cref="IIdentifierGenerator" /> that indicates to the <see cref="ISession"/> that identity
-	/// (ie. identity/autoincrement column) key generation should be used.
-	/// </summary>
-	/// <remarks>
-	/// <p>
-	///	This id generation strategy is specified in the mapping file as 
-	///	<code>&lt;generator class="identity" /&gt;</code> 
-	///	or if the database natively supports identity columns 
-	///	<code>&lt;generator class="native" /&gt;</code>
-	/// </p>
-	/// <p>
-	/// This indicates to NHibernate that the database generates the id when
-	/// the entity is inserted.
-	/// </p>
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class IdentityGenerator : AbstractPostInsertGenerator
 	{
 
-		/// <summary> 
-		/// Delegate for dealing with IDENTITY columns where the dialect supports returning
-		/// the generated IDENTITY value directly from the insert statement.
-		/// </summary>
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		public partial class InsertSelectDelegate : AbstractReturningDelegate, IInsertGeneratedIdentifierDelegate
 		{
 
@@ -63,10 +49,9 @@ namespace NHibernate.Id
 			}
 		}
 
-		/// <summary> 
-		/// Delegate for dealing with IDENTITY columns where the dialect requires an
-		/// additional command execution to retrieve the generated IDENTITY value
-		/// </summary>
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		public partial class BasicDelegate : AbstractSelectingDelegate, IInsertGeneratedIdentifierDelegate
 		{
 

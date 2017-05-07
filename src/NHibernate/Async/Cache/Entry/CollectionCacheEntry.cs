@@ -16,6 +16,9 @@ using NHibernate.Util;
 namespace NHibernate.Cache.Entry
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class CollectionCacheEntry
 	{
 

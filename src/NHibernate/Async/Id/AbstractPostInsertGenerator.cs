@@ -15,6 +15,9 @@ namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
 	using System;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public abstract partial class AbstractPostInsertGenerator : IPostInsertIdentifierGenerator
 	{
 		/// <summary>

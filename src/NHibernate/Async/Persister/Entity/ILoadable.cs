@@ -16,10 +16,9 @@ namespace NHibernate.Persister.Entity
 {
 	using System.Threading.Tasks;
 
-	/// <summary>
-	/// Implemented by <c>ClassPersister</c> that uses <c>Loader</c>. There are several optional
-	/// operations used only by loaders that inherit <c>OuterJoinLoader</c>
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface ILoadable : IEntityPersister
 	{
 

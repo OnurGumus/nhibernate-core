@@ -24,9 +24,9 @@ using System.Linq;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Abstract implementation of the IQuery interface.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public abstract partial class AbstractQueryImpl : IQuery
 	{
 

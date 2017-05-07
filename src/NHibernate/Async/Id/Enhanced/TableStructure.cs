@@ -20,9 +20,9 @@ using NHibernate.AdoNet.Util;
 namespace NHibernate.Id.Enhanced
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Describes a table used to mimic sequence behavior
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class TableStructure : TransactionHelper, IDatabaseStructure
 	{
 
@@ -99,6 +99,9 @@ namespace NHibernate.Id.Enhanced
 
 		#region Nested type: TableAccessCallback
 
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		private partial class TableAccessCallback : IAccessCallback
 		{
 

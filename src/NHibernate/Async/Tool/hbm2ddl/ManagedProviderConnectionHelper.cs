@@ -15,10 +15,9 @@ using NHibernate.Connection;
 namespace NHibernate.Tool.hbm2ddl
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// A <seealso cref="IConnectionHelper"/> implementation based on an internally 
-	/// built and managed <seealso cref="ConnectionProvider"/>.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class ManagedProviderConnectionHelper : IConnectionHelper
 	{
 

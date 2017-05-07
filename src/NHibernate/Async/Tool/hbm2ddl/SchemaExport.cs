@@ -23,13 +23,9 @@ using Environment=NHibernate.Cfg.Environment;
 namespace NHibernate.Tool.hbm2ddl
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Generates ddl to export table schema for a configured <c>Configuration</c> to the database
-	/// </summary>
-	/// <remarks>
-	/// This Class can be used directly or the command line wrapper NHibernate.Tool.hbm2ddl.exe can be
-	/// used when a dll can not be directly used.
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class SchemaExport
 	{
 

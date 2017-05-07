@@ -19,6 +19,9 @@ using NHibernate.Persister.Entity;
 namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public sealed partial class EntityInsertAction : EntityAction
 	{
 

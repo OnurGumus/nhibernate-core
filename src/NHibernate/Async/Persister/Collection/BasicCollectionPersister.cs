@@ -28,9 +28,9 @@ using System.Collections.Generic;
 namespace NHibernate.Persister.Collection
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Collection persister for collections of values and many-to-many associations.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class BasicCollectionPersister : AbstractCollectionPersister
 	{
 

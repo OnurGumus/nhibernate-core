@@ -19,10 +19,9 @@ using NHibernate.Proxy;
 namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Holds the state of the persistence context, including the
-	/// first-level cache, entries, snapshots, proxies, etc.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IPersistenceContext
 	{
 

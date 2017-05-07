@@ -15,10 +15,9 @@ using NHibernate.Type;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
-	/// <summary> 
-	/// Process collections reachable from an entity. 
-	/// This visitor assumes that wrap was already performed for the entity.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class FlushVisitor : AbstractVisitor
 	{
 

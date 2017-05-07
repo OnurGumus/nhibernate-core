@@ -11,9 +11,9 @@
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
-	/// <summary> 
-	/// Called before injecting property values into a newly loaded entity instance.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IPreLoadEventListener
 	{
 		/// <summary>

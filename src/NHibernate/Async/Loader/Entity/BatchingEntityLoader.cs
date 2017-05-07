@@ -19,11 +19,9 @@ using NHibernate.Util;
 namespace NHibernate.Loader.Entity
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// "Batch" loads entities, using multiple primary key values in the
-	/// SQL <c>where</c> clause.
-	/// </summary>
-	/// <seealso cref="EntityLoader"/>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class BatchingEntityLoader : IUniqueEntityLoader
 	{
 

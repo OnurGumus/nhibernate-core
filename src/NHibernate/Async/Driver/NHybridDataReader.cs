@@ -17,22 +17,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Driver
 {
-	/// <summary>
-	/// An implementation of <see cref="DbDataReader"/> that will work with either an 
-	/// <see cref="DbDataReader"/> returned by Execute or with an <see cref="DbDataReader"/>
-	/// whose contents have been read into a <see cref="NDataReader"/>.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This allows NHibernate to use the underlying <see cref="DbDataReader"/> for as long as
-	/// possible without the need to read everything into the <see cref="NDataReader"/>.
-	/// </para>
-	/// <para>
-	/// The consumer of the <see cref="DbDataReader"/> returned from <see cref="Engine.IBatcher"/> does
-	/// not need to know the underlying reader and can use it the same even if it switches from an
-	/// <see cref="DbDataReader"/> to <see cref="NDataReader"/> in the middle of its use.
-	/// </para>
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class NHybridDataReader : DbDataReader
 	{
 

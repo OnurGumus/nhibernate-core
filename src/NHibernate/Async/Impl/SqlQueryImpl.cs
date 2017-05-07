@@ -20,19 +20,9 @@ using NHibernate.Util;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Implements SQL query passthrough
-	/// </summary>
-	/// <example>
-	/// An example mapping is:
-	/// <code>
-	/// &lt;sql-query-name name="mySqlQuery"&gt;
-	/// &lt;return alias="person" class="eg.Person" /&gt;
-	///		SELECT {person}.NAME AS {person.name}, {person}.AGE AS {person.age}, {person}.SEX AS {person.sex}
-	///		FROM PERSON {person} WHERE {person}.NAME LIKE 'Hiber%'
-	/// &lt;/sql-query-name&gt;
-	/// </code>
-	/// </example>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class SqlQueryImpl : AbstractQueryImpl, ISQLQuery
 	{
 

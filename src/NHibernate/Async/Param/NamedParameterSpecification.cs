@@ -18,9 +18,9 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Param
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Parameter bind specification for an explicit named parameter.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class NamedParameterSpecification : AbstractExplicitParameterSpecification
 	{
 

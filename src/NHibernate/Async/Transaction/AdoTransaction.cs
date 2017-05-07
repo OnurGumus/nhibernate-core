@@ -19,10 +19,9 @@ using NHibernate.Impl;
 namespace NHibernate.Transaction
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Wraps an ADO.NET <see cref="DbTransaction"/> to implement
-	/// the <see cref="ITransaction" /> interface.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class AdoTransaction : ITransaction
 	{
 

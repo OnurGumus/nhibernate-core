@@ -25,6 +25,9 @@ using NHibernate.Impl;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public abstract partial class CollectionType : AbstractType, IAssociationType
 	{
 

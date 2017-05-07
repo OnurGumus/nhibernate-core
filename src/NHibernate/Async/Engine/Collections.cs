@@ -18,6 +18,9 @@ namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
 	using System;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public static partial class Collections
 	{
 

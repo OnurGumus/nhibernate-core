@@ -13,16 +13,9 @@ using NHibernate.Engine;
 namespace NHibernate.Dialect.Lock
 {
 	using System.Threading.Tasks;
-	/// <summary> 
-	/// A strategy abstraction for how locks are obtained in the underlying database.
-	/// </summary>
-	/// <remarks>
-	/// All locking provided implementations assume the underlying database supports
-	/// (and that the connection is in) at least read-committed transaction isolation.
-	/// The most glaring exclusion to this is HSQLDB which only offers support for
-	/// READ_UNCOMMITTED isolation.
-	/// </remarks>
-	/// <seealso cref="NHibernate.Dialect.Dialect.GetLockingStrategy"/>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface ILockingStrategy
 	{
 		/// <summary> 

@@ -24,13 +24,9 @@ using NHibernate.Util;
 namespace NHibernate.Loader.Criteria
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// A <c>Loader</c> for <see cref="ICriteria"/> queries. 
-	/// </summary>
-	/// <remarks>
-	/// Note that criteria
-	/// queries are more like multi-object <c>Load()</c>s than like HQL queries.
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class CriteriaLoader : OuterJoinLoader
 	{
 

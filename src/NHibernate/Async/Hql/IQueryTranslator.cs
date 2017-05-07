@@ -18,9 +18,9 @@ using NHibernate.Type;
 namespace NHibernate.Hql
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Defines the contract of an HQL->SQL translator.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IQueryTranslator
 	{
 

@@ -20,22 +20,9 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Dialect
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// An SQL dialect targeting Sybase Adaptive Server Enterprise (ASE) 15 and higher.
-	/// </summary>
-	/// <remarks>
-	/// The dialect defaults the following configuration properties:
-	/// <list type="table">
-	///	<listheader>
-	///		<term>Property</term>
-	///		<description>Default Value</description>
-	///	</listheader>
-	///	<item>
-	///		<term>connection.driver_class</term>
-	///		<description><see cref="NHibernate.Driver.SybaseAseClientDriver" /></description>
-	///	</item>
-	/// </list>
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class SybaseASE15Dialect : Dialect
 	{
 		

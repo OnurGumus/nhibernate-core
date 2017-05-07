@@ -18,6 +18,9 @@ using NHibernate.UserTypes;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class CustomCollectionType : CollectionType
 	{
 

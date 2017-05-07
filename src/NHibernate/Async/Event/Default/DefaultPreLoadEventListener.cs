@@ -14,6 +14,9 @@ using NHibernate.Persister.Entity;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class DefaultPreLoadEventListener : IPreLoadEventListener
 	{
 		public virtual Task OnPreLoadAsync(PreLoadEvent @event)

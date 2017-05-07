@@ -16,14 +16,9 @@ using NHibernate.Driver;
 namespace NHibernate.Connection
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// A strategy for obtaining ADO.NET <see cref="DbConnection"/>.
-	/// </summary>
-	/// <remarks>
-	/// The <c>IConnectionProvider</c> interface is not intended to be exposed to the application.
-	/// Instead it is used internally by NHibernate to obtain <see cref="DbConnection"/>. 
-	/// Implementors should provide a public default constructor.
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IConnectionProvider : IDisposable
 	{
 

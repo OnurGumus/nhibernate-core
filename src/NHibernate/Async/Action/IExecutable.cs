@@ -14,11 +14,9 @@ namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
 	
-	/// <summary>
-	/// An operation which may be scheduled for later execution.
-	/// Usually, the operation is a database insert/update/delete,
-	/// together with required second-level cache management.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IExecutable
 	{
 

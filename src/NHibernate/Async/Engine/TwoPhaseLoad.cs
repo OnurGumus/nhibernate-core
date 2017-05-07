@@ -23,11 +23,9 @@ using NHibernate.Properties;
 namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Functionality relating to Hibernate's two-phase loading process,
-	/// that may be reused by persisters that do not use the Loader
-	/// framework
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public static partial class TwoPhaseLoad
 	{
 		

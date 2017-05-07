@@ -21,9 +21,9 @@ using NHibernate.Type;
 namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Generates Guid values using the server side Guid function.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class NativeGuidGenerator : IIdentifierGenerator
 	{
 

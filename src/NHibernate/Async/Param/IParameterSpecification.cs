@@ -17,9 +17,9 @@ using NHibernate.Type;
 namespace NHibernate.Param
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Maintains information relating to parameters which need to get bound into a <see cref="DbCommand"/>.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IParameterSpecification
 	{
 		/// <summary>

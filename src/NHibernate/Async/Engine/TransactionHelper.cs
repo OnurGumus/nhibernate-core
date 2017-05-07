@@ -15,12 +15,14 @@ using NHibernate.Exceptions;
 namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Allows work to be done outside the current transaction, by suspending it,
-	/// and performing work in a new transaction
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public abstract partial class TransactionHelper
 	{
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		public partial class Work : IIsolatedWork
 		{
 

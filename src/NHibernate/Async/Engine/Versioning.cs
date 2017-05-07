@@ -15,9 +15,9 @@ using NHibernate.Type;
 namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Utility methods for managing versions and timestamps
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class Versioning
 	{
 

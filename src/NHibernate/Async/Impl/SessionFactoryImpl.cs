@@ -46,6 +46,9 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public sealed partial class SessionFactoryImpl : ISessionFactoryImplementor, IObjectReference
 	{
 

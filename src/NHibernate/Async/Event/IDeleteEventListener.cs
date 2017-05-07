@@ -13,7 +13,9 @@ using System.Collections.Generic;
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
-	/// <summary> Defines the contract for handling of deletion events generated from a session. </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IDeleteEventListener
 	{
 		/// <summary>Handle the given delete event. </summary>

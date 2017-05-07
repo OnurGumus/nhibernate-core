@@ -19,9 +19,9 @@ namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
 	using System;
-	/// <summary> 
-	/// Wrap collections in a Hibernate collection wrapper.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class WrapVisitor : ProxyVisitor
 	{
 

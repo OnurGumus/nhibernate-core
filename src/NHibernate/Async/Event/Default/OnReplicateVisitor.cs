@@ -16,13 +16,9 @@ namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
 	using System;
-	/// <summary> 
-	/// When an entity is passed to replicate(), and there is an existing row, we must
-	/// inspect all its collections and
-	/// 1. associate any uninitialized PersistentCollections with this session
-	/// 2. associate any initialized PersistentCollections with this session, using the existing snapshot
-	/// 3. execute a collection removal (SQL DELETE) for each null collection property or "new" collection 
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class OnReplicateVisitor : ReattachVisitor
 	{
 

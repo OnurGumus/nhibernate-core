@@ -23,6 +23,9 @@ using NHibernate.Type;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class DefaultLoadEventListener : AbstractLockUpgradeEventListener, ILoadEventListener
 	{
 

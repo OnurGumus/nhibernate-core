@@ -13,9 +13,9 @@ using System.Collections;
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Defines the contract for handling of create events generated from a session.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IPersistEventListener
 	{
 		/// <summary> Handle the given create event.</summary>

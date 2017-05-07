@@ -18,9 +18,9 @@ using NHibernate.Tuple;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Collection of convenience methods relating to operations across arrays of types...
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public static partial class TypeHelper
 	{
 		

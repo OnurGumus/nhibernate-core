@@ -14,14 +14,9 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Id.Insert
 {
 	using System.Threading.Tasks;
-	/// <summary> 
-	/// Responsible for handling delegation relating to variants in how
-	/// insert-generated-identifier generator strategies dictate processing:
-	/// <ul>
-	/// <li>building the sql insert statement</li>
-	/// <li>determination of the generated identifier value</li>
-	/// </ul> 
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IInsertGeneratedIdentifierDelegate
 	{
 

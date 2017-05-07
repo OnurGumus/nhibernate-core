@@ -13,6 +13,9 @@ using System.Collections;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class FutureCriteriaBatch : FutureBatch<ICriteria, IMultiCriteria>
 	{
 

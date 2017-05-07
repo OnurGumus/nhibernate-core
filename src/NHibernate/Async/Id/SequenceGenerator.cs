@@ -24,25 +24,9 @@ using System.Data.Common;
 namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// An <see cref="IIdentifierGenerator" /> that generates <c>Int64</c> values using an 
-	/// oracle-style sequence. A higher performance algorithm is 
-	/// <see cref="SequenceHiLoGenerator"/>.
-	/// </summary>
-	/// <remarks>
-	/// <p>
-	///	This id generation strategy is specified in the mapping file as 
-	///	<code>
-	///	&lt;generator class="sequence"&gt;
-	///		&lt;param name="sequence"&gt;uid_sequence&lt;/param&gt;
-	///		&lt;param name="schema"&gt;db_schema&lt;/param&gt;
-	///	&lt;/generator&gt;
-	///	</code>
-	/// </p>
-	/// <p>
-	/// The <c>sequence</c> parameter is required while the <c>schema</c> is optional.
-	/// </p>
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class SequenceGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
 

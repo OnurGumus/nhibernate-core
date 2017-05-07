@@ -13,6 +13,9 @@ using NHibernate.Engine;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface ICacheAssembler
 	{
 

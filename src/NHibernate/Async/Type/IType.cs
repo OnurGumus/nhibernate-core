@@ -16,9 +16,9 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
-	/// <include file='..\..\Type\IType.cs.xmldoc' 
-	///		path='//members[@type="IType"]/member[@name="T:IType"]/*'
-	/// />
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IType : ICacheAssembler
 	{
 

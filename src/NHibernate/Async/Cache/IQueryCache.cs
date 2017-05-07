@@ -16,12 +16,9 @@ using NHibernate.Type;
 namespace NHibernate.Cache
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Defines the contract for caches capable of storing query results.  These
-	/// caches should only concern themselves with storing the matching result ids.
-	/// The transactional semantics are necessarily less strict than the semantics
-	/// of an item cache.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IQueryCache
 	{
 		Task<IList> GetAsync(QueryKey key, ICacheAssembler[] returnTypes, bool isNaturalKeyLookup, ISet<string> spaces, ISessionImplementor session);

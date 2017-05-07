@@ -13,11 +13,9 @@ using NHibernate.Engine;
 namespace NHibernate.Loader.Collection
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// An interface for collection loaders
-	/// </summary>
-	/// <seealso cref="BasicCollectionLoader"/>
-	/// <seealso cref="OneToManyLoader"/>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface ICollectionInitializer
 	{
 		/// <summary>

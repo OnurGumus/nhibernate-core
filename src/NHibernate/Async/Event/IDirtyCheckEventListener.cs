@@ -11,7 +11,9 @@
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
-	/// <summary> Defines the contract for handling of session dirty-check events.</summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IDirtyCheckEventListener
 	{
 		/// <summary>Handle the given dirty-check event. </summary>

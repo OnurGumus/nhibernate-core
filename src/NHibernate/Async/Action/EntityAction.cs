@@ -19,6 +19,9 @@ using NHibernate.Impl;
 namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public abstract partial class EntityAction : IExecutable, IComparable<EntityAction>, IDeserializationCallback
 	{
 

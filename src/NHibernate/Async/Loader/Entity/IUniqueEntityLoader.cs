@@ -13,9 +13,9 @@ using NHibernate.Engine;
 namespace NHibernate.Loader.Entity
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	///  Loads entities for a <see cref="NHibernate.Persister.Entity.IEntityPersister"/>
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IUniqueEntityLoader
 	{
 		/// <summary>

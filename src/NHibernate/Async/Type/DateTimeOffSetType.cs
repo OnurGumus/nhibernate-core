@@ -19,6 +19,9 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class DateTimeOffsetType : PrimitiveType, IIdentifierType, ILiteralType, IVersionType
 	{
 

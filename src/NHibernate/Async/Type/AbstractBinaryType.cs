@@ -19,6 +19,9 @@ using NHibernate.Util;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public abstract partial class AbstractBinaryType : MutableType, IVersionType, IComparer
 	{
 

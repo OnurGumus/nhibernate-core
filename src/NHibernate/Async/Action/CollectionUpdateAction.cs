@@ -21,6 +21,9 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public sealed partial class CollectionUpdateAction : CollectionAction
 	{
 

@@ -14,9 +14,9 @@ using NHibernate.Engine;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// An <see cref="IType"/> that may be used to version data.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IVersionType : IType
 	{
 		/// <summary>

@@ -21,6 +21,9 @@ using System.Collections.Generic;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class CustomType : AbstractType, IDiscriminatorType, IVersionType
 	{
 

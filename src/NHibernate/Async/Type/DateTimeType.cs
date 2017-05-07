@@ -19,6 +19,9 @@ using System.Data;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class DateTimeType : PrimitiveType, IIdentifierType, ILiteralType, IVersionType
 	{
 

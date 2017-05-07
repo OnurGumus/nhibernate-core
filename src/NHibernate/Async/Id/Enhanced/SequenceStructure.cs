@@ -20,9 +20,9 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Id.Enhanced
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Describes a sequence.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class SequenceStructure : IDatabaseStructure
 	{
 
@@ -32,6 +32,9 @@ namespace NHibernate.Id.Enhanced
 
 		#region Nested type: SequenceAccessCallback
 
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		private partial class SequenceAccessCallback : IAccessCallback
 		{
 

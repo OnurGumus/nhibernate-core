@@ -16,10 +16,9 @@ using NHibernate.Engine;
 namespace NHibernate.AdoNet
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// An implementation of the <see cref="IBatcher" /> 
-	/// interface that does no batching.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class NonBatchingBatcher : AbstractBatcher
 	{
 

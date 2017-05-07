@@ -21,6 +21,9 @@ using NHibernate.Util;
 namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public abstract partial class CollectionAction : IExecutable, IComparable<CollectionAction>, IDeserializationCallback
 	{
 

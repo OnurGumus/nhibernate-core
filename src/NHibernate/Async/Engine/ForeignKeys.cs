@@ -17,10 +17,15 @@ using NHibernate.Type;
 namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
-	/// <summary> Algorithms related to foreign key constraint transparency </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public static partial class ForeignKeys
 	{
 
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		public partial class Nullifier
 		{
 

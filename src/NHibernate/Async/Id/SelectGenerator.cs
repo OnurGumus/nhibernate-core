@@ -20,11 +20,9 @@ using NHibernate.Type;
 namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
-	/// <summary> 
-	/// A generator that selects the just inserted row to determine the identifier
-	/// value assigned by the database. The correct row is located using a unique key.
-	/// </summary>
-	/// <remarks>One mapping parameter is required: key (unless a natural-id is defined in the mapping).</remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class SelectGenerator : AbstractPostInsertGenerator, IConfigurable
 	{
 
@@ -37,7 +35,9 @@ namespace NHibernate.Id
 
 		#region Nested type: SelectGeneratorDelegate
 
-		/// <summary> The delegate for the select generation strategy.</summary>
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		public partial class SelectGeneratorDelegate : AbstractSelectingDelegate
 		{
 

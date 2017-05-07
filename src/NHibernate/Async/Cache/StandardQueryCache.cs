@@ -20,12 +20,9 @@ using NHibernate.Util;
 namespace NHibernate.Cache
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// The standard implementation of the Hibernate <see cref="IQueryCache" />
-	/// interface.  This implementation is very good at recognizing stale query
-	/// results and re-running queries when it detects this condition, recaching
-	/// the new results.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class StandardQueryCache : IQueryCache
 	{
 

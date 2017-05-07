@@ -17,6 +17,9 @@ using NHibernate.Exceptions;
 namespace NHibernate.AdoNet
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class MySqlClientBatchingBatcher : AbstractBatcher
 	{
 

@@ -23,6 +23,9 @@ using System.Threading.Tasks;
 namespace NHibernate.Linq
 {
 
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class DefaultQueryProvider : INhQueryProvider
 	{
 

@@ -11,9 +11,9 @@
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Called before inserting an item in the datastore
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IPreInsertEventListener
 	{
 		/// <summary> Return true if the operation should be vetoed</summary>

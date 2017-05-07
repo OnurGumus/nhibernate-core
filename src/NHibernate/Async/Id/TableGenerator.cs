@@ -26,25 +26,9 @@ using NHibernate.Util;
 namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// An <see cref="IIdentifierGenerator" /> that uses a database table to store the last
-	/// generated value.
-	/// </summary>
-	/// <remarks>
-	/// <p>
-	/// It is not intended that applications use this strategy directly. However,
-	/// it may be used to build other (efficient) strategies. The return type is
-	/// <c>System.Int32</c>
-	/// </p>
-	/// <p>
-	/// The hi value MUST be fetched in a separate transaction to the <c>ISession</c>
-	/// transaction so the generator must be able to obtain a new connection and commit it.
-	/// Hence this implementation may not be used when the user is supplying connections.
-	/// </p>
-	/// <p>
-	/// The mapping parameters <c>table</c> and <c>column</c> are required.
-	/// </p>
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
 	{
 		private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();

@@ -19,9 +19,9 @@ using NHibernate.Type;
 namespace NHibernate.Param
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Parameter bind specification for an explicit  positional (or ordinal) parameter.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class PositionalParameterSpecification : AbstractExplicitParameterSpecification
 	{
 

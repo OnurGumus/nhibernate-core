@@ -21,13 +21,9 @@ namespace NHibernate.Persister.Entity
 {
 	using System.Threading.Tasks;
 
-	/// <summary>
-	/// Concrete <c>IEntityPersister</c>s implement mapping and persistence logic for a particular class.
-	/// </summary>
-	/// <remarks>
-	/// Implementors must be threadsafe (preferably immutable) and must provide a constructor of type
-	/// matching the signature of: (PersistentClass, SessionFactoryImplementor)
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IEntityPersister : IOptimisticCacheSource
 	{
 

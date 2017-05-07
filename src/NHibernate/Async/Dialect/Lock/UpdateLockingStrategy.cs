@@ -21,10 +21,9 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Dialect.Lock
 {
 	using System.Threading.Tasks;
-	/// <summary> 
-	/// A locking strategy where the locks are obtained through update statements.
-	/// </summary>
-	/// <remarks> This strategy is not valid for read style locks. </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class UpdateLockingStrategy : ILockingStrategy
 	{
 

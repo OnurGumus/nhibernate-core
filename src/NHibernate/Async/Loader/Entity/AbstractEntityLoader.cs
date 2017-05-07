@@ -23,9 +23,9 @@ namespace NHibernate.Loader.Entity
 {
 	using System.Threading.Tasks;
 	using System;
-	/// <summary>
-	/// Abstract superclass for entity loaders that use outer joins
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public abstract partial class AbstractEntityLoader : OuterJoinLoader, IUniqueEntityLoader
 	{
 

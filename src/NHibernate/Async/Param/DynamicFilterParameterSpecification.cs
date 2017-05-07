@@ -21,6 +21,9 @@ using NHibernate.Type;
 namespace NHibernate.Param
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class DynamicFilterParameterSpecification : IParameterSpecification
 	{
 
@@ -40,6 +43,9 @@ namespace NHibernate.Param
 		}
 
 		#endregion
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		private partial class CollectionOfValuesType : IType
 		{
 

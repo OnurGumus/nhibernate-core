@@ -16,9 +16,9 @@ using NHibernate.Loader.Entity;
 namespace NHibernate.Persister.Entity
 {
 	using System.Threading.Tasks;
-	/// <summary> 
-	/// Not really a <tt>Loader</tt>, just a wrapper around a named query.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class NamedQueryLoader : IUniqueEntityLoader
 	{
 

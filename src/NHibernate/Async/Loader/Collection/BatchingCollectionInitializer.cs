@@ -17,11 +17,9 @@ using NHibernate.Util;
 namespace NHibernate.Loader.Collection
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// "Batch" loads collections, using multiple foreign key values in the SQL Where clause
-	/// </summary>
-	/// <seealso cref="BasicCollectionLoader"/>
-	/// <seealso cref="OneToManyLoader"/>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class BatchingCollectionInitializer : ICollectionInitializer
 	{
 

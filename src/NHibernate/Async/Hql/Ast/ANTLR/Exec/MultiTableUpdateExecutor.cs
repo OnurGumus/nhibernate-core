@@ -26,6 +26,9 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class MultiTableUpdateExecutor : AbstractStatementExecutor
 	{
 

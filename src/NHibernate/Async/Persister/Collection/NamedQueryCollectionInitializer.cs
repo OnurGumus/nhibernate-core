@@ -17,6 +17,9 @@ namespace NHibernate.Persister.Collection
 {
 	using System.Threading.Tasks;
 	using System;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class NamedQueryCollectionInitializer : ICollectionInitializer
 	{
 

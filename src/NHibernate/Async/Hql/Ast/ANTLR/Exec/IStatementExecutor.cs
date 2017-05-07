@@ -14,10 +14,9 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
 	using System.Threading.Tasks;
-	/// <summary> 
-	/// Encapsulates the strategy required to execute various types of update, delete,
-	/// and insert statements issued through HQL. 
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IStatementExecutor
 	{
 

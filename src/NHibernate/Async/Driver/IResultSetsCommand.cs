@@ -14,6 +14,9 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Driver
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IResultSetsCommand
 	{
 		Task<DbDataReader> GetReaderAsync(int? commandTimeout);

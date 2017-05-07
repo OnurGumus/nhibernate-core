@@ -16,13 +16,9 @@ using System.Data.Common;
 namespace NHibernate.Connection
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// An implementation of the <c>IConnectionProvider</c> that simply throws an exception when
-	/// a connection is requested.
-	/// </summary>
-	/// <remarks>
-	/// This implementation indicates that the user is expected to supply an ADO.NET connection
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class UserSuppliedConnectionProvider : ConnectionProvider
 	{
 

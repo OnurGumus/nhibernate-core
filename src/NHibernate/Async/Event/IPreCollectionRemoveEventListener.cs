@@ -11,7 +11,9 @@
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
-	/// <summary> Called before removing a collection </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IPreCollectionRemoveEventListener
 	{
 		Task OnPreRemoveCollectionAsync(PreCollectionRemoveEvent @event);

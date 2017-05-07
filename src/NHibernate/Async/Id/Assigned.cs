@@ -17,16 +17,9 @@ namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
 	using System;
-	/// <summary>
-	/// An <see cref="IIdentifierGenerator" /> that returns the current identifier
-	/// assigned to an instance.
-	/// </summary>
-	/// <remarks>
-	/// <p>
-	///	This id generation strategy is specified in the mapping file as 
-	///	<code>&lt;generator class="assigned" /&gt;</code>
-	/// </p>
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class Assigned : IIdentifierGenerator, IConfigurable
 	{
 

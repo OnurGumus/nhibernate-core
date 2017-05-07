@@ -17,6 +17,9 @@ using NHibernate.Type;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	internal partial class MultipleQueriesCacheAssembler : ICacheAssembler
 	{
 

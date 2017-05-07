@@ -31,6 +31,9 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 namespace NHibernate.Loader.Hql
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class QueryLoader : BasicLoader
 	{
 

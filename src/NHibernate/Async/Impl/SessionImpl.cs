@@ -37,6 +37,9 @@ using NHibernate.Util;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public sealed partial class SessionImpl : AbstractSessionImpl, IEventSource, ISerializable, IDeserializationCallback
 	{
 

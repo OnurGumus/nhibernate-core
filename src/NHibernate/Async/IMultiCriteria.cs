@@ -15,9 +15,9 @@ using NHibernate.Transform;
 namespace NHibernate
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Combines several queries into a single DB call
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IMultiCriteria
 	{
 		/// <summary>

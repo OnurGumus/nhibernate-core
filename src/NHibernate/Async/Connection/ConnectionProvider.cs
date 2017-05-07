@@ -21,9 +21,9 @@ using System.Collections.Generic;
 namespace NHibernate.Connection
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// The base class for the ConnectionProvider.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public abstract partial class ConnectionProvider : IConnectionProvider
 	{
 

@@ -13,9 +13,9 @@ using System.Data.Common;
 namespace NHibernate.Tool.hbm2ddl
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Contract for delegates responsible for managing connection used by the hbm2ddl tools.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IConnectionHelper
 	{
 		/// <summary>

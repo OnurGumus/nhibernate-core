@@ -30,6 +30,9 @@ using NHibernate.Type;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public abstract partial class AbstractSessionImpl : ISessionImplementor
 	{
 

@@ -17,7 +17,10 @@ namespace NHibernate.Tool.hbm2ddl
 {
 	using System.Threading.Tasks;
 	using System;
-	// Candidate to be exstensions of ISessionFactory and Configuration
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
+
 	public static partial class SchemaMetadataUpdater
 	{
 		public static async Task UpdateAsync(ISessionFactory sessionFactory)

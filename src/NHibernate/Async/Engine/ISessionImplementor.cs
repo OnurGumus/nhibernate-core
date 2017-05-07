@@ -27,10 +27,9 @@ using NHibernate.Type;
 namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Defines the internal contract between the <c>Session</c> and other parts of NHibernate
-	/// such as implementors of <c>Type</c> or <c>ClassPersister</c>
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface ISessionImplementor
 	{
 

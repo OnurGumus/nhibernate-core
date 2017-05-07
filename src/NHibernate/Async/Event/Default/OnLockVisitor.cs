@@ -17,12 +17,9 @@ namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
 	using System;
-	/// <summary> 
-	/// When a transient entity is passed to lock(), we must inspect all its collections and
-	/// 1. associate any uninitialized PersistentCollections with this session
-	/// 2. associate any initialized PersistentCollections with this session, using the existing snapshot
-	/// 3. throw an exception for each "new" collection 
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class OnLockVisitor : ReattachVisitor
 	{
 

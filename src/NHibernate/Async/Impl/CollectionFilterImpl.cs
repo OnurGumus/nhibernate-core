@@ -18,9 +18,9 @@ namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
 	using System;
-	/// <summary>
-	/// Implementation of the <see cref="IQuery"/> interface for collection filters.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class CollectionFilterImpl : QueryImpl
 	{
 

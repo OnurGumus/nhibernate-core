@@ -11,7 +11,9 @@
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
-	/// <summary> Called after deleting an item from the datastore </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IPostDeleteEventListener
 	{
 		/// <summary>

@@ -26,6 +26,9 @@ using NHibernate.Util;
 namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class StatefulPersistenceContext : IPersistenceContext, ISerializable, IDeserializationCallback
 	{
 

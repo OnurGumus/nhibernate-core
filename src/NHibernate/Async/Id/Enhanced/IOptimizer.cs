@@ -11,19 +11,9 @@
 namespace NHibernate.Id.Enhanced
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Performs optimization on an optimizable identifier generator.  Typically
-	/// this optimization takes the form of trying to ensure we do not have to
-	/// hit the database on each and every request to get an identifier value.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// Optimizers work on constructor injection.  They should provide
-	/// a constructor with the following arguments.
-	/// </para>
-	/// - <see cref="System.Type"/> The return type for the generated values.
-	/// - <langword>int</langword> The increment size.
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IOptimizer
 	{
 

@@ -15,21 +15,9 @@ using System.Data.Common;
 namespace NHibernate.Driver
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// NHibernate driver for the System.Data.SQLite data provider for .NET 2.0.
-	/// </summary>
-	/// <remarks>
-	/// <p>
-	/// In order to use this driver you must have the System.Data.SQLite.dll assembly available
-	/// for NHibernate to load. This assembly includes the SQLite.dll or SQLite3.dll libraries.
-	/// </p>    
-	/// <p>
-	/// You can get the System.Data.SQLite.dll assembly from http://sourceforge.net/projects/sqlite-dotnet2.
-	/// </p>
-	/// <p>
-	/// Please check <a href="http://www.sqlite.org/">http://www.sqlite.org/</a> for more information regarding SQLite.
-	/// </p>
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class SQLite20Driver : ReflectionBasedDriver
 	{
 

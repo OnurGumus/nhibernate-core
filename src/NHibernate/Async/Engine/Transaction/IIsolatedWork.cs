@@ -13,11 +13,9 @@ using System.Data.Common;
 namespace NHibernate.Engine.Transaction
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Represents work that needs to be performed in a manner
-	/// which isolates it from any current application unit of
-	/// work transaction.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IIsolatedWork
 	{
 		/// <summary>

@@ -16,6 +16,9 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public abstract partial class ImmutableType : NullableType
 	{
 

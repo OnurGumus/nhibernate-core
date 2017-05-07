@@ -30,14 +30,9 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Dialect
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Represents a dialect of SQL implemented by a particular RDBMS. Subclasses
-	/// implement NHibernate compatibility with different systems.
-	/// </summary>
-	/// <remarks>
-	/// Subclasses should provide a public default constructor that <c>Register()</c>
-	/// a set of type mappings and default Hibernate properties.
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public abstract partial class Dialect
 	{
 

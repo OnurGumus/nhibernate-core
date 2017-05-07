@@ -11,9 +11,9 @@
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Called after updating the datastore
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IPostUpdateEventListener
 	{
 		/// <summary>

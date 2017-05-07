@@ -11,9 +11,9 @@
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Called before deleting an item from the datastore
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IPreDeleteEventListener
 	{
 		/// <summary> Return true if the operation should be vetoed</summary>

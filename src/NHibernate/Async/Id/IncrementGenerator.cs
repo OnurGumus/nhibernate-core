@@ -23,19 +23,9 @@ using NHibernate.Type;
 namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// An <c>IIdentifierGenerator</c> that returns a <c>Int64</c>, constructed by
-	/// counting from the maximum primary key value at startup. Not safe for use in a
-	/// cluster!
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// java author Gavin King, .NET port Mark Holden
-	/// </para>
-	/// <para>
-	/// Mapping parameters supported, but not usually needed: table, column.
-	/// </para>
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class IncrementGenerator : IIdentifierGenerator, IConfigurable
 	{
 		private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();

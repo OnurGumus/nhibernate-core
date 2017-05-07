@@ -19,15 +19,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Driver
 {
-	/// <summary>
-	/// Some Data Providers (ie - SqlClient) do not support Multiple Active Result Sets (MARS).
-	/// NHibernate relies on being able to create MARS to read Components and entities inside
-	/// of Collections.
-	/// </summary>
-	/// <remarks>
-	/// This is a completely off-line DataReader - the underlying DbDataReader that was used to create
-	/// this has been closed and no connections to the Db exists.
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class NDataReader : DbDataReader
 	{
 
@@ -78,9 +72,9 @@ namespace NHibernate.Driver
 			return dataReader;
 		}
 
-		/// <summary>
-		/// Stores a Result from a DataReader in memory.
-		/// </summary>
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		private partial class NResult
 		{
 

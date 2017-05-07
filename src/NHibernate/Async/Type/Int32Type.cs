@@ -19,6 +19,9 @@ using System.Data;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class Int32Type : PrimitiveType, IDiscriminatorType, IVersionType
 	{
 

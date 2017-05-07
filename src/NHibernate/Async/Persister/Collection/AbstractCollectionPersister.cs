@@ -37,9 +37,9 @@ using Array=NHibernate.Mapping.Array;
 namespace NHibernate.Persister.Collection
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Summary description for AbstractCollectionPersister.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public abstract partial class AbstractCollectionPersister : ICollectionMetadata, ISqlLoadableCollection,
 														IPostInsertIdentityPersister
 	{

@@ -22,10 +22,9 @@ namespace NHibernate.Engine
 	using System.Threading.Tasks;
 	using System;
 
-	/// <summary> 
-	/// Delegate responsible, in conjunction with the various
-	/// <see cref="CascadingAction"/>, for implementing cascade processing. 
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public sealed partial class Cascade
 	{
 

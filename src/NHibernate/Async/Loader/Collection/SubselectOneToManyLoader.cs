@@ -19,9 +19,9 @@ using NHibernate.Type;
 namespace NHibernate.Loader.Collection
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Implements subselect fetching for a one to many association
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class SubselectOneToManyLoader : OneToManyLoader
 	{
 

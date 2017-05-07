@@ -20,20 +20,9 @@ using NHibernate.Stat;
 namespace NHibernate
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Creates <c>ISession</c>s.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// Usually an application has a single <c>SessionFactory</c>. Threads servicing client requests
-	/// obtain <c>ISession</c>s from the factory. Implementors must be threadsafe.
-	/// </para>
-	/// <para>
-	/// <c>ISessionFactory</c>s are immutable. The behaviour of a <c>SessionFactory</c>
-	/// is controlled by properties supplied at configuration time.
-	/// These properties are defined on <c>Environment</c>
-	/// </para>
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface ISessionFactory : IDisposable
 	{
 

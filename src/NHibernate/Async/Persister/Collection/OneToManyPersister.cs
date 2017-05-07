@@ -28,6 +28,9 @@ using NHibernate.Util;
 namespace NHibernate.Persister.Collection
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class OneToManyPersister : AbstractCollectionPersister
 	{
 

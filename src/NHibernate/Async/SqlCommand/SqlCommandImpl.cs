@@ -19,6 +19,9 @@ using NHibernate.SqlTypes;
 namespace NHibernate.SqlCommand
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface ISqlCommand
 	{
 
@@ -34,6 +37,9 @@ namespace NHibernate.SqlCommand
 		Task BindAsync(DbCommand command, ISessionImplementor session);
 	}
 
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class SqlCommandImpl : ISqlCommand
 	{
 

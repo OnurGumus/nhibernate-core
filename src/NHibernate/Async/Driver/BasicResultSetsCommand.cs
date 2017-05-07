@@ -22,6 +22,9 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Driver
 {
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class BasicResultSetsCommand: IResultSetsCommand
 	{
 
@@ -41,9 +44,9 @@ namespace NHibernate.Driver
 		}
 	}
 
-	/// <summary>
-	/// Datareader wrapper with the same life cycle of its command (through the batcher)
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class BatcherDataReaderWrapper: DbDataReader
 	{
 

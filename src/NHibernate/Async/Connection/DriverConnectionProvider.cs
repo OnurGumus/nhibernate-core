@@ -14,9 +14,9 @@ using System.Data.Common;
 namespace NHibernate.Connection
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// A ConnectionProvider that uses an IDriver to create connections.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class DriverConnectionProvider : ConnectionProvider
 	{
 

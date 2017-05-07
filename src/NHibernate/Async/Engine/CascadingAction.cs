@@ -20,9 +20,9 @@ using NHibernate.Type;
 namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// A session action that may be cascaded from parent entity to its children
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public abstract partial class CascadingAction
 	{
 
@@ -58,6 +58,9 @@ namespace NHibernate.Engine
 
 		#endregion
 
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		private partial class DeleteCascadingAction : CascadingAction
 		{
 			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
@@ -78,6 +81,9 @@ namespace NHibernate.Engine
 			}
 		}
 
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		private partial class LockCascadingAction : CascadingAction
 		{
 			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
@@ -98,6 +104,9 @@ namespace NHibernate.Engine
 			}
 		}
 
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		private partial class RefreshCascadingAction : CascadingAction
 		{
 			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
@@ -118,6 +127,9 @@ namespace NHibernate.Engine
 			}
 		}
 
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		private partial class EvictCascadingAction : CascadingAction
 		{
 			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
@@ -138,6 +150,9 @@ namespace NHibernate.Engine
 			}
 		}
 
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		private partial class SaveUpdateCascadingAction : CascadingAction
 		{
 			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
@@ -158,6 +173,9 @@ namespace NHibernate.Engine
 			}
 		}
 
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		private partial class MergeCascadingAction : CascadingAction
 		{
 			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
@@ -178,7 +196,10 @@ namespace NHibernate.Engine
 			}
 		}
         
-		private partial class PersistCascadingAction : CascadingAction
+		/// <content>
+        /// Contains generated async methods
+        /// </content>
+        private partial class PersistCascadingAction : CascadingAction
 		{
 			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
 			{
@@ -198,6 +219,9 @@ return Task.FromException<object>(ex);
 			}
 		}
 
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		private partial class PersistOnFlushCascadingAction : CascadingAction
 		{
 			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
@@ -241,6 +265,9 @@ return Task.FromException<object>(ex);
 			}
 		}
 
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		private partial class ReplicateCascadingAction : CascadingAction
 		{
 			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)

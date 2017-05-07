@@ -13,9 +13,9 @@ using System.Collections;
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Defines the contract for handling of refresh events generated from a session.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IRefreshEventListener
 	{
 		/// <summary> Handle the given refresh event. </summary>

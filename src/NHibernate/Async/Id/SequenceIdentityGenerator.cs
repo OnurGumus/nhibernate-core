@@ -15,11 +15,9 @@ namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
 	using System;
-	/// <summary>
-	/// A generator which combines sequence generation with immediate retrieval
-	/// by attaching a output parameter to the SQL command
-	/// In this respect it works much like ANSI-SQL IDENTITY generation.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class SequenceIdentityGenerator : SequenceGenerator, IPostInsertIdentifierGenerator
 	{
 		#region IPostInsertIdentifierGenerator Members

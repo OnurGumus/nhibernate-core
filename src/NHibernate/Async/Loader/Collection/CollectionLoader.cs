@@ -19,11 +19,9 @@ using NHibernate.Type;
 namespace NHibernate.Loader.Collection
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Superclass for loaders that initialize collections
-	/// <seealso cref="OneToManyLoader" />
-	/// <seealso cref="BasicCollectionLoader" />
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class CollectionLoader : OuterJoinLoader, ICollectionInitializer
 	{
 

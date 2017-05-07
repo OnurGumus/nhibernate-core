@@ -13,9 +13,9 @@ using System.Collections;
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Defines the contract for handling of merge events generated from a session.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IMergeEventListener
 	{
 		/// <summary> Handle the given merge event. </summary>

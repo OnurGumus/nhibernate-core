@@ -18,6 +18,9 @@ using NHibernate.Util;
 namespace NHibernate.Tool.hbm2ddl
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class SchemaValidator
 	{
 

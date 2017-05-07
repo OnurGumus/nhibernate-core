@@ -28,6 +28,9 @@ using NHibernate.Util;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class MultiQueryImpl : IMultiQuery
 	{
 

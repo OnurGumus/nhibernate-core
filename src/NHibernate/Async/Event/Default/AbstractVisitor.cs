@@ -15,10 +15,9 @@ namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
 	using System;
-	/// <summary> 
-	/// Abstract superclass of algorithms that walk a tree of property values of an entity, and
-	/// perform specific functionality for collections, components and associated entities. 
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public abstract partial class AbstractVisitor
 	{
 

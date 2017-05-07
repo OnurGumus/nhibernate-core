@@ -18,11 +18,9 @@ namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
 	using System;
-	/// <summary> 
-	/// Evict any collections referenced by the object from the session cache.
-	/// This will NOT pick up any collections that were dereferenced, so they
-	/// will be deleted (suboptimal but not exactly incorrect). 
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class EvictVisitor : AbstractVisitor
 	{
 

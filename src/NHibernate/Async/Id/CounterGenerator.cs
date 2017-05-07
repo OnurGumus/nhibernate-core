@@ -15,10 +15,9 @@ using NHibernate.Engine;
 namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// An <see cref="IIdentifierGenerator" /> that returns a <c>Int64</c> constructed from the system
-	/// time and a counter value. Not safe for use in a clustser!
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class CounterGenerator : IIdentifierGenerator
 	{
 

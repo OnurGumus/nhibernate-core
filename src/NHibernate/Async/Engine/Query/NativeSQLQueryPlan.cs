@@ -30,6 +30,9 @@ using NHibernate.Util;
 namespace NHibernate.Engine.Query
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class NativeSQLQueryPlan
 	{
 

@@ -17,6 +17,9 @@ using NHibernate.Persister.Entity;
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IEventSource : ISessionImplementor, ISession
 	{
 

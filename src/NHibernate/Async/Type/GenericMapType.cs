@@ -20,6 +20,9 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class GenericMapType<TKey, TValue> : CollectionType
 	{
 

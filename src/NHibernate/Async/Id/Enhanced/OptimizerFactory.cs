@@ -16,11 +16,17 @@ using NHibernate.Util;
 namespace NHibernate.Id.Enhanced
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class OptimizerFactory
 	{
 
 		#region Nested type: HiLoOptimizer
 
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		public partial class HiLoOptimizer : OptimizerSupport
 		{
 			private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();
@@ -58,6 +64,9 @@ namespace NHibernate.Id.Enhanced
 
 		#region Nested type: NoopOptimizer
 
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		public partial class NoopOptimizer : OptimizerSupport
 		{
 
@@ -82,9 +91,9 @@ namespace NHibernate.Id.Enhanced
 
 		#region Nested type: OptimizerSupport
 
-		/// <summary>
-		/// Common support for optimizer implementations.
-		/// </summary>
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		public abstract partial class OptimizerSupport : IOptimizer
 		{
 
@@ -99,17 +108,9 @@ namespace NHibernate.Id.Enhanced
 
 		#region Nested type: PooledOptimizer
 
-		/// <summary>
-		/// Optimizer which uses a pool of values, storing the next low value of the range in the database.
-		/// <para>
-		/// Note that this optimizer works essentially the same as the HiLoOptimizer, except that here the
-		/// bucket ranges are actually encoded into the database structures.
-		/// </para>
-		/// <para>
-		/// Note that if you prefer that the database value be interpreted as the bottom end of our current
-		/// range, then use the PooledLoOptimizer strategy.
-		/// </para>
-		/// </summary>
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		public partial class PooledOptimizer : OptimizerSupport, IInitialValueAwareOptimizer
 		{
 			private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();
@@ -154,6 +155,9 @@ namespace NHibernate.Id.Enhanced
 
 		#region Nested type: PooledLoOptimizer
 
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		public partial class PooledLoOptimizer : OptimizerSupport
 		{
 			private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();

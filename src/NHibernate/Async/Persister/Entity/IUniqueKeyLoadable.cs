@@ -13,9 +13,9 @@ using NHibernate.Engine;
 namespace NHibernate.Persister.Entity
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Describes a class that may be loaded via a unique key.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IUniqueKeyLoadable
 	{
 		/// <summary>

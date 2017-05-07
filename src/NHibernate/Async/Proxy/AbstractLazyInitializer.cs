@@ -15,6 +15,9 @@ using NHibernate.Persister.Entity;
 namespace NHibernate.Proxy
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public abstract partial class AbstractLazyInitializer : ILazyInitializer
 	{
 		

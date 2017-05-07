@@ -19,6 +19,9 @@ using NHibernate.Type;
 namespace NHibernate.Param
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class VersionTypeSeedParameterSpecification : IParameterSpecification
 	{
 

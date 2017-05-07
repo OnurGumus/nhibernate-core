@@ -19,7 +19,9 @@ using NHibernate.Type;
 namespace NHibernate.Loader.Collection
 {
 	using System.Threading.Tasks;
-	/// <summary> Implements subselect fetching for a collection</summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class SubselectCollectionLoader : BasicCollectionLoader
 	{
 

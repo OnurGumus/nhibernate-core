@@ -11,9 +11,9 @@
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Defines the contract for handling of lock events generated from a session.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface ILockEventListener
 	{
 		/// <summary>Handle the given lock event. </summary>

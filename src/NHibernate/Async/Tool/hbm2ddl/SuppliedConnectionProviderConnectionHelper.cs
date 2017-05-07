@@ -15,12 +15,9 @@ namespace NHibernate.Tool.hbm2ddl
 {
 	using System.Threading.Tasks;
 
-	/// <summary>
-	/// A <seealso cref="IConnectionHelper"/> implementation based on a provided
-	/// <seealso cref="IConnectionProvider"/>.  Essentially, ensures that the connection
-	/// gets cleaned up, but that the provider itself remains usable since it
-	/// was externally provided to us.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class SuppliedConnectionProviderConnectionHelper : IConnectionHelper
 	{
 

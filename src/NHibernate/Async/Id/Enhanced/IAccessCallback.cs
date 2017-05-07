@@ -11,10 +11,9 @@
 namespace NHibernate.Id.Enhanced
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Contract for providing callback access to an <see cref="IDatabaseStructure"/>,
-	/// typically from the <see cref="IOptimizer"/>.
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IAccessCallback
 	{
 		/// <summary>

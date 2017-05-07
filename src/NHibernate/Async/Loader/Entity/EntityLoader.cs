@@ -16,13 +16,9 @@ using NHibernate.Type;
 namespace NHibernate.Loader.Entity
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Load an entity using outerjoin fetching to fetch associated entities.
-	/// </summary>
-	/// <remarks>
-	/// The <see cref="IEntityPersister"/> must implement <see cref="ILoadable" />. For other entities,
-	/// create a customized subclass of <see cref="Loader" />.
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class EntityLoader : AbstractEntityLoader
 	{
 

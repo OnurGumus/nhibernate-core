@@ -18,9 +18,9 @@ using NHibernate.Type;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Abstract superclass of visitors that reattach collections
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public abstract partial class ReattachVisitor : ProxyVisitor
 	{
 

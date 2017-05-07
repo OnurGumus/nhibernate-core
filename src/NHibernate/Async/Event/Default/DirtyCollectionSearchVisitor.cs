@@ -16,31 +16,9 @@ namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
 	using System;
-	/// <summary>
-	/// A Visitor that determines if a dirty collection was found.
-	/// </summary>
-	/// <remarks>
-	/// <list type="number">
-	///		<listheader>
-	///			<description>Reason for dirty collection</description>
-	///		</listheader>
-	///		<item>
-	///			<description>
-	///			If it is a new application-instantiated collection, return true (does not occur anymore!)
-	///			</description>
-	///		</item>
-	///		<item>
-	///			<description>
-	///			If it is a component, recurse.
-	///			</description>
-	///		</item>
-	///		<item>
-	///			<description>
-	///			If it is a wrapped collection, ask the collection entry.
-	///			</description>
-	///		</item>
-	/// </list>
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class DirtyCollectionSearchVisitor : AbstractVisitor
 	{
 

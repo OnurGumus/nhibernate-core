@@ -27,9 +27,9 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 namespace NHibernate.Loader.Custom
 {
 	using System.Threading.Tasks;
-	/// <summary> 
-	/// Extension point for loaders which use a SQL result set with "unexpected" column aliases. 
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class CustomLoader : Loader
 	{
 
@@ -46,6 +46,9 @@ namespace NHibernate.Loader.Custom
 			return rowProcessor.BuildResultRowAsync(row, rs, resultTransformer != null, session);
 		}
 
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		public partial class ResultRowProcessor
 		{
 
@@ -85,11 +88,17 @@ namespace NHibernate.Loader.Custom
 			}
 		}
 
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		public partial interface IResultColumnProcessor
 		{
 			Task<object> ExtractAsync(object[] data, DbDataReader resultSet, ISessionImplementor session);
 		}
 
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		public partial class NonScalarResultColumnProcessor : IResultColumnProcessor
 		{
 
@@ -106,6 +115,9 @@ namespace NHibernate.Loader.Custom
 			}
 		}
 
+		/// <content>
+		/// Contains generated async methods
+		/// </content>
 		public partial class ScalarResultColumnProcessor : IResultColumnProcessor
 		{
 

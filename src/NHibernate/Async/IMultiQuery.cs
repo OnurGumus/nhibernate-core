@@ -16,9 +16,9 @@ using NHibernate.Type;
 namespace NHibernate
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Combines several queries into a single database call
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial interface IMultiQuery
 	{
 		/// <summary>

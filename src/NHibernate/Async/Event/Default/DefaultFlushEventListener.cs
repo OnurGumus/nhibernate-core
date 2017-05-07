@@ -13,6 +13,9 @@ using System;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class DefaultFlushEventListener : AbstractFlushingEventListener, IFlushEventListener
 	{
 		public virtual async Task OnFlushAsync(FlushEvent @event)

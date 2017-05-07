@@ -20,15 +20,9 @@ using NHibernate.Exceptions;
 namespace NHibernate.Dialect.Lock
 {
 	using System.Threading.Tasks;
-	/// <summary> 
-	/// A locking strategy where the locks are obtained through select statements.
-	///  </summary>
-	/// <seealso cref="NHibernate.Dialect.Dialect.GetForUpdateString(NHibernate.LockMode)"/>
-	/// <seealso cref="NHibernate.Dialect.Dialect.AppendLockHint(NHibernate.LockMode, string)"/>
-	/// <remarks>
-	/// For non-read locks, this is achieved through the Dialect's specific
-	/// SELECT ... FOR UPDATE syntax.
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class SelectLockingStrategy : ILockingStrategy
 	{
 

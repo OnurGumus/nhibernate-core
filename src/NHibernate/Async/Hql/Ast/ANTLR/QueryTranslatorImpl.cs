@@ -31,6 +31,9 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 namespace NHibernate.Hql.Ast.ANTLR
 {
 	using System.Threading.Tasks;
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class QueryTranslatorImpl : IFilterTranslator
 	{
 

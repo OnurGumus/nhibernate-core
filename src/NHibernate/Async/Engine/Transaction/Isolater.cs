@@ -17,25 +17,9 @@ using NHibernate.Exceptions;
 namespace NHibernate.Engine.Transaction
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Class which provides the isolation semantics required by
-	/// an <see cref="IIsolatedWork"/>.
-	/// </summary>
-	/// <remarks>
-	/// <list type="bullet">
-  /// <listheader>
-	///      <description>Processing comes in two flavors:</description>
-  ///  </listheader>
-  ///  <item>
-	///      <term><see cref="DoIsolatedWork"/> </term>
-	///      <description>makes sure the work to be done is performed in a separate, distinct transaction</description>
-  ///  </item>
-	///  <item>
-	///      <term><see cref="DoNonTransactedWork"/> </term>
-	///      <description>makes sure the work to be done is performed outside the scope of any transaction</description>
-	///  </item>
-	/// </list>
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class Isolater
 	{
 

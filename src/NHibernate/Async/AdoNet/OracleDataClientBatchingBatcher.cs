@@ -18,10 +18,9 @@ using NHibernate.Exceptions;
 namespace NHibernate.AdoNet
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Summary description for OracleDataClientBatchingBatcher.
-	/// By Tomer Avissar
-	/// </summary>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public partial class OracleDataClientBatchingBatcher : AbstractBatcher
 	{
 

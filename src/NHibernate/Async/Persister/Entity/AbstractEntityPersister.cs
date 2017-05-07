@@ -42,13 +42,9 @@ using System.Linq;
 namespace NHibernate.Persister.Entity
 {
 	using System.Threading.Tasks;
-	/// <summary>
-	/// Superclass for built-in mapping strategies. Implements functionalty common to both mapping
-	/// strategies
-	/// </summary>
-	/// <remarks>
-	/// May be considered an immutable view of the mapping object
-	/// </remarks>
+	/// <content>
+	/// Contains generated async methods
+	/// </content>
 	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata, IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable
 	{
 
