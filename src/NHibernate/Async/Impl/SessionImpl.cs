@@ -250,7 +250,7 @@ namespace NHibernate.Impl
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 				try
 				{
-					return plan.PerformIterate<T>(queryParameters, this);
+					return await (plan.PerformIterateAsync<T>(queryParameters, this)).ConfigureAwait(false);
 				}
 				finally
 				{
@@ -271,7 +271,7 @@ namespace NHibernate.Impl
 				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
 				try
 				{
-					return plan.PerformIterate(queryParameters, this);
+					return await (plan.PerformIterateAsync(queryParameters, this)).ConfigureAwait(false);
 				}
 				finally
 				{
@@ -1045,7 +1045,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				FilterQueryPlan plan = await (GetFilterQueryPlanAsync(collection, filter, queryParameters, true)).ConfigureAwait(false);
-				return plan.PerformIterate(queryParameters, this);
+				return await (plan.PerformIterateAsync(queryParameters, this)).ConfigureAwait(false);
 			}
 		}
 
@@ -1055,7 +1055,7 @@ namespace NHibernate.Impl
 			{
 				CheckAndUpdateSessionStatus();
 				FilterQueryPlan plan = await (GetFilterQueryPlanAsync(collection, filter, queryParameters, true)).ConfigureAwait(false);
-				return plan.PerformIterate<T>(queryParameters, this);
+				return await (plan.PerformIterateAsync<T>(queryParameters, this)).ConfigureAwait(false);
 			}
 		}
 

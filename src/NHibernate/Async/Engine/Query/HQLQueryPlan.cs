@@ -25,6 +25,8 @@ namespace NHibernate.Engine.Query
     {
         Task PerformListAsync(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, IList results);
         Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl);
+        Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session);
+        Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session);
     }
 	public partial class HQLQueryPlan : IQueryPlan
 	{
@@ -94,6 +96,35 @@ namespace NHibernate.Engine.Query
 				else
 					ArrayHelper.AddAll(combinedResults, tmp);
 			}
+		}
+
+		public async Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session)
+		{
+			if (Log.IsDebugEnabled)
+			{
+				Log.Debug("enumerable: " + _sourceQuery);
+				queryParameters.LogParameters(session.Factory);
+			}
+			if (Translators.Length == 0)
+			{
+				return CollectionHelper.EmptyEnumerable;
+			}
+			if (Translators.Length == 1)
+			{
+				return await (Translators[0].GetEnumerableAsync(queryParameters, session)).ConfigureAwait(false);
+			}
+			var results = new IEnumerable[Translators.Length];
+			for (int i = 0; i < Translators.Length; i++)
+			{
+				var result = await (Translators[i].GetEnumerableAsync(queryParameters, session)).ConfigureAwait(false);
+				results[i] = result;
+			}
+			return new JoinedEnumerable(results);
+		}
+
+		public async Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session)
+		{
+			return new SafetyEnumerable<T>(await (PerformIterateAsync(queryParameters, session)).ConfigureAwait(false));
 		}
 
         public async Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session)
