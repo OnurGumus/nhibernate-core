@@ -39,45 +39,6 @@ namespace NHibernate.Impl
 		public abstract Task<object> InternalLoadAsync(string entityName, object id, bool eager, bool isNullable);
 		public abstract Task<object> ImmediateLoadAsync(string entityName, object id);
 
-		[Obsolete("Use overload with IQueryExpression")]
-		public virtual Task<IList> ListAsync(string query, QueryParameters parameters)
-		{
-			try
-			{
-				return ListAsync(query.ToQueryExpression(), parameters);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<IList>(ex);
-			}
-		}
-
-		[Obsolete("Use overload with IQueryExpression")]
-		public virtual Task ListAsync(string query, QueryParameters queryParameters, IList results)
-		{
-			try
-			{
-				return ListAsync(query.ToQueryExpression(), queryParameters, results);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
-		}
-
-		[Obsolete("Use overload with IQueryExpression")]
-		public virtual Task<IList<T>> ListAsync<T>(string query, QueryParameters queryParameters)
-		{
-			try
-			{
-				return ListAsync<T>(query.ToQueryExpression(), queryParameters);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<IList<T>>(ex);
-			}
-		}
-
 		public virtual async Task<IList> ListAsync(IQueryExpression queryExpression, QueryParameters parameters)
 		{
 			var results = (IList) typeof (List<>).MakeGenericType(queryExpression.Type)
@@ -170,19 +131,6 @@ namespace NHibernate.Impl
 				return results;
 			}
 		}
-
-		[Obsolete("Use overload with IQueryExpression")]
-		public virtual Task<IQueryTranslator[]> GetQueriesAsync(string query, bool scalar)
-		{
-			try
-			{
-				return GetQueriesAsync(query.ToQueryExpression(), scalar);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<IQueryTranslator[]>(ex);
-			}
-		}
 		
 		public abstract Task<IQueryTranslator[]> GetQueriesAsync(IQueryExpression query, bool scalar);
 		public abstract Task<object> GetEntityUsingInterceptorAsync(EntityKey key);
@@ -194,46 +142,7 @@ namespace NHibernate.Impl
 
 		public abstract Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters);
 
-		[Obsolete("Use overload with IQueryExpression")]
-		public virtual Task<IEnumerable> EnumerableAsync(string query, QueryParameters queryParameters)
-		{
-			try
-			{
-				return EnumerableAsync(query.ToQueryExpression(), queryParameters);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<IEnumerable>(ex);
-			}
-		}
-
-		[Obsolete("Use overload with IQueryExpression")]
-		public virtual Task<IEnumerable<T>> EnumerableAsync<T>(string query, QueryParameters queryParameters)
-		{
-			try
-			{
-				return EnumerableAsync<T>(query.ToQueryExpression(), queryParameters);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<IEnumerable<T>>(ex);
-			}
-		}
-
 		public abstract Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters);
-
-		[Obsolete("Use overload with IQueryExpression")]
-		public virtual Task<int> ExecuteUpdateAsync(string query, QueryParameters queryParameters)
-		{
-			try
-			{
-				return ExecuteUpdateAsync(query.ToQueryExpression(), queryParameters);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<int>(ex);
-			}
-		}
 
 		public abstract Task<int> ExecuteUpdateAsync(IQueryExpression queryExpression, QueryParameters queryParameters);
 	}

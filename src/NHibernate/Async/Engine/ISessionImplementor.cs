@@ -65,15 +65,6 @@ namespace NHibernate.Engine
 		Task<object> ImmediateLoadAsync(string entityName, object id);
 
 		/// <summary>
-		/// Execute a <c>List()</c> query
-		/// </summary>
-		/// <param name="query"></param>
-		/// <param name="parameters"></param>
-		/// <returns></returns>
-		[Obsolete("Use overload with IQueryExpression")]
-		Task<IList> ListAsync(string query, QueryParameters parameters);
-
-		/// <summary>
 		/// Execute a <c>List()</c> expression query
 		/// </summary>
 		/// <param name="queryExpression"></param>
@@ -81,16 +72,7 @@ namespace NHibernate.Engine
 		/// <returns></returns>
 		Task<IList> ListAsync(IQueryExpression queryExpression, QueryParameters parameters);
 
-		[Obsolete("Use overload with IQueryExpression")]
-		Task ListAsync(string query, QueryParameters parameters, IList results);
-
 		Task ListAsync(IQueryExpression queryExpression, QueryParameters queryParameters, IList results);
-
-		/// <summary>
-		/// Strongly-typed version of <see cref="List(string,QueryParameters)" />
-		/// </summary>
-		[Obsolete("Use overload with IQueryExpression")]
-		Task<IList<T>> ListAsync<T>(string query, QueryParameters queryParameters);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="List(IQueryExpression,QueryParameters)" />
@@ -112,22 +94,7 @@ namespace NHibernate.Engine
 		/// <param name="query"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
-		[Obsolete("Use overload with IQueryExpression")]
-		Task<IEnumerable> EnumerableAsync(string query, QueryParameters parameters);
-
-		/// <summary>
-		/// Execute an <c>Iterate()</c> query
-		/// </summary>
-		/// <param name="query"></param>
-		/// <param name="parameters"></param>
-		/// <returns></returns>
 		Task<IEnumerable> EnumerableAsync(IQueryExpression query, QueryParameters parameters);
-
-		/// <summary>
-		/// Strongly-typed version of <see cref="Enumerable(string, QueryParameters)" />
-		/// </summary>
-		[Obsolete("Use overload with IQueryExpression")]
-		Task<IEnumerable<T>> EnumerableAsync<T>(string query, QueryParameters queryParameters);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="Enumerable(IQueryExpression, QueryParameters)" />
@@ -170,9 +137,6 @@ namespace NHibernate.Engine
 		Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results);
 
 		Task<IList<T>> ListCustomQueryAsync<T>(ICustomQuery customQuery, QueryParameters queryParameters);
-
-		[Obsolete("Use overload with IQueryExpression")]
-		Task<IQueryTranslator[]> GetQueriesAsync(string query, bool scalar); // NH specific for MultiQuery
 		
 		Task<IQueryTranslator[]> GetQueriesAsync(IQueryExpression query, bool scalar); // NH specific for MultiQuery
 
@@ -186,10 +150,6 @@ namespace NHibernate.Engine
 
 		/// <summary> Execute a native SQL update or delete query</summary>
 		Task<int> ExecuteNativeUpdateAsync(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
-
-		/// <summary> Execute a HQL update or delete query</summary>
-		[Obsolete("Use overload with IQueryExpression")]
-		Task<int> ExecuteUpdateAsync(string query, QueryParameters queryParameters);
 
 		/// <summary> Execute a HQL update or delete query</summary>
 		Task<int> ExecuteUpdateAsync(IQueryExpression query, QueryParameters queryParameters);
