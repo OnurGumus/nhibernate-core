@@ -60,9 +60,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				// can't just return null here, since that would
-				// cause an owning component to become null
-				return Task.FromResult<object>(NotNullCollection);
+				return Task.FromResult<object>(Hydrate(rs, name, session, owner));
 			}
 			catch (Exception ex)
 			{

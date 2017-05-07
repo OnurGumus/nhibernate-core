@@ -384,7 +384,7 @@ namespace NHibernate.Loader
 		{
 			try
 			{
-				return Task.FromResult<object>(row);
+				return Task.FromResult<object>(GetResultColumnOrRow(row, resultTransformer, rs, session));
 			}
 			catch (Exception ex)
 			{
@@ -396,7 +396,7 @@ namespace NHibernate.Loader
 		{
 			try
 			{
-				return Task.FromResult<object[]>(row);
+				return Task.FromResult<object[]>(GetResultRow(row, rs, session));
 			}
 			catch (Exception ex)
 			{

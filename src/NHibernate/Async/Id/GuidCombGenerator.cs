@@ -32,7 +32,7 @@ namespace NHibernate.Id
 		{
 			try
 			{
-				return Task.FromResult<object>(GenerateComb());
+				return Task.FromResult<object>(Generate(session, obj));
 			}
 			catch (Exception ex)
 			{

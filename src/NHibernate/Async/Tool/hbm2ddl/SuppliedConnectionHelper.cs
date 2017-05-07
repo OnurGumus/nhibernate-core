@@ -13,6 +13,7 @@ using System.Data.Common;
 namespace NHibernate.Tool.hbm2ddl
 {
 	using System.Threading.Tasks;
+	using System;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -21,7 +22,15 @@ namespace NHibernate.Tool.hbm2ddl
 
 		public Task PrepareAsync()
 		{
-			return Task.CompletedTask;
+			try
+			{
+				Prepare();
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 	}
 }

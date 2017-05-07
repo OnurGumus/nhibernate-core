@@ -26,35 +26,7 @@ namespace NHibernate.Event.Default
 		{
 			try
 			{
-				if (collection != null)
-				{
-					ISessionImplementor session = Session;
-					IPersistentCollection persistentCollection;
-					if (type.IsArrayType)
-					{
-						persistentCollection = session.PersistenceContext.GetCollectionHolder(collection);
-					// if no array holder we found an unwrappered array (this can't occur,
-					// because we now always call wrap() before getting to here)
-					// return (ah==null) ? true : searchForDirtyCollections(ah, type);
-					}
-					else
-					{
-						// if not wrappered yet, its dirty (this can't occur, because
-						// we now always call wrap() before getting to here)
-						// return ( ! (obj instanceof PersistentCollection) ) ?
-						//true : searchForDirtyCollections( (PersistentCollection) obj, type );
-						persistentCollection = (IPersistentCollection)collection;
-					}
-
-					if (persistentCollection.IsDirty)
-					{
-						//we need to check even if it was not initialized, because of delayed adds!
-						dirty = true;
-						return Task.FromResult<object>(null); //NOTE: EARLY EXIT!
-					}
-				}
-
-				return Task.FromResult<object>(null);
+				return Task.FromResult<object>(ProcessCollection(collection, type));
 			}
 			catch (Exception ex)
 			{

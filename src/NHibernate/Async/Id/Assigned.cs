@@ -44,13 +44,7 @@ namespace NHibernate.Id
 			}
 			try
 			{
-				object id = session.GetEntityPersister(entityName, obj).GetIdentifier(obj);
-				if (id == null)
-				{
-					return Task.FromException<object>(new IdentifierGenerationException("ids for this class must be manually assigned before calling save(): " + obj.GetType().FullName));
-				}
-
-				return Task.FromResult<object>(id);
+				return Task.FromResult<object>(Generate(session, obj));
 			}
 			catch (Exception ex)
 			{

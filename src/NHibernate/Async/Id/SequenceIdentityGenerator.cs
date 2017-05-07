@@ -26,7 +26,7 @@ namespace NHibernate.Id
 		{
 			try
 			{
-				return Task.FromResult<object>(IdentifierGeneratorFactory.PostInsertIndicator);
+				return Task.FromResult<object>(Generate(session, obj));
 			}
 			catch (Exception ex)
 			{

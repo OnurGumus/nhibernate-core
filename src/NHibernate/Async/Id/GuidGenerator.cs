@@ -31,7 +31,7 @@ namespace NHibernate.Id
 		{
 			try
 			{
-				return Task.FromResult<object>(Guid.NewGuid());
+				return Task.FromResult<object>(Generate(session, obj));
 			}
 			catch (Exception ex)
 			{

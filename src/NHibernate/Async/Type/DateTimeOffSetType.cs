@@ -34,7 +34,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Task.FromResult<object>(DateTimeOffset.Now);
+				return Task.FromResult<object>(Seed(session));
 			}
 			catch (Exception ex)
 			{

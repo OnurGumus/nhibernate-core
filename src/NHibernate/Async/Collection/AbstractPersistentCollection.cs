@@ -134,7 +134,15 @@ namespace NHibernate.Collection
 		/// Called before inserting rows, to ensure that any surrogate keys are fully generated
 		/// </summary>
 		/// <param name="persister"></param>
-		public virtual Task PreInsertAsync(ICollectionPersister persister) {			return Task.CompletedTask;
+		public virtual Task PreInsertAsync(ICollectionPersister persister) {			try
+			{
+				PreInsert(persister);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 }
 
 		/// <summary>

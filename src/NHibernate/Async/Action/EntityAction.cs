@@ -31,7 +31,15 @@ namespace NHibernate.Action
 		
 		protected virtual Task AfterTransactionCompletionProcessImplAsync(bool success)
 		{
-			return Task.CompletedTask;
+			try
+			{
+				AfterTransactionCompletionProcessImpl(success);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		#endregion

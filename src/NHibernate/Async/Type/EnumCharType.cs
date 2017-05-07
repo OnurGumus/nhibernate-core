@@ -26,14 +26,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				if (cached == null)
-				{
-					return Task.FromResult<object>(null);
-				}
-				else
-				{
-					return Task.FromResult<object>(GetInstance(cached));
-				}
+				return Task.FromResult<object>(Assemble(cached, session, owner));
 			}
 			catch (Exception ex)
 			{

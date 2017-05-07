@@ -127,12 +127,7 @@ namespace NHibernate.Impl
 		{
 			try
 			{
-				var yields = new List<ITranslator>();
-				// NOTE: updates queryParameters.NamedParameters as (desired) side effect
-				ExpandParameterLists(queryParameters.NamedParameters);
-				var sqlQuery = this as ISQLQuery;
-				yields.Add(new SqlTranslator(sqlQuery, sessionImplementor.Factory));
-				return Task.FromResult<IEnumerable<ITranslator>>(yields);
+				return Task.FromResult<IEnumerable<ITranslator>>(GetTranslators(sessionImplementor, queryParameters));
 			}
 			catch (Exception ex)
 			{

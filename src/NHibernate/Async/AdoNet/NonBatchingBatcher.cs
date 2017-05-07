@@ -50,7 +50,15 @@ namespace NHibernate.AdoNet
 		/// <param name="ps"></param>
 		protected override Task DoExecuteBatchAsync(DbCommand ps)
 		{
-			return Task.CompletedTask;
+			try
+			{
+				DoExecuteBatch(ps);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 	}
 }

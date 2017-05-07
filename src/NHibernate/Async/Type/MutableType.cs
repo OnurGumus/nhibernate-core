@@ -27,9 +27,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				if (IsEqual(original, target))
-					return Task.FromResult<object>(original);
-				return Task.FromResult<object>(DeepCopy(original, session.Factory));
+				return Task.FromResult<object>(Replace(original, target, session, owner, copiedAlready));
 			}
 			catch (Exception ex)
 			{

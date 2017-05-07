@@ -150,7 +150,7 @@ namespace NHibernate.Event.Default
 		{
 			try
 			{
-				return Task.FromResult<bool>(false);
+				return Task.FromResult<bool>(SubstituteValuesIfNecessary(entity, id, values, persister, source));
 			}
 			catch (Exception ex)
 			{

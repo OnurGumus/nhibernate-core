@@ -27,7 +27,15 @@ namespace NHibernate.Action
 
 		public Task ExecuteAsync()
 		{
-			return Task.CompletedTask;
+			try
+			{
+				Execute();
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 			// nothing to do
 		}
 

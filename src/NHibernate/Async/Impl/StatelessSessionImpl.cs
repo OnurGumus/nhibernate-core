@@ -225,12 +225,7 @@ namespace NHibernate.Impl
 		{
 			try
 			{
-				using (new SessionIdLoggingContext(SessionId))
-				{
-					// take the union of the query spaces (ie the queried tables)
-					var plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, EnabledFilters);
-					return Task.FromResult<IQueryTranslator[]>(plan.Translators);
-				}
+				return Task.FromResult<IQueryTranslator[]>(GetQueries(query, scalar));
 			}
 			catch (Exception ex)
 			{
@@ -242,13 +237,7 @@ namespace NHibernate.Impl
 		{
 			try
 			{
-				CheckAndUpdateSessionStatus();
-				// while a pending Query we should use existing temporary entities so a join fetch does not create multiple instances
-				// of the same parent item (NH-3015, NH-3705).
-				object obj;
-				if (temporaryPersistenceContext.EntitiesByKey.TryGetValue(key, out obj))
-					return Task.FromResult<object>(obj);
-				return Task.FromResult<object>(null);
+				return Task.FromResult<object>(GetEntityUsingInterceptor(key));
 			}
 			catch (Exception ex)
 			{

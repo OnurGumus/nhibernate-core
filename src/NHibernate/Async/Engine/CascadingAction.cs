@@ -47,7 +47,15 @@ namespace NHibernate.Engine
 		/// <param name="propertyIndex">The index of the property within the owner. </param>
 		public virtual Task NoCascadeAsync(IEventSource session, object child, object parent, IEntityPersister persister, int propertyIndex)
 		{
-			return Task.CompletedTask;
+			try
+			{
+				NoCascade(session, child, parent, persister, propertyIndex);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		#endregion

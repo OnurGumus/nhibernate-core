@@ -28,7 +28,7 @@ namespace NHibernate.Param
 		{
 			try
 			{
-				Bind(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
+				Bind(command, sqlQueryParametersList, queryParameters, session);
 				return Task.CompletedTask;
 			}
 			catch (Exception ex)

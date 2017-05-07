@@ -33,7 +33,7 @@ namespace NHibernate.Param
 		{
 			try
 			{
-				Bind(command, sqlQueryParametersList, 0, sqlQueryParametersList, queryParameters, session);
+				Bind(command, sqlQueryParametersList, queryParameters, session);
 				return Task.CompletedTask;
 			}
 			catch (Exception ex)
@@ -56,7 +56,15 @@ namespace NHibernate.Param
 
 			public Task BeforeAssembleAsync(object cached, ISessionImplementor session)
 			{
-				return Task.CompletedTask;
+				try
+				{
+					BeforeAssemble(cached, session);
+					return Task.CompletedTask;
+				}
+				catch (Exception ex)
+				{
+					return Task.FromException<object>(ex);
+				}
 			}
 
 			public Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)

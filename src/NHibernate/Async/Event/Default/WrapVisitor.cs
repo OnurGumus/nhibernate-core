@@ -40,21 +40,7 @@ namespace NHibernate.Event.Default
 		{
 			try
 			{
-				IPersistentCollection coll = collection as IPersistentCollection;
-				if (coll != null)
-				{
-					ISessionImplementor session = Session;
-					if (coll.SetCurrentSession(session))
-					{
-						ReattachCollection(coll, collectionType);
-					}
-
-					return Task.FromResult<object>(null);
-				}
-				else
-				{
-					return Task.FromResult<object>(ProcessArrayOrNewCollection(collection, collectionType));
-				}
+				return Task.FromResult<object>(ProcessCollection(collection, collectionType));
 			}
 			catch (Exception ex)
 			{

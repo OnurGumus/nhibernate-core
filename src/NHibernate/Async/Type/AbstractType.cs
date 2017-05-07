@@ -38,9 +38,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				if (cached == null)
-					return Task.FromResult<object>(null);
-				return Task.FromResult<object>(DeepCopy(cached, session.Factory));
+				return Task.FromResult<object>(Assemble(cached, session, owner));
 			}
 			catch (Exception ex)
 			{
@@ -50,7 +48,15 @@ namespace NHibernate.Type
 
 		public virtual Task BeforeAssembleAsync(object cached, ISessionImplementor session)
 		{
-			return Task.CompletedTask;
+			try
+			{
+				BeforeAssemble(cached, session);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		/// <summary>
@@ -88,7 +94,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Task.FromResult<object>(value);
+				return Task.FromResult<object>(ResolveIdentifier(value, session, owner));
 			}
 			catch (Exception ex)
 			{
@@ -100,7 +106,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Task.FromResult<object>(value);
+				return Task.FromResult<object>(SemiResolve(value, session, owner));
 			}
 			catch (Exception ex)
 			{

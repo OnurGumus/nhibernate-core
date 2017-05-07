@@ -27,52 +27,7 @@ namespace NHibernate.Event.Default
 		{
 			try
 			{
-				ISessionImplementor session = Session;
-				ICollectionPersister persister = session.Factory.GetCollectionPersister(type.Role);
-				if (collection == null)
-				{
-				//do nothing
-				}
-				else
-				{
-					IPersistentCollection persistentCollection = collection as IPersistentCollection;
-					if (persistentCollection != null)
-					{
-						if (persistentCollection.SetCurrentSession(session))
-						{
-							if (IsOwnerUnchanged(persistentCollection, persister, ExtractCollectionKeyFromOwner(persister)))
-							{
-								// a "detached" collection that originally belonged to the same entity
-								if (persistentCollection.IsDirty)
-								{
-									return Task.FromException<object>(new HibernateException("reassociated object has dirty collection: " + persistentCollection.Role));
-								}
-
-								ReattachCollection(persistentCollection, type);
-							}
-							else
-							{
-								// a "detached" collection that belonged to a different entity
-								return Task.FromException<object>(new HibernateException("reassociated object has dirty collection reference: " + persistentCollection.Role));
-							}
-						}
-						else
-						{
-							// a collection loaded in the current session
-							// can not possibly be the collection belonging
-							// to the entity passed to update()
-							return Task.FromException<object>(new HibernateException("reassociated object has dirty collection reference: " + persistentCollection.Role));
-						}
-					}
-					else
-					{
-						// brand new collection
-						//TODO: or an array!! we can't lock objects with arrays now??
-						return Task.FromException<object>(new HibernateException("reassociated object has dirty collection reference (or an array)"));
-					}
-				}
-
-				return Task.FromResult<object>(null);
+				return Task.FromResult<object>(ProcessCollection(collection, type));
 			}
 			catch (Exception ex)
 			{

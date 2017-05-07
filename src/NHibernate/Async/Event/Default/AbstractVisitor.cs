@@ -96,7 +96,7 @@ namespace NHibernate.Event.Default
 		{
 			try
 			{
-				return Task.FromResult<object>(null);
+				return Task.FromResult<object>(ProcessCollection(value, collectionType));
 			}
 			catch (Exception ex)
 			{

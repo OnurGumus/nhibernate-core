@@ -25,7 +25,7 @@ namespace NHibernate.Id
 		{
 			try
 			{
-				return Task.FromResult<object>(unchecked ((DateTime.Now.Ticks << 16) + Count));
+				return Task.FromResult<object>(Generate(cache, obj));
 			}
 			catch (Exception ex)
 			{

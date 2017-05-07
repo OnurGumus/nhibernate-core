@@ -34,12 +34,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				if (session == null)
-				{
-					return Task.FromResult<object>(Now);
-				}
-
-				return Task.FromResult<object>(Round(Now, session.Factory.Dialect.TimestampResolutionInTicks));
+				return Task.FromResult<object>(Seed(session));
 			}
 			catch (Exception ex)
 			{

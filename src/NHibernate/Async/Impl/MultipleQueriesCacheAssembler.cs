@@ -17,6 +17,7 @@ using NHibernate.Type;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
+	using System;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -50,7 +51,15 @@ namespace NHibernate.Impl
 			return result;
 		}
 
-		public Task BeforeAssembleAsync(object cached, ISessionImplementor session) {			return Task.CompletedTask;
+		public Task BeforeAssembleAsync(object cached, ISessionImplementor session) {			try
+			{
+				BeforeAssemble(cached, session);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 }
 
 		#endregion

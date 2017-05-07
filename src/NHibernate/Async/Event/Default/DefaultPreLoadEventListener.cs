@@ -23,8 +23,7 @@ namespace NHibernate.Event.Default
 		{
 			try
 			{
-				IEntityPersister persister = @event.Persister;
-				@event.Session.Interceptor.OnLoad(@event.Entity, @event.Id, @event.State, persister.PropertyNames, persister.PropertyTypes);
+				OnPreLoad(@event);
 				return Task.CompletedTask;
 			}
 			catch (Exception ex)

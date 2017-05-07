@@ -26,40 +26,7 @@ namespace NHibernate.Event.Default
 		{
 			try
 			{
-				if (collection == CollectionType.UnfetchedCollection)
-				{
-					return Task.FromResult<object>(null);
-				}
-
-				IEventSource session = Session;
-				ICollectionPersister persister = session.Factory.GetCollectionPersister(type.Role);
-				if (isUpdate)
-				{
-					RemoveCollection(persister, ExtractCollectionKeyFromOwner(persister), session);
-				}
-
-				IPersistentCollection wrapper = collection as IPersistentCollection;
-				if (wrapper != null)
-				{
-					wrapper.SetCurrentSession(session);
-					if (wrapper.WasInitialized)
-					{
-						session.PersistenceContext.AddNewCollection(persister, wrapper);
-					}
-					else
-					{
-						ReattachCollection(wrapper, type);
-					}
-				}
-				else
-				{
-				// otherwise a null or brand new collection
-				// this will also (inefficiently) handle arrays, which
-				// have no snapshot, so we can't do any better
-				//processArrayOrNewCollection(collection, type);
-				}
-
-				return Task.FromResult<object>(null);
+				return Task.FromResult<object>(ProcessCollection(collection, type));
 			}
 			catch (Exception ex)
 			{

@@ -106,7 +106,7 @@ namespace NHibernate.Loader.Custom
 			{
 				try
 				{
-					return Task.FromResult<object>(data[position]);
+					return Task.FromResult<object>(Extract(data, resultSet, session));
 				}
 				catch (Exception ex)
 				{

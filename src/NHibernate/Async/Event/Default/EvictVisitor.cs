@@ -28,9 +28,7 @@ namespace NHibernate.Event.Default
 		{
 			try
 			{
-				if (collection != null)
-					EvictCollection(collection, type);
-				return Task.FromResult<object>(null);
+				return Task.FromResult<object>(ProcessCollection(collection, type));
 			}
 			catch (Exception ex)
 			{

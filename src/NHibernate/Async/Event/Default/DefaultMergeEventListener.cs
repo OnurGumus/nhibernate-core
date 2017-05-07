@@ -531,13 +531,29 @@ return Task.FromException<object>(ex);
 		/// <summary> Cascade behavior is redefined by this subclass, disable superclass behavior</summary>
 		protected override Task CascadeAfterSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything)
 		{
-			return Task.CompletedTask;
+			try
+			{
+				CascadeAfterSave(source, persister, entity, anything);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		/// <summary> Cascade behavior is redefined by this subclass, disable superclass behavior</summary>
 		protected override Task CascadeBeforeSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything)
 		{
-			return Task.CompletedTask;
+			try
+			{
+				CascadeBeforeSave(source, persister, entity, anything);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 	}
 }

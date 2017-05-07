@@ -36,13 +36,7 @@ namespace NHibernate.Id
 		{
 			try
 			{
-				string guidString = GenerateNewGuid();
-				if (format != FormatWithDigitsOnly && sep != null)
-				{
-					return Task.FromResult<object>(StringHelper.Replace(guidString, "-", sep));
-				}
-
-				return Task.FromResult<object>(guidString);
+				return Task.FromResult<object>(Generate(session, obj));
 			}
 			catch (Exception ex)
 			{

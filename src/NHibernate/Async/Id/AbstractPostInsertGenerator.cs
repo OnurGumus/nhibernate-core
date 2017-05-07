@@ -33,7 +33,7 @@ namespace NHibernate.Id
 		{
 			try
 			{
-				return Task.FromResult<object>(IdentifierGeneratorFactory.PostInsertIndicator);
+				return Task.FromResult<object>(Generate(s, obj));
 			}
 			catch (Exception ex)
 			{

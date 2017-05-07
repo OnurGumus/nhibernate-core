@@ -36,7 +36,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Task.FromResult<object>(new TimeSpan(DateTime.Now.Ticks));
+				return Task.FromResult<object>(Seed(session));
 			}
 			catch (Exception ex)
 			{

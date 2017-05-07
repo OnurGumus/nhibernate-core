@@ -31,7 +31,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Task.FromResult<object>(userType.NullSafeGet(rs, names, owner));
+				return Task.FromResult<object>(NullSafeGet(rs, names, session, owner));
 			}
 			catch (Exception ex)
 			{
@@ -48,7 +48,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Task.FromResult<object>(((IUserVersionType)userType).Next(current, session));
+				return Task.FromResult<object>(Next(current, session));
 			}
 			catch (Exception ex)
 			{
@@ -60,7 +60,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Task.FromResult<object>(((IUserVersionType)userType).Seed(session));
+				return Task.FromResult<object>(Seed(session));
 			}
 			catch (Exception ex)
 			{
@@ -73,7 +73,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Task.FromResult<object>(userType.Replace(original, current, owner));
+				return Task.FromResult<object>(Replace(original, current, session, owner, copiedAlready));
 			}
 			catch (Exception ex)
 			{
@@ -85,7 +85,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Task.FromResult<object>(userType.Assemble(cached, owner));
+				return Task.FromResult<object>(Assemble(cached, session, owner));
 			}
 			catch (Exception ex)
 			{

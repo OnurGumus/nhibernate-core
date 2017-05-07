@@ -61,7 +61,7 @@ namespace NHibernate.Loader.Entity
 		{
 			try
 			{
-				return Task.FromResult<object>(row[row.Length - 1]);
+				return Task.FromResult<object>(GetResultColumnOrRow(row, transformer, rs, session));
 			}
 			catch (Exception ex)
 			{

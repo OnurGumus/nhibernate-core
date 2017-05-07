@@ -39,7 +39,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Task.FromResult<object>(original);
+				return Task.FromResult<object>(Replace(original, current, session, owner, copiedAlready));
 			}
 			catch (Exception ex)
 			{

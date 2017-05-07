@@ -29,8 +29,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				ICollectionPersister cp = session.Factory.GetCollectionPersister(Role);
-				return Task.FromResult<object>(userType.ReplaceElements(original, target, cp, owner, copyCache, session));
+				return Task.FromResult<object>(ReplaceElements(original, target, owner, copyCache, session));
 			}
 			catch (Exception ex)
 			{

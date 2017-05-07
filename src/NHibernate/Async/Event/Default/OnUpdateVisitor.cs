@@ -26,46 +26,7 @@ namespace NHibernate.Event.Default
 		{
 			try
 			{
-				if (collection == CollectionType.UnfetchedCollection)
-				{
-					return Task.FromResult<object>(null);
-				}
-
-				IEventSource session = Session;
-				ICollectionPersister persister = session.Factory.GetCollectionPersister(type.Role);
-				object collectionKey = ExtractCollectionKeyFromOwner(persister);
-				IPersistentCollection wrapper = collection as IPersistentCollection;
-				if (wrapper != null)
-				{
-					if (wrapper.SetCurrentSession(session))
-					{
-						//a "detached" collection!
-						if (!IsOwnerUnchanged(wrapper, persister, collectionKey))
-						{
-							// if the collection belonged to a different entity,
-							// clean up the existing state of the collection
-							RemoveCollection(persister, collectionKey, session);
-						}
-
-						ReattachCollection(wrapper, type);
-					}
-					else
-					{
-						// a collection loaded in the current session
-						// can not possibly be the collection belonging
-						// to the entity passed to update()
-						RemoveCollection(persister, collectionKey, session);
-					}
-				}
-				else
-				{
-					// null or brand new collection
-					// this will also (inefficiently) handle arrays, which have
-					// no snapshot, so we can't do any better
-					RemoveCollection(persister, collectionKey, session);
-				}
-
-				return Task.FromResult<object>(null);
+				return Task.FromResult<object>(ProcessCollection(collection, type));
 			}
 			catch (Exception ex)
 			{

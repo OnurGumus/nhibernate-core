@@ -30,7 +30,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return (cached == null) ? Task.FromResult<object>(null) : Task.FromResult<object>(FromBytes((byte[])cached));
+				return Task.FromResult<object>(Assemble(cached, session, owner));
 			}
 			catch (Exception ex)
 			{

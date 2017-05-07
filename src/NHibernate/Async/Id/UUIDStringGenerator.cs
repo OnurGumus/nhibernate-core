@@ -32,15 +32,7 @@ namespace NHibernate.Id
 		{
 			try
 			{
-				StringBuilder guidBuilder = new StringBuilder(16, 16);
-				byte[] guidInBytes = Guid.NewGuid().ToByteArray();
-				// add each item in Byte[] to the string builder
-				for (int i = 0; i < guidInBytes.Length; i++)
-				{
-					guidBuilder.Append((char)guidInBytes[i]);
-				}
-
-				return Task.FromResult<object>(guidBuilder.ToString());
+				return Task.FromResult<object>(Generate(session, obj));
 			}
 			catch (Exception ex)
 			{

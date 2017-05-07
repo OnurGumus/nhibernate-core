@@ -36,7 +36,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Task.FromResult<object>(current);
+				return Task.FromResult<object>(Next(current, session));
 			}
 			catch (Exception ex)
 			{
@@ -48,7 +48,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Task.FromResult<object>(null);
+				return Task.FromResult<object>(Seed(session));
 			}
 			catch (Exception ex)
 			{
