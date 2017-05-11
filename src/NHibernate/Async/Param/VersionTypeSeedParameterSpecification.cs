@@ -19,6 +19,7 @@ using NHibernate.Type;
 namespace NHibernate.Param
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -27,10 +28,11 @@ namespace NHibernate.Param
 
 		#region IParameterSpecification Members
 
-		public async Task BindAsync(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public async Task BindAsync(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			int position = sqlQueryParametersList.GetEffectiveParameterLocations(IdBackTrack).Single(); // version parameter can't appear more than once
-			type.NullSafeSet(command, await (type.SeedAsync(session)).ConfigureAwait(false), position, session);
+			type.NullSafeSet(command, await (type.SeedAsync(session, cancellationToken)).ConfigureAwait(false), position, session);
 		}
 
 		#endregion

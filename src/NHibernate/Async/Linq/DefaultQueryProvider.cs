@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Linq
 {
+	using System.Threading;
 
 	/// <content>
 	/// Contains generated async methods
@@ -29,9 +30,10 @@ namespace NHibernate.Linq
 	public partial class DefaultQueryProvider : INhQueryProvider
 	{
 
-		protected virtual async Task<object> ExecuteQueryAsync(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery)
+		protected virtual async Task<object> ExecuteQueryAsync(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			IList results = await (query.ListAsync()).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			IList results = await (query.ListAsync(cancellationToken)).ConfigureAwait(false);
 
 			if (nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer != null)
 			{

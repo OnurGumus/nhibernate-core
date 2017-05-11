@@ -14,13 +14,18 @@ using NHibernate.Persister.Entity;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class DefaultPreLoadEventListener : IPreLoadEventListener
 	{
-		public virtual Task OnPreLoadAsync(PreLoadEvent @event)
+		public virtual Task OnPreLoadAsync(PreLoadEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				OnPreLoad(@event);

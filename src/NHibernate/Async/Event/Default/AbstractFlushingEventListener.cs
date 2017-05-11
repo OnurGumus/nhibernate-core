@@ -24,6 +24,7 @@ using NHibernate.Util;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -36,8 +37,10 @@ namespace NHibernate.Event.Default
 		/// entities and collections to their respective execution queues. 
 		/// </summary>
 		/// <param name="event">The flush event.</param>
-		protected virtual async Task FlushEverythingToExecutionsAsync(FlushEvent @event)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		protected virtual async Task FlushEverythingToExecutionsAsync(FlushEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("flushing session");
 
 			IEventSource session = @event.Session;
@@ -45,7 +48,7 @@ namespace NHibernate.Event.Default
 
 			session.Interceptor.PreFlush((ICollection) persistenceContext.EntitiesByKey.Values);
 
-			await (PrepareEntityFlushesAsync(session)).ConfigureAwait(false);
+			await (PrepareEntityFlushesAsync(session, cancellationToken)).ConfigureAwait(false);
 			// we could move this inside if we wanted to
 			// tolerate collection initializations during
 			// collection dirty checking:
@@ -57,8 +60,8 @@ namespace NHibernate.Event.Default
 			persistenceContext.Flushing = true;
 			try
 			{
-				await (FlushEntitiesAsync(@event)).ConfigureAwait(false);
-				await (FlushCollectionsAsync(session)).ConfigureAwait(false);
+				await (FlushEntitiesAsync(@event, cancellationToken)).ConfigureAwait(false);
+				await (FlushCollectionsAsync(session, cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -84,8 +87,9 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected virtual async Task FlushCollectionsAsync(IEventSource session)
+		protected virtual async Task FlushCollectionsAsync(IEventSource session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("Processing unreferenced collections");
 
 			ICollection list = IdentityMap.Entries(session.PersistenceContext.CollectionEntries);
@@ -94,7 +98,7 @@ namespace NHibernate.Event.Default
 				CollectionEntry ce = (CollectionEntry) me.Value;
 				if (!ce.IsReached && !ce.IsIgnore)
 				{
-					await (Collections.ProcessUnreachableCollectionAsync((IPersistentCollection) me.Key, session)).ConfigureAwait(false);
+					await (Collections.ProcessUnreachableCollectionAsync((IPersistentCollection) me.Key, session, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 
@@ -133,8 +137,9 @@ namespace NHibernate.Event.Default
 		// 1. detect any dirty entities
 		// 2. schedule any entity updates
 		// 3. search out any reachable collections
-		protected virtual async Task FlushEntitiesAsync(FlushEvent @event)
+		protected virtual async Task FlushEntitiesAsync(FlushEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("Flushing entities and processing referenced collections");
 
 			// Among other things, updateReachables() will recursively load all
@@ -158,7 +163,7 @@ namespace NHibernate.Event.Default
 					IFlushEntityEventListener[] listeners = source.Listeners.FlushEntityEventListeners;
 					foreach (IFlushEntityEventListener listener in listeners)
 					{
-						await (listener.OnFlushEntityAsync(entityEvent)).ConfigureAwait(false);
+						await (listener.OnFlushEntityAsync(entityEvent, cancellationToken)).ConfigureAwait(false);
 					}
 				}
 			}
@@ -168,8 +173,9 @@ namespace NHibernate.Event.Default
 		//process cascade save/update at the start of a flush to discover
 		//any newly referenced entity that must be passed to saveOrUpdate(),
 		//and also apply orphan delete
-		protected virtual async Task PrepareEntityFlushesAsync(IEventSource session)
+		protected virtual async Task PrepareEntityFlushesAsync(IEventSource session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("processing flush-time cascades");
 
 			ICollection list = IdentityMap.ConcurrentEntries(session.PersistenceContext.EntityEntries);
@@ -180,17 +186,18 @@ namespace NHibernate.Event.Default
 				Status status = entry.Status;
 				if (status == Status.Loaded || status == Status.Saving || status == Status.ReadOnly)
 				{
-					await (CascadeOnFlushAsync(session, entry.Persister, me.Key, Anything)).ConfigureAwait(false);
+					await (CascadeOnFlushAsync(session, entry.Persister, me.Key, Anything, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
 
-		protected virtual async Task CascadeOnFlushAsync(IEventSource session, IEntityPersister persister, object key, object anything)
+		protected virtual async Task CascadeOnFlushAsync(IEventSource session, IEntityPersister persister, object key, object anything, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			session.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
-				await (new Cascade(CascadingAction, CascadePoint.BeforeFlush, session).CascadeOnAsync(persister, key, anything)).ConfigureAwait(false);
+				await (new Cascade(CascadingAction, CascadePoint.BeforeFlush, session).CascadeOnAsync(persister, key, anything, cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -211,8 +218,10 @@ namespace NHibernate.Event.Default
 		/// </list>
 		/// </summary>
 		/// <param name="session">The session being flushed</param>
-		protected virtual async Task PerformExecutionsAsync(IEventSource session)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		protected virtual async Task PerformExecutionsAsync(IEventSource session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("executing flush");
@@ -230,7 +239,7 @@ namespace NHibernate.Event.Default
 				// executing entity inserts/updates in order to
 				// account for bidi associations
 				session.ActionQueue.PrepareActions();
-				await (session.ActionQueue.ExecuteActionsAsync()).ConfigureAwait(false);
+				await (session.ActionQueue.ExecuteActionsAsync(cancellationToken)).ConfigureAwait(false);
 			}
 			catch (HibernateException he)
 			{

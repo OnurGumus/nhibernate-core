@@ -28,16 +28,18 @@ using System.Data;
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public abstract partial class AbstractStatementExecutor : IStatementExecutor
 	{
 
-		public abstract Task<int> ExecuteAsync(QueryParameters parameters, ISessionImplementor session);
+		public abstract Task<int> ExecuteAsync(QueryParameters parameters, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 
-		protected virtual async Task CreateTemporaryTableIfNecessaryAsync(IQueryable persister, ISessionImplementor session)
+		protected virtual async Task CreateTemporaryTableIfNecessaryAsync(IQueryable persister, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			// Don't really know all the codes required to adequately decipher returned ADO exceptions here.
 			// simply allow the failure to be eaten and the subsequent insert-selects/deletes should fail
 			IIsolatedWork work = new TmpIdTableCreationIsolatedWork(persister, log, session);
@@ -45,25 +47,26 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			{
 				if (Factory.Settings.IsDataDefinitionInTransactionSupported)
 				{
-					await (Isolater.DoIsolatedWorkAsync(work, session)).ConfigureAwait(false);
+					await (Isolater.DoIsolatedWorkAsync(work, session, cancellationToken)).ConfigureAwait(false);
 				}
 				else
 				{
-					await (Isolater.DoNonTransactedWorkAsync(work, session)).ConfigureAwait(false);
+					await (Isolater.DoNonTransactedWorkAsync(work, session, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 			else
 			{
-				using (var dummyCommand = await (session.ConnectionManager.CreateCommandAsync()).ConfigureAwait(false))
+				using (var dummyCommand = await (session.ConnectionManager.CreateCommandAsync(cancellationToken)).ConfigureAwait(false))
 				{
-					await (work.DoWorkAsync(dummyCommand.Connection, dummyCommand.Transaction)).ConfigureAwait(false);
+					await (work.DoWorkAsync(dummyCommand.Connection, dummyCommand.Transaction, cancellationToken)).ConfigureAwait(false);
 					session.ConnectionManager.AfterStatement();
 				}
 			}
 		}
 
-		protected virtual async Task DropTemporaryTableIfNecessaryAsync(IQueryable persister, ISessionImplementor session)
+		protected virtual async Task DropTemporaryTableIfNecessaryAsync(IQueryable persister, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (Factory.Dialect.DropTemporaryTableAfterUse())
 			{
 				IIsolatedWork work = new TmpIdTableDropIsolatedWork(persister, log, session);
@@ -84,9 +87,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				}
 				else
 				{
-					using (var dummyCommand = await (session.ConnectionManager.CreateCommandAsync()).ConfigureAwait(false))
+					using (var dummyCommand = await (session.ConnectionManager.CreateCommandAsync(cancellationToken)).ConfigureAwait(false))
 					{
-						await (work.DoWorkAsync(dummyCommand.Connection, dummyCommand.Transaction)).ConfigureAwait(false);
+						await (work.DoWorkAsync(dummyCommand.Connection, dummyCommand.Transaction, cancellationToken)).ConfigureAwait(false);
 						session.ConnectionManager.AfterStatement();
 					}
 				}
@@ -98,8 +101,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				try
 				{
 					var commandText = new SqlString("delete from " + persister.TemporaryIdTableName);
-					ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, commandText, new SqlType[0])).ConfigureAwait(false);
-					await (session.Batcher.ExecuteNonQueryAsync(ps)).ConfigureAwait(false);
+					ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, commandText, new SqlType[0], cancellationToken)).ConfigureAwait(false);
+					await (session.Batcher.ExecuteNonQueryAsync(ps, cancellationToken)).ConfigureAwait(false);
 				}
 				catch (Exception t)
 				{
@@ -128,15 +131,16 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		private partial class TmpIdTableCreationIsolatedWork : IIsolatedWork
 		{
 
-			public async Task DoWorkAsync(DbConnection connection, DbTransaction transaction)
+			public async Task DoWorkAsync(DbConnection connection, DbTransaction transaction, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 				DbCommand stmnt = null;
 				try
 				{
 					stmnt = connection.CreateCommand();
 					stmnt.Transaction = transaction;
 					stmnt.CommandText = persister.TemporaryIdTableDDL;
-					await (stmnt.ExecuteNonQueryAsync()).ConfigureAwait(false);
+					await (stmnt.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 					session.Factory.Settings.SqlStatementLogger.LogCommand(stmnt, FormatStyle.Ddl);
 				}
 				catch (Exception t)
@@ -166,15 +170,16 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		private partial class TmpIdTableDropIsolatedWork : IIsolatedWork
 		{
 
-			public async Task DoWorkAsync(DbConnection connection, DbTransaction transaction)
+			public async Task DoWorkAsync(DbConnection connection, DbTransaction transaction, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 				DbCommand stmnt = null;
 				try
 				{
 					stmnt = connection.CreateCommand();
 					stmnt.Transaction = transaction;
 					stmnt.CommandText = "drop table " + persister.TemporaryIdTableName;
-					await (stmnt.ExecuteNonQueryAsync()).ConfigureAwait(false);
+					await (stmnt.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 					session.Factory.Settings.SqlStatementLogger.LogCommand(stmnt, FormatStyle.Ddl);
 				}
 				catch (Exception t)

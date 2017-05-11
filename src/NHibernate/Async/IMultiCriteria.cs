@@ -15,6 +15,7 @@ using NHibernate.Transform;
 namespace NHibernate
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -23,13 +24,15 @@ namespace NHibernate
 		/// <summary>
 		/// Get all the results
 		/// </summary>
-		Task<IList> ListAsync();
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Returns the result of one of the Criteria based on the key
 		/// </summary>
 		/// <param name="key">The key</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		Task<object> GetResultAsync(string key);
+		Task<object> GetResultAsync(string key, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

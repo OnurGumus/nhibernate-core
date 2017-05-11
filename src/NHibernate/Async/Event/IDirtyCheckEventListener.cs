@@ -11,6 +11,7 @@
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -18,6 +19,7 @@ namespace NHibernate.Event
 	{
 		/// <summary>Handle the given dirty-check event. </summary>
 		/// <param name="event">The dirty-check event to be handled. </param>
-		Task OnDirtyCheckAsync(DirtyCheckEvent @event);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task OnDirtyCheckAsync(DirtyCheckEvent @event, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

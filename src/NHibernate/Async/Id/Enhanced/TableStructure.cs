@@ -20,6 +20,7 @@ using NHibernate.AdoNet.Util;
 namespace NHibernate.Id.Enhanced
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -32,8 +33,9 @@ namespace NHibernate.Id.Enhanced
 
 		#region Overrides of TransactionHelper
 
-		public override async Task<object> DoWorkInCurrentTransactionAsync(ISessionImplementor session, DbConnection conn, DbTransaction transaction)
+		public override async Task<object> DoWorkInCurrentTransactionAsync(ISessionImplementor session, DbConnection conn, DbTransaction transaction, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			long result;
 			int updatedRows;
 
@@ -50,7 +52,7 @@ namespace NHibernate.Id.Enhanced
 						selectCmd.Transaction = transaction;
 						PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(selectCmd, FormatStyle.Basic);
 
-						selectedValue = await (selectCmd.ExecuteScalarAsync()).ConfigureAwait(false);
+						selectedValue = await (selectCmd.ExecuteScalarAsync(cancellationToken)).ConfigureAwait(false);
 					}
 
 					if (selectedValue ==null)
@@ -79,7 +81,7 @@ namespace NHibernate.Id.Enhanced
 						int increment = _applyIncrementSizeToSourceValues ? _incrementSize : 1;
 						updateCmd.Parameters[0].Value = result + increment;
 						updateCmd.Parameters[1].Value = result;
-						updatedRows = await (updateCmd.ExecuteNonQueryAsync()).ConfigureAwait(false);
+						updatedRows = await (updateCmd.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 					}
 				}
 				catch (Exception sqle)
@@ -107,9 +109,10 @@ namespace NHibernate.Id.Enhanced
 
 			#region IAccessCallback Members
 
-			public virtual async Task<long> GetNextValueAsync()
+			public virtual async Task<long> GetNextValueAsync(CancellationToken cancellationToken = default(CancellationToken))
 			{
-				return Convert.ToInt64(await (_owner.DoWorkInNewTransactionAsync(_session)).ConfigureAwait(false));
+				cancellationToken.ThrowIfCancellationRequested();
+				return Convert.ToInt64(await (_owner.DoWorkInNewTransactionAsync(_session, cancellationToken)).ConfigureAwait(false));
 			}
 
 			#endregion

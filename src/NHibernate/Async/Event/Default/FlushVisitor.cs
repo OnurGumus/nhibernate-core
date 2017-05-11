@@ -15,14 +15,16 @@ using NHibernate.Type;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class FlushVisitor : AbstractVisitor
 	{
 
-		internal override async Task<object> ProcessCollectionAsync(object collection, CollectionType type)
+		internal override async Task<object> ProcessCollectionAsync(object collection, CollectionType type, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (collection == CollectionType.UnfetchedCollection)
 			{
 				return null;
@@ -40,7 +42,7 @@ namespace NHibernate.Event.Default
 					coll = (IPersistentCollection)collection;
 				}
 
-				await (Collections.ProcessReachableCollectionAsync(coll, type, owner, Session)).ConfigureAwait(false);
+				await (Collections.ProcessReachableCollectionAsync(coll, type, owner, Session, cancellationToken)).ConfigureAwait(false);
 			}
 			return null;
 		}

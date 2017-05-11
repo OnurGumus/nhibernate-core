@@ -11,11 +11,12 @@
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial interface IInitializeCollectionEventListener
 	{
-		Task OnInitializeCollectionAsync(InitializeCollectionEvent @event);
+		Task OnInitializeCollectionAsync(InitializeCollectionEvent @event, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

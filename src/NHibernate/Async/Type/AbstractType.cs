@@ -18,6 +18,7 @@ using NHibernate.Util;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -30,12 +31,17 @@ namespace NHibernate.Type
 		/// <param name="cached">The disassembled state from the cache</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> is not used by this method.</param>
 		/// <param name="owner">The parent Entity object is not used by this method</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The assembled object.</returns>
 		/// <remarks>
 		/// This method calls DeepCopy if the value is not null.
 		/// </remarks>
-		public virtual Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner)
+		public virtual Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(Assemble(cached, session, owner));
@@ -46,8 +52,12 @@ namespace NHibernate.Type
 			}
 		}
 
-		public virtual Task BeforeAssembleAsync(object cached, ISessionImplementor session)
+		public virtual Task BeforeAssembleAsync(object cached, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				BeforeAssemble(cached, session);
@@ -70,14 +80,19 @@ namespace NHibernate.Type
 		/// </param>
 		/// <param name="session">the session</param>
 		/// <param name="owner">The parent Entity</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>An identifier or actual object mapped by this IType.</returns>
 		/// <remarks>
 		/// This method uses the <c>IType.NullSafeGet(DbDataReader, string[], ISessionImplementor, object)</c> method
 		/// to Hydrate this <see cref="AbstractType"/>.
 		/// </remarks>
-		public virtual Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public virtual Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return NullSafeGetAsync(rs, names, session, owner);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return NullSafeGetAsync(rs, names, session, owner, cancellationToken);
 		}
 
 		/// <summary>
@@ -86,12 +101,17 @@ namespace NHibernate.Type
 		/// <param name="value">An identifier or value returned by <c>Hydrate()</c></param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> is not used by this method.</param>
 		/// <param name="owner">The parent Entity is not used by this method.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The value.</returns>
 		/// <remarks>
 		/// There is nothing done in this method other than return the value parameter passed in.
 		/// </remarks>
-		public virtual Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner)
+		public virtual Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(ResolveIdentifier(value, session, owner));
@@ -102,8 +122,12 @@ namespace NHibernate.Type
 			}
 		}
 
-		public virtual Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner)
+		public virtual Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(SemiResolve(value, session, owner));
@@ -114,9 +138,12 @@ namespace NHibernate.Type
 			}
 		}
 
-		public virtual Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache,
-							  ForeignKeyDirection foreignKeyDirection)
+		public virtual Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, 							  ForeignKeyDirection foreignKeyDirection, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				bool include;
@@ -130,7 +157,7 @@ namespace NHibernate.Type
 					include = ForeignKeyDirection.ForeignKeyFromParent.Equals(foreignKeyDirection);
 				}
 
-				return include ? ReplaceAsync(original, target, session, owner, copyCache) : Task.FromResult<object>(target);
+				return include ? ReplaceAsync(original, target, session, owner, copyCache, cancellationToken) : Task.FromResult<object>(target);
 			}
 			catch (Exception ex)
 			{
@@ -138,17 +165,16 @@ namespace NHibernate.Type
 			}
 		}
 
-		public abstract Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner,
-									   IDictionary copiedAlready);
+		public abstract Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, 									   IDictionary copiedAlready, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <include file='..\..\Type\IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, string[], ISessionImplementor, object)"]/*'
 		/// /> 
-		public abstract Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner);
+		public abstract Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <include file='..\..\Type\IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, string, ISessionImplementor, object)"]/*'
 		/// /> 
-		public abstract Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, Object owner);
+		public abstract Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, Object owner, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

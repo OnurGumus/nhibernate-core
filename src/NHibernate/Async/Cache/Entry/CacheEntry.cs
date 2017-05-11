@@ -17,28 +17,32 @@ using NHibernate.Type;
 namespace NHibernate.Cache.Entry
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public sealed partial class CacheEntry
 	{
 
-		public Task<object[]> AssembleAsync(object instance, object id, IEntityPersister persister, IInterceptor interceptor,
-		                         ISessionImplementor session)
+		public Task<object[]> AssembleAsync(object instance, object id, IEntityPersister persister, IInterceptor interceptor, 		                         ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (!persister.EntityName.Equals(subclass))
 			{
 				throw new AssertionFailure("Tried to assemble a different subclass instance");
 			}
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object[]>(cancellationToken);
+			}
 
-			return AssembleAsync(disassembledState, instance, id, persister, interceptor, session);
+			return AssembleAsync(disassembledState, instance, id, persister, interceptor, session, cancellationToken);
 		}
 
-		private static async Task<object[]> AssembleAsync(object[] values, object result, object id, IEntityPersister persister,
-		                                 IInterceptor interceptor, ISessionImplementor session)
+		private static async Task<object[]> AssembleAsync(object[] values, object result, object id, IEntityPersister persister, 		                                 IInterceptor interceptor, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			//assembled state gets put in a new array (we read from cache by value!)
-			object[] assembledProps = await (TypeHelper.AssembleAsync(values, persister.PropertyTypes, session, result)).ConfigureAwait(false);
+			object[] assembledProps = await (TypeHelper.AssembleAsync(values, persister.PropertyTypes, session, result, cancellationToken)).ConfigureAwait(false);
 	
 			//from h3.2 TODO: reuse the PreLoadEvent
 			PreLoadEvent preLoadEvent = new PreLoadEvent((IEventSource) session);
@@ -50,7 +54,7 @@ namespace NHibernate.Cache.Entry
 			IPreLoadEventListener[] listeners = session.Listeners.PreLoadEventListeners;
 			for (int i = 0; i < listeners.Length; i++)
 			{
-				await (listeners[i].OnPreLoadAsync(preLoadEvent)).ConfigureAwait(false);
+				await (listeners[i].OnPreLoadAsync(preLoadEvent, cancellationToken)).ConfigureAwait(false);
 			}
 
 			persister.SetPropertyValues(result, assembledProps);

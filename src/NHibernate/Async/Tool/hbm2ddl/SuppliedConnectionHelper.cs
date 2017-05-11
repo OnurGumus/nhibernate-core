@@ -13,6 +13,7 @@ using System.Data.Common;
 namespace NHibernate.Tool.hbm2ddl
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	using System;
 	/// <content>
 	/// Contains generated async methods
@@ -20,8 +21,12 @@ namespace NHibernate.Tool.hbm2ddl
 	public partial class SuppliedConnectionHelper : IConnectionHelper
 	{
 
-		public Task PrepareAsync()
+		public Task PrepareAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				Prepare();

@@ -20,6 +20,7 @@ using NHibernate.Stat;
 namespace NHibernate
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -32,6 +33,7 @@ namespace NHibernate
 		/// to ensure that there are no open <c>Session</c>s before calling
 		/// <c>close()</c>. 
 		/// </summary>
-		Task CloseAsync();
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task CloseAsync(CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

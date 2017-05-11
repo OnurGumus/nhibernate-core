@@ -17,14 +17,16 @@ using NHibernate.Persister.Entity;
 namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public sealed partial class EntityIdentityInsertAction : EntityAction
 	{
 
-		public override async Task ExecuteAsync()
+		public override async Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IEntityPersister persister = Persister;
 			object instance = Instance;
 
@@ -35,17 +37,17 @@ namespace NHibernate.Action
 				stopwatch = Stopwatch.StartNew();
 			}
 
-			bool veto = await (PreInsertAsync()).ConfigureAwait(false);
+			bool veto = await (PreInsertAsync(cancellationToken)).ConfigureAwait(false);
 
 			// Don't need to lock the cache here, since if someone
 			// else inserted the same pk first, the insert would fail
 
 			if (!veto)
 			{
-				generatedId = await (persister.InsertAsync(state, instance, Session)).ConfigureAwait(false);
+				generatedId = await (persister.InsertAsync(state, instance, Session, cancellationToken)).ConfigureAwait(false);
 				if (persister.HasInsertGeneratedProperties)
 				{
-					await (persister.ProcessInsertGeneratedPropertiesAsync(generatedId, instance, state, Session)).ConfigureAwait(false);
+					await (persister.ProcessInsertGeneratedPropertiesAsync(generatedId, instance, state, Session, cancellationToken)).ConfigureAwait(false);
 				}
 				//need to do that here rather than in the save event listener to let
 				//the post insert events to have a id-filled entity when IDENTITY is used (EJB3)
@@ -60,7 +62,7 @@ namespace NHibernate.Action
 			persister.getCache().insert(generatedId, cacheEntry);
 			}*/
 
-			await (PostInsertAsync()).ConfigureAwait(false);
+			await (PostInsertAsync(cancellationToken)).ConfigureAwait(false);
 			if (statsEnabled && !veto)
 			{
 				stopwatch.Stop();
@@ -68,8 +70,9 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task PostInsertAsync()
+		private async Task PostInsertAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (isDelayed)
 			{
 				Session.PersistenceContext.ReplaceDelayedEntityIdentityInsertKeys(delayedEntityKey, generatedId);
@@ -80,26 +83,28 @@ namespace NHibernate.Action
 				PostInsertEvent postEvent = new PostInsertEvent(Instance, generatedId, state, Persister, (IEventSource)Session);
 				foreach (IPostInsertEventListener listener in postListeners)
 				{
-					await (listener.OnPostInsertAsync(postEvent)).ConfigureAwait(false);
+					await (listener.OnPostInsertAsync(postEvent, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private async Task PostCommitInsertAsync()
+		private async Task PostCommitInsertAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IPostInsertEventListener[] postListeners = Session.Listeners.PostCommitInsertEventListeners;
 			if (postListeners.Length > 0)
 			{
 				var postEvent = new PostInsertEvent(Instance, generatedId, state, Persister, (IEventSource) Session);
 				foreach (IPostInsertEventListener listener in postListeners)
 				{
-					await (listener.OnPostInsertAsync(postEvent)).ConfigureAwait(false);
+					await (listener.OnPostInsertAsync(postEvent, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private async Task<bool> PreInsertAsync()
+		private async Task<bool> PreInsertAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IPreInsertEventListener[] preListeners = Session.Listeners.PreInsertEventListeners;
 			bool veto = false;
 			if (preListeners.Length > 0)
@@ -107,14 +112,18 @@ namespace NHibernate.Action
 				var preEvent = new PreInsertEvent(Instance, null, state, Persister, (IEventSource) Session);
 				foreach (IPreInsertEventListener listener in preListeners)
 				{
-					veto |= await (listener.OnPreInsertAsync(preEvent)).ConfigureAwait(false);
+					veto |= await (listener.OnPreInsertAsync(preEvent, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 			return veto;
 		}
 
-		protected override Task AfterTransactionCompletionProcessImplAsync(bool success)
+		protected override Task AfterTransactionCompletionProcessImplAsync(bool success, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				//TODO Make 100% certain that this is called before any subsequent ScheduledUpdate.afterTransactionCompletion()!!
@@ -125,7 +134,7 @@ namespace NHibernate.Action
 			}*/
 				if (success)
 				{
-					return PostCommitInsertAsync();
+					return PostCommitInsertAsync(cancellationToken);
 				}
 
 				return Task.CompletedTask;

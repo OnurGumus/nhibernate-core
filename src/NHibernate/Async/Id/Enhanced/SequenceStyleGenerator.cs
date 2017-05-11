@@ -17,6 +17,7 @@ using NHibernate.Util;
 namespace NHibernate.Id.Enhanced
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	using System;
 	/// <content>
 	/// Contains generated async methods
@@ -31,11 +32,15 @@ namespace NHibernate.Id.Enhanced
 
 		#region Implementation of IIdentifierGenerator
 
-		public virtual Task<object> GenerateAsync(ISessionImplementor session, object obj)
+		public virtual Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
-				return Optimizer.GenerateAsync(DatabaseStructure.BuildCallback(session));
+				return Optimizer.GenerateAsync(DatabaseStructure.BuildCallback(session), cancellationToken);
 			}
 			catch (Exception ex)
 			{

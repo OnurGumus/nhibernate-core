@@ -21,6 +21,7 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -28,8 +29,9 @@ namespace NHibernate.Event.Default
 	{
 
 		/// <summary> called by a collection that wants to initialize itself</summary>
-		public virtual async Task OnInitializeCollectionAsync(InitializeCollectionEvent @event)
+		public virtual async Task OnInitializeCollectionAsync(InitializeCollectionEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IPersistentCollection collection = @event.Collection;
 			ISessionImplementor source = @event.Session;
 
@@ -51,7 +53,7 @@ namespace NHibernate.Event.Default
 				}
 
 				log.Debug("checking second-level cache");
-				bool foundInCache = await (InitializeCollectionFromCacheAsync(ce.LoadedKey, ce.LoadedPersister, collection, source)).ConfigureAwait(false);
+				bool foundInCache = await (InitializeCollectionFromCacheAsync(ce.LoadedKey, ce.LoadedPersister, collection, source, cancellationToken)).ConfigureAwait(false);
 
 				if (foundInCache)
 				{
@@ -60,7 +62,7 @@ namespace NHibernate.Event.Default
 				else
 				{
 					log.Debug("collection not cached");
-					await (ce.LoadedPersister.InitializeAsync(ce.LoadedKey, source)).ConfigureAwait(false);
+					await (ce.LoadedPersister.InitializeAsync(ce.LoadedKey, source, cancellationToken)).ConfigureAwait(false);
 					log.Debug("collection initialized");
 
 					if (statsEnabled)
@@ -73,8 +75,9 @@ namespace NHibernate.Event.Default
 		}
 
 		/// <summary> Try to initialize a collection from the cache</summary>
-		private async Task<bool> InitializeCollectionFromCacheAsync(object id, ICollectionPersister persister, IPersistentCollection collection, ISessionImplementor source)
+		private async Task<bool> InitializeCollectionFromCacheAsync(object id, ICollectionPersister persister, IPersistentCollection collection, ISessionImplementor source, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 
 			if (!(source.EnabledFilters.Count == 0) && persister.IsAffectedByEnabledFilters(source))
 			{
@@ -125,7 +128,7 @@ namespace NHibernate.Event.Default
 					IPersistenceContext persistenceContext = source.PersistenceContext;
 
 					CollectionCacheEntry cacheEntry = (CollectionCacheEntry)persister.CacheEntryStructure.Destructure(ce, factory);
-					await (cacheEntry.AssembleAsync(collection, persister, persistenceContext.GetCollectionOwner(id, persister))).ConfigureAwait(false);
+					await (cacheEntry.AssembleAsync(collection, persister, persistenceContext.GetCollectionOwner(id, persister), cancellationToken)).ConfigureAwait(false);
 
 					persistenceContext.GetCollectionEntry(collection).PostInitialize(collection);
 					return true;

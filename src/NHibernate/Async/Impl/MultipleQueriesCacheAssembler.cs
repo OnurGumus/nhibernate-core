@@ -17,6 +17,7 @@ using NHibernate.Type;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	using System;
 	/// <content>
 	/// Contains generated async methods
@@ -26,8 +27,9 @@ namespace NHibernate.Impl
 
 		#region ICacheAssembler Members
 
-		public async Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner)
+		public async Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IList srcList = (IList) cached;
 			var result = new List<object>();
 			for (int i = 0; i < assemblersList.Count; i++)
@@ -39,11 +41,11 @@ namespace NHibernate.Impl
 				{
 					if (assemblers.Length == 1)
 					{
-						queryResults.Add(await (assemblers[0].AssembleAsync(fromCache, session, owner)).ConfigureAwait(false));
+						queryResults.Add(await (assemblers[0].AssembleAsync(fromCache, session, owner, cancellationToken)).ConfigureAwait(false));
 					}
 					else
 					{
-						queryResults.Add(await (TypeHelper.AssembleAsync((object[]) fromCache, assemblers, session, owner)).ConfigureAwait(false));
+						queryResults.Add(await (TypeHelper.AssembleAsync((object[]) fromCache, assemblers, session, owner, cancellationToken)).ConfigureAwait(false));
 					}
 				}
 				result.Add(queryResults);
@@ -51,7 +53,11 @@ namespace NHibernate.Impl
 			return result;
 		}
 
-		public Task BeforeAssembleAsync(object cached, ISessionImplementor session) {			try
+		public Task BeforeAssembleAsync(object cached, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken)) {			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
 			{
 				BeforeAssemble(cached, session);
 				return Task.CompletedTask;
@@ -64,13 +70,13 @@ namespace NHibernate.Impl
 
 		#endregion
 
-		public async Task<IList> GetResultFromQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters,
-											 ISet<string> querySpaces, IQueryCache queryCache, QueryKey key)
+		public async Task<IList> GetResultFromQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters, 											 ISet<string> querySpaces, IQueryCache queryCache, QueryKey key, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (!queryParameters.ForceCacheRefresh)
 			{
 				IList list =
-					await (queryCache.GetAsync(key, new ICacheAssembler[] {this}, queryParameters.NaturalKeyLookup, querySpaces, session)).ConfigureAwait(false);
+					await (queryCache.GetAsync(key, new ICacheAssembler[] {this}, queryParameters.NaturalKeyLookup, querySpaces, session, cancellationToken)).ConfigureAwait(false);
 				//we had to wrap the query results in another list in order to save all
 				//the queries in the same bucket, now we need to do it the other way around.
 				if (list != null)

@@ -18,19 +18,21 @@ using NHibernate.Impl;
 namespace NHibernate.Transaction
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class AdoNetWithDistributedTransactionFactory : ITransactionFactory
 	{
 
-		public async Task ExecuteWorkInIsolationAsync(ISessionImplementor session, IIsolatedWork work, bool transacted)
+		public async Task ExecuteWorkInIsolationAsync(ISessionImplementor session, IIsolatedWork work, bool transacted, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			using (var tx = new TransactionScope(TransactionScopeOption.Suppress))
 			{
 				// instead of duplicating the logic, we suppress the DTC transaction and create
 				// our own transaction instead
-				await (adoNetTransactionFactory.ExecuteWorkInIsolationAsync(session, work, transacted)).ConfigureAwait(false);
+				await (adoNetTransactionFactory.ExecuteWorkInIsolationAsync(session, work, transacted, cancellationToken)).ConfigureAwait(false);
 				tx.Complete();
 			}
 		}

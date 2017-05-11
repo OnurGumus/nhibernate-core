@@ -18,6 +18,7 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -25,12 +26,14 @@ namespace NHibernate.Action
 	{
 
 		/// <summary> Execute this action</summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <remarks>
 		/// This method is called when a new non-null collection is persisted
 		/// or when an existing (non-null) collection is moved to a new owner
 		/// </remarks>
-		public override async Task ExecuteAsync()
+		public override async Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			bool statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
 			Stopwatch stopwatch = null;
 			if (statsEnabled)
@@ -39,15 +42,15 @@ namespace NHibernate.Action
 			}
 			IPersistentCollection collection = Collection;
 
-			await (PreRecreateAsync()).ConfigureAwait(false);
+			await (PreRecreateAsync(cancellationToken)).ConfigureAwait(false);
 
-			await (Persister.RecreateAsync(collection, Key, Session)).ConfigureAwait(false);
+			await (Persister.RecreateAsync(collection, Key, Session, cancellationToken)).ConfigureAwait(false);
 
 			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
 
 			Evict();
 
-			await (PostRecreateAsync()).ConfigureAwait(false);
+			await (PostRecreateAsync(cancellationToken)).ConfigureAwait(false);
 			if (statsEnabled)
 			{
 				stopwatch.Stop();
@@ -55,28 +58,30 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task PreRecreateAsync()
+		private async Task PreRecreateAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IPreCollectionRecreateEventListener[] preListeners = Session.Listeners.PreCollectionRecreateEventListeners;
 			if (preListeners.Length > 0)
 			{
 				PreCollectionRecreateEvent preEvent = new PreCollectionRecreateEvent(Persister, Collection, (IEventSource)Session);
 				for (int i = 0; i < preListeners.Length; i++)
 				{
-					await (preListeners[i].OnPreRecreateCollectionAsync(preEvent)).ConfigureAwait(false);
+					await (preListeners[i].OnPreRecreateCollectionAsync(preEvent, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private async Task PostRecreateAsync()
+		private async Task PostRecreateAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IPostCollectionRecreateEventListener[] postListeners = Session.Listeners.PostCollectionRecreateEventListeners;
 			if (postListeners.Length > 0)
 			{
 				PostCollectionRecreateEvent postEvent = new PostCollectionRecreateEvent(Persister, Collection, (IEventSource)Session);
 				for (int i = 0; i < postListeners.Length; i++)
 				{
-					await (postListeners[i].OnPostRecreateCollectionAsync(postEvent)).ConfigureAwait(false);
+					await (postListeners[i].OnPostRecreateCollectionAsync(postEvent, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}

@@ -15,6 +15,7 @@ using NHibernate.Engine;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -27,22 +28,24 @@ namespace NHibernate.Event.Default
 		/// Handle the given auto-flush event.
 		/// </summary>
 		/// <param name="event">The auto-flush event to be handled.</param>
-		public virtual async Task OnAutoFlushAsync(AutoFlushEvent @event)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public virtual async Task OnAutoFlushAsync(AutoFlushEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IEventSource source = @event.Session;
 
 			if (FlushMightBeNeeded(source))
 			{
 				int oldSize = source.ActionQueue.CollectionRemovalsCount;
 
-				await (FlushEverythingToExecutionsAsync(@event)).ConfigureAwait(false);
+				await (FlushEverythingToExecutionsAsync(@event, cancellationToken)).ConfigureAwait(false);
 
 				if (FlushIsReallyNeeded(@event, source))
 				{
 					if (log.IsDebugEnabled)
 						log.Debug("Need to execute flush");
 
-					await (PerformExecutionsAsync(source)).ConfigureAwait(false);
+					await (PerformExecutionsAsync(source, cancellationToken)).ConfigureAwait(false);
 					PostFlush(source);
 					// note: performExecutions() clears all collectionXxxxtion
 					// collections (the collection actions) in the session

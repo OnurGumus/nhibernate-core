@@ -28,8 +28,9 @@ namespace NHibernate.Driver
 	public partial class BasicResultSetsCommand: IResultSetsCommand
 	{
 
-		public virtual async Task<DbDataReader> GetReaderAsync(int? commandTimeout)
+		public virtual async Task<DbDataReader> GetReaderAsync(int? commandTimeout, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			var batcher = Session.Batcher;
 			SqlType[] sqlTypes = Commands.SelectMany(c => c.ParameterTypes).ToArray();
 			ForEachSqlCommand((sqlLoaderCommand, offset) => sqlLoaderCommand.ResetParametersIndexesForTheCommand(offset));
@@ -40,7 +41,7 @@ namespace NHibernate.Driver
 			}
 			log.Info(command.CommandText);
 			BindParameters(command);
-			return await (BatcherDataReaderWrapper.CreateAsync(batcher, command)).ConfigureAwait(false);
+			return await (BatcherDataReaderWrapper.CreateAsync(batcher, command, cancellationToken)).ConfigureAwait(false);
 		}
 	}
 
@@ -50,11 +51,12 @@ namespace NHibernate.Driver
 	public partial class BatcherDataReaderWrapper: DbDataReader
 	{
 
-		public static async Task<BatcherDataReaderWrapper> CreateAsync(IBatcher batcher, DbCommand command)
+		public static async Task<BatcherDataReaderWrapper> CreateAsync(IBatcher batcher, DbCommand command, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			return new BatcherDataReaderWrapper(batcher, command)
 			{
-				reader = await (batcher.ExecuteReaderAsync(command))
+				reader = await (batcher.ExecuteReaderAsync(command, cancellationToken))
 .ConfigureAwait(false)			};
 		}
 	}

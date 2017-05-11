@@ -21,6 +21,7 @@ using NHibernate.Util;
 namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -30,7 +31,8 @@ namespace NHibernate.Action
 		#region IExecutable Members
 
 		/// <summary>Execute this action</summary>
-		public abstract Task ExecuteAsync();
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public abstract Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		#endregion
 

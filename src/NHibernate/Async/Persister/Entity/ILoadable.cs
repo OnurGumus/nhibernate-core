@@ -15,6 +15,7 @@ using System.Data.Common;
 namespace NHibernate.Persister.Entity
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 
 	/// <content>
 	/// Contains generated async methods
@@ -25,7 +26,6 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Retrieve property values from one row of a result set
 		/// </summary>
-		Task<object[]> HydrateAsync(DbDataReader rs, object id, object obj, ILoadable rootLoadable, string[][] suffixedPropertyColumns,
-						 bool allProperties, ISessionImplementor session);
+		Task<object[]> HydrateAsync(DbDataReader rs, object id, object obj, ILoadable rootLoadable, string[][] suffixedPropertyColumns, 						 bool allProperties, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

@@ -16,6 +16,7 @@ using NHibernate.Type;
 namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -29,13 +30,15 @@ namespace NHibernate.Id
 		/// </summary>
 		/// <param name="sessionImplementor">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>
 		/// The identifier value from the associated object or  
 		/// <see cref="IdentifierGeneratorFactory.ShortCircuitIndicator"/> if the <c>session</c>
 		/// already contains <c>obj</c>.
 		/// </returns>
-		public async Task<object> GenerateAsync(ISessionImplementor sessionImplementor, object obj)
+		public async Task<object> GenerateAsync(ISessionImplementor sessionImplementor, object obj, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			ISession session = (ISession) sessionImplementor;
 
 			var persister = sessionImplementor.Factory.GetEntityPersister(entityName);
@@ -68,7 +71,7 @@ namespace NHibernate.Id
 			}
 			catch (TransientObjectException)
 			{
-				id = await (session.SaveAsync(foreignValueSourceType.GetAssociatedEntityName(), associatedObject)).ConfigureAwait(false);
+				id = await (session.SaveAsync(foreignValueSourceType.GetAssociatedEntityName(), associatedObject, cancellationToken)).ConfigureAwait(false);
 			}
 
 			if (session.Contains(obj))

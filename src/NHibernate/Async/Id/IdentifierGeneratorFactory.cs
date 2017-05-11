@@ -21,6 +21,7 @@ using NHibernate.Id.Enhanced;
 namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -31,14 +32,16 @@ namespace NHibernate.Id
 		/// <param name="rs">The <see cref="DbDataReader"/> to read the identifier value from.</param>
 		/// <param name="type">The <see cref="IIdentifierType"/> the value should be converted to.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the value is retrieved in.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The value for the identifier. </returns>
-		public static async Task<object> GetGeneratedIdentityAsync(DbDataReader rs, IType type, ISessionImplementor session)
+		public static async Task<object> GetGeneratedIdentityAsync(DbDataReader rs, IType type, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (!await (rs.ReadAsync()).ConfigureAwait(false))
+			cancellationToken.ThrowIfCancellationRequested();
+			if (!await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false))
 			{
 				throw new HibernateException("The database returned no natively generated identity value");
 			}
-			object id = await (GetAsync(rs, type, session)).ConfigureAwait(false);
+			object id = await (GetAsync(rs, type, session, cancellationToken)).ConfigureAwait(false);
 
 			if (log.IsDebugEnabled)
 			{
@@ -54,6 +57,7 @@ namespace NHibernate.Id
 		/// <param name="rs">The <see cref="DbDataReader"/> to read the identifier value from.</param>
 		/// <param name="type">The <see cref="IIdentifierType"/> the value should be converted to.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the value is retrieved in.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>
 		/// The value for the identifier.
 		/// </returns>
@@ -61,8 +65,12 @@ namespace NHibernate.Id
 		/// Thrown if there is any problem getting the value from the <see cref="DbDataReader"/>
 		/// or with converting it to the <see cref="System.Type"/>.
 		/// </exception>
-		public static Task<object> GetAsync(DbDataReader rs, IType type, ISessionImplementor session)
+		public static Task<object> GetAsync(DbDataReader rs, IType type, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				// here is an interesting one: 
@@ -70,7 +78,7 @@ namespace NHibernate.Id
 				// - MySql LAST_IDENITY() returns an Int64 			
 				try
 				{
-					return type.NullSafeGetAsync(rs, rs.GetName(0), session, null);
+					return type.NullSafeGetAsync(rs, rs.GetName(0), session, null, cancellationToken);
 				}
 				catch (Exception e)
 				{

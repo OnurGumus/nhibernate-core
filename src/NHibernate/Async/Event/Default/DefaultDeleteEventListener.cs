@@ -22,6 +22,7 @@ using Status=NHibernate.Engine.Status;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -32,16 +33,22 @@ namespace NHibernate.Event.Default
 
 		/// <summary>Handle the given delete event. </summary>
 		/// <param name="event">The delete event to be handled. </param>
-		public virtual Task OnDeleteAsync(DeleteEvent @event)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public virtual Task OnDeleteAsync(DeleteEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return OnDeleteAsync(@event, new IdentitySet());
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return OnDeleteAsync(@event, new IdentitySet(), cancellationToken);
 		}
 
-		public virtual async Task OnDeleteAsync(DeleteEvent @event, ISet<object> transientEntities)
+		public virtual async Task OnDeleteAsync(DeleteEvent @event, ISet<object> transientEntities, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IEventSource source = @event.Session;
 			IPersistenceContext persistenceContext = source.PersistenceContext;
-			object entity = await (persistenceContext.UnproxyAndReassociateAsync(@event.Entity)).ConfigureAwait(false);
+			object entity = await (persistenceContext.UnproxyAndReassociateAsync(@event.Entity, cancellationToken)).ConfigureAwait(false);
 
 			EntityEntry entityEntry = persistenceContext.GetEntry(entity);
 			IEntityPersister persister;
@@ -54,9 +61,9 @@ namespace NHibernate.Event.Default
 
 				persister = source.GetEntityPersister(@event.EntityName, entity);
 
-				if (await (ForeignKeys.IsTransientSlowAsync(persister.EntityName, entity, source)).ConfigureAwait(false))
+				if (await (ForeignKeys.IsTransientSlowAsync(persister.EntityName, entity, source, cancellationToken)).ConfigureAwait(false))
 				{
-					await (DeleteTransientEntityAsync(source, entity, @event.CascadeDeleteEnabled, persister, transientEntities)).ConfigureAwait(false);
+					await (DeleteTransientEntityAsync(source, entity, @event.CascadeDeleteEnabled, persister, transientEntities, cancellationToken)).ConfigureAwait(false);
 					// EARLY EXIT!!!
 					return;
 				}
@@ -76,7 +83,7 @@ namespace NHibernate.Event.Default
 
 				persistenceContext.CheckUniqueness(key, entity);
 
-				await (new OnUpdateVisitor(source, id, entity).ProcessAsync(entity, persister)).ConfigureAwait(false);
+				await (new OnUpdateVisitor(source, id, entity).ProcessAsync(entity, persister, cancellationToken)).ConfigureAwait(false);
 
 				version = persister.GetVersion(entity);
 
@@ -109,7 +116,7 @@ namespace NHibernate.Event.Default
 			if (InvokeDeleteLifecycle(source, entity, persister))
 				return;
 
-			await (DeleteEntityAsync(source, entity, entityEntry, @event.CascadeDeleteEnabled, persister, transientEntities)).ConfigureAwait(false);
+			await (DeleteEntityAsync(source, entity, entityEntry, @event.CascadeDeleteEnabled, persister, transientEntities, cancellationToken)).ConfigureAwait(false);
 
 			if (source.Factory.Settings.IsIdentifierRollbackEnabled)
 			{
@@ -134,8 +141,10 @@ namespace NHibernate.Event.Default
 		/// <param name="transientEntities">
 		/// A cache of already visited transient entities (to avoid infinite recursion).
 		/// </param>
-		protected virtual async Task DeleteTransientEntityAsync(IEventSource session, object entity, bool cascadeDeleteEnabled, IEntityPersister persister, ISet<object> transientEntities)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		protected virtual async Task DeleteTransientEntityAsync(IEventSource session, object entity, bool cascadeDeleteEnabled, IEntityPersister persister, ISet<object> transientEntities, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			log.Info("handling transient entity in delete processing");
 			// NH different impl : NH-1895
 			if(transientEntities == null)
@@ -147,8 +156,8 @@ namespace NHibernate.Event.Default
 				log.Debug("already handled transient entity; skipping");
 				return;
 			}
-			await (CascadeBeforeDeleteAsync(session, persister, entity, null, transientEntities)).ConfigureAwait(false);
-			await (CascadeAfterDeleteAsync(session, persister, entity, transientEntities)).ConfigureAwait(false);
+			await (CascadeBeforeDeleteAsync(session, persister, entity, null, transientEntities, cancellationToken)).ConfigureAwait(false);
+			await (CascadeAfterDeleteAsync(session, persister, entity, transientEntities, cancellationToken)).ConfigureAwait(false);
 		}
 
 		/// <summary> 
@@ -162,8 +171,10 @@ namespace NHibernate.Event.Default
 		/// <param name="isCascadeDeleteEnabled">Is delete cascading enabled? </param>
 		/// <param name="persister">The entity persister. </param>
 		/// <param name="transientEntities">A cache of already deleted entities. </param>
-		protected virtual async Task DeleteEntityAsync(IEventSource session, object entity, EntityEntry entityEntry, bool isCascadeDeleteEnabled, IEntityPersister persister, ISet<object> transientEntities)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		protected virtual async Task DeleteEntityAsync(IEventSource session, object entity, EntityEntry entityEntry, bool isCascadeDeleteEnabled, IEntityPersister persister, ISet<object> transientEntities, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("deleting " + MessageHelper.InfoString(persister, entityEntry.Id, session.Factory));
@@ -194,16 +205,16 @@ namespace NHibernate.Event.Default
 			persistenceContext.SetEntryStatus(entityEntry, Status.Deleted);
 			EntityKey key = session.GenerateEntityKey(entityEntry.Id, persister);
 
-			await (CascadeBeforeDeleteAsync(session, persister, entity, entityEntry, transientEntities)).ConfigureAwait(false);
+			await (CascadeBeforeDeleteAsync(session, persister, entity, entityEntry, transientEntities, cancellationToken)).ConfigureAwait(false);
 
-			await (new ForeignKeys.Nullifier(entity, true, false, session).NullifyTransientReferencesAsync(entityEntry.DeletedState, propTypes)).ConfigureAwait(false);
+			await (new ForeignKeys.Nullifier(entity, true, false, session).NullifyTransientReferencesAsync(entityEntry.DeletedState, propTypes, cancellationToken)).ConfigureAwait(false);
 			new Nullability(session).CheckNullability(entityEntry.DeletedState, persister, true);
 			persistenceContext.NullifiableEntityKeys.Add(key);
 
 			// Ensures that containing deletions happen before sub-deletions
 			session.ActionQueue.AddAction(new EntityDeleteAction(entityEntry.Id, deletedState, version, entity, persister, isCascadeDeleteEnabled, session));
 
-			await (CascadeAfterDeleteAsync(session, persister, entity, transientEntities)).ConfigureAwait(false);
+			await (CascadeAfterDeleteAsync(session, persister, entity, transientEntities, cancellationToken)).ConfigureAwait(false);
 
 			// the entry will be removed after the flush, and will no longer
 			// override the stale snapshot
@@ -211,8 +222,9 @@ namespace NHibernate.Event.Default
 			//persistenceContext.removeDatabaseSnapshot(key);
 		}
 
-		protected virtual async Task CascadeBeforeDeleteAsync(IEventSource session, IEntityPersister persister, object entity, EntityEntry entityEntry, ISet<object> transientEntities)
+		protected virtual async Task CascadeBeforeDeleteAsync(IEventSource session, IEntityPersister persister, object entity, EntityEntry entityEntry, ISet<object> transientEntities, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			ISessionImplementor si = session;
 			CacheMode cacheMode = si.CacheMode;
 			si.CacheMode = CacheMode.Get;
@@ -221,7 +233,7 @@ namespace NHibernate.Event.Default
 			{
 				// cascade-delete to collections BEFORE the collection owner is deleted
 				await (new Cascade(CascadingAction.Delete, CascadePoint.AfterInsertBeforeDelete, session).CascadeOnAsync(persister, entity,
-				                                                                                             transientEntities)).ConfigureAwait(false);
+				                                                                                             transientEntities, cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -230,8 +242,9 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected virtual async Task CascadeAfterDeleteAsync(IEventSource session, IEntityPersister persister, object entity, ISet<object> transientEntities)
+		protected virtual async Task CascadeAfterDeleteAsync(IEventSource session, IEntityPersister persister, object entity, ISet<object> transientEntities, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			ISessionImplementor si = session;
 			CacheMode cacheMode = si.CacheMode;
 			si.CacheMode = CacheMode.Get;
@@ -240,7 +253,7 @@ namespace NHibernate.Event.Default
 			{
 				// cascade-delete to many-to-one AFTER the parent was deleted
 				await (new Cascade(CascadingAction.Delete, CascadePoint.BeforeInsertAfterDelete, session).CascadeOnAsync(persister, entity,
-				                                                                                             transientEntities)).ConfigureAwait(false);
+				                                                                                             transientEntities, cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{

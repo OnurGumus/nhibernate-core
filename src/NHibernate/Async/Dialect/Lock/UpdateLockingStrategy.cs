@@ -21,6 +21,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Dialect.Lock
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -29,11 +30,15 @@ namespace NHibernate.Dialect.Lock
 
 		#region ILockingStrategy Members
 
-		public Task LockAsync(object id, object version, object obj, ISessionImplementor session)
+		public Task LockAsync(object id, object version, object obj, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (!lockable.IsVersioned)
 			{
 				throw new HibernateException("write locks via update not supported for non-versioned entities [" + lockable.EntityName + "]");
+			}
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
 			}
 			async Task InternalLockAsync()
 			{
@@ -41,7 +46,7 @@ namespace NHibernate.Dialect.Lock
 				ISessionFactoryImplementor factory = session.Factory;
 				try
 				{
-					var st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, lockable.IdAndVersionSqlTypes)).ConfigureAwait(false);
+					var st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, lockable.IdAndVersionSqlTypes, cancellationToken)).ConfigureAwait(false);
 					try
 					{
 						lockable.VersionType.NullSafeSet(st, version, 1, session);
@@ -53,7 +58,7 @@ namespace NHibernate.Dialect.Lock
 							lockable.VersionType.NullSafeSet(st, version, offset, session);
 						}
 
-						int affected = await (session.Batcher.ExecuteNonQueryAsync(st)).ConfigureAwait(false);
+						int affected = await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false);
 						if (affected < 0)
 						{
 							factory.StatisticsImplementor.OptimisticFailure(lockable.EntityName);

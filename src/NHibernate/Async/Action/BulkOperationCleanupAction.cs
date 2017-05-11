@@ -17,6 +17,7 @@ using NHibernate.Persister.Entity;
 namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -25,8 +26,12 @@ namespace NHibernate.Action
 
 		#region IExecutable Members
 
-		public Task ExecuteAsync()
+		public Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				Execute();

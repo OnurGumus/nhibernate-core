@@ -26,6 +26,7 @@ using NHibernate.Util;
 namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -38,8 +39,9 @@ namespace NHibernate.Engine
 		/// Get the current state of the entity as known to the underlying
 		/// database, or null if there is no corresponding row
 		/// </summary>
-		public async Task<object[]> GetDatabaseSnapshotAsync(object id, IEntityPersister persister)
+		public async Task<object[]> GetDatabaseSnapshotAsync(object id, IEntityPersister persister, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			EntityKey key = session.GenerateEntityKey(id, persister);
 			object cached;
 			if (entitySnapshotsByKey.TryGetValue(key, out cached))
@@ -48,7 +50,7 @@ namespace NHibernate.Engine
 			}
 			else
 			{
-				object[] snapshot = await (persister.GetDatabaseSnapshotAsync(id, session)).ConfigureAwait(false);
+				object[] snapshot = await (persister.GetDatabaseSnapshotAsync(id, session, cancellationToken)).ConfigureAwait(false);
 				entitySnapshotsByKey[key] = snapshot ?? NoRow;
 				return snapshot;
 			}
@@ -59,8 +61,9 @@ namespace NHibernate.Engine
 		/// database, or null if the entity has no natural id or there is no
 		/// corresponding row.
 		/// </summary>
-		public async Task<object[]> GetNaturalIdSnapshotAsync(object id, IEntityPersister persister)
+		public async Task<object[]> GetNaturalIdSnapshotAsync(object id, IEntityPersister persister, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (!persister.HasNaturalIdentifier)
 			{
 				return null;
@@ -85,7 +88,7 @@ namespace NHibernate.Engine
 				// do this when all the properties are updateable since there is
 				// a certain likelihood that the information will already be
 				// snapshot-cached.
-				object[] entitySnapshot = await (GetDatabaseSnapshotAsync(id, persister)).ConfigureAwait(false);
+				object[] entitySnapshot = await (GetDatabaseSnapshotAsync(id, persister, cancellationToken)).ConfigureAwait(false);
 				if (entitySnapshot == NoRow)
 				{
 					return null;
@@ -99,7 +102,7 @@ namespace NHibernate.Engine
 			}
 			else
 			{
-				return await (persister.GetNaturalIdentifierSnapshotAsync(id, session)).ConfigureAwait(false);
+				return await (persister.GetNaturalIdentifierSnapshotAsync(id, session, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -107,9 +110,14 @@ namespace NHibernate.Engine
 		/// Possibly unproxy the given reference and reassociate it with the current session.
 		/// </summary>
 		/// <param name="maybeProxy">The reference to be unproxied if it currently represents a proxy. </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The unproxied instance. </returns>
-		public Task<object> UnproxyAndReassociateAsync(object maybeProxy)
+		public Task<object> UnproxyAndReassociateAsync(object maybeProxy, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				// TODO H3.2 Not ported
@@ -123,7 +131,7 @@ namespace NHibernate.Engine
 					var proxy = maybeProxy as INHibernateProxy;
 					ILazyInitializer li = proxy.HibernateLazyInitializer;
 					ReassociateProxy(li, proxy);
-					return li.GetImplementationAsync(); //initialize + unwrap the object
+					return li.GetImplementationAsync(cancellationToken); //initialize + unwrap the object
 				}
 
 				return Task.FromResult<object>(maybeProxy);
@@ -139,8 +147,10 @@ namespace NHibernate.Engine
 		/// the current two-phase load (actually, this is a no-op, unless this
 		/// is the "outermost" load)
 		/// </summary>
-		public async Task InitializeNonLazyCollectionsAsync()
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public async Task InitializeNonLazyCollectionsAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (loadCounter == 0)
 			{
 				log.Debug("initializing non-lazy collections");
@@ -153,7 +163,7 @@ namespace NHibernate.Engine
 						//note that each iteration of the loop may add new elements
 						IPersistentCollection tempObject = nonlazyCollections[nonlazyCollections.Count - 1];
 						nonlazyCollections.RemoveAt(nonlazyCollections.Count - 1);
-						await (tempObject.ForceInitializationAsync()).ConfigureAwait(false);
+						await (tempObject.ForceInitializationAsync(cancellationToken)).ConfigureAwait(false);
 					}
 				}
 				finally

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -20,8 +21,9 @@ namespace NHibernate.Event
 	{
 		/// <summary>Handle the given delete event. </summary>
 		/// <param name="event">The delete event to be handled. </param>
-		Task OnDeleteAsync(DeleteEvent @event);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task OnDeleteAsync(DeleteEvent @event, CancellationToken cancellationToken = default(CancellationToken));
 
-		Task OnDeleteAsync(DeleteEvent @event, ISet<object> transientEntities);
+		Task OnDeleteAsync(DeleteEvent @event, ISet<object> transientEntities, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

@@ -16,15 +16,20 @@ using NHibernate.Type;
 namespace NHibernate.Loader.Entity
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class EntityLoader : AbstractEntityLoader
 	{
 
-		public Task<object> LoadByUniqueKeyAsync(ISessionImplementor session, object key)
+		public Task<object> LoadByUniqueKeyAsync(ISessionImplementor session, object key, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return LoadAsync(session, key, null, null);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return LoadAsync(session, key, null, null, cancellationToken);
 		}
 	}
 }

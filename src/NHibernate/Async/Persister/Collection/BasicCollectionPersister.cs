@@ -28,14 +28,16 @@ using System.Collections.Generic;
 namespace NHibernate.Persister.Collection
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class BasicCollectionPersister : AbstractCollectionPersister
 	{
 
-		protected override async Task<int> DoUpdateRowsAsync(object id, IPersistentCollection collection, ISessionImplementor session)
+		protected override async Task<int> DoUpdateRowsAsync(object id, IPersistentCollection collection, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (ArrayHelper.IsAllFalse(elementColumnIsSettable)) return 0;
 
 			try
@@ -58,14 +60,14 @@ namespace NHibernate.Persister.Collection
 							{
 								st =
 									await (session.Batcher.PrepareBatchCommandAsync(SqlUpdateRowString.CommandType, SqlUpdateRowString.Text,
-																		SqlUpdateRowString.ParameterTypes)).ConfigureAwait(false);
+																		SqlUpdateRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 							}
 						}
 						else
 						{
 							st =
 								await (session.Batcher.PrepareCommandAsync(SqlUpdateRowString.CommandType, SqlUpdateRowString.Text,
-															   SqlUpdateRowString.ParameterTypes)).ConfigureAwait(false);
+															   SqlUpdateRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 						}
 
 						try
@@ -92,11 +94,11 @@ namespace NHibernate.Persister.Collection
 
 							if (useBatch)
 							{
-								await (session.Batcher.AddToBatchAsync(expectation)).ConfigureAwait(false);
+								await (session.Batcher.AddToBatchAsync(expectation, cancellationToken)).ConfigureAwait(false);
 							}
 							else
 							{
-								expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st)).ConfigureAwait(false), st);
+								expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
 							}
 						}
 						catch (Exception e)

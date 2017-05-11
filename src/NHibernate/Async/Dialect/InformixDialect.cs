@@ -22,15 +22,20 @@ using NHibernate.Util;
 namespace NHibernate.Dialect
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class InformixDialect : Dialect
 	{
 
-		public override Task<DbDataReader> GetResultSetAsync(DbCommand statement)
+		public override Task<DbDataReader> GetResultSetAsync(DbCommand statement, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return statement.ExecuteReaderAsync(CommandBehavior.SingleResult);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<DbDataReader>(cancellationToken);
+			}
+			return statement.ExecuteReaderAsync(CommandBehavior.SingleResult, cancellationToken);
 		}
 	}
 }

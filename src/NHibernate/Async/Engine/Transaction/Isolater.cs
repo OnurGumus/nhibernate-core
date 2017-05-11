@@ -17,6 +17,7 @@ using NHibernate.Exceptions;
 namespace NHibernate.Engine.Transaction
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -29,9 +30,14 @@ namespace NHibernate.Engine.Transaction
 		/// </summary>
 		/// <param name="work">The work to be performed. </param>
 		/// <param name="session">The session from which this request is originating. </param>
-		public static Task DoIsolatedWorkAsync(IIsolatedWork work, ISessionImplementor session)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public static Task DoIsolatedWorkAsync(IIsolatedWork work, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return session.Factory.TransactionFactory.ExecuteWorkInIsolationAsync(session, work, true);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return session.Factory.TransactionFactory.ExecuteWorkInIsolationAsync(session, work, true, cancellationToken);
 		}
 
 		/// <summary> 
@@ -40,9 +46,14 @@ namespace NHibernate.Engine.Transaction
 		/// </summary>
 		/// <param name="work">The work to be performed. </param>
 		/// <param name="session">The session from which this request is originating. </param>
-		public static Task DoNonTransactedWorkAsync(IIsolatedWork work, ISessionImplementor session)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public static Task DoNonTransactedWorkAsync(IIsolatedWork work, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return session.Factory.TransactionFactory.ExecuteWorkInIsolationAsync(session, work, false);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return session.Factory.TransactionFactory.ExecuteWorkInIsolationAsync(session, work, false, cancellationToken);
 		}
 	}
 }

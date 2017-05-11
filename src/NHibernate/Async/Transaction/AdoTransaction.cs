@@ -19,6 +19,7 @@ using NHibernate.Impl;
 namespace NHibernate.Transaction
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -29,12 +30,14 @@ namespace NHibernate.Transaction
 		/// Commits the <see cref="ITransaction"/> by flushing the <see cref="ISession"/>
 		/// and committing the <see cref="DbTransaction"/>.
 		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <exception cref="TransactionException">
 		/// Thrown if there is any exception while trying to call <c>Commit()</c> on 
 		/// the underlying <see cref="DbTransaction"/>.
 		/// </exception>
-		public async Task CommitAsync()
+		public async Task CommitAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(sessionId))
 			{
 				CheckNotDisposed();
@@ -45,7 +48,7 @@ namespace NHibernate.Transaction
 
 				if (session.FlushMode != FlushMode.Never)
 				{
-					await (session.FlushAsync()).ConfigureAwait(false);
+					await (session.FlushAsync(cancellationToken)).ConfigureAwait(false);
 				}
 
 				NotifyLocalSynchsBeforeTransactionCompletion();

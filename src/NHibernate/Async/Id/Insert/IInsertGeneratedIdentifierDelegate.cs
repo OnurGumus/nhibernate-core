@@ -14,6 +14,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Id.Insert
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -26,7 +27,8 @@ namespace NHibernate.Id.Insert
 		/// <param name="insertSQL"> </param>
 		/// <param name="session"> </param>
 		/// <param name="binder"> </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The generated identifier value. </returns>
-		Task<object> PerformInsertAsync(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder);
+		Task<object> PerformInsertAsync(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

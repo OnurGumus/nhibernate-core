@@ -18,15 +18,19 @@ using NHibernate.UserTypes;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class CustomCollectionType : CollectionType
 	{
 
-		public override Task<object> ReplaceElementsAsync(object original, object target, object owner, IDictionary copyCache,
-		                                       ISessionImplementor session)
+		public override Task<object> ReplaceElementsAsync(object original, object target, object owner, IDictionary copyCache, 		                                       ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(ReplaceElements(original, target, owner, copyCache, session));

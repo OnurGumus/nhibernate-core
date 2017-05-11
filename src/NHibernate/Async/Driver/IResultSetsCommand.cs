@@ -14,11 +14,12 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Driver
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial interface IResultSetsCommand
 	{
-		Task<DbDataReader> GetReaderAsync(int? commandTimeout);
+		Task<DbDataReader> GetReaderAsync(int? commandTimeout, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

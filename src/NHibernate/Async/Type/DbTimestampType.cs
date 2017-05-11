@@ -21,29 +21,34 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class DbTimestampType : TimestampType, IVersionType
 	{
 
-		public override Task<object> SeedAsync(ISessionImplementor session)
+		public override Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				if (session == null)
 				{
 					log.Debug("incoming session was null; using current vm time");
-					return base.SeedAsync(session);
+					return base.SeedAsync(session, cancellationToken);
 				}
 				else if (!session.Factory.Dialect.SupportsCurrentTimestampSelection)
 				{
 					log.Debug("falling back to vm-based timestamp, as dialect does not support current timestamp selection");
-					return base.SeedAsync(session);
+					return base.SeedAsync(session, cancellationToken);
 				}
 				else
 				{
-					return GetCurrentTimestampAsync(session);
+					return GetCurrentTimestampAsync(session, cancellationToken);
 				}
 			}
 			catch (Exception ex)
@@ -52,13 +57,17 @@ namespace NHibernate.Type
 			}
 		}
 
-		private Task<object> GetCurrentTimestampAsync(ISessionImplementor session)
+		private Task<object> GetCurrentTimestampAsync(ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				Dialect.Dialect dialect = session.Factory.Dialect;
 				string timestampSelectString = dialect.CurrentTimestampSelectString;
-				return UsePreparedStatementAsync(timestampSelectString, session);
+				return UsePreparedStatementAsync(timestampSelectString, session, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -66,17 +75,18 @@ namespace NHibernate.Type
 			}
 		}
 
-		protected virtual async Task<object> UsePreparedStatementAsync(string timestampSelectString, ISessionImplementor session)
+		protected virtual async Task<object> UsePreparedStatementAsync(string timestampSelectString, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			var tsSelect = new SqlString(timestampSelectString);
 			DbCommand ps = null;
 			DbDataReader rs = null;
 			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
-				ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, tsSelect, EmptyParams)).ConfigureAwait(false);
-				rs = await (session.Batcher.ExecuteReaderAsync(ps)).ConfigureAwait(false);
-				await (rs.ReadAsync()).ConfigureAwait(false);
+				ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, tsSelect, EmptyParams, cancellationToken)).ConfigureAwait(false);
+				rs = await (session.Batcher.ExecuteReaderAsync(ps, cancellationToken)).ConfigureAwait(false);
+				await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false);
 				DateTime ts = rs.GetDateTime(0);
 				if (log.IsDebugEnabled)
 				{

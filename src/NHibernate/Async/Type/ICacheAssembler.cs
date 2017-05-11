@@ -13,6 +13,7 @@ using NHibernate.Engine;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -23,13 +24,14 @@ namespace NHibernate.Type
 		/// <param name="cached">the disassembled state from the cache </param>
 		/// <param name="session">the session </param>
 		/// <param name="owner">the parent entity object </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> the the object </returns>
-		Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner);
+		Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Called before assembling a query result set from the query cache, to allow batch fetching
 		/// of entities missing from the second-level cache.
 		/// </summary>
-		Task BeforeAssembleAsync(object cached, ISessionImplementor session);
+		Task BeforeAssembleAsync(object cached, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

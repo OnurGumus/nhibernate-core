@@ -15,6 +15,7 @@ using NHibernate.Persister.Entity;
 namespace NHibernate.Proxy
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -24,11 +25,13 @@ namespace NHibernate.Proxy
 		/// <summary>
 		/// Perform an ImmediateLoad of the actual object for the Proxy.
 		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <exception cref="HibernateException">
 		/// Thrown when the Proxy has no Session or the Session is closed or disconnected.
 		/// </exception>
-		public virtual async Task InitializeAsync()
+		public virtual async Task InitializeAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (!initialized)
 			{
 				if (_session == null)
@@ -45,7 +48,7 @@ namespace NHibernate.Proxy
 				}
 				else
 				{
-					_target = await (_session.ImmediateLoadAsync(_entityName, _id)).ConfigureAwait(false);
+					_target = await (_session.ImmediateLoadAsync(_entityName, _id, cancellationToken)).ConfigureAwait(false);
 					initialized = true;
 					CheckTargetState();
 				}
@@ -59,10 +62,12 @@ namespace NHibernate.Proxy
 		/// <summary>
 		/// Return the Underlying Persistent Object, initializing if necessary.
 		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The Persistent Object this proxy is Proxying.</returns>
-		public async Task<object> GetImplementationAsync()
+		public async Task<object> GetImplementationAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			await (InitializeAsync()).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			await (InitializeAsync(cancellationToken)).ConfigureAwait(false);
 			return _target;
 		}
 	}

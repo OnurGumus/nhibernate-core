@@ -18,14 +18,16 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public sealed partial class CollectionRemoveAction : CollectionAction
 	{
 
-		public override async Task ExecuteAsync()
+		public override async Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			bool statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
 			Stopwatch stopwatch = null;
 			if (statsEnabled)
@@ -33,11 +35,11 @@ namespace NHibernate.Action
 				stopwatch = Stopwatch.StartNew();
 			}
 
-			await (PreRemoveAsync()).ConfigureAwait(false);
+			await (PreRemoveAsync(cancellationToken)).ConfigureAwait(false);
 
 			if (!emptySnapshot)
 			{
-				await (Persister.RemoveAsync(Key, Session)).ConfigureAwait(false);
+				await (Persister.RemoveAsync(Key, Session, cancellationToken)).ConfigureAwait(false);
 			}
 
 			IPersistentCollection collection = Collection;
@@ -48,7 +50,7 @@ namespace NHibernate.Action
 
 			Evict();
 
-			await (PostRemoveAsync()).ConfigureAwait(false);
+			await (PostRemoveAsync(cancellationToken)).ConfigureAwait(false);
 
 			if (statsEnabled)
 			{
@@ -57,8 +59,9 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task PreRemoveAsync()
+		private async Task PreRemoveAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IPreCollectionRemoveEventListener[] preListeners = Session.Listeners.PreCollectionRemoveEventListeners;
 			if (preListeners.Length > 0)
 			{
@@ -66,13 +69,14 @@ namespace NHibernate.Action
 				                                                                 affectedOwner);
 				for (int i = 0; i < preListeners.Length; i++)
 				{
-					await (preListeners[i].OnPreRemoveCollectionAsync(preEvent)).ConfigureAwait(false);
+					await (preListeners[i].OnPreRemoveCollectionAsync(preEvent, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private async Task PostRemoveAsync()
+		private async Task PostRemoveAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IPostCollectionRemoveEventListener[] postListeners = Session.Listeners.PostCollectionRemoveEventListeners;
 			if (postListeners.Length > 0)
 			{
@@ -80,7 +84,7 @@ namespace NHibernate.Action
 				                                                                    affectedOwner);
 				for (int i = 0; i < postListeners.Length; i++)
 				{
-					await (postListeners[i].OnPostRemoveCollectionAsync(postEvent)).ConfigureAwait(false);
+					await (postListeners[i].OnPostRemoveCollectionAsync(postEvent, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}

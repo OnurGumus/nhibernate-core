@@ -14,6 +14,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -25,8 +26,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		/// </summary>
 		/// <param name="parameters">Essentially bind information for this processing. </param>
 		/// <param name="session">The session originating the request. </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The number of entities updated/deleted. </returns>
 		/// <exception cref="HibernateException"/>
-		Task<int> ExecuteAsync(QueryParameters parameters, ISessionImplementor session);
+		Task<int> ExecuteAsync(QueryParameters parameters, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

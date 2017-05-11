@@ -30,6 +30,7 @@ using NHibernate.Util;
 namespace NHibernate.Engine.Query
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -37,8 +38,9 @@ namespace NHibernate.Engine.Query
 	{
 
 		// DONE : H3.2 Executable query (now can be supported for named SQL query/ storedProcedure)
-		public async Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session)
+		public async Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			CoordinateSharedCacheCleanup(session);
 
 			if (queryParameters.Callable)
@@ -59,7 +61,7 @@ namespace NHibernate.Engine.Query
 				var sqlParametersList = sql.GetParameters().ToList();
 				SqlType[] sqlTypes = parametersSpecifications.GetQueryParameterTypes(sqlParametersList, session.Factory);
 				
-				var ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, sqlTypes)).ConfigureAwait(false);
+				var ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, sqlTypes, cancellationToken)).ConfigureAwait(false);
 
 				try
 				{
@@ -71,10 +73,10 @@ namespace NHibernate.Engine.Query
 
 					foreach (IParameterSpecification parameterSpecification in parametersSpecifications)
 					{
-						await (parameterSpecification.BindAsync(ps, sqlParametersList, queryParameters, session)).ConfigureAwait(false);
+						await (parameterSpecification.BindAsync(ps, sqlParametersList, queryParameters, session, cancellationToken)).ConfigureAwait(false);
 					}
 					
-					result = await (session.Batcher.ExecuteNonQueryAsync(ps)).ConfigureAwait(false);
+					result = await (session.Batcher.ExecuteNonQueryAsync(ps, cancellationToken)).ConfigureAwait(false);
 				}
 				finally
 				{

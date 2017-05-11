@@ -24,6 +24,7 @@ using NHibernate.Type;
 namespace NHibernate.Collection.Generic
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -36,22 +37,25 @@ namespace NHibernate.Collection.Generic
 		/// <param name="persister">The CollectionPersister to use to reassemble the PersistentIdentifierBag.</param>
 		/// <param name="disassembled">The disassembled PersistentIdentifierBag.</param>
 		/// <param name="owner">The owner object.</param>
-		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object[] array = (object[])disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
 			for (int i = 0; i < size; i += 2)
 			{
-				_identifiers[i / 2] = await (persister.IdentifierType.AssembleAsync(array[i], Session, owner)).ConfigureAwait(false);
-				_values.Add((T) await (persister.ElementType.AssembleAsync(array[i + 1], Session, owner)).ConfigureAwait(false));
+				_identifiers[i / 2] = await (persister.IdentifierType.AssembleAsync(array[i], Session, owner, cancellationToken)).ConfigureAwait(false);
+				_values.Add((T) await (persister.ElementType.AssembleAsync(array[i + 1], Session, owner, cancellationToken)).ConfigureAwait(false));
 			}
 		}
 
-		public override async Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor, object owner)
+		public override async Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			object element = await (persister.ReadElementAsync(reader, owner, descriptor.SuffixedElementAliases, Session)).ConfigureAwait(false);
-			object id = await (persister.ReadIdentifierAsync(reader, descriptor.SuffixedIdentifierAlias, Session)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			object element = await (persister.ReadElementAsync(reader, owner, descriptor.SuffixedElementAliases, Session, cancellationToken)).ConfigureAwait(false);
+			object id = await (persister.ReadIdentifierAsync(reader, descriptor.SuffixedIdentifierAlias, Session, cancellationToken)).ConfigureAwait(false);
 
 			// eliminate duplication if loaded in a cartesian product
 			if (!_identifiers.ContainsValue(id))
@@ -62,12 +66,16 @@ namespace NHibernate.Collection.Generic
 			return element;
 		}
 
-		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
+		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<ICollection>(cancellationToken);
+			}
 			try
 			{
 				var sn = (ISet<SnapshotElement>)GetSnapshot();
-				return GetOrphansAsync(sn.Select(x => x.Value).ToArray(), (ICollection)_values, entityName, Session);
+				return GetOrphansAsync(sn.Select(x => x.Value).ToArray(), (ICollection)_values, entityName, Session, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -75,8 +83,9 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override async Task PreInsertAsync(ICollectionPersister persister)
+		public override async Task PreInsertAsync(ICollectionPersister persister, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if ((persister.IdentifierGenerator as IPostInsertIdentifierGenerator) != null)
 			{
 				// NH Different behavior (NH specific) : if we are using IdentityGenerator the PreInsert have no effect
@@ -90,7 +99,7 @@ namespace NHibernate.Collection.Generic
 					int loc = i++;
 					if (!_identifiers.ContainsKey(loc)) // TODO: native ids
 					{
-						object id = await (persister.IdentifierGenerator.GenerateAsync(Session, entry)).ConfigureAwait(false);
+						object id = await (persister.IdentifierGenerator.GenerateAsync(Session, entry, cancellationToken)).ConfigureAwait(false);
 						_identifiers[loc] = id;
 					}
 				}

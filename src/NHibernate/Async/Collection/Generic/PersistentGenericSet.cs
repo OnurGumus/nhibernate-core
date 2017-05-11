@@ -25,14 +25,19 @@ using NHibernate.Util;
 namespace NHibernate.Collection.Generic
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>
 	{
 
-		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
+		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<ICollection>(cancellationToken);
+			}
 			try
 			{
 				var sn = new SetSnapShot<T>((IEnumerable<T>)snapshot);
@@ -41,7 +46,7 @@ namespace NHibernate.Collection.Generic
 					return Task.FromResult<ICollection>(sn);
 				if (((ICollection)sn).Count == 0)
 					return Task.FromResult<ICollection>(sn);
-				return GetOrphansAsync(sn, WrappedSet.ToArray(), entityName, Session);
+				return GetOrphansAsync(sn, WrappedSet.ToArray(), entityName, Session, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -55,14 +60,16 @@ namespace NHibernate.Collection.Generic
 		/// <param name="persister">The CollectionPersister to use to reassemble the PersistentSet.</param>
 		/// <param name="disassembled">The disassembled PersistentSet.</param>
 		/// <param name="owner">The owner object.</param>
-		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			var array = (object[])disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
 			for (int i = 0; i < size; i++)
 			{
-				var element = await (persister.ElementType.AssembleAsync(array[i], Session, owner)).ConfigureAwait(false);
+				var element = await (persister.ElementType.AssembleAsync(array[i], Session, owner, cancellationToken)).ConfigureAwait(false);
 				if (element != null)
 				{
 					WrappedSet.Add((T) element);
@@ -71,9 +78,10 @@ namespace NHibernate.Collection.Generic
 			SetInitialized();
 		}
 
-		public override async Task<object> ReadFromAsync(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
+		public override async Task<object> ReadFromAsync(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var element = await (role.ReadElementAsync(rs, owner, descriptor.SuffixedElementAliases, Session)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			var element = await (role.ReadElementAsync(rs, owner, descriptor.SuffixedElementAliases, Session, cancellationToken)).ConfigureAwait(false);
 			if (element != null)
 			{
 				_tempList.Add((T) element);

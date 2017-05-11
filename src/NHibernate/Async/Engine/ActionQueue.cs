@@ -21,27 +21,30 @@ using NHibernate.Type;
 namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class ActionQueue
 	{
 	
-		private async Task ExecuteActionsAsync(IList list)
+		private async Task ExecuteActionsAsync(IList list, CancellationToken cancellationToken = default(CancellationToken))
 		{
+	cancellationToken.ThrowIfCancellationRequested();
 			int size = list.Count;
 			for (int i = 0; i < size; i++)
-				await (ExecuteAsync((IExecutable)list[i])).ConfigureAwait(false);
+				await (ExecuteAsync((IExecutable)list[i], cancellationToken)).ConfigureAwait(false);
 
 			list.Clear();
-			await (session.Batcher.ExecuteBatchAsync()).ConfigureAwait(false);
+			await (session.Batcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
 		}
 
-		public async Task ExecuteAsync(IExecutable executable)
+		public async Task ExecuteAsync(IExecutable executable, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			try
 			{
-				await (executable.ExecuteAsync()).ConfigureAwait(false);
+				await (executable.ExecuteAsync(cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -52,22 +55,29 @@ namespace NHibernate.Engine
 		/// <summary> 
 		/// Perform all currently queued entity-insertion actions.
 		/// </summary>
-		public Task ExecuteInsertsAsync()
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public Task ExecuteInsertsAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return ExecuteActionsAsync(insertions);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return ExecuteActionsAsync(insertions, cancellationToken);
 		}
 
 		/// <summary> 
 		/// Perform all currently queued actions. 
 		/// </summary>
-		public async Task ExecuteActionsAsync()
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public async Task ExecuteActionsAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			await (ExecuteActionsAsync(insertions)).ConfigureAwait(false);
-			await (ExecuteActionsAsync(updates)).ConfigureAwait(false);
-			await (ExecuteActionsAsync(collectionRemovals)).ConfigureAwait(false);
-			await (ExecuteActionsAsync(collectionUpdates)).ConfigureAwait(false);
-			await (ExecuteActionsAsync(collectionCreations)).ConfigureAwait(false);
-			await (ExecuteActionsAsync(deletions)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			await (ExecuteActionsAsync(insertions, cancellationToken)).ConfigureAwait(false);
+			await (ExecuteActionsAsync(updates, cancellationToken)).ConfigureAwait(false);
+			await (ExecuteActionsAsync(collectionRemovals, cancellationToken)).ConfigureAwait(false);
+			await (ExecuteActionsAsync(collectionUpdates, cancellationToken)).ConfigureAwait(false);
+			await (ExecuteActionsAsync(collectionCreations, cancellationToken)).ConfigureAwait(false);
+			await (ExecuteActionsAsync(deletions, cancellationToken)).ConfigureAwait(false);
 		}
 	}
 }

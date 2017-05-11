@@ -18,14 +18,16 @@ using NHibernate.Util;
 namespace NHibernate.Tool.hbm2ddl
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class SchemaValidator
 	{
 
-		public static async Task MainAsync(string[] args)
+		public static async Task MainAsync(string[] args, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			try
 			{
 				var cfg = new Configuration();
@@ -65,7 +67,7 @@ namespace NHibernate.Tool.hbm2ddl
 					cfg.setProperties( props );
 				}
 				*/
-				await (new SchemaValidator(cfg).ValidateAsync()).ConfigureAwait(false);
+				await (new SchemaValidator(cfg).ValidateAsync(cancellationToken)).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -75,8 +77,9 @@ namespace NHibernate.Tool.hbm2ddl
 		}
 
 		// Perform the validations.
-		public async Task ValidateAsync()
+		public async Task ValidateAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			log.Info("Running schema validator");
 			try
 			{
@@ -84,7 +87,7 @@ namespace NHibernate.Tool.hbm2ddl
 				try
 				{
 					log.Info("fetching database metadata");
-					await (connectionHelper.PrepareAsync()).ConfigureAwait(false);
+					await (connectionHelper.PrepareAsync(cancellationToken)).ConfigureAwait(false);
 					var connection = connectionHelper.Connection;
 					meta = new DatabaseMetadata(connection, dialect, false);
 				}

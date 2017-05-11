@@ -27,23 +27,31 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 namespace NHibernate.Loader.Custom
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class CustomLoader : Loader
 	{
 
-		public Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters)
+		public Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return ListAsync(session, queryParameters, querySpaces, resultTypes);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IList>(cancellationToken);
+			}
+			return ListAsync(session, queryParameters, querySpaces, resultTypes, cancellationToken);
 		}
 
 		// Not ported: scroll
 
-		protected override Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, DbDataReader rs,
-		                                               ISessionImplementor session)
+		protected override Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, DbDataReader rs, 		                                               ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return rowProcessor.BuildResultRowAsync(row, rs, resultTransformer != null, session);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return rowProcessor.BuildResultRowAsync(row, rs, resultTransformer != null, session, cancellationToken);
 		}
 
 		/// <content>
@@ -59,13 +67,15 @@ namespace NHibernate.Loader.Custom
 			/// <param name="resultSet">The ADO result set (positioned at the row currently being processed). </param>
 			/// <param name="hasTransformer">Does this query have an associated <see cref="IResultTransformer"/>. </param>
 			/// <param name="session">The session from which the query request originated.</param>
+			/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 			/// <returns> The logical result row </returns>
 			/// <remarks>
 			/// At this point, Loader has already processed all non-scalar result data.  We
 			/// just need to account for scalar result data here...
 			/// </remarks>
-			public async Task<object> BuildResultRowAsync(object[] data, DbDataReader resultSet, bool hasTransformer, ISessionImplementor session)
+			public async Task<object> BuildResultRowAsync(object[] data, DbDataReader resultSet, bool hasTransformer, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 				object[] resultRow;
 				// NH Different behavior (patched in NH-1612 to solve Hibernate issue HHH-2831).
 				if (!hasScalars && (hasTransformer || data.Length == 0))
@@ -80,7 +90,7 @@ namespace NHibernate.Loader.Custom
 					resultRow = new object[columnProcessors.Length];
 					for (int i = 0; i < columnProcessors.Length; i++)
 					{
-						resultRow[i] = await (columnProcessors[i].ExtractAsync(data, resultSet, session)).ConfigureAwait(false);
+						resultRow[i] = await (columnProcessors[i].ExtractAsync(data, resultSet, session, cancellationToken)).ConfigureAwait(false);
 					}
 				}
 
@@ -93,7 +103,7 @@ namespace NHibernate.Loader.Custom
 		/// </content>
 		public partial interface IResultColumnProcessor
 		{
-			Task<object> ExtractAsync(object[] data, DbDataReader resultSet, ISessionImplementor session);
+			Task<object> ExtractAsync(object[] data, DbDataReader resultSet, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 		}
 
 		/// <content>
@@ -102,8 +112,12 @@ namespace NHibernate.Loader.Custom
 		public partial class NonScalarResultColumnProcessor : IResultColumnProcessor
 		{
 
-			public Task<object> ExtractAsync(object[] data, DbDataReader resultSet, ISessionImplementor session)
+			public Task<object> ExtractAsync(object[] data, DbDataReader resultSet, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
 				try
 				{
 					return Task.FromResult<object>(Extract(data, resultSet, session));
@@ -121,9 +135,13 @@ namespace NHibernate.Loader.Custom
 		public partial class ScalarResultColumnProcessor : IResultColumnProcessor
 		{
 
-			public Task<object> ExtractAsync(object[] data, DbDataReader resultSet, ISessionImplementor session)
+			public Task<object> ExtractAsync(object[] data, DbDataReader resultSet, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 			{
-				return type.NullSafeGetAsync(resultSet, alias, session, null);
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
+				return type.NullSafeGetAsync(resultSet, alias, session, null, cancellationToken);
 			}
 		}
 	}

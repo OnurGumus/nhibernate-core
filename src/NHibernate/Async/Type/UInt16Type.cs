@@ -19,6 +19,7 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -27,8 +28,12 @@ namespace NHibernate.Type
 
 		#region IVersionType Members
 
-		public virtual Task<object> NextAsync(object current, ISessionImplementor session)
+		public virtual Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(Next(current, session));
@@ -39,8 +44,12 @@ namespace NHibernate.Type
 			}
 		}
 
-		public virtual Task<object> SeedAsync(ISessionImplementor session)
+		public virtual Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(Seed(session));

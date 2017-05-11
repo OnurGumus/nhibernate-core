@@ -18,6 +18,7 @@ using NHibernate.Type;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	using System;
 	/// <content>
 	/// Contains generated async methods
@@ -25,19 +26,24 @@ namespace NHibernate.Event.Default
 	public partial class WrapVisitor : ProxyVisitor
 	{
 
-		internal override async Task ProcessAsync(object obj, IEntityPersister persister)
+		internal override async Task ProcessAsync(object obj, IEntityPersister persister, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object[] values = persister.GetPropertyValues(obj);
 			IType[] types = persister.PropertyTypes;
-			await (ProcessEntityPropertyValuesAsync(values, types)).ConfigureAwait(false);
+			await (ProcessEntityPropertyValuesAsync(values, types, cancellationToken)).ConfigureAwait(false);
 			if (SubstitutionRequired)
 			{
 				persister.SetPropertyValues(obj, values);
 			}
 		}
 
-		internal override Task<object> ProcessCollectionAsync(object collection, CollectionType collectionType)
+		internal override Task<object> ProcessCollectionAsync(object collection, CollectionType collectionType, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(ProcessCollection(collection, collectionType));
@@ -48,9 +54,10 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		internal override async Task ProcessValueAsync(int i, object[] values, IType[] types)
+		internal override async Task ProcessValueAsync(int i, object[] values, IType[] types, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			object result = await (ProcessValueAsync(values[i], types[i])).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			object result = await (ProcessValueAsync(values[i], types[i], cancellationToken)).ConfigureAwait(false);
 			if (result != null)
 			{
 				substitute = true;
@@ -58,8 +65,9 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		internal override async Task<object> ProcessComponentAsync(object component, IAbstractComponentType componentType)
+		internal override async Task<object> ProcessComponentAsync(object component, IAbstractComponentType componentType, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (component != null)
 			{
 				object[] values = componentType.GetPropertyValues(component, Session);
@@ -67,7 +75,7 @@ namespace NHibernate.Event.Default
 				bool substituteComponent = false;
 				for (int i = 0; i < types.Length; i++)
 				{
-					object result = await (ProcessValueAsync(values[i], types[i])).ConfigureAwait(false);
+					object result = await (ProcessValueAsync(values[i], types[i], cancellationToken)).ConfigureAwait(false);
 					if (result != null)
 					{
 						values[i] = result;

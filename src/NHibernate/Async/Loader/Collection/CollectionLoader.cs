@@ -19,15 +19,20 @@ using NHibernate.Type;
 namespace NHibernate.Loader.Collection
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class CollectionLoader : OuterJoinLoader, ICollectionInitializer
 	{
 
-		public virtual Task InitializeAsync(object id, ISessionImplementor session)
+		public virtual Task InitializeAsync(object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return LoadCollectionAsync(session, id, KeyType);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return LoadCollectionAsync(session, id, KeyType, cancellationToken);
 		}
 	}
 }

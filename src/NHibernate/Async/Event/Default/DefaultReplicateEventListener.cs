@@ -17,14 +17,16 @@ using NHibernate.Persister.Entity;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class DefaultReplicateEventListener : AbstractSaveEventListener, IReplicateEventListener
 	{
 
-		public virtual async Task OnReplicateAsync(ReplicateEvent @event)
+		public virtual async Task OnReplicateAsync(ReplicateEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IEventSource source = @event.Session;
 			if (source.PersistenceContext.ReassociateIfUninitializedProxy(@event.Entity))
 			{
@@ -32,7 +34,7 @@ namespace NHibernate.Event.Default
 				return;
 			}
 
-			object entity = await (source.PersistenceContext.UnproxyAndReassociateAsync(@event.Entity)).ConfigureAwait(false);
+			object entity = await (source.PersistenceContext.UnproxyAndReassociateAsync(@event.Entity, cancellationToken)).ConfigureAwait(false);
 
 			if (source.PersistenceContext.IsEntryFor(entity))
 			{
@@ -63,7 +65,7 @@ namespace NHibernate.Event.Default
 			else
 			{
 				//what is the version on the database?
-				oldVersion = await (persister.GetCurrentVersionAsync(id, source)).ConfigureAwait(false);
+				oldVersion = await (persister.GetCurrentVersionAsync(id, source, cancellationToken)).ConfigureAwait(false);
 			}
 
 			if (oldVersion != null)
@@ -84,7 +86,7 @@ namespace NHibernate.Event.Default
 				if (canReplicate)
 				{
 					//will result in a SQL UPDATE:
-					await (PerformReplicationAsync(entity, id, realOldVersion, persister, replicationMode, source)).ConfigureAwait(false);
+					await (PerformReplicationAsync(entity, id, realOldVersion, persister, replicationMode, source, cancellationToken)).ConfigureAwait(false);
 				}
 				else
 				{
@@ -105,18 +107,19 @@ namespace NHibernate.Event.Default
 				bool regenerate = persister.IsIdentifierAssignedByInsert; // prefer re-generation of identity!
 				EntityKey key = regenerate ? null : source.GenerateEntityKey(id, persister);
 
-				await (PerformSaveOrReplicateAsync(entity, key, persister, regenerate, replicationMode, source, true)).ConfigureAwait(false);
+				await (PerformSaveOrReplicateAsync(entity, key, persister, regenerate, replicationMode, source, true, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
-		private async Task PerformReplicationAsync(object entity, object id, object version, IEntityPersister persister, ReplicationMode replicationMode, IEventSource source)
+		private async Task PerformReplicationAsync(object entity, object id, object version, IEntityPersister persister, ReplicationMode replicationMode, IEventSource source, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("replicating changes to " + MessageHelper.InfoString(persister, id, source.Factory));
 			}
 
-			await (new OnReplicateVisitor(source, id, entity, true).ProcessAsync(entity, persister)).ConfigureAwait(false);
+			await (new OnReplicateVisitor(source, id, entity, true).ProcessAsync(entity, persister, cancellationToken)).ConfigureAwait(false);
 
 			source.PersistenceContext.AddEntity(
 				entity, 
@@ -130,15 +133,16 @@ namespace NHibernate.Event.Default
 				true, 
 				false);
 
-			await (CascadeAfterReplicateAsync(entity, persister, replicationMode, source)).ConfigureAwait(false);
+			await (CascadeAfterReplicateAsync(entity, persister, replicationMode, source, cancellationToken)).ConfigureAwait(false);
 		}
 
-		private async Task CascadeAfterReplicateAsync(object entity, IEntityPersister persister, ReplicationMode replicationMode, IEventSource source)
+		private async Task CascadeAfterReplicateAsync(object entity, IEntityPersister persister, ReplicationMode replicationMode, IEventSource source, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
-				await (new Cascade(CascadingAction.Replicate, CascadePoint.AfterUpdate, source).CascadeOnAsync(persister, entity, replicationMode)).ConfigureAwait(false);
+				await (new Cascade(CascadingAction.Replicate, CascadePoint.AfterUpdate, source).CascadeOnAsync(persister, entity, replicationMode, cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -146,8 +150,12 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected override Task<bool> SubstituteValuesIfNecessaryAsync(object entity, object id, object[] values, IEntityPersister persister, ISessionImplementor source)
+		protected override Task<bool> SubstituteValuesIfNecessaryAsync(object entity, object id, object[] values, IEntityPersister persister, ISessionImplementor source, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<bool>(SubstituteValuesIfNecessary(entity, id, values, persister, source));
@@ -158,12 +166,13 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected override async Task<bool> VisitCollectionsBeforeSaveAsync(object entity, object id, object[] values, Type.IType[] types, IEventSource source)
+		protected override async Task<bool> VisitCollectionsBeforeSaveAsync(object entity, object id, object[] values, Type.IType[] types, IEventSource source, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			//TODO: we use two visitors here, inefficient!
 			OnReplicateVisitor visitor = new OnReplicateVisitor(source, id, entity, false);
-			await (visitor.ProcessEntityPropertyValuesAsync(values, types)).ConfigureAwait(false);
-			return await (base.VisitCollectionsBeforeSaveAsync(entity, id, values, types, source)).ConfigureAwait(false);
+			await (visitor.ProcessEntityPropertyValuesAsync(values, types, cancellationToken)).ConfigureAwait(false);
+			return await (base.VisitCollectionsBeforeSaveAsync(entity, id, values, types, source, cancellationToken)).ConfigureAwait(false);
 		}
 	}
 }

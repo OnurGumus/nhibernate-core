@@ -15,14 +15,16 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public abstract partial class FutureBatch<TQueryApproach, TMultiApproach>
 	{
 
-		private async Task<IList> GetResultsAsync()
+		private async Task<IList> GetResultsAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (results != null)
 			{
 				return results;
@@ -32,10 +34,10 @@ namespace NHibernate.Impl
 			{
 				AddTo(multiApproach, queries[i], resultTypes[i]);
 			}
-			results = await (GetResultsFromAsync(multiApproach)).ConfigureAwait(false);
+			results = await (GetResultsFromAsync(multiApproach, cancellationToken)).ConfigureAwait(false);
 			ClearCurrentFutureBatch();
 			return results;
 		}
-		protected abstract Task<IList> GetResultsFromAsync(TMultiApproach multiApproach);
+		protected abstract Task<IList> GetResultsFromAsync(TMultiApproach multiApproach, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

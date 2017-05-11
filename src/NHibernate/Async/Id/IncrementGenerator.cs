@@ -23,6 +23,7 @@ using NHibernate.Type;
 namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -35,15 +36,17 @@ namespace NHibernate.Id
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="obj"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
 		[MethodImpl()]
-		public async Task<object> GenerateAsync(ISessionImplementor session, object obj)
+		public async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			using (await _generate.LockAsync())
 			{
 				if (_sql != null)
 				{
-					await (GetNextAsync(session)).ConfigureAwait(false);
+					await (GetNextAsync(session, cancellationToken)).ConfigureAwait(false);
 				}
 
 				return IdentifierGeneratorFactory.CreateNumber(_next++, _returnClass);
@@ -51,22 +54,23 @@ namespace NHibernate.Id
 		}
 
 
-		private async Task GetNextAsync(ISessionImplementor session)
+		private async Task GetNextAsync(ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			Logger.Debug("fetching initial value: " + _sql);
 
 			try
 			{
-				var cmd = await (session.Batcher.PrepareCommandAsync(CommandType.Text, _sql, SqlTypeFactory.NoTypes)).ConfigureAwait(false);
+				var cmd = await (session.Batcher.PrepareCommandAsync(CommandType.Text, _sql, SqlTypeFactory.NoTypes, cancellationToken)).ConfigureAwait(false);
 				DbDataReader reader = null;
 				try
 				{
-					reader = await (session.Batcher.ExecuteReaderAsync(cmd)).ConfigureAwait(false);
+					reader = await (session.Batcher.ExecuteReaderAsync(cmd, cancellationToken)).ConfigureAwait(false);
 					try
 					{
-						if (await (reader.ReadAsync()).ConfigureAwait(false))
+						if (await (reader.ReadAsync(cancellationToken)).ConfigureAwait(false))
 						{
-							_next = !await (reader.IsDBNullAsync(0)) .ConfigureAwait(false)? Convert.ToInt64(reader.GetValue(0)) + 1 : 1L;
+							_next = !await (reader.IsDBNullAsync(0, cancellationToken)) .ConfigureAwait(false)? Convert.ToInt64(reader.GetValue(0)) + 1 : 1L;
 						}
 						else
 						{

@@ -16,6 +16,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Id.Insert
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -24,16 +25,17 @@ namespace NHibernate.Id.Insert
 
 		#region IInsertGeneratedIdentifierDelegate Members
 
-		public async Task<object> PerformInsertAsync(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder)
+		public async Task<object> PerformInsertAsync(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			try
 			{
 				// prepare and execute the insert
-				var insert = await (PrepareAsync(insertSQL, session)).ConfigureAwait(false);
+				var insert = await (PrepareAsync(insertSQL, session, cancellationToken)).ConfigureAwait(false);
 				try
 				{
 					binder.BindValues(insert);
-					return await (ExecuteAndExtractAsync(insert, session)).ConfigureAwait(false);
+					return await (ExecuteAndExtractAsync(insert, session, cancellationToken)).ConfigureAwait(false);
 				}
 				finally
 				{
@@ -49,8 +51,8 @@ namespace NHibernate.Id.Insert
 
 		#endregion
 
-		protected internal abstract Task<DbCommand> PrepareAsync(SqlCommandInfo insertSQL, ISessionImplementor session);
+		protected internal abstract Task<DbCommand> PrepareAsync(SqlCommandInfo insertSQL, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 
-		public abstract Task<object> ExecuteAndExtractAsync(DbCommand insert, ISessionImplementor session);
+		public abstract Task<object> ExecuteAndExtractAsync(DbCommand insert, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

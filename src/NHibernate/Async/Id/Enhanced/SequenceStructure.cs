@@ -20,6 +20,7 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Id.Enhanced
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -40,19 +41,20 @@ namespace NHibernate.Id.Enhanced
 
 			#region IAccessCallback Members
 
-			public virtual async Task<long> GetNextValueAsync()
+			public virtual async Task<long> GetNextValueAsync(CancellationToken cancellationToken = default(CancellationToken))
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 				_owner._accessCounter++;
 				try
 				{
-					var st = await (_session.Batcher.PrepareCommandAsync(CommandType.Text, _owner._sql, SqlTypeFactory.NoTypes)).ConfigureAwait(false);
+					var st = await (_session.Batcher.PrepareCommandAsync(CommandType.Text, _owner._sql, SqlTypeFactory.NoTypes, cancellationToken)).ConfigureAwait(false);
 					DbDataReader rs = null;
 					try
 					{
-						rs = await (_session.Batcher.ExecuteReaderAsync(st)).ConfigureAwait(false);
+						rs = await (_session.Batcher.ExecuteReaderAsync(st, cancellationToken)).ConfigureAwait(false);
 						try
 						{
-							await (rs.ReadAsync()).ConfigureAwait(false);
+							await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false);
 							long result = Convert.ToInt64(rs.GetValue(0));
 							if (Log.IsDebugEnabled)
 							{

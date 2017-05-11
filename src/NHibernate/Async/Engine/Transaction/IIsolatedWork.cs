@@ -13,6 +13,7 @@ using System.Data.Common;
 namespace NHibernate.Engine.Transaction
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -23,6 +24,7 @@ namespace NHibernate.Engine.Transaction
 		/// </summary>
 		/// <param name="connection">The ADP connection to use.</param>
 		/// <param name="transaction">The active transaction of the connection.</param>
-		Task DoWorkAsync(DbConnection connection, DbTransaction transaction);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task DoWorkAsync(DbConnection connection, DbTransaction transaction, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

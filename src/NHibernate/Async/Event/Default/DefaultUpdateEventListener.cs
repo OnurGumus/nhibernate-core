@@ -15,13 +15,15 @@ using NHibernate.Persister.Entity;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class DefaultUpdateEventListener : DefaultSaveOrUpdateEventListener
 	{
-		protected override async Task<object> PerformSaveOrUpdateAsync(SaveOrUpdateEvent @event)
+		protected override async Task<object> PerformSaveOrUpdateAsync(SaveOrUpdateEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			// this implementation is supposed to tolerate incorrect unsaved-value
 			// mappings, for the purpose of backward-compatibility
 			EntityEntry entry = @event.Session.PersistenceContext.GetEntry(@event.Entity);
@@ -38,14 +40,18 @@ namespace NHibernate.Event.Default
 			}
 			else
 			{
-				await (EntityIsDetachedAsync(@event)).ConfigureAwait(false);
+				await (EntityIsDetachedAsync(@event, cancellationToken)).ConfigureAwait(false);
 				return null;
 			}
 		}
 
-		protected override Task<object> SaveWithGeneratedOrRequestedIdAsync(SaveOrUpdateEvent @event)
+		protected override Task<object> SaveWithGeneratedOrRequestedIdAsync(SaveOrUpdateEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return SaveWithGeneratedIdAsync(@event.Entity, @event.EntityName, null, @event.Session, true);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return SaveWithGeneratedIdAsync(@event.Entity, @event.EntityName, null, @event.Session, true, cancellationToken);
 		}
 	}
 }

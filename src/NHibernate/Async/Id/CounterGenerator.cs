@@ -15,14 +15,19 @@ using NHibernate.Engine;
 namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class CounterGenerator : IIdentifierGenerator
 	{
 
-		public Task<object> GenerateAsync(ISessionImplementor cache, object obj)
+		public Task<object> GenerateAsync(ISessionImplementor cache, object obj, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(Generate(cache, obj));

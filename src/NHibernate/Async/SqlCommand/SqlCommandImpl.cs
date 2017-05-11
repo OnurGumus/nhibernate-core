@@ -19,6 +19,7 @@ using NHibernate.SqlTypes;
 namespace NHibernate.SqlCommand
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -30,11 +31,12 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="command">The command into which the value should be bound.</param>
 		/// <param name="session">The session against which the current execution is occurring.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <remarks>
 		/// Use this method when the <paramref name="command"/> contains just 'this' instance of <see cref="ISqlCommand"/>.
 		/// Use the overload <see cref="Bind(DbCommand, IList{Parameter}, int, ISessionImplementor)"/> when the <paramref name="command"/> contains more instances of <see cref="ISqlCommand"/>.
 		/// </remarks>
-		Task BindAsync(DbCommand command, ISessionImplementor session);
+		Task BindAsync(DbCommand command, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 	}
 
 	/// <content>
@@ -48,15 +50,17 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="command">The command into which the value should be bound.</param>
 		/// <param name="session">The session against which the current execution is occuring.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <remarks>
 		/// Use this method when the <paramref name="command"/> contains just 'this' instance of <see cref="ISqlCommand"/>.
 		/// Use the overload <see cref="Bind(DbCommand, IList{Parameter}, int, ISessionImplementor)"/> when the <paramref name="command"/> contains more instances of <see cref="ISqlCommand"/>.
 		/// </remarks>
-		public async Task BindAsync(DbCommand command, ISessionImplementor session)
+		public async Task BindAsync(DbCommand command, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			foreach (IParameterSpecification parameterSpecification in Specifications)
 			{
-				await (parameterSpecification.BindAsync(command, SqlQueryParametersList, QueryParameters, session)).ConfigureAwait(false);
+				await (parameterSpecification.BindAsync(command, SqlQueryParametersList, QueryParameters, session, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 	}

@@ -16,15 +16,19 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public abstract partial class MutableType : NullableType
 	{
 
-		public override Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner,
-									   IDictionary copiedAlready)
+		public override Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, 									   IDictionary copiedAlready, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(Replace(original, target, session, owner, copiedAlready));

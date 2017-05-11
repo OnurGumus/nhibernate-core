@@ -19,6 +19,7 @@ using NHibernate.Impl;
 namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -27,10 +28,14 @@ namespace NHibernate.Action
 
 		#region IExecutable Members
 
-		public abstract Task ExecuteAsync();
+		public abstract Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken));
 		
-		protected virtual Task AfterTransactionCompletionProcessImplAsync(bool success)
+		protected virtual Task AfterTransactionCompletionProcessImplAsync(bool success, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				AfterTransactionCompletionProcessImpl(success);

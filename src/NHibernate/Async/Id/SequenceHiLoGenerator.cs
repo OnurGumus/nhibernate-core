@@ -20,6 +20,7 @@ using NHibernate.Util;
 namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -39,24 +40,26 @@ namespace NHibernate.Id
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The new identifier as a <see cref="Int16"/>, <see cref="Int32"/>, or <see cref="Int64"/>.</returns>
 		[MethodImpl()]
-		public override async Task<object> GenerateAsync(ISessionImplementor session, object obj)
+		public override async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			using (await _generate.LockAsync())
 			{
 				if (maxLo < 1)
 				{
 					//keep the behavior consistent even for boundary usages
-					long val = Convert.ToInt64(await (base.GenerateAsync(session, obj)).ConfigureAwait(false));
+					long val = Convert.ToInt64(await (base.GenerateAsync(session, obj, cancellationToken)).ConfigureAwait(false));
 					if (val == 0)
-						val = Convert.ToInt64(await (base.GenerateAsync(session, obj)).ConfigureAwait(false));
+						val = Convert.ToInt64(await (base.GenerateAsync(session, obj, cancellationToken)).ConfigureAwait(false));
 					return IdentifierGeneratorFactory.CreateNumber(val, returnClass);
 				}
 
 				if (lo > maxLo)
 				{
-					long hival = Convert.ToInt64(await (base.GenerateAsync(session, obj)).ConfigureAwait(false));
+					long hival = Convert.ToInt64(await (base.GenerateAsync(session, obj, cancellationToken)).ConfigureAwait(false));
 					lo = 1;
 					hi = hival * (maxLo + 1);
 					if (log.IsDebugEnabled)

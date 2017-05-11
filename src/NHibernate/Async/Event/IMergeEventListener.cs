@@ -13,6 +13,7 @@ using System.Collections;
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -20,11 +21,13 @@ namespace NHibernate.Event
 	{
 		/// <summary> Handle the given merge event. </summary>
 		/// <param name="event">The merge event to be handled. </param>
-		Task OnMergeAsync(MergeEvent @event);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task OnMergeAsync(MergeEvent @event, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary> Handle the given merge event. </summary>
 		/// <param name="event">The merge event to be handled. </param>
 		/// <param name="copiedAlready"></param>
-		Task OnMergeAsync(MergeEvent @event, IDictionary copiedAlready);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task OnMergeAsync(MergeEvent @event, IDictionary copiedAlready, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

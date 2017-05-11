@@ -16,6 +16,7 @@ using NHibernate.Transaction;
 namespace NHibernate
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -25,10 +26,11 @@ namespace NHibernate
 		/// <summary>
 		/// Flush the associated <c>ISession</c> and end the unit of work.
 		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <remarks>
 		/// This method will commit the underlying transaction if and only if the transaction
 		/// was initiated by this object.
 		/// </remarks>
-		Task CommitAsync();
+		Task CommitAsync(CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

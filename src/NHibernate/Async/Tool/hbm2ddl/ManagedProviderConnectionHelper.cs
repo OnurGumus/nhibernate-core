@@ -15,16 +15,18 @@ using NHibernate.Connection;
 namespace NHibernate.Tool.hbm2ddl
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class ManagedProviderConnectionHelper : IConnectionHelper
 	{
 
-		public async Task PrepareAsync()
+		public async Task PrepareAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			connectionProvider = ConnectionProviderFactory.NewConnectionProvider(cfgProperties);
-			connection = await (connectionProvider.GetConnectionAsync()).ConfigureAwait(false);
+			connection = await (connectionProvider.GetConnectionAsync(cancellationToken)).ConfigureAwait(false);
 		}
 	}
 }

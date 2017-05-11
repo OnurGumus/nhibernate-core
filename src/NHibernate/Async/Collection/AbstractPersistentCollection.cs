@@ -23,6 +23,7 @@ using NHibernate.Util;
 namespace NHibernate.Collection
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -34,9 +35,14 @@ namespace NHibernate.Collection
 		/// in a runtime exception
 		/// </summary>
 		/// <param name="writing">currently obsolete</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <exception cref="LazyInitializationException">if we cannot initialize</exception>
-		protected virtual Task InitializeAsync(bool writing)
+		protected virtual Task InitializeAsync(bool writing, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				if (!initialized)
@@ -47,7 +53,7 @@ namespace NHibernate.Collection
 					}
 
 					ThrowLazyInitializationExceptionIfNotConnected();
-					return session.InitializeCollectionAsync(this, writing);
+					return session.InitializeCollectionAsync(this, writing, cancellationToken);
 				}
 
 				return Task.CompletedTask;
@@ -62,11 +68,16 @@ namespace NHibernate.Collection
 		/// To be called internally by the session, forcing
 		/// immediate initialization.
 		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <remarks>
-		/// This method is similar to <see cref="InitializeAsync(bool)" />, except that different exceptions are thrown.
+		/// This method is similar to <see cref="InitializeAsync(bool,CancellationToken)" />, except that different exceptions are thrown.
 		/// </remarks>
-		public virtual Task ForceInitializationAsync()
+		public virtual Task ForceInitializationAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				if (!initialized)
@@ -86,7 +97,7 @@ namespace NHibernate.Collection
 						return Task.FromException<object>(new HibernateException("disconnected session"));
 					}
 
-					return session.InitializeCollectionAsync(this, false);
+					return session.InitializeCollectionAsync(this, false, cancellationToken);
 				}
 
 				return Task.CompletedTask;
@@ -97,8 +108,12 @@ namespace NHibernate.Collection
 			}
 		}
 
-		public Task<ICollection> GetQueuedOrphansAsync(string entityName)
+		public Task<ICollection> GetQueuedOrphansAsync(string entityName, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<ICollection>(cancellationToken);
+			}
 			try
 			{
 				if (HasQueuedOperations)
@@ -119,7 +134,7 @@ namespace NHibernate.Collection
 						}
 					}
 
-					return GetOrphansAsync(removals, additions, entityName, session);
+					return GetOrphansAsync(removals, additions, entityName, session, cancellationToken);
 				}
 
 				return Task.FromResult<ICollection>(CollectionHelper.EmptyCollection);
@@ -134,7 +149,12 @@ namespace NHibernate.Collection
 		/// Called before inserting rows, to ensure that any surrogate keys are fully generated
 		/// </summary>
 		/// <param name="persister"></param>
-		public virtual Task PreInsertAsync(ICollectionPersister persister) {			try
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public virtual Task PreInsertAsync(ICollectionPersister persister, CancellationToken cancellationToken = default(CancellationToken)) {			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
 			{
 				PreInsert(persister);
 				return Task.CompletedTask;
@@ -148,15 +168,16 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Get all "orphaned" elements
 		/// </summary>
-		public abstract Task<ICollection> GetOrphansAsync(object snapshot, string entityName);
+		public abstract Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary> 
 		/// Given a collection of entity instances that used to
 		/// belong to the collection, and a collection of instances
 		/// that currently belong, return a collection of orphans
 		/// </summary>
-		protected virtual async Task<ICollection> GetOrphansAsync(ICollection oldElements, ICollection currentElements, string entityName, ISessionImplementor session)
+		protected virtual async Task<ICollection> GetOrphansAsync(ICollection oldElements, ICollection currentElements, string entityName, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			// short-circuit(s)
 			if (currentElements.Count == 0)
 			{
@@ -178,7 +199,7 @@ namespace NHibernate.Collection
 			var currentIds = new HashSet<TypedValue>();
 			foreach (object current in currentElements)
 			{
-				if (current != null && await (ForeignKeys.IsNotTransientSlowAsync(entityName, current, session)).ConfigureAwait(false))
+				if (current != null && await (ForeignKeys.IsNotTransientSlowAsync(entityName, current, session, cancellationToken)).ConfigureAwait(false))
 				{
 					object currentId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, current, session);
 					currentIds.Add(new TypedValue(idType, currentId));
@@ -198,9 +219,10 @@ namespace NHibernate.Collection
 			return res;
 		}
 
-		public async Task IdentityRemoveAsync(IList list, object obj, string entityName, ISessionImplementor session)
+		public async Task IdentityRemoveAsync(IList list, object obj, string entityName, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (obj != null && await (ForeignKeys.IsNotTransientSlowAsync(entityName, obj, session)).ConfigureAwait(false))
+			cancellationToken.ThrowIfCancellationRequested();
+			if (obj != null && await (ForeignKeys.IsNotTransientSlowAsync(entityName, obj, session, cancellationToken)).ConfigureAwait(false))
 			{
 				IType idType = session.Factory.GetEntityPersister(entityName).IdentifierType;
 
@@ -231,7 +253,8 @@ namespace NHibernate.Collection
 		/// <param name="persister"></param>
 		/// <param name="disassembled"></param>
 		/// <param name="owner"></param>
-		public abstract Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public abstract Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Reads the row from the <see cref="DbDataReader"/>.
@@ -240,9 +263,9 @@ namespace NHibernate.Collection
 		/// <param name="role">The persister for this Collection.</param>
 		/// <param name="descriptor">The descriptor providing result set column names</param>
 		/// <param name="owner">The owner of this Collection.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The object that was contained in the row.</returns>
-		public abstract Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor,
-										object owner);
+		public abstract Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, 										object owner, CancellationToken cancellationToken = default(CancellationToken));
 
 		#region - Hibernate Collection Proxy Classes
 

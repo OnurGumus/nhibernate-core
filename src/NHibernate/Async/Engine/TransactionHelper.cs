@@ -15,6 +15,7 @@ using NHibernate.Exceptions;
 namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -28,11 +29,12 @@ namespace NHibernate.Engine
 
 			#region Implementation of IIsolatedWork
 
-			public async Task DoWorkAsync(DbConnection connection, DbTransaction transaction)
+			public async Task DoWorkAsync(DbConnection connection, DbTransaction transaction, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 				try
 				{
-					generatedValue = await (owner.DoWorkInCurrentTransactionAsync(session, connection, transaction)).ConfigureAwait(false);
+					generatedValue = await (owner.DoWorkInCurrentTransactionAsync(session, connection, transaction, cancellationToken)).ConfigureAwait(false);
 				}
 				catch (DbException sqle)
 				{
@@ -44,13 +46,14 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> The work to be done</summary>
-		public abstract Task<object> DoWorkInCurrentTransactionAsync(ISessionImplementor session, DbConnection conn, DbTransaction transaction);
+		public abstract Task<object> DoWorkInCurrentTransactionAsync(ISessionImplementor session, DbConnection conn, DbTransaction transaction, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary> Suspend the current transaction and perform work in a new transaction</summary>
-		public virtual async Task<object> DoWorkInNewTransactionAsync(ISessionImplementor session)
+		public virtual async Task<object> DoWorkInNewTransactionAsync(ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			Work work = new Work(session, this);
-			await (Isolater.DoIsolatedWorkAsync(work, session)).ConfigureAwait(false);
+			await (Isolater.DoIsolatedWorkAsync(work, session, cancellationToken)).ConfigureAwait(false);
 			return work.generatedValue;
 		}
 	}

@@ -16,6 +16,7 @@ using NHibernate.Util;
 namespace NHibernate.Id.Enhanced
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -32,16 +33,17 @@ namespace NHibernate.Id.Enhanced
 			private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();
 
 			[MethodImpl()]
-			public override async Task<object> GenerateAsync(IAccessCallback callback)
+			public override async Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 				using (await _generate.LockAsync())
 				{
 					if (_lastSourceValue < 0)
 					{
-						_lastSourceValue = await (callback.GetNextValueAsync()).ConfigureAwait(false);
+						_lastSourceValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
 						while (_lastSourceValue <= 0)
 						{
-							_lastSourceValue = await (callback.GetNextValueAsync()).ConfigureAwait(false);
+							_lastSourceValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
 						}
 
 						// upperLimit defines the upper end of the bucket values
@@ -51,7 +53,7 @@ namespace NHibernate.Id.Enhanced
 					}
 					else if (_upperLimit <= _value)
 					{
-						_lastSourceValue = await (callback.GetNextValueAsync()).ConfigureAwait(false);
+						_lastSourceValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
 						_upperLimit = (_lastSourceValue * IncrementSize) + 1;
 					}
 
@@ -70,14 +72,15 @@ namespace NHibernate.Id.Enhanced
 		public partial class NoopOptimizer : OptimizerSupport
 		{
 
-			public override async Task<object> GenerateAsync(IAccessCallback callback)
+			public override async Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 				// We must use a local variable here to avoid concurrency issues.
 				// With the local value we can avoid synchronizing the whole method.
 
 				long val = -1;
 				while (val <= 0)
-					val = await (callback.GetNextValueAsync()).ConfigureAwait(false);
+					val = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
 
 				// This value is only stored for easy access in test. Should be no
 				// threading concerns there.
@@ -99,7 +102,7 @@ namespace NHibernate.Id.Enhanced
 
 			#region IOptimizer Members
 
-			public abstract Task<object> GenerateAsync(IAccessCallback param);
+			public abstract Task<object> GenerateAsync(IAccessCallback param, CancellationToken cancellationToken = default(CancellationToken));
 
 			#endregion
 		}
@@ -116,13 +119,14 @@ namespace NHibernate.Id.Enhanced
 			private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();
 
 			[MethodImpl()]
-			public override async Task<object> GenerateAsync(IAccessCallback callback)
+			public override async Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 				using (await _generate.LockAsync())
 				{
 					if (_hiValue < 0)
 					{
-						_value = await (callback.GetNextValueAsync()).ConfigureAwait(false);
+						_value = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
 						if (_value < 1)
 						{
 							// unfortunately not really safe to normalize this
@@ -133,7 +137,7 @@ namespace NHibernate.Id.Enhanced
 						}
 
 						if ((_initialValue == -1 && _value < IncrementSize) || _value == _initialValue)
-							_hiValue = await (callback.GetNextValueAsync()).ConfigureAwait(false);
+							_hiValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
 						else
 						{
 							_hiValue = _value;
@@ -142,7 +146,7 @@ namespace NHibernate.Id.Enhanced
 					}
 					else if (_value >= _hiValue)
 					{
-						_hiValue = await (callback.GetNextValueAsync()).ConfigureAwait(false);
+						_hiValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
 						_value = _hiValue - IncrementSize;
 					}
 
@@ -163,13 +167,14 @@ namespace NHibernate.Id.Enhanced
 			private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();
 
 			[MethodImpl()]
-			public override async Task<object> GenerateAsync(IAccessCallback callback)
+			public override async Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 				using (await _generate.LockAsync())
 				{
 					if (_lastSourceValue < 0 || _value >= (_lastSourceValue + IncrementSize))
 					{
-						_lastSourceValue = await (callback.GetNextValueAsync()).ConfigureAwait(false);
+						_lastSourceValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
 						_value = _lastSourceValue;
 						// handle cases where initial-value is less than one (hsqldb for instance).
 						while (_value < 1)

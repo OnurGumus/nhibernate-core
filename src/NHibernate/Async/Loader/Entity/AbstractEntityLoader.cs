@@ -22,6 +22,7 @@ using NHibernate.Type;
 namespace NHibernate.Loader.Entity
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	using System;
 	/// <content>
 	/// Contains generated async methods
@@ -29,14 +30,19 @@ namespace NHibernate.Loader.Entity
 	public abstract partial class AbstractEntityLoader : OuterJoinLoader, IUniqueEntityLoader
 	{
 
-		public Task<object> LoadAsync(object id, object optionalObject, ISessionImplementor session)
+		public Task<object> LoadAsync(object id, object optionalObject, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return LoadAsync(session, id, optionalObject, id);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return LoadAsync(session, id, optionalObject, id, cancellationToken);
 		}
 
-		protected virtual async Task<object> LoadAsync(ISessionImplementor session, object id, object optionalObject, object optionalId)
+		protected virtual async Task<object> LoadAsync(ISessionImplementor session, object id, object optionalObject, object optionalId, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			IList list = await (LoadEntityAsync(session, id, UniqueKeyType, optionalObject, entityName, optionalId, persister)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			IList list = await (LoadEntityAsync(session, id, UniqueKeyType, optionalObject, entityName, optionalId, persister, cancellationToken)).ConfigureAwait(false);
 
 			if (list.Count == 1)
 			{
@@ -61,9 +67,12 @@ namespace NHibernate.Loader.Entity
 			}
 		}
 
-		protected override Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, DbDataReader rs,
-													   ISessionImplementor session)
+		protected override Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, DbDataReader rs, 													   ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(GetResultColumnOrRow(row, resultTransformer, rs, session));

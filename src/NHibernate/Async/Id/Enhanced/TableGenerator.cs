@@ -23,6 +23,7 @@ using NHibernate.AdoNet.Util;
 namespace NHibernate.Id.Enhanced
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -36,11 +37,12 @@ namespace NHibernate.Id.Enhanced
 
 
 		[MethodImpl()]
-		public virtual async Task<object> GenerateAsync(ISessionImplementor session, object obj)
+		public virtual async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			using (await _generate.LockAsync())
 			{
-				return await (Optimizer.GenerateAsync(new TableAccessCallback(session, this))).ConfigureAwait(false);
+				return await (Optimizer.GenerateAsync(new TableAccessCallback(session, this), cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -54,17 +56,19 @@ namespace NHibernate.Id.Enhanced
 
 			#region IAccessCallback Members
 
-			public async Task<long> GetNextValueAsync()
+			public async Task<long> GetNextValueAsync(CancellationToken cancellationToken = default(CancellationToken))
 			{
-				return Convert.ToInt64(await (owner.DoWorkInNewTransactionAsync(session)).ConfigureAwait(false));
+				cancellationToken.ThrowIfCancellationRequested();
+				return Convert.ToInt64(await (owner.DoWorkInNewTransactionAsync(session, cancellationToken)).ConfigureAwait(false));
 			}
 
 			#endregion
 		}
 
 
-		public override async Task<object> DoWorkInCurrentTransactionAsync(ISessionImplementor session, DbConnection conn, DbTransaction transaction)
+		public override async Task<object> DoWorkInCurrentTransactionAsync(ISessionImplementor session, DbConnection conn, DbTransaction transaction, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			long result;
 			int updatedRows;
 
@@ -83,7 +87,7 @@ namespace NHibernate.Id.Enhanced
 						selectCmd.Parameters[0].Value = SegmentValue;
 						PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(selectCmd, FormatStyle.Basic);
 
-						selectedValue = await (selectCmd.ExecuteScalarAsync()).ConfigureAwait(false);
+						selectedValue = await (selectCmd.ExecuteScalarAsync(cancellationToken)).ConfigureAwait(false);
 					}
 
 					if (selectedValue == null)
@@ -100,7 +104,7 @@ namespace NHibernate.Id.Enhanced
 							insertCmd.Parameters[1].Value = result;
 
 							PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(insertCmd, FormatStyle.Basic);
-							await (insertCmd.ExecuteNonQueryAsync()).ConfigureAwait(false);
+							await (insertCmd.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 						}
 					}
 					else
@@ -128,7 +132,7 @@ namespace NHibernate.Id.Enhanced
 						updateCmd.Parameters[1].Value = result;
 						updateCmd.Parameters[2].Value = SegmentValue;
 						PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(updateCmd, FormatStyle.Basic);
-						updatedRows = await (updateCmd.ExecuteNonQueryAsync()).ConfigureAwait(false);
+						updatedRows = await (updateCmd.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 					}
 				}
 				catch (Exception ex)

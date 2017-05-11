@@ -18,19 +18,24 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class CollectionEntry
 	{
 
-		public Task<ICollection> GetOrphansAsync(string entityName, IPersistentCollection collection)
+		public Task<ICollection> GetOrphansAsync(string entityName, IPersistentCollection collection, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (snapshot == null)
 			{
 				throw new AssertionFailure("no collection snapshot for orphan delete");
 			}
-			return collection.GetOrphansAsync(snapshot, entityName);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<ICollection>(cancellationToken);
+			}
+			return collection.GetOrphansAsync(snapshot, entityName, cancellationToken);
 		}
 	}
 }

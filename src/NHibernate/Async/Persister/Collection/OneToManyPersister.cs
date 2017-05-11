@@ -28,14 +28,16 @@ using NHibernate.Util;
 namespace NHibernate.Persister.Collection
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class OneToManyPersister : AbstractCollectionPersister
 	{
 
-		protected override async Task<int> DoUpdateRowsAsync(object id, IPersistentCollection collection, ISessionImplementor session)
+		protected override async Task<int> DoUpdateRowsAsync(object id, IPersistentCollection collection, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			// we finish all the "removes" first to take care of possible unique 
 			// constraints and so that we can take better advantage of batching
 			try
@@ -61,12 +63,12 @@ namespace NHibernate.Persister.Collection
 							if (useBatch)
 							{
 								st = await (session.Batcher.PrepareBatchCommandAsync(SqlDeleteRowString.CommandType, sql.Text,
-																		 SqlDeleteRowString.ParameterTypes)).ConfigureAwait(false);
+																		 SqlDeleteRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 							}
 							else
 							{
 								st = await (session.Batcher.PrepareCommandAsync(SqlDeleteRowString.CommandType, sql.Text,
-																	SqlDeleteRowString.ParameterTypes)).ConfigureAwait(false);
+																	SqlDeleteRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 							}
 
 							try
@@ -75,11 +77,11 @@ namespace NHibernate.Persister.Collection
 								WriteElementToWhere(st, collection.GetSnapshotElement(entry, i), loc, session);
 								if (useBatch)
 								{
-									await (session.Batcher.AddToBatchAsync(deleteExpectation)).ConfigureAwait(false);
+									await (session.Batcher.AddToBatchAsync(deleteExpectation, cancellationToken)).ConfigureAwait(false);
 								}
 								else
 								{
-									deleteExpectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st)).ConfigureAwait(false), st);
+									deleteExpectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
 								}
 							}
 							catch (Exception e)
@@ -121,12 +123,12 @@ namespace NHibernate.Persister.Collection
 							if (useBatch)
 							{
 								st = await (session.Batcher.PrepareBatchCommandAsync(SqlInsertRowString.CommandType, sql.Text,
-																		 SqlInsertRowString.ParameterTypes)).ConfigureAwait(false);
+																		 SqlInsertRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 							}
 							else
 							{
 								st = await (session.Batcher.PrepareCommandAsync(SqlInsertRowString.CommandType, sql.Text,
-																	SqlInsertRowString.ParameterTypes)).ConfigureAwait(false);
+																	SqlInsertRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 							}
 
 							try
@@ -140,11 +142,11 @@ namespace NHibernate.Persister.Collection
 								WriteElementToWhere(st, collection.GetElement(entry), loc, session);
 								if (useBatch)
 								{
-									await (session.Batcher.AddToBatchAsync(insertExpectation)).ConfigureAwait(false);
+									await (session.Batcher.AddToBatchAsync(insertExpectation, cancellationToken)).ConfigureAwait(false);
 								}
 								else
 								{
-									insertExpectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st)).ConfigureAwait(false), st);
+									insertExpectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
 								}
 							}
 							catch (Exception e)

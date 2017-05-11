@@ -13,6 +13,7 @@ using NHibernate.Engine;
 namespace NHibernate.Proxy
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -21,15 +22,17 @@ namespace NHibernate.Proxy
 		/// <summary>
 		/// Perform an ImmediateLoad of the actual object for the Proxy.
 		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <exception cref="HibernateException">
 		/// Thrown when the Proxy has no Session or the Session is closed or disconnected.
 		/// </exception>
-		Task InitializeAsync();
+		Task InitializeAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Return the underlying persistent object, initializing if necessary.
 		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The persistent object this proxy is proxying.</returns>
-		Task<object> GetImplementationAsync();
+		Task<object> GetImplementationAsync(CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

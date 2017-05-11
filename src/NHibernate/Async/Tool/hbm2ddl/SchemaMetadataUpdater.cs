@@ -16,6 +16,7 @@ using System.Collections.Generic;
 namespace NHibernate.Tool.hbm2ddl
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	using System;
 	/// <content>
 	/// Contains generated async methods
@@ -23,17 +24,19 @@ namespace NHibernate.Tool.hbm2ddl
 
 	public static partial class SchemaMetadataUpdater
 	{
-		public static async Task UpdateAsync(ISessionFactory sessionFactory)
+		public static async Task UpdateAsync(ISessionFactory sessionFactory, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			var factory = (ISessionFactoryImplementor) sessionFactory;
 			var dialect = factory.Dialect;
 			var connectionHelper = new SuppliedConnectionProviderConnectionHelper(factory.ConnectionProvider);
-			factory.Dialect.Keywords.UnionWith(await (GetReservedWordsAsync(dialect, connectionHelper)).ConfigureAwait(false));
+			factory.Dialect.Keywords.UnionWith(await (GetReservedWordsAsync(dialect, connectionHelper, cancellationToken)).ConfigureAwait(false));
 		}
 
-		public static async Task QuoteTableAndColumnsAsync(Configuration configuration)
+		public static async Task QuoteTableAndColumnsAsync(Configuration configuration, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			ISet<string> reservedDb = await (GetReservedWordsAsync(configuration.GetDerivedProperties())).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			ISet<string> reservedDb = await (GetReservedWordsAsync(configuration.GetDerivedProperties(), cancellationToken)).ConfigureAwait(false);
 			foreach (var cm in configuration.ClassMappings)
 			{
 				QuoteTable(cm.Table, reservedDb);
@@ -44,13 +47,17 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 		}
 
-		private static Task<ISet<string>> GetReservedWordsAsync(IDictionary<string, string> cfgProperties)
+		private static Task<ISet<string>> GetReservedWordsAsync(IDictionary<string, string> cfgProperties, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<ISet<string>>(cancellationToken);
+			}
 			try
 			{
 				var dialect = Dialect.Dialect.GetDialect(cfgProperties);
 				var connectionHelper = new ManagedProviderConnectionHelper(cfgProperties);
-				return GetReservedWordsAsync(dialect, connectionHelper);
+				return GetReservedWordsAsync(dialect, connectionHelper, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -58,10 +65,11 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 		}
 
-		private static async Task<ISet<string>> GetReservedWordsAsync(Dialect.Dialect dialect, IConnectionHelper connectionHelper)
+		private static async Task<ISet<string>> GetReservedWordsAsync(Dialect.Dialect dialect, IConnectionHelper connectionHelper, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			ISet<string> reservedDb = new HashSet<string>();
-			await (connectionHelper.PrepareAsync()).ConfigureAwait(false);
+			await (connectionHelper.PrepareAsync(cancellationToken)).ConfigureAwait(false);
 			try
 			{
 				var metaData = dialect.GetDataBaseSchema(connectionHelper.Connection);

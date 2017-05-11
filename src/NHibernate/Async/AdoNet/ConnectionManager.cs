@@ -20,19 +20,21 @@ using NHibernate.Engine;
 namespace NHibernate.AdoNet
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class ConnectionManager : ISerializable, IDeserializationCallback
 	{
 
-		public async Task<DbConnection> GetConnectionAsync()
+		public async Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (connection == null)
 			{
 				if (ownConnection)
 				{
-					connection = await (Factory.ConnectionProvider.GetConnectionAsync()).ConfigureAwait(false);
+					connection = await (Factory.ConnectionProvider.GetConnectionAsync(cancellationToken)).ConfigureAwait(false);
 					if (Factory.Statistics.IsStatisticsEnabled)
 					{
 						Factory.StatisticsImplementor.Connect();
@@ -57,9 +59,10 @@ namespace NHibernate.AdoNet
 
 		#endregion
 
-		public async Task<DbCommand> CreateCommandAsync()
+		public async Task<DbCommand> CreateCommandAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var result = (await (GetConnectionAsync()).ConfigureAwait(false)).CreateCommand();
+			cancellationToken.ThrowIfCancellationRequested();
+			var result = (await (GetConnectionAsync(cancellationToken)).ConfigureAwait(false)).CreateCommand();
 			Transaction.Enlist(result);
 			return result;
 		}

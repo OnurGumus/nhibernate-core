@@ -14,6 +14,7 @@ using NHibernate.Connection;
 namespace NHibernate.Tool.hbm2ddl
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 
 	/// <content>
 	/// Contains generated async methods
@@ -21,9 +22,10 @@ namespace NHibernate.Tool.hbm2ddl
 	public partial class SuppliedConnectionProviderConnectionHelper : IConnectionHelper
 	{
 
-		public async Task PrepareAsync()
+		public async Task PrepareAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			connection = await (provider.GetConnectionAsync()).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			connection = await (provider.GetConnectionAsync(cancellationToken)).ConfigureAwait(false);
 		}
 	}
 }

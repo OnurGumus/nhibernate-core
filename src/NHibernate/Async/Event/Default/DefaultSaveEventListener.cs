@@ -14,13 +14,18 @@ using NHibernate.Engine;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class DefaultSaveEventListener : DefaultSaveOrUpdateEventListener
 	{
-		protected override Task<object> PerformSaveOrUpdateAsync(SaveOrUpdateEvent @event)
+		protected override Task<object> PerformSaveOrUpdateAsync(SaveOrUpdateEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				// this implementation is supposed to tolerate incorrect unsaved-value
@@ -32,7 +37,7 @@ namespace NHibernate.Event.Default
 				}
 				else
 				{
-					return EntityIsTransientAsync(@event);
+					return EntityIsTransientAsync(@event, cancellationToken);
 				}
 			}
 			catch (Exception ex)

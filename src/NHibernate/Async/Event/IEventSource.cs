@@ -17,6 +17,7 @@ using NHibernate.Persister.Entity;
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -24,21 +25,21 @@ namespace NHibernate.Event
 	{
 
 		/// <summary> Force an immediate flush</summary>
-		Task ForceFlushAsync(EntityEntry e);
+		Task ForceFlushAsync(EntityEntry e, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary> Cascade merge an entity instance</summary>
-		Task MergeAsync(string entityName, object obj, IDictionary copiedAlready);
+		Task MergeAsync(string entityName, object obj, IDictionary copiedAlready, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary> Cascade persist an entity instance</summary>
-		Task PersistAsync(string entityName, object obj, IDictionary createdAlready);
+		Task PersistAsync(string entityName, object obj, IDictionary createdAlready, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary> Cascade persist an entity instance during the flush process</summary>
-		Task PersistOnFlushAsync(string entityName, object obj, IDictionary copiedAlready);
+		Task PersistOnFlushAsync(string entityName, object obj, IDictionary copiedAlready, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary> Cascade refresh an entity instance</summary>
-		Task RefreshAsync(object obj, IDictionary refreshedAlready);
+		Task RefreshAsync(object obj, IDictionary refreshedAlready, CancellationToken cancellationToken = default(CancellationToken));
         
 		/// <summary> Cascade delete an entity instance</summary>
-		Task DeleteAsync(string entityName, object child, bool isCascadeDeleteEnabled, ISet<object> transientEntities);
+		Task DeleteAsync(string entityName, object child, bool isCascadeDeleteEnabled, ISet<object> transientEntities, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

@@ -17,6 +17,7 @@ using NHibernate.Type;
 namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -34,11 +35,12 @@ namespace NHibernate.Engine
 			/// been inserted in the database, where the foreign key
 			/// points toward that entity
 			/// </summary>
-			public async Task NullifyTransientReferencesAsync(object[] values, IType[] types)
+			public async Task NullifyTransientReferencesAsync(object[] values, IType[] types, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 				for (int i = 0; i < types.Length; i++)
 				{
-					values[i] = await (NullifyTransientReferencesAsync(values[i], types[i])).ConfigureAwait(false);
+					values[i] = await (NullifyTransientReferencesAsync(values[i], types[i], cancellationToken)).ConfigureAwait(false);
 				}
 			}
 
@@ -48,8 +50,9 @@ namespace NHibernate.Engine
 			/// otherwise. This is how Hibernate avoids foreign key constraint
 			/// violations.
 			/// </summary>
-			private async Task<object> NullifyTransientReferencesAsync(object value, IType type)
+			private async Task<object> NullifyTransientReferencesAsync(object value, IType type, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 				if (value == null)
 				{
 					return null;
@@ -64,12 +67,12 @@ namespace NHibernate.Engine
 					else
 					{
 						string entityName = entityType.GetAssociatedEntityName();
-						return await (IsNullifiableAsync(entityName, value)) .ConfigureAwait(false)? null : value;
+						return await (IsNullifiableAsync(entityName, value, cancellationToken)) .ConfigureAwait(false)? null : value;
 					}
 				}
 				else if (type.IsAnyType)
 				{
-					return await (IsNullifiableAsync(null, value)) .ConfigureAwait(false)? null : value;
+					return await (IsNullifiableAsync(null, value, cancellationToken)) .ConfigureAwait(false)? null : value;
 				}
 				else if (type.IsComponentType)
 				{
@@ -79,7 +82,7 @@ namespace NHibernate.Engine
 					bool substitute = false;
 					for (int i = 0; i < subvalues.Length; i++)
 					{
-						object replacement = await (NullifyTransientReferencesAsync(subvalues[i], subtypes[i])).ConfigureAwait(false);
+						object replacement = await (NullifyTransientReferencesAsync(subvalues[i], subtypes[i], cancellationToken)).ConfigureAwait(false);
 						if (replacement != subvalues[i])
 						{
 							substitute = true;
@@ -99,8 +102,9 @@ namespace NHibernate.Engine
 			/// <summary> 
 			/// Determine if the object already exists in the database, using a "best guess"
 			/// </summary>
-			private async Task<bool> IsNullifiableAsync(string entityName, object obj)
+			private async Task<bool> IsNullifiableAsync(string entityName, object obj, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 
 				//if (obj == org.hibernate.intercept.LazyPropertyInitializer_Fields.UNFETCHED_PROPERTY)
 				//  return false; //this is kinda the best we can do...
@@ -120,7 +124,7 @@ namespace NHibernate.Engine
 					else
 					{
 						//unwrap it
-						obj = await (li.GetImplementationAsync()).ConfigureAwait(false);
+						obj = await (li.GetImplementationAsync(cancellationToken)).ConfigureAwait(false);
 					}
 				}
 
@@ -141,7 +145,7 @@ namespace NHibernate.Engine
 				EntityEntry entityEntry = session.PersistenceContext.GetEntry(obj);
 				if (entityEntry == null)
 				{
-					return await (IsTransientSlowAsync(entityName, obj, session)).ConfigureAwait(false);
+					return await (IsTransientSlowAsync(entityName, obj, session, cancellationToken)).ConfigureAwait(false);
 				}
 				else
 				{
@@ -156,13 +160,14 @@ namespace NHibernate.Engine
 		/// <remarks>
 		/// Hit the database to make the determination.
 		/// </remarks>
-		public static async Task<bool> IsNotTransientSlowAsync(string entityName, object entity, ISessionImplementor session)
+		public static async Task<bool> IsNotTransientSlowAsync(string entityName, object entity, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (entity.IsProxy())
 				return true;
 			if (session.PersistenceContext.IsEntryFor(entity))
 				return true;
-			return !await (IsTransientSlowAsync(entityName, entity, session)).ConfigureAwait(false);
+			return !await (IsTransientSlowAsync(entityName, entity, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		/// <summary> 
@@ -171,14 +176,16 @@ namespace NHibernate.Engine
 		/// <remarks>
 		/// Hit the database to make the determination.
 		/// </remarks>
-		public static async Task<bool> IsTransientSlowAsync(string entityName, object entity, ISessionImplementor session)
+		public static async Task<bool> IsTransientSlowAsync(string entityName, object entity, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			return IsTransientFast(entityName, entity, session) ??
-			       await (HasDbSnapshotAsync(entityName, entity, session)).ConfigureAwait(false);
+			       await (HasDbSnapshotAsync(entityName, entity, session, cancellationToken)).ConfigureAwait(false);
 		}
 
-		static async Task<bool> HasDbSnapshotAsync(string entityName, object entity, ISessionImplementor session)
+		static async Task<bool> HasDbSnapshotAsync(string entityName, object entity, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IEntityPersister persister = session.GetEntityPersister(entityName, entity);
 			if (persister.IdentifierGenerator is Assigned)
 			{
@@ -194,7 +201,7 @@ namespace NHibernate.Engine
 
 			// hit the database, after checking the session cache for a snapshot
 			System.Object[] snapshot =
-				await (session.PersistenceContext.GetDatabaseSnapshotAsync(persister.GetIdentifier(entity), persister)).ConfigureAwait(false);
+				await (session.PersistenceContext.GetDatabaseSnapshotAsync(persister.GetIdentifier(entity), persister, cancellationToken)).ConfigureAwait(false);
 			return snapshot == null;
 		}
 	}

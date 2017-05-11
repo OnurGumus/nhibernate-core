@@ -37,6 +37,7 @@ using Array=NHibernate.Mapping.Array;
 namespace NHibernate.Persister.Collection
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -44,11 +45,15 @@ namespace NHibernate.Persister.Collection
 														IPostInsertIdentityPersister
 	{
 
-		public Task InitializeAsync(object key, ISessionImplementor session)
+		public Task InitializeAsync(object key, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
-				return GetAppropriateInitializer(key, session).InitializeAsync(key, session);
+				return GetAppropriateInitializer(key, session).InitializeAsync(key, session, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -61,14 +66,19 @@ namespace NHibernate.Persister.Collection
 		/// the id of the Element.
 		/// </summary>
 		/// <remarks>See ReadElementIdentifier for an explanation of why this method will be depreciated.</remarks>
-		public Task<object> ReadElementAsync(DbDataReader rs, object owner, string[] aliases, ISessionImplementor session)
+		public Task<object> ReadElementAsync(DbDataReader rs, object owner, string[] aliases, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return ElementType.NullSafeGetAsync(rs, aliases, session, owner);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return ElementType.NullSafeGetAsync(rs, aliases, session, owner, cancellationToken);
 		}
 
-		public async Task<object> ReadIndexAsync(DbDataReader rs, string[] aliases, ISessionImplementor session)
+		public async Task<object> ReadIndexAsync(DbDataReader rs, string[] aliases, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			object index = await (IndexType.NullSafeGetAsync(rs, aliases, session, null)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			object index = await (IndexType.NullSafeGetAsync(rs, aliases, session, null, cancellationToken)).ConfigureAwait(false);
 			if (index == null)
 			{
 				throw new HibernateException("null index column for collection: " + role);
@@ -77,9 +87,10 @@ namespace NHibernate.Persister.Collection
 			return index;
 		}
 
-		public async Task<object> ReadIdentifierAsync(DbDataReader rs, string alias, ISessionImplementor session)
+		public async Task<object> ReadIdentifierAsync(DbDataReader rs, string alias, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			object id = await (IdentifierType.NullSafeGetAsync(rs, alias, session, null)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			object id = await (IdentifierType.NullSafeGetAsync(rs, alias, session, null, cancellationToken)).ConfigureAwait(false);
 			if (id == null)
 			{
 				throw new HibernateException("null identifier column for collection: " + role);
@@ -88,13 +99,18 @@ namespace NHibernate.Persister.Collection
 			return id;
 		}
 
-		public Task<object> ReadKeyAsync(DbDataReader dr, string[] aliases, ISessionImplementor session)
+		public Task<object> ReadKeyAsync(DbDataReader dr, string[] aliases, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return KeyType.NullSafeGetAsync(dr, aliases, session, null);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return KeyType.NullSafeGetAsync(dr, aliases, session, null, cancellationToken);
 		}
 
-		public async Task RemoveAsync(object id, ISessionImplementor session)
+		public async Task RemoveAsync(object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (!isInverse && RowDeleteEnabled)
 			{
 				if (log.IsDebugEnabled)
@@ -110,8 +126,8 @@ namespace NHibernate.Persister.Collection
 					//bool callable = DeleteAllCallable;
 					bool useBatch = expectation.CanBeBatched;
 					var st = useBatch
-						? await (session.Batcher.PrepareBatchCommandAsync(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes))
-.ConfigureAwait(false)						: await (session.Batcher.PrepareCommandAsync(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes)).ConfigureAwait(false);
+						? await (session.Batcher.PrepareBatchCommandAsync(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes, cancellationToken))
+.ConfigureAwait(false)						: await (session.Batcher.PrepareCommandAsync(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 
 					try
 					{
@@ -119,11 +135,11 @@ namespace NHibernate.Persister.Collection
 						WriteKey(st, id, offset, session);
 						if (useBatch)
 						{
-							await (session.Batcher.AddToBatchAsync(expectation)).ConfigureAwait(false);
+							await (session.Batcher.AddToBatchAsync(expectation, cancellationToken)).ConfigureAwait(false);
 						}
 						else
 						{
-							expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st)).ConfigureAwait(false), st);
+							expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
 						}
 					}
 					catch (Exception e)
@@ -155,8 +171,9 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
-		public async Task RecreateAsync(IPersistentCollection collection, object id, ISessionImplementor session)
+		public async Task RecreateAsync(IPersistentCollection collection, object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (!isInverse && RowInsertEnabled)
 			{
 				if (log.IsDebugEnabled)
@@ -179,7 +196,7 @@ namespace NHibernate.Persister.Collection
 						if (count == 0)
 						{
 							expectation = Expectations.AppropriateExpectation(insertCheckStyle);
-							await (collection.PreInsertAsync(this)).ConfigureAwait(false);
+							await (collection.PreInsertAsync(this, cancellationToken)).ConfigureAwait(false);
 							//bool callable = InsertCallable;
 							useBatch = expectation.CanBeBatched;
 						}
@@ -191,11 +208,11 @@ namespace NHibernate.Persister.Collection
 							if (!IsIdentifierAssignedByInsert)
 							{
 								// NH Different implementation: write once
-								entryId = await (PerformInsertAsync(id, collection, expectation, entry, i, useBatch, false, session)).ConfigureAwait(false);
+								entryId = await (PerformInsertAsync(id, collection, expectation, entry, i, useBatch, false, session, cancellationToken)).ConfigureAwait(false);
 							}
 							else
 							{
-								entryId = await (PerformInsertAsync(id, collection, entry, i, session)).ConfigureAwait(false);
+								entryId = await (PerformInsertAsync(id, collection, entry, i, session, cancellationToken)).ConfigureAwait(false);
 							}
 							collection.AfterRowInsert(this, entry, i, entryId);
 							count++;
@@ -219,8 +236,9 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
-		public async Task DeleteRowsAsync(IPersistentCollection collection, object id, ISessionImplementor session)
+		public async Task DeleteRowsAsync(IPersistentCollection collection, object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (!isInverse && RowDeleteEnabled)
 			{
 				if (log.IsDebugEnabled)
@@ -251,13 +269,13 @@ namespace NHibernate.Persister.Collection
 							{
 								st =
 									await (session.Batcher.PrepareBatchCommandAsync(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
-																		SqlDeleteRowString.ParameterTypes)).ConfigureAwait(false);
+																		SqlDeleteRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 							}
 							else
 							{
 								st =
 									await (session.Batcher.PrepareCommandAsync(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
-																   SqlDeleteRowString.ParameterTypes)).ConfigureAwait(false);
+																   SqlDeleteRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 							}
 							try
 							{
@@ -282,11 +300,11 @@ namespace NHibernate.Persister.Collection
 								}
 								if (useBatch)
 								{
-									await (session.Batcher.AddToBatchAsync(expectation)).ConfigureAwait(false);
+									await (session.Batcher.AddToBatchAsync(expectation, cancellationToken)).ConfigureAwait(false);
 								}
 								else
 								{
-									expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st)).ConfigureAwait(false), st);
+									expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
 								}
 								count++;
 							}
@@ -328,8 +346,9 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
-		public async Task InsertRowsAsync(IPersistentCollection collection, object id, ISessionImplementor session)
+		public async Task InsertRowsAsync(IPersistentCollection collection, object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (!isInverse && RowInsertEnabled)
 			{
 				if (log.IsDebugEnabled)
@@ -340,7 +359,7 @@ namespace NHibernate.Persister.Collection
 				try
 				{
 					// insert all the new entries
-					await (collection.PreInsertAsync(this)).ConfigureAwait(false);
+					await (collection.PreInsertAsync(this, cancellationToken)).ConfigureAwait(false);
 					IExpectation expectation = Expectations.AppropriateExpectation(insertCheckStyle);
 					//bool callable = InsertCallable;
 					bool useBatch = expectation.CanBeBatched;
@@ -356,11 +375,11 @@ namespace NHibernate.Persister.Collection
 							if (!IsIdentifierAssignedByInsert)
 							{
 								// NH Different implementation: write once
-								entryId = await (PerformInsertAsync(id, collection, expectation, entry, i, useBatch, false, session)).ConfigureAwait(false);
+								entryId = await (PerformInsertAsync(id, collection, expectation, entry, i, useBatch, false, session, cancellationToken)).ConfigureAwait(false);
 							}
 							else
 							{
-								entryId = await (PerformInsertAsync(id, collection, entry, i, session)).ConfigureAwait(false);
+								entryId = await (PerformInsertAsync(id, collection, entry, i, session, cancellationToken)).ConfigureAwait(false);
 							}
 							collection.AfterRowInsert(this, entry, i, entryId);
 							count++;
@@ -381,8 +400,9 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
-		public async Task UpdateRowsAsync(IPersistentCollection collection, object id, ISessionImplementor session)
+		public async Task UpdateRowsAsync(IPersistentCollection collection, object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (!isInverse && collection.RowUpdatePossible)
 			{
 				if (log.IsDebugEnabled)
@@ -391,7 +411,7 @@ namespace NHibernate.Persister.Collection
 				}
 
 				// update all the modified entries
-				int count = await (DoUpdateRowsAsync(id, collection, session)).ConfigureAwait(false);
+				int count = await (DoUpdateRowsAsync(id, collection, session, cancellationToken)).ConfigureAwait(false);
 
 				if (log.IsDebugEnabled)
 				{
@@ -400,16 +420,16 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
-		protected abstract Task<int> DoUpdateRowsAsync(object key, IPersistentCollection collection, ISessionImplementor session);
+		protected abstract Task<int> DoUpdateRowsAsync(object key, IPersistentCollection collection, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 
-		protected async Task<object> PerformInsertAsync(object ownerId, IPersistentCollection collection, IExpectation expectation,
-									   object entry, int index, bool useBatch, bool callable, ISessionImplementor session)
+		protected async Task<object> PerformInsertAsync(object ownerId, IPersistentCollection collection, IExpectation expectation, 									   object entry, int index, bool useBatch, bool callable, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object entryId = null;
 			int offset = 0;
 			var st = useBatch
-				? await (session.Batcher.PrepareBatchCommandAsync(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes))
-.ConfigureAwait(false)				: await (session.Batcher.PrepareCommandAsync(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes)).ConfigureAwait(false);
+				? await (session.Batcher.PrepareBatchCommandAsync(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes, cancellationToken))
+.ConfigureAwait(false)				: await (session.Batcher.PrepareCommandAsync(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 			try
 			{
 				//offset += expectation.Prepare(st, factory.ConnectionProvider.Driver);
@@ -426,11 +446,11 @@ namespace NHibernate.Persister.Collection
 				WriteElement(st, collection.GetElement(entry), offset, session);
 				if (useBatch)
 				{
-					await (session.Batcher.AddToBatchAsync(expectation)).ConfigureAwait(false);
+					await (session.Batcher.AddToBatchAsync(expectation, cancellationToken)).ConfigureAwait(false);
 				}
 				else
 				{
-					expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st)).ConfigureAwait(false), st);
+					expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
 				}
 			}
 			catch (Exception e)
@@ -463,13 +483,16 @@ namespace NHibernate.Persister.Collection
 		/// <remarks>
 		/// This form is used for PostInsertIdentifierGenerator-style ids (IDENTITY, select, etc).
 		/// </remarks>
-		protected Task<object> PerformInsertAsync(object ownerId, IPersistentCollection collection, object entry, int index,
-									   ISessionImplementor session)
+		protected Task<object> PerformInsertAsync(object ownerId, IPersistentCollection collection, object entry, int index, 									   ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				IBinder binder = new GeneratedIdentifierBinder(ownerId, collection, entry, index, session, this);
-				return identityDelegate.PerformInsertAsync(SqlInsertRowString, session, binder);
+				return identityDelegate.PerformInsertAsync(SqlInsertRowString, session, binder, cancellationToken);
 			}
 			catch (Exception ex)
 			{

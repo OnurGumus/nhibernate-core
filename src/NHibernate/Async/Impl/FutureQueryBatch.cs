@@ -13,15 +13,20 @@ using System.Collections;
 namespace NHibernate.Impl
 {
     using System.Threading.Tasks;
+    using System.Threading;
     /// <content>
     /// Contains generated async methods
     /// </content>
     public partial class FutureQueryBatch : FutureBatch<IQuery, IMultiQuery>
     {
 
-    	protected override Task<IList> GetResultsFromAsync(IMultiQuery multiApproach)
+    	protected override Task<IList> GetResultsFromAsync(IMultiQuery multiApproach, CancellationToken cancellationToken = default(CancellationToken))
     	{
-			return multiApproach.ListAsync();
+    		if (cancellationToken.IsCancellationRequested)
+    		{
+    			return Task.FromCanceled<IList>(cancellationToken);
+    		}
+			return multiApproach.ListAsync(cancellationToken);
     	}
     }
 }

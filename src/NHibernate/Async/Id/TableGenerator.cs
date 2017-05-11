@@ -26,6 +26,7 @@ using NHibernate.Util;
 namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -45,16 +46,18 @@ namespace NHibernate.Id
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The new identifier as a <see cref="short"/>, <see cref="int"/>, or <see cref="long"/>.</returns>
 		[MethodImpl()]
-		public virtual async Task<object> GenerateAsync(ISessionImplementor session, object obj)
+		public virtual async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			using (await _generate.LockAsync())
 			{
 				// This has to be done using a different connection to the containing
 				// transaction becase the new hi value must remain valid even if the
 				// containing transaction rolls back.
-				return await (DoWorkInNewTransactionAsync(session)).ConfigureAwait(false);
+				return await (DoWorkInNewTransactionAsync(session, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -64,9 +67,9 @@ namespace NHibernate.Id
 
 		#endregion
 
-		public override async Task<object> DoWorkInCurrentTransactionAsync(ISessionImplementor session, DbConnection conn,
-														  DbTransaction transaction)
+		public override async Task<object> DoWorkInCurrentTransactionAsync(ISessionImplementor session, DbConnection conn, 														  DbTransaction transaction, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			long result;
 			int rows;
 			do
@@ -83,8 +86,8 @@ namespace NHibernate.Id
 				PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand("Reading high value:", qps, FormatStyle.Basic);
 				try
 				{
-					rs = await (qps.ExecuteReaderAsync()).ConfigureAwait(false);
-					if (!await (rs.ReadAsync()).ConfigureAwait(false))
+					rs = await (qps.ExecuteReaderAsync(cancellationToken)).ConfigureAwait(false);
+					if (!await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false))
 					{
 						string err;
 						if (string.IsNullOrEmpty(whereClause))
@@ -125,7 +128,7 @@ namespace NHibernate.Id
 
 					PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand("Updating high value:", ups, FormatStyle.Basic);
 
-					rows = await (ups.ExecuteNonQueryAsync()).ConfigureAwait(false);
+					rows = await (ups.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 				}
 				catch (Exception e)
 				{

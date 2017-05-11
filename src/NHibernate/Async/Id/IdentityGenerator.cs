@@ -18,6 +18,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -30,17 +31,22 @@ namespace NHibernate.Id
 		public partial class InsertSelectDelegate : AbstractReturningDelegate, IInsertGeneratedIdentifierDelegate
 		{
 
-			protected internal override Task<DbCommand> PrepareAsync(SqlCommandInfo insertSQL, ISessionImplementor session)
+			protected internal override Task<DbCommand> PrepareAsync(SqlCommandInfo insertSQL, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 			{
-				return session.Batcher.PrepareCommandAsync(CommandType.Text, insertSQL.Text, insertSQL.ParameterTypes);
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<DbCommand>(cancellationToken);
+				}
+				return session.Batcher.PrepareCommandAsync(CommandType.Text, insertSQL.Text, insertSQL.ParameterTypes, cancellationToken);
 			}
 
-			public override async Task<object> ExecuteAndExtractAsync(DbCommand insert, ISessionImplementor session)
+			public override async Task<object> ExecuteAndExtractAsync(DbCommand insert, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 			{
-				var rs = await (session.Batcher.ExecuteReaderAsync(insert)).ConfigureAwait(false);
+				cancellationToken.ThrowIfCancellationRequested();
+				var rs = await (session.Batcher.ExecuteReaderAsync(insert, cancellationToken)).ConfigureAwait(false);
 				try
 				{
-					return await (IdentifierGeneratorFactory.GetGeneratedIdentityAsync(rs, persister.IdentifierType, session)).ConfigureAwait(false);
+					return await (IdentifierGeneratorFactory.GetGeneratedIdentityAsync(rs, persister.IdentifierType, session, cancellationToken)).ConfigureAwait(false);
 				}
 				finally
 				{
@@ -55,9 +61,13 @@ namespace NHibernate.Id
 		public partial class BasicDelegate : AbstractSelectingDelegate, IInsertGeneratedIdentifierDelegate
 		{
 
-			protected internal override Task<object> GetResultAsync(ISessionImplementor session, DbDataReader rs, object obj)
+			protected internal override Task<object> GetResultAsync(ISessionImplementor session, DbDataReader rs, object obj, CancellationToken cancellationToken = default(CancellationToken))
 			{
-				return IdentifierGeneratorFactory.GetGeneratedIdentityAsync(rs, persister.IdentifierType, session);
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
+				return IdentifierGeneratorFactory.GetGeneratedIdentityAsync(rs, persister.IdentifierType, session, cancellationToken);
 			}
 		}
 	}

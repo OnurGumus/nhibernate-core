@@ -18,22 +18,24 @@ using NHibernate.Type;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public abstract partial class ReattachVisitor : ProxyVisitor
 	{
 
-		internal override async Task<object> ProcessComponentAsync(object component, IAbstractComponentType componentType)
+		internal override async Task<object> ProcessComponentAsync(object component, IAbstractComponentType componentType, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IType[] types = componentType.Subtypes;
 			if (component == null)
 			{
-				await (ProcessValuesAsync(new object[types.Length], types)).ConfigureAwait(false);
+				await (ProcessValuesAsync(new object[types.Length], types, cancellationToken)).ConfigureAwait(false);
 			}
 			else
 			{
-				await (base.ProcessComponentAsync(component, componentType)).ConfigureAwait(false);
+				await (base.ProcessComponentAsync(component, componentType, cancellationToken)).ConfigureAwait(false);
 			}
 
 			return null;

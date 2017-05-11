@@ -21,6 +21,7 @@ using NHibernate.Util;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -28,12 +29,9 @@ namespace NHibernate.Type
 	{
 
 		public override async Task<object> ReplaceElementsAsync(
-			object original,
-			object target,
-			object owner,
-			IDictionary copyCache,
-			ISessionImplementor session)
+			object original, 			object target, 			object owner, 			IDictionary copyCache, 			ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			var elemType = GetElementType(session.Factory);
 			var targetPc = target as PersistentIdentifierBag<T>;
 			var originalPc = original as IPersistentCollection;
@@ -65,7 +63,7 @@ namespace NHibernate.Type
 				Clear(target);
 				foreach (var obj in iterOriginal)
 				{
-					Add(target, await (elemType.ReplaceAsync(obj, null, session, owner, copyCache)).ConfigureAwait(false));
+					Add(target, await (elemType.ReplaceAsync(obj, null, session, owner, copyCache, cancellationToken)).ConfigureAwait(false));
 				}
 			}
 			else
@@ -75,7 +73,7 @@ namespace NHibernate.Type
 				{
 					var currTarget = targetPc[i];
 					var orgToUse = originalLookup[currTarget].First();
-					targetPc[i] = (T)await (elemType.ReplaceAsync(orgToUse, null, session, owner, copyCache)).ConfigureAwait(false);
+					targetPc[i] = (T)await (elemType.ReplaceAsync(orgToUse, null, session, owner, copyCache, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 

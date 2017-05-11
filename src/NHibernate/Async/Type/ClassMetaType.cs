@@ -16,22 +16,28 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class ClassMetaType : AbstractType
 	{
 
-		public override Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return NullSafeGetAsync(rs, names[0], session, owner);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return NullSafeGetAsync(rs, names[0], session, owner, cancellationToken);
 		}
 
-		public override async Task<object> NullSafeGetAsync(DbDataReader rs,string name,ISessionImplementor session,object owner)
+		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			int index = rs.GetOrdinal(name);
 
-			if (await (rs.IsDBNullAsync(index)).ConfigureAwait(false))
+			if (await (rs.IsDBNullAsync(index, cancellationToken)).ConfigureAwait(false))
 			{
 				return null;
 			}
@@ -42,8 +48,12 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, System.Collections.IDictionary copiedAlready)
+		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, System.Collections.IDictionary copiedAlready, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(Replace(original, current, session, owner, copiedAlready));

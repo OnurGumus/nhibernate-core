@@ -16,6 +16,7 @@ using NHibernate.Driver;
 namespace NHibernate.Connection
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -25,7 +26,8 @@ namespace NHibernate.Connection
 		/// <summary>
 		/// Get an open <see cref="DbConnection"/>.
 		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>An open <see cref="DbConnection"/>.</returns>
-		Task<DbConnection> GetConnectionAsync();
+		Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

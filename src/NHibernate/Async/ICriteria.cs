@@ -18,6 +18,7 @@ using NHibernate.Transform;
 namespace NHibernate
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -27,18 +28,20 @@ namespace NHibernate
 		/// <summary>
 		/// Get the results
 		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		Task<IList> ListAsync();
+		Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Convenience method to return a single instance that matches
 		/// the query, or null if the query returns no results.
 		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>the single result or <see langword="null" /></returns>
 		/// <exception cref="HibernateException">
 		/// If there is more than one matching result
 		/// </exception>
-		Task<object> UniqueResultAsync();
+		Task<object> UniqueResultAsync(CancellationToken cancellationToken = default(CancellationToken));
 	
 		#region NHibernate specific
 
@@ -46,17 +49,20 @@ namespace NHibernate
 		/// Get the results and fill the <see cref="IList"/>
 		/// </summary>
 		/// <param name="results">The list to fill with the results.</param>
-		Task ListAsync(IList results);
+	/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task ListAsync(IList results, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="List()" />.
 		/// </summary>
-		Task<IList<T>> ListAsync<T>();
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task<IList<T>> ListAsync<T>(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="UniqueResult()" />.
 		/// </summary>
-		Task<T> UniqueResultAsync<T>();
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task<T> UniqueResultAsync<T>(CancellationToken cancellationToken = default(CancellationToken));
 
 		#endregion
 	}

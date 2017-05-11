@@ -20,14 +20,19 @@ using NHibernate.Util;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class SqlQueryImpl : AbstractQueryImpl, ISQLQuery
 	{
 
-		public override Task<IList> ListAsync()
+		public override Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IList>(cancellationToken);
+			}
 			try
 			{
 				VerifyParameters();
@@ -37,7 +42,7 @@ namespace NHibernate.Impl
 				Before();
 				try
 				{
-					return Session.ListAsync(spec, qp);
+					return Session.ListAsync(spec, qp, cancellationToken);
 				}
 				finally
 				{
@@ -50,8 +55,9 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task ListAsync(IList results)
+		public override async Task ListAsync(IList results, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			NativeSQLQuerySpecification spec = GenerateQuerySpecification(namedParams);
@@ -60,7 +66,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
-				await (Session.ListAsync(spec, qp, results)).ConfigureAwait(false);
+				await (Session.ListAsync(spec, qp, results, cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -68,8 +74,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override Task<IList<T>> ListAsync<T>()
+		public override Task<IList<T>> ListAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IList<T>>(cancellationToken);
+			}
 			try
 			{
 				VerifyParameters();
@@ -79,7 +89,7 @@ namespace NHibernate.Impl
 				Before();
 				try
 				{
-					return Session.ListAsync<T>(spec, qp);
+					return Session.ListAsync<T>(spec, qp, cancellationToken);
 				}
 				finally
 				{
@@ -92,25 +102,37 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override Task<IEnumerable> EnumerableAsync()
+		public override Task<IEnumerable> EnumerableAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IEnumerable>(cancellationToken);
+			}
 			throw new NotSupportedException("SQL queries do not currently support enumeration");
 		}
 
-		public override Task<IEnumerable<T>> EnumerableAsync<T>()
+		public override Task<IEnumerable<T>> EnumerableAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IEnumerable<T>>(cancellationToken);
+			}
 			throw new NotSupportedException("SQL queries do not currently support enumeration");
 		}
 
-		public override Task<int> ExecuteUpdateAsync()
+		public override Task<int> ExecuteUpdateAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<int>(cancellationToken);
+			}
 			try
 			{
 				IDictionary<string, TypedValue> namedParams = NamedParams;
 				Before();
 				try
 				{
-					return Session.ExecuteNativeUpdateAsync(GenerateQuerySpecification(namedParams), GetQueryParameters(namedParams));
+					return Session.ExecuteNativeUpdateAsync(GenerateQuerySpecification(namedParams), GetQueryParameters(namedParams), cancellationToken);
 				}
 				finally
 				{
@@ -123,8 +145,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		protected internal override Task<IEnumerable<ITranslator>> GetTranslatorsAsync(ISessionImplementor sessionImplementor, QueryParameters queryParameters)
+		protected internal override Task<IEnumerable<ITranslator>> GetTranslatorsAsync(ISessionImplementor sessionImplementor, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IEnumerable<ITranslator>>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<IEnumerable<ITranslator>>(GetTranslators(sessionImplementor, queryParameters));

@@ -17,6 +17,7 @@ using NHibernate.Type;
 namespace NHibernate.Param
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -29,6 +30,7 @@ namespace NHibernate.Param
 		/// <param name="sqlQueryParametersList">The list of Sql query parameter in the exact sequence they are present in the query.</param>
 		/// <param name="queryParameters">The defined values for the current query execution.</param>
 		/// <param name="session">The session against which the current execution is occuring.</param>
-		Task BindAsync(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task BindAsync(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

@@ -24,6 +24,7 @@ using System.Data.Common;
 namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -42,20 +43,22 @@ namespace NHibernate.Id
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The new identifier as a <see cref="Int16"/>, <see cref="Int32"/>, or <see cref="Int64"/>.</returns>
-		public virtual async Task<object> GenerateAsync(ISessionImplementor session, object obj)
+		public virtual async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			try
 			{
-				var cmd = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, SqlTypeFactory.NoTypes)).ConfigureAwait(false);
+				var cmd = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, SqlTypeFactory.NoTypes, cancellationToken)).ConfigureAwait(false);
 				DbDataReader reader = null;
 				try
 				{
-					reader = await (session.Batcher.ExecuteReaderAsync(cmd)).ConfigureAwait(false);
+					reader = await (session.Batcher.ExecuteReaderAsync(cmd, cancellationToken)).ConfigureAwait(false);
 					try
 					{
-						await (reader.ReadAsync()).ConfigureAwait(false);
-						object result = await (IdentifierGeneratorFactory.GetAsync(reader, identifierType, session)).ConfigureAwait(false);
+						await (reader.ReadAsync(cancellationToken)).ConfigureAwait(false);
+						object result = await (IdentifierGeneratorFactory.GetAsync(reader, identifierType, session, cancellationToken)).ConfigureAwait(false);
 						if (log.IsDebugEnabled)
 						{
 							log.Debug("Sequence identifier generated: " + result);

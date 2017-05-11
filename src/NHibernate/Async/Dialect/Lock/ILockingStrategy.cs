@@ -13,6 +13,7 @@ using NHibernate.Engine;
 namespace NHibernate.Dialect.Lock
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -26,6 +27,7 @@ namespace NHibernate.Dialect.Lock
 		/// <param name="version">The current version (or null if not versioned) </param>
 		/// <param name="obj">The object logically being locked (currently not used) </param>
 		/// <param name="session">The session from which the lock request originated </param>
-		Task LockAsync(object id, object version, object obj, ISessionImplementor session);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task LockAsync(object id, object version, object obj, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

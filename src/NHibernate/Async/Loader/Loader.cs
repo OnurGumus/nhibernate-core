@@ -38,6 +38,7 @@ using NHibernate.Util;
 namespace NHibernate.Loader
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -49,15 +50,19 @@ namespace NHibernate.Loader
 		/// persister from each row of the <c>DataReader</c>. If an object is supplied, will attempt to
 		/// initialize that object. If a collection is supplied, attempt to initialize that collection.
 		/// </summary>
-		private Task<IList> DoQueryAndInitializeNonLazyCollectionsAsync(ISessionImplementor session, QueryParameters queryParameters,
-															 bool returnProxies)
+		private Task<IList> DoQueryAndInitializeNonLazyCollectionsAsync(ISessionImplementor session, QueryParameters queryParameters, 															 bool returnProxies, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return DoQueryAndInitializeNonLazyCollectionsAsync(session, queryParameters, returnProxies, null);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IList>(cancellationToken);
+			}
+			return DoQueryAndInitializeNonLazyCollectionsAsync(session, queryParameters, returnProxies, null, cancellationToken);
 		}
 
 
-		private async Task<IList> DoQueryAndInitializeNonLazyCollectionsAsync(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies, IResultTransformer forcedResultTransformer)
+		private async Task<IList> DoQueryAndInitializeNonLazyCollectionsAsync(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies, IResultTransformer forcedResultTransformer, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 			bool defaultReadOnlyOrig = persistenceContext.DefaultReadOnly;
 
@@ -72,13 +77,13 @@ namespace NHibernate.Loader
 			{
 				try
 				{
-					result = await (DoQueryAsync(session, queryParameters, returnProxies, forcedResultTransformer)).ConfigureAwait(false);
+					result = await (DoQueryAsync(session, queryParameters, returnProxies, forcedResultTransformer, cancellationToken)).ConfigureAwait(false);
 				}
 				finally
 				{
 					persistenceContext.AfterLoad();
 				}
-				await (persistenceContext.InitializeNonLazyCollectionsAsync()).ConfigureAwait(false);
+				await (persistenceContext.InitializeNonLazyCollectionsAsync(cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -96,11 +101,12 @@ namespace NHibernate.Loader
 		/// <param name="session">The session from which the request originated.</param>
 		/// <param name="queryParameters">The query parameters specified by the user.</param>
 		/// <param name="returnProxies">Should proxies be generated</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The loaded "row".</returns>
 		/// <exception cref="HibernateException" />
-		protected async Task<object> LoadSingleRowAsync(DbDataReader resultSet, ISessionImplementor session, QueryParameters queryParameters,
-									   bool returnProxies)
+		protected async Task<object> LoadSingleRowAsync(DbDataReader resultSet, ISessionImplementor session, QueryParameters queryParameters, 									   bool returnProxies, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			int entitySpan = EntityPersisters.Length;
 			IList hydratedObjects = entitySpan == 0 ? null : new List<object>(entitySpan);
 
@@ -109,7 +115,7 @@ namespace NHibernate.Loader
 			{
 				result =
 					await (GetRowFromResultSetAsync(resultSet, session, queryParameters, GetLockModes(queryParameters.LockModes), null,
-										hydratedObjects, new EntityKey[entitySpan], returnProxies)).ConfigureAwait(false);
+										hydratedObjects, new EntityKey[entitySpan], returnProxies, cancellationToken)).ConfigureAwait(false);
 			}
 			catch (HibernateException)
 			{
@@ -122,32 +128,31 @@ namespace NHibernate.Loader
 												 queryParameters.NamedParameters);
 			}
 
-			await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, resultSet, session, queryParameters.IsReadOnly(session))).ConfigureAwait(false);
-			await (session.PersistenceContext.InitializeNonLazyCollectionsAsync()).ConfigureAwait(false);
+			await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, resultSet, session, queryParameters.IsReadOnly(session), cancellationToken)).ConfigureAwait(false);
+			await (session.PersistenceContext.InitializeNonLazyCollectionsAsync(cancellationToken)).ConfigureAwait(false);
 			return result;
 		}
 
-		internal Task<object> GetRowFromResultSetAsync(DbDataReader resultSet, ISessionImplementor session,
-											QueryParameters queryParameters, LockMode[] lockModeArray,
-											EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys,
-											bool returnProxies)
+		internal Task<object> GetRowFromResultSetAsync(DbDataReader resultSet, ISessionImplementor session, 											QueryParameters queryParameters, LockMode[] lockModeArray, 											EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys, 											bool returnProxies, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			return GetRowFromResultSetAsync(resultSet, session, queryParameters, lockModeArray, optionalObjectKey, hydratedObjects,
-									   keys, returnProxies, null);
+									   keys, returnProxies, null, cancellationToken);
 		}
 
-		internal async Task<object> GetRowFromResultSetAsync(DbDataReader resultSet, ISessionImplementor session,
-											QueryParameters queryParameters, LockMode[] lockModeArray,
-											EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys,
-											bool returnProxies, IResultTransformer forcedResultTransformer)
+		internal async Task<object> GetRowFromResultSetAsync(DbDataReader resultSet, ISessionImplementor session, 											QueryParameters queryParameters, LockMode[] lockModeArray, 											EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys, 											bool returnProxies, IResultTransformer forcedResultTransformer, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			ILoadable[] persisters = EntityPersisters;
 			int entitySpan = persisters.Length;
 
 			for (int i = 0; i < entitySpan; i++)
 			{
 				keys[i] =
-					await (GetKeyFromResultSetAsync(i, persisters[i], i == entitySpan - 1 ? queryParameters.OptionalId : null, resultSet, session)).ConfigureAwait(false);
+					await (GetKeyFromResultSetAsync(i, persisters[i], i == entitySpan - 1 ? queryParameters.OptionalId : null, resultSet, session, cancellationToken)).ConfigureAwait(false);
 				//TODO: the i==entitySpan-1 bit depends upon subclass implementation (very bad)
 			}
 
@@ -156,9 +161,9 @@ namespace NHibernate.Loader
 			// this call is side-effecty
 			object[] row =
 				await (GetRowAsync(resultSet, persisters, keys, queryParameters.OptionalObject, optionalObjectKey, lockModeArray,
-					   hydratedObjects, session)).ConfigureAwait(false);
+					   hydratedObjects, session, cancellationToken)).ConfigureAwait(false);
 
-			await (ReadCollectionElementsAsync(row, resultSet, session)).ConfigureAwait(false);
+			await (ReadCollectionElementsAsync(row, resultSet, session, cancellationToken)).ConfigureAwait(false);
 
 			if (returnProxies)
 			{
@@ -178,16 +183,17 @@ namespace NHibernate.Loader
 			}
 
 			return forcedResultTransformer == null
-					   ? await (GetResultColumnOrRowAsync(row, queryParameters.ResultTransformer, resultSet, session))
-.ConfigureAwait(false)					   : forcedResultTransformer.TransformTuple(await (GetResultRowAsync(row, resultSet, session)).ConfigureAwait(false),
+					   ? await (GetResultColumnOrRowAsync(row, queryParameters.ResultTransformer, resultSet, session, cancellationToken))
+.ConfigureAwait(false)					   : forcedResultTransformer.TransformTuple(await (GetResultRowAsync(row, resultSet, session, cancellationToken)).ConfigureAwait(false),
 																ResultRowAliases);
 		}
 
 		/// <summary>
 		/// Read any collection elements contained in a single row of the result set
 		/// </summary>
-		private async Task ReadCollectionElementsAsync(object[] row, DbDataReader resultSet, ISessionImplementor session)
+		private async Task ReadCollectionElementsAsync(object[] row, DbDataReader resultSet, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			//TODO: make this handle multiple collection roles!
 
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
@@ -220,13 +226,14 @@ namespace NHibernate.Loader
 						//keys[collectionOwner].getIdentifier()
 					}
 
-					await (ReadCollectionElementAsync(owner, key, collectionPersister, descriptors[i], resultSet, session)).ConfigureAwait(false);
+					await (ReadCollectionElementAsync(owner, key, collectionPersister, descriptors[i], resultSet, session, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private async Task<IList> DoQueryAsync(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies, IResultTransformer forcedResultTransformer)
+		private async Task<IList> DoQueryAsync(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies, IResultTransformer forcedResultTransformer, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(session.SessionId))
 			{
 				RowSelection selection = queryParameters.RowSelection;
@@ -236,9 +243,9 @@ namespace NHibernate.Loader
 
 				List<object> hydratedObjects = entitySpan == 0 ? null : new List<object>(entitySpan*10);
 
-				var st = await (PrepareQueryCommandAsync(queryParameters, false, session)).ConfigureAwait(false);
+				var st = await (PrepareQueryCommandAsync(queryParameters, false, session, cancellationToken)).ConfigureAwait(false);
 
-				var rs = await (GetResultSetAsync(st, queryParameters.HasAutoDiscoverScalarTypes, queryParameters.Callable, selection, session)).ConfigureAwait(false);
+				var rs = await (GetResultSetAsync(st, queryParameters.HasAutoDiscoverScalarTypes, queryParameters.Callable, selection, session, cancellationToken)).ConfigureAwait(false);
 
 				// would be great to move all this below here into another method that could also be used
 				// from the new scrolling stuff.
@@ -263,7 +270,7 @@ namespace NHibernate.Loader
 					}
 
 					int count;
-					for (count = 0; count < maxRows && await (rs.ReadAsync()).ConfigureAwait(false); count++)
+					for (count = 0; count < maxRows && await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false); count++)
 					{
 						if (Log.IsDebugEnabled)
 						{
@@ -272,7 +279,7 @@ namespace NHibernate.Loader
 
 						object result = await (GetRowFromResultSetAsync(rs, session, queryParameters, lockModeArray, optionalObjectKey,
 															hydratedObjects,
-															keys, returnProxies, forcedResultTransformer)).ConfigureAwait(false);
+															keys, returnProxies, forcedResultTransformer, cancellationToken)).ConfigureAwait(false);
 						results.Add(result);
 
 						if (createSubselects)
@@ -297,7 +304,7 @@ namespace NHibernate.Loader
 					session.Batcher.CloseCommand(st, rs);
 				}
 
-				await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, rs, session, queryParameters.IsReadOnly(session))).ConfigureAwait(false);
+				await (InitializeEntitiesAndCollectionsAsync(hydratedObjects, rs, session, queryParameters.IsReadOnly(session), cancellationToken)).ConfigureAwait(false);
 
 				if (createSubselects)
 				{
@@ -308,8 +315,9 @@ namespace NHibernate.Loader
 			}
 		}
 
-		internal async Task InitializeEntitiesAndCollectionsAsync(IList hydratedObjects, object resultSetId, ISessionImplementor session, bool readOnly)
+		internal async Task InitializeEntitiesAndCollectionsAsync(IList hydratedObjects, object resultSetId, ISessionImplementor session, bool readOnly, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
 			if (collectionPersisters != null)
 			{
@@ -352,7 +360,7 @@ namespace NHibernate.Loader
 
 				for (int i = 0; i < hydratedObjectsSize; i++)
 				{
-					await (TwoPhaseLoad.InitializeEntityAsync(hydratedObjects[i], readOnly, session, pre, post)).ConfigureAwait(false);
+					await (TwoPhaseLoad.InitializeEntityAsync(hydratedObjects[i], readOnly, session, pre, post, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 
@@ -380,8 +388,12 @@ namespace NHibernate.Loader
 		/// This empty implementation merely returns its first argument. This is
 		/// overridden by some subclasses.
 		/// </remarks>
-		protected virtual Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, DbDataReader rs, ISessionImplementor session)
+		protected virtual Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, DbDataReader rs, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(GetResultColumnOrRow(row, resultTransformer, rs, session));
@@ -392,8 +404,12 @@ namespace NHibernate.Loader
 			}
 		}
 
-		protected virtual Task<object[]> GetResultRowAsync(Object[] row, DbDataReader rs, ISessionImplementor session)
+		protected virtual Task<object[]> GetResultRowAsync(Object[] row, DbDataReader rs, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object[]>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object[]>(GetResultRow(row, rs, session));
@@ -407,12 +423,12 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Read one collection element from the current row of the ADO.NET result set
 		/// </summary>
-		private static async Task ReadCollectionElementAsync(object optionalOwner, object optionalKey, ICollectionPersister persister,
-												  ICollectionAliases descriptor, DbDataReader rs, ISessionImplementor session)
+		private static async Task ReadCollectionElementAsync(object optionalOwner, object optionalKey, ICollectionPersister persister, 												  ICollectionAliases descriptor, DbDataReader rs, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 
-			object collectionRowKey = await (persister.ReadKeyAsync(rs, descriptor.SuffixedKeyAliases, session)).ConfigureAwait(false);
+			object collectionRowKey = await (persister.ReadKeyAsync(rs, descriptor.SuffixedKeyAliases, session, cancellationToken)).ConfigureAwait(false);
 
 			if (collectionRowKey != null)
 			{
@@ -441,7 +457,7 @@ namespace NHibernate.Loader
 
 				if (rowCollection != null)
 				{
-					await (rowCollection.ReadFromAsync(rs, persister, descriptor, owner)).ConfigureAwait(false);
+					await (rowCollection.ReadFromAsync(rs, persister, descriptor, owner, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 			else if (optionalKey != null)
@@ -468,8 +484,9 @@ namespace NHibernate.Loader
 		/// Warning: this method is side-effecty. If an <c>id</c> is given, don't bother going
 		/// to the <c>DbDataReader</c>
 		/// </remarks>
-		private async Task<EntityKey> GetKeyFromResultSetAsync(int i, IEntityPersister persister, object id, DbDataReader rs, ISessionImplementor session)
+		private async Task<EntityKey> GetKeyFromResultSetAsync(int i, IEntityPersister persister, object id, DbDataReader rs, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object resultId;
 
 			// if we know there is exactly 1 row, we can skip.
@@ -483,7 +500,7 @@ namespace NHibernate.Loader
 			else
 			{
 				IType idType = persister.IdentifierType;
-				resultId = await (idType.NullSafeGetAsync(rs, EntityAliases[i].SuffixedKeyAliases, session, null)).ConfigureAwait(false);
+				resultId = await (idType.NullSafeGetAsync(rs, EntityAliases[i].SuffixedKeyAliases, session, null, cancellationToken)).ConfigureAwait(false);
 
 				bool idIsResultId = id != null && resultId != null && idType.IsEqual(id, resultId, _factory);
 
@@ -502,15 +519,16 @@ namespace NHibernate.Loader
 		/// if the version numbers are different.
 		/// </summary>
 		/// <exception cref="StaleObjectStateException"></exception>
-		private async Task CheckVersionAsync(int i, IEntityPersister persister, object id, object entity, DbDataReader rs, ISessionImplementor session)
+		private async Task CheckVersionAsync(int i, IEntityPersister persister, object id, object entity, DbDataReader rs, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object version = session.PersistenceContext.GetEntry(entity).Version;
 
 			// null version means the object is in the process of being loaded somewhere else in the ResultSet
 			if (version != null)
 			{
 				IVersionType versionType = persister.VersionType;
-				object currentVersion = await (versionType.NullSafeGetAsync(rs, EntityAliases[i].SuffixedVersionAliases, session, null)).ConfigureAwait(false);
+				object currentVersion = await (versionType.NullSafeGetAsync(rs, EntityAliases[i].SuffixedVersionAliases, session, null, cancellationToken)).ConfigureAwait(false);
 				if (!versionType.IsEqual(version, currentVersion))
 				{
 					if (session.Factory.Statistics.IsStatisticsEnabled)
@@ -529,10 +547,9 @@ namespace NHibernate.Loader
 		/// array of objects (a row of results) and an array of booleans (by side-effect) that determine
 		/// whether the corresponding object should be initialized
 		/// </summary>
-		private async Task<object[]> GetRowAsync(DbDataReader rs, ILoadable[] persisters, EntityKey[] keys, object optionalObject,
-								EntityKey optionalObjectKey, LockMode[] lockModes, IList hydratedObjects,
-								ISessionImplementor session)
+		private async Task<object[]> GetRowAsync(DbDataReader rs, ILoadable[] persisters, EntityKey[] keys, object optionalObject, 								EntityKey optionalObjectKey, LockMode[] lockModes, IList hydratedObjects, 								ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			int cols = persisters.Length;
 			IEntityAliases[] descriptors = EntityAliases;
 
@@ -559,17 +576,17 @@ namespace NHibernate.Loader
 				else
 				{
 					//If the object is already loaded, return the loaded one
-					obj = await (session.GetEntityUsingInterceptorAsync(key)).ConfigureAwait(false);
+					obj = await (session.GetEntityUsingInterceptorAsync(key, cancellationToken)).ConfigureAwait(false);
 					if (obj != null)
 					{
 						//its already loaded so dont need to hydrate it
-						await (InstanceAlreadyLoadedAsync(rs, i, persisters[i], key, obj, lockModes[i], session)).ConfigureAwait(false);
+						await (InstanceAlreadyLoadedAsync(rs, i, persisters[i], key, obj, lockModes[i], session, cancellationToken)).ConfigureAwait(false);
 					}
 					else
 					{
 						obj =
 							await (InstanceNotYetLoadedAsync(rs, i, persisters[i], key, lockModes[i], descriptors[i].RowIdAlias, optionalObjectKey,
-												 optionalObject, hydratedObjects, session)).ConfigureAwait(false);
+												 optionalObject, hydratedObjects, session, cancellationToken)).ConfigureAwait(false);
 					}
 				}
 
@@ -581,9 +598,9 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// The entity instance is already in the session cache
 		/// </summary>
-		private async Task InstanceAlreadyLoadedAsync(DbDataReader rs, int i, IEntityPersister persister, EntityKey key, object obj,
-										   LockMode lockMode, ISessionImplementor session)
+		private async Task InstanceAlreadyLoadedAsync(DbDataReader rs, int i, IEntityPersister persister, EntityKey key, object obj, 										   LockMode lockMode, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (!persister.IsInstance(obj))
 			{
 				string errorMsg = string.Format("loading object was of wrong class [{0}]", obj.GetType().FullName);
@@ -601,7 +618,7 @@ namespace NHibernate.Loader
 				if (isVersionCheckNeeded)
 				{
 					// we only check the version when _upgrading_ lock modes
-					await (CheckVersionAsync(i, persister, key.Identifier, obj, rs, session)).ConfigureAwait(false);
+					await (CheckVersionAsync(i, persister, key.Identifier, obj, rs, session, cancellationToken)).ConfigureAwait(false);
 					// we need to upgrade the lock mode to the mode requested
 					entry.LockMode = lockMode;
 				}
@@ -611,13 +628,12 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// The entity instance is not in the session cache
 		/// </summary>
-		private async Task<object> InstanceNotYetLoadedAsync(DbDataReader dr, int i, ILoadable persister, EntityKey key, LockMode lockMode,
-											string rowIdAlias, EntityKey optionalObjectKey, object optionalObject,
-											IList hydratedObjects, ISessionImplementor session)
+		private async Task<object> InstanceNotYetLoadedAsync(DbDataReader dr, int i, ILoadable persister, EntityKey key, LockMode lockMode, 											string rowIdAlias, EntityKey optionalObjectKey, object optionalObject, 											IList hydratedObjects, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object obj;
 
-			string instanceClass = await (GetInstanceClassAsync(dr, i, persister, key.Identifier, session)).ConfigureAwait(false);
+			string instanceClass = await (GetInstanceClassAsync(dr, i, persister, key.Identifier, session, cancellationToken)).ConfigureAwait(false);
 
 			if (optionalObjectKey != null && key.Equals(optionalObjectKey))
 			{
@@ -635,7 +651,7 @@ namespace NHibernate.Loader
 			// (but don't yet initialize the object itself)
 			// note that we acquired LockMode.READ even if it was not requested
 			LockMode acquiredLockMode = lockMode == LockMode.None ? LockMode.Read : lockMode;
-			await (LoadFromResultSetAsync(dr, i, obj, instanceClass, key, rowIdAlias, acquiredLockMode, persister, session)).ConfigureAwait(false);
+			await (LoadFromResultSetAsync(dr, i, obj, instanceClass, key, rowIdAlias, acquiredLockMode, persister, session, cancellationToken)).ConfigureAwait(false);
 
 			// materialize associations (and initialize the object) later
 			hydratedObjects.Add(obj);
@@ -648,10 +664,9 @@ namespace NHibernate.Loader
 		/// an array of "hydrated" values (do not resolve associations yet),
 		/// and pass the hydrated state to the session.
 		/// </summary>
-		private async Task LoadFromResultSetAsync(DbDataReader rs, int i, object obj, string instanceClass, EntityKey key,
-									   string rowIdAlias, LockMode lockMode, ILoadable rootPersister,
-									   ISessionImplementor session)
+		private async Task LoadFromResultSetAsync(DbDataReader rs, int i, object obj, string instanceClass, EntityKey key, 									   string rowIdAlias, LockMode lockMode, ILoadable rootPersister, 									   ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object id = key.Identifier;
 
 			// Get the persister for the _subclass_
@@ -674,7 +689,7 @@ namespace NHibernate.Loader
 								? EntityAliases[i].SuffixedPropertyAliases
 								: EntityAliases[i].GetSuffixedPropertyAliases(persister);
 
-			object[] values = await (persister.HydrateAsync(rs, id, obj, rootPersister, cols, eagerPropertyFetch, session)).ConfigureAwait(false);
+			object[] values = await (persister.HydrateAsync(rs, id, obj, rootPersister, cols, eagerPropertyFetch, session, cancellationToken)).ConfigureAwait(false);
 
 			object rowId = persister.HasRowId ? rs[rowIdAlias] : null;
 
@@ -693,7 +708,7 @@ namespace NHibernate.Loader
 					// the one used here, which it will be
 
 					EntityUniqueKey euk =
-						new EntityUniqueKey(rootPersister.EntityName, ukName, await (type.SemiResolveAsync(values[index], session, obj)).ConfigureAwait(false), type, session.Factory);
+						new EntityUniqueKey(rootPersister.EntityName, ukName, await (type.SemiResolveAsync(values[index], session, obj, cancellationToken)).ConfigureAwait(false), type, session.Factory);
 					session.PersistenceContext.AddEntity(euk, obj);
 				}
 			}
@@ -704,13 +719,14 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Determine the concrete class of an instance for the <c>DbDataReader</c>
 		/// </summary>
-		private async Task<string> GetInstanceClassAsync(DbDataReader rs, int i, ILoadable persister, object id, ISessionImplementor session)
+		private async Task<string> GetInstanceClassAsync(DbDataReader rs, int i, ILoadable persister, object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (persister.HasSubclasses)
 			{
 				// code to handle subclasses of topClass
 				object discriminatorValue =
-					await (persister.DiscriminatorType.NullSafeGetAsync(rs, EntityAliases[i].SuffixedDiscriminatorAlias, session, null)).ConfigureAwait(false);
+					await (persister.DiscriminatorType.NullSafeGetAsync(rs, EntityAliases[i].SuffixedDiscriminatorAlias, session, null, cancellationToken)).ConfigureAwait(false);
 
 				string result = persister.GetSubclassForDiscriminatorValue(discriminatorValue);
 
@@ -729,8 +745,9 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Advance the cursor to the first required row of the <c>DbDataReader</c>
 		/// </summary>
-		internal static async Task AdvanceAsync(DbDataReader rs, RowSelection selection)
+		internal static async Task AdvanceAsync(DbDataReader rs, RowSelection selection, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			int firstRow = GetFirstRow(selection);
 
 			if (firstRow != 0)
@@ -738,7 +755,7 @@ namespace NHibernate.Loader
 				// DataReaders are forward-only, readonly, so we have to step through
 				for (int i = 0; i < firstRow; i++)
 				{
-					await (rs.ReadAsync()).ConfigureAwait(false);
+					await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
@@ -754,9 +771,11 @@ namespace NHibernate.Loader
 		/// <param name="queryParameters">The <see cref="QueryParameters"/> to use for the DbCommand.</param>
 		/// <param name="scroll">TODO: find out where this is used...</param>
 		/// <param name="session">The SessionImpl this Command is being prepared in.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>A CommandWrapper wrapping an DbCommand that is ready to be executed.</returns>
-		protected internal virtual async Task<DbCommand> PrepareQueryCommandAsync(QueryParameters queryParameters, bool scroll, ISessionImplementor session)
+		protected internal virtual async Task<DbCommand> PrepareQueryCommandAsync(QueryParameters queryParameters, bool scroll, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			ISqlCommand sqlCommand = CreateSqlCommand(queryParameters, session);
 			SqlString sqlString = sqlCommand.Query;
 
@@ -771,7 +790,7 @@ namespace NHibernate.Loader
 					command.CommandTimeout = selection.Timeout;
 				}
 
-				await (sqlCommand.BindAsync(command, session)).ConfigureAwait(false);
+				await (sqlCommand.BindAsync(command, session, cancellationToken)).ConfigureAwait(false);
 
 				IDriver driver = _factory.ConnectionProvider.Driver;
 				driver.RemoveUnusedCommandParameters(command, sqlString);
@@ -800,15 +819,17 @@ namespace NHibernate.Loader
 		/// <param name="autoDiscoverTypes">true if result types need to be auto-discovered by the loader; false otherwise.</param>
 		/// <param name="session">The <see cref="ISession" /> to load in.</param>
 		/// <param name="callable"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>An DbDataReader advanced to the first record in RowSelection.</returns>
-		protected async Task<DbDataReader> GetResultSetAsync(DbCommand st, bool autoDiscoverTypes, bool callable, RowSelection selection, ISessionImplementor session)
+		protected async Task<DbDataReader> GetResultSetAsync(DbCommand st, bool autoDiscoverTypes, bool callable, RowSelection selection, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			DbDataReader rs = null;
 			try
 			{
 				Log.Info(st.CommandText);
 				// TODO NH: Callable
-				rs = await (session.Batcher.ExecuteReaderAsync(st)).ConfigureAwait(false);
+				rs = await (session.Batcher.ExecuteReaderAsync(st, cancellationToken)).ConfigureAwait(false);
 
 				//NH: this is checked outside the WrapResultSet because we
 				// want to avoid the syncronization overhead in the vast majority
@@ -819,7 +840,7 @@ namespace NHibernate.Loader
 				Dialect.Dialect dialect = session.Factory.Dialect;
 				if (!dialect.SupportsLimitOffset || !UseLimit(selection, dialect))
 				{
-					await (AdvanceAsync(rs, selection)).ConfigureAwait(false);
+					await (AdvanceAsync(rs, selection, cancellationToken)).ConfigureAwait(false);
 				}
 
 				if (autoDiscoverTypes)
@@ -839,9 +860,9 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Called by subclasses that load entities
 		/// </summary>
-		protected async Task<IList> LoadEntityAsync(ISessionImplementor session, object id, IType identifierType, object optionalObject,
-								   string optionalEntityName, object optionalIdentifier, IEntityPersister persister)
+		protected async Task<IList> LoadEntityAsync(ISessionImplementor session, object id, IType identifierType, object optionalObject, 								   string optionalEntityName, object optionalIdentifier, IEntityPersister persister, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (Log.IsDebugEnabled)
 			{
 				Log.Debug("loading entity: " + MessageHelper.InfoString(persister, id, identifierType, Factory));
@@ -854,7 +875,7 @@ namespace NHibernate.Loader
 				QueryParameters qp =
 					new QueryParameters(new IType[] { identifierType }, new object[] { id }, optionalObject, optionalEntityName,
 										optionalIdentifier);
-				result = await (DoQueryAndInitializeNonLazyCollectionsAsync(session, qp, false)).ConfigureAwait(false);
+				result = await (DoQueryAndInitializeNonLazyCollectionsAsync(session, qp, false, cancellationToken)).ConfigureAwait(false);
 			}
 			catch (HibernateException)
 			{
@@ -875,9 +896,9 @@ namespace NHibernate.Loader
 			return result;
 		}
 
-		protected async Task<IList> LoadEntityAsync(ISessionImplementor session, object key, object index, IType keyType, IType indexType,
-								   IEntityPersister persister)
+		protected async Task<IList> LoadEntityAsync(ISessionImplementor session, object key, object index, IType keyType, IType indexType, 								   IEntityPersister persister, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			Log.Debug("loading collection element by index");
 
 			IList result;
@@ -886,7 +907,7 @@ namespace NHibernate.Loader
 				result =
 					await (DoQueryAndInitializeNonLazyCollectionsAsync(session,
 														   new QueryParameters(new IType[] { keyType, indexType },
-																			   new object[] { key, index }), false)).ConfigureAwait(false);
+																			   new object[] { key, index }), false, cancellationToken)).ConfigureAwait(false);
 			}
 			catch (Exception sqle)
 			{
@@ -902,10 +923,9 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Called by subclasses that batch load entities
 		/// </summary>
-		protected internal async Task<IList> LoadEntityBatchAsync(ISessionImplementor session, object[] ids, IType idType,
-												 object optionalObject, string optionalEntityName, object optionalId,
-												 IEntityPersister persister)
+		protected internal async Task<IList> LoadEntityBatchAsync(ISessionImplementor session, object[] ids, IType idType, 												 object optionalObject, string optionalEntityName, object optionalId, 												 IEntityPersister persister, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (Log.IsDebugEnabled)
 			{
 				Log.Debug("batch loading entity: " + MessageHelper.InfoString(persister, ids, Factory));
@@ -919,7 +939,7 @@ namespace NHibernate.Loader
 				result =
 					await (DoQueryAndInitializeNonLazyCollectionsAsync(session,
 														   new QueryParameters(types, ids, optionalObject, optionalEntityName,
-																			   optionalId), false)).ConfigureAwait(false);
+																			   optionalId), false, cancellationToken)).ConfigureAwait(false);
 			}
 			catch (HibernateException)
 			{
@@ -940,8 +960,9 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Called by subclasses that load collections
 		/// </summary>
-		public async Task LoadCollectionAsync(ISessionImplementor session, object id, IType type)
+		public async Task LoadCollectionAsync(ISessionImplementor session, object id, IType type, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (Log.IsDebugEnabled)
 			{
 				Log.Debug("loading collection: " + MessageHelper.CollectionInfoString(CollectionPersisters[0], id));
@@ -950,7 +971,7 @@ namespace NHibernate.Loader
 			object[] ids = new object[] { id };
 			try
 			{
-				await (DoQueryAndInitializeNonLazyCollectionsAsync(session, new QueryParameters(new IType[] { type }, ids, ids), true)).ConfigureAwait(false);
+				await (DoQueryAndInitializeNonLazyCollectionsAsync(session, new QueryParameters(new IType[] { type }, ids, ids), true, cancellationToken)).ConfigureAwait(false);
 			}
 			catch (HibernateException)
 			{
@@ -970,8 +991,9 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Called by wrappers that batch initialize collections
 		/// </summary>
-		public async Task LoadCollectionBatchAsync(ISessionImplementor session, object[] ids, IType type)
+		public async Task LoadCollectionBatchAsync(ISessionImplementor session, object[] ids, IType type, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (Log.IsDebugEnabled)
 			{
 				Log.Debug("batch loading collection: " + MessageHelper.CollectionInfoString(CollectionPersisters[0], ids));
@@ -981,7 +1003,7 @@ namespace NHibernate.Loader
 			ArrayHelper.Fill(idTypes, type);
 			try
 			{
-				await (DoQueryAndInitializeNonLazyCollectionsAsync(session, new QueryParameters(idTypes, ids, ids), true)).ConfigureAwait(false);
+				await (DoQueryAndInitializeNonLazyCollectionsAsync(session, new QueryParameters(idTypes, ids, ids), true, cancellationToken)).ConfigureAwait(false);
 			}
 			catch (HibernateException)
 			{
@@ -1001,15 +1023,14 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Called by subclasses that batch initialize collections
 		/// </summary>
-		protected async Task LoadCollectionSubselectAsync(ISessionImplementor session, object[] ids, object[] parameterValues,
-											   IType[] parameterTypes, IDictionary<string, TypedValue> namedParameters,
-											   IType type)
+		protected async Task LoadCollectionSubselectAsync(ISessionImplementor session, object[] ids, object[] parameterValues, 											   IType[] parameterTypes, IDictionary<string, TypedValue> namedParameters, 											   IType type, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			try
 			{
 				await (DoQueryAndInitializeNonLazyCollectionsAsync(session,
 													   new QueryParameters(parameterTypes, parameterValues, namedParameters, ids),
-													   true)).ConfigureAwait(false);
+													   true, cancellationToken)).ConfigureAwait(false);
 			}
 			catch (HibernateException)
 			{
@@ -1033,18 +1054,23 @@ namespace NHibernate.Loader
 		/// <param name="queryParameters"></param>
 		/// <param name="querySpaces"></param>
 		/// <param name="resultTypes"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		protected Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, IType[] resultTypes)
+		protected Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, IType[] resultTypes, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IList>(cancellationToken);
+			}
 			try
 			{
 				bool cacheable = _factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable;
 				if (cacheable)
 				{
-					return ListUsingQueryCacheAsync(session, queryParameters, querySpaces, resultTypes);
+					return ListUsingQueryCacheAsync(session, queryParameters, querySpaces, resultTypes, cancellationToken);
 				}
 
-				return ListIgnoreQueryCacheAsync(session, queryParameters);
+				return ListIgnoreQueryCacheAsync(session, queryParameters, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -1052,22 +1078,24 @@ namespace NHibernate.Loader
 			}
 		}
 
-		private async Task<IList> ListIgnoreQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters)
+		private async Task<IList> ListIgnoreQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return GetResultList(await (DoListAsync(session, queryParameters)).ConfigureAwait(false), queryParameters.ResultTransformer);
+			cancellationToken.ThrowIfCancellationRequested();
+			return GetResultList(await (DoListAsync(session, queryParameters, cancellationToken)).ConfigureAwait(false), queryParameters.ResultTransformer);
 		}
 
-		private async Task<IList> ListUsingQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, IType[] resultTypes)
+		private async Task<IList> ListUsingQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters, ISet<string> querySpaces, IType[] resultTypes, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IQueryCache queryCache = _factory.GetQueryCache(queryParameters.CacheRegion);
 
 			QueryKey key = GenerateQueryKey(session, queryParameters);
 
-			IList result = await (GetResultFromQueryCacheAsync(session, queryParameters, querySpaces, resultTypes, queryCache, key)).ConfigureAwait(false);
+			IList result = await (GetResultFromQueryCacheAsync(session, queryParameters, querySpaces, resultTypes, queryCache, key, cancellationToken)).ConfigureAwait(false);
 
 			if (result == null)
 			{
-				result = await (DoListAsync(session, queryParameters, key.ResultTransformer)).ConfigureAwait(false);
+				result = await (DoListAsync(session, queryParameters, key.ResultTransformer, cancellationToken)).ConfigureAwait(false);
 				PutResultInQueryCache(session, queryParameters, resultTypes, queryCache, key, result);
 			}
 
@@ -1087,10 +1115,9 @@ namespace NHibernate.Loader
 			return GetResultList(result, queryParameters.ResultTransformer);
 		}
 
-		private async Task<IList> GetResultFromQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters,
-											  ISet<string> querySpaces, IType[] resultTypes, IQueryCache queryCache,
-											  QueryKey key)
+		private async Task<IList> GetResultFromQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters, 											  ISet<string> querySpaces, IType[] resultTypes, IQueryCache queryCache, 											  QueryKey key, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IList result = null;
 
 			if ((!queryParameters.ForceCacheRefresh) && (session.CacheMode & CacheMode.Get) == CacheMode.Get)
@@ -1106,7 +1133,7 @@ namespace NHibernate.Loader
 
 				try
 				{
-					result = await (queryCache.GetAsync(key, key.ResultTransformer.GetCachedResultTypes(resultTypes), queryParameters.NaturalKeyLookup, querySpaces, session)).ConfigureAwait(false);
+					result = await (queryCache.GetAsync(key, key.ResultTransformer.GetCachedResultTypes(resultTypes), queryParameters.NaturalKeyLookup, querySpaces, session, cancellationToken)).ConfigureAwait(false);
 					if (_factory.Statistics.IsStatisticsEnabled)
 					{
 						if (result == null)
@@ -1133,14 +1160,20 @@ namespace NHibernate.Loader
 		/// </summary>
 		/// <param name="session"></param>
 		/// <param name="queryParameters"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		protected Task<IList> DoListAsync(ISessionImplementor session, QueryParameters queryParameters)
+		protected Task<IList> DoListAsync(ISessionImplementor session, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return DoListAsync(session, queryParameters, null);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IList>(cancellationToken);
+			}
+			return DoListAsync(session, queryParameters, null, cancellationToken);
 		}
 
-		protected async Task<IList> DoListAsync(ISessionImplementor session, QueryParameters queryParameters, IResultTransformer forcedResultTransformer)
+		protected async Task<IList> DoListAsync(ISessionImplementor session, QueryParameters queryParameters, IResultTransformer forcedResultTransformer, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			bool statsEnabled = Factory.Statistics.IsStatisticsEnabled;
 			var stopWatch = new Stopwatch();
 			if (statsEnabled)
@@ -1151,7 +1184,7 @@ namespace NHibernate.Loader
 			IList result;
 			try
 			{
-				result = await (DoQueryAndInitializeNonLazyCollectionsAsync(session, queryParameters, true, forcedResultTransformer)).ConfigureAwait(false);
+				result = await (DoQueryAndInitializeNonLazyCollectionsAsync(session, queryParameters, true, forcedResultTransformer, cancellationToken)).ConfigureAwait(false);
 			}
 			catch (HibernateException)
 			{

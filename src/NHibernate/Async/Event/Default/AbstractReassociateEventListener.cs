@@ -19,6 +19,7 @@ using Status=NHibernate.Engine.Status;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -32,9 +33,11 @@ namespace NHibernate.Event.Default
 		/// <param name="entity">The entity to be associated </param>
 		/// <param name="id">The id of the entity. </param>
 		/// <param name="persister">The entity's persister instance. </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> An EntityEntry representing the entity within this session. </returns>
-		protected async Task<EntityEntry> ReassociateAsync(AbstractEvent @event, object entity, object id, IEntityPersister persister)
+		protected async Task<EntityEntry> ReassociateAsync(AbstractEvent @event, object entity, object id, IEntityPersister persister, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("Reassociating transient instance: " + MessageHelper.InfoString(persister, id, @event.Session.Factory));
@@ -62,7 +65,7 @@ namespace NHibernate.Event.Default
 				false,
 				true);
 
-			await (new OnLockVisitor(source, id, entity).ProcessAsync(entity, persister)).ConfigureAwait(false);
+			await (new OnLockVisitor(source, id, entity).ProcessAsync(entity, persister, cancellationToken)).ConfigureAwait(false);
 
 			persister.AfterReassociate(entity, source);
 

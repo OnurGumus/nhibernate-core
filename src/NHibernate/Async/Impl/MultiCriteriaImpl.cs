@@ -26,14 +26,16 @@ using NHibernate.Util;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class MultiCriteriaImpl : IMultiCriteria
 	{
 
-		public async Task<IList> ListAsync()
+		public async Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(session.SessionId))
 			{
 				bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
@@ -52,19 +54,20 @@ namespace NHibernate.Impl
 
 				if (cacheable)
 				{
-					criteriaResults = await (ListUsingQueryCacheAsync()).ConfigureAwait(false);
+					criteriaResults = await (ListUsingQueryCacheAsync(cancellationToken)).ConfigureAwait(false);
 				}
 				else
 				{
-					criteriaResults = await (ListIgnoreQueryCacheAsync()).ConfigureAwait(false);
+					criteriaResults = await (ListIgnoreQueryCacheAsync(cancellationToken)).ConfigureAwait(false);
 				}
 
 				return criteriaResults;
 			}
 		}
 
-		private async Task<IList> ListUsingQueryCacheAsync()
+		private async Task<IList> ListUsingQueryCacheAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);
 
 			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters);
@@ -92,7 +95,7 @@ namespace NHibernate.Impl
 												  combinedParameters,
 												  querySpaces,
 												  queryCache,
-												  key)).ConfigureAwait(false);
+												  key, cancellationToken)).ConfigureAwait(false);
 
 			if (factory.Statistics.IsStatisticsEnabled)
 			{
@@ -109,7 +112,7 @@ namespace NHibernate.Impl
 			if (result == null)
 			{
 				log.Debug("Cache miss for multi criteria query");
-				IList list = await (DoListAsync()).ConfigureAwait(false);
+				IList list = await (DoListAsync(cancellationToken)).ConfigureAwait(false);
 				result = list;
 				if ((session.CacheMode & CacheMode.Put) == CacheMode.Put)
 				{
@@ -124,20 +127,23 @@ namespace NHibernate.Impl
 			return GetResultList(result);
 		}
 
-		private async Task<IList> ListIgnoreQueryCacheAsync()
+		private async Task<IList> ListIgnoreQueryCacheAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return GetResultList(await (DoListAsync()).ConfigureAwait(false));
+			cancellationToken.ThrowIfCancellationRequested();
+			return GetResultList(await (DoListAsync(cancellationToken)).ConfigureAwait(false));
 		}
 
-		private async Task<IList> DoListAsync()
+		private async Task<IList> DoListAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			List<IList> results = new List<IList>();
-			await (GetResultsFromDatabaseAsync(results)).ConfigureAwait(false);
+			await (GetResultsFromDatabaseAsync(results, cancellationToken)).ConfigureAwait(false);
 			return results;
 		}
 
-		private async Task GetResultsFromDatabaseAsync(IList results)
+		private async Task GetResultsFromDatabaseAsync(IList results, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
 			var stopWatch = new Stopwatch();
 			if (statsEnabled)
@@ -148,7 +154,7 @@ namespace NHibernate.Impl
 
 			try
 			{
-				using (var reader = await (resultSetsCommand.GetReaderAsync(null)).ConfigureAwait(false))
+				using (var reader = await (resultSetsCommand.GetReaderAsync(null, cancellationToken)).ConfigureAwait(false))
 				{
 					var hydratedObjects = new List<object>[loaders.Count];
 					List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[loaders.Count];
@@ -168,16 +174,16 @@ namespace NHibernate.Impl
 						int maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
 						if (!dialect.SupportsLimitOffset || !loader.UseLimit(selection, dialect))
 						{
-							await (Loader.Loader.AdvanceAsync(reader, selection)).ConfigureAwait(false);
+							await (Loader.Loader.AdvanceAsync(reader, selection, cancellationToken)).ConfigureAwait(false);
 						}
 						int count;
-						for (count = 0; count < maxRows && await (reader.ReadAsync()).ConfigureAwait(false); count++)
+						for (count = 0; count < maxRows && await (reader.ReadAsync(cancellationToken)).ConfigureAwait(false); count++)
 						{
 							rowCount++;
 
 							object o =
 								await (loader.GetRowFromResultSetAsync(reader, session, queryParameters, loader.GetLockModes(queryParameters.LockModes),
-																					 null, hydratedObjects[i], keys, true)).ConfigureAwait(false);
+																					 null, hydratedObjects[i], keys, true, cancellationToken)).ConfigureAwait(false);
 							if (createSubselects[i])
 							{
 								subselectResultKeys[i].Add(keys);
@@ -187,13 +193,13 @@ namespace NHibernate.Impl
 						}
 
 						results.Add(tmpResults);
-						await (reader.NextResultAsync()).ConfigureAwait(false);
+						await (reader.NextResultAsync(cancellationToken)).ConfigureAwait(false);
 					}
 
 					for (int i = 0; i < loaders.Count; i++)
 					{
 						CriteriaLoader loader = loaders[i];
-						await (loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, session.DefaultReadOnly)).ConfigureAwait(false);
+						await (loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, session.DefaultReadOnly, cancellationToken)).ConfigureAwait(false);
 
 						if (createSubselects[i])
 						{
@@ -217,9 +223,10 @@ namespace NHibernate.Impl
 
 		#region IMultiCriteria Members
 
-		public async Task<object> GetResultAsync(string key)
+		public async Task<object> GetResultAsync(string key, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (criteriaResults == null) await (ListAsync()).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			if (criteriaResults == null) await (ListAsync(cancellationToken)).ConfigureAwait(false);
 
 			int criteriaResultPosition;
 			if (!criteriaResultPositions.TryGetValue(key, out criteriaResultPosition))

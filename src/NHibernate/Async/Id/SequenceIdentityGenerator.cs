@@ -14,6 +14,7 @@ using NHibernate.Id.Insert;
 namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	using System;
 	/// <content>
 	/// Contains generated async methods
@@ -22,8 +23,12 @@ namespace NHibernate.Id
 	{
 		#region IPostInsertIdentifierGenerator Members
 
-		public override Task<object> GenerateAsync(ISessionImplementor session, object obj)
+		public override Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(Generate(session, obj));

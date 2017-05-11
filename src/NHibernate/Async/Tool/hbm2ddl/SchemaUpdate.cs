@@ -19,14 +19,16 @@ using NHibernate.AdoNet.Util;
 namespace NHibernate.Tool.hbm2ddl
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class SchemaUpdate
 	{
 
-		public static async Task MainAsync(string[] args)
+		public static async Task MainAsync(string[] args, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			try
 			{
 				var cfg = new Configuration();
@@ -78,7 +80,7 @@ namespace NHibernate.Tool.hbm2ddl
 					cfg.SetProperties( props );
 				}*/
 
-				await (new SchemaUpdate(cfg).ExecuteAsync(script, doUpdate)).ConfigureAwait(false);
+				await (new SchemaUpdate(cfg).ExecuteAsync(script, doUpdate, cancellationToken)).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -90,17 +92,21 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <summary>
 		/// Execute the schema updates
 		/// </summary>
-		public Task ExecuteAsync(bool useStdOut, bool doUpdate)
+		public Task ExecuteAsync(bool useStdOut, bool doUpdate, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				if (useStdOut)
 				{
-					return ExecuteAsync(Console.WriteLine, doUpdate);
+					return ExecuteAsync(Console.WriteLine, doUpdate, cancellationToken);
 				}
 				else
 				{
-					return ExecuteAsync(null, doUpdate);
+					return ExecuteAsync(null, doUpdate, cancellationToken);
 				}
 			}
 			catch (Exception ex)
@@ -114,15 +120,17 @@ namespace NHibernate.Tool.hbm2ddl
 		/// </summary>
 		/// <param name="scriptAction">The action to write the each schema line.</param>
 		/// <param name="doUpdate">Commit the script to DB</param>
-		public async Task ExecuteAsync(Action<string> scriptAction, bool doUpdate)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public async Task ExecuteAsync(Action<string> scriptAction, bool doUpdate, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			log.Info("Running hbm2ddl schema update");
 
 			string autoKeyWordsImport = PropertiesHelper.GetString(Environment.Hbm2ddlKeyWords, configuration.Properties, "not-defined");
 			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
 			if (autoKeyWordsImport == Hbm2DDLKeyWords.AutoQuote)
 			{
-				await (SchemaMetadataUpdater.QuoteTableAndColumnsAsync(configuration)).ConfigureAwait(false);
+				await (SchemaMetadataUpdater.QuoteTableAndColumnsAsync(configuration, cancellationToken)).ConfigureAwait(false);
 			}
 
 			DbConnection connection;
@@ -136,7 +144,7 @@ namespace NHibernate.Tool.hbm2ddl
 				try
 				{
 					log.Info("fetching database metadata");
-					await (connectionHelper.PrepareAsync()).ConfigureAwait(false);
+					await (connectionHelper.PrepareAsync(cancellationToken)).ConfigureAwait(false);
 					connection = connectionHelper.Connection;
 					meta = new DatabaseMetadata(connection, dialect);
 					stmt = connection.CreateCommand();
@@ -166,7 +174,7 @@ namespace NHibernate.Tool.hbm2ddl
 						{
 							log.Debug(sql);
 							stmt.CommandText = sql;
-							await (stmt.ExecuteNonQueryAsync()).ConfigureAwait(false);
+							await (stmt.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 						}
 					}
 					catch (Exception e)

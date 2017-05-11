@@ -11,11 +11,12 @@
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial interface IFlushEntityEventListener
 	{
-		Task OnFlushEntityAsync(FlushEntityEvent @event);
+		Task OnFlushEntityAsync(FlushEntityEvent @event, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

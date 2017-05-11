@@ -18,14 +18,19 @@ using NHibernate.Util;
 namespace NHibernate.AdoNet
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class SqlClientBatchingBatcher : AbstractBatcher
 	{
 
-		public override Task AddToBatchAsync(IExpectation expectation)
+		public override Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				_totalExpectedRowsAffected += expectation.ExpectedRowCount;
@@ -49,7 +54,7 @@ namespace NHibernate.AdoNet
 				_currentBatch.Append((System.Data.SqlClient.SqlCommand)batchUpdate);
 				if (_currentBatch.CountOfCommands >= _batchSize)
 				{
-					return ExecuteBatchWithTimingAsync(batchUpdate);
+					return ExecuteBatchWithTimingAsync(batchUpdate, cancellationToken);
 				}
 
 				return Task.CompletedTask;
@@ -60,11 +65,12 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		protected override async Task DoExecuteBatchAsync(DbCommand ps)
+		protected override async Task DoExecuteBatchAsync(DbCommand ps, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			Log.DebugFormat("Executing batch");
-			await (CheckReadersAsync()).ConfigureAwait(false);
-			await (PrepareAsync(_currentBatch.BatchCommand)).ConfigureAwait(false);
+			await (CheckReadersAsync(cancellationToken)).ConfigureAwait(false);
+			await (PrepareAsync(_currentBatch.BatchCommand, cancellationToken)).ConfigureAwait(false);
 			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
 			{
 				Factory.Settings.SqlStatementLogger.LogBatchCommand(_currentBatchCommandsLog.ToString());

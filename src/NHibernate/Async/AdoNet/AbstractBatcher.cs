@@ -40,11 +40,12 @@ namespace NHibernate.AdoNet
 		/// and <see cref="DbTransaction"/> if one exists.  It will call <c>Prepare</c> if the Driver
 		/// supports preparing commands.
 		/// </remarks>
-		protected async Task PrepareAsync(DbCommand cmd)
+		protected async Task PrepareAsync(DbCommand cmd, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			try
 			{
-				var sessionConnection = await (_connectionManager.GetConnectionAsync()).ConfigureAwait(false);
+				var sessionConnection = await (_connectionManager.GetConnectionAsync(cancellationToken)).ConfigureAwait(false);
 
 				if (cmd.Connection != null)
 				{
@@ -69,8 +70,9 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		public virtual async Task<DbCommand> PrepareBatchCommandAsync(CommandType type, SqlString sql, SqlType[] parameterTypes)
+		public virtual async Task<DbCommand> PrepareBatchCommandAsync(CommandType type, SqlString sql, SqlType[] parameterTypes, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (sql.Equals(_batchCommandSql) && ArrayHelper.ArrayEquals(parameterTypes, _batchCommandParameterTypes))
 			{
 				if (Log.IsDebugEnabled)
@@ -80,7 +82,7 @@ namespace NHibernate.AdoNet
 			}
 			else
 			{
-				_batchCommand = await (PrepareCommandAsync(type, sql, parameterTypes)).ConfigureAwait(false); // calls ExecuteBatch()
+				_batchCommand = await (PrepareCommandAsync(type, sql, parameterTypes, cancellationToken)).ConfigureAwait(false); // calls ExecuteBatch()
 				_batchCommandSql = sql;
 				_batchCommandParameterTypes = parameterTypes;
 			}
@@ -88,9 +90,10 @@ namespace NHibernate.AdoNet
 			return _batchCommand;
 		}
 
-		public async Task<DbCommand> PrepareCommandAsync(CommandType type, SqlString sql, SqlType[] parameterTypes)
+		public async Task<DbCommand> PrepareCommandAsync(CommandType type, SqlString sql, SqlType[] parameterTypes, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			await (OnPreparedCommandAsync()).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			await (OnPreparedCommandAsync(cancellationToken)).ConfigureAwait(false);
 
 			// do not actually prepare the Command here - instead just generate it because
 			// if the command is associated with an ADO.NET Transaction/Connection while
@@ -99,24 +102,29 @@ namespace NHibernate.AdoNet
 			return Generate(type, sql, parameterTypes);
 		}
 
-		protected virtual Task OnPreparedCommandAsync()
+		protected virtual Task OnPreparedCommandAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			// a new DbCommand is being prepared and a new (potential) batch
 			// started - so execute the current batch of commands.
-			return ExecuteBatchAsync();
+			return ExecuteBatchAsync(cancellationToken);
 		}
 
-		public async Task<int> ExecuteNonQueryAsync(DbCommand cmd)
+		public async Task<int> ExecuteNonQueryAsync(DbCommand cmd, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			await (CheckReadersAsync()).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			await (CheckReadersAsync(cancellationToken)).ConfigureAwait(false);
 			LogCommand(cmd);
-			await (PrepareAsync(cmd)).ConfigureAwait(false);
+			await (PrepareAsync(cmd, cancellationToken)).ConfigureAwait(false);
 			Stopwatch duration = null;
 			if (Log.IsDebugEnabled)
 				duration = Stopwatch.StartNew();
 			try
 			{
-				return await (cmd.ExecuteNonQueryAsync()).ConfigureAwait(false);
+				return await (cmd.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -131,18 +139,19 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		public virtual async Task<DbDataReader> ExecuteReaderAsync(DbCommand cmd)
+		public virtual async Task<DbDataReader> ExecuteReaderAsync(DbCommand cmd, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			await (CheckReadersAsync()).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			await (CheckReadersAsync(cancellationToken)).ConfigureAwait(false);
 			LogCommand(cmd);
-			await (PrepareAsync(cmd)).ConfigureAwait(false);
+			await (PrepareAsync(cmd, cancellationToken)).ConfigureAwait(false);
 			Stopwatch duration = null;
 			if (Log.IsDebugEnabled)
 				duration = Stopwatch.StartNew();
 			DbDataReader reader = null;
 			try
 			{
-				reader = await (cmd.ExecuteReaderAsync()).ConfigureAwait(false);
+				reader = await (cmd.ExecuteReaderAsync(cancellationToken)).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -161,7 +170,7 @@ namespace NHibernate.AdoNet
 
 			if (!_factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders)
 			{
-				reader = await (NHybridDataReader.CreateAsync(reader)).ConfigureAwait(false);
+				reader = await (NHybridDataReader.CreateAsync(reader, cancellationToken)).ConfigureAwait(false);
 			}
 
 			_readersToClose.Add(reader);
@@ -172,8 +181,10 @@ namespace NHibernate.AdoNet
 		/// <summary>
 		/// Ensures that the Driver's rules for Multiple Open DataReaders are being followed.
 		/// </summary>
-		protected async Task CheckReadersAsync()
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		protected async Task CheckReadersAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			// early exit because we don't need to move an open DbDataReader into memory
 			// since the Driver supports mult open readers.
 			if (_factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders)
@@ -183,12 +194,13 @@ namespace NHibernate.AdoNet
 
 			foreach (NHybridDataReader reader in _readersToClose)
 			{
-				await (reader.ReadIntoMemoryAsync()).ConfigureAwait(false);
+				await (reader.ReadIntoMemoryAsync(cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
-		public async Task ExecuteBatchAsync()
+		public async Task ExecuteBatchAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			// if there is currently a command that a batch is
 			// being built for then execute it
 			if (_batchCommand != null)
@@ -197,7 +209,7 @@ namespace NHibernate.AdoNet
 				InvalidateBatchCommand();
 				try
 				{
-					await (ExecuteBatchWithTimingAsync(ps)).ConfigureAwait(false);
+					await (ExecuteBatchWithTimingAsync(ps, cancellationToken)).ConfigureAwait(false);
 				}
 				finally
 				{
@@ -206,30 +218,32 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		protected async Task ExecuteBatchWithTimingAsync(DbCommand ps)
+		protected async Task ExecuteBatchWithTimingAsync(DbCommand ps, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			Stopwatch duration = null;
 			if (Log.IsDebugEnabled)
 				duration = Stopwatch.StartNew();
 			var countBeforeExecutingBatch = CountOfStatementsInCurrentBatch;
-			await (DoExecuteBatchAsync(ps)).ConfigureAwait(false);
+			await (DoExecuteBatchAsync(ps, cancellationToken)).ConfigureAwait(false);
 			if (Log.IsDebugEnabled && duration != null)
 				Log.DebugFormat("ExecuteBatch for {0} statements took {1} ms",
 					countBeforeExecutingBatch,
 					duration.ElapsedMilliseconds);
 		}
 
-		protected abstract Task DoExecuteBatchAsync(DbCommand ps);
+		protected abstract Task DoExecuteBatchAsync(DbCommand ps, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Adds the expected row count into the batch.
 		/// </summary>
 		/// <param name="expectation">The number of rows expected to be affected by the query.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <remarks>
 		/// If Batching is not supported, then this is when the Command should be executed.  If Batching
 		/// is supported then it should hold of on executing the batch until explicitly told to.
 		/// </remarks>
-		public abstract Task AddToBatchAsync(IExpectation expectation);
+		public abstract Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken = default(CancellationToken));
 
 		#region IDisposable Members
 

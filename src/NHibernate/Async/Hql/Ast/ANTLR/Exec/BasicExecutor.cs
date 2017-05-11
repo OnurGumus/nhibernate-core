@@ -27,14 +27,16 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class BasicExecutor : AbstractStatementExecutor
 	{
 
-		public override async Task<int> ExecuteAsync(QueryParameters parameters, ISessionImplementor session)
+		public override async Task<int> ExecuteAsync(QueryParameters parameters, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			CoordinateSharedCacheCleanup(session);
 
 			DbCommand st = null;
@@ -49,10 +51,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					var sqlQueryParametersList = sql.GetParameters().ToList();
 					SqlType[] parameterTypes = Parameters.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
 
-					st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, parameterTypes)).ConfigureAwait(false);
+					st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, parameterTypes, cancellationToken)).ConfigureAwait(false);
 					foreach (var parameterSpecification in Parameters)
 					{
-						await (parameterSpecification.BindAsync(st, sqlQueryParametersList, parameters, session)).ConfigureAwait(false);
+						await (parameterSpecification.BindAsync(st, sqlQueryParametersList, parameters, session, cancellationToken)).ConfigureAwait(false);
 					}
 
 					if (selection != null)
@@ -62,7 +64,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 							st.CommandTimeout = selection.Timeout;
 						}
 					}
-					return await (session.Batcher.ExecuteNonQueryAsync(st)).ConfigureAwait(false);
+					return await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false);
 				}
 				finally
 				{

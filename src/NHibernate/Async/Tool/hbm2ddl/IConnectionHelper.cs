@@ -13,6 +13,7 @@ using System.Data.Common;
 namespace NHibernate.Tool.hbm2ddl
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -21,7 +22,8 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <summary>
 		///  Prepare the helper for use.
 		/// </summary>
-		Task PrepareAsync();
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task PrepareAsync(CancellationToken cancellationToken = default(CancellationToken));
 	}
 
 }

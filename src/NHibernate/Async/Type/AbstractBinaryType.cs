@@ -19,6 +19,7 @@ using NHibernate.Util;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -32,8 +33,12 @@ namespace NHibernate.Type
 		//      TIMESTAMP datatype supported by Sybase and SQL Server, which
 		//      are completely db-generated values...
 
-		public Task<object> NextAsync(object current, ISessionImplementor session)
+		public Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(Next(current, session));
@@ -44,8 +49,12 @@ namespace NHibernate.Type
 			}
 		}
 
-		public Task<object> SeedAsync(ISessionImplementor session)
+		public Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(Seed(session));

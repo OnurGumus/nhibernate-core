@@ -13,6 +13,7 @@ using NHibernate.Engine;
 namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 
 
 	/// <content>
@@ -25,7 +26,8 @@ namespace NHibernate.Id
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The new identifier</returns>
-		Task<object> GenerateAsync(ISessionImplementor session, object obj);
+		Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

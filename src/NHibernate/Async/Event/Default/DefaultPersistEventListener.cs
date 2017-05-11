@@ -19,17 +19,22 @@ using NHibernate.Util;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class DefaultPersistEventListener : AbstractSaveEventListener, IPersistEventListener
 	{
 
-		public virtual Task OnPersistAsync(PersistEvent @event)
+		public virtual Task OnPersistAsync(PersistEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
-				return OnPersistAsync(@event, IdentityMap.Instantiate(10));
+				return OnPersistAsync(@event, IdentityMap.Instantiate(10), cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -37,8 +42,9 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		public virtual async Task OnPersistAsync(PersistEvent @event, IDictionary createdAlready)
+		public virtual async Task OnPersistAsync(PersistEvent @event, IDictionary createdAlready, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			ISessionImplementor source = @event.Session;
 			object obj = @event.Entity;
 
@@ -57,22 +63,22 @@ namespace NHibernate.Event.Default
 						throw new PersistentObjectException("uninitialized proxy passed to persist()");
 					}
 				}
-				entity = await (li.GetImplementationAsync()).ConfigureAwait(false);
+				entity = await (li.GetImplementationAsync(cancellationToken)).ConfigureAwait(false);
 			}
 			else
 			{
 				entity = obj;
 			}
 
-			EntityState entityState = await (GetEntityStateAsync(entity, @event.EntityName, source.PersistenceContext.GetEntry(entity), source)).ConfigureAwait(false);
+			EntityState entityState = await (GetEntityStateAsync(entity, @event.EntityName, source.PersistenceContext.GetEntry(entity), source, cancellationToken)).ConfigureAwait(false);
 
 			switch (entityState)
 			{
 				case EntityState.Persistent:
-					await (EntityIsPersistentAsync(@event, createdAlready)).ConfigureAwait(false);
+					await (EntityIsPersistentAsync(@event, createdAlready, cancellationToken)).ConfigureAwait(false);
 					break;
 				case EntityState.Transient:
-					await (EntityIsTransientAsync(@event, createdAlready)).ConfigureAwait(false);
+					await (EntityIsTransientAsync(@event, createdAlready, cancellationToken)).ConfigureAwait(false);
 					break;
 				case EntityState.Detached:
 					throw new PersistentObjectException("detached entity passed to persist: " + GetLoggableName(@event.EntityName, entity));
@@ -81,8 +87,9 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected virtual async Task EntityIsPersistentAsync(PersistEvent @event, IDictionary createCache)
+		protected virtual async Task EntityIsPersistentAsync(PersistEvent @event, IDictionary createCache, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("ignoring persistent instance");
 			IEventSource source = @event.Session;
 
@@ -105,16 +112,21 @@ namespace NHibernate.Event.Default
 			if (tempObject == null)
 			{
 				//TODO: merge into one method!
-				await (CascadeBeforeSaveAsync(source, persister, entity, createCache)).ConfigureAwait(false);
-				await (CascadeAfterSaveAsync(source, persister, entity, createCache)).ConfigureAwait(false);
+				await (CascadeBeforeSaveAsync(source, persister, entity, createCache, cancellationToken)).ConfigureAwait(false);
+				await (CascadeAfterSaveAsync(source, persister, entity, createCache, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
 		/// <summary> Handle the given create event. </summary>
 		/// <param name="event">The save event to be handled. </param>
 		/// <param name="createCache"></param>
-		protected virtual Task EntityIsTransientAsync(PersistEvent @event, IDictionary createCache)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		protected virtual Task EntityIsTransientAsync(PersistEvent @event, IDictionary createCache, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				log.Debug("saving transient instance");
@@ -125,7 +137,7 @@ namespace NHibernate.Event.Default
 				createCache[entity] = entity;
 				if (tempObject == null)
 				{
-					return SaveWithGeneratedIdAsync(entity, @event.EntityName, createCache, source, false);
+					return SaveWithGeneratedIdAsync(entity, @event.EntityName, createCache, source, false, cancellationToken);
 				}
 
 				return Task.CompletedTask;

@@ -21,15 +21,16 @@ using NHibernate.Util;
 namespace NHibernate.Engine.Query
 {
     using System.Threading.Tasks;
+    using System.Threading;
     /// <content>
     /// Contains generated async methods
     /// </content>
     public partial interface IQueryPlan
     {
-        Task PerformListAsync(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, IList results);
-        Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl);
-        Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session);
-        Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session);
+        Task PerformListAsync(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, IList results, CancellationToken cancellationToken = default(CancellationToken));
+        Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken = default(CancellationToken));
     }
 	/// <content>
 	/// Contains generated async methods
@@ -37,8 +38,9 @@ namespace NHibernate.Engine.Query
 	public partial class HQLQueryPlan : IQueryPlan
 	{
 
-		public async Task PerformListAsync(QueryParameters queryParameters, ISessionImplementor session, IList results)
+		public async Task PerformListAsync(QueryParameters queryParameters, ISessionImplementor session, IList results, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (Log.IsDebugEnabled)
 			{
 				Log.Debug("find: " + _sourceQuery);
@@ -66,7 +68,7 @@ namespace NHibernate.Engine.Query
 			int includedCount = -1;
 			for (int i = 0; i < Translators.Length; i++)
 			{
-				IList tmp = await (Translators[i].ListAsync(session, queryParametersToUse)).ConfigureAwait(false);
+				IList tmp = await (Translators[i].ListAsync(session, queryParametersToUse, cancellationToken)).ConfigureAwait(false);
 				if (needsLimit)
 				{
 					// NOTE : firstRow is zero-based
@@ -104,8 +106,9 @@ namespace NHibernate.Engine.Query
 			}
 		}
 
-		public async Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session)
+		public async Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (Log.IsDebugEnabled)
 			{
 				Log.Debug("enumerable: " + _sourceQuery);
@@ -117,24 +120,26 @@ namespace NHibernate.Engine.Query
 			}
 			if (Translators.Length == 1)
 			{
-				return await (Translators[0].GetEnumerableAsync(queryParameters, session)).ConfigureAwait(false);
+				return await (Translators[0].GetEnumerableAsync(queryParameters, session, cancellationToken)).ConfigureAwait(false);
 			}
 			var results = new IEnumerable[Translators.Length];
 			for (int i = 0; i < Translators.Length; i++)
 			{
-				var result = await (Translators[i].GetEnumerableAsync(queryParameters, session)).ConfigureAwait(false);
+				var result = await (Translators[i].GetEnumerableAsync(queryParameters, session, cancellationToken)).ConfigureAwait(false);
 				results[i] = result;
 			}
 			return new JoinedEnumerable(results);
 		}
 
-		public async Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session)
+		public async Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return new SafetyEnumerable<T>(await (PerformIterateAsync(queryParameters, session)).ConfigureAwait(false));
+			cancellationToken.ThrowIfCancellationRequested();
+			return new SafetyEnumerable<T>(await (PerformIterateAsync(queryParameters, session, cancellationToken)).ConfigureAwait(false));
 		}
 
-        public async Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session)
+        public async Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
         {
+               cancellationToken.ThrowIfCancellationRequested();
             if (Log.IsDebugEnabled)
             {
                 Log.Debug("executeUpdate: " + _sourceQuery);
@@ -147,7 +152,7 @@ namespace NHibernate.Engine.Query
             int result = 0;
             for (int i = 0; i < Translators.Length; i++)
             {
-                result += await (Translators[i].ExecuteUpdateAsync(queryParameters, session)).ConfigureAwait(false);
+                result += await (Translators[i].ExecuteUpdateAsync(queryParameters, session, cancellationToken)).ConfigureAwait(false);
             }
             return result;
         }

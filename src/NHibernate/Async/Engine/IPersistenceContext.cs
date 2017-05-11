@@ -19,6 +19,7 @@ using NHibernate.Proxy;
 namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -29,27 +30,29 @@ namespace NHibernate.Engine
 		/// Get the current state of the entity as known to the underlying
 		/// database, or null if there is no corresponding row
 		/// </summary>
-		Task<object[]> GetDatabaseSnapshotAsync(object id, IEntityPersister persister);
+		Task<object[]> GetDatabaseSnapshotAsync(object id, IEntityPersister persister, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Get the values of the natural id fields as known to the underlying
 		/// database, or null if the entity has no natural id or there is no
 		/// corresponding row.
 		/// </summary>
-		Task<object[]> GetNaturalIdSnapshotAsync(object id, IEntityPersister persister);
+		Task<object[]> GetNaturalIdSnapshotAsync(object id, IEntityPersister persister, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Possibly unproxy the given reference and reassociate it with the current session.
 		/// </summary>
 		/// <param name="maybeProxy">The reference to be unproxied if it currently represents a proxy. </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The unproxied instance. </returns>
-		Task<object> UnproxyAndReassociateAsync(object maybeProxy);
+		Task<object> UnproxyAndReassociateAsync(object maybeProxy, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Force initialization of all non-lazy collections encountered during
 		/// the current two-phase load (actually, this is a no-op, unless this
 		/// is the "outermost" load)
 		/// </summary>
-		Task InitializeNonLazyCollectionsAsync();
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task InitializeNonLazyCollectionsAsync(CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

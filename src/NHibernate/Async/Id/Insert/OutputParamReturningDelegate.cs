@@ -19,6 +19,7 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Id.Insert
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -27,9 +28,10 @@ namespace NHibernate.Id.Insert
 
 		#region Overrides of AbstractReturningDelegate
 
-		protected internal override async Task<DbCommand> PrepareAsync(SqlCommandInfo insertSQL, ISessionImplementor session)
+		protected internal override async Task<DbCommand> PrepareAsync(SqlCommandInfo insertSQL, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var command = await (session.Batcher.PrepareCommandAsync(CommandType.Text, insertSQL.Text, insertSQL.ParameterTypes)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			var command = await (session.Batcher.PrepareCommandAsync(CommandType.Text, insertSQL.Text, insertSQL.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 			//Add the output parameter
 			var idParameter = factory.ConnectionProvider.Driver.GenerateParameter(command, ReturnParameterName,
 			                                                                                         paramType);
@@ -46,9 +48,10 @@ namespace NHibernate.Id.Insert
 			return command;
 		}
 
-		public override async Task<object> ExecuteAndExtractAsync(DbCommand insert, ISessionImplementor session)
+		public override async Task<object> ExecuteAndExtractAsync(DbCommand insert, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			await (session.Batcher.ExecuteNonQueryAsync(insert)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			await (session.Batcher.ExecuteNonQueryAsync(insert, cancellationToken)).ConfigureAwait(false);
 			return Convert.ChangeType(insert.Parameters[driveGeneratedParamName].Value, Persister.IdentifierType.ReturnedClass);
 		}
 

@@ -11,6 +11,7 @@
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -20,6 +21,7 @@ namespace NHibernate.Event
 		/// Handle the given auto-flush event.
 		/// </summary>
 		/// <param name="event">The auto-flush event to be handled.</param>
-		Task OnAutoFlushAsync(AutoFlushEvent @event);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task OnAutoFlushAsync(AutoFlushEvent @event, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

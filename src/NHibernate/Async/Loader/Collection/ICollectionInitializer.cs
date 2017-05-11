@@ -13,6 +13,7 @@ using NHibernate.Engine;
 namespace NHibernate.Loader.Collection
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -21,6 +22,6 @@ namespace NHibernate.Loader.Collection
 		/// <summary>
 		/// Initialize the given collection
 		/// </summary>
-		Task InitializeAsync(object id, ISessionImplementor session);
+		Task InitializeAsync(object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

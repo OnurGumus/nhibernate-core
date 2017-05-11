@@ -11,6 +11,7 @@
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -18,6 +19,7 @@ namespace NHibernate.Event
 	{
 		/// <summary>Handle the given lock event. </summary>
 		/// <param name="event">The lock event to be handled. </param>
-		Task OnLockAsync(LockEvent @event);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task OnLockAsync(LockEvent @event, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

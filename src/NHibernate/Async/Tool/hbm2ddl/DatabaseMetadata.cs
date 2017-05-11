@@ -21,14 +21,16 @@ using NHibernate.Util;
 namespace NHibernate.Tool.hbm2ddl
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class DatabaseMetadata : IDatabaseMetadata
 	{
 
-		private async Task InitSequencesAsync(DbConnection connection, Dialect.Dialect dialect)
+		private async Task InitSequencesAsync(DbConnection connection, Dialect.Dialect dialect, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (dialect.SupportsSequences)
 			{
 				string sql = dialect.QuerySequencesString;
@@ -37,9 +39,9 @@ namespace NHibernate.Tool.hbm2ddl
 					using (var statement = connection.CreateCommand())
 					{
 						statement.CommandText = sql;
-						using (var rs = await (statement.ExecuteReaderAsync()).ConfigureAwait(false))
+						using (var rs = await (statement.ExecuteReaderAsync(cancellationToken)).ConfigureAwait(false))
 						{
-							while (await (rs.ReadAsync()).ConfigureAwait(false))
+							while (await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false))
 								sequences.Add(((string) rs[0]).ToLower().Trim());
 						}
 					}

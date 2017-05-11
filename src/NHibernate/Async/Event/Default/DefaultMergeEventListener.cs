@@ -23,17 +23,19 @@ using NHibernate.Type;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class DefaultMergeEventListener : AbstractSaveEventListener, IMergeEventListener
 	{
 
-		public virtual async Task OnMergeAsync(MergeEvent @event)
+		public virtual async Task OnMergeAsync(MergeEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			EventCache copyCache = new EventCache();
 			
-			await (OnMergeAsync(@event, copyCache)).ConfigureAwait(false);
+			await (OnMergeAsync(@event, copyCache, cancellationToken)).ConfigureAwait(false);
 
 			// transientCopyCache may contain parent and child entities in random order.
 			// Child entities occurring ahead of their respective transient parents may fail 
@@ -46,16 +48,16 @@ namespace NHibernate.Event.Default
 			// TODO: find out if retrying can add entities to copyCache (don't think it can...)
 			// For now, just retry once; throw TransientObjectException if there are still any transient entities
 			
-			IDictionary transientCopyCache = await (this.GetTransientCopyCacheAsync(@event, copyCache)).ConfigureAwait(false);
+			IDictionary transientCopyCache = await (this.GetTransientCopyCacheAsync(@event, copyCache, cancellationToken)).ConfigureAwait(false);
 			
 			while (transientCopyCache.Count > 0)
 			{
 				var initialTransientCount = transientCopyCache.Count;
 
-				await (RetryMergeTransientEntitiesAsync(@event, transientCopyCache, copyCache)).ConfigureAwait(false);
+				await (RetryMergeTransientEntitiesAsync(@event, transientCopyCache, copyCache, cancellationToken)).ConfigureAwait(false);
 				
 				// find any entities that are still transient after retry
-				transientCopyCache = await (this.GetTransientCopyCacheAsync(@event, copyCache)).ConfigureAwait(false);
+				transientCopyCache = await (this.GetTransientCopyCacheAsync(@event, copyCache, cancellationToken)).ConfigureAwait(false);
 
 				// if a retry did nothing, the remaining transient entities 
 				// cannot be merged due to references to other transient entities 
@@ -83,8 +85,9 @@ namespace NHibernate.Event.Default
 			copyCache.Clear();
 		}
 		
-		public virtual async Task OnMergeAsync(MergeEvent @event, IDictionary copiedAlready)
+		public virtual async Task OnMergeAsync(MergeEvent @event, IDictionary copiedAlready, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			EventCache copyCache = (EventCache)copiedAlready;
 			IEventSource source = @event.Session;
 			object original = @event.Original;
@@ -98,12 +101,12 @@ namespace NHibernate.Event.Default
 					if (li.IsUninitialized)
 					{
 						log.Debug("ignoring uninitialized proxy");
-						@event.Result = await (source.LoadAsync(li.EntityName, li.Identifier)).ConfigureAwait(false);
+						@event.Result = await (source.LoadAsync(li.EntityName, li.Identifier, cancellationToken)).ConfigureAwait(false);
 						return; //EARLY EXIT!
 					}
 					else
 					{
-						entity = await (li.GetImplementationAsync()).ConfigureAwait(false);
+						entity = await (li.GetImplementationAsync(cancellationToken)).ConfigureAwait(false);
 					}
 				}
 				else
@@ -157,19 +160,19 @@ namespace NHibernate.Event.Default
 
 					if (entityState == EntityState.Undefined)
 					{
-						entityState = await (GetEntityStateAsync(entity, @event.EntityName, entry, source)).ConfigureAwait(false);
+						entityState = await (GetEntityStateAsync(entity, @event.EntityName, entry, source, cancellationToken)).ConfigureAwait(false);
 					}
 
 					switch (entityState)
 					{
 						case EntityState.Persistent:
-							await (EntityIsPersistentAsync(@event, copyCache)).ConfigureAwait(false);
+							await (EntityIsPersistentAsync(@event, copyCache, cancellationToken)).ConfigureAwait(false);
 							break;
 						case EntityState.Transient:
-							await (EntityIsTransientAsync(@event, copyCache)).ConfigureAwait(false);
+							await (EntityIsTransientAsync(@event, copyCache, cancellationToken)).ConfigureAwait(false);
 							break;
 						case EntityState.Detached:
-							await (EntityIsDetachedAsync(@event, copyCache)).ConfigureAwait(false);
+							await (EntityIsDetachedAsync(@event, copyCache, cancellationToken)).ConfigureAwait(false);
 							break;
 						default:
 							throw new ObjectDeletedException("deleted instance passed to merge", null, GetLoggableName(@event.EntityName, entity));
@@ -178,8 +181,9 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected virtual async Task EntityIsPersistentAsync(MergeEvent @event, IDictionary copyCache)
+		protected virtual async Task EntityIsPersistentAsync(MergeEvent @event, IDictionary copyCache, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("ignoring persistent instance");
 
 			//TODO: check that entry.getIdentifier().equals(requestedId)
@@ -190,14 +194,15 @@ namespace NHibernate.Event.Default
 
 			((EventCache)copyCache).Add(entity, entity, true); //before cascade!
 
-			await (CascadeOnMergeAsync(source, persister, entity, copyCache)).ConfigureAwait(false);
-			await (CopyValuesAsync(persister, entity, entity, source, copyCache)).ConfigureAwait(false);
+			await (CascadeOnMergeAsync(source, persister, entity, copyCache, cancellationToken)).ConfigureAwait(false);
+			await (CopyValuesAsync(persister, entity, entity, source, copyCache, cancellationToken)).ConfigureAwait(false);
 
 			@event.Result = entity;
 		}
 
-		protected virtual async Task EntityIsTransientAsync(MergeEvent @event, IDictionary copyCache)
+		protected virtual async Task EntityIsTransientAsync(MergeEvent @event, IDictionary copyCache, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			log.Info("merging transient instance");
 
 			object entity = @event.Entity;
@@ -206,11 +211,12 @@ namespace NHibernate.Event.Default
 			IEntityPersister persister = source.GetEntityPersister(@event.EntityName, entity);
 			string entityName = persister.EntityName;
 			
-			@event.Result = await (this.MergeTransientEntityAsync(entity, entityName, @event.RequestedId, source, copyCache)).ConfigureAwait(false);
+			@event.Result = await (this.MergeTransientEntityAsync(entity, entityName, @event.RequestedId, source, copyCache, cancellationToken)).ConfigureAwait(false);
 		}
 	
-		private async Task<object> MergeTransientEntityAsync(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache)
+		private async Task<object> MergeTransientEntityAsync(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache, CancellationToken cancellationToken = default(CancellationToken))
 		{
+	cancellationToken.ThrowIfCancellationRequested();
 			IEntityPersister persister = source.GetEntityPersister(entityName, entity);
 
 			object id = persister.HasIdentifierProperty ? persister.GetIdentifier(entity) : null;
@@ -230,13 +236,13 @@ namespace NHibernate.Event.Default
 			// cascade first, so that all unsaved objects get their
 			// copy created before we actually copy
 			//cascadeOnMerge(event, persister, entity, copyCache, Cascades.CASCADE_BEFORE_MERGE);
-			await (base.CascadeBeforeSaveAsync(source, persister, entity, copyCache)).ConfigureAwait(false);
-			await (CopyValuesAsync(persister, entity, copy, source, copyCache, ForeignKeyDirection.ForeignKeyFromParent)).ConfigureAwait(false);
+			await (base.CascadeBeforeSaveAsync(source, persister, entity, copyCache, cancellationToken)).ConfigureAwait(false);
+			await (CopyValuesAsync(persister, entity, copy, source, copyCache, ForeignKeyDirection.ForeignKeyFromParent, cancellationToken)).ConfigureAwait(false);
 
 			try
 			{
 				// try saving; check for non-nullable properties that are null or transient entities before saving
-				await (this.SaveTransientEntityAsync(copy, entityName, requestedId, source, copyCache)).ConfigureAwait(false);
+				await (this.SaveTransientEntityAsync(copy, entityName, requestedId, source, copyCache, cancellationToken)).ConfigureAwait(false);
 			}
 			catch (PropertyValueException ex)
 			{
@@ -272,14 +278,18 @@ namespace NHibernate.Event.Default
 			
 			// cascade first, so that all unsaved objects get their
 			// copy created before we actually copy
-			await (base.CascadeAfterSaveAsync(source, persister, entity, copyCache)).ConfigureAwait(false);
-			await (CopyValuesAsync(persister, entity, copy, source, copyCache, ForeignKeyDirection.ForeignKeyToParent)).ConfigureAwait(false);
+			await (base.CascadeAfterSaveAsync(source, persister, entity, copyCache, cancellationToken)).ConfigureAwait(false);
+			await (CopyValuesAsync(persister, entity, copy, source, copyCache, ForeignKeyDirection.ForeignKeyToParent, cancellationToken)).ConfigureAwait(false);
 
 			return copy;
 		}
 	
-		private Task SaveTransientEntityAsync(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache)
+		private Task SaveTransientEntityAsync(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache, CancellationToken cancellationToken = default(CancellationToken))
 		{
+	if (cancellationToken.IsCancellationRequested)
+	{
+	return Task.FromCanceled<object>(cancellationToken);
+	}
 try
 {
 // this bit is only *really* absolutely necessary for handling
@@ -287,11 +297,11 @@ try
 // graphs, since it helps ensure uniqueness
 if (requestedId == null)
 {
-return SaveWithGeneratedIdAsync(entity, entityName, copyCache, source, false);
+return SaveWithGeneratedIdAsync(entity, entityName, copyCache, source, false, cancellationToken);
 }
 else
 {
-return SaveWithRequestedIdAsync(entity, requestedId, entityName, copyCache, source);
+return SaveWithRequestedIdAsync(entity, requestedId, entityName, copyCache, source, cancellationToken);
 }
 }
 catch (Exception ex)
@@ -300,8 +310,9 @@ return Task.FromException<object>(ex);
 }
 		}
 
-		protected virtual async Task EntityIsDetachedAsync(MergeEvent @event, IDictionary copyCache)
+		protected virtual async Task EntityIsDetachedAsync(MergeEvent @event, IDictionary copyCache, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("merging detached instance");
 
 			object entity = @event.Entity;
@@ -331,7 +342,7 @@ return Task.FromException<object>(ex);
 			//we must clone embedded composite identifiers, or
 			//we will get back the same instance that we pass in
 			object clonedIdentifier = persister.IdentifierType.DeepCopy(id, source.Factory);
-			object result = await (source.GetAsync(persister.EntityName, clonedIdentifier)).ConfigureAwait(false);
+			object result = await (source.GetAsync(persister.EntityName, clonedIdentifier, cancellationToken)).ConfigureAwait(false);
 
 			source.FetchProfile = previousFetchProfile;
 
@@ -344,7 +355,7 @@ return Task.FromException<object>(ex);
 				// we got here because we assumed that an instance
 				// with an assigned id was detached, when it was
 				// really persistent
-				await (EntityIsTransientAsync(@event, copyCache)).ConfigureAwait(false);
+				await (EntityIsTransientAsync(@event, copyCache, cancellationToken)).ConfigureAwait(false);
 			}
 			else
 			{
@@ -361,7 +372,7 @@ return Task.FromException<object>(ex);
 				{
 					throw new AssertionFailure("entity was not detached");
 				}
-				else if (!(await (source.GetEntityNameAsync(target)).ConfigureAwait(false)).Equals(entityName))
+				else if (!(await (source.GetEntityNameAsync(target, cancellationToken)).ConfigureAwait(false)).Equals(entityName))
 				{
 					throw new WrongClassException("class of the given object did not match class of persistent copy",
 					                              @event.RequestedId, persister.EntityName);
@@ -377,8 +388,8 @@ return Task.FromException<object>(ex);
 
 				// cascade first, so that all unsaved objects get their
 				// copy created before we actually copy
-				await (CascadeOnMergeAsync(source, persister, entity, copyCache)).ConfigureAwait(false);
-				await (CopyValuesAsync(persister, entity, target, source, copyCache)).ConfigureAwait(false);
+				await (CascadeOnMergeAsync(source, persister, entity, copyCache, cancellationToken)).ConfigureAwait(false);
+				await (CopyValuesAsync(persister, entity, target, source, copyCache, cancellationToken)).ConfigureAwait(false);
 
 				//copyValues works by reflection, so explicitly mark the entity instance dirty
 				MarkInterceptorDirty(entity, target);
@@ -387,18 +398,20 @@ return Task.FromException<object>(ex);
 			}
 		}
 
-		protected virtual async Task CopyValuesAsync(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache)
+		protected virtual async Task CopyValuesAsync(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object[] copiedValues =
 				await (TypeHelper.ReplaceAsync(persister.GetPropertyValues(entity),
 				                    persister.GetPropertyValues(target), persister.PropertyTypes, source, target,
-				                    copyCache)).ConfigureAwait(false);
+				                    copyCache, cancellationToken)).ConfigureAwait(false);
 
 			persister.SetPropertyValues(target, copiedValues);
 		}
 
-		protected virtual async Task CopyValuesAsync(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
+		protected virtual async Task CopyValuesAsync(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object[] copiedValues;
 
 			if (foreignKeyDirection.Equals( ForeignKeyDirection.ForeignKeyToParent))
@@ -409,14 +422,14 @@ return Task.FromException<object>(ex);
 				copiedValues =
 					await (TypeHelper.ReplaceAssociationsAsync(persister.GetPropertyValues(entity),
 					                                persister.GetPropertyValues(target), persister.PropertyTypes,
-					                                source, target, copyCache, foreignKeyDirection)).ConfigureAwait(false);
+					                                source, target, copyCache, foreignKeyDirection, cancellationToken)).ConfigureAwait(false);
 			}
 			else
 			{
 				copiedValues =
 					await (TypeHelper.ReplaceAsync(persister.GetPropertyValues(entity),
 					                    persister.GetPropertyValues(target), persister.PropertyTypes, source, target,
-					                    copyCache, foreignKeyDirection)).ConfigureAwait(false);
+					                    copyCache, foreignKeyDirection, cancellationToken)).ConfigureAwait(false);
 			}
 
 			persister.SetPropertyValues(target, copiedValues);
@@ -429,12 +442,14 @@ return Task.FromException<object>(ex);
 		/// <param name="persister">The persister of the entity being copied. </param>
 		/// <param name="entity">The entity being copied. </param>
 		/// <param name="copyCache">A cache of already copied instance. </param>
-		protected virtual async Task CascadeOnMergeAsync(IEventSource source, IEntityPersister persister, object entity, IDictionary copyCache)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		protected virtual async Task CascadeOnMergeAsync(IEventSource source, IEntityPersister persister, object entity, IDictionary copyCache, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
-				await (new Cascade(CascadeAction, CascadePoint.BeforeMerge, source).CascadeOnAsync(persister, entity, copyCache)).ConfigureAwait(false);
+				await (new Cascade(CascadeAction, CascadePoint.BeforeMerge, source).CascadeOnAsync(persister, entity, copyCache, cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -447,10 +462,12 @@ return Task.FromException<object>(ex);
 		/// </summary>
 		/// <param name="event"></param>
 		/// <param name="copyCache"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
 		/// <remarks>Should this method be on the EventCache class?</remarks>
-		protected async Task<EventCache> GetTransientCopyCacheAsync(MergeEvent @event, EventCache copyCache)
+		protected async Task<EventCache> GetTransientCopyCacheAsync(MergeEvent @event, EventCache copyCache, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			EventCache transientCopyCache = new EventCache();
 
 			foreach(object entity in copyCache.Keys)
@@ -458,7 +475,7 @@ return Task.FromException<object>(ex);
 				object entityCopy = copyCache[entity];
 				
 				if (entityCopy.IsProxy())
-					entityCopy = await (((INHibernateProxy)entityCopy).HibernateLazyInitializer.GetImplementationAsync()).ConfigureAwait(false);
+					entityCopy = await (((INHibernateProxy)entityCopy).HibernateLazyInitializer.GetImplementationAsync(cancellationToken)).ConfigureAwait(false);
 				
 				// NH-specific: Disregard entities that implement ILifecycle and manage their own state - they 
 				// don't have an EntityEntry, and we can't determine if they are transient or not
@@ -506,8 +523,10 @@ return Task.FromException<object>(ex);
 		/// <param name="event"></param>
 		/// <param name="transientCopyCache"></param>
 		/// <param name="copyCache"></param>
-		protected async Task RetryMergeTransientEntitiesAsync(MergeEvent @event, IDictionary transientCopyCache, EventCache copyCache)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		protected async Task RetryMergeTransientEntitiesAsync(MergeEvent @event, IDictionary transientCopyCache, EventCache copyCache, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			// TODO: The order in which entities are saved may matter (e.g., a particular
 			// transient entity may need to be saved before other transient entities can
 			// be saved).
@@ -522,15 +541,19 @@ return Task.FromException<object>(ex);
 				EntityEntry copyEntry = @event.Session.PersistenceContext.GetEntry(copy);
 				
 				if (entity == @event.Entity)
-					await (MergeTransientEntityAsync(entity, copyEntry.EntityName, @event.RequestedId, @event.Session, copyCache)).ConfigureAwait(false);
+					await (MergeTransientEntityAsync(entity, copyEntry.EntityName, @event.RequestedId, @event.Session, copyCache, cancellationToken)).ConfigureAwait(false);
 				else
-					await (MergeTransientEntityAsync(entity, copyEntry.EntityName, copyEntry.Id, @event.Session, copyCache)).ConfigureAwait(false);
+					await (MergeTransientEntityAsync(entity, copyEntry.EntityName, copyEntry.Id, @event.Session, copyCache, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 		
 		/// <summary> Cascade behavior is redefined by this subclass, disable superclass behavior</summary>
-		protected override Task CascadeAfterSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything)
+		protected override Task CascadeAfterSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				CascadeAfterSave(source, persister, entity, anything);
@@ -543,8 +566,12 @@ return Task.FromException<object>(ex);
 		}
 
 		/// <summary> Cascade behavior is redefined by this subclass, disable superclass behavior</summary>
-		protected override Task CascadeBeforeSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything)
+		protected override Task CascadeBeforeSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				CascadeBeforeSave(source, persister, entity, anything);

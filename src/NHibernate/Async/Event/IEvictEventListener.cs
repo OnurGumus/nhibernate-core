@@ -11,6 +11,7 @@
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -18,6 +19,7 @@ namespace NHibernate.Event
 	{
 		/// <summary> Handle the given evict event. </summary>
 		/// <param name="event">The evict event to be handled.</param>
-		Task OnEvictAsync(EvictEvent @event);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task OnEvictAsync(EvictEvent @event, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

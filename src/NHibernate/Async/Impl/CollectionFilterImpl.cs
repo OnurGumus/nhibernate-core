@@ -17,6 +17,7 @@ using System.Collections.Generic;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	using System;
 	/// <content>
 	/// Contains generated async methods
@@ -24,13 +25,17 @@ namespace NHibernate.Impl
 	public partial class CollectionFilterImpl : QueryImpl
 	{
 
-		public override Task<IEnumerable> EnumerableAsync()
+		public override Task<IEnumerable> EnumerableAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IEnumerable>(cancellationToken);
+			}
 			try
 			{
 				VerifyParameters();
 				IDictionary<string, TypedValue> namedParams = NamedParams;
-				return Session.EnumerableFilterAsync(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
+				return Session.EnumerableFilterAsync(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams), cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -38,13 +43,17 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override Task<IEnumerable<T>> EnumerableAsync<T>()
+		public override Task<IEnumerable<T>> EnumerableAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IEnumerable<T>>(cancellationToken);
+			}
 			try
 			{
 				VerifyParameters();
 				IDictionary<string, TypedValue> namedParams = NamedParams;
-				return Session.EnumerableFilterAsync<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
+				return Session.EnumerableFilterAsync<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams), cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -52,13 +61,17 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override Task<IList> ListAsync()
+		public override Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IList>(cancellationToken);
+			}
 			try
 			{
 				VerifyParameters();
 				IDictionary<string, TypedValue> namedParams = NamedParams;
-				return Session.ListFilterAsync(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
+				return Session.ListFilterAsync(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams), cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -66,13 +79,17 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override Task<IList<T>> ListAsync<T>()
+		public override Task<IList<T>> ListAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IList<T>>(cancellationToken);
+			}
 			try
 			{
 				VerifyParameters();
 				IDictionary<string, TypedValue> namedParams = NamedParams;
-				return Session.ListFilterAsync<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
+				return Session.ListFilterAsync<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams), cancellationToken);
 			}
 			catch (Exception ex)
 			{

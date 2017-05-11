@@ -17,26 +17,33 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class MetaType : AbstractType
 	{
 
-		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			object key = await (baseType.NullSafeGetAsync(rs, names, session, owner)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			object key = await (baseType.NullSafeGetAsync(rs, names, session, owner, cancellationToken)).ConfigureAwait(false);
 			return key == null ? null : values[key];
 		}
 
-		public override async Task<object> NullSafeGetAsync(DbDataReader rs,string name,ISessionImplementor session,object owner)
+		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			object key = await (baseType.NullSafeGetAsync(rs, name, session, owner)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			object key = await (baseType.NullSafeGetAsync(rs, name, session, owner, cancellationToken)).ConfigureAwait(false);
 			return key == null ? null : values[key];
 		}
 
-		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, System.Collections.IDictionary copiedAlready)
+		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, System.Collections.IDictionary copiedAlready, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(Replace(original, current, session, owner, copiedAlready));

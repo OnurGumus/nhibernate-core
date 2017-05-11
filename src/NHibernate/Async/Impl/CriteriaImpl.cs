@@ -21,25 +21,28 @@ using NHibernate.Util;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class CriteriaImpl : ICriteria
 	{
 
-		public async Task<IList> ListAsync()
+		public async Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			var results = new List<object>();
-			await (ListAsync(results)).ConfigureAwait(false);
+			await (ListAsync(results, cancellationToken)).ConfigureAwait(false);
 			return results;
 		}
 
-		public async Task ListAsync(IList results)
+		public async Task ListAsync(IList results, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			Before();
 			try
 			{
-				await (session.ListAsync(this, results)).ConfigureAwait(false);
+				await (session.ListAsync(this, results, cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -47,16 +50,18 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public async Task<IList<T>> ListAsync<T>()
+		public async Task<IList<T>> ListAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			List<T> results = new List<T>();
-			await (ListAsync(results)).ConfigureAwait(false);
+			await (ListAsync(results, cancellationToken)).ConfigureAwait(false);
 			return results;
 		}
 
-		public async Task<T> UniqueResultAsync<T>()
+		public async Task<T> UniqueResultAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			object result = await (UniqueResultAsync()).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			object result = await (UniqueResultAsync(cancellationToken)).ConfigureAwait(false);
 			if (result == null && typeof (T).IsValueType)
 			{
 				return default(T);
@@ -67,9 +72,10 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public async Task<object> UniqueResultAsync()
+		public async Task<object> UniqueResultAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return AbstractQueryImpl.UniqueElement(await (ListAsync()).ConfigureAwait(false));
+			cancellationToken.ThrowIfCancellationRequested();
+			return AbstractQueryImpl.UniqueElement(await (ListAsync(cancellationToken)).ConfigureAwait(false));
 		}
 		/// <content>
 		/// Contains generated async methods
@@ -77,24 +83,37 @@ namespace NHibernate.Impl
 		public sealed partial class Subcriteria : ICriteria
 		{
 
-			public Task<IList> ListAsync()
+			public Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken))
 			{
-				return root.ListAsync();
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<IList>(cancellationToken);
+				}
+				return root.ListAsync(cancellationToken);
 			}
 
-			public Task ListAsync(IList results)
+			public Task ListAsync(IList results, CancellationToken cancellationToken = default(CancellationToken))
 			{
-				return root.ListAsync(results);
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
+				return root.ListAsync(results, cancellationToken);
 			}
 
-			public Task<IList<T>> ListAsync<T>()
+			public Task<IList<T>> ListAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 			{
-				return root.ListAsync<T>();
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<IList<T>>(cancellationToken);
+				}
+				return root.ListAsync<T>(cancellationToken);
 			}
 
-			public async Task<T> UniqueResultAsync<T>()
+			public async Task<T> UniqueResultAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 			{
-				object result = await (UniqueResultAsync()).ConfigureAwait(false);
+				cancellationToken.ThrowIfCancellationRequested();
+				object result = await (UniqueResultAsync(cancellationToken)).ConfigureAwait(false);
 				if (result == null && typeof (T).IsValueType)
 				{
 					throw new InvalidCastException(
@@ -106,9 +125,13 @@ namespace NHibernate.Impl
 				}
 			}
 
-			public Task<object> UniqueResultAsync()
+			public Task<object> UniqueResultAsync(CancellationToken cancellationToken = default(CancellationToken))
 			{
-				return root.UniqueResultAsync();
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
+				return root.UniqueResultAsync(cancellationToken);
 			}
 		}
 	}

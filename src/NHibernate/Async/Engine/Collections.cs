@@ -17,6 +17,7 @@ using NHibernate.Type;
 namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	using System;
 	/// <content>
 	/// Contains generated async methods
@@ -29,17 +30,22 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="coll">The collection to be updated by unreachability. </param>
 		/// <param name="session">The session.</param>
-		public static Task ProcessUnreachableCollectionAsync(IPersistentCollection coll, ISessionImplementor session)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public static Task ProcessUnreachableCollectionAsync(IPersistentCollection coll, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				if (coll.Owner == null)
 				{
-					return ProcessNeverReferencedCollectionAsync(coll, session);
+					return ProcessNeverReferencedCollectionAsync(coll, session, cancellationToken);
 				}
 				else
 				{
-					return ProcessDereferencedCollectionAsync(coll, session);
+					return ProcessDereferencedCollectionAsync(coll, session, cancellationToken);
 				}
 			}
 			catch (Exception ex)
@@ -48,8 +54,12 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private static Task ProcessDereferencedCollectionAsync(IPersistentCollection coll, ISessionImplementor session)
+		private static Task ProcessDereferencedCollectionAsync(IPersistentCollection coll, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				IPersistenceContext persistenceContext = session.PersistenceContext;
@@ -99,7 +109,7 @@ namespace NHibernate.Engine
 				// do the work
 				entry.CurrentPersister = null;
 				entry.CurrentKey = null;
-				return PrepareCollectionForUpdateAsync(coll, entry, session.Factory);
+				return PrepareCollectionForUpdateAsync(coll, entry, session.Factory, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -107,15 +117,19 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private static Task ProcessNeverReferencedCollectionAsync(IPersistentCollection coll, ISessionImplementor session)
+		private static Task ProcessNeverReferencedCollectionAsync(IPersistentCollection coll, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(coll);
 				log.Debug("Found collection with unloaded owner: " + MessageHelper.CollectionInfoString(entry.LoadedPersister, coll, entry.LoadedKey, session));
 				entry.CurrentPersister = entry.LoadedPersister;
 				entry.CurrentKey = entry.LoadedKey;
-				return PrepareCollectionForUpdateAsync(coll, entry, session.Factory);
+				return PrepareCollectionForUpdateAsync(coll, entry, session.Factory, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -130,8 +144,13 @@ namespace NHibernate.Engine
 		/// <param name="type">The type of the collection. </param>
 		/// <param name="entity">The owner of the collection. </param>
 		/// <param name="session">The session.</param>
-		public static Task ProcessReachableCollectionAsync(IPersistentCollection collection, CollectionType type, object entity, ISessionImplementor session)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public static Task ProcessReachableCollectionAsync(IPersistentCollection collection, CollectionType type, object entity, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				collection.Owner = entity;
@@ -160,7 +179,7 @@ namespace NHibernate.Engine
 					log.Debug("Collection found: " + MessageHelper.CollectionInfoString(persister, collection, ce.CurrentKey, session) + ", was: " + MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, session) + (collection.WasInitialized ? " (initialized)" : " (uninitialized)"));
 				}
 
-				return PrepareCollectionForUpdateAsync(collection, ce, factory);
+				return PrepareCollectionForUpdateAsync(collection, ce, factory, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -168,13 +187,17 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private static Task PrepareCollectionForUpdateAsync(IPersistentCollection collection, CollectionEntry entry, ISessionFactoryImplementor factory)
+		private static Task PrepareCollectionForUpdateAsync(IPersistentCollection collection, CollectionEntry entry, ISessionFactoryImplementor factory, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			//1. record the collection role that this collection is referenced by
 			//2. decide if the collection needs deleting/creating/updating (but don't actually schedule the action yet)
 
 			if (entry.IsProcessed)
 				throw new AssertionFailure("collection was processed twice by flush()");
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				entry.IsProcessed = true;
@@ -205,7 +228,7 @@ namespace NHibernate.Engine
 							if (entry.IsDorecreate)
 							{
 								log.Debug("Forcing collection initialization");
-								return collection.ForceInitializationAsync(); // force initialize!
+								return collection.ForceInitializationAsync(cancellationToken); // force initialize!
 							}
 						}
 					}

@@ -15,14 +15,16 @@ using System.Data.Common;
 namespace NHibernate.Driver
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class SQLite20Driver : ReflectionBasedDriver
 	{
 
-        private static async Task Connection_StateChangeAsync(object sender, StateChangeEventArgs e)
+        private static async Task Connection_StateChangeAsync(object sender, StateChangeEventArgs e, CancellationToken cancellationToken = default(CancellationToken))
         {
+               cancellationToken.ThrowIfCancellationRequested();
             if ((e.OriginalState == ConnectionState.Broken || e.OriginalState == ConnectionState.Closed || e.OriginalState == ConnectionState.Connecting) &&
                 e.CurrentState == ConnectionState.Open)
             {
@@ -31,7 +33,7 @@ namespace NHibernate.Driver
                 {
                     // Activated foreign keys if supported by SQLite.  Unknown pragmas are ignored.
                     command.CommandText = "PRAGMA foreign_keys = ON";
-                    await (command.ExecuteNonQueryAsync()).ConfigureAwait(false);
+                    await (command.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
                 }
             }
         }

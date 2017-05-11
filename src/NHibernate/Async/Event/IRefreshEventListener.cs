@@ -13,6 +13,7 @@ using System.Collections;
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -20,13 +21,15 @@ namespace NHibernate.Event
 	{
 		/// <summary> Handle the given refresh event. </summary>
 		/// <param name="event">The refresh event to be handled.</param>
-		Task OnRefreshAsync(RefreshEvent @event);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task OnRefreshAsync(RefreshEvent @event, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="event"></param>
 		/// <param name="refreshedAlready"></param>
-		Task OnRefreshAsync(RefreshEvent @event, IDictionary refreshedAlready);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task OnRefreshAsync(RefreshEvent @event, IDictionary refreshedAlready, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

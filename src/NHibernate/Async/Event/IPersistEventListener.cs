@@ -13,6 +13,7 @@ using System.Collections;
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -20,11 +21,13 @@ namespace NHibernate.Event
 	{
 		/// <summary> Handle the given create event.</summary>
 		/// <param name="event">The create event to be handled.</param>
-		Task OnPersistAsync(PersistEvent @event);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task OnPersistAsync(PersistEvent @event, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary> Handle the given create event. </summary>
 		/// <param name="event">The create event to be handled.</param>
 		/// <param name="createdAlready"></param>
-		Task OnPersistAsync(PersistEvent @event, IDictionary createdAlready);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task OnPersistAsync(PersistEvent @event, IDictionary createdAlready, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

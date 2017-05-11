@@ -19,14 +19,16 @@ using NHibernate.Persister.Entity;
 namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public sealed partial class EntityDeleteAction : EntityAction
 	{
 
-		public override async Task ExecuteAsync()
+		public override async Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object id = Id;
 			IEntityPersister persister = Persister;
 			ISessionImplementor session = Session;
@@ -39,7 +41,7 @@ namespace NHibernate.Action
 				stopwatch = Stopwatch.StartNew();
 			}
 
-			bool veto = await (PreDeleteAsync()).ConfigureAwait(false);
+			bool veto = await (PreDeleteAsync(cancellationToken)).ConfigureAwait(false);
 
 			object tmpVersion = version;
 			if (persister.IsVersionPropertyGenerated)
@@ -63,7 +65,7 @@ namespace NHibernate.Action
 
 			if (!isCascadeDeleteEnabled && !veto)
 			{
-				await (persister.DeleteAsync(id, tmpVersion, instance, session)).ConfigureAwait(false);
+				await (persister.DeleteAsync(id, tmpVersion, instance, session, cancellationToken)).ConfigureAwait(false);
 			}
 
 			//postDelete:
@@ -86,7 +88,7 @@ namespace NHibernate.Action
 			if (persister.HasCache)
 				persister.Cache.Evict(ck);
 
-			await (PostDeleteAsync()).ConfigureAwait(false);
+			await (PostDeleteAsync(cancellationToken)).ConfigureAwait(false);
 
 			if (statsEnabled && !veto)
 			{
@@ -95,21 +97,23 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task PostDeleteAsync()
+		private async Task PostDeleteAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IPostDeleteEventListener[] postListeners = Session.Listeners.PostDeleteEventListeners;
 			if (postListeners.Length > 0)
 			{
 				PostDeleteEvent postEvent = new PostDeleteEvent(Instance, Id, state, Persister, (IEventSource)Session);
 				foreach (IPostDeleteEventListener listener in postListeners)
 				{
-					await (listener.OnPostDeleteAsync(postEvent)).ConfigureAwait(false);
+					await (listener.OnPostDeleteAsync(postEvent, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private async Task<bool> PreDeleteAsync()
+		private async Task<bool> PreDeleteAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IPreDeleteEventListener[] preListeners = Session.Listeners.PreDeleteEventListeners;
 			bool veto = false;
 			if (preListeners.Length > 0)
@@ -117,14 +121,18 @@ namespace NHibernate.Action
 				var preEvent = new PreDeleteEvent(Instance, Id, state, Persister, (IEventSource)Session);
 				foreach (IPreDeleteEventListener listener in preListeners)
 				{
-					veto |= await (listener.OnPreDeleteAsync(preEvent)).ConfigureAwait(false);
+					veto |= await (listener.OnPreDeleteAsync(preEvent, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 			return veto;
 		}
 		
-		protected override Task AfterTransactionCompletionProcessImplAsync(bool success)
+		protected override Task AfterTransactionCompletionProcessImplAsync(bool success, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				if (Persister.HasCache)
@@ -135,7 +143,7 @@ namespace NHibernate.Action
 
 				if (success)
 				{
-					return PostCommitDeleteAsync();
+					return PostCommitDeleteAsync(cancellationToken);
 				}
 
 				return Task.CompletedTask;
@@ -146,15 +154,16 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task PostCommitDeleteAsync()
+		private async Task PostCommitDeleteAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IPostDeleteEventListener[] postListeners = Session.Listeners.PostCommitDeleteEventListeners;
 			if (postListeners.Length > 0)
 			{
 				PostDeleteEvent postEvent = new PostDeleteEvent(Instance, Id, state, Persister, (IEventSource)Session);
 				foreach (IPostDeleteEventListener listener in postListeners)
 				{
-					await (listener.OnPostDeleteAsync(postEvent)).ConfigureAwait(false);
+					await (listener.OnPostDeleteAsync(postEvent, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}

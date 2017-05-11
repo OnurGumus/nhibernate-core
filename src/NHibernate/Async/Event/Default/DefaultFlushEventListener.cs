@@ -13,19 +13,21 @@ using System;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class DefaultFlushEventListener : AbstractFlushingEventListener, IFlushEventListener
 	{
-		public virtual async Task OnFlushAsync(FlushEvent @event)
+		public virtual async Task OnFlushAsync(FlushEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IEventSource source = @event.Session;
 
 			if ((source.PersistenceContext.EntityEntries.Count > 0) || (source.PersistenceContext.CollectionEntries.Count > 0))
 			{
-				await (FlushEverythingToExecutionsAsync(@event)).ConfigureAwait(false);
-				await (PerformExecutionsAsync(source)).ConfigureAwait(false);
+				await (FlushEverythingToExecutionsAsync(@event, cancellationToken)).ConfigureAwait(false);
+				await (PerformExecutionsAsync(source, cancellationToken)).ConfigureAwait(false);
 				PostFlush(source);
 
 				if (source.Factory.Statistics.IsStatisticsEnabled)

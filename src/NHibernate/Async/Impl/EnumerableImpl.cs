@@ -22,19 +22,21 @@ using NHibernate.Type;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class EnumerableImpl : IEnumerable, IEnumerator, IDisposable
 	{
 		
-		private async Task PostNextAsync()
+		private async Task PostNextAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("attempting to retrieve next results");
 			bool readResult;
 			try
 			{
-				readResult = await (_reader.ReadAsync()).ConfigureAwait(false);
+				readResult = await (_reader.ReadAsync(cancellationToken)).ConfigureAwait(false);
 				if (!readResult)
 				{
 					log.Debug("exhausted results");
@@ -51,8 +53,9 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private async Task PostMoveNextAsync(bool hasNext)
+		private async Task PostMoveNextAsync(bool hasNext, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			_startedReading = true;
 			_hasNext = hasNext;
 			_currentRow++;
@@ -82,7 +85,7 @@ namespace NHibernate.Impl
 	
 					if (_single && !isHolder)
 					{
-						_currentResult = await (_types[0].NullSafeGetAsync(_reader, _names[0], _session, null)).ConfigureAwait(false);
+						_currentResult = await (_types[0].NullSafeGetAsync(_reader, _names[0], _session, null, cancellationToken)).ConfigureAwait(false);
 					}
 					else
 					{
@@ -96,7 +99,7 @@ namespace NHibernate.Impl
 							// is a value type then the value will simply be pulled out of the DbDataReader.  If
 							// the IType is an Entity type then the IType will extract the id from the DbDataReader
 							// and use the ISession to load an instance of the object.
-							currentResults[i] = await (_types[i].NullSafeGetAsync(_reader, _names[i], _session, null)).ConfigureAwait(false);
+							currentResults[i] = await (_types[i].NullSafeGetAsync(_reader, _names[i], _session, null, cancellationToken)).ConfigureAwait(false);
 						}
 	
 						if (isHolder)

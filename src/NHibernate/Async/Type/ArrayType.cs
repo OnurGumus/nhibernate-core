@@ -20,14 +20,16 @@ using NHibernate.Util;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class ArrayType : CollectionType
 	{
 
-		public override async Task<object> ReplaceElementsAsync(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session)
+		public override async Task<object> ReplaceElementsAsync(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			Array org = (Array) original;
 			Array result = (Array)target;
 
@@ -41,7 +43,7 @@ namespace NHibernate.Type
 			IType elemType = GetElementType(session.Factory);
 			for (int i = 0; i < length; i++)
 			{
-				result.SetValue(await (elemType.ReplaceAsync(org.GetValue(i), null, session, owner, copyCache)).ConfigureAwait(false), i);
+				result.SetValue(await (elemType.ReplaceAsync(org.GetValue(i), null, session, owner, copyCache, cancellationToken)).ConfigureAwait(false), i);
 			}
 
 			return result;

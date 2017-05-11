@@ -23,28 +23,31 @@ using NHibernate.Type;
 namespace NHibernate.Collection
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class PersistentArrayHolder : AbstractPersistentCollection, ICollection
 	{
 
-		public override async Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
+		public override async Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object[] sn = (object[]) snapshot;
 			object[] arr = (object[]) array;
 			List<object> result = new List<object>(sn);
 			for (int i = 0; i < sn.Length; i++)
 			{
-				await (IdentityRemoveAsync(result, arr[i], entityName, Session)).ConfigureAwait(false);
+				await (IdentityRemoveAsync(result, arr[i], entityName, Session, cancellationToken)).ConfigureAwait(false);
 			}
 			return result;
 		}
 
-		public override async Task<object> ReadFromAsync(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
+		public override async Task<object> ReadFromAsync(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			object element = await (role.ReadElementAsync(rs, owner, descriptor.SuffixedElementAliases, Session)).ConfigureAwait(false);
-			int index = (int) await (role.ReadIndexAsync(rs, descriptor.SuffixedIndexAliases, Session)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			object element = await (role.ReadElementAsync(rs, owner, descriptor.SuffixedElementAliases, Session, cancellationToken)).ConfigureAwait(false);
+			int index = (int) await (role.ReadIndexAsync(rs, descriptor.SuffixedIndexAliases, Session, cancellationToken)).ConfigureAwait(false);
 			for (int i = tempList.Count; i <= index; i++)
 			{
 				tempList.Add(null);
@@ -59,15 +62,17 @@ namespace NHibernate.Collection
 		/// <param name="persister">The CollectionPersister to use to reassemble the Array.</param>
 		/// <param name="disassembled">The disassembled Array.</param>
 		/// <param name="owner">The owner object.</param>
-		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object[] cached = (object[]) disassembled;
 
 			array = System.Array.CreateInstance(persister.ElementClass, cached.Length);
 
 			for (int i = 0; i < cached.Length; i++)
 			{
-				array.SetValue(await (persister.ElementType.AssembleAsync(cached[i], Session, owner)).ConfigureAwait(false), i);
+				array.SetValue(await (persister.ElementType.AssembleAsync(cached[i], Session, owner, cancellationToken)).ConfigureAwait(false), i);
 			}
 		}
 

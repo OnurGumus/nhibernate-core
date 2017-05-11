@@ -11,6 +11,7 @@
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -18,6 +19,7 @@ namespace NHibernate.Event
 	{
 		/// <summary> Return true if the operation should be vetoed</summary>
 		/// <param name="event"></param>
-		Task<bool> OnPreInsertAsync(PreInsertEvent @event);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task<bool> OnPreInsertAsync(PreInsertEvent @event, CancellationToken cancellationToken);
 	}
 }

@@ -21,6 +21,7 @@ using NHibernate.Transform;
 namespace NHibernate
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 
 	/// <content>
 	/// Contains generated async methods
@@ -30,39 +31,45 @@ namespace NHibernate
 		/// <summary>
 		/// Get the results of the root type and fill the <see cref="IList&lt;T&gt;"/>
 		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The list filled with the results.</returns>
-		Task<IList<TRoot>> ListAsync();
+		Task<IList<TRoot>> ListAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Get the results of the root type and fill the <see cref="IList&lt;T&gt;"/>
 		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The list filled with the results.</returns>
-		Task<IList<U>> ListAsync<U>();
+		Task<IList<U>> ListAsync<U>(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Short for ToRowCountQuery().SingleOrDefault&lt;int&gt;()
 		/// </summary>
-		Task<int> RowCountAsync();
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task<int> RowCountAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Short for ToRowCountInt64Query().SingleOrDefault&lt;long&gt;()
 		/// </summary>
-		Task<long> RowCountInt64Async();
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task<long> RowCountInt64Async(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Convenience method to return a single instance that matches
 		/// the query, or null if the query returns no results.
 		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>the single result or <see langword="null" /></returns>
 		/// <exception cref="HibernateException">
 		/// If there is more than one matching result
 		/// </exception>
-		Task<TRoot> SingleOrDefaultAsync();
+		Task<TRoot> SingleOrDefaultAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Override type of <see cref="SingleOrDefault()" />.
 		/// </summary>
-		Task<U> SingleOrDefaultAsync<U>();
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task<U> SingleOrDefaultAsync<U>(CancellationToken cancellationToken = default(CancellationToken));
 
 	}
 

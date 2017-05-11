@@ -30,6 +30,7 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Dialect
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -61,10 +62,15 @@ namespace NHibernate.Dialect
 		/// extract the <see cref="DbDataReader"/> from the OUT parameter. 
 		/// </summary>
 		/// <param name="statement">The callable statement. </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The extracted result set. </returns>
 		/// <throws>  SQLException Indicates problems extracting the result set. </throws>
-		public virtual Task<DbDataReader> GetResultSetAsync(DbCommand statement)
+		public virtual Task<DbDataReader> GetResultSetAsync(DbCommand statement, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<DbDataReader>(cancellationToken);
+			}
 			throw new NotSupportedException(GetType().FullName + " does not support resultsets via stored procedures");
 		}
 

@@ -18,14 +18,19 @@ using NHibernate.Exceptions;
 namespace NHibernate.AdoNet
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class OracleDataClientBatchingBatcher : AbstractBatcher
 	{
 
-		public override Task AddToBatchAsync(IExpectation expectation)
+		public override Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				bool firstOnBatch = true;
@@ -84,7 +89,7 @@ namespace NHibernate.AdoNet
 				_countOfCommands++;
 				if (_countOfCommands >= _batchSize)
 				{
-					return ExecuteBatchWithTimingAsync(_currentBatch);
+					return ExecuteBatchWithTimingAsync(_currentBatch, cancellationToken);
 				}
 
 				return Task.CompletedTask;
@@ -95,16 +100,17 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		protected override async Task DoExecuteBatchAsync(DbCommand ps)
+		protected override async Task DoExecuteBatchAsync(DbCommand ps, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (_currentBatch != null)
 			{
 				int arraySize = 0;
 				_countOfCommands = 0;
 
 				Log.Info("Executing batch");
-				await (CheckReadersAsync()).ConfigureAwait(false);
-				await (PrepareAsync(_currentBatch)).ConfigureAwait(false);
+				await (CheckReadersAsync(cancellationToken)).ConfigureAwait(false);
+				await (PrepareAsync(_currentBatch, cancellationToken)).ConfigureAwait(false);
 
 				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
 				{
@@ -128,7 +134,7 @@ namespace NHibernate.AdoNet
 					int rowsAffected;
 					try
 					{
-						rowsAffected = await (_currentBatch.ExecuteNonQueryAsync()).ConfigureAwait(false);
+						rowsAffected = await (_currentBatch.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 					}
 					catch (DbException e)
 					{

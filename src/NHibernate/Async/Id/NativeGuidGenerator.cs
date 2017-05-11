@@ -21,6 +21,7 @@ using NHibernate.Type;
 namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -29,21 +30,22 @@ namespace NHibernate.Id
 
 		#region Implementation of IIdentifierGenerator
 
-		public async Task<object> GenerateAsync(ISessionImplementor session, object obj)
+		public async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			var sql = new SqlString(session.Factory.Dialect.SelectGUIDString);
 			try
 			{
-				var st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, SqlTypeFactory.NoTypes)).ConfigureAwait(false);
+				var st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, SqlTypeFactory.NoTypes, cancellationToken)).ConfigureAwait(false);
 				DbDataReader reader = null;
 				try
 				{
-					reader = await (session.Batcher.ExecuteReaderAsync(st)).ConfigureAwait(false);
+					reader = await (session.Batcher.ExecuteReaderAsync(st, cancellationToken)).ConfigureAwait(false);
 					object result;
 					try
 					{
-						await (reader.ReadAsync()).ConfigureAwait(false);
-						result = await (IdentifierGeneratorFactory.GetAsync(reader, identifierType, session)).ConfigureAwait(false);
+						await (reader.ReadAsync(cancellationToken)).ConfigureAwait(false);
+						result = await (IdentifierGeneratorFactory.GetAsync(reader, identifierType, session, cancellationToken)).ConfigureAwait(false);
 					}
 					finally
 					{

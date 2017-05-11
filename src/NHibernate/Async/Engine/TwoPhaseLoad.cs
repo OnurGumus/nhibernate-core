@@ -23,6 +23,7 @@ using NHibernate.Properties;
 namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -35,8 +36,9 @@ namespace NHibernate.Engine
 		/// between the entities which were instantiated and had their state
 		/// "hydrated" into an array
 		/// </summary>
-		public static async Task InitializeEntityAsync(object entity, bool readOnly, ISessionImplementor session, PreLoadEvent preLoadEvent, PostLoadEvent postLoadEvent)
+		public static async Task InitializeEntityAsync(object entity, bool readOnly, ISessionImplementor session, PreLoadEvent preLoadEvent, PostLoadEvent postLoadEvent, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			//TODO: Should this be an InitializeEntityEventListener??? (watch out for performance!)
 
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
@@ -65,7 +67,7 @@ namespace NHibernate.Engine
 				object value = hydratedState[i];
 				if (!Equals(LazyPropertyInitializer.UnfetchedProperty, value) && !(Equals(BackrefPropertyAccessor.Unknown, value)))
 				{
-					hydratedState[i] = await (types[i].ResolveIdentifierAsync(value, session, entity)).ConfigureAwait(false);
+					hydratedState[i] = await (types[i].ResolveIdentifierAsync(value, session, entity, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 
@@ -79,7 +81,7 @@ namespace NHibernate.Engine
 				IPreLoadEventListener[] listeners = session.Listeners.PreLoadEventListeners;
 				for (int i = 0; i < listeners.Length; i++)
 				{
-					await (listeners[i].OnPreLoadAsync(preLoadEvent)).ConfigureAwait(false);
+					await (listeners[i].OnPreLoadAsync(preLoadEvent, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 

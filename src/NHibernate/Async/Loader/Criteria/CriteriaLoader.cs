@@ -24,17 +24,22 @@ using NHibernate.Util;
 namespace NHibernate.Loader.Criteria
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class CriteriaLoader : OuterJoinLoader
 	{
 
-		public Task<IList> ListAsync(ISessionImplementor session)
+		public Task<IList> ListAsync(ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IList>(cancellationToken);
+			}
 			try
 			{
-				return ListAsync(session, translator.GetQueryParameters(), querySpaces, resultTypes);
+				return ListAsync(session, translator.GetQueryParameters(), querySpaces, resultTypes, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -42,16 +47,17 @@ namespace NHibernate.Loader.Criteria
 			}
 		}
 
-		protected override async Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer customResultTransformer, DbDataReader rs,
-													   ISessionImplementor session)
+		protected override async Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer customResultTransformer, DbDataReader rs, 													   ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			return ResolveResultTransformer(customResultTransformer)
-				.TransformTuple(await (GetResultRowAsync(row, rs, session)).ConfigureAwait(false), ResultRowAliases);
+				.TransformTuple(await (GetResultRowAsync(row, rs, session, cancellationToken)).ConfigureAwait(false), ResultRowAliases);
 		}
 
 
-		protected override async Task<object[]> GetResultRowAsync(object[] row, DbDataReader rs, ISessionImplementor session)
+		protected override async Task<object[]> GetResultRowAsync(object[] row, DbDataReader rs, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object[] result;
 
 			if (translator.HasProjection)
@@ -65,11 +71,11 @@ namespace NHibernate.Loader.Criteria
 					if (numColumns > 1)
 					{
 						string[] typeColumnAliases = ArrayHelper.Slice(cachedProjectedColumnAliases, position, numColumns);
-						result[i] = await (ResultTypes[i].NullSafeGetAsync(rs, typeColumnAliases, session, null)).ConfigureAwait(false);
+						result[i] = await (ResultTypes[i].NullSafeGetAsync(rs, typeColumnAliases, session, null, cancellationToken)).ConfigureAwait(false);
 					}
 					else
 					{
-						result[i] = await (ResultTypes[i].NullSafeGetAsync(rs, cachedProjectedColumnAliases[position], session, null)).ConfigureAwait(false);
+						result[i] = await (ResultTypes[i].NullSafeGetAsync(rs, cachedProjectedColumnAliases[position], session, null, cancellationToken)).ConfigureAwait(false);
 					}
 					position += numColumns;
 				}

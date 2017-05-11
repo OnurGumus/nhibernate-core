@@ -24,6 +24,7 @@ using System.Linq;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -39,15 +40,16 @@ namespace NHibernate.Impl
 
 		#region Execution methods
 
-		public abstract Task<int> ExecuteUpdateAsync();
-		public abstract Task<IEnumerable> EnumerableAsync();
-		public abstract Task<IEnumerable<T>> EnumerableAsync<T>();
-		public abstract Task<IList> ListAsync();
-		public abstract Task ListAsync(IList results);
-		public abstract Task<IList<T>> ListAsync<T>();
-		public async Task<T> UniqueResultAsync<T>()
+		public abstract Task<int> ExecuteUpdateAsync(CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task<IEnumerable> EnumerableAsync(CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task<IEnumerable<T>> EnumerableAsync<T>(CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task ListAsync(IList results, CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task<IList<T>> ListAsync<T>(CancellationToken cancellationToken = default(CancellationToken));
+		public async Task<T> UniqueResultAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			object result = await (UniqueResultAsync()).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			object result = await (UniqueResultAsync(cancellationToken)).ConfigureAwait(false);
 			if (result == null && typeof(T).IsValueType)
 			{
 				return default(T);
@@ -58,13 +60,14 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public async Task<object> UniqueResultAsync()
+		public async Task<object> UniqueResultAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return UniqueElement(await (ListAsync()).ConfigureAwait(false));
+			cancellationToken.ThrowIfCancellationRequested();
+			return UniqueElement(await (ListAsync(cancellationToken)).ConfigureAwait(false));
 		}
 
 		#endregion
 
-		protected internal abstract Task<IEnumerable<ITranslator>> GetTranslatorsAsync(ISessionImplementor sessionImplementor, QueryParameters queryParameters);
+		protected internal abstract Task<IEnumerable<ITranslator>> GetTranslatorsAsync(ISessionImplementor sessionImplementor, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

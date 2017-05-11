@@ -20,15 +20,20 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Dialect
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class SybaseASE15Dialect : Dialect
 	{
 		
-		public override Task<DbDataReader> GetResultSetAsync(DbCommand statement)
+		public override Task<DbDataReader> GetResultSetAsync(DbCommand statement, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return statement.ExecuteReaderAsync();
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<DbDataReader>(cancellationToken);
+			}
+			return statement.ExecuteReaderAsync(cancellationToken);
 		}
 	}
 }

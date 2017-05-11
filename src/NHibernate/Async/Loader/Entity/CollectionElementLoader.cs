@@ -24,6 +24,7 @@ using NHibernate.Util;
 namespace NHibernate.Loader.Entity
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	using System;
 	/// <content>
 	/// Contains generated async methods
@@ -31,9 +32,10 @@ namespace NHibernate.Loader.Entity
 	public partial class CollectionElementLoader : OuterJoinLoader
 	{
 
-		public virtual async Task<object> LoadElementAsync(ISessionImplementor session, object key, object index)
+		public virtual async Task<object> LoadElementAsync(ISessionImplementor session, object key, object index, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			IList list = await (LoadEntityAsync(session, key, index, keyType, indexType, persister)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			IList list = await (LoadEntityAsync(session, key, index, keyType, indexType, persister, cancellationToken)).ConfigureAwait(false);
 
 			if (list.Count == 1)
 			{
@@ -56,9 +58,12 @@ namespace NHibernate.Loader.Entity
 			}
 		}
 
-		protected override Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer transformer, DbDataReader rs,
-		                                               ISessionImplementor session)
+		protected override Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer transformer, DbDataReader rs, 		                                               ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(GetResultColumnOrRow(row, transformer, rs, session));

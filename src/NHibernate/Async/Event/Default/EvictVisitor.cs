@@ -17,6 +17,7 @@ using NHibernate.Type;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	using System;
 	/// <content>
 	/// Contains generated async methods
@@ -24,8 +25,12 @@ namespace NHibernate.Event.Default
 	public partial class EvictVisitor : AbstractVisitor
 	{
 
-		internal override Task<object> ProcessCollectionAsync(object collection, CollectionType type)
+		internal override Task<object> ProcessCollectionAsync(object collection, CollectionType type, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(ProcessCollection(collection, type));

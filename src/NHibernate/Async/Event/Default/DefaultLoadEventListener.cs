@@ -23,14 +23,16 @@ using NHibernate.Type;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class DefaultLoadEventListener : AbstractLockUpgradeEventListener, ILoadEventListener
 	{
 
-		public virtual async Task OnLoadAsync(LoadEvent @event, LoadType loadType)
+		public virtual async Task OnLoadAsync(LoadEvent @event, LoadType loadType, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			ISessionImplementor source = @event.Session;
 
 			IEntityPersister persister;
@@ -77,18 +79,18 @@ namespace NHibernate.Event.Default
 				{
 					//do not return a proxy!
 					//(this option indicates we are initializing a proxy)
-					@event.Result = await (LoadAsync(@event, persister, keyToLoad, loadType)).ConfigureAwait(false);
+					@event.Result = await (LoadAsync(@event, persister, keyToLoad, loadType, cancellationToken)).ConfigureAwait(false);
 				}
 				else
 				{
 					//return a proxy if appropriate
 					if (@event.LockMode == LockMode.None)
 					{
-						@event.Result = await (ProxyOrLoadAsync(@event, persister, keyToLoad, loadType)).ConfigureAwait(false);
+						@event.Result = await (ProxyOrLoadAsync(@event, persister, keyToLoad, loadType, cancellationToken)).ConfigureAwait(false);
 					}
 					else
 					{
-						@event.Result = await (LockAndLoadAsync(@event, persister, keyToLoad, loadType, source)).ConfigureAwait(false);
+						@event.Result = await (LockAndLoadAsync(@event, persister, keyToLoad, loadType, source, cancellationToken)).ConfigureAwait(false);
 					}
 				}
 			}
@@ -101,8 +103,9 @@ namespace NHibernate.Event.Default
 
 		/// <summary> Perfoms the load of an entity. </summary>
 		/// <returns> The loaded entity. </returns>
-		protected virtual async Task<object> LoadAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
+		protected virtual async Task<object> LoadAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (@event.InstanceToLoad != null)
 			{
 				if (@event.Session.PersistenceContext.GetEntry(@event.InstanceToLoad) != null)
@@ -112,7 +115,7 @@ namespace NHibernate.Event.Default
 				persister.SetIdentifier(@event.InstanceToLoad, @event.EntityId);
 			}
 
-			object entity = await (DoLoadAsync(@event, persister, keyToLoad, options)).ConfigureAwait(false);
+			object entity = await (DoLoadAsync(@event, persister, keyToLoad, options, cancellationToken)).ConfigureAwait(false);
 
 			bool isOptionalInstance = @event.InstanceToLoad != null;
 
@@ -137,8 +140,12 @@ namespace NHibernate.Event.Default
 		/// generate a new proxy, or perform an actual load.
 		/// </summary>
 		/// <returns> The result of the proxy/load operation.</returns>
-		protected virtual Task<object> ProxyOrLoadAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
+		protected virtual Task<object> ProxyOrLoadAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				if (log.IsDebugEnabled)
@@ -149,7 +156,7 @@ namespace NHibernate.Event.Default
 				if (!persister.HasProxy)
 				{
 					// this class has no proxies (so do a shortcut)
-					return LoadAsync(@event, persister, keyToLoad, options);
+					return LoadAsync(@event, persister, keyToLoad, options, cancellationToken);
 				}
 				else
 				{
@@ -158,7 +165,7 @@ namespace NHibernate.Event.Default
 					object proxy = persistenceContext.GetProxy(keyToLoad);
 					if (proxy != null)
 					{
-						return ReturnNarrowedProxyAsync(@event, persister, keyToLoad, options, persistenceContext, proxy);
+						return ReturnNarrowedProxyAsync(@event, persister, keyToLoad, options, persistenceContext, proxy, cancellationToken);
 					}
 					else
 					{
@@ -169,7 +176,7 @@ namespace NHibernate.Event.Default
 						else
 						{
 							// return a newly loaded object
-							return LoadAsync(@event, persister, keyToLoad, options);
+							return LoadAsync(@event, persister, keyToLoad, options, cancellationToken);
 						}
 					}
 				}
@@ -184,19 +191,20 @@ namespace NHibernate.Event.Default
 		/// Given that there is a pre-existing proxy.
 		/// Initialize it if necessary; narrow if necessary.
 		/// </summary>
-		private async Task<object> ReturnNarrowedProxyAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, IPersistenceContext persistenceContext, object proxy)
+		private async Task<object> ReturnNarrowedProxyAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, IPersistenceContext persistenceContext, object proxy, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("entity proxy found in session cache");
 			var castedProxy = (INHibernateProxy) proxy;
 			ILazyInitializer li = castedProxy.HibernateLazyInitializer;
 			if (li.Unwrap)
 			{
-				return await (li.GetImplementationAsync()).ConfigureAwait(false);
+				return await (li.GetImplementationAsync(cancellationToken)).ConfigureAwait(false);
 			}
 			object impl = null;
 			if (!options.IsAllowProxyCreation)
 			{
-				impl = await (LoadAsync(@event, persister, keyToLoad, options)).ConfigureAwait(false);
+				impl = await (LoadAsync(@event, persister, keyToLoad, options, cancellationToken)).ConfigureAwait(false);
 				// NH Different behavior : NH-1252
 				if (impl == null && !options.IsAllowNulls)
 				{
@@ -216,8 +224,9 @@ namespace NHibernate.Event.Default
 		/// given id in that cache and then perform the load.
 		/// </summary>
 		/// <returns> The loaded entity </returns>
-		protected virtual async Task<object> LockAndLoadAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, ISessionImplementor source)
+		protected virtual async Task<object> LockAndLoadAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, ISessionImplementor source, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			ISoftLock sLock = null;
 			CacheKey ck;
 			if (persister.HasCache)
@@ -233,7 +242,7 @@ namespace NHibernate.Event.Default
 			object entity;
 			try
 			{
-				entity = await (LoadAsync(@event, persister, keyToLoad, options)).ConfigureAwait(false);
+				entity = await (LoadAsync(@event, persister, keyToLoad, options, cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -257,15 +266,17 @@ namespace NHibernate.Event.Default
 		/// <param name="persister">The persister for the entity being requested for load </param>
 		/// <param name="keyToLoad">The EntityKey representing the entity to be loaded. </param>
 		/// <param name="options">The load options. </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The loaded entity, or null. </returns>
-		protected virtual async Task<object> DoLoadAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
+		protected virtual async Task<object> DoLoadAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("attempting to resolve: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 			}
 
-			object entity = await (LoadFromSessionCacheAsync(@event, keyToLoad, options)).ConfigureAwait(false);
+			object entity = await (LoadFromSessionCacheAsync(@event, keyToLoad, options, cancellationToken)).ConfigureAwait(false);
 			if (entity == RemovedEntityMarker)
 			{
 				log.Debug("load request found matching entity in context, but it is scheduled for removal; returning null");
@@ -285,7 +296,7 @@ namespace NHibernate.Event.Default
 				return entity;
 			}
 
-			entity = await (LoadFromSecondLevelCacheAsync(@event, persister, options)).ConfigureAwait(false);
+			entity = await (LoadFromSecondLevelCacheAsync(@event, persister, options, cancellationToken)).ConfigureAwait(false);
 			if (entity != null)
 			{
 				if (log.IsDebugEnabled)
@@ -300,7 +311,7 @@ namespace NHibernate.Event.Default
 				log.Debug("object not resolved in any cache: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 			}
 
-			return await (LoadFromDatasourceAsync(@event, persister, keyToLoad, options)).ConfigureAwait(false);
+			return await (LoadFromDatasourceAsync(@event, persister, keyToLoad, options, cancellationToken)).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -310,9 +321,11 @@ namespace NHibernate.Event.Default
 		/// <param name="persister">The persister for the entity being requested for load </param>
 		/// <param name="keyToLoad">The EntityKey representing the entity to be loaded. </param>
 		/// <param name="options">The load options. </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The object loaded from the datasource, or null if not found. </returns>
-		protected virtual async Task<object> LoadFromDatasourceAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
+		protected virtual async Task<object> LoadFromDatasourceAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			ISessionImplementor source = @event.Session;
 
 			bool statsEnabled = source.Factory.Statistics.IsStatisticsEnabled;
@@ -322,7 +335,7 @@ namespace NHibernate.Event.Default
 				stopWath.Start();
 			}
 
-			object entity = await (persister.LoadAsync(@event.EntityId, @event.InstanceToLoad, @event.LockMode, source)).ConfigureAwait(false);
+			object entity = await (persister.LoadAsync(@event.EntityId, @event.InstanceToLoad, @event.LockMode, source, cancellationToken)).ConfigureAwait(false);
 
 			if (@event.IsAssociationFetch && statsEnabled)
 			{
@@ -339,6 +352,7 @@ namespace NHibernate.Event.Default
 		/// <param name="event">The load event </param>
 		/// <param name="keyToLoad">The EntityKey representing the entity to be loaded. </param>
 		/// <param name="options">The load options. </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The entity from the session-level cache, or null. </returns>
 		/// <remarks>
 		/// If allowed to return nulls, then if the entity happens to be found in
@@ -348,10 +362,11 @@ namespace NHibernate.Event.Default
 		/// session-level cache, it's current status within the session cache
 		/// is checked to see if it has previously been scheduled for deletion.
 		/// </remarks>
-		protected virtual async Task<object> LoadFromSessionCacheAsync(LoadEvent @event, EntityKey keyToLoad, LoadType options)
+		protected virtual async Task<object> LoadFromSessionCacheAsync(LoadEvent @event, EntityKey keyToLoad, LoadType options, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			ISessionImplementor session = @event.Session;
-			object old = await (session.GetEntityUsingInterceptorAsync(keyToLoad)).ConfigureAwait(false);
+			object old = await (session.GetEntityUsingInterceptorAsync(keyToLoad, cancellationToken)).ConfigureAwait(false);
 
 			if (old != null)
 			{
@@ -373,7 +388,7 @@ namespace NHibernate.Event.Default
 						return InconsistentRTNClassMarker;
 					}
 				}
-				await (UpgradeLockAsync(old, oldEntry, @event.LockMode, session)).ConfigureAwait(false);
+				await (UpgradeLockAsync(old, oldEntry, @event.LockMode, session, cancellationToken)).ConfigureAwait(false);
 			}
 			return old;
 		}
@@ -383,9 +398,14 @@ namespace NHibernate.Event.Default
 		/// <param name="event">The load event </param>
 		/// <param name="persister">The persister for the entity being requested for load </param>
 		/// <param name="options">The load options. </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The entity from the second-level cache, or null. </returns>
-		protected virtual Task<object> LoadFromSecondLevelCacheAsync(LoadEvent @event, IEntityPersister persister, LoadType options)
+		protected virtual Task<object> LoadFromSecondLevelCacheAsync(LoadEvent @event, IEntityPersister persister, LoadType options, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				ISessionImplementor source = @event.Session;
@@ -416,7 +436,7 @@ namespace NHibernate.Event.Default
 						// NH: Different behavior (take a look to options.ExactPersister (NH-295))
 						if (!options.ExactPersister || persister.EntityMetamodel.SubclassEntityNames.Contains(entry.Subclass))
 						{
-							return AssembleCacheEntryAsync(entry, @event.EntityId, persister, @event);
+							return AssembleCacheEntryAsync(entry, @event.EntityId, persister, @event, cancellationToken);
 						}
 					}
 				}
@@ -429,8 +449,9 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		private async Task<object> AssembleCacheEntryAsync(CacheEntry entry, object id, IEntityPersister persister, LoadEvent @event)
+		private async Task<object> AssembleCacheEntryAsync(CacheEntry entry, object id, IEntityPersister persister, LoadEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object optionalObject = @event.InstanceToLoad;
 			IEventSource session = @event.Session;
 			ISessionFactoryImplementor factory = session.Factory;
@@ -448,7 +469,7 @@ namespace NHibernate.Event.Default
 			TwoPhaseLoad.AddUninitializedCachedEntity(entityKey, result, subclassPersister, LockMode.None, entry.AreLazyPropertiesUnfetched, entry.Version, session);
 
 			IType[] types = subclassPersister.PropertyTypes;
-			object[] values = await (entry.AssembleAsync(result, id, subclassPersister, session.Interceptor, session)).ConfigureAwait(false); // intializes result by side-effect
+			object[] values = await (entry.AssembleAsync(result, id, subclassPersister, session.Interceptor, session, cancellationToken)).ConfigureAwait(false); // intializes result by side-effect
 			TypeHelper.DeepCopy(values, types, subclassPersister.PropertyUpdateability, values, session);
 
 			object version = Versioning.GetVersion(values, subclassPersister);
@@ -487,7 +508,7 @@ namespace NHibernate.Event.Default
 				entry.AreLazyPropertiesUnfetched);
 			
 			subclassPersister.AfterInitialize(result, entry.AreLazyPropertiesUnfetched, session);
-			await (persistenceContext.InitializeNonLazyCollectionsAsync()).ConfigureAwait(false);
+			await (persistenceContext.InitializeNonLazyCollectionsAsync(cancellationToken)).ConfigureAwait(false);
 			// upgrade the lock if necessary:
 			//lock(result, lockMode);
 

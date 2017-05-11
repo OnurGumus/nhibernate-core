@@ -13,6 +13,7 @@ using NHibernate.Engine;
 namespace NHibernate.Loader.Entity
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -22,6 +23,6 @@ namespace NHibernate.Loader.Entity
 		/// Load an entity instance. If <c>OptionalObject</c> is supplied, load the entity
 		/// state into the given (uninitialized) object
 		/// </summary>
-		Task<object> LoadAsync(object id, object optionalObject, ISessionImplementor session);
+		Task<object> LoadAsync(object id, object optionalObject, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

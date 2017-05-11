@@ -11,6 +11,7 @@
 namespace NHibernate.Event
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -21,7 +22,8 @@ namespace NHibernate.Event
 		/// </summary>
 		/// <param name="event">The load event to be handled. </param>
 		/// <param name="loadType"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The result (i.e., the loaded entity). </returns>
-		Task OnLoadAsync(LoadEvent @event, LoadType loadType);
+		Task OnLoadAsync(LoadEvent @event, LoadType loadType, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

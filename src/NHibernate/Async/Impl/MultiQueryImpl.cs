@@ -28,6 +28,7 @@ using NHibernate.Util;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -41,8 +42,13 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Return the query results of all the queries
 		/// </summary>
-		public Task<IList> ListAsync()
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IList>(cancellationToken);
+			}
 			try
 			{
 				using (new SessionIdLoggingContext(session.SessionId))
@@ -61,7 +67,7 @@ namespace NHibernate.Impl
 					try
 					{
 						Before();
-						return cacheable ? ListUsingQueryCacheAsync() : ListIgnoreQueryCacheAsync();
+						return cacheable ? ListUsingQueryCacheAsync(cancellationToken) : ListIgnoreQueryCacheAsync(cancellationToken);
 					}
 					finally
 					{
@@ -75,8 +81,9 @@ namespace NHibernate.Impl
 			}
 		}
 
-		protected async Task<List<object>> DoListAsync()
+		protected async Task<List<object>> DoListAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
 			var stopWatch = new Stopwatch();
 			if (statsEnabled)
@@ -93,7 +100,7 @@ namespace NHibernate.Impl
 
 			try
 			{
-				using (var reader = await (resultSetsCommand.GetReaderAsync(commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null)).ConfigureAwait(false))
+				using (var reader = await (resultSetsCommand.GetReaderAsync(commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null, cancellationToken)).ConfigureAwait(false))
 				{
 					if (log.IsDebugEnabled)
 					{
@@ -110,7 +117,7 @@ namespace NHibernate.Impl
 						int maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
 						if (!dialect.SupportsLimitOffset || !translator.Loader.UseLimit(selection, dialect))
 						{
-							await (Loader.Loader.AdvanceAsync(reader, selection)).ConfigureAwait(false);
+							await (Loader.Loader.AdvanceAsync(reader, selection, cancellationToken)).ConfigureAwait(false);
 						}
 
 						if (parameter.HasAutoDiscoverScalarTypes)
@@ -134,7 +141,7 @@ namespace NHibernate.Impl
 
 						IList tempResults = new List<object>();
 						int count;
-						for (count = 0; count < maxRows && await (reader.ReadAsync()).ConfigureAwait(false); count++)
+						for (count = 0; count < maxRows && await (reader.ReadAsync(cancellationToken)).ConfigureAwait(false); count++)
 						{
 							if (log.IsDebugEnabled)
 							{
@@ -143,7 +150,7 @@ namespace NHibernate.Impl
 
 							rowCount++;
 							object result = await (translator.Loader.GetRowFromResultSetAsync(
-								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true)).ConfigureAwait(false);
+								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true, cancellationToken)).ConfigureAwait(false);
 							tempResults.Add(result);
 
 							if (createSubselects[i])
@@ -165,7 +172,7 @@ namespace NHibernate.Impl
 							log.DebugFormat("Query {0} returned {1} results", i, tempResults.Count);
 						}
 
-						await (reader.NextResultAsync()).ConfigureAwait(false);
+						await (reader.NextResultAsync(cancellationToken)).ConfigureAwait(false);
 					}
 
 					for (int i = 0; i < translators.Count; i++)
@@ -173,7 +180,7 @@ namespace NHibernate.Impl
 						ITranslator translator = translators[i];
 						QueryParameters parameter = parameters[i];
 
-						await (translator.Loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, false)).ConfigureAwait(false);
+						await (translator.Loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, false, cancellationToken)).ConfigureAwait(false);
 
 						if (createSubselects[i])
 						{
@@ -197,15 +204,16 @@ namespace NHibernate.Impl
 			return results;
 		}
 
-		private async Task AggregateQueriesInformationAsync()
+		private async Task AggregateQueriesInformationAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			int queryIndex = 0;
 			foreach (AbstractQueryImpl query in queries)
 			{
 				query.VerifyParameters();
 				QueryParameters queryParameters = query.GetQueryParameters();
 				queryParameters.ValidateParameters();
-				foreach (var translator in await (query.GetTranslatorsAsync(session, queryParameters)).ConfigureAwait(false))
+				foreach (var translator in await (query.GetTranslatorsAsync(session, queryParameters, cancellationToken)).ConfigureAwait(false))
 				{
 					translators.Add(translator);
 					translatorQueryMap.Add(queryIndex);
@@ -217,11 +225,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public async Task<object> GetResultAsync(string key)
+		public async Task<object> GetResultAsync(string key, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (queryResults == null)
 			{
-				queryResults = await (ListAsync()).ConfigureAwait(false);
+				queryResults = await (ListAsync(cancellationToken)).ConfigureAwait(false);
 			}
 
 			int queryResultPosition;
@@ -233,13 +242,15 @@ namespace NHibernate.Impl
 
 		#region Implementation
 
-		private async Task<IList> ListIgnoreQueryCacheAsync()
+		private async Task<IList> ListIgnoreQueryCacheAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return GetResultList(await (DoListAsync()).ConfigureAwait(false));
+			cancellationToken.ThrowIfCancellationRequested();
+			return GetResultList(await (DoListAsync(cancellationToken)).ConfigureAwait(false));
 		}
 
-		private async Task<IList> ListUsingQueryCacheAsync()
+		private async Task<IList> ListUsingQueryCacheAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);
 
 			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters);
@@ -267,12 +278,12 @@ namespace NHibernate.Impl
 				.SetFirstRows(firstRows)
 				.SetMaxRows(maxRows);
 
-			IList result = await (assembler.GetResultFromQueryCacheAsync(session, combinedParameters, querySpaces, queryCache, key)).ConfigureAwait(false);
+			IList result = await (assembler.GetResultFromQueryCacheAsync(session, combinedParameters, querySpaces, queryCache, key, cancellationToken)).ConfigureAwait(false);
 
 			if (result == null)
 			{
 				log.Debug("Cache miss for multi query");
-				var list = await (DoListAsync()).ConfigureAwait(false);
+				var list = await (DoListAsync(cancellationToken)).ConfigureAwait(false);
 				queryCache.Put(key, new ICacheAssembler[] { assembler }, new object[] { list }, false, session);
 				result = list;
 			}

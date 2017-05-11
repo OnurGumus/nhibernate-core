@@ -19,15 +19,20 @@ using NHibernate.Type;
 namespace NHibernate.Loader.Collection
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class SubselectOneToManyLoader : OneToManyLoader
 	{
 
-		public override Task InitializeAsync(object id, ISessionImplementor session)
+		public override Task InitializeAsync(object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return LoadCollectionSubselectAsync(session, keys, values, types, namedParameters, KeyType);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return LoadCollectionSubselectAsync(session, keys, values, types, namedParameters, KeyType, cancellationToken);
 		}
 	}
 }

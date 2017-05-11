@@ -30,14 +30,16 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="reader">The <see cref="DbDataReader" /> to get the records from the Database.</param>
 		/// <param name="isMidstream"><see langword="true" /> if we are loading the <see cref="DbDataReader" /> in the middle of reading it.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <remarks>
 		/// NHibernate attempts to not have to read the contents of an <see cref="DbDataReader"/> into memory until it absolutely
 		/// has to.  What that means is that it might have processed some records from the <see cref="DbDataReader"/> and will
 		/// pick up the <see cref="DbDataReader"/> midstream so that the underlying <see cref="DbDataReader"/> can be closed 
 		/// so a new one can be opened.
 		/// </remarks>
-		public static async Task<NDataReader> CreateAsync(DbDataReader reader, bool isMidstream)
+		public static async Task<NDataReader> CreateAsync(DbDataReader reader, bool isMidstream, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			var dataReader = new NDataReader();
 			var resultList = new List<NResult>(2);
 
@@ -51,12 +53,12 @@ namespace NHibernate.Driver
 				}
 
 				// there will be atleast one result 
-				resultList.Add(await (NResult.CreateAsync(reader, isMidstream)).ConfigureAwait(false));
+				resultList.Add(await (NResult.CreateAsync(reader, isMidstream, cancellationToken)).ConfigureAwait(false));
 
-				while (await (reader.NextResultAsync()).ConfigureAwait(false))
+				while (await (reader.NextResultAsync(cancellationToken)).ConfigureAwait(false))
 				{
 					// the second, third, nth result is not processed midstream
-					resultList.Add(await (NResult.CreateAsync(reader, false)).ConfigureAwait(false));
+					resultList.Add(await (NResult.CreateAsync(reader, false, cancellationToken)).ConfigureAwait(false));
 				}
 
 				dataReader.results = resultList.ToArray();
@@ -86,8 +88,10 @@ namespace NHibernate.Driver
 			/// <see langword="true" /> if the <see cref="DbDataReader"/> is already positioned on the record
 			/// to start reading from.
 			/// </param>
-			internal static async Task<NResult> CreateAsync(DbDataReader reader, bool isMidstream)
+			/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+			internal static async Task<NResult> CreateAsync(DbDataReader reader, bool isMidstream, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 				var result = new NResult
 				{
 					schemaTable = reader.GetSchemaTable()
@@ -98,7 +102,7 @@ namespace NHibernate.Driver
 
 				// if we are in the middle of processing the reader then don't bother
 				// to move to the next record - just use the current one.
-				while (isMidstream || await (reader.ReadAsync()).ConfigureAwait(false))
+				while (isMidstream || await (reader.ReadAsync(cancellationToken)).ConfigureAwait(false))
 				{
 					if (rowIndex == 0)
 					{

@@ -24,6 +24,7 @@ using Status=NHibernate.Engine.Status;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -38,12 +39,17 @@ namespace NHibernate.Event.Default
 		/// <param name="entityName">The name of the entity being saved. </param>
 		/// <param name="anything">Generally cascade-specific information. </param>
 		/// <param name="source">The session which is the source of this save event. </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The id used to save the entity. </returns>
-		protected virtual Task<object> SaveWithRequestedIdAsync(object entity, object requestedId, string entityName, object anything, IEventSource source)
+		protected virtual Task<object> SaveWithRequestedIdAsync(object entity, object requestedId, string entityName, object anything, IEventSource source, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
-				return PerformSaveAsync(entity, requestedId, source.GetEntityPersister(entityName, entity), false, anything, source, true);
+				return PerformSaveAsync(entity, requestedId, source.GetEntityPersister(entityName, entity), false, anything, source, true, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -64,14 +70,16 @@ namespace NHibernate.Event.Default
 		/// not, post-insert style id generators may be postponed if we are outside
 		/// a transaction). 
 		/// </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> 
 		/// The id used to save the entity; may be null depending on the
 		/// type of id generator used and the requiresImmediateIdAccess value
 		/// </returns>
-		protected virtual async Task<object> SaveWithGeneratedIdAsync(object entity, string entityName, object anything, IEventSource source, bool requiresImmediateIdAccess)
+		protected virtual async Task<object> SaveWithGeneratedIdAsync(object entity, string entityName, object anything, IEventSource source, bool requiresImmediateIdAccess, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IEntityPersister persister = source.GetEntityPersister(entityName, entity);
-			object generatedId = await (persister.IdentifierGenerator.GenerateAsync(source, entity)).ConfigureAwait(false);
+			object generatedId = await (persister.IdentifierGenerator.GenerateAsync(source, entity, cancellationToken)).ConfigureAwait(false);
 			if (generatedId == null)
 			{
 				throw new IdentifierGenerationException("null id generated for:" + entity.GetType());
@@ -82,7 +90,7 @@ namespace NHibernate.Event.Default
 			}
 			else if (generatedId == IdentifierGeneratorFactory.PostInsertIndicator)
 			{
-				return await (PerformSaveAsync(entity, null, persister, true, anything, source, requiresImmediateIdAccess)).ConfigureAwait(false);
+				return await (PerformSaveAsync(entity, null, persister, true, anything, source, requiresImmediateIdAccess, cancellationToken)).ConfigureAwait(false);
 			}
 			else
 			{
@@ -92,7 +100,7 @@ namespace NHibernate.Event.Default
 						persister.IdentifierType.ToLoggableString(generatedId, source.Factory),
 						persister.IdentifierGenerator.GetType().FullName));
 				}
-				return await (PerformSaveAsync(entity, generatedId, persister, false, anything, source, true)).ConfigureAwait(false);
+				return await (PerformSaveAsync(entity, generatedId, persister, false, anything, source, true, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -112,12 +120,14 @@ namespace NHibernate.Event.Default
 		/// not, post-insert style id generators may be postponed if we are outside
 		/// a transaction). 
 		/// </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> 
 		/// The id used to save the entity; may be null depending on the
 		/// type of id generator used and the requiresImmediateIdAccess value
 		/// </returns>
-		protected virtual async Task<object> PerformSaveAsync(object entity, object id, IEntityPersister persister, bool useIdentityColumn, object anything, IEventSource source, bool requiresImmediateIdAccess)
+		protected virtual async Task<object> PerformSaveAsync(object entity, object id, IEntityPersister persister, bool useIdentityColumn, object anything, IEventSource source, bool requiresImmediateIdAccess, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("saving " + MessageHelper.InfoString(persister, id, source.Factory));
@@ -132,7 +142,7 @@ namespace NHibernate.Event.Default
 				{
 					if (source.PersistenceContext.GetEntry(old).Status == Status.Deleted)
 					{
-						await (source.ForceFlushAsync(source.PersistenceContext.GetEntry(old))).ConfigureAwait(false);
+						await (source.ForceFlushAsync(source.PersistenceContext.GetEntry(old), cancellationToken)).ConfigureAwait(false);
 					}
 					else
 					{
@@ -150,7 +160,7 @@ namespace NHibernate.Event.Default
 			{
 				return id; //EARLY EXIT
 			}
-			return await (PerformSaveOrReplicateAsync(entity, key, persister, useIdentityColumn, anything, source, requiresImmediateIdAccess)).ConfigureAwait(false);
+			return await (PerformSaveOrReplicateAsync(entity, key, persister, useIdentityColumn, anything, source, requiresImmediateIdAccess, cancellationToken)).ConfigureAwait(false);
 		}
 
 		/// <summary> 
@@ -167,12 +177,14 @@ namespace NHibernate.Event.Default
 		/// Is access to the identifier required immediately
 		/// after the completion of the save?  persist(), for example, does not require this... 
 		/// </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> 
 		/// The id used to save the entity; may be null depending on the
 		/// type of id generator used and the requiresImmediateIdAccess value
 		/// </returns>
-		protected virtual async Task<object> PerformSaveOrReplicateAsync(object entity, EntityKey key, IEntityPersister persister, bool useIdentityColumn, object anything, IEventSource source, bool requiresImmediateIdAccess)
+		protected virtual async Task<object> PerformSaveOrReplicateAsync(object entity, EntityKey key, IEntityPersister persister, bool useIdentityColumn, object anything, IEventSource source, bool requiresImmediateIdAccess, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			Validate(entity, persister, source);
 
 			object id = key == null ? null : key.Identifier;
@@ -187,23 +199,23 @@ namespace NHibernate.Event.Default
 			// likewise, should it be done before onUpdate()?
 			source.PersistenceContext.AddEntry(entity, Status.Saving, null, null, id, null, LockMode.Write, useIdentityColumn, persister, false, false);
 
-			await (CascadeBeforeSaveAsync(source, persister, entity, anything)).ConfigureAwait(false);
+			await (CascadeBeforeSaveAsync(source, persister, entity, anything, cancellationToken)).ConfigureAwait(false);
 
 			// NH-962: This was originally done before many-to-one cascades.
 			if (useIdentityColumn && !shouldDelayIdentityInserts)
 			{
 				log.Debug("executing insertions");
-				await (source.ActionQueue.ExecuteInsertsAsync()).ConfigureAwait(false);
+				await (source.ActionQueue.ExecuteInsertsAsync(cancellationToken)).ConfigureAwait(false);
 			}
 
 			object[] values = persister.GetPropertyValuesToInsert(entity, GetMergeMap(anything), source);
 			IType[] types = persister.PropertyTypes;
 
-			bool substitute = await (SubstituteValuesIfNecessaryAsync(entity, id, values, persister, source)).ConfigureAwait(false);
+			bool substitute = await (SubstituteValuesIfNecessaryAsync(entity, id, values, persister, source, cancellationToken)).ConfigureAwait(false);
 
 			if (persister.HasCollections)
 			{
-				substitute = substitute || await (VisitCollectionsBeforeSaveAsync(entity, id, values, types, source)).ConfigureAwait(false);
+				substitute = substitute || await (VisitCollectionsBeforeSaveAsync(entity, id, values, types, source, cancellationToken)).ConfigureAwait(false);
 			}
 
 			if (substitute)
@@ -213,7 +225,7 @@ namespace NHibernate.Event.Default
 
 			TypeHelper.DeepCopy(values, types, persister.PropertyUpdateability, values, source);
 
-			await (new ForeignKeys.Nullifier(entity, false, useIdentityColumn, source).NullifyTransientReferencesAsync(values, types)).ConfigureAwait(false);
+			await (new ForeignKeys.Nullifier(entity, false, useIdentityColumn, source).NullifyTransientReferencesAsync(values, types, cancellationToken)).ConfigureAwait(false);
 			new Nullability(source).CheckNullability(values, persister, false);
 
 			if (useIdentityColumn)
@@ -222,7 +234,7 @@ namespace NHibernate.Event.Default
 				if (!shouldDelayIdentityInserts)
 				{
 					log.Debug("executing identity-insert immediately");
-					await (source.ActionQueue.ExecuteAsync(insert)).ConfigureAwait(false);
+					await (source.ActionQueue.ExecuteAsync(insert, cancellationToken)).ConfigureAwait(false);
 					id = insert.GeneratedId;
 					//now done in EntityIdentityInsertAction
 					//persister.setIdentifier( entity, id, source.getEntityMode() );
@@ -256,18 +268,19 @@ namespace NHibernate.Event.Default
 				source.ActionQueue.AddAction(new EntityInsertAction(id, values, entity, version, persister, source));
 			}
 
-			await (CascadeAfterSaveAsync(source, persister, entity, anything)).ConfigureAwait(false);
+			await (CascadeAfterSaveAsync(source, persister, entity, anything, cancellationToken)).ConfigureAwait(false);
 
 			MarkInterceptorDirty(entity, persister, source);
 
 			return id;
 		}
 
-		protected virtual async Task<bool> VisitCollectionsBeforeSaveAsync(object entity, object id, object[] values, IType[] types, IEventSource source)
+		protected virtual async Task<bool> VisitCollectionsBeforeSaveAsync(object entity, object id, object[] values, IType[] types, IEventSource source, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			WrapVisitor visitor = new WrapVisitor(source);
 			// substitutes into values by side-effect
-			await (visitor.ProcessEntityPropertyValuesAsync(values, types)).ConfigureAwait(false);
+			await (visitor.ProcessEntityPropertyValuesAsync(values, types, cancellationToken)).ConfigureAwait(false);
 			return visitor.SubstitutionRequired;
 		}
 
@@ -280,12 +293,14 @@ namespace NHibernate.Event.Default
 		/// <param name="values">The snapshot entity state </param>
 		/// <param name="persister">The entity persister </param>
 		/// <param name="source">The originating session </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> 
 		/// True if the snapshot state changed such that
 		/// reinjection of the values into the entity is required.
 		/// </returns>
-		protected virtual async Task<bool> SubstituteValuesIfNecessaryAsync(object entity, object id, object[] values, IEntityPersister persister, ISessionImplementor source)
+		protected virtual async Task<bool> SubstituteValuesIfNecessaryAsync(object entity, object id, object[] values, IEntityPersister persister, ISessionImplementor source, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			bool substitute = source.Interceptor.OnSave(entity, id, values, persister.PropertyNames, persister.PropertyTypes);
 
 			//keep the existing version number in the case of replicate!
@@ -293,7 +308,7 @@ namespace NHibernate.Event.Default
 			{
 				// NH Specific feature (H3.2 use null value for versionProperty; NH ask to persister to know if a valueType mean unversioned)
 				object versionValue = values[persister.VersionProperty];
-				substitute |= await (Versioning.SeedVersionAsync(values, persister.VersionProperty, persister.VersionType, persister.IsUnsavedVersion(versionValue), source)).ConfigureAwait(false);
+				substitute |= await (Versioning.SeedVersionAsync(values, persister.VersionProperty, persister.VersionType, persister.IsUnsavedVersion(versionValue), source, cancellationToken)).ConfigureAwait(false);
 			}
 			return substitute;
 		}
@@ -303,13 +318,15 @@ namespace NHibernate.Event.Default
 		/// <param name="persister">The entity's persister instance. </param>
 		/// <param name="entity">The entity to be saved. </param>
 		/// <param name="anything">Generally cascade-specific data </param>
-		protected virtual async Task CascadeBeforeSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		protected virtual async Task CascadeBeforeSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			// cascade-save to many-to-one BEFORE the parent is saved
 			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
-				await (new Cascade(CascadeAction, CascadePoint.BeforeInsertAfterDelete, source).CascadeOnAsync(persister, entity, anything)).ConfigureAwait(false);
+				await (new Cascade(CascadeAction, CascadePoint.BeforeInsertAfterDelete, source).CascadeOnAsync(persister, entity, anything, cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -322,13 +339,15 @@ namespace NHibernate.Event.Default
 		/// <param name="persister">The entity's persister instance. </param>
 		/// <param name="entity">The entity being saved. </param>
 		/// <param name="anything">Generally cascade-specific data </param>
-		protected virtual async Task CascadeAfterSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		protected virtual async Task CascadeAfterSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			// cascade-save to collections AFTER the collection owner was saved
 			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
-				await (new Cascade(CascadeAction, CascadePoint.AfterInsertBeforeDelete, source).CascadeOnAsync(persister, entity, anything)).ConfigureAwait(false);
+				await (new Cascade(CascadeAction, CascadePoint.AfterInsertBeforeDelete, source).CascadeOnAsync(persister, entity, anything, cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -343,9 +362,11 @@ namespace NHibernate.Event.Default
 		/// <param name="entityName">The name of the entity </param>
 		/// <param name="entry">The entity's entry in the persistence context </param>
 		/// <param name="source">The originating session. </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The state. </returns>
-		protected virtual async Task<EntityState> GetEntityStateAsync(object entity, string entityName, EntityEntry entry, ISessionImplementor source)
+		protected virtual async Task<EntityState> GetEntityStateAsync(object entity, string entityName, EntityEntry entry, ISessionImplementor source, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (entry != null)
 			{
 				// the object is persistent
@@ -377,7 +398,7 @@ namespace NHibernate.Event.Default
 				var assumed = AssumedUnsaved;
 				if (assumed.HasValue
 					? ForeignKeys.IsTransientFast(entityName, entity, source).GetValueOrDefault(assumed.Value)
-					: await (ForeignKeys.IsTransientSlowAsync(entityName, entity, source)).ConfigureAwait(false))
+					: await (ForeignKeys.IsTransientSlowAsync(entityName, entity, source, cancellationToken)).ConfigureAwait(false))
 				{
 					if (log.IsDebugEnabled)
 					{

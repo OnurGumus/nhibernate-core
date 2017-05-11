@@ -16,14 +16,16 @@ using NHibernate.Loader.Entity;
 namespace NHibernate.Persister.Entity
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class NamedQueryLoader : IUniqueEntityLoader
 	{
 
-		public async Task<object> LoadAsync(object id, object optionalObject, ISessionImplementor session)
+		public async Task<object> LoadAsync(object id, object optionalObject, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)
 			{
 				log.Debug(string.Format("loading entity: {0} using named query: {1}", persister.EntityName, queryName));
@@ -42,7 +44,7 @@ namespace NHibernate.Persister.Entity
 			query.SetOptionalEntityName(persister.EntityName);
 			query.SetOptionalObject(optionalObject);
 			query.SetFlushMode(FlushMode.Never);
-			await (query.ListAsync()).ConfigureAwait(false);
+			await (query.ListAsync(cancellationToken)).ConfigureAwait(false);
 
 			// now look up the object we are really interested in!
 			// (this lets us correctly handle proxies and multi-row

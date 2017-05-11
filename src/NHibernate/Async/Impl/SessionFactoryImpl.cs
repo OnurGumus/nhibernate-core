@@ -46,6 +46,7 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -64,8 +65,10 @@ namespace NHibernate.Impl
 		/// <item>close the ADO.NET connection</item>
 		/// </list>
 		/// </summary>
-		public async Task CloseAsync()
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public async Task CloseAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			log.Info("Closing");
 
 			isClosed = true;
@@ -111,7 +114,7 @@ namespace NHibernate.Impl
 
 			if (settings.IsAutoDropSchema)
 			{
-				await (schemaExport.DropAsync(false, true)).ConfigureAwait(false);
+				await (schemaExport.DropAsync(false, true, cancellationToken)).ConfigureAwait(false);
 			}
 
 			eventListeners.DestroyListeners();

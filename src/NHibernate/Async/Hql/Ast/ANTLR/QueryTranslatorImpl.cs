@@ -31,14 +31,16 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 namespace NHibernate.Hql.Ast.ANTLR
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class QueryTranslatorImpl : IFilterTranslator
 	{
 
-		public async Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters)
+		public async Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			// Delegate to the QueryLoader...
 			ErrorIfDML();
 			var query = ( QueryNode ) _sqlAst;
@@ -62,7 +64,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				queryParametersToUse = queryParameters;
 			}
 
-			IList results = await (_queryLoader.ListAsync(session, queryParametersToUse)).ConfigureAwait(false);
+			IList results = await (_queryLoader.ListAsync(session, queryParametersToUse, cancellationToken)).ConfigureAwait(false);
 
 			if ( needsDistincting ) 
 			{
@@ -105,12 +107,16 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return results;
 		}
 
-		public Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session)
+		public Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IEnumerable>(cancellationToken);
+			}
 			try
 			{
 				ErrorIfDML();
-				return _queryLoader.GetEnumerableAsync(queryParameters, session);
+				return _queryLoader.GetEnumerableAsync(queryParameters, session, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -118,12 +124,16 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
-		public Task<int> ExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session)
+		public Task<int> ExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<int>(cancellationToken);
+			}
 			try
 			{
 				ErrorIfSelect();
-				return _statementExecutor.ExecuteAsync(queryParameters, session);
+				return _statementExecutor.ExecuteAsync(queryParameters, session, cancellationToken);
 			}
 			catch (Exception ex)
 			{

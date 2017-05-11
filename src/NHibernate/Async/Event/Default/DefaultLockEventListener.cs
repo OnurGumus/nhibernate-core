@@ -16,6 +16,7 @@ using NHibernate.Proxy;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -23,7 +24,8 @@ namespace NHibernate.Event.Default
 	{
 		/// <summary>Handle the given lock event. </summary>
 		/// <param name="event">The lock event to be handled.</param>
-		public virtual Task OnLockAsync(LockEvent @event)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public virtual Task OnLockAsync(LockEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (@event.Entity == null)
 			{
@@ -33,6 +35,10 @@ namespace NHibernate.Event.Default
 			if (@event.LockMode == LockMode.Write)
 			{
 				throw new HibernateException("Invalid lock mode for lock()");
+			}
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
 			}
 			async Task InternalOnLockAsync()
 			{
@@ -44,7 +50,7 @@ namespace NHibernate.Event.Default
 					return;
 				}
 
-				object entity = await (source.PersistenceContext.UnproxyAndReassociateAsync(@event.Entity)).ConfigureAwait(false);
+				object entity = await (source.PersistenceContext.UnproxyAndReassociateAsync(@event.Entity, cancellationToken)).ConfigureAwait(false);
 				//TODO: if object was an uninitialized proxy, this is inefficient,resulting in two SQL selects
 				EntityEntry entry = source.PersistenceContext.GetEntry(entity);
 				if (entry == null)
@@ -56,22 +62,23 @@ namespace NHibernate.Event.Default
 						throw new TransientObjectException("cannot lock an unsaved transient instance: " + persister.EntityName);
 					}
 
-					entry = await (ReassociateAsync(@event, entity, id, persister)).ConfigureAwait(false);
-					await (CascadeOnLockAsync(@event, persister, entity)).ConfigureAwait(false);
+					entry = await (ReassociateAsync(@event, entity, id, persister, cancellationToken)).ConfigureAwait(false);
+					await (CascadeOnLockAsync(@event, persister, entity, cancellationToken)).ConfigureAwait(false);
 				}
 
-				await (UpgradeLockAsync(entity, entry, @event.LockMode, source)).ConfigureAwait(false);
+				await (UpgradeLockAsync(entity, entry, @event.LockMode, source, cancellationToken)).ConfigureAwait(false);
 			}
 			return InternalOnLockAsync();
 		}
 
-		private async Task CascadeOnLockAsync(LockEvent @event, IEntityPersister persister, object entity)
+		private async Task CascadeOnLockAsync(LockEvent @event, IEntityPersister persister, object entity, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IEventSource source = @event.Session;
 			source.PersistenceContext.IncrementCascadeLevel();
 			try
 			{
-				await (new Cascade(CascadingAction.Lock, CascadePoint.AfterLock, source).CascadeOnAsync(persister, entity, @event.LockMode)).ConfigureAwait(false);
+				await (new Cascade(CascadingAction.Lock, CascadePoint.AfterLock, source).CascadeOnAsync(persister, entity, @event.LockMode, cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{

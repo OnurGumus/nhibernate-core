@@ -23,18 +23,23 @@ using NHibernate.Util;
 namespace NHibernate.Collection.Generic
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IList
 	{
 
-		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
+		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<ICollection>(cancellationToken);
+			}
 			try
 			{
 				var sn = (IList<T>)snapshot;
-				return GetOrphansAsync((ICollection)sn, (ICollection)WrappedList, entityName, Session);
+				return GetOrphansAsync((ICollection)sn, (ICollection)WrappedList, entityName, Session, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -42,10 +47,11 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override async Task<object> ReadFromAsync(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
+		public override async Task<object> ReadFromAsync(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var element = (T)await (role.ReadElementAsync(rs, owner, descriptor.SuffixedElementAliases, Session)).ConfigureAwait(false);
-			int index = (int)await (role.ReadIndexAsync(rs, descriptor.SuffixedIndexAliases, Session)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			var element = (T)await (role.ReadElementAsync(rs, owner, descriptor.SuffixedElementAliases, Session, cancellationToken)).ConfigureAwait(false);
+			int index = (int)await (role.ReadIndexAsync(rs, descriptor.SuffixedIndexAliases, Session, cancellationToken)).ConfigureAwait(false);
 
 			//pad with nulls from the current last element up to the new index
 			for (int i = WrappedList.Count; i <= index; i++)
@@ -63,14 +69,16 @@ namespace NHibernate.Collection.Generic
 		/// <param name="persister">The CollectionPersister to use to reassemble the PersistentGenericList.</param>
 		/// <param name="disassembled">The disassembled PersistentList.</param>
 		/// <param name="owner">The owner object.</param>
-		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object[] array = (object[])disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
 			for (int i = 0; i < size; i++)
 			{
-				var element = await (persister.ElementType.AssembleAsync(array[i], Session, owner)).ConfigureAwait(false);
+				var element = await (persister.ElementType.AssembleAsync(array[i], Session, owner, cancellationToken)).ConfigureAwait(false);
 				WrappedList.Add((T) (element ?? DefaultForType));
 			}
 		}

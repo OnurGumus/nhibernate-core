@@ -17,6 +17,7 @@ using NHibernate.Engine.Query;
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	using System;
 	/// <content>
 	/// Contains generated async methods
@@ -24,8 +25,12 @@ namespace NHibernate.Impl
 	public abstract partial class AbstractQueryImpl2 : AbstractQueryImpl
 	{
 
-		public override Task<int> ExecuteUpdateAsync()
+		public override Task<int> ExecuteUpdateAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<int>(cancellationToken);
+			}
 			try
 			{
 				VerifyParameters();
@@ -33,7 +38,7 @@ namespace NHibernate.Impl
 				Before();
 				try
 				{
-					return Session.ExecuteUpdateAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams));
+					return Session.ExecuteUpdateAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams), cancellationToken);
 				}
 				finally
 				{
@@ -46,8 +51,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override Task<IEnumerable> EnumerableAsync()
+		public override Task<IEnumerable> EnumerableAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IEnumerable>(cancellationToken);
+			}
 			try
 			{
 				VerifyParameters();
@@ -55,7 +64,7 @@ namespace NHibernate.Impl
 				Before();
 				try
 				{
-					return Session.EnumerableAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams));
+					return Session.EnumerableAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams), cancellationToken);
 				}
 				finally
 				{
@@ -68,8 +77,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override Task<IEnumerable<T>> EnumerableAsync<T>()
+		public override Task<IEnumerable<T>> EnumerableAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IEnumerable<T>>(cancellationToken);
+			}
 			try
 			{
 				VerifyParameters();
@@ -77,7 +90,7 @@ namespace NHibernate.Impl
 				Before();
 				try
 				{
-					return Session.EnumerableAsync<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams));
+					return Session.EnumerableAsync<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams), cancellationToken);
 				}
 				finally
 				{
@@ -90,8 +103,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override Task<IList> ListAsync()
+		public override Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IList>(cancellationToken);
+			}
 			try
 			{
 				VerifyParameters();
@@ -99,7 +116,7 @@ namespace NHibernate.Impl
 				Before();
 				try
 				{
-					return Session.ListAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams));
+					return Session.ListAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams), cancellationToken);
 				}
 				finally
 				{
@@ -112,14 +129,15 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task ListAsync(IList results)
+		public override async Task ListAsync(IList results, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			VerifyParameters();
 			var namedParams = NamedParams;
 			Before();
 			try
 			{
-				await (Session.ListAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams), results)).ConfigureAwait(false);
+				await (Session.ListAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams), results, cancellationToken)).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -127,8 +145,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override Task<IList<T>> ListAsync<T>()
+		public override Task<IList<T>> ListAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IList<T>>(cancellationToken);
+			}
 			try
 			{
 				VerifyParameters();
@@ -136,7 +158,7 @@ namespace NHibernate.Impl
 				Before();
 				try
 				{
-					return Session.ListAsync<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams));
+					return Session.ListAsync<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams), cancellationToken);
 				}
 				finally
 				{
@@ -149,12 +171,13 @@ namespace NHibernate.Impl
 			}
 		}
 
-		protected internal override async Task<IEnumerable<ITranslator>> GetTranslatorsAsync(ISessionImplementor sessionImplementor, QueryParameters queryParameters)
+		protected internal override async Task<IEnumerable<ITranslator>> GetTranslatorsAsync(ISessionImplementor sessionImplementor, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			// NOTE: updates queryParameters.NamedParameters as (desired) side effect
 			var queryExpression = ExpandParameters(queryParameters.NamedParameters);
 
-			return (await (sessionImplementor.GetQueriesAsync(queryExpression, false))
+			return (await (sessionImplementor.GetQueriesAsync(queryExpression, false, cancellationToken))
 .ConfigureAwait(false))									 .Select(queryTranslator => new HqlTranslatorWrapper(queryTranslator));
 		}
 	}

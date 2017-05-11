@@ -14,6 +14,7 @@ using NHibernate.Engine;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -24,14 +25,16 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="current">The current version</param>
 		/// <param name="session">The current session, if available.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>an instance of the <see cref="IType"/> that has been incremented.</returns>
-		Task<object> NextAsync(object current, ISessionImplementor session);
+		Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// When implemented by a class, gets an initial version.
 		/// </summary>
 		/// <param name="session">The current session, if available.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>An instance of the type.</returns>
-		Task<object> SeedAsync(ISessionImplementor session);
+		Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

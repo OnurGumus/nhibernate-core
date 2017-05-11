@@ -17,14 +17,16 @@ using NHibernate.Util;
 namespace NHibernate.Loader.Collection
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class BatchingCollectionInitializer : ICollectionInitializer
 	{
 
-		public async Task InitializeAsync(object id, ISessionImplementor session)
+		public async Task InitializeAsync(object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object[] batch =
 				session.PersistenceContext.BatchFetchQueue.GetCollectionBatch(collectionPersister, id, batchSizes[0]);
 
@@ -35,12 +37,12 @@ namespace NHibernate.Loader.Collection
 				{
 					object[] smallBatch = new object[smallBatchSize];
 					Array.Copy(batch, 0, smallBatch, 0, smallBatchSize);
-					await (loaders[i].LoadCollectionBatchAsync(session, smallBatch, collectionPersister.KeyType)).ConfigureAwait(false);
+					await (loaders[i].LoadCollectionBatchAsync(session, smallBatch, collectionPersister.KeyType, cancellationToken)).ConfigureAwait(false);
 					return; //EARLY EXIT!
 				}
 			}
 
-			await (loaders[batchSizes.Length - 1].LoadCollectionAsync(session, id, collectionPersister.KeyType)).ConfigureAwait(false);
+			await (loaders[batchSizes.Length - 1].LoadCollectionAsync(session, id, collectionPersister.KeyType, cancellationToken)).ConfigureAwait(false);
 		}
 	}
 }

@@ -20,6 +20,7 @@ using System.Collections;
 namespace NHibernate.Persister.Entity
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 
 	/// <content>
 	/// Contains generated async methods
@@ -38,33 +39,34 @@ namespace NHibernate.Persister.Entity
 		/// <param name="session">
 		/// The session from which the request originated.
 		/// </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The natural-id snapshot. </returns>
-		Task<object[]> GetNaturalIdentifierSnapshotAsync(object id, ISessionImplementor session);
+		Task<object[]> GetNaturalIdentifierSnapshotAsync(object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Load an instance of the persistent class.
 		/// </summary>
-		Task<object> LoadAsync(object id, object optionalObject, LockMode lockMode, ISessionImplementor session);
+		Task<object> LoadAsync(object id, object optionalObject, LockMode lockMode, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Do a version check (optional operation)
 		/// </summary>
-		Task LockAsync(object id, object version, object obj, LockMode lockMode, ISessionImplementor session);
+		Task LockAsync(object id, object version, object obj, LockMode lockMode, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Persist an instance
 		/// </summary>
-		Task InsertAsync(object id, object[] fields, object obj, ISessionImplementor session);
+		Task InsertAsync(object id, object[] fields, object obj, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Persist an instance, using a natively generated identifier (optional operation)
 		/// </summary>
-		Task<object> InsertAsync(object[] fields, object obj, ISessionImplementor session);
+		Task<object> InsertAsync(object[] fields, object obj, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Delete a persistent instance
 		/// </summary>
-		Task DeleteAsync(object id, object version, object obj, ISessionImplementor session);
+		Task DeleteAsync(object id, object version, object obj, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Update a persistent instance
@@ -78,24 +80,18 @@ namespace NHibernate.Persister.Entity
 		/// <param name="obj">The obj.</param>
 		/// <param name="rowId">The rowId</param>
 		/// <param name="session">The session.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		Task UpdateAsync(
-			object id,
-			object[] fields,
-			int[] dirtyFields,
-			bool hasDirtyCollection,
-			object[] oldFields,
-			object oldVersion,
-			object obj,
-			object rowId,
-			ISessionImplementor session);
+			object id, 			object[] fields, 			int[] dirtyFields, 			bool hasDirtyCollection, 			object[] oldFields, 			object oldVersion, 			object obj, 			object rowId, 			ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Get the current database state of the object, in a "hydrated" form, without resolving identifiers
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="session"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns><see langword="null" /> if select-before-update is not enabled or not supported</returns>
-		Task<object[]> GetDatabaseSnapshotAsync(object id, ISessionImplementor session);
+		Task<object[]> GetDatabaseSnapshotAsync(object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Get the current version of the object, or return null if there is no row for
@@ -104,10 +100,11 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="session"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		Task<object> GetCurrentVersionAsync(object id, ISessionImplementor session);
+		Task<object> GetCurrentVersionAsync(object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 
-		Task<object> ForceVersionIncrementAsync(object id, object currentVersion, ISessionImplementor session);
+		Task<object> ForceVersionIncrementAsync(object id, object currentVersion, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 
 		#endregion
 		#region stuff that is tuplizer-centric, but is passed a session
@@ -126,7 +123,8 @@ namespace NHibernate.Persister.Entity
 		/// <param name="entity">The entity for which to get the state.</param>
 		/// <param name="state">The entity state (at the time of Save).</param>
 		/// <param name="session">The session.</param>
-		Task ProcessInsertGeneratedPropertiesAsync(object id, object entity, object[] state, ISessionImplementor session);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task ProcessInsertGeneratedPropertiesAsync(object id, object entity, object[] state, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Perform a select to retrieve the values of any generated properties
@@ -142,7 +140,8 @@ namespace NHibernate.Persister.Entity
 		/// <param name="entity">The entity for which to get the state.</param>
 		/// <param name="state">The entity state (at the time of Save).</param>
 		/// <param name="session">The session.</param>
-		Task ProcessUpdateGeneratedPropertiesAsync(object id, object entity, object[] state, ISessionImplementor session);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task ProcessUpdateGeneratedPropertiesAsync(object id, object entity, object[] state, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 
 		#endregion
 		#region stuff that is Tuplizer-centric

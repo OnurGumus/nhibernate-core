@@ -13,6 +13,7 @@ using NHibernate.Engine;
 namespace NHibernate.Persister.Entity
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -21,6 +22,6 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Load an instance of the persistent class, by a unique key other than the primary key.
 		/// </summary>
-		Task<object> LoadByUniqueKeyAsync(string propertyName, object uniqueKey, ISessionImplementor session);
+		Task<object> LoadByUniqueKeyAsync(string propertyName, object uniqueKey, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

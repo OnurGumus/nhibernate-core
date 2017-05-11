@@ -21,14 +21,16 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public sealed partial class CollectionUpdateAction : CollectionAction
 	{
 
-		public override async Task ExecuteAsync()
+		public override async Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object id = Key;
 			ISessionImplementor session = Session;
 			ICollectionPersister persister = Persister;
@@ -42,7 +44,7 @@ namespace NHibernate.Action
 				stopwatch = Stopwatch.StartNew();
 			}
 
-			await (PreUpdateAsync()).ConfigureAwait(false);
+			await (PreUpdateAsync(cancellationToken)).ConfigureAwait(false);
 
 			if (!collection.WasInitialized)
 			{
@@ -56,7 +58,7 @@ namespace NHibernate.Action
 			{
 				if (!emptySnapshot)
 				{
-					await (persister.RemoveAsync(id, session)).ConfigureAwait(false);
+					await (persister.RemoveAsync(id, session, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 			else if (collection.NeedsRecreate(persister))
@@ -68,22 +70,22 @@ namespace NHibernate.Action
 				}
 				if (!emptySnapshot)
 				{
-					await (persister.RemoveAsync(id, session)).ConfigureAwait(false);
+					await (persister.RemoveAsync(id, session, cancellationToken)).ConfigureAwait(false);
 				}
-				await (persister.RecreateAsync(collection, id, session)).ConfigureAwait(false);
+				await (persister.RecreateAsync(collection, id, session, cancellationToken)).ConfigureAwait(false);
 			}
 			else
 			{
-				await (persister.DeleteRowsAsync(collection, id, session)).ConfigureAwait(false);
-				await (persister.UpdateRowsAsync(collection, id, session)).ConfigureAwait(false);
-				await (persister.InsertRowsAsync(collection, id, session)).ConfigureAwait(false);
+				await (persister.DeleteRowsAsync(collection, id, session, cancellationToken)).ConfigureAwait(false);
+				await (persister.UpdateRowsAsync(collection, id, session, cancellationToken)).ConfigureAwait(false);
+				await (persister.InsertRowsAsync(collection, id, session, cancellationToken)).ConfigureAwait(false);
 			}
 
 			Session.PersistenceContext.GetCollectionEntry(collection).AfterAction(collection);
 
 			Evict();
 
-			await (PostUpdateAsync()).ConfigureAwait(false);
+			await (PostUpdateAsync(cancellationToken)).ConfigureAwait(false);
 
 			if (statsEnabled)
 			{
@@ -92,28 +94,30 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task PreUpdateAsync()
+		private async Task PreUpdateAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IPreCollectionUpdateEventListener[] preListeners = Session.Listeners.PreCollectionUpdateEventListeners;
 			if (preListeners.Length > 0)
 			{
 				PreCollectionUpdateEvent preEvent = new PreCollectionUpdateEvent(Persister, Collection, (IEventSource)Session);
 				for (int i = 0; i < preListeners.Length; i++)
 				{
-					await (preListeners[i].OnPreUpdateCollectionAsync(preEvent)).ConfigureAwait(false);
+					await (preListeners[i].OnPreUpdateCollectionAsync(preEvent, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private async Task PostUpdateAsync()
+		private async Task PostUpdateAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IPostCollectionUpdateEventListener[] postListeners = Session.Listeners.PostCollectionUpdateEventListeners;
 			if (postListeners.Length > 0)
 			{
 				PostCollectionUpdateEvent postEvent = new PostCollectionUpdateEvent(Persister, Collection, (IEventSource)Session);
 				for (int i = 0; i < postListeners.Length; i++)
 				{
-					await (postListeners[i].OnPostUpdateCollectionAsync(postEvent)).ConfigureAwait(false);
+					await (postListeners[i].OnPostUpdateCollectionAsync(postEvent, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}

@@ -11,6 +11,7 @@
 namespace NHibernate.Id.Enhanced
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -21,7 +22,8 @@ namespace NHibernate.Id.Enhanced
 		/// Generate an identifier value accounting for this specific optimization. 
 		/// </summary>
 		/// <param name="callback">Callback to access the underlying value source. </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The generated identifier value.</returns>
-		Task<object> GenerateAsync(IAccessCallback callback);
+		Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

@@ -19,6 +19,7 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Dialect
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -39,9 +40,10 @@ namespace NHibernate.Dialect
 		#endregion
 		#region Callable statement support
 
-		public override async Task<DbDataReader> GetResultSetAsync(DbCommand statement)
+		public override async Task<DbDataReader> GetResultSetAsync(DbCommand statement, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var rdr = await (statement.ExecuteReaderAsync()).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			var rdr = await (statement.ExecuteReaderAsync(cancellationToken)).ConfigureAwait(false);
 			return rdr;
 		}
 

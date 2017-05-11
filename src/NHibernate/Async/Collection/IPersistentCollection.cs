@@ -19,6 +19,7 @@ using NHibernate.Type;
 namespace NHibernate.Collection
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -31,7 +32,8 @@ namespace NHibernate.Collection
 		/// <param name="persister"></param>
 		/// <param name="disassembled"></param>
 		/// <param name="owner"></param>
-		Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Reads the row from the <see cref="DbDataReader"/>.
@@ -43,26 +45,29 @@ namespace NHibernate.Collection
 		/// <param name="role">The persister for this Collection.</param>
 		/// <param name="descriptor">The descriptor providing result set column names</param>
 		/// <param name="owner">The owner of this Collection.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The object that was contained in the row.</returns>
-		Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner);
+		Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// To be called internally by the session, forcing
 		/// immediate initalization.
 		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <remarks>
 		/// This method is similar to <see cref="AbstractPersistentCollection.Initialize" />, except that different exceptions are thrown.
 		/// </remarks>
-		Task ForceInitializationAsync();
+		Task ForceInitializationAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary> Get the "queued" orphans</summary>
-		Task<ICollection> GetQueuedOrphansAsync(string entityName);
+		Task<ICollection> GetQueuedOrphansAsync(string entityName, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Called before inserting rows, to ensure that any surrogate keys are fully generated
 		/// </summary>
 		/// <param name="persister"></param>
-		Task PreInsertAsync(ICollectionPersister persister);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task PreInsertAsync(ICollectionPersister persister, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Get all "orphaned" elements
@@ -70,10 +75,11 @@ namespace NHibernate.Collection
 		/// <param name="snapshot">The snapshot of the collection.</param>
 		/// <param name="entityName">The persistent class whose objects
 		/// the collection is expected to contain.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>
 		/// An <see cref="ICollection"/> that contains all of the elements
 		/// that have been orphaned.
 		/// </returns>
-		Task<ICollection> GetOrphansAsync(object snapshot, string entityName);
+		Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

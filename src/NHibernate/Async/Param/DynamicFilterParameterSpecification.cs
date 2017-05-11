@@ -21,6 +21,7 @@ using NHibernate.Type;
 namespace NHibernate.Param
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -29,8 +30,12 @@ namespace NHibernate.Param
 
 		#region IParameterSpecification Members
 
-		public Task BindAsync(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
+		public Task BindAsync(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				Bind(command, sqlQueryParametersList, queryParameters, session);
@@ -49,13 +54,21 @@ namespace NHibernate.Param
 		private partial class CollectionOfValuesType : IType
 		{
 
-			public Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner)
+			public Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
 				throw new InvalidOperationException();
 			}
 
-			public Task BeforeAssembleAsync(object cached, ISessionImplementor session)
+			public Task BeforeAssembleAsync(object cached, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
 				try
 				{
 					BeforeAssemble(cached, session);
@@ -67,38 +80,66 @@ namespace NHibernate.Param
 				}
 			}
 
-			public Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
+			public Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
 				throw new InvalidOperationException();
 			}
 
-			public Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)
+			public Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
 				throw new InvalidOperationException();
 			}
 
-			public Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
+			public Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
 				throw new InvalidOperationException();
 			}
 
-			public Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner)
+			public Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
 				throw new InvalidOperationException();
 			}
 
-			public Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner)
+			public Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
 				throw new InvalidOperationException();
 			}
 
-			public Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready)
+			public Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
 				throw new InvalidOperationException();
 			}
 
-			public Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
+			public Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
 				throw new InvalidOperationException();
 			}
 		}

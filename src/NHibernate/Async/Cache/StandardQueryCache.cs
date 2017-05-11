@@ -20,6 +20,7 @@ using NHibernate.Util;
 namespace NHibernate.Cache
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -28,8 +29,9 @@ namespace NHibernate.Cache
 
 		#region IQueryCache Members
 
-		public async Task<IList> GetAsync(QueryKey key, ICacheAssembler[] returnTypes, bool isNaturalKeyLookup, ISet<string> spaces, ISessionImplementor session)
+		public async Task<IList> GetAsync(QueryKey key, ICacheAssembler[] returnTypes, bool isNaturalKeyLookup, ISet<string> spaces, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (Log.IsDebugEnabled)
 				Log.DebugFormat("checking cached query results in region: '{0}'; {1}", _regionName, key);
 
@@ -56,11 +58,11 @@ namespace NHibernate.Cache
 			{
 				if (returnTypes.Length == 1)
 				{
-					await (returnTypes[0].BeforeAssembleAsync(cacheable[i], session)).ConfigureAwait(false);
+					await (returnTypes[0].BeforeAssembleAsync(cacheable[i], session, cancellationToken)).ConfigureAwait(false);
 				}
 				else
 				{
-					await (TypeHelper.BeforeAssembleAsync((object[])cacheable[i], returnTypes, session)).ConfigureAwait(false);
+					await (TypeHelper.BeforeAssembleAsync((object[])cacheable[i], returnTypes, session, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 
@@ -71,11 +73,11 @@ namespace NHibernate.Cache
 				{
 					if (returnTypes.Length == 1)
 					{
-						result.Add(await (returnTypes[0].AssembleAsync(cacheable[i], session, null)).ConfigureAwait(false));
+						result.Add(await (returnTypes[0].AssembleAsync(cacheable[i], session, null, cancellationToken)).ConfigureAwait(false));
 					}
 					else
 					{
-						result.Add(await (TypeHelper.AssembleAsync((object[])cacheable[i], returnTypes, session, null)).ConfigureAwait(false));
+						result.Add(await (TypeHelper.AssembleAsync((object[])cacheable[i], returnTypes, session, null, cancellationToken)).ConfigureAwait(false));
 					}
 				}
 				catch (UnresolvableObjectException)

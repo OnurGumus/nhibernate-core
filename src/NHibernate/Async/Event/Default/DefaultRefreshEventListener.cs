@@ -21,17 +21,22 @@ using NHibernate.Util;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class DefaultRefreshEventListener : IRefreshEventListener
 	{
 
-		public virtual Task OnRefreshAsync(RefreshEvent @event)
+		public virtual Task OnRefreshAsync(RefreshEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
-				return OnRefreshAsync(@event, IdentityMap.Instantiate(10));
+				return OnRefreshAsync(@event, IdentityMap.Instantiate(10), cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -39,8 +44,9 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		public virtual async Task OnRefreshAsync(RefreshEvent @event, IDictionary refreshedAlready)
+		public virtual async Task OnRefreshAsync(RefreshEvent @event, IDictionary refreshedAlready, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IEventSource source = @event.Session;
 
 			bool isTransient = !source.Contains(@event.Entity);
@@ -51,7 +57,7 @@ namespace NHibernate.Event.Default
 				return;
 			}
 
-			object obj = await (source.PersistenceContext.UnproxyAndReassociateAsync(@event.Entity)).ConfigureAwait(false);
+			object obj = await (source.PersistenceContext.UnproxyAndReassociateAsync(@event.Entity, cancellationToken)).ConfigureAwait(false);
 
 			if (refreshedAlready.Contains(obj))
 			{
@@ -95,14 +101,14 @@ namespace NHibernate.Event.Default
 
 			// cascade the refresh prior to refreshing this entity
 			refreshedAlready[obj] = obj;
-			await (new Cascade(CascadingAction.Refresh, CascadePoint.BeforeRefresh, source).CascadeOnAsync(persister, obj, refreshedAlready)).ConfigureAwait(false);
+			await (new Cascade(CascadingAction.Refresh, CascadePoint.BeforeRefresh, source).CascadeOnAsync(persister, obj, refreshedAlready, cancellationToken)).ConfigureAwait(false);
 
 			if (e != null)
 			{
 				EntityKey key = source.GenerateEntityKey(id, persister);
 				source.PersistenceContext.RemoveEntity(key);
 				if (persister.HasCollections)
-					await (new EvictVisitor(source).ProcessAsync(obj, persister)).ConfigureAwait(false);
+					await (new EvictVisitor(source).ProcessAsync(obj, persister, cancellationToken)).ConfigureAwait(false);
 			}
 
 			if (persister.HasCache)
@@ -117,11 +123,11 @@ namespace NHibernate.Event.Default
 			// At this point the entity need the real refresh, all elementes of collections are Refreshed,
 			// the collection state was evicted, but the PersistentCollection (in the entity state)
 			// is associated with a possible previous session.
-			await (new WrapVisitor(source).ProcessAsync(obj, persister)).ConfigureAwait(false);
+			await (new WrapVisitor(source).ProcessAsync(obj, persister, cancellationToken)).ConfigureAwait(false);
 
 			string previousFetchProfile = source.FetchProfile;
 			source.FetchProfile = "refresh";
-			object result = await (persister.LoadAsync(id, obj, @event.LockMode, source)).ConfigureAwait(false);
+			object result = await (persister.LoadAsync(id, obj, @event.LockMode, source, cancellationToken)).ConfigureAwait(false);
 			
 			if (result != null)
 				if (!persister.IsMutable)

@@ -19,6 +19,7 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Id.Insert
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -27,16 +28,17 @@ namespace NHibernate.Id.Insert
 
 		#region IInsertGeneratedIdentifierDelegate Members
 
-		public async Task<object> PerformInsertAsync(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder)
+		public async Task<object> PerformInsertAsync(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			try
 			{
 				// prepare and execute the insert
-				var insert = await (session.Batcher.PrepareCommandAsync(insertSQL.CommandType, insertSQL.Text, insertSQL.ParameterTypes)).ConfigureAwait(false);
+				var insert = await (session.Batcher.PrepareCommandAsync(insertSQL.CommandType, insertSQL.Text, insertSQL.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 				try
 				{
 					binder.BindValues(insert);
-					await (session.Batcher.ExecuteNonQueryAsync(insert)).ConfigureAwait(false);
+					await (session.Batcher.ExecuteNonQueryAsync(insert, cancellationToken)).ConfigureAwait(false);
 				}
 				finally
 				{
@@ -54,14 +56,14 @@ namespace NHibernate.Id.Insert
 			try
 			{
 				//fetch the generated id in a separate query
-				var idSelect = await (session.Batcher.PrepareCommandAsync(CommandType.Text, selectSQL, ParametersTypes)).ConfigureAwait(false);
+				var idSelect = await (session.Batcher.PrepareCommandAsync(CommandType.Text, selectSQL, ParametersTypes, cancellationToken)).ConfigureAwait(false);
 				try
 				{
 					BindParameters(session, idSelect, binder.Entity);
-					var rs = await (session.Batcher.ExecuteReaderAsync(idSelect)).ConfigureAwait(false);
+					var rs = await (session.Batcher.ExecuteReaderAsync(idSelect, cancellationToken)).ConfigureAwait(false);
 					try
 					{
-						return await (GetResultAsync(session, rs, binder.Entity)).ConfigureAwait(false);
+						return await (GetResultAsync(session, rs, binder.Entity, cancellationToken)).ConfigureAwait(false);
 					}
 					finally
 					{
@@ -87,8 +89,9 @@ namespace NHibernate.Id.Insert
 		/// <param name="session">The session </param>
 		/// <param name="rs">The result set containing the generated primary key values. </param>
 		/// <param name="entity">The entity being saved. </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The generated identifier </returns>
-		protected internal abstract Task<object> GetResultAsync(ISessionImplementor session, DbDataReader rs, object entity);
+		protected internal abstract Task<object> GetResultAsync(ISessionImplementor session, DbDataReader rs, object entity, CancellationToken cancellationToken = default(CancellationToken));
 
 		#region NH Specific
 

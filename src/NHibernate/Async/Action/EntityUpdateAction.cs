@@ -21,14 +21,16 @@ using NHibernate.Type;
 namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public sealed partial class EntityUpdateAction : EntityAction
 	{
 
-		public override async Task ExecuteAsync()
+		public override async Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			ISessionImplementor session = Session;
 			object id = Id;
 			IEntityPersister persister = Persister;
@@ -41,7 +43,7 @@ namespace NHibernate.Action
 				stopwatch = Stopwatch.StartNew();
 			}
 
-			bool veto = await (PreUpdateAsync()).ConfigureAwait(false);
+			bool veto = await (PreUpdateAsync(cancellationToken)).ConfigureAwait(false);
 
 			ISessionFactoryImplementor factory = Session.Factory;
 
@@ -62,7 +64,7 @@ namespace NHibernate.Action
 
 			if (!veto)
 			{
-				await (persister.UpdateAsync(id, state, dirtyFields, hasDirtyCollection, previousState, previousVersion, instance, null, session)).ConfigureAwait(false);
+				await (persister.UpdateAsync(id, state, dirtyFields, hasDirtyCollection, previousState, previousVersion, instance, null, session, cancellationToken)).ConfigureAwait(false);
 			}
 
 			EntityEntry entry = Session.PersistenceContext.GetEntry(instance);
@@ -81,7 +83,7 @@ namespace NHibernate.Action
 				{
 					// this entity defines property generation, so process those generated
 					// values...
-					await (persister.ProcessUpdateGeneratedPropertiesAsync(id, instance, state, Session)).ConfigureAwait(false);
+					await (persister.ProcessUpdateGeneratedPropertiesAsync(id, instance, state, Session, cancellationToken)).ConfigureAwait(false);
 					if (persister.IsVersionPropertyGenerated)
 					{
 						nextVersion = Versioning.GetVersion(state, persister);
@@ -112,7 +114,7 @@ namespace NHibernate.Action
 				}
 			}
 
-			await (PostUpdateAsync()).ConfigureAwait(false);
+			await (PostUpdateAsync(cancellationToken)).ConfigureAwait(false);
 
 			if (statsEnabled && !veto)
 			{
@@ -121,8 +123,12 @@ namespace NHibernate.Action
 			}
 		}
 
-		protected override Task AfterTransactionCompletionProcessImplAsync(bool success)
+		protected override Task AfterTransactionCompletionProcessImplAsync(bool success, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				IEntityPersister persister = Persister;
@@ -145,7 +151,7 @@ namespace NHibernate.Action
 
 				if (success)
 				{
-					return PostCommitUpdateAsync();
+					return PostCommitUpdateAsync(cancellationToken);
 				}
 
 				return Task.CompletedTask;
@@ -156,34 +162,37 @@ namespace NHibernate.Action
 			}
 		}
 		
-		private async Task PostUpdateAsync()
+		private async Task PostUpdateAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IPostUpdateEventListener[] postListeners = Session.Listeners.PostUpdateEventListeners;
 			if (postListeners.Length > 0)
 			{
 				PostUpdateEvent postEvent = new PostUpdateEvent(Instance, Id, state, previousState, Persister, (IEventSource)Session);
 				foreach (IPostUpdateEventListener listener in postListeners)
 				{
-					await (listener.OnPostUpdateAsync(postEvent)).ConfigureAwait(false);
+					await (listener.OnPostUpdateAsync(postEvent, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private async Task PostCommitUpdateAsync()
+		private async Task PostCommitUpdateAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IPostUpdateEventListener[] postListeners = Session.Listeners.PostCommitUpdateEventListeners;
 			if (postListeners.Length > 0)
 			{
 				PostUpdateEvent postEvent = new PostUpdateEvent(Instance, Id, state, previousState, Persister, (IEventSource)Session);
 				foreach (IPostUpdateEventListener listener in postListeners)
 				{
-					await (listener.OnPostUpdateAsync(postEvent)).ConfigureAwait(false);
+					await (listener.OnPostUpdateAsync(postEvent, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private async Task<bool> PreUpdateAsync()
+		private async Task<bool> PreUpdateAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IPreUpdateEventListener[] preListeners = Session.Listeners.PreUpdateEventListeners;
 			bool veto = false;
 			if (preListeners.Length > 0)
@@ -191,7 +200,7 @@ namespace NHibernate.Action
 				var preEvent = new PreUpdateEvent(Instance, Id, state, previousState, Persister, (IEventSource) Session);
 				foreach (IPreUpdateEventListener listener in preListeners)
 				{
-					veto |= await (listener.OnPreUpdateAsync(preEvent)).ConfigureAwait(false);
+					veto |= await (listener.OnPreUpdateAsync(preEvent, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 			return veto;

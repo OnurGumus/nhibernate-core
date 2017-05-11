@@ -21,6 +21,7 @@ using NHibernate.Util;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -30,8 +31,9 @@ namespace NHibernate.Event.Default
 		/// <summary>
 		/// Flushes a single entity's state to the database, by scheduling an update action, if necessary
 		/// </summary>
-		public virtual async Task OnFlushEntityAsync(FlushEntityEvent @event)
+		public virtual async Task OnFlushEntityAsync(FlushEntityEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object entity = @event.Entity;
 			EntityEntry entry = @event.EntityEntry;
 			IEventSource session = @event.Session;
@@ -41,16 +43,16 @@ namespace NHibernate.Event.Default
 
 			bool mightBeDirty = entry.RequiresDirtyCheck(entity);
 
-			object[] values = await (GetValuesAsync(entity, entry, mightBeDirty, session)).ConfigureAwait(false);
+			object[] values = await (GetValuesAsync(entity, entry, mightBeDirty, session, cancellationToken)).ConfigureAwait(false);
 
 			@event.PropertyValues = values;
 
 			//TODO: avoid this for non-new instances where mightBeDirty==false
-			bool substitute = await (WrapCollectionsAsync(session, persister, types, values)).ConfigureAwait(false);
+			bool substitute = await (WrapCollectionsAsync(session, persister, types, values, cancellationToken)).ConfigureAwait(false);
 
-			if (await (IsUpdateNecessaryAsync(@event, mightBeDirty)).ConfigureAwait(false))
+			if (await (IsUpdateNecessaryAsync(@event, mightBeDirty, cancellationToken)).ConfigureAwait(false))
 			{
-				substitute = await (ScheduleUpdateAsync(@event)) .ConfigureAwait(false)|| substitute;
+				substitute = await (ScheduleUpdateAsync(@event, cancellationToken)) .ConfigureAwait(false)|| substitute;
 			}
 
 			if (status != Status.Deleted)
@@ -63,13 +65,14 @@ namespace NHibernate.Event.Default
 				// We don't want to touch collections reachable from a deleted object
 				if (persister.HasCollections)
 				{
-					await (new FlushVisitor(session, entity).ProcessEntityPropertyValuesAsync(values, types)).ConfigureAwait(false);
+					await (new FlushVisitor(session, entity).ProcessEntityPropertyValuesAsync(values, types, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private async Task<object[]> GetValuesAsync(object entity, EntityEntry entry, bool mightBeDirty, ISessionImplementor session)
+		private async Task<object[]> GetValuesAsync(object entity, EntityEntry entry, bool mightBeDirty, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object[] loadedState = entry.LoadedState;
 			Status status = entry.Status;
 			IEntityPersister persister = entry.Persister;
@@ -91,13 +94,14 @@ namespace NHibernate.Event.Default
 				// grab its current state
 				values = persister.GetPropertyValues(entity);
 
-				await (CheckNaturalIdAsync(persister, entry, values, loadedState, session)).ConfigureAwait(false);
+				await (CheckNaturalIdAsync(persister, entry, values, loadedState, session, cancellationToken)).ConfigureAwait(false);
 			}
 			return values;
 		}
 
-		private async Task CheckNaturalIdAsync(IEntityPersister persister, EntityEntry entry, object[] current, object[] loaded, ISessionImplementor session)
+		private async Task CheckNaturalIdAsync(IEntityPersister persister, EntityEntry entry, object[] current, object[] loaded, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (persister.HasNaturalIdentifier && entry.Status != Status.ReadOnly)
 			{
 				object[] snapshot = null;
@@ -114,7 +118,7 @@ namespace NHibernate.Event.Default
 						{
 							if (snapshot == null)
 							{
-								snapshot = await (session.PersistenceContext.GetNaturalIdSnapshotAsync(entry.Id, persister)).ConfigureAwait(false);
+								snapshot = await (session.PersistenceContext.GetNaturalIdSnapshotAsync(entry.Id, persister, cancellationToken)).ConfigureAwait(false);
 							}
 							loadedVal = snapshot[i];
 						}
@@ -132,8 +136,9 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		private async Task<bool> WrapCollectionsAsync(IEventSource session, IEntityPersister persister, IType[] types, object[] values)
+		private async Task<bool> WrapCollectionsAsync(IEventSource session, IEntityPersister persister, IType[] types, object[] values, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (persister.HasCollections)
 			{
 				// wrap up any new collections directly referenced by the object
@@ -146,7 +151,7 @@ namespace NHibernate.Event.Default
 
 				WrapVisitor visitor = new WrapVisitor(session);
 				// substitutes into values by side-effect
-				await (visitor.ProcessEntityPropertyValuesAsync(values, types)).ConfigureAwait(false);
+				await (visitor.ProcessEntityPropertyValuesAsync(values, types, cancellationToken)).ConfigureAwait(false);
 				return visitor.SubstitutionRequired;
 			}
 			else
@@ -155,14 +160,15 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		private async Task<bool> IsUpdateNecessaryAsync(FlushEntityEvent @event, bool mightBeDirty)
+		private async Task<bool> IsUpdateNecessaryAsync(FlushEntityEvent @event, bool mightBeDirty, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			Status status = @event.EntityEntry.Status;
 			if (mightBeDirty || status == Status.Deleted)
 			{
 				// compare to cached state (ignoring collections unless versioned)
-				await (DirtyCheckAsync(@event)).ConfigureAwait(false);
-				if (await (IsUpdateNecessaryAsync(@event)).ConfigureAwait(false))
+				await (DirtyCheckAsync(@event, cancellationToken)).ConfigureAwait(false);
+				if (await (IsUpdateNecessaryAsync(@event, cancellationToken)).ConfigureAwait(false))
 				{
 					return true;
 				}
@@ -175,12 +181,13 @@ namespace NHibernate.Event.Default
 			}
 			else
 			{
-				return await (HasDirtyCollectionsAsync(@event, @event.EntityEntry.Persister, status)).ConfigureAwait(false);
+				return await (HasDirtyCollectionsAsync(@event, @event.EntityEntry.Persister, status, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
-		private async Task<bool> ScheduleUpdateAsync(FlushEntityEvent @event)
+		private async Task<bool> ScheduleUpdateAsync(FlushEntityEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			EntityEntry entry = @event.EntityEntry;
 			IEventSource session = @event.Session;
 			object entity = @event.Entity;
@@ -227,7 +234,7 @@ namespace NHibernate.Event.Default
 			Validate(entity, persister, status);
 
 			// increment the version number (if necessary)
-			object nextVersion = await (GetNextVersionAsync(@event)).ConfigureAwait(false);
+			object nextVersion = await (GetNextVersionAsync(@event, cancellationToken)).ConfigureAwait(false);
 
 			// if it was dirtied by a collection only
 			int[] dirtyProperties = @event.DirtyProperties;
@@ -262,8 +269,9 @@ namespace NHibernate.Event.Default
 			return intercepted;
 		}
 
-		private async Task<object> GetNextVersionAsync(FlushEntityEvent @event)
+		private async Task<object> GetNextVersionAsync(FlushEntityEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			// Convience method to retrieve an entities next version value
 			EntityEntry entry = @event.EntityEntry;
 			IEntityPersister persister = entry.Persister;
@@ -282,7 +290,7 @@ namespace NHibernate.Event.Default
 					bool isVersionIncrementRequired = IsVersionIncrementRequired(@event, entry, persister, dirtyProperties);
 
 					object nextVersion = isVersionIncrementRequired ?
-						await (Versioning.IncrementAsync(entry.Version, persister.VersionType, @event.Session)) .ConfigureAwait(false):
+						await (Versioning.IncrementAsync(entry.Version, persister.VersionType, @event.Session, cancellationToken)) .ConfigureAwait(false):
 						entry.Version; //use the current version
 
 					Versioning.SetVersion(values, nextVersion, persister);
@@ -301,8 +309,12 @@ namespace NHibernate.Event.Default
 		/// to synchronize its state to the database. Modifies the event by side-effect!
 		/// Note: this method is quite slow, avoid calling if possible!
 		/// </summary>
-		protected Task<bool> IsUpdateNecessaryAsync(FlushEntityEvent @event)
+		protected Task<bool> IsUpdateNecessaryAsync(FlushEntityEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
 			try
 			{
 				IEntityPersister persister = @event.EntityEntry.Persister;
@@ -320,7 +332,7 @@ namespace NHibernate.Event.Default
 					}
 					else
 					{
-						return HasDirtyCollectionsAsync(@event, persister, status);
+						return HasDirtyCollectionsAsync(@event, persister, status, cancellationToken);
 					}
 				}
 			}
@@ -330,12 +342,13 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		private async Task<bool> HasDirtyCollectionsAsync(FlushEntityEvent @event, IEntityPersister persister, Status status)
+		private async Task<bool> HasDirtyCollectionsAsync(FlushEntityEvent @event, IEntityPersister persister, Status status, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (IsCollectionDirtyCheckNecessary(persister, status))
 			{
 				DirtyCollectionSearchVisitor visitor = new DirtyCollectionSearchVisitor(@event.Session, persister.PropertyVersionability);
-				await (visitor.ProcessEntityPropertyValuesAsync(@event.PropertyValues, persister.PropertyTypes)).ConfigureAwait(false);
+				await (visitor.ProcessEntityPropertyValuesAsync(@event.PropertyValues, persister.PropertyTypes, cancellationToken)).ConfigureAwait(false);
 				bool hasDirtyCollections = visitor.WasDirtyCollectionFound;
 				@event.HasDirtyCollection = hasDirtyCollections;
 				return hasDirtyCollections;
@@ -347,8 +360,9 @@ namespace NHibernate.Event.Default
 		}
 
 		/// <summary> Perform a dirty check, and attach the results to the event</summary>
-		protected virtual async Task DirtyCheckAsync(FlushEntityEvent @event)
+		protected virtual async Task DirtyCheckAsync(FlushEntityEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object entity = @event.Entity;
 			object[] values = @event.PropertyValues;
 			ISessionImplementor session = @event.Session;
@@ -398,7 +412,7 @@ namespace NHibernate.Event.Default
 				else
 				{
 					// dirty check against the database snapshot, if possible/necessary
-					object[] databaseSnapshot = await (GetDatabaseSnapshotAsync(session, persister, id)).ConfigureAwait(false);
+					object[] databaseSnapshot = await (GetDatabaseSnapshotAsync(session, persister, id, cancellationToken)).ConfigureAwait(false);
 					if (databaseSnapshot != null)
 					{
 						dirtyProperties = persister.FindModified(databaseSnapshot, values, entity, session);
@@ -420,11 +434,12 @@ namespace NHibernate.Event.Default
 		}
 
 
-		private async Task<object[]> GetDatabaseSnapshotAsync(ISessionImplementor session, IEntityPersister persister, object id)
+		private async Task<object[]> GetDatabaseSnapshotAsync(ISessionImplementor session, IEntityPersister persister, object id, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (persister.IsSelectBeforeUpdateRequired)
 			{
-				object[] snapshot = await (session.PersistenceContext.GetDatabaseSnapshotAsync(id, persister)).ConfigureAwait(false);
+				object[] snapshot = await (session.PersistenceContext.GetDatabaseSnapshotAsync(id, persister, cancellationToken)).ConfigureAwait(false);
 				if (snapshot == null)
 				{
 					//do we even really need this? the update will fail anyway....

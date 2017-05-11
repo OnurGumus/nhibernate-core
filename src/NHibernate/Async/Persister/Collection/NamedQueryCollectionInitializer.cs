@@ -16,6 +16,7 @@ using NHibernate.Loader.Collection;
 namespace NHibernate.Persister.Collection
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	using System;
 	/// <content>
 	/// Contains generated async methods
@@ -23,8 +24,12 @@ namespace NHibernate.Persister.Collection
 	public partial class NamedQueryCollectionInitializer : ICollectionInitializer
 	{
 
-		public Task InitializeAsync(object key, ISessionImplementor session)
+		public Task InitializeAsync(object key, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				if (log.IsDebugEnabled)
@@ -43,7 +48,7 @@ namespace NHibernate.Persister.Collection
 					query.SetParameter(0, key, persister.KeyType);
 				}
 
-				return query.SetCollectionKey(key).SetFlushMode(FlushMode.Never).ListAsync();
+				return query.SetCollectionKey(key).SetFlushMode(FlushMode.Never).ListAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{

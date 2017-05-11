@@ -23,6 +23,7 @@ namespace NHibernate
 	using System.Collections.Generic;
 	using System.Reflection;
 	using System.Threading.Tasks;
+	using System.Threading;
 
 	/// <content>
 	/// Contains generated async methods
@@ -35,9 +36,14 @@ namespace NHibernate
 		/// Force initialization of a proxy or persistent collection.
 		/// </summary>
 		/// <param name="proxy">a persistable object, proxy, persistent collection or null</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <exception cref="HibernateException">if we can't initialize the proxy at this time, eg. the Session was closed</exception>
-		public static Task InitializeAsync(object proxy)
+		public static Task InitializeAsync(object proxy, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				if (proxy == null)
@@ -46,11 +52,11 @@ namespace NHibernate
 				}
 				else if (proxy.IsProxy())
 				{
-					return ((INHibernateProxy)proxy).HibernateLazyInitializer.InitializeAsync();
+					return ((INHibernateProxy)proxy).HibernateLazyInitializer.InitializeAsync(cancellationToken);
 				}
 				else if (proxy is IPersistentCollection)
 				{
-					return ((IPersistentCollection)proxy).ForceInitializationAsync();
+					return ((IPersistentCollection)proxy).ForceInitializationAsync(cancellationToken);
 				}
 
 				return Task.CompletedTask;
@@ -66,12 +72,14 @@ namespace NHibernate
 		/// will initialize a proxy by side-effect.
 		/// </summary>
 		/// <param name="proxy">a persistable object or proxy</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>the true class of the instance</returns>
-		public static async Task<System.Type> GetClassAsync(object proxy)
+		public static async Task<System.Type> GetClassAsync(object proxy, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (proxy.IsProxy())
 			{
-				return (await (((INHibernateProxy)proxy).HibernateLazyInitializer.GetImplementationAsync()).ConfigureAwait(false)).GetType();
+				return (await (((INHibernateProxy)proxy).HibernateLazyInitializer.GetImplementationAsync(cancellationToken)).ConfigureAwait(false)).GetType();
 			}
 			else
 			{

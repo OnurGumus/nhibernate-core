@@ -16,15 +16,17 @@ using NHibernate.Util;
 namespace NHibernate.Cache.Entry
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class CollectionCacheEntry
 	{
 
-		public virtual async Task AssembleAsync(IPersistentCollection collection, ICollectionPersister persister, object owner)
+		public virtual async Task AssembleAsync(IPersistentCollection collection, ICollectionPersister persister, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			await (collection.InitializeFromCacheAsync(persister, state, owner)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			await (collection.InitializeFromCacheAsync(persister, state, owner, cancellationToken)).ConfigureAwait(false);
 			collection.AfterInitialize(persister);
 		}
 	}

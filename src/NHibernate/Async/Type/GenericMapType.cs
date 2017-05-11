@@ -20,14 +20,16 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class GenericMapType<TKey, TValue> : CollectionType
 	{
 
-		public override async Task<object> ReplaceElementsAsync(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session)
+		public override async Task<object> ReplaceElementsAsync(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			var cp = session.Factory.GetCollectionPersister(Role);
 
 			var targetPc = target as IPersistentCollection;
@@ -40,8 +42,8 @@ namespace NHibernate.Type
 
 			foreach (var me in iterOriginal)
 			{
-				var key = (TKey)await (cp.IndexType.ReplaceAsync(me.Key, null, session, owner, copyCache)).ConfigureAwait(false);
-				var value = (TValue)await (cp.ElementType.ReplaceAsync(me.Value, null, session, owner, copyCache)).ConfigureAwait(false);
+				var key = (TKey)await (cp.IndexType.ReplaceAsync(me.Key, null, session, owner, copyCache, cancellationToken)).ConfigureAwait(false);
+				var value = (TValue)await (cp.ElementType.ReplaceAsync(me.Value, null, session, owner, copyCache, cancellationToken)).ConfigureAwait(false);
 				result[key] = value;
 			}
 

@@ -18,14 +18,16 @@ using NHibernate.Util;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class OneToOneType : EntityType, IAssociationType
 	{
 
-		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IType type = GetIdentifierOrUniqueKeyType(session.Factory);
 			object identifier = session.GetContextEntityIdentifier(owner);
 
@@ -37,7 +39,7 @@ namespace NHibernate.Type
 				if (ownerIdType != null)
 				{
 					object[] values = ownerIdType.GetPropertyValues(identifier, session);
-					object id = await (componentType.ResolveIdentifierAsync(values, session, null)).ConfigureAwait(false);
+					object id = await (componentType.ResolveIdentifierAsync(values, session, null, cancellationToken)).ConfigureAwait(false);
 					IEntityPersister persister = session.Factory.GetEntityPersister(type.ReturnedClass.FullName);
 					var key = session.GenerateEntityKey(id, persister);
 					return session.PersistenceContext.GetEntity(key);
@@ -46,14 +48,18 @@ namespace NHibernate.Type
 			return identifier;
 		}
 
-		public override Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner)
+		public override Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				//this should be a call to resolve(), not resolveIdentifier(), 
 				//'cos it might be a property-ref, and we did not cache the
 				//referenced value
-				return ResolveIdentifierAsync(session.GetContextEntityIdentifier(owner), session, owner);
+				return ResolveIdentifierAsync(session.GetContextEntityIdentifier(owner), session, owner, cancellationToken);
 			}
 			catch (Exception ex)
 			{

@@ -22,14 +22,16 @@ using NHibernate.Impl;
 namespace NHibernate.Transaction
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class AdoNetTransactionFactory : ITransactionFactory
 	{
 
-		public async Task ExecuteWorkInIsolationAsync(ISessionImplementor session, IIsolatedWork work, bool transacted)
+		public async Task ExecuteWorkInIsolationAsync(ISessionImplementor session, IIsolatedWork work, bool transacted, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			DbConnection connection = null;
 			DbTransaction trans = null;
 			// bool wasAutoCommit = false;
@@ -40,7 +42,7 @@ namespace NHibernate.Transaction
 				if (session.Factory.Dialect is SQLiteDialect)
 					connection = session.Connection;
 				else
-					connection = await (session.Factory.ConnectionProvider.GetConnectionAsync()).ConfigureAwait(false);
+					connection = await (session.Factory.ConnectionProvider.GetConnectionAsync(cancellationToken)).ConfigureAwait(false);
 
 				if (transacted)
 				{
@@ -53,7 +55,7 @@ namespace NHibernate.Transaction
 					//}
 				}
 
-				await (work.DoWorkAsync(connection, trans)).ConfigureAwait(false);
+				await (work.DoWorkAsync(connection, trans, cancellationToken)).ConfigureAwait(false);
 
 				if (transacted)
 				{

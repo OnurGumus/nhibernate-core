@@ -18,14 +18,16 @@ using NHibernate.Proxy;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class DefaultEvictEventListener : IEvictEventListener
 	{
 
-		public virtual async Task OnEvictAsync(EvictEvent @event)
+		public virtual async Task OnEvictAsync(EvictEvent @event, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			IEventSource source = @event.Session;
 			object obj = @event.Entity;
 			IPersistenceContext persistenceContext = source.PersistenceContext;
@@ -47,7 +49,7 @@ namespace NHibernate.Event.Default
 					if (entity != null)
 					{
 						EntityEntry e = @event.Session.PersistenceContext.RemoveEntry(entity);
-						await (DoEvictAsync(entity, key, e.Persister, @event.Session)).ConfigureAwait(false);
+						await (DoEvictAsync(entity, key, e.Persister, @event.Session, cancellationToken)).ConfigureAwait(false);
 					}
 				}
 				li.UnsetSession();
@@ -58,13 +60,14 @@ namespace NHibernate.Event.Default
 				if (e != null)
 				{
 					persistenceContext.RemoveEntity(e.EntityKey);
-					await (DoEvictAsync(obj, e.EntityKey, e.Persister, source)).ConfigureAwait(false);
+					await (DoEvictAsync(obj, e.EntityKey, e.Persister, source, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
 
-		protected virtual async Task DoEvictAsync(object obj, EntityKey key, IEntityPersister persister, IEventSource session)
+		protected virtual async Task DoEvictAsync(object obj, EntityKey key, IEntityPersister persister, IEventSource session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 
 			if (log.IsDebugEnabled)
 			{
@@ -74,10 +77,10 @@ namespace NHibernate.Event.Default
 			// remove all collections for the entity from the session-level cache
 			if (persister.HasCollections)
 			{
-				await (new EvictVisitor(session).ProcessAsync(obj, persister)).ConfigureAwait(false);
+				await (new EvictVisitor(session).ProcessAsync(obj, persister, cancellationToken)).ConfigureAwait(false);
 			}
 
-			await (new Cascade(CascadingAction.Evict, CascadePoint.AfterEvict, session).CascadeOnAsync(persister, obj)).ConfigureAwait(false);
+			await (new Cascade(CascadingAction.Evict, CascadePoint.AfterEvict, session).CascadeOnAsync(persister, obj, cancellationToken)).ConfigureAwait(false);
 		}
 	}
 }

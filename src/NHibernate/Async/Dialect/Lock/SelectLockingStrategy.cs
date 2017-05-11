@@ -20,6 +20,7 @@ using NHibernate.Exceptions;
 namespace NHibernate.Dialect.Lock
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -28,12 +29,13 @@ namespace NHibernate.Dialect.Lock
 
 		#region ILockingStrategy Members
 
-		public async Task LockAsync(object id, object version, object obj, ISessionImplementor session)
+		public async Task LockAsync(object id, object version, object obj, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			ISessionFactoryImplementor factory = session.Factory;
 			try
 			{
-				var st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, lockable.IdAndVersionSqlTypes)).ConfigureAwait(false);
+				var st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, lockable.IdAndVersionSqlTypes, cancellationToken)).ConfigureAwait(false);
 				DbDataReader rs = null;
 				try
 				{
@@ -43,10 +45,10 @@ namespace NHibernate.Dialect.Lock
 						lockable.VersionType.NullSafeSet(st, version, lockable.IdentifierType.GetColumnSpan(factory), session);
 					}
 
-					rs = await (session.Batcher.ExecuteReaderAsync(st)).ConfigureAwait(false);
+					rs = await (session.Batcher.ExecuteReaderAsync(st, cancellationToken)).ConfigureAwait(false);
 					try
 					{
-						if (!await (rs.ReadAsync()).ConfigureAwait(false))
+						if (!await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false))
 						{
 							if (factory.Statistics.IsStatisticsEnabled)
 							{

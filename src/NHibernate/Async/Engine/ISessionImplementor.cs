@@ -27,6 +27,7 @@ using NHibernate.Type;
 namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -38,7 +39,8 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="collection"></param>
 		/// <param name="writing"></param>
-		Task InitializeCollectionAsync(IPersistentCollection collection, bool writing);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task InitializeCollectionAsync(IPersistentCollection collection, bool writing, CancellationToken cancellationToken = default(CancellationToken));
 
 		// NH-268
 		/// <summary>
@@ -49,108 +51,112 @@ namespace NHibernate.Engine
 		/// <param name="id">The identifier of the object in the database.</param>
 		/// <param name="isNullable">Allow null instance</param>
 		/// <param name="eager">When enabled, the object is eagerly fetched.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>
 		/// A proxy of the object or an instance of the object if the <c>persistentClass</c> does not have a proxy.
 		/// </returns>
 		/// <exception cref="ObjectNotFoundException">No object could be found with that <c>id</c>.</exception>
-		Task<object> InternalLoadAsync(string entityName, object id, bool eager, bool isNullable);
+		Task<object> InternalLoadAsync(string entityName, object id, bool eager, bool isNullable, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Load an instance immediately. Do not return a proxy.
 		/// </summary>
 		/// <param name="entityName"></param>
 		/// <param name="id"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		Task<object> ImmediateLoadAsync(string entityName, object id);
+		Task<object> ImmediateLoadAsync(string entityName, object id, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Execute a <c>List()</c> expression query
 		/// </summary>
 		/// <param name="queryExpression"></param>
 		/// <param name="parameters"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		Task<IList> ListAsync(IQueryExpression queryExpression, QueryParameters parameters);
+		Task<IList> ListAsync(IQueryExpression queryExpression, QueryParameters parameters, CancellationToken cancellationToken = default(CancellationToken));
 
-		Task ListAsync(IQueryExpression queryExpression, QueryParameters queryParameters, IList results);
+		Task ListAsync(IQueryExpression queryExpression, QueryParameters queryParameters, IList results, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="List(IQueryExpression,QueryParameters)" />
 		/// </summary>
-		Task<IList<T>> ListAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters);
+		Task<IList<T>> ListAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="List(CriteriaImpl)" />
 		/// </summary>
-		Task<IList<T>> ListAsync<T>(CriteriaImpl criteria);
+		Task<IList<T>> ListAsync<T>(CriteriaImpl criteria, CancellationToken cancellationToken = default(CancellationToken));
 
-		Task ListAsync(CriteriaImpl criteria, IList results);
+		Task ListAsync(CriteriaImpl criteria, IList results, CancellationToken cancellationToken = default(CancellationToken));
 
-		Task<IList> ListAsync(CriteriaImpl criteria);
+		Task<IList> ListAsync(CriteriaImpl criteria, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Execute an <c>Iterate()</c> query
 		/// </summary>
 		/// <param name="query"></param>
 		/// <param name="parameters"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		Task<IEnumerable> EnumerableAsync(IQueryExpression query, QueryParameters parameters);
+		Task<IEnumerable> EnumerableAsync(IQueryExpression query, QueryParameters parameters, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="Enumerable(IQueryExpression, QueryParameters)" />
 		/// </summary>
-		Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression query, QueryParameters queryParameters);
+		Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression query, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Execute a filter
 		/// </summary>
-		Task<IList> ListFilterAsync(object collection, string filter, QueryParameters parameters);
+		Task<IList> ListFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Execute a filter (strongly-typed version).
 		/// </summary>
-		Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters);
+		Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Collection from a filter
 		/// </summary>
-		Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters);
+		Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="EnumerableFilter(object, string, QueryParameters)" />
 		/// </summary>
-		Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters);
+		Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Execute an SQL Query
 		/// </summary>
-		Task<IList> ListAsync(NativeSQLQuerySpecification spec, QueryParameters queryParameters);
+		Task<IList> ListAsync(NativeSQLQuerySpecification spec, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken));
 
-		Task ListAsync(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results);
+		Task ListAsync(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="List(NativeSQLQuerySpecification, QueryParameters)" />
 		/// </summary>
-		Task<IList<T>> ListAsync<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters);
+		Task<IList<T>> ListAsync<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary> Execute an SQL Query</summary>
-		Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results);
+		Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results, CancellationToken cancellationToken = default(CancellationToken));
 
-		Task<IList<T>> ListCustomQueryAsync<T>(ICustomQuery customQuery, QueryParameters queryParameters);
+		Task<IList<T>> ListCustomQueryAsync<T>(ICustomQuery customQuery, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken));
 		
-		Task<IQueryTranslator[]> GetQueriesAsync(IQueryExpression query, bool scalar); // NH specific for MultiQuery
+		Task<IQueryTranslator[]> GetQueriesAsync(IQueryExpression query, bool scalar, CancellationToken cancellationToken = default(CancellationToken)); // NH specific for MultiQuery
 
 		/// <summary> 
 		/// Get the entity instance associated with the given <tt>Key</tt>,
 		/// calling the Interceptor if necessary
 		/// </summary>
-		Task<object> GetEntityUsingInterceptorAsync(EntityKey key);
+		Task<object> GetEntityUsingInterceptorAsync(EntityKey key, CancellationToken cancellationToken = default(CancellationToken));
 
-		Task FlushAsync();
+		Task FlushAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary> Execute a native SQL update or delete query</summary>
-		Task<int> ExecuteNativeUpdateAsync(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
+		Task<int> ExecuteNativeUpdateAsync(NativeSQLQuerySpecification specification, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary> Execute a HQL update or delete query</summary>
-		Task<int> ExecuteUpdateAsync(IQueryExpression query, QueryParameters queryParameters);
+		Task<int> ExecuteUpdateAsync(IQueryExpression query, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

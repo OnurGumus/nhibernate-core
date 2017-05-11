@@ -18,6 +18,7 @@ using NHibernate.Util;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -31,26 +32,29 @@ namespace NHibernate.Type
 		/// <param name="names">A string array of column names to read from.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> this is occurring in.</param>
 		/// <param name="owner">The object that this Entity will be a part of.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>
 		/// An instantiated object that used as the identifier of the type.
 		/// </returns>
-		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			// return the (fully resolved) identifier value, but do not resolve
 			// to the actual referenced entity instance
 			// NOTE: the owner of the association is not really the owner of the id!
 			object id = await (GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeGetAsync(rs, names, session, owner)).ConfigureAwait(false);
+				.NullSafeGetAsync(rs, names, session, owner, cancellationToken)).ConfigureAwait(false);
 			ScheduleBatchLoadIfNeeded(id, session);
 			return id;
 		}
 
-		public override async Task<object> AssembleAsync(object oid, ISessionImplementor session, object owner)
+		public override async Task<object> AssembleAsync(object oid, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			//TODO: currently broken for unique-key references (does not detect
 			//      change to unique key property of the associated object)
 
-			object id = await (AssembleIdAsync(oid, session)).ConfigureAwait(false);
+			object id = await (AssembleIdAsync(oid, session, cancellationToken)).ConfigureAwait(false);
 
 			if (id == null)
 			{
@@ -58,21 +62,26 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				return await (ResolveIdentifierAsync(id, session)).ConfigureAwait(false);
+				return await (ResolveIdentifierAsync(id, session, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
-		public override async Task BeforeAssembleAsync(object oid, ISessionImplementor session)
+		public override async Task BeforeAssembleAsync(object oid, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			ScheduleBatchLoadIfNeeded(await (AssembleIdAsync(oid, session)).ConfigureAwait(false), session);
+			cancellationToken.ThrowIfCancellationRequested();
+			ScheduleBatchLoadIfNeeded(await (AssembleIdAsync(oid, session, cancellationToken)).ConfigureAwait(false), session);
 		}
 
-		private Task<object> AssembleIdAsync(object oid, ISessionImplementor session)
+		private Task<object> AssembleIdAsync(object oid, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				//the owner of the association is not the owner of the id
-				return GetIdentifierType(session).AssembleAsync(oid, session, null);
+				return GetIdentifierType(session).AssembleAsync(oid, session, null, cancellationToken);
 			}
 			catch (Exception ex)
 			{

@@ -22,51 +22,59 @@ using NHibernate.Util;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class ComponentType : AbstractType, IAbstractComponentType
 	{
 
-		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return await (ResolveIdentifierAsync(await (HydrateAsync(rs, names, session, owner)).ConfigureAwait(false), session, owner)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			return await (ResolveIdentifierAsync(await (HydrateAsync(rs, names, session, owner, cancellationToken)).ConfigureAwait(false), session, owner, cancellationToken)).ConfigureAwait(false);
 		}
 
-		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)
+		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return NullSafeGetAsync(rs, new string[] {name}, session, owner);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return NullSafeGetAsync(rs, new string[] {name}, session, owner, cancellationToken);
 		}
 
-		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner,
-									   IDictionary copiedAlready)
+		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, 									   IDictionary copiedAlready, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (original == null)
 				return null;
 
 			object result = target ?? Instantiate(owner, session);
 
-			object[] values = await (TypeHelper.ReplaceAsync(GetPropertyValues(original), GetPropertyValues(result), propertyTypes, session, owner, copiedAlready)).ConfigureAwait(false);
+			object[] values = await (TypeHelper.ReplaceAsync(GetPropertyValues(original), GetPropertyValues(result), propertyTypes, session, owner, copiedAlready, cancellationToken)).ConfigureAwait(false);
 
 			SetPropertyValues(result, values);
 			return result;
 		}
 
-		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection)
+		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (original == null)
 				return null;
 
 			object result = target ?? Instantiate(owner, session);
 
-			object[] values = await (TypeHelper.ReplaceAsync(GetPropertyValues(original), GetPropertyValues(result), propertyTypes, session, owner, copyCache, foreignKeyDirection)).ConfigureAwait(false);
+			object[] values = await (TypeHelper.ReplaceAsync(GetPropertyValues(original), GetPropertyValues(result), propertyTypes, session, owner, copyCache, foreignKeyDirection, cancellationToken)).ConfigureAwait(false);
 
 			SetPropertyValues(result, values);
 			return result;
 		}
 
-		public override async Task<object> AssembleAsync(object obj, ISessionImplementor session, object owner)
+		public override async Task<object> AssembleAsync(object obj, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (obj == null)
 			{
 				return null;
@@ -77,7 +85,7 @@ namespace NHibernate.Type
 				object[] assembled = new object[values.Length];
 				for (int i = 0; i < propertyTypes.Length; i++)
 				{
-					assembled[i] = await (propertyTypes[i].AssembleAsync(values[i], session, owner)).ConfigureAwait(false);
+					assembled[i] = await (propertyTypes[i].AssembleAsync(values[i], session, owner, cancellationToken)).ConfigureAwait(false);
 				}
 				object result = Instantiate(owner, session);
 				SetPropertyValues(result, assembled);
@@ -85,8 +93,9 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			int begin = 0;
 			bool notNull = false;
 			object[] values = new object[propertySpan];
@@ -94,7 +103,7 @@ namespace NHibernate.Type
 			{
 				int length = propertyTypes[i].GetColumnSpan(session.Factory);
 				string[] range = ArrayHelper.Slice(names, begin, length); //cache this
-				object val = await (propertyTypes[i].HydrateAsync(rs, range, session, owner)).ConfigureAwait(false);
+				object val = await (propertyTypes[i].HydrateAsync(rs, range, session, owner, cancellationToken)).ConfigureAwait(false);
 				if (val == null)
 				{
 					if (isKey)
@@ -116,8 +125,9 @@ namespace NHibernate.Type
 				return notNull ? values : null;
 		}
 
-		public override async Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner)
+		public override async Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (value != null)
 			{
 				object result = Instantiate(owner, session);
@@ -125,7 +135,7 @@ namespace NHibernate.Type
 				object[] resolvedValues = new object[values.Length]; //only really need new array during semiresolve!
 				for (int i = 0; i < values.Length; i++)
 				{
-					resolvedValues[i] = await (propertyTypes[i].ResolveIdentifierAsync(values[i], session, owner)).ConfigureAwait(false);
+					resolvedValues[i] = await (propertyTypes[i].ResolveIdentifierAsync(values[i], session, owner, cancellationToken)).ConfigureAwait(false);
 				}
 				SetPropertyValues(result, resolvedValues);
 				return result;
@@ -136,11 +146,15 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner)
+		public override Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			//note that this implementation is kinda broken
 			//for components with many-to-one associations
-			return ResolveIdentifierAsync(value, session, owner);
+			return ResolveIdentifierAsync(value, session, owner, cancellationToken);
 		}
 	}
 }

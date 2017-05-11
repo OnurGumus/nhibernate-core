@@ -20,6 +20,7 @@ using NHibernate.Type;
 namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -34,7 +35,8 @@ namespace NHibernate.Engine
 		/// <param name="entityName">The child's entity name </param>
 		/// <param name="anything">Typically some form of cascade-local cache which is specific to each CascadingAction type </param>
 		/// <param name="isCascadeDeleteEnabled">Are cascading deletes enabled. </param>
-		public abstract Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public abstract Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary> 
 		/// Called (in the case of <see cref="RequiresNoCascadeChecking"/> returning true) to validate
@@ -45,8 +47,13 @@ namespace NHibernate.Engine
 		/// <param name="parent">The property value owner </param>
 		/// <param name="persister">The entity persister for the owner </param>
 		/// <param name="propertyIndex">The index of the property within the owner. </param>
-		public virtual Task NoCascadeAsync(IEventSource session, object child, object parent, IEntityPersister persister, int propertyIndex)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public virtual Task NoCascadeAsync(IEventSource session, object child, object parent, IEntityPersister persister, int propertyIndex, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				NoCascade(session, child, parent, persister, propertyIndex);
@@ -71,8 +78,12 @@ namespace NHibernate.Engine
 		/// </content>
 		private partial class DeleteCascadingAction : CascadingAction
 		{
-			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
+			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
 				try
 				{
 					if (log.IsDebugEnabled)
@@ -80,7 +91,7 @@ namespace NHibernate.Engine
 						log.Debug("cascading to delete: " + entityName);
 					}
 
-					return session.DeleteAsync(entityName, child, isCascadeDeleteEnabled, (ISet<object>)anything);
+					return session.DeleteAsync(entityName, child, isCascadeDeleteEnabled, (ISet<object>)anything, cancellationToken);
 				}
 				catch (Exception ex)
 				{
@@ -94,8 +105,12 @@ namespace NHibernate.Engine
 		/// </content>
 		private partial class LockCascadingAction : CascadingAction
 		{
-			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
+			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
 				try
 				{
 					if (log.IsDebugEnabled)
@@ -103,7 +118,7 @@ namespace NHibernate.Engine
 						log.Debug("cascading to lock: " + entityName);
 					}
 
-					return session.LockAsync(entityName, child, LockMode.None);
+					return session.LockAsync(entityName, child, LockMode.None, cancellationToken);
 				}
 				catch (Exception ex)
 				{
@@ -117,8 +132,12 @@ namespace NHibernate.Engine
 		/// </content>
 		private partial class RefreshCascadingAction : CascadingAction
 		{
-			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
+			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
 				try
 				{
 					if (log.IsDebugEnabled)
@@ -126,7 +145,7 @@ namespace NHibernate.Engine
 						log.Debug("cascading to refresh: " + entityName);
 					}
 
-					return session.RefreshAsync(child, (IDictionary)anything);
+					return session.RefreshAsync(child, (IDictionary)anything, cancellationToken);
 				}
 				catch (Exception ex)
 				{
@@ -140,8 +159,12 @@ namespace NHibernate.Engine
 		/// </content>
 		private partial class EvictCascadingAction : CascadingAction
 		{
-			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
+			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
 				try
 				{
 					if (log.IsDebugEnabled)
@@ -149,7 +172,7 @@ namespace NHibernate.Engine
 						log.Debug("cascading to evict: " + entityName);
 					}
 
-					return session.EvictAsync(child);
+					return session.EvictAsync(child, cancellationToken);
 				}
 				catch (Exception ex)
 				{
@@ -163,8 +186,12 @@ namespace NHibernate.Engine
 		/// </content>
 		private partial class SaveUpdateCascadingAction : CascadingAction
 		{
-			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
+			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
 				try
 				{
 					if (log.IsDebugEnabled)
@@ -172,7 +199,7 @@ namespace NHibernate.Engine
 						log.Debug("cascading to saveOrUpdate: " + entityName);
 					}
 
-					return session.SaveOrUpdateAsync(entityName, child);
+					return session.SaveOrUpdateAsync(entityName, child, cancellationToken);
 				}
 				catch (Exception ex)
 				{
@@ -186,8 +213,12 @@ namespace NHibernate.Engine
 		/// </content>
 		private partial class MergeCascadingAction : CascadingAction
 		{
-			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
+			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
 				try
 				{
 					if (log.IsDebugEnabled)
@@ -195,7 +226,7 @@ namespace NHibernate.Engine
 						log.Debug("cascading to merge: " + entityName);
 					}
 
-					return session.MergeAsync(entityName, child, (IDictionary)anything);
+					return session.MergeAsync(entityName, child, (IDictionary)anything, cancellationToken);
 				}
 				catch (Exception ex)
 				{
@@ -209,8 +240,12 @@ namespace NHibernate.Engine
         /// </content>
         private partial class PersistCascadingAction : CascadingAction
 		{
-			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
+			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken = default(CancellationToken))
 			{
+			if (cancellationToken.IsCancellationRequested)
+			{
+			return Task.FromCanceled<object>(cancellationToken);
+			}
 try
 {
 if (log.IsDebugEnabled)
@@ -218,7 +253,7 @@ if (log.IsDebugEnabled)
 log.Debug("cascading to persist: " + entityName);
 }
 
-return session.PersistAsync(entityName, child, (IDictionary)anything);
+return session.PersistAsync(entityName, child, (IDictionary)anything, cancellationToken);
 }
 catch (Exception ex)
 {
@@ -232,8 +267,12 @@ return Task.FromException<object>(ex);
 		/// </content>
 		private partial class PersistOnFlushCascadingAction : CascadingAction
 		{
-			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
+			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
 				try
 				{
 					if (log.IsDebugEnabled)
@@ -241,7 +280,7 @@ return Task.FromException<object>(ex);
 						log.Debug("cascading to persistOnFlush: " + entityName);
 					}
 
-					return session.PersistOnFlushAsync(entityName, child, (IDictionary)anything);
+					return session.PersistOnFlushAsync(entityName, child, (IDictionary)anything, cancellationToken);
 				}
 				catch (Exception ex)
 				{
@@ -249,8 +288,9 @@ return Task.FromException<object>(ex);
 				}
 			}
 
-			public override async Task NoCascadeAsync(IEventSource session, object child, object parent, IEntityPersister persister, int propertyIndex)
+			public override async Task NoCascadeAsync(IEventSource session, object child, object parent, IEntityPersister persister, int propertyIndex, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 				if (child == null)
 				{
 					return;
@@ -260,7 +300,7 @@ return Task.FromException<object>(ex);
 				{
 					string childEntityName = ((EntityType)type).GetAssociatedEntityName(session.Factory);
 
-					if (!IsInManagedState(child, session) && !child.IsProxy() && await (ForeignKeys.IsTransientSlowAsync(childEntityName, child, session)).ConfigureAwait(false))
+					if (!IsInManagedState(child, session) && !child.IsProxy() && await (ForeignKeys.IsTransientSlowAsync(childEntityName, child, session, cancellationToken)).ConfigureAwait(false))
 					{
 						string parentEntiytName = persister.EntityName;
 						string propertyName = persister.PropertyNames[propertyIndex];
@@ -278,8 +318,12 @@ return Task.FromException<object>(ex);
 		/// </content>
 		private partial class ReplicateCascadingAction : CascadingAction
 		{
-			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
+			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return Task.FromCanceled<object>(cancellationToken);
+				}
 				try
 				{
 					if (log.IsDebugEnabled)
@@ -287,7 +331,7 @@ return Task.FromException<object>(ex);
 						log.Debug("cascading to replicate: " + entityName);
 					}
 
-					return session.ReplicateAsync(entityName, child, (ReplicationMode)anything);
+					return session.ReplicateAsync(entityName, child, (ReplicationMode)anything, cancellationToken);
 				}
 				catch (Exception ex)
 				{

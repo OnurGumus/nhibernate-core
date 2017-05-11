@@ -19,6 +19,7 @@ using NHibernate.Type;
 namespace NHibernate
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -27,19 +28,21 @@ namespace NHibernate
 		/// <summary>
 		/// Force the <c>ISession</c> to flush.
 		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <remarks>
 		/// Must be called at the end of a unit of work, before committing the transaction and closing
 		/// the session (<c>Transaction.Commit()</c> calls this method). <i>Flushing</i> is the process
 		/// of synchronizing the underlying persistent store with persistable state held in memory.
 		/// </remarks>
-		Task FlushAsync();
+		Task FlushAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Does this <c>ISession</c> contain any changes which must be
 		/// synchronized with the database? Would any SQL be executed if
 		/// we flushed this session?
 		/// </summary>
-		Task<bool> IsDirtyAsync();
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task<bool> IsDirtyAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Remove this instance from the session cache.
@@ -50,7 +53,8 @@ namespace NHibernate
 		/// with <c>cascade="all"</c> or <c>cascade="all-delete-orphan"</c>.
 		/// </remarks>
 		/// <param name="obj">a persistent instance</param>
-		Task EvictAsync(Object obj);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task EvictAsync(Object obj, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Return the persistent instance of the given entity class with the given identifier,
@@ -59,8 +63,9 @@ namespace NHibernate
 		/// <param name="theType">A persistent class</param>
 		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
 		/// <param name="lockMode">The lock level</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>the persistent instance</returns>
-		Task<object> LoadAsync(System.Type theType, object id, LockMode lockMode);
+		Task<object> LoadAsync(System.Type theType, object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Return the persistent instance of the given entity class with the given identifier,
@@ -69,8 +74,9 @@ namespace NHibernate
 		/// <param name="entityName">The entity-name of a persistent class</param>
 		/// <param name="id">a valid identifier of an existing persistent instance of the class </param>
 		/// <param name="lockMode">the lock level </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> the persistent instance or proxy </returns>
-		Task<object> LoadAsync(string entityName, object id, LockMode lockMode);
+		Task<object> LoadAsync(string entityName, object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Return the persistent instance of the given entity class with the given identifier,
@@ -83,8 +89,9 @@ namespace NHibernate
 		/// </remarks>
 		/// <param name="theType">A persistent class</param>
 		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The persistent instance or proxy</returns>
-		Task<object> LoadAsync(System.Type theType, object id);
+		Task<object> LoadAsync(System.Type theType, object id, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Return the persistent instance of the given entity class with the given identifier,
@@ -93,8 +100,9 @@ namespace NHibernate
 		/// <typeparam name="T">A persistent class</typeparam>
 		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
 		/// <param name="lockMode">The lock level</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>the persistent instance</returns>
-		Task<T> LoadAsync<T>(object id, LockMode lockMode);
+		Task<T> LoadAsync<T>(object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Return the persistent instance of the given entity class with the given identifier,
@@ -107,8 +115,9 @@ namespace NHibernate
 		/// </remarks>
 		/// <typeparam name="T">A persistent class</typeparam>
 		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The persistent instance or proxy</returns>
-		Task<T> LoadAsync<T>(object id);
+		Task<T> LoadAsync<T>(object id, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Return the persistent instance of the given <paramref name="entityName"/> with the given identifier,
@@ -116,13 +125,14 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="entityName">The entity-name of a persistent class</param>
 		/// <param name="id">a valid identifier of an existing persistent instance of the class </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The persistent instance or proxy </returns>
 		/// <remarks>
 		/// You should not use this method to determine if an instance exists (use <see cref="Get(string,object)"/>
 		/// instead). Use this only to retrieve an instance that you assume exists, where non-existence
 		/// would be an actual error.
 		/// </remarks>
-		Task<object> LoadAsync(string entityName, object id);
+		Task<object> LoadAsync(string entityName, object id, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Read the persistent state associated with the given identifier into the given transient
@@ -130,7 +140,8 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="obj">An "empty" instance of the persistent class</param>
 		/// <param name="id">A valid identifier of an existing persistent instance of the class</param>
-		Task LoadAsync(object obj, object id);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task LoadAsync(object obj, object id, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Persist all reachable transient objects, reusing the current identifier
@@ -138,7 +149,8 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="obj">a detached instance of a persistent class</param>
 		/// <param name="replicationMode"></param>
-		Task ReplicateAsync(object obj, ReplicationMode replicationMode);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task ReplicateAsync(object obj, ReplicationMode replicationMode, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Persist the state of the given detached instance, reusing the current
@@ -148,7 +160,8 @@ namespace NHibernate
 		/// <param name="entityName"></param>
 		/// <param name="obj">a detached instance of a persistent class </param>
 		/// <param name="replicationMode"></param>
-		Task ReplicateAsync(string entityName, object obj, ReplicationMode replicationMode);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task ReplicateAsync(string entityName, object obj, ReplicationMode replicationMode, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Persist the given transient instance, first assigning a generated identifier.
@@ -158,15 +171,17 @@ namespace NHibernate
 		/// generator is used.
 		/// </remarks>
 		/// <param name="obj">A transient instance of a persistent class</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The generated identifier</returns>
-		Task<object> SaveAsync(object obj);
+		Task<object> SaveAsync(object obj, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Persist the given transient instance, using the given identifier.
 		/// </summary>
 		/// <param name="obj">A transient instance of a persistent class</param>
 		/// <param name="id">An unused valid identifier</param>
-		Task SaveAsync(object obj, object id);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task SaveAsync(object obj, object id, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Persist the given transient instance, first assigning a generated identifier. (Or
@@ -175,12 +190,13 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="entityName">The Entity name.</param>
 		/// <param name="obj">a transient instance of a persistent class </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> the generated identifier </returns>
 		/// <remarks>
 		/// This operation cascades to associated instances if the
 		/// association is mapped with <tt>cascade="save-update"</tt>.
 		/// </remarks>
-		Task<object> SaveAsync(string entityName, object obj);
+		Task<object> SaveAsync(string entityName, object obj, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Persist the given transient instance, using the given identifier.
@@ -188,11 +204,12 @@ namespace NHibernate
 		/// <param name="entityName">The Entity name.</param>
 		/// <param name="obj">a transient instance of a persistent class </param>
 		/// <param name="id">An unused valid identifier</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <remarks>
 		/// This operation cascades to associated instances if the
 		/// association is mapped with <tt>cascade="save-update"</tt>.
 		/// </remarks>
-		Task SaveAsync(string entityName, object obj, object id);
+		Task SaveAsync(string entityName, object obj, object id, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Either <c>Save()</c> or <c>Update()</c> the given instance, depending upon the value of
@@ -203,7 +220,8 @@ namespace NHibernate
 		/// an <c>unsaved-value</c> attribute of the identifier property mapping
 		/// </remarks>
 		/// <param name="obj">A transient instance containing new or updated state</param>
-		Task SaveOrUpdateAsync(object obj);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task SaveOrUpdateAsync(object obj, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Either <see cref="Save(String,Object)"/> or <see cref="Update(String,Object)"/>
@@ -212,13 +230,14 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="entityName">The name of the entity </param>
 		/// <param name="obj">a transient or detached instance containing new or updated state </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <seealso cref="ISession.Save(String,Object)"/>
 		/// <seealso cref="ISession.Update(String,Object)"/>
 		/// <remarks>
 		/// This operation cascades to associated instances if the association is mapped
 		/// with <tt>cascade="save-update"</tt>.
 		/// </remarks>
-		Task SaveOrUpdateAsync(string entityName, object obj);
+		Task SaveOrUpdateAsync(string entityName, object obj, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Either <c>Save()</c> or <c>Update()</c> the given instance, depending upon the value of
@@ -231,7 +250,8 @@ namespace NHibernate
 		/// <param name="entityName">The name of the entity</param>      
 		/// <param name="obj">A transient instance containing new or updated state</param>
 		/// <param name="id">Identifier of persistent instance</param>
-		Task SaveOrUpdateAsync(string entityName, object obj, object id);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task SaveOrUpdateAsync(string entityName, object obj, object id, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Update the persistent instance with the identifier of the given transient instance.
@@ -241,7 +261,8 @@ namespace NHibernate
 		/// the given transient instance has a <see langword="null" /> identifier, an exception will be thrown.
 		/// </remarks>
 		/// <param name="obj">A transient instance containing updated state</param>
-		Task UpdateAsync(object obj);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task UpdateAsync(object obj, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Update the persistent state associated with the given identifier.
@@ -252,7 +273,8 @@ namespace NHibernate
 		/// </remarks>
 		/// <param name="obj">A transient instance containing updated state</param>
 		/// <param name="id">Identifier of persistent instance</param>
-		Task UpdateAsync(object obj, object id);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task UpdateAsync(object obj, object id, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Update the persistent instance with the identifier of the given detached
@@ -260,12 +282,13 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="entityName">The Entity name.</param>
 		/// <param name="obj">a detached instance containing updated state </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <remarks>
 		/// If there is a persistent instance with the same identifier,
 		/// an exception is thrown. This operation cascades to associated instances
 		/// if the association is mapped with <tt>cascade="save-update"</tt>.
 		/// </remarks>
-		Task UpdateAsync(string entityName, object obj);
+		Task UpdateAsync(string entityName, object obj, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Update the persistent instance associated with the given identifier.
@@ -273,12 +296,13 @@ namespace NHibernate
 		/// <param name="entityName">The Entity name.</param>
 		/// <param name="obj">a detached instance containing updated state </param>
 		/// <param name="id">Identifier of persistent instance</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <remarks>
 		/// If there is a persistent instance with the same identifier,
 		/// an exception is thrown. This operation cascades to associated instances
 		/// if the association is mapped with <tt>cascade="save-update"</tt>.
 		/// </remarks>
-		Task UpdateAsync(string entityName, object obj, object id);
+		Task UpdateAsync(string entityName, object obj, object id, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Copy the state of the given object onto the persistent object with the same
@@ -291,8 +315,9 @@ namespace NHibernate
 		/// The semantics of this method are defined by JSR-220.
 		/// </summary>
 		/// <param name="obj">a detached instance with state to be copied </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> an updated persistent instance </returns>
-		Task<object> MergeAsync(object obj);
+		Task<object> MergeAsync(object obj, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Copy the state of the given object onto the persistent object with the same
@@ -308,7 +333,7 @@ namespace NHibernate
 		/// <returns> an updated persistent instance </returns>
 		/// </summary>
 		/// <returns></returns>
-		Task<object> MergeAsync(string entityName, object obj);
+		Task<object> MergeAsync(string entityName, object obj, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Copy the state of the given object onto the persistent object with the same
@@ -321,8 +346,9 @@ namespace NHibernate
 		/// The semantics of this method are defined by JSR-220.
 		/// </summary>
 		/// <param name="entity">a detached instance with state to be copied </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> an updated persistent instance </returns>
-		Task<T> MergeAsync<T>(T entity) where T : class;
+		Task<T> MergeAsync<T>(T entity, CancellationToken cancellationToken = default(CancellationToken)) where T : class;
 
 		/// <summary>
 		/// Copy the state of the given object onto the persistent object with the same
@@ -338,7 +364,7 @@ namespace NHibernate
 		/// <returns> an updated persistent instance </returns>
 		/// </summary>
 		/// <returns></returns>
-		Task<T> MergeAsync<T>(string entityName, T entity) where T : class;
+		Task<T> MergeAsync<T>(string entityName, T entity, CancellationToken cancellationToken = default(CancellationToken)) where T : class;
 
 		/// <summary>
 		/// Make a transient instance persistent. This operation cascades to associated
@@ -346,7 +372,8 @@ namespace NHibernate
 		/// The semantics of this method are defined by JSR-220.
 		/// </summary>
 		/// <param name="obj">a transient instance to be made persistent </param>
-		Task PersistAsync(object obj);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task PersistAsync(object obj, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Make a transient instance persistent. This operation cascades to associated
@@ -355,7 +382,8 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="entityName">Name of the entity.</param>
 		/// <param name="obj">a transient instance to be made persistent</param>
-		Task PersistAsync(string entityName, object obj);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task PersistAsync(string entityName, object obj, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Remove a persistent instance from the datastore.
@@ -365,7 +393,8 @@ namespace NHibernate
 		/// transient instance with an identifier associated with existing persistent state.
 		/// </remarks>
 		/// <param name="obj">The instance to be removed</param>
-		Task DeleteAsync(object obj);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task DeleteAsync(object obj, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Remove a persistent instance from the datastore. The <b>object</b> argument may be
@@ -376,14 +405,16 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="entityName">The entity name for the instance to be removed. </param>
 		/// <param name="obj">the instance to be removed </param>
-		Task DeleteAsync(string entityName, object obj);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task DeleteAsync(string entityName, object obj, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Delete all objects returned by the query.
 		/// </summary>
 		/// <param name="query">The query string</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>Returns the number of objects deleted.</returns>
-		Task<int> DeleteAsync(string query);
+		Task<int> DeleteAsync(string query, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Delete all objects returned by the query.
@@ -391,8 +422,9 @@ namespace NHibernate
 		/// <param name="query">The query string</param>
 		/// <param name="value">A value to be written to a "?" placeholer in the query</param>
 		/// <param name="type">The hibernate type of value.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The number of instances deleted</returns>
-		Task<int> DeleteAsync(string query, object value, IType type);
+		Task<int> DeleteAsync(string query, object value, IType type, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Delete all objects returned by the query.
@@ -400,15 +432,17 @@ namespace NHibernate
 		/// <param name="query">The query string</param>
 		/// <param name="values">A list of values to be written to "?" placeholders in the query</param>
 		/// <param name="types">A list of Hibernate types of the values</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The number of instances deleted</returns>
-		Task<int> DeleteAsync(string query, object[] values, IType[] types);
+		Task<int> DeleteAsync(string query, object[] values, IType[] types, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Obtain the specified lock level upon the given object.
 		/// </summary>
 		/// <param name="obj">A persistent instance</param>
 		/// <param name="lockMode">The lock level</param>
-		Task LockAsync(object obj, LockMode lockMode);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task LockAsync(object obj, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Obtain the specified lock level upon the given object.
@@ -416,13 +450,14 @@ namespace NHibernate
 		/// <param name="entityName">The Entity name.</param>
 		/// <param name="obj">a persistent or transient instance </param>
 		/// <param name="lockMode">the lock level </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <remarks>
 		/// This may be used to perform a version check (<see cref="LockMode.Read"/>), to upgrade to a pessimistic
 		/// lock (<see cref="LockMode.Upgrade"/>), or to simply reassociate a transient instance
 		/// with a session (<see cref="LockMode.None"/>). This operation cascades to associated
 		/// instances if the association is mapped with <tt>cascade="lock"</tt>.
 		/// </remarks>
-		Task LockAsync(string entityName, object obj, LockMode lockMode);
+		Task LockAsync(string entityName, object obj, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Re-read the state of the given instance from the underlying database.
@@ -442,7 +477,8 @@ namespace NHibernate
 		/// </para>
 		/// </remarks>
 		/// <param name="obj">A persistent instance</param>
-		Task RefreshAsync(object obj);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task RefreshAsync(object obj, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Re-read the state of the given instance from the underlying database, with
@@ -454,15 +490,17 @@ namespace NHibernate
 		/// </remarks>
 		/// <param name="obj">a persistent or transient instance</param>
 		/// <param name="lockMode">the lock mode to use</param>
-		Task RefreshAsync(object obj, LockMode lockMode);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task RefreshAsync(object obj, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Create a new instance of <c>Query</c> for the given collection and filter string
 		/// </summary>
 		/// <param name="collection">A persistent collection</param>
 		/// <param name="queryString">A hibernate query</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>A query</returns>
-		Task<IQuery> CreateFilterAsync(object collection, string queryString);
+		Task<IQuery> CreateFilterAsync(object collection, string queryString, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Return the persistent instance of the given entity class with the given identifier, or null
@@ -471,8 +509,9 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="clazz">a persistent class</param>
 		/// <param name="id">an identifier</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>a persistent instance or null</returns>
-		Task<object> GetAsync(System.Type clazz, object id);
+		Task<object> GetAsync(System.Type clazz, object id, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Return the persistent instance of the given entity class with the given identifier, or null
@@ -482,8 +521,9 @@ namespace NHibernate
 		/// <param name="clazz">a persistent class</param>
 		/// <param name="id">an identifier</param>
 		/// <param name="lockMode">the lock mode</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>a persistent instance or null</returns>
-		Task<object> GetAsync(System.Type clazz, object id, LockMode lockMode);
+		Task<object> GetAsync(System.Type clazz, object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Return the persistent instance of the given named entity with the given identifier,
@@ -492,24 +532,26 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="entityName">the entity name </param>
 		/// <param name="id">an identifier </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> a persistent instance or null </returns>
-		Task<object> GetAsync(string entityName, object id);
+		Task<object> GetAsync(string entityName, object id, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="Get(System.Type, object)" />
 		/// </summary>
-		Task<T> GetAsync<T>(object id);
+		Task<T> GetAsync<T>(object id, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="Get(System.Type, object, LockMode)" />
 		/// </summary>
-		Task<T> GetAsync<T>(object id, LockMode lockMode);
+		Task<T> GetAsync<T>(object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Return the entity name for a persistent entity
 		/// </summary>
 		/// <param name="obj">a persistent entity</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> the entity name </returns>
-		Task<string> GetEntityNameAsync(object obj);
+		Task<string> GetEntityNameAsync(object obj, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

@@ -23,18 +23,23 @@ using NHibernate.Util;
 namespace NHibernate.Collection.Generic
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, IList
 	{
 
-		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName)
+		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<ICollection>(cancellationToken);
+			}
 			try
 			{
 				var sn = (ICollection)snapshot;
-				return GetOrphansAsync(sn, (ICollection)_gbag, entityName, Session);
+				return GetOrphansAsync(sn, (ICollection)_gbag, entityName, Session, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -48,14 +53,16 @@ namespace NHibernate.Collection.Generic
 		/// <param name="persister">The CollectionPersister to use to reassemble the PersistentBag.</param>
 		/// <param name="disassembled">The disassembled PersistentBag.</param>
 		/// <param name="owner">The owner object.</param>
-		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			var array = (object[]) disassembled;
 			var size = array.Length;
 			BeforeInitialize(persister, size);
 			for (var i = 0; i < size; i++)
 			{
-				var element = await (persister.ElementType.AssembleAsync(array[i], Session, owner)).ConfigureAwait(false);
+				var element = await (persister.ElementType.AssembleAsync(array[i], Session, owner, cancellationToken)).ConfigureAwait(false);
 				if (element != null)
 				{
 					_gbag.Add((T) element);
@@ -63,11 +70,12 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override async Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner)
+		public override async Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			// note that if we load this collection from a cartesian product
 			// the multiplicity would be broken ... so use an idbag instead
-			var element = await (role.ReadElementAsync(reader, owner, descriptor.SuffixedElementAliases, Session)).ConfigureAwait(false);
+			var element = await (role.ReadElementAsync(reader, owner, descriptor.SuffixedElementAliases, Session, cancellationToken)).ConfigureAwait(false);
 			// NH Different behavior : we don't check for null
 			// The NH-750 test show how checking for null we are ignoring the not-found tag and
 			// the DB may have some records ignored by NH. This issue may need some more deep consideration.

@@ -16,6 +16,7 @@ using NHibernate.Type;
 namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	using System;
 	/// <content>
 	/// Contains generated async methods
@@ -31,16 +32,21 @@ namespace NHibernate.Id
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The value that was assigned to the mapped <c>id</c>'s property.</returns>
 		/// <exception cref="IdentifierGenerationException">
 		/// Thrown when a <see cref="IPersistentCollection"/> is passed in as the <c>obj</c> or
 		/// if the identifier of <c>obj</c> is null.
 		/// </exception>
-		public Task<object> GenerateAsync(ISessionImplementor session, object obj)
+		public Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (obj is IPersistentCollection)
 			{
 				throw new IdentifierGenerationException("Illegal use of assigned id generation for a toplevel collection");
+			}
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
 			}
 			try
 			{

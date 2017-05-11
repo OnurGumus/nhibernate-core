@@ -27,9 +27,14 @@ namespace NHibernate.Driver
 		/// Initializes a new instance of the <see cref="NHybridDataReader"/> class.
 		/// </summary>
 		/// <param name="reader">The underlying DbDataReader to use.</param>
-		public static Task<NHybridDataReader> CreateAsync(DbDataReader reader)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public static Task<NHybridDataReader> CreateAsync(DbDataReader reader, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return CreateAsync(reader, false);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<NHybridDataReader>(cancellationToken);
+			}
+			return CreateAsync(reader, false, cancellationToken);
 		}
 
 		/// <summary>
@@ -37,12 +42,14 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="reader">The underlying DbDataReader to use.</param>
 		/// <param name="inMemory"><see langword="true" /> if the contents of the DbDataReader should be read into memory right away.</param>
-		public static async Task<NHybridDataReader> CreateAsync(DbDataReader reader, bool inMemory)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public static async Task<NHybridDataReader> CreateAsync(DbDataReader reader, bool inMemory, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			var dataReader = new NHybridDataReader();
 			if (inMemory)
 			{
-				dataReader._reader = await (NDataReader.CreateAsync(reader, false)).ConfigureAwait(false);
+				dataReader._reader = await (NDataReader.CreateAsync(reader, false, cancellationToken)).ConfigureAwait(false);
 			}
 			else
 			{
@@ -55,18 +62,20 @@ namespace NHibernate.Driver
 		/// Reads all of the contents into memory because another <see cref="DbDataReader"/>
 		/// needs to be opened.
 		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <remarks>
 		/// This will result in a no op if the reader is closed or is already in memory.
 		/// </remarks>
-		public async Task ReadIntoMemoryAsync()
+		public async Task ReadIntoMemoryAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (_reader.IsClosed == false && _reader.GetType() != typeof(NDataReader))
 			{
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("Moving DbDataReader into an NDataReader.  It was converted in midstream " + _isMidstream.ToString());
 				}
-				_reader = await (NDataReader.CreateAsync(_reader, _isMidstream)).ConfigureAwait(false);
+				_reader = await (NDataReader.CreateAsync(_reader, _isMidstream, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 	}

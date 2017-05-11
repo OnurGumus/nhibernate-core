@@ -25,24 +25,34 @@ using NHibernate.Impl;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public abstract partial class CollectionType : AbstractType, IAssociationType
 	{
 
-		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)
+		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return NullSafeGetAsync(rs, new string[] { name }, session, owner);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return NullSafeGetAsync(rs, new string[] { name }, session, owner, cancellationToken);
 		}
 
-		public override Task<object> NullSafeGetAsync(DbDataReader rs, string[] name, ISessionImplementor session, object owner)
+		public override Task<object> NullSafeGetAsync(DbDataReader rs, string[] name, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return ResolveIdentifierAsync(null, session, owner);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return ResolveIdentifierAsync(null, session, owner, cancellationToken);
 		}
 
-		public override async Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner)
+		public override async Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			//we must use the "remembered" uk value, since it is 
 			//not available from the EntityEntry during assembly
 			if (cached == null)
@@ -51,13 +61,17 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				object key = await (GetPersister(session).KeyType.AssembleAsync(cached, session, owner)).ConfigureAwait(false);
-				return await (ResolveKeyAsync(key, session, owner)).ConfigureAwait(false);
+				object key = await (GetPersister(session).KeyType.AssembleAsync(cached, session, owner, cancellationToken)).ConfigureAwait(false);
+				return await (ResolveKeyAsync(key, session, owner, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
-		public override Task<object> HydrateAsync(DbDataReader rs, string[] name, ISessionImplementor session, object owner)
+		public override Task<object> HydrateAsync(DbDataReader rs, string[] name, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				return Task.FromResult<object>(Hydrate(rs, name, session, owner));
@@ -68,11 +82,15 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<object> ResolveIdentifierAsync(object key, ISessionImplementor session, object owner)
+		public override Task<object> ResolveIdentifierAsync(object key, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
-				return ResolveKeyAsync(GetKeyOfOwner(owner, session), session, owner);
+				return ResolveKeyAsync(GetKeyOfOwner(owner, session), session, owner, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -80,13 +98,18 @@ namespace NHibernate.Type
 			}
 		}
 
-		private Task<object> ResolveKeyAsync(object key, ISessionImplementor session, object owner)
+		private Task<object> ResolveKeyAsync(object key, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return key == null ? Task.FromResult<object >(null ): GetCollectionAsync(key, session, owner);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return key == null ? Task.FromResult<object >(null ): GetCollectionAsync(key, session, owner, cancellationToken);
 		}
 
-		public async Task<object> GetCollectionAsync(object key, ISessionImplementor session, object owner)
+		public async Task<object> GetCollectionAsync(object key, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			ICollectionPersister persister = GetPersister(session);
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 
@@ -107,7 +130,7 @@ namespace NHibernate.Type
 					// some collections are not lazy:
 					if (InitializeImmediately())
 					{
-						await (session.InitializeCollectionAsync(collection, false)).ConfigureAwait(false);
+						await (session.InitializeCollectionAsync(collection, false, cancellationToken)).ConfigureAwait(false);
 					}
 					else if (!persister.IsLazy)
 					{
@@ -129,14 +152,18 @@ namespace NHibernate.Type
 			return collection.GetValue();
 		}
 
-		public override Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner)
+		public override Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			throw new NotSupportedException("collection mappings may not form part of a property-ref");
 		}
 
-		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner,
-									   IDictionary copyCache)
+		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, 									   IDictionary copyCache, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (original == null)
 			{
 				return null;
@@ -153,22 +180,23 @@ namespace NHibernate.Type
 
 			//for arrays, replaceElements() may return a different reference, since
 			//the array length might not match
-			result = await (ReplaceElementsAsync(original, result, owner, copyCache, session)).ConfigureAwait(false);
+			result = await (ReplaceElementsAsync(original, result, owner, copyCache, session, cancellationToken)).ConfigureAwait(false);
 
 			if (original == target)
 			{
 				//get the elements back into the target
 				//TODO: this is a little inefficient, don't need to do a whole
 				//	  deep replaceElements() call
-				await (ReplaceElementsAsync(result, target, owner, copyCache, session)).ConfigureAwait(false);
+				await (ReplaceElementsAsync(result, target, owner, copyCache, session, cancellationToken)).ConfigureAwait(false);
 				result = target;
 			}
 
 			return result;
 		}
 
-		public virtual async Task<object> ReplaceElementsAsync(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session)
+		public virtual async Task<object> ReplaceElementsAsync(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			var elemType = GetElementType(session.Factory);
 			var targetPc = target as IPersistentCollection;
 			var originalPc = original as IPersistentCollection;
@@ -179,7 +207,7 @@ namespace NHibernate.Type
 			Clear(target);
 			foreach (var obj in iterOriginal)
 			{
-				Add(target, await (elemType.ReplaceAsync(obj, null, session, owner, copyCache)).ConfigureAwait(false));
+				Add(target, await (elemType.ReplaceAsync(obj, null, session, owner, copyCache, cancellationToken)).ConfigureAwait(false));
 			}
 
 			if(clearTargetsDirtyFlag)

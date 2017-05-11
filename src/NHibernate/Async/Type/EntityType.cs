@@ -22,19 +22,25 @@ using System.Collections.Generic;
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public abstract partial class EntityType : AbstractType, IAssociationType
 	{
 
-		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner)
+		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return NullSafeGetAsync(rs, new string[] {name}, session, owner);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return NullSafeGetAsync(rs, new string[] {name}, session, owner, cancellationToken);
 		}
 
-		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache)
+		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (original == null)
 			{
 				return null;
@@ -64,8 +70,8 @@ namespace NHibernate.Type
 					{
 						throw new AssertionFailure("non-transient entity has a null id");
 					}
-					id = await (GetIdentifierOrUniqueKeyType(session.Factory).ReplaceAsync(id, null, session, owner, copyCache)).ConfigureAwait(false);
-					return await (ResolveIdentifierAsync(id, session, owner)).ConfigureAwait(false);
+					id = await (GetIdentifierOrUniqueKeyType(session.Factory).ReplaceAsync(id, null, session, owner, copyCache, cancellationToken)).ConfigureAwait(false);
+					return await (ResolveIdentifierAsync(id, session, owner, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
@@ -77,26 +83,29 @@ namespace NHibernate.Type
 		/// <param name="names">A string array of column names that contain the id.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> this is occurring in.</param>
 		/// <param name="owner">The object that this Entity will be a part of.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>
 		/// An instance of the object or <see langword="null" /> if the identifer was null.
 		/// </returns>
-		public override sealed async Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
+		public override sealed async Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return await (ResolveIdentifierAsync(await (HydrateAsync(rs, names, session, owner)).ConfigureAwait(false), session, owner)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			return await (ResolveIdentifierAsync(await (HydrateAsync(rs, names, session, owner, cancellationToken)).ConfigureAwait(false), session, owner, cancellationToken)).ConfigureAwait(false);
 		}
 
-		public abstract override Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner);
+		public abstract override Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Resolves the identifier to the actual object.
 		/// </summary>
-		protected async Task<object> ResolveIdentifierAsync(object id, ISessionImplementor session)
+		protected async Task<object> ResolveIdentifierAsync(object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			string entityName = GetAssociatedEntityName();
 			bool isProxyUnwrapEnabled = unwrapProxy && session.Factory
 			                                                  .GetEntityPersister(entityName).IsInstrumented;
 
-			object proxyOrEntity = await (session.InternalLoadAsync(entityName, id, eager, IsNullable && !isProxyUnwrapEnabled)).ConfigureAwait(false);
+			object proxyOrEntity = await (session.InternalLoadAsync(entityName, id, eager, IsNullable && !isProxyUnwrapEnabled, cancellationToken)).ConfigureAwait(false);
 
 			if (proxyOrEntity.IsProxy())
 			{
@@ -113,9 +122,14 @@ namespace NHibernate.Type
 		/// <param name="value"></param>
 		/// <param name="session"></param>
 		/// <param name="owner"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		public override Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner)
+		public override Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				if (value == null)
@@ -131,11 +145,11 @@ namespace NHibernate.Type
 
 					if (IsReferenceToPrimaryKey)
 					{
-						return ResolveIdentifierAsync(value, session);
+						return ResolveIdentifierAsync(value, session, cancellationToken);
 					}
 					else
 					{
-						return LoadByUniqueKeyAsync(GetAssociatedEntityName(), uniqueKeyPropertyName, value, session);
+						return LoadByUniqueKeyAsync(GetAssociatedEntityName(), uniqueKeyPropertyName, value, session, cancellationToken);
 					}
 				}
 			}
@@ -152,9 +166,11 @@ namespace NHibernate.Type
 		/// <param name="uniqueKeyPropertyName">The name of the property defining the unique key. </param>
 		/// <param name="key">The unique key property value. </param>
 		/// <param name="session">The originating session. </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The loaded entity </returns>
-		public async Task<object> LoadByUniqueKeyAsync(string entityName, string uniqueKeyPropertyName, object key, ISessionImplementor session)
+		public async Task<object> LoadByUniqueKeyAsync(string entityName, string uniqueKeyPropertyName, object key, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			ISessionFactoryImplementor factory = session.Factory;
 			IUniqueKeyLoadable persister = (IUniqueKeyLoadable) factory.GetEntityPersister(entityName);
 
@@ -174,7 +190,7 @@ namespace NHibernate.Type
 				object result = persistenceContext.GetEntity(euk);
 				if (result == null)
 				{
-					result = await (persister.LoadByUniqueKeyAsync(uniqueKeyPropertyName, key, session)).ConfigureAwait(false);
+					result = await (persister.LoadByUniqueKeyAsync(uniqueKeyPropertyName, key, session, cancellationToken)).ConfigureAwait(false);
 				}
 				return result == null ? null : persistenceContext.ProxyFor(result);
 			}

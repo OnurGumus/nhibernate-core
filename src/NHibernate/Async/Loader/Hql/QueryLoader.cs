@@ -31,18 +31,23 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 namespace NHibernate.Loader.Hql
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public partial class QueryLoader : BasicLoader
 	{
 
-		public Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters)
+		public Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IList>(cancellationToken);
+			}
 			try
 			{
 				CheckQuery(queryParameters);
-				return ListAsync(session, queryParameters, _queryTranslator.QuerySpaces, _queryReturnTypes);
+				return ListAsync(session, queryParameters, _queryTranslator.QuerySpaces, _queryReturnTypes, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -50,10 +55,10 @@ namespace NHibernate.Loader.Hql
 			}
 		}
 
-		protected override async Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, DbDataReader rs,
-													   ISessionImplementor session)
+		protected override async Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, DbDataReader rs, 													   ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			Object[] resultRow = await (GetResultRowAsync(row, rs, session)).ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			Object[] resultRow = await (GetResultRowAsync(row, rs, session, cancellationToken)).ConfigureAwait(false);
 			bool hasTransform = HasSelectNew || resultTransformer != null;
 			return (!hasTransform && resultRow.Length == 1
 				        ? resultRow[0]
@@ -61,8 +66,9 @@ namespace NHibernate.Loader.Hql
 			       );
 		}
 
-		protected override async Task<object[]> GetResultRowAsync(object[] row, DbDataReader rs, ISessionImplementor session)
+		protected override async Task<object[]> GetResultRowAsync(object[] row, DbDataReader rs, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			object[] resultRow;
 
 			if (_hasScalars)
@@ -72,7 +78,7 @@ namespace NHibernate.Loader.Hql
 				resultRow = new object[queryCols];
 				for (int i = 0; i < queryCols; i++)
 				{
-					resultRow[i] = await (_queryReturnTypes[i].NullSafeGetAsync(rs, scalarColumns[i], session, null)).ConfigureAwait(false);
+					resultRow[i] = await (_queryReturnTypes[i].NullSafeGetAsync(rs, scalarColumns[i], session, null, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 			else
@@ -83,8 +89,9 @@ namespace NHibernate.Loader.Hql
 			return resultRow;
 		}
 
-		internal async Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session)
+		internal async Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			CheckQuery(queryParameters);
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
 
@@ -94,10 +101,10 @@ namespace NHibernate.Loader.Hql
 				stopWath.Start();
 			}
 
-			var cmd = await (PrepareQueryCommandAsync(queryParameters, false, session)).ConfigureAwait(false);
+			var cmd = await (PrepareQueryCommandAsync(queryParameters, false, session, cancellationToken)).ConfigureAwait(false);
 
 			// This DbDataReader is disposed of in EnumerableImpl.Dispose
-			var rs = await (GetResultSetAsync(cmd, queryParameters.HasAutoDiscoverScalarTypes, false, queryParameters.RowSelection, session)).ConfigureAwait(false);
+			var rs = await (GetResultSetAsync(cmd, queryParameters.HasAutoDiscoverScalarTypes, false, queryParameters.RowSelection, session, cancellationToken)).ConfigureAwait(false);
 
 			HolderInstantiator hi = 
 				HolderInstantiator.GetHolderInstantiator(_selectNewTransformer, queryParameters.ResultTransformer, _queryReturnAliases);

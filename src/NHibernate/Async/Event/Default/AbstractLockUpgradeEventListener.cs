@@ -20,6 +20,7 @@ using Status=NHibernate.Engine.Status;
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -33,8 +34,10 @@ namespace NHibernate.Event.Default
 		/// <param name="entry">The entity's EntityEntry instance.</param>
 		/// <param name="requestedLockMode">The lock mode being requested for locking. </param>
 		/// <param name="source">The session which is the source of the event being processed.</param>
-		protected virtual async Task UpgradeLockAsync(object entity, EntityEntry entry, LockMode requestedLockMode, ISessionImplementor source)
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		protected virtual async Task UpgradeLockAsync(object entity, EntityEntry entry, LockMode requestedLockMode, ISessionImplementor source, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (requestedLockMode.GreaterThan(entry.LockMode))
 			{
 				// The user requested a "greater" (i.e. more restrictive) form of
@@ -69,12 +72,12 @@ namespace NHibernate.Event.Default
 					if (persister.IsVersioned && requestedLockMode == LockMode.Force)
 					{
 						// todo : should we check the current isolation mode explicitly?
-						object nextVersion = await (persister.ForceVersionIncrementAsync(entry.Id, entry.Version, source)).ConfigureAwait(false);
+						object nextVersion = await (persister.ForceVersionIncrementAsync(entry.Id, entry.Version, source, cancellationToken)).ConfigureAwait(false);
 						entry.ForceLocked(entity, nextVersion);
 					}
 					else
 					{
-						await (persister.LockAsync(entry.Id, entry.Version, entity, requestedLockMode, source)).ConfigureAwait(false);
+						await (persister.LockAsync(entry.Id, entry.Version, entity, requestedLockMode, source, cancellationToken)).ConfigureAwait(false);
 					}
 					entry.LockMode = requestedLockMode;
 				}
