@@ -17,7 +17,6 @@ namespace NHibernate.Tool.hbm2ddl
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	using System;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -59,7 +58,7 @@ namespace NHibernate.Tool.hbm2ddl
 				var connectionHelper = new ManagedProviderConnectionHelper(cfgProperties);
 				return GetReservedWordsAsync(dialect, connectionHelper, cancellationToken);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<ISet<string>>(ex);
 			}

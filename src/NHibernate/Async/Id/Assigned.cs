@@ -17,7 +17,6 @@ namespace NHibernate.Id
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	using System;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -52,7 +51,7 @@ namespace NHibernate.Id
 			{
 				return Task.FromResult<object>(Generate(session, obj));
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}

@@ -18,7 +18,6 @@ namespace NHibernate.Id.Enhanced
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	using System;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -42,7 +41,7 @@ namespace NHibernate.Id.Enhanced
 			{
 				return Optimizer.GenerateAsync(DatabaseStructure.BuildCallback(session), cancellationToken);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}

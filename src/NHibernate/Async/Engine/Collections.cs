@@ -18,7 +18,6 @@ namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	using System;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -48,7 +47,7 @@ namespace NHibernate.Engine
 					return ProcessDereferencedCollectionAsync(coll, session, cancellationToken);
 				}
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -111,7 +110,7 @@ namespace NHibernate.Engine
 				entry.CurrentKey = null;
 				return PrepareCollectionForUpdateAsync(coll, entry, session.Factory, cancellationToken);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -131,7 +130,7 @@ namespace NHibernate.Engine
 				entry.CurrentKey = entry.LoadedKey;
 				return PrepareCollectionForUpdateAsync(coll, entry, session.Factory, cancellationToken);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -181,7 +180,7 @@ namespace NHibernate.Engine
 
 				return PrepareCollectionForUpdateAsync(collection, ce, factory, cancellationToken);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -241,7 +240,7 @@ namespace NHibernate.Engine
 
 				return Task.CompletedTask;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}

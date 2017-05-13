@@ -21,7 +21,6 @@ namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	using System;
 
 	/// <content>
 	/// Contains generated async methods
@@ -162,7 +161,7 @@ namespace NHibernate.Engine
 
 				return Task.CompletedTask;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -205,7 +204,7 @@ namespace NHibernate.Engine
 
 				return Task.CompletedTask;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}

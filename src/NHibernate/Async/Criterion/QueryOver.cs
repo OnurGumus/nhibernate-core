@@ -66,7 +66,7 @@ namespace NHibernate.Criterion
 		}
 
 
-		Task<IList<TRoot>> IQueryOver<TRoot>.ListAsync(CancellationToken cancellationToken = default(CancellationToken))
+		Task<IList<TRoot>> IQueryOver<TRoot>.ListAsync(CancellationToken cancellationToken)
 		{ 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<
@@ -75,7 +75,7 @@ namespace NHibernate.Criterion
 			}
 return ListAsync(cancellationToken); }
 
-		Task<IList<U>> IQueryOver<TRoot>.ListAsync<U>(CancellationToken cancellationToken = default(CancellationToken))
+		Task<IList<U>> IQueryOver<TRoot>.ListAsync<U>(CancellationToken cancellationToken)
 		{ 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<
@@ -83,7 +83,7 @@ return ListAsync(cancellationToken); }
 			}
 return ListAsync<U>(cancellationToken); }
 
-		Task<int> IQueryOver<TRoot>.RowCountAsync(CancellationToken cancellationToken = default(CancellationToken))
+		Task<int> IQueryOver<TRoot>.RowCountAsync(CancellationToken cancellationToken)
 		{ 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<
@@ -99,7 +99,7 @@ return ListAsync<U>(cancellationToken); }
 			}
 }
 
-		Task<long> IQueryOver<TRoot>.RowCountInt64Async(CancellationToken cancellationToken = default(CancellationToken))
+		Task<long> IQueryOver<TRoot>.RowCountInt64Async(CancellationToken cancellationToken)
 		{ 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<
@@ -115,7 +115,7 @@ return ListAsync<U>(cancellationToken); }
 			}
 }
 
-		Task<TRoot> IQueryOver<TRoot>.SingleOrDefaultAsync(CancellationToken cancellationToken = default(CancellationToken))
+		Task<TRoot> IQueryOver<TRoot>.SingleOrDefaultAsync(CancellationToken cancellationToken)
 		{ 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<
@@ -123,7 +123,7 @@ return ListAsync<U>(cancellationToken); }
 			}
 return SingleOrDefaultAsync(cancellationToken); }
 
-		Task<U> IQueryOver<TRoot>.SingleOrDefaultAsync<U>(CancellationToken cancellationToken = default(CancellationToken))
+		Task<U> IQueryOver<TRoot>.SingleOrDefaultAsync<U>(CancellationToken cancellationToken)
 		{ 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<

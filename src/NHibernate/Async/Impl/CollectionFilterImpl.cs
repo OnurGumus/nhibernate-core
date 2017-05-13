@@ -18,7 +18,6 @@ namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	using System;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -37,7 +36,7 @@ namespace NHibernate.Impl
 				IDictionary<string, TypedValue> namedParams = NamedParams;
 				return Session.EnumerableFilterAsync(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams), cancellationToken);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<IEnumerable>(ex);
 			}
@@ -55,7 +54,7 @@ namespace NHibernate.Impl
 				IDictionary<string, TypedValue> namedParams = NamedParams;
 				return Session.EnumerableFilterAsync<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams), cancellationToken);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<IEnumerable<T>>(ex);
 			}
@@ -73,7 +72,7 @@ namespace NHibernate.Impl
 				IDictionary<string, TypedValue> namedParams = NamedParams;
 				return Session.ListFilterAsync(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams), cancellationToken);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<IList>(ex);
 			}
@@ -91,7 +90,7 @@ namespace NHibernate.Impl
 				IDictionary<string, TypedValue> namedParams = NamedParams;
 				return Session.ListFilterAsync<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams), cancellationToken);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<IList<T>>(ex);
 			}

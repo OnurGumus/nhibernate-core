@@ -18,7 +18,6 @@ namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	using System;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -62,7 +61,7 @@ namespace NHibernate.Impl
 				BeforeAssemble(cached, session);
 				return Task.CompletedTask;
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}

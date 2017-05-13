@@ -23,7 +23,6 @@ namespace NHibernate.Loader.Entity
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	using System;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -77,7 +76,7 @@ namespace NHibernate.Loader.Entity
 			{
 				return Task.FromResult<object>(GetResultColumnOrRow(row, resultTransformer, rs, session));
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}

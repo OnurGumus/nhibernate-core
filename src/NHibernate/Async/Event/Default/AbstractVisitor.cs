@@ -15,7 +15,6 @@ namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	using System;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -77,7 +76,7 @@ namespace NHibernate.Event.Default
 					return Task.FromResult<object>(null);
 				}
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -117,7 +116,7 @@ namespace NHibernate.Event.Default
 			{
 				return Task.FromResult<object>(ProcessCollection(value, collectionType));
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -139,7 +138,7 @@ namespace NHibernate.Event.Default
 			{
 				return ProcessEntityPropertyValuesAsync(persister.GetPropertyValues(obj), persister.PropertyTypes, cancellationToken);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}

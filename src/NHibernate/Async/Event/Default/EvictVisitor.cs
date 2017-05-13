@@ -18,7 +18,6 @@ namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	using System;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -35,7 +34,7 @@ namespace NHibernate.Event.Default
 			{
 				return Task.FromResult<object>(ProcessCollection(collection, type));
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}

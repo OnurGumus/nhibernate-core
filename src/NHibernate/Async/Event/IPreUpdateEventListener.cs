@@ -20,6 +20,6 @@ namespace NHibernate.Event
 		/// <summary> Return true if the operation should be vetoed</summary>
 		/// <param name="event"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task<bool> OnPreUpdateAsync(PreUpdateEvent @event, CancellationToken cancellationToken);
+		Task<bool> OnPreUpdateAsync(PreUpdateEvent @event, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

@@ -17,7 +17,6 @@ namespace NHibernate.Persister.Collection
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	using System;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -50,7 +49,7 @@ namespace NHibernate.Persister.Collection
 
 				return query.SetCollectionKey(key).SetFlushMode(FlushMode.Never).ListAsync(cancellationToken);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}

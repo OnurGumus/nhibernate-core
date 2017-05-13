@@ -18,7 +18,6 @@ namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	using System;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -45,7 +44,7 @@ namespace NHibernate.Impl
 					After();
 				}
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<int>(ex);
 			}
@@ -71,7 +70,7 @@ namespace NHibernate.Impl
 					After();
 				}
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<IEnumerable>(ex);
 			}
@@ -97,7 +96,7 @@ namespace NHibernate.Impl
 					After();
 				}
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<IEnumerable<T>>(ex);
 			}
@@ -123,7 +122,7 @@ namespace NHibernate.Impl
 					After();
 				}
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<IList>(ex);
 			}
@@ -165,7 +164,7 @@ namespace NHibernate.Impl
 					After();
 				}
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<IList<T>>(ex);
 			}
