@@ -20,7 +20,7 @@ namespace NHibernate.Event.Default
 	/// </content>
 	public partial class DefaultSaveEventListener : DefaultSaveOrUpdateEventListener
 	{
-		protected override Task<object> PerformSaveOrUpdateAsync(SaveOrUpdateEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		protected override Task<object> PerformSaveOrUpdateAsync(SaveOrUpdateEvent @event, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

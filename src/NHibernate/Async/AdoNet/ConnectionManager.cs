@@ -27,7 +27,7 @@ namespace NHibernate.AdoNet
 	public partial class ConnectionManager : ISerializable, IDeserializationCallback
 	{
 
-		public async Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (connection == null)
@@ -59,7 +59,7 @@ namespace NHibernate.AdoNet
 
 		#endregion
 
-		public async Task<DbCommand> CreateCommandAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<DbCommand> CreateCommandAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var result = (await (GetConnectionAsync(cancellationToken)).ConfigureAwait(false)).CreateCommand();

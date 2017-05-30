@@ -20,7 +20,7 @@ namespace NHibernate.Event.Default
 	/// </content>
 	public partial class DefaultPreLoadEventListener : IPreLoadEventListener
 	{
-		public virtual Task OnPreLoadAsync(PreLoadEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual Task OnPreLoadAsync(PreLoadEvent @event, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

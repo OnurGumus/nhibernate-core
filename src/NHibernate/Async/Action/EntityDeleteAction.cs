@@ -26,7 +26,7 @@ namespace NHibernate.Action
 	public sealed partial class EntityDeleteAction : EntityAction
 	{
 
-		public override async Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task ExecuteAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object id = Id;
@@ -97,7 +97,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task PostDeleteAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task PostDeleteAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IPostDeleteEventListener[] postListeners = Session.Listeners.PostDeleteEventListeners;
@@ -111,7 +111,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task<bool> PreDeleteAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<bool> PreDeleteAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IPreDeleteEventListener[] preListeners = Session.Listeners.PreDeleteEventListeners;
@@ -127,7 +127,7 @@ namespace NHibernate.Action
 			return veto;
 		}
 		
-		protected override Task AfterTransactionCompletionProcessImplAsync(bool success, CancellationToken cancellationToken = default(CancellationToken))
+		protected override Task AfterTransactionCompletionProcessImplAsync(bool success, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -140,12 +140,10 @@ namespace NHibernate.Action
 					CacheKey ck = Session.GenerateCacheKey(Id, Persister.IdentifierType, Persister.RootEntityName);
 					Persister.Cache.Release(ck, sLock);
 				}
-
 				if (success)
 				{
 					return PostCommitDeleteAsync(cancellationToken);
 				}
-
 				return Task.CompletedTask;
 			}
 			catch (Exception ex)
@@ -154,7 +152,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task PostCommitDeleteAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task PostCommitDeleteAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IPostDeleteEventListener[] postListeners = Session.Listeners.PostCommitDeleteEventListeners;

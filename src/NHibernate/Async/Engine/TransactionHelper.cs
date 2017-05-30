@@ -29,7 +29,7 @@ namespace NHibernate.Engine
 
 			#region Implementation of IIsolatedWork
 
-			public async Task DoWorkAsync(DbConnection connection, DbTransaction transaction, CancellationToken cancellationToken = default(CancellationToken))
+			public async Task DoWorkAsync(DbConnection connection, DbTransaction transaction, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				try
@@ -46,10 +46,10 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> The work to be done</summary>
-		public abstract Task<object> DoWorkInCurrentTransactionAsync(ISessionImplementor session, DbConnection conn, DbTransaction transaction, CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task<object> DoWorkInCurrentTransactionAsync(ISessionImplementor session, DbConnection conn, DbTransaction transaction, CancellationToken cancellationToken);
 
 		/// <summary> Suspend the current transaction and perform work in a new transaction</summary>
-		public virtual async Task<object> DoWorkInNewTransactionAsync(ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task<object> DoWorkInNewTransactionAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			Work work = new Work(session, this);

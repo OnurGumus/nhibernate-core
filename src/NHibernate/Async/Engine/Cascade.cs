@@ -33,7 +33,7 @@ namespace NHibernate.Engine
 		/// <param name="persister">The parent's entity persister </param>
 		/// <param name="parent">The parent reference. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public Task CascadeOnAsync(IEntityPersister persister, object parent, CancellationToken cancellationToken = default(CancellationToken))
+		public Task CascadeOnAsync(IEntityPersister persister, object parent, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -53,7 +53,7 @@ namespace NHibernate.Engine
 		/// which is specific to each CascadingAction type
 		/// </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public async Task CascadeOnAsync(IEntityPersister persister, object parent, object anything, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task CascadeOnAsync(IEntityPersister persister, object parent, object anything, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (persister.HasCascades || action.RequiresNoCascadeChecking)
@@ -88,7 +88,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Cascade an action to the child or children</summary>
-		private Task CascadePropertyAsync(object parent, object child, IType type, CascadeStyle style, string propertyName, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken = default(CancellationToken))
+		private Task CascadePropertyAsync(object parent, object child, IType type, CascadeStyle style, string propertyName, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -158,7 +158,6 @@ namespace NHibernate.Engine
 						}
 					}
 				}
-
 				return Task.CompletedTask;
 			}
 			catch (System.Exception ex)
@@ -167,7 +166,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private async Task CascadeComponentAsync(object parent, object child, IAbstractComponentType componentType, string componentPropertyName, object anything, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task CascadeComponentAsync(object parent, object child, IAbstractComponentType componentType, string componentPropertyName, object anything, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			componentPathStack.Push(componentPropertyName);
@@ -185,7 +184,7 @@ namespace NHibernate.Engine
 			componentPathStack.Pop();
 		}
 
-		private Task CascadeAssociationAsync(object parent, object child, IType type, CascadeStyle style, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken = default(CancellationToken))
+		private Task CascadeAssociationAsync(object parent, object child, IType type, CascadeStyle style, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -201,7 +200,6 @@ namespace NHibernate.Engine
 				{
 					return CascadeCollectionAsync(parent, child, style, anything, (CollectionType)type, cancellationToken);
 				}
-
 				return Task.CompletedTask;
 			}
 			catch (System.Exception ex)
@@ -211,7 +209,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Cascade an action to a collection</summary>
-		private async Task CascadeCollectionAsync(object parent, object child, CascadeStyle style, object anything, CollectionType type, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task CascadeCollectionAsync(object parent, object child, CascadeStyle style, object anything, CollectionType type, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ICollectionPersister persister = eventSource.Factory.GetCollectionPersister(type.Role);
@@ -229,7 +227,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Cascade an action to a to-one association or any type</summary>
-		private async Task CascadeToOneAsync(object parent, object child, IType type, CascadeStyle style, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task CascadeToOneAsync(object parent, object child, IType type, CascadeStyle style, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			string entityName = type.IsEntityType ? ((EntityType)type).GetAssociatedEntityName() : null;
@@ -249,7 +247,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Cascade to the collection elements</summary>
-		private async Task CascadeCollectionElementsAsync(object parent, object child, CollectionType collectionType, CascadeStyle style, IType elemType, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task CascadeCollectionElementsAsync(object parent, object child, CollectionType collectionType, CascadeStyle style, IType elemType, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			bool reallyDoCascade = style.ReallyDoCascade(action)
@@ -285,7 +283,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Delete any entities that were removed from the collection</summary>
-		private async Task DeleteOrphansAsync(string entityName, IPersistentCollection pc, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task DeleteOrphansAsync(string entityName, IPersistentCollection pc, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			//TODO: suck this logic into the collection!

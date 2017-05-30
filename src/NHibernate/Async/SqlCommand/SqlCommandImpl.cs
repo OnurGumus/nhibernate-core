@@ -36,7 +36,7 @@ namespace NHibernate.SqlCommand
 		/// Use this method when the <paramref name="command"/> contains just 'this' instance of <see cref="ISqlCommand"/>.
 		/// Use the overload <see cref="Bind(DbCommand, IList{Parameter}, int, ISessionImplementor)"/> when the <paramref name="command"/> contains more instances of <see cref="ISqlCommand"/>.
 		/// </remarks>
-		Task BindAsync(DbCommand command, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		Task BindAsync(DbCommand command, ISessionImplementor session, CancellationToken cancellationToken);
 	}
 
 	/// <content>
@@ -55,7 +55,7 @@ namespace NHibernate.SqlCommand
 		/// Use this method when the <paramref name="command"/> contains just 'this' instance of <see cref="ISqlCommand"/>.
 		/// Use the overload <see cref="Bind(DbCommand, IList{Parameter}, int, ISessionImplementor)"/> when the <paramref name="command"/> contains more instances of <see cref="ISqlCommand"/>.
 		/// </remarks>
-		public async Task BindAsync(DbCommand command, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task BindAsync(DbCommand command, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			foreach (IParameterSpecification parameterSpecification in Specifications)

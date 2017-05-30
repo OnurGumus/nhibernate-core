@@ -28,7 +28,7 @@ namespace NHibernate.Id.Insert
 
 		#region IInsertGeneratedIdentifierDelegate Members
 
-		public async Task<object> PerformInsertAsync(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> PerformInsertAsync(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			try
@@ -91,7 +91,7 @@ namespace NHibernate.Id.Insert
 		/// <param name="entity">The entity being saved. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The generated identifier </returns>
-		protected internal abstract Task<object> GetResultAsync(ISessionImplementor session, DbDataReader rs, object entity, CancellationToken cancellationToken = default(CancellationToken));
+		protected internal abstract Task<object> GetResultAsync(ISessionImplementor session, DbDataReader rs, object entity, CancellationToken cancellationToken);
 
 		#region NH Specific
 

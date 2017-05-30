@@ -55,6 +55,7 @@ namespace NHibernate.Impl
 				{
 					bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
 					combinedParameters = CreateCombinedQueryParameters();
+
 					if (log.IsDebugEnabled)
 					{
 						log.DebugFormat("Multi query with {0} queries.", queries.Count);
@@ -81,7 +82,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		protected async Task<List<object>> DoListAsync(CancellationToken cancellationToken = default(CancellationToken))
+		protected async Task<List<object>> DoListAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
@@ -204,7 +205,7 @@ namespace NHibernate.Impl
 			return results;
 		}
 
-		private async Task AggregateQueriesInformationAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task AggregateQueriesInformationAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			int queryIndex = 0;
@@ -242,13 +243,13 @@ namespace NHibernate.Impl
 
 		#region Implementation
 
-		private async Task<IList> ListIgnoreQueryCacheAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<IList> ListIgnoreQueryCacheAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			return GetResultList(await (DoListAsync(cancellationToken)).ConfigureAwait(false));
 		}
 
-		private async Task<IList> ListUsingQueryCacheAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<IList> ListUsingQueryCacheAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);

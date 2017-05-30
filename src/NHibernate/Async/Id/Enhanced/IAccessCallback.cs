@@ -21,6 +21,6 @@ namespace NHibernate.Id.Enhanced
 		/// Retrieve the next value from the underlying source.
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task<long> GetNextValueAsync(CancellationToken cancellationToken = default(CancellationToken));
+		Task<long> GetNextValueAsync(CancellationToken cancellationToken);
 	}
 }

@@ -65,7 +65,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private async Task<IList> ListUsingQueryCacheAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<IList> ListUsingQueryCacheAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);
@@ -127,13 +127,13 @@ namespace NHibernate.Impl
 			return GetResultList(result);
 		}
 
-		private async Task<IList> ListIgnoreQueryCacheAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<IList> ListIgnoreQueryCacheAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			return GetResultList(await (DoListAsync(cancellationToken)).ConfigureAwait(false));
 		}
 
-		private async Task<IList> DoListAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<IList> DoListAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			List<IList> results = new List<IList>();
@@ -141,7 +141,7 @@ namespace NHibernate.Impl
 			return results;
 		}
 
-		private async Task GetResultsFromDatabaseAsync(IList results, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task GetResultsFromDatabaseAsync(IList results, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;

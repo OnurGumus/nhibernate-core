@@ -17,6 +17,6 @@ namespace NHibernate.Event
 	/// </content>
 	public partial interface IInitializeCollectionEventListener
 	{
-		Task OnInitializeCollectionAsync(InitializeCollectionEvent @event, CancellationToken cancellationToken = default(CancellationToken));
+		Task OnInitializeCollectionAsync(InitializeCollectionEvent @event, CancellationToken cancellationToken);
 	}
 }

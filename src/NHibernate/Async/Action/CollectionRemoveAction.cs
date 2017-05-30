@@ -25,7 +25,7 @@ namespace NHibernate.Action
 	public sealed partial class CollectionRemoveAction : CollectionAction
 	{
 
-		public override async Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task ExecuteAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			bool statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
@@ -59,7 +59,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task PreRemoveAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task PreRemoveAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IPreCollectionRemoveEventListener[] preListeners = Session.Listeners.PreCollectionRemoveEventListeners;
@@ -74,7 +74,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task PostRemoveAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task PostRemoveAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IPostCollectionRemoveEventListener[] postListeners = Session.Listeners.PostCollectionRemoveEventListeners;

@@ -26,33 +26,33 @@ namespace NHibernate.Type
 		/// <include file='..\..\Type\IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, String[], ISessionImplementor, Object)"]/*'
 		/// /> 
-		Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken);
 
 		/// <include file='..\..\Type\IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, String, ISessionImplementor, Object)"]/*'
 		/// /> 
-		Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken);
 
 		/// <include file='..\..\Type\IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.Hydrate"]/*'
 		/// /> 
-		Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken);
 
 		/// <include file='..\..\Type\IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.ResolveIdentifier"]/*'
 		/// /> 
-		Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Given a hydrated, but unresolved value, return a value that may be used to
 		/// reconstruct property-ref associations.
 		/// </summary>
-		Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken);
 
 		/// <include file='..\..\Type\IType.cs.xmldoc' 
 		///		path='//members[@type="IType"]/member[@name="M:IType.Copy"]/*'
 		/// /> 
-		Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready, CancellationToken cancellationToken);
 
 		/// <summary> 
 		/// During merge, replace the existing (target) value in the entity we are merging to
@@ -69,6 +69,6 @@ namespace NHibernate.Type
 		/// <param name="foreignKeyDirection"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> the value to be merged </returns>
-		Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection, CancellationToken cancellationToken);
 	}
 }

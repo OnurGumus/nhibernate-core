@@ -23,7 +23,7 @@ namespace NHibernate.Persister.Entity
 	public partial class NamedQueryLoader : IUniqueEntityLoader
 	{
 
-		public async Task<object> LoadAsync(object id, object optionalObject, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> LoadAsync(object id, object optionalObject, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)

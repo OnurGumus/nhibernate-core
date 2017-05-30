@@ -20,7 +20,7 @@ namespace NHibernate.Tool.hbm2ddl
 	public partial class SuppliedConnectionHelper : IConnectionHelper
 	{
 
-		public Task PrepareAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public Task PrepareAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

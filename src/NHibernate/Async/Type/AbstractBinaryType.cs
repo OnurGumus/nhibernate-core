@@ -33,7 +33,7 @@ namespace NHibernate.Type
 		//      TIMESTAMP datatype supported by Sybase and SQL Server, which
 		//      are completely db-generated values...
 
-		public Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -49,7 +49,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

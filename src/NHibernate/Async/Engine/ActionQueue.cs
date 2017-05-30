@@ -28,7 +28,7 @@ namespace NHibernate.Engine
 	public partial class ActionQueue
 	{
 	
-		private async Task ExecuteActionsAsync(IList list, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task ExecuteActionsAsync(IList list, CancellationToken cancellationToken)
 		{
 	cancellationToken.ThrowIfCancellationRequested();
 			int size = list.Count;
@@ -39,7 +39,7 @@ namespace NHibernate.Engine
 			await (session.Batcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
 		}
 
-		public async Task ExecuteAsync(IExecutable executable, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task ExecuteAsync(IExecutable executable, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			try
@@ -56,7 +56,7 @@ namespace NHibernate.Engine
 		/// Perform all currently queued entity-insertion actions.
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public Task ExecuteInsertsAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public Task ExecuteInsertsAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -69,7 +69,7 @@ namespace NHibernate.Engine
 		/// Perform all currently queued actions. 
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public async Task ExecuteActionsAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public async Task ExecuteActionsAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			await (ExecuteActionsAsync(insertions, cancellationToken)).ConfigureAwait(false);

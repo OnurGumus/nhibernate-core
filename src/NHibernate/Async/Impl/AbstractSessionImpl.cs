@@ -39,11 +39,11 @@ namespace NHibernate.Impl
 
 		#region ISessionImplementor Members
 
-		public abstract Task InitializeCollectionAsync(IPersistentCollection collection, bool writing, CancellationToken cancellationToken = default(CancellationToken));
-		public abstract Task<object> InternalLoadAsync(string entityName, object id, bool eager, bool isNullable, CancellationToken cancellationToken = default(CancellationToken));
-		public abstract Task<object> ImmediateLoadAsync(string entityName, object id, CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task InitializeCollectionAsync(IPersistentCollection collection, bool writing, CancellationToken cancellationToken);
+		public abstract Task<object> InternalLoadAsync(string entityName, object id, bool eager, bool isNullable, CancellationToken cancellationToken);
+		public abstract Task<object> ImmediateLoadAsync(string entityName, object id, CancellationToken cancellationToken);
 
-		public virtual async Task<IList> ListAsync(IQueryExpression queryExpression, QueryParameters parameters, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task<IList> ListAsync(IQueryExpression queryExpression, QueryParameters parameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var results = (IList) typeof (List<>).MakeGenericType(queryExpression.Type)
@@ -53,9 +53,9 @@ namespace NHibernate.Impl
 			return results;
 		}
 
-		public abstract Task ListAsync(IQueryExpression queryExpression, QueryParameters queryParameters, IList results, CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task ListAsync(IQueryExpression queryExpression, QueryParameters queryParameters, IList results, CancellationToken cancellationToken);
 
-		public virtual async Task<IList<T>> ListAsync<T>(IQueryExpression query, QueryParameters parameters, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task<IList<T>> ListAsync<T>(IQueryExpression query, QueryParameters parameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(SessionId))
@@ -66,7 +66,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public virtual async Task<IList<T>> ListAsync<T>(CriteriaImpl criteria, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task<IList<T>> ListAsync<T>(CriteriaImpl criteria, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(SessionId))
@@ -77,9 +77,9 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public abstract Task ListAsync(CriteriaImpl criteria, IList results, CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task ListAsync(CriteriaImpl criteria, IList results, CancellationToken cancellationToken);
 		
-		public virtual async Task<IList> ListAsync(CriteriaImpl criteria, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task<IList> ListAsync(CriteriaImpl criteria, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(SessionId))
@@ -90,12 +90,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public abstract Task<IList> ListFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken = default(CancellationToken));
-		public abstract Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken = default(CancellationToken));
-		public abstract Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken = default(CancellationToken));
-		public abstract Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task<IList> ListFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
+		public abstract Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
+		public abstract Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
+		public abstract Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken);
 
-		public virtual async Task<IList> ListAsync(NativeSQLQuerySpecification spec, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task<IList> ListAsync(NativeSQLQuerySpecification spec, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(SessionId))
@@ -106,7 +106,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public virtual async Task ListAsync(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task ListAsync(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(SessionId))
@@ -120,7 +120,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public virtual async Task<IList<T>> ListAsync<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task<IList<T>> ListAsync<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(SessionId))
@@ -131,9 +131,9 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public abstract Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results, CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results, CancellationToken cancellationToken);
 
-		public virtual async Task<IList<T>> ListCustomQueryAsync<T>(ICustomQuery customQuery, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task<IList<T>> ListCustomQueryAsync<T>(ICustomQuery customQuery, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(SessionId))
@@ -144,18 +144,18 @@ namespace NHibernate.Impl
 			}
 		}
 		
-		public abstract Task<IQueryTranslator[]> GetQueriesAsync(IQueryExpression query, bool scalar, CancellationToken cancellationToken = default(CancellationToken));
-		public abstract Task<object> GetEntityUsingInterceptorAsync(EntityKey key, CancellationToken cancellationToken = default(CancellationToken));
-		public abstract Task<int> ExecuteNativeUpdateAsync(NativeSQLQuerySpecification specification, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task<IQueryTranslator[]> GetQueriesAsync(IQueryExpression query, bool scalar, CancellationToken cancellationToken);
+		public abstract Task<object> GetEntityUsingInterceptorAsync(EntityKey key, CancellationToken cancellationToken);
+		public abstract Task<int> ExecuteNativeUpdateAsync(NativeSQLQuerySpecification specification, QueryParameters queryParameters, CancellationToken cancellationToken);
 
-		public abstract Task FlushAsync(CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task FlushAsync(CancellationToken cancellationToken);
 
 		#endregion
 
-		public abstract Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken);
 
-		public abstract Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken);
 
-		public abstract Task<int> ExecuteUpdateAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task<int> ExecuteUpdateAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken);
 	}
 }

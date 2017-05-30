@@ -38,7 +38,7 @@ namespace NHibernate.Collection.Generic
 		/// <param name="disassembled">The disassembled PersistentIdentifierBag.</param>
 		/// <param name="owner">The owner object.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object[] array = (object[])disassembled;
@@ -51,7 +51,7 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override async Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister persister, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object element = await (persister.ReadElementAsync(reader, owner, descriptor.SuffixedElementAliases, Session, cancellationToken)).ConfigureAwait(false);
@@ -66,7 +66,7 @@ namespace NHibernate.Collection.Generic
 			return element;
 		}
 
-		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -75,7 +75,7 @@ namespace NHibernate.Collection.Generic
 			try
 			{
 				var sn = (ISet<SnapshotElement>)GetSnapshot();
-				return GetOrphansAsync(sn.Select(x => x.Value).ToArray(), (ICollection)_values, entityName, Session, cancellationToken);
+				return GetOrphansAsync(sn.Select(x => x.Value).ToArray(), (ICollection) _values, entityName, Session, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -83,7 +83,7 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override async Task PreInsertAsync(ICollectionPersister persister, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task PreInsertAsync(ICollectionPersister persister, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if ((persister.IdentifierGenerator as IPostInsertIdentifierGenerator) != null)

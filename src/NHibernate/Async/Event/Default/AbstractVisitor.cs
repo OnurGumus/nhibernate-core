@@ -25,7 +25,7 @@ namespace NHibernate.Event.Default
 		/// <param name="values"> </param>
 		/// <param name="types"> </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		internal async Task ProcessValuesAsync(object[] values, IType[] types, CancellationToken cancellationToken = default(CancellationToken))
+		internal async Task ProcessValuesAsync(object[] values, IType[] types, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			for (int i = 0; i < types.Length; i++)
@@ -35,7 +35,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		internal virtual Task ProcessValueAsync(int i, object[] values, IType[] types, CancellationToken cancellationToken = default(CancellationToken))
+		internal virtual Task ProcessValueAsync(int i, object[] values, IType[] types, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -50,7 +50,7 @@ namespace NHibernate.Event.Default
 		/// <param name="value"> </param>
 		/// <param name="type"> </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		internal Task<object> ProcessValueAsync(object value, IType type, CancellationToken cancellationToken = default(CancellationToken))
+		internal Task<object> ProcessValueAsync(object value, IType type, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -74,7 +74,7 @@ namespace NHibernate.Event.Default
 				else
 				{
 					return Task.FromResult<object>(null);
-				}
+				} 
 			}
 			catch (System.Exception ex)
 			{
@@ -83,13 +83,13 @@ namespace NHibernate.Event.Default
 		}
 
 		/// <summary>
-		/// Visit a component. Dispatch each property to <see cref="ProcessValuesAsync(object[],NHibernate.Type.IType[],CancellationToken)"/>
+		/// Visit a component. Dispatch each property to <see cref="ProcessValuesAsync(object[],IType[],CancellationToken)"/>
 		/// </summary>
 		/// <param name="component"></param>
 		/// <param name="componentType"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		internal virtual async Task<object> ProcessComponentAsync(object component, IAbstractComponentType componentType, CancellationToken cancellationToken = default(CancellationToken))
+		internal virtual async Task<object> ProcessComponentAsync(object component, IAbstractComponentType componentType, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (component != null)
@@ -106,7 +106,7 @@ namespace NHibernate.Event.Default
 		/// <param name="collectionType"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		internal virtual Task<object> ProcessCollectionAsync(object value, CollectionType collectionType, CancellationToken cancellationToken = default(CancellationToken))
+		internal virtual Task<object> ProcessCollectionAsync(object value, CollectionType collectionType, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -128,7 +128,7 @@ namespace NHibernate.Event.Default
 		/// <param name="obj"></param>
 		/// <param name="persister"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		internal virtual Task ProcessAsync(object obj, IEntityPersister persister, CancellationToken cancellationToken = default(CancellationToken))
+		internal virtual Task ProcessAsync(object obj, IEntityPersister persister, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -144,7 +144,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		public async Task ProcessEntityPropertyValuesAsync(object[] values, IType[] types, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task ProcessEntityPropertyValuesAsync(object[] values, IType[] types, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			for (int i = 0; i < types.Length; i++)

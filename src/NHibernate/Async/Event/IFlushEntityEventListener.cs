@@ -17,6 +17,6 @@ namespace NHibernate.Event
 	/// </content>
 	public partial interface IFlushEntityEventListener
 	{
-		Task OnFlushEntityAsync(FlushEntityEvent @event, CancellationToken cancellationToken = default(CancellationToken));
+		Task OnFlushEntityAsync(FlushEntityEvent @event, CancellationToken cancellationToken);
 	}
 }

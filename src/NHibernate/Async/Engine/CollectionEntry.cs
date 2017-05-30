@@ -25,7 +25,7 @@ namespace NHibernate.Engine
 	public partial class CollectionEntry
 	{
 
-		public Task<ICollection> GetOrphansAsync(string entityName, IPersistentCollection collection, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<ICollection> GetOrphansAsync(string entityName, IPersistentCollection collection, CancellationToken cancellationToken)
 		{
 			if (snapshot == null)
 			{

@@ -22,7 +22,7 @@ namespace NHibernate.Event.Default
 	public partial class OnUpdateVisitor : ReattachVisitor
 	{
 
-		internal override Task<object> ProcessCollectionAsync(object collection, CollectionType type, CancellationToken cancellationToken = default(CancellationToken))
+		internal override Task<object> ProcessCollectionAsync(object collection, CollectionType type, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

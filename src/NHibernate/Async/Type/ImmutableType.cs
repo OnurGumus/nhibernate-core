@@ -23,7 +23,7 @@ namespace NHibernate.Type
 	public abstract partial class ImmutableType : NullableType
 	{
 
-		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, 									   IDictionary copiedAlready, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, 									   IDictionary copiedAlready, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

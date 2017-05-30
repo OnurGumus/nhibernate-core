@@ -42,7 +42,7 @@ namespace NHibernate.Impl
 	public partial class StatelessSessionImpl : AbstractSessionImpl, IStatelessSession
 	{
 
-		public override Task InitializeCollectionAsync(IPersistentCollection collection, bool writing, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task InitializeCollectionAsync(IPersistentCollection collection, bool writing, CancellationToken cancellationToken)
 		{
 			if (temporaryPersistenceContext.IsLoadFinished)
 			{
@@ -59,7 +59,6 @@ namespace NHibernate.Impl
 				{
 					return ce.LoadedPersister.InitializeAsync(ce.LoadedKey, this, cancellationToken);
 				}
-
 				return Task.CompletedTask;
 			}
 			catch (Exception ex)
@@ -68,7 +67,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override Task<object> InternalLoadAsync(string entityName, object id, bool eager, bool isNullable, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> InternalLoadAsync(string entityName, object id, bool eager, bool isNullable, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -85,12 +84,10 @@ namespace NHibernate.Impl
 					{
 						return Task.FromResult<object>(loaded);
 					}
-
 					if (!eager && persister.HasProxy)
 					{
 						return Task.FromResult<object>(persister.CreateProxy(id, this));
 					}
-
 					//TODO: if not loaded, throw an exception
 					return GetAsync(entityName, id, cancellationToken);
 				}
@@ -101,7 +98,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override Task<object> ImmediateLoadAsync(string entityName, object id, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> ImmediateLoadAsync(string entityName, object id, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -110,7 +107,7 @@ namespace NHibernate.Impl
 			throw new SessionException("proxies cannot be fetched by a stateless session");
 		}
 
-		public override async Task ListAsync(IQueryExpression queryExpression, QueryParameters queryParameters, IList results, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task ListAsync(IQueryExpression queryExpression, QueryParameters queryParameters, IList results, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(SessionId))
@@ -142,7 +139,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task ListAsync(CriteriaImpl criteria, IList results, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task ListAsync(CriteriaImpl criteria, IList results, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(SessionId))
@@ -184,7 +181,7 @@ namespace NHibernate.Impl
 			}
 		}
 		
-		public override Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -193,7 +190,7 @@ namespace NHibernate.Impl
 			throw new NotImplementedException();
 		}
 
-		public override Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -202,7 +199,7 @@ namespace NHibernate.Impl
 			throw new NotImplementedException();
 		}
 
-		public override Task<IList> ListFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<IList> ListFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -211,7 +208,7 @@ namespace NHibernate.Impl
 			throw new NotSupportedException();
 		}
 
-		public override Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -220,7 +217,7 @@ namespace NHibernate.Impl
 			throw new NotSupportedException();
 		}
 
-		public override Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -229,7 +226,7 @@ namespace NHibernate.Impl
 			throw new NotSupportedException();
 		}
 
-		public override Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -238,7 +235,7 @@ namespace NHibernate.Impl
 			throw new NotSupportedException();
 		}
 
-		public override async Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(SessionId))
@@ -261,7 +258,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override Task<IQueryTranslator[]> GetQueriesAsync(IQueryExpression query, bool scalar, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<IQueryTranslator[]> GetQueriesAsync(IQueryExpression query, bool scalar, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -277,7 +274,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override Task<object> GetEntityUsingInterceptorAsync(EntityKey key, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> GetEntityUsingInterceptorAsync(EntityKey key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -293,7 +290,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task FlushAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task FlushAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(SessionId))
@@ -302,7 +299,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public async Task ManagedFlushAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public async Task ManagedFlushAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(SessionId))
@@ -482,7 +479,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private Task<object> GetAsync(System.Type persistentClass, object id, CancellationToken cancellationToken = default(CancellationToken))
+		private Task<object> GetAsync(System.Type persistentClass, object id, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -631,7 +628,7 @@ namespace NHibernate.Impl
 
 		#endregion
 
-		public override async Task<int> ExecuteNativeUpdateAsync(NativeSQLQuerySpecification nativeSQLQuerySpecification, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<int> ExecuteNativeUpdateAsync(NativeSQLQuerySpecification nativeSQLQuerySpecification, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(SessionId))
@@ -656,7 +653,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task<int> ExecuteUpdateAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<int> ExecuteUpdateAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(SessionId))

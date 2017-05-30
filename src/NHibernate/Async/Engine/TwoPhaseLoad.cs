@@ -36,7 +36,7 @@ namespace NHibernate.Engine
 		/// between the entities which were instantiated and had their state
 		/// "hydrated" into an array
 		/// </summary>
-		public static async Task InitializeEntityAsync(object entity, bool readOnly, ISessionImplementor session, PreLoadEvent preLoadEvent, PostLoadEvent postLoadEvent, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task InitializeEntityAsync(object entity, bool readOnly, ISessionImplementor session, PreLoadEvent preLoadEvent, PostLoadEvent postLoadEvent, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			//TODO: Should this be an InitializeEntityEventListener??? (watch out for performance!)

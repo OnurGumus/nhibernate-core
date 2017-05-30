@@ -28,7 +28,7 @@ namespace NHibernate.Driver
 	public partial class BasicResultSetsCommand: IResultSetsCommand
 	{
 
-		public virtual async Task<DbDataReader> GetReaderAsync(int? commandTimeout, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task<DbDataReader> GetReaderAsync(int? commandTimeout, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var batcher = Session.Batcher;
@@ -51,7 +51,7 @@ namespace NHibernate.Driver
 	public partial class BatcherDataReaderWrapper: DbDataReader
 	{
 
-		public static async Task<BatcherDataReaderWrapper> CreateAsync(IBatcher batcher, DbCommand command, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task<BatcherDataReaderWrapper> CreateAsync(IBatcher batcher, DbCommand command, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			return new BatcherDataReaderWrapper(batcher, command)

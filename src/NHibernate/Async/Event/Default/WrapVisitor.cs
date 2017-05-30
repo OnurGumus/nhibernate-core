@@ -25,7 +25,7 @@ namespace NHibernate.Event.Default
 	public partial class WrapVisitor : ProxyVisitor
 	{
 
-		internal override async Task ProcessAsync(object obj, IEntityPersister persister, CancellationToken cancellationToken = default(CancellationToken))
+		internal override async Task ProcessAsync(object obj, IEntityPersister persister, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object[] values = persister.GetPropertyValues(obj);
@@ -37,7 +37,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		internal override Task<object> ProcessCollectionAsync(object collection, CollectionType collectionType, CancellationToken cancellationToken = default(CancellationToken))
+		internal override Task<object> ProcessCollectionAsync(object collection, CollectionType collectionType, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -53,7 +53,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		internal override async Task ProcessValueAsync(int i, object[] values, IType[] types, CancellationToken cancellationToken = default(CancellationToken))
+		internal override async Task ProcessValueAsync(int i, object[] values, IType[] types, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object result = await (ProcessValueAsync(values[i], types[i], cancellationToken)).ConfigureAwait(false);
@@ -64,7 +64,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		internal override async Task<object> ProcessComponentAsync(object component, IAbstractComponentType componentType, CancellationToken cancellationToken = default(CancellationToken))
+		internal override async Task<object> ProcessComponentAsync(object component, IAbstractComponentType componentType, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (component != null)

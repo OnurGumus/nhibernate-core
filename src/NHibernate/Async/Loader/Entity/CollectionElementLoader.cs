@@ -31,7 +31,7 @@ namespace NHibernate.Loader.Entity
 	public partial class CollectionElementLoader : OuterJoinLoader
 	{
 
-		public virtual async Task<object> LoadElementAsync(ISessionImplementor session, object key, object index, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task<object> LoadElementAsync(ISessionImplementor session, object key, object index, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IList list = await (LoadEntityAsync(session, key, index, keyType, indexType, persister, cancellationToken)).ConfigureAwait(false);
@@ -57,7 +57,7 @@ namespace NHibernate.Loader.Entity
 			}
 		}
 
-		protected override Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer transformer, DbDataReader rs, 		                                               ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		protected override Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer transformer, DbDataReader rs, 		                                               ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

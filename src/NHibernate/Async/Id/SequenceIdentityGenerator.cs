@@ -22,7 +22,7 @@ namespace NHibernate.Id
 	{
 		#region IPostInsertIdentifierGenerator Members
 
-		public override Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

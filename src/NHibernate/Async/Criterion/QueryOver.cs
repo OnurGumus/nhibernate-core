@@ -12,7 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-
+using System.Threading;
 using NHibernate.Criterion.Lambda;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -22,14 +22,13 @@ using NHibernate.Transform;
 namespace NHibernate.Criterion
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public abstract partial class QueryOver<TRoot> : QueryOver, IQueryOver<TRoot>
 	{
 
-		private Task<IList<TRoot>> ListAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private Task<IList<TRoot>> ListAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -38,7 +37,7 @@ namespace NHibernate.Criterion
 			return criteria.ListAsync<TRoot>(cancellationToken);
 		}
 
-		private Task<IList<U>> ListAsync<U>(CancellationToken cancellationToken = default(CancellationToken))
+		private Task<IList<U>> ListAsync<U>(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -47,7 +46,7 @@ namespace NHibernate.Criterion
 			return criteria.ListAsync<U>(cancellationToken);
 		}
 
-		private Task<TRoot> SingleOrDefaultAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private Task<TRoot> SingleOrDefaultAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -56,7 +55,7 @@ namespace NHibernate.Criterion
 			return criteria.UniqueResultAsync<TRoot>(cancellationToken);
 		}
 
-		private Task<U> SingleOrDefaultAsync<U>(CancellationToken cancellationToken = default(CancellationToken))
+		private Task<U> SingleOrDefaultAsync<U>(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -91,8 +90,7 @@ return ListAsync<U>(cancellationToken); }
 			}
 			try
 			{
-				return ToRowCountQuery().SingleOrDefaultAsync<int>(cancellationToken);
-			}
+return ToRowCountQuery().SingleOrDefaultAsync<int>(cancellationToken); 			}
 			catch (Exception ex)
 			{
 				return Task.FromException<int>(ex);
@@ -107,8 +105,7 @@ return ListAsync<U>(cancellationToken); }
 			}
 			try
 			{
-				return ToRowCountInt64Query().SingleOrDefaultAsync<long>(cancellationToken);
-			}
+return ToRowCountInt64Query().SingleOrDefaultAsync<long>(cancellationToken); 			}
 			catch (Exception ex)
 			{
 				return Task.FromException<long>(ex);

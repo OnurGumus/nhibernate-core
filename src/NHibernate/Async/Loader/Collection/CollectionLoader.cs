@@ -26,7 +26,7 @@ namespace NHibernate.Loader.Collection
 	public partial class CollectionLoader : OuterJoinLoader, ICollectionInitializer
 	{
 
-		public virtual Task InitializeAsync(object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual Task InitializeAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

@@ -20,6 +20,6 @@ namespace NHibernate.Driver
 	/// </content>
 	public partial interface IResultSetsCommand
 	{
-		Task<DbDataReader> GetReaderAsync(int? commandTimeout, CancellationToken cancellationToken = default(CancellationToken));
+		Task<DbDataReader> GetReaderAsync(int? commandTimeout, CancellationToken cancellationToken);
 	}
 }

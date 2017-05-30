@@ -28,7 +28,7 @@ namespace NHibernate.Tool.hbm2ddl
 	public partial class DatabaseMetadata : IDatabaseMetadata
 	{
 
-		private async Task InitSequencesAsync(DbConnection connection, Dialect.Dialect dialect, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task InitSequencesAsync(DbConnection connection, Dialect.Dialect dialect, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (dialect.SupportsSequences)

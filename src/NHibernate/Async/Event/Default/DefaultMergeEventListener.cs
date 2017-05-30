@@ -30,7 +30,7 @@ namespace NHibernate.Event.Default
 	public partial class DefaultMergeEventListener : AbstractSaveEventListener, IMergeEventListener
 	{
 
-		public virtual async Task OnMergeAsync(MergeEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task OnMergeAsync(MergeEvent @event, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			EventCache copyCache = new EventCache();
@@ -85,7 +85,7 @@ namespace NHibernate.Event.Default
 			copyCache.Clear();
 		}
 		
-		public virtual async Task OnMergeAsync(MergeEvent @event, IDictionary copiedAlready, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task OnMergeAsync(MergeEvent @event, IDictionary copiedAlready, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			EventCache copyCache = (EventCache)copiedAlready;
@@ -181,7 +181,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected virtual async Task EntityIsPersistentAsync(MergeEvent @event, IDictionary copyCache, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task EntityIsPersistentAsync(MergeEvent @event, IDictionary copyCache, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("ignoring persistent instance");
@@ -200,7 +200,7 @@ namespace NHibernate.Event.Default
 			@event.Result = entity;
 		}
 
-		protected virtual async Task EntityIsTransientAsync(MergeEvent @event, IDictionary copyCache, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task EntityIsTransientAsync(MergeEvent @event, IDictionary copyCache, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			log.Info("merging transient instance");
@@ -214,7 +214,7 @@ namespace NHibernate.Event.Default
 			@event.Result = await (this.MergeTransientEntityAsync(entity, entityName, @event.RequestedId, source, copyCache, cancellationToken)).ConfigureAwait(false);
 		}
 	
-		private async Task<object> MergeTransientEntityAsync(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<object> MergeTransientEntityAsync(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache, CancellationToken cancellationToken)
 		{
 	cancellationToken.ThrowIfCancellationRequested();
 			IEntityPersister persister = source.GetEntityPersister(entityName, entity);
@@ -284,33 +284,33 @@ namespace NHibernate.Event.Default
 			return copy;
 		}
 	
-		private Task SaveTransientEntityAsync(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache, CancellationToken cancellationToken = default(CancellationToken))
+		private Task SaveTransientEntityAsync(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache, CancellationToken cancellationToken)
 		{
 	if (cancellationToken.IsCancellationRequested)
 	{
 	return Task.FromCanceled<object>(cancellationToken);
 	}
-try
-{
-// this bit is only *really* absolutely necessary for handling
-// requestedId, but is also good if we merge multiple object
-// graphs, since it helps ensure uniqueness
-if (requestedId == null)
-{
-return SaveWithGeneratedIdAsync(entity, entityName, copyCache, source, false, cancellationToken);
-}
-else
-{
-return SaveWithRequestedIdAsync(entity, requestedId, entityName, copyCache, source, cancellationToken);
-}
-}
-catch (Exception ex)
-{
-return Task.FromException<object>(ex);
-}
+	try
+	{
+			// this bit is only *really* absolutely necessary for handling
+			// requestedId, but is also good if we merge multiple object
+			// graphs, since it helps ensure uniqueness
+			if (requestedId == null)
+			{
+				return SaveWithGeneratedIdAsync(entity, entityName, copyCache, source, false, cancellationToken);
+			}
+			else
+			{
+				return SaveWithRequestedIdAsync(entity, requestedId, entityName, copyCache, source, cancellationToken);
+			}
+	}
+	catch (Exception ex)
+	{
+	return Task.FromException<object>(ex);
+	}
 		}
 
-		protected virtual async Task EntityIsDetachedAsync(MergeEvent @event, IDictionary copyCache, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task EntityIsDetachedAsync(MergeEvent @event, IDictionary copyCache, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("merging detached instance");
@@ -398,7 +398,7 @@ return Task.FromException<object>(ex);
 			}
 		}
 
-		protected virtual async Task CopyValuesAsync(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task CopyValuesAsync(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object[] copiedValues =
@@ -409,7 +409,7 @@ return Task.FromException<object>(ex);
 			persister.SetPropertyValues(target, copiedValues);
 		}
 
-		protected virtual async Task CopyValuesAsync(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task CopyValuesAsync(IEntityPersister persister, object entity, object target, ISessionImplementor source, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object[] copiedValues;
@@ -443,7 +443,7 @@ return Task.FromException<object>(ex);
 		/// <param name="entity">The entity being copied. </param>
 		/// <param name="copyCache">A cache of already copied instance. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		protected virtual async Task CascadeOnMergeAsync(IEventSource source, IEntityPersister persister, object entity, IDictionary copyCache, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task CascadeOnMergeAsync(IEventSource source, IEntityPersister persister, object entity, IDictionary copyCache, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			source.PersistenceContext.IncrementCascadeLevel();
@@ -465,7 +465,7 @@ return Task.FromException<object>(ex);
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
 		/// <remarks>Should this method be on the EventCache class?</remarks>
-		protected async Task<EventCache> GetTransientCopyCacheAsync(MergeEvent @event, EventCache copyCache, CancellationToken cancellationToken = default(CancellationToken))
+		protected async Task<EventCache> GetTransientCopyCacheAsync(MergeEvent @event, EventCache copyCache, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			EventCache transientCopyCache = new EventCache();
@@ -524,7 +524,7 @@ return Task.FromException<object>(ex);
 		/// <param name="transientCopyCache"></param>
 		/// <param name="copyCache"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		protected async Task RetryMergeTransientEntitiesAsync(MergeEvent @event, IDictionary transientCopyCache, EventCache copyCache, CancellationToken cancellationToken = default(CancellationToken))
+		protected async Task RetryMergeTransientEntitiesAsync(MergeEvent @event, IDictionary transientCopyCache, EventCache copyCache, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			// TODO: The order in which entities are saved may matter (e.g., a particular
@@ -548,7 +548,7 @@ return Task.FromException<object>(ex);
 		}
 		
 		/// <summary> Cascade behavior is redefined by this subclass, disable superclass behavior</summary>
-		protected override Task CascadeAfterSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything, CancellationToken cancellationToken = default(CancellationToken))
+		protected override Task CascadeAfterSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -566,7 +566,7 @@ return Task.FromException<object>(ex);
 		}
 
 		/// <summary> Cascade behavior is redefined by this subclass, disable superclass behavior</summary>
-		protected override Task CascadeBeforeSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything, CancellationToken cancellationToken = default(CancellationToken))
+		protected override Task CascadeBeforeSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

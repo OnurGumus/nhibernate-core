@@ -22,12 +22,12 @@ namespace NHibernate.Event
 		/// <summary> Handle the given create event.</summary>
 		/// <param name="event">The create event to be handled.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task OnPersistAsync(PersistEvent @event, CancellationToken cancellationToken = default(CancellationToken));
+		Task OnPersistAsync(PersistEvent @event, CancellationToken cancellationToken);
 
 		/// <summary> Handle the given create event. </summary>
 		/// <param name="event">The create event to be handled.</param>
 		/// <param name="createdAlready"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task OnPersistAsync(PersistEvent @event, IDictionary createdAlready, CancellationToken cancellationToken = default(CancellationToken));
+		Task OnPersistAsync(PersistEvent @event, IDictionary createdAlready, CancellationToken cancellationToken);
 	}
 }

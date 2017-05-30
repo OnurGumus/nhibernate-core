@@ -25,7 +25,7 @@ namespace NHibernate.Event.Default
 		/// <summary>Handle the given lock event. </summary>
 		/// <param name="event">The lock event to be handled.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public virtual Task OnLockAsync(LockEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual Task OnLockAsync(LockEvent @event, CancellationToken cancellationToken)
 		{
 			if (@event.Entity == null)
 			{
@@ -42,7 +42,9 @@ namespace NHibernate.Event.Default
 			}
 			async Task InternalOnLockAsync()
 			{
+
 				ISessionImplementor source = @event.Session;
+
 				if (@event.LockMode == LockMode.None && source.PersistenceContext.ReassociateIfUninitializedProxy(@event.Entity))
 				{
 					// NH-specific: shortcut for uninitialized proxies - reassociate
@@ -52,6 +54,7 @@ namespace NHibernate.Event.Default
 
 				object entity = await (source.PersistenceContext.UnproxyAndReassociateAsync(@event.Entity, cancellationToken)).ConfigureAwait(false);
 				//TODO: if object was an uninitialized proxy, this is inefficient,resulting in two SQL selects
+
 				EntityEntry entry = source.PersistenceContext.GetEntry(entity);
 				if (entry == null)
 				{
@@ -63,6 +66,7 @@ namespace NHibernate.Event.Default
 					}
 
 					entry = await (ReassociateAsync(@event, entity, id, persister, cancellationToken)).ConfigureAwait(false);
+
 					await (CascadeOnLockAsync(@event, persister, entity, cancellationToken)).ConfigureAwait(false);
 				}
 
@@ -71,7 +75,7 @@ namespace NHibernate.Event.Default
 			return InternalOnLockAsync();
 		}
 
-		private async Task CascadeOnLockAsync(LockEvent @event, IEntityPersister persister, object entity, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task CascadeOnLockAsync(LockEvent @event, IEntityPersister persister, object entity, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IEventSource source = @event.Session;

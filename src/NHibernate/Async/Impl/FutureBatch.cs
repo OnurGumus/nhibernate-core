@@ -11,18 +11,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
-	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
 	public abstract partial class FutureBatch<TQueryApproach, TMultiApproach>
 	{
 
-		private async Task<IList> GetResultsAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<IList> GetResultsAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (results != null)
@@ -38,6 +38,6 @@ namespace NHibernate.Impl
 			ClearCurrentFutureBatch();
 			return results;
 		}
-		protected abstract Task<IList> GetResultsFromAsync(TMultiApproach multiApproach, CancellationToken cancellationToken = default(CancellationToken));
+		protected abstract Task<IList> GetResultsFromAsync(TMultiApproach multiApproach, CancellationToken cancellationToken);
 	}
 }

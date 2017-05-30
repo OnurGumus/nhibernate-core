@@ -35,7 +35,7 @@ namespace NHibernate.Connection
 		/// Thrown when this method is called.  User is responsible for creating
 		/// <see cref="DbConnection"/>s.
 		/// </exception>
-		public override Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

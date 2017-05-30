@@ -21,7 +21,7 @@ namespace NHibernate.Event.Default
 	public partial class DefaultDirtyCheckEventListener : AbstractFlushingEventListener, IDirtyCheckEventListener
 	{
 
-		public virtual async Task OnDirtyCheckAsync(DirtyCheckEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task OnDirtyCheckAsync(DirtyCheckEvent @event, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			int oldSize = @event.Session.ActionQueue.CollectionRemovalsCount;

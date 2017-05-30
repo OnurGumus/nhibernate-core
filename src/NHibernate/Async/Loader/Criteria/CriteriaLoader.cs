@@ -31,7 +31,7 @@ namespace NHibernate.Loader.Criteria
 	public partial class CriteriaLoader : OuterJoinLoader
 	{
 
-		public Task<IList> ListAsync(ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<IList> ListAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -47,7 +47,7 @@ namespace NHibernate.Loader.Criteria
 			}
 		}
 
-		protected override async Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer customResultTransformer, DbDataReader rs, 													   ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		protected override async Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer customResultTransformer, DbDataReader rs, 													   ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			return ResolveResultTransformer(customResultTransformer)
@@ -55,7 +55,7 @@ namespace NHibernate.Loader.Criteria
 		}
 
 
-		protected override async Task<object[]> GetResultRowAsync(object[] row, DbDataReader rs, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		protected override async Task<object[]> GetResultRowAsync(object[] row, DbDataReader rs, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object[] result;

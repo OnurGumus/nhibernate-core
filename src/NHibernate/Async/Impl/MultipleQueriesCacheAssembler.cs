@@ -26,7 +26,7 @@ namespace NHibernate.Impl
 
 		#region ICacheAssembler Members
 
-		public async Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IList srcList = (IList) cached;
@@ -52,7 +52,7 @@ namespace NHibernate.Impl
 			return result;
 		}
 
-		public Task BeforeAssembleAsync(object cached, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken)) {			if (cancellationToken.IsCancellationRequested)
+		public Task BeforeAssembleAsync(object cached, ISessionImplementor session, CancellationToken cancellationToken) {			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
@@ -69,7 +69,7 @@ namespace NHibernate.Impl
 
 		#endregion
 
-		public async Task<IList> GetResultFromQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters, 											 ISet<string> querySpaces, IQueryCache queryCache, QueryKey key, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<IList> GetResultFromQueryCacheAsync(ISessionImplementor session, QueryParameters queryParameters, 											 ISet<string> querySpaces, IQueryCache queryCache, QueryKey key, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (!queryParameters.ForceCacheRefresh)

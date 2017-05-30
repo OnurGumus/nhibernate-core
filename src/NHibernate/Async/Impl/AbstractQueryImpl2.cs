@@ -170,7 +170,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		protected internal override async Task<IEnumerable<ITranslator>> GetTranslatorsAsync(ISessionImplementor sessionImplementor, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken))
+		protected internal override async Task<IEnumerable<ITranslator>> GetTranslatorsAsync(ISessionImplementor sessionImplementor, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			// NOTE: updates queryParameters.NamedParameters as (desired) side effect

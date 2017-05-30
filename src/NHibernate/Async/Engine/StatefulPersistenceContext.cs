@@ -39,7 +39,7 @@ namespace NHibernate.Engine
 		/// Get the current state of the entity as known to the underlying
 		/// database, or null if there is no corresponding row
 		/// </summary>
-		public async Task<object[]> GetDatabaseSnapshotAsync(object id, IEntityPersister persister, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object[]> GetDatabaseSnapshotAsync(object id, IEntityPersister persister, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			EntityKey key = session.GenerateEntityKey(id, persister);
@@ -61,7 +61,7 @@ namespace NHibernate.Engine
 		/// database, or null if the entity has no natural id or there is no
 		/// corresponding row.
 		/// </summary>
-		public async Task<object[]> GetNaturalIdSnapshotAsync(object id, IEntityPersister persister, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object[]> GetNaturalIdSnapshotAsync(object id, IEntityPersister persister, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (!persister.HasNaturalIdentifier)
@@ -112,7 +112,7 @@ namespace NHibernate.Engine
 		/// <param name="maybeProxy">The reference to be unproxied if it currently represents a proxy. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The unproxied instance. </returns>
-		public Task<object> UnproxyAndReassociateAsync(object maybeProxy, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object> UnproxyAndReassociateAsync(object maybeProxy, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -128,12 +128,12 @@ namespace NHibernate.Engine
 				//}
 				if (maybeProxy.IsProxy())
 				{
-					var proxy = maybeProxy as INHibernateProxy;
+					var proxy = maybeProxy as INHibernateProxy; 
+					
 					ILazyInitializer li = proxy.HibernateLazyInitializer;
 					ReassociateProxy(li, proxy);
 					return li.GetImplementationAsync(cancellationToken); //initialize + unwrap the object
 				}
-
 				return Task.FromResult<object>(maybeProxy);
 			}
 			catch (Exception ex)
@@ -148,7 +148,7 @@ namespace NHibernate.Engine
 		/// is the "outermost" load)
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public async Task InitializeNonLazyCollectionsAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public async Task InitializeNonLazyCollectionsAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (loadCounter == 0)

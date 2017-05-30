@@ -22,6 +22,6 @@ namespace NHibernate.Event
 		/// </summary>
 		/// <param name="event">The auto-flush event to be handled.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task OnAutoFlushAsync(AutoFlushEvent @event, CancellationToken cancellationToken = default(CancellationToken));
+		Task OnAutoFlushAsync(AutoFlushEvent @event, CancellationToken cancellationToken);
 	}
 }

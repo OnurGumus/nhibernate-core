@@ -29,7 +29,7 @@ namespace NHibernate.Dialect.Lock
 
 		#region ILockingStrategy Members
 
-		public async Task LockAsync(object id, object version, object obj, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task LockAsync(object id, object version, object obj, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ISessionFactoryImplementor factory = session.Factory;

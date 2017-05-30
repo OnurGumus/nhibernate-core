@@ -24,7 +24,7 @@ namespace NHibernate.Loader.Collection
 	public partial class BatchingCollectionInitializer : ICollectionInitializer
 	{
 
-		public async Task InitializeAsync(object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task InitializeAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object[] batch =

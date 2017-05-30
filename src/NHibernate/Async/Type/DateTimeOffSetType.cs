@@ -26,7 +26,7 @@ namespace NHibernate.Type
 	public partial class DateTimeOffsetType : PrimitiveType, IIdentifierType, ILiteralType, IVersionType
 	{
 
-		public Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -35,7 +35,7 @@ namespace NHibernate.Type
 			return SeedAsync(session, cancellationToken);
 		}
 
-		public Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

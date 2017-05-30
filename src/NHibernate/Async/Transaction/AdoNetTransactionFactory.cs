@@ -29,7 +29,7 @@ namespace NHibernate.Transaction
 	public partial class AdoNetTransactionFactory : ITransactionFactory
 	{
 
-		public async Task ExecuteWorkInIsolationAsync(ISessionImplementor session, IIsolatedWork work, bool transacted, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task ExecuteWorkInIsolationAsync(ISessionImplementor session, IIsolatedWork work, bool transacted, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			DbConnection connection = null;

@@ -36,7 +36,7 @@ namespace NHibernate.Type
 		/// <returns>
 		/// An instantiated object that used as the identifier of the type.
 		/// </returns>
-		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			// return the (fully resolved) identifier value, but do not resolve
@@ -48,7 +48,7 @@ namespace NHibernate.Type
 			return id;
 		}
 
-		public override async Task<object> AssembleAsync(object oid, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> AssembleAsync(object oid, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			//TODO: currently broken for unique-key references (does not detect
@@ -66,13 +66,13 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override async Task BeforeAssembleAsync(object oid, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task BeforeAssembleAsync(object oid, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ScheduleBatchLoadIfNeeded(await (AssembleIdAsync(oid, session, cancellationToken)).ConfigureAwait(false), session);
 		}
 
-		private Task<object> AssembleIdAsync(object oid, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		private Task<object> AssembleIdAsync(object oid, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

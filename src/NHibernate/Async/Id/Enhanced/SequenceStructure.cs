@@ -41,7 +41,7 @@ namespace NHibernate.Id.Enhanced
 
 			#region IAccessCallback Members
 
-			public virtual async Task<long> GetNextValueAsync(CancellationToken cancellationToken = default(CancellationToken))
+			public virtual async Task<long> GetNextValueAsync(CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				_owner._accessCounter++;

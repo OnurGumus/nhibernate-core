@@ -30,7 +30,7 @@ namespace NHibernate.Param
 
 		#region IParameterSpecification Members
 
-		public Task BindAsync(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task BindAsync(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -54,7 +54,7 @@ namespace NHibernate.Param
 		private partial class CollectionOfValuesType : IType
 		{
 
-			public Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+			public Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{
@@ -63,7 +63,7 @@ namespace NHibernate.Param
 				throw new InvalidOperationException();
 			}
 
-			public Task BeforeAssembleAsync(object cached, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+			public Task BeforeAssembleAsync(object cached, ISessionImplementor session, CancellationToken cancellationToken)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{
@@ -80,7 +80,7 @@ namespace NHibernate.Param
 				}
 			}
 
-			public Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+			public Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{
@@ -89,7 +89,7 @@ namespace NHibernate.Param
 				throw new InvalidOperationException();
 			}
 
-			public Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+			public Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{
@@ -98,7 +98,7 @@ namespace NHibernate.Param
 				throw new InvalidOperationException();
 			}
 
-			public Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+			public Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{
@@ -107,7 +107,7 @@ namespace NHibernate.Param
 				throw new InvalidOperationException();
 			}
 
-			public Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+			public Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{
@@ -116,7 +116,7 @@ namespace NHibernate.Param
 				throw new InvalidOperationException();
 			}
 
-			public Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+			public Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{
@@ -125,7 +125,7 @@ namespace NHibernate.Param
 				throw new InvalidOperationException();
 			}
 
-			public Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready, CancellationToken cancellationToken = default(CancellationToken))
+			public Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready, CancellationToken cancellationToken)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{
@@ -134,7 +134,7 @@ namespace NHibernate.Param
 				throw new InvalidOperationException();
 			}
 
-			public Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection, CancellationToken cancellationToken = default(CancellationToken))
+			public Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection, CancellationToken cancellationToken)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{

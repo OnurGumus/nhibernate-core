@@ -23,7 +23,7 @@ namespace NHibernate.Type
 	public partial class EnumCharType<T> : AbstractEnumType
 	{
 
-		public override Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

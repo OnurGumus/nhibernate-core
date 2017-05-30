@@ -20,7 +20,7 @@ namespace NHibernate.Impl
 	public partial class FutureCriteriaBatch : FutureBatch<ICriteria, IMultiCriteria>
 	{
 
-		protected override Task<IList> GetResultsFromAsync(IMultiCriteria multiApproach, CancellationToken cancellationToken = default(CancellationToken))
+		protected override Task<IList> GetResultsFromAsync(IMultiCriteria multiApproach, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

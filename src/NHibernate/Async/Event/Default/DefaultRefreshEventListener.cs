@@ -28,7 +28,7 @@ namespace NHibernate.Event.Default
 	public partial class DefaultRefreshEventListener : IRefreshEventListener
 	{
 
-		public virtual Task OnRefreshAsync(RefreshEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual Task OnRefreshAsync(RefreshEvent @event, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -44,7 +44,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		public virtual async Task OnRefreshAsync(RefreshEvent @event, IDictionary refreshedAlready, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task OnRefreshAsync(RefreshEvent @event, IDictionary refreshedAlready, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IEventSource source = @event.Session;

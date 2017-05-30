@@ -23,7 +23,7 @@ namespace NHibernate.Persister.Collection
 	public partial class NamedQueryCollectionInitializer : ICollectionInitializer
 	{
 
-		public Task InitializeAsync(object key, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task InitializeAsync(object key, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -37,7 +37,7 @@ namespace NHibernate.Persister.Collection
 				}
 
 				//TODO: is there a more elegant way than downcasting?
-				AbstractQueryImpl query = (AbstractQueryImpl)session.GetNamedSQLQuery(queryName);
+				AbstractQueryImpl query = (AbstractQueryImpl) session.GetNamedSQLQuery(queryName);
 				if (query.NamedParameters.Length > 0)
 				{
 					query.SetParameter(query.NamedParameters[0], key, persister.KeyType);
@@ -46,7 +46,6 @@ namespace NHibernate.Persister.Collection
 				{
 					query.SetParameter(0, key, persister.KeyType);
 				}
-
 				return query.SetCollectionKey(key).SetFlushMode(FlushMode.Never).ListAsync(cancellationToken);
 			}
 			catch (System.Exception ex)

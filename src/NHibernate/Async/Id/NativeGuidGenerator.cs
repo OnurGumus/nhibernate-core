@@ -30,7 +30,7 @@ namespace NHibernate.Id
 
 		#region Implementation of IIdentifierGenerator
 
-		public async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var sql = new SqlString(session.Factory.Dialect.SelectGUIDString);

@@ -28,6 +28,6 @@ namespace NHibernate.Dialect.Lock
 		/// <param name="obj">The object logically being locked (currently not used) </param>
 		/// <param name="session">The session from which the lock request originated </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task LockAsync(object id, object version, object obj, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		Task LockAsync(object id, object version, object obj, ISessionImplementor session, CancellationToken cancellationToken);
 	}
 }

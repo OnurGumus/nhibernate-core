@@ -29,13 +29,13 @@ namespace NHibernate.Type
 	public partial class ComponentType : AbstractType, IAbstractComponentType
 	{
 
-		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			return await (ResolveIdentifierAsync(await (HydrateAsync(rs, names, session, owner, cancellationToken)).ConfigureAwait(false), session, owner, cancellationToken)).ConfigureAwait(false);
 		}
 
-		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -44,7 +44,7 @@ namespace NHibernate.Type
 			return NullSafeGetAsync(rs, new string[] {name}, session, owner, cancellationToken);
 		}
 
-		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, 									   IDictionary copiedAlready, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, 									   IDictionary copiedAlready, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (original == null)
@@ -58,7 +58,7 @@ namespace NHibernate.Type
 			return result;
 		}
 
-		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (original == null)
@@ -72,7 +72,7 @@ namespace NHibernate.Type
 			return result;
 		}
 
-		public override async Task<object> AssembleAsync(object obj, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> AssembleAsync(object obj, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (obj == null)
@@ -93,7 +93,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			int begin = 0;
@@ -125,7 +125,7 @@ namespace NHibernate.Type
 				return notNull ? values : null;
 		}
 
-		public override async Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (value != null)
@@ -146,7 +146,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

@@ -38,7 +38,7 @@ namespace NHibernate.Event.Default
 		/// </summary>
 		/// <param name="event">The flush event.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		protected virtual async Task FlushEverythingToExecutionsAsync(FlushEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task FlushEverythingToExecutionsAsync(FlushEvent @event, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("flushing session");
@@ -87,7 +87,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected virtual async Task FlushCollectionsAsync(IEventSource session, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task FlushCollectionsAsync(IEventSource session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("Processing unreferenced collections");
@@ -137,7 +137,7 @@ namespace NHibernate.Event.Default
 		// 1. detect any dirty entities
 		// 2. schedule any entity updates
 		// 3. search out any reachable collections
-		protected virtual async Task FlushEntitiesAsync(FlushEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task FlushEntitiesAsync(FlushEvent @event, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("Flushing entities and processing referenced collections");
@@ -173,7 +173,7 @@ namespace NHibernate.Event.Default
 		//process cascade save/update at the start of a flush to discover
 		//any newly referenced entity that must be passed to saveOrUpdate(),
 		//and also apply orphan delete
-		protected virtual async Task PrepareEntityFlushesAsync(IEventSource session, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task PrepareEntityFlushesAsync(IEventSource session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("processing flush-time cascades");
@@ -191,7 +191,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected virtual async Task CascadeOnFlushAsync(IEventSource session, IEntityPersister persister, object key, object anything, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task CascadeOnFlushAsync(IEventSource session, IEntityPersister persister, object key, object anything, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			session.PersistenceContext.IncrementCascadeLevel();
@@ -219,7 +219,7 @@ namespace NHibernate.Event.Default
 		/// </summary>
 		/// <param name="session">The session being flushed</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		protected virtual async Task PerformExecutionsAsync(IEventSource session, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task PerformExecutionsAsync(IEventSource session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)

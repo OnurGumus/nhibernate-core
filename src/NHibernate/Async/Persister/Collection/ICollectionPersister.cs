@@ -35,30 +35,30 @@ namespace NHibernate.Persister.Collection
 		/// <param name="key"></param>
 		/// <param name="session"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task InitializeAsync(object key, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		Task InitializeAsync(object key, ISessionImplementor session, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Read the key from a row of the <see cref="DbDataReader" />
 		/// </summary>
-		Task<object> ReadKeyAsync(DbDataReader rs, string[] keyAliases, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object> ReadKeyAsync(DbDataReader rs, string[] keyAliases, ISessionImplementor session, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Read the element from a row of the <see cref="DbDataReader" />
 		/// </summary>
 		//TODO: the ReadElement should really be a parameterized TElement
-		Task<object> ReadElementAsync(DbDataReader rs, object owner, string[] columnAliases, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object> ReadElementAsync(DbDataReader rs, object owner, string[] columnAliases, ISessionImplementor session, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Read the index from a row of the <see cref="DbDataReader" />
 		/// </summary>
 		//TODO: the ReadIndex should really be a parameterized TIndex
-		Task<object> ReadIndexAsync(DbDataReader rs, string[] columnAliases, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object> ReadIndexAsync(DbDataReader rs, string[] columnAliases, ISessionImplementor session, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Read the identifier from a row of the <see cref="DbDataReader" />
 		/// </summary>
 		//TODO: the ReadIdentifier should really be a parameterized TIdentifier
-		Task<object> ReadIdentifierAsync(DbDataReader rs, string columnAlias, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object> ReadIdentifierAsync(DbDataReader rs, string columnAlias, ISessionImplementor session, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Completely remove the persistent state of the collection
@@ -66,7 +66,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="id"></param>
 		/// <param name="session"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task RemoveAsync(object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		Task RemoveAsync(object id, ISessionImplementor session, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// (Re)create the collection's persistent state
@@ -75,7 +75,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="key"></param>
 		/// <param name="session"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task RecreateAsync(IPersistentCollection collection, object key, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		Task RecreateAsync(IPersistentCollection collection, object key, ISessionImplementor session, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Delete the persistent state of any elements that were removed from the collection
@@ -84,7 +84,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="key"></param>
 		/// <param name="session"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task DeleteRowsAsync(IPersistentCollection collection, object key, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		Task DeleteRowsAsync(IPersistentCollection collection, object key, ISessionImplementor session, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Update the persistent state of any elements that were modified
@@ -93,7 +93,7 @@ namespace NHibernate.Persister.Collection
 		/// <param name="key"></param>
 		/// <param name="session"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task UpdateRowsAsync(IPersistentCollection collection, object key, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		Task UpdateRowsAsync(IPersistentCollection collection, object key, ISessionImplementor session, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Insert the persistent state of any new collection elements
@@ -102,6 +102,6 @@ namespace NHibernate.Persister.Collection
 		/// <param name="key"></param>
 		/// <param name="session"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task InsertRowsAsync(IPersistentCollection collection, object key, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		Task InsertRowsAsync(IPersistentCollection collection, object key, ISessionImplementor session, CancellationToken cancellationToken);
 	}
 }

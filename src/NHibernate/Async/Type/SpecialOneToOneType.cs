@@ -21,7 +21,7 @@ namespace NHibernate.Type
 	public partial class SpecialOneToOneType : OneToOneType
 	{
 
-		public override Task<object> HydrateAsync(DbDataReader rs, string[] names, Engine.ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> HydrateAsync(DbDataReader rs, string[] names, Engine.ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

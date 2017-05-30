@@ -38,7 +38,7 @@ namespace NHibernate.Loader.Hql
 	public partial class QueryLoader : BasicLoader
 	{
 
-		public Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -55,7 +55,7 @@ namespace NHibernate.Loader.Hql
 			}
 		}
 
-		protected override async Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, DbDataReader rs, 													   ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		protected override async Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, DbDataReader rs, 													   ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			Object[] resultRow = await (GetResultRowAsync(row, rs, session, cancellationToken)).ConfigureAwait(false);
@@ -66,7 +66,7 @@ namespace NHibernate.Loader.Hql
 			       );
 		}
 
-		protected override async Task<object[]> GetResultRowAsync(object[] row, DbDataReader rs, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		protected override async Task<object[]> GetResultRowAsync(object[] row, DbDataReader rs, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object[] resultRow;
@@ -89,7 +89,7 @@ namespace NHibernate.Loader.Hql
 			return resultRow;
 		}
 
-		internal async Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken = default(CancellationToken))
+		internal async Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			CheckQuery(queryParameters);

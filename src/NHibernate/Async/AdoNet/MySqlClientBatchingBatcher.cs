@@ -24,7 +24,7 @@ namespace NHibernate.AdoNet
 	public partial class MySqlClientBatchingBatcher : AbstractBatcher
 	{
 
-		public override async Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			totalExpectedRowsAffected += expectation.ExpectedRowCount;
@@ -55,7 +55,7 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		protected override async Task DoExecuteBatchAsync(DbCommand ps, CancellationToken cancellationToken = default(CancellationToken))
+		protected override async Task DoExecuteBatchAsync(DbCommand ps, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			Log.DebugFormat("Executing batch");

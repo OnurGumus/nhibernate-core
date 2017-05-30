@@ -29,6 +29,6 @@ namespace NHibernate.Id.Insert
 		/// <param name="binder"> </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The generated identifier value. </returns>
-		Task<object> PerformInsertAsync(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object> PerformInsertAsync(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder, CancellationToken cancellationToken);
 	}
 }

@@ -35,7 +35,7 @@ namespace NHibernate.Engine
 			/// been inserted in the database, where the foreign key
 			/// points toward that entity
 			/// </summary>
-			public async Task NullifyTransientReferencesAsync(object[] values, IType[] types, CancellationToken cancellationToken = default(CancellationToken))
+			public async Task NullifyTransientReferencesAsync(object[] values, IType[] types, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				for (int i = 0; i < types.Length; i++)
@@ -50,7 +50,7 @@ namespace NHibernate.Engine
 			/// otherwise. This is how Hibernate avoids foreign key constraint
 			/// violations.
 			/// </summary>
-			private async Task<object> NullifyTransientReferencesAsync(object value, IType type, CancellationToken cancellationToken = default(CancellationToken))
+			private async Task<object> NullifyTransientReferencesAsync(object value, IType type, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				if (value == null)
@@ -102,7 +102,7 @@ namespace NHibernate.Engine
 			/// <summary> 
 			/// Determine if the object already exists in the database, using a "best guess"
 			/// </summary>
-			private async Task<bool> IsNullifiableAsync(string entityName, object obj, CancellationToken cancellationToken = default(CancellationToken))
+			private async Task<bool> IsNullifiableAsync(string entityName, object obj, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 
@@ -160,7 +160,7 @@ namespace NHibernate.Engine
 		/// <remarks>
 		/// Hit the database to make the determination.
 		/// </remarks>
-		public static async Task<bool> IsNotTransientSlowAsync(string entityName, object entity, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task<bool> IsNotTransientSlowAsync(string entityName, object entity, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (entity.IsProxy())
@@ -176,14 +176,14 @@ namespace NHibernate.Engine
 		/// <remarks>
 		/// Hit the database to make the determination.
 		/// </remarks>
-		public static async Task<bool> IsTransientSlowAsync(string entityName, object entity, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task<bool> IsTransientSlowAsync(string entityName, object entity, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			return IsTransientFast(entityName, entity, session) ??
 			       await (HasDbSnapshotAsync(entityName, entity, session, cancellationToken)).ConfigureAwait(false);
 		}
 
-		static async Task<bool> HasDbSnapshotAsync(string entityName, object entity, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		static async Task<bool> HasDbSnapshotAsync(string entityName, object entity, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IEntityPersister persister = session.GetEntityPersister(entityName, entity);

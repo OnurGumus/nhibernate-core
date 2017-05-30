@@ -36,7 +36,7 @@ namespace NHibernate.AdoNet
 		/// Thrown when there is an expected number of rows to be affected and the
 		/// actual number of rows is different.
 		/// </exception>
-		public override async Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var cmd = CurrentCommand;
@@ -52,7 +52,7 @@ namespace NHibernate.AdoNet
 		/// </summary>
 		/// <param name="ps"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		protected override Task DoExecuteBatchAsync(DbCommand ps, CancellationToken cancellationToken = default(CancellationToken))
+		protected override Task DoExecuteBatchAsync(DbCommand ps, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

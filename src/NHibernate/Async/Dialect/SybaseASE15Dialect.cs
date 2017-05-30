@@ -27,7 +27,7 @@ namespace NHibernate.Dialect
 	public partial class SybaseASE15Dialect : Dialect
 	{
 		
-		public override Task<DbDataReader> GetResultSetAsync(DbCommand statement, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<DbDataReader> GetResultSetAsync(DbCommand statement, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

@@ -30,7 +30,7 @@ namespace NHibernate.Collection
 	public partial class PersistentArrayHolder : AbstractPersistentCollection, ICollection
 	{
 
-		public override async Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object[] sn = (object[]) snapshot;
@@ -43,7 +43,7 @@ namespace NHibernate.Collection
 			return result;
 		}
 
-		public override async Task<object> ReadFromAsync(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> ReadFromAsync(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object element = await (role.ReadElementAsync(rs, owner, descriptor.SuffixedElementAliases, Session, cancellationToken)).ConfigureAwait(false);
@@ -63,7 +63,7 @@ namespace NHibernate.Collection
 		/// <param name="disassembled">The disassembled Array.</param>
 		/// <param name="owner">The owner object.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object[] cached = (object[]) disassembled;

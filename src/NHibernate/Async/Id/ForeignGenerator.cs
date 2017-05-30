@@ -36,7 +36,7 @@ namespace NHibernate.Id
 		/// <see cref="IdentifierGeneratorFactory.ShortCircuitIndicator"/> if the <c>session</c>
 		/// already contains <c>obj</c>.
 		/// </returns>
-		public async Task<object> GenerateAsync(ISessionImplementor sessionImplementor, object obj, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> GenerateAsync(ISessionImplementor sessionImplementor, object obj, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ISession session = (ISession) sessionImplementor;

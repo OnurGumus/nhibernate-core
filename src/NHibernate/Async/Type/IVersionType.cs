@@ -27,7 +27,7 @@ namespace NHibernate.Type
 		/// <param name="session">The current session, if available.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>an instance of the <see cref="IType"/> that has been incremented.</returns>
-		Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// When implemented by a class, gets an initial version.
@@ -35,6 +35,6 @@ namespace NHibernate.Type
 		/// <param name="session">The current session, if available.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>An instance of the type.</returns>
-		Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken);
 	}
 }

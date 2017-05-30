@@ -26,7 +26,7 @@ namespace NHibernate.Type
 
 		#region IVersionType Members
 
-		public Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -35,7 +35,7 @@ namespace NHibernate.Type
 			return SeedAsync(session, cancellationToken);
 		}
 
-		public virtual Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

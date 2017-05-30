@@ -30,7 +30,7 @@ namespace NHibernate.Collection.Generic
 	public partial class PersistentGenericMap<TKey, TValue> : AbstractPersistentCollection, IDictionary<TKey, TValue>, ICollection
 	{
 
-		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -38,7 +38,7 @@ namespace NHibernate.Collection.Generic
 			}
 			try
 			{
-				var sn = (IDictionary<TKey, TValue>)snapshot;
+				var sn = (IDictionary<TKey, TValue>) snapshot;
 				return GetOrphansAsync((ICollection)sn.Values, (ICollection)WrappedMap.Values, entityName, Session, cancellationToken);
 			}
 			catch (Exception ex)
@@ -47,7 +47,7 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override async Task<object> ReadFromAsync(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> ReadFromAsync(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object element = await (role.ReadElementAsync(rs, owner, descriptor.SuffixedElementAliases, Session, cancellationToken)).ConfigureAwait(false);
@@ -64,7 +64,7 @@ namespace NHibernate.Collection.Generic
 		/// <param name="disassembled">The disassembled PersistentGenericMap.</param>
 		/// <param name="owner">The owner object.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object[] array = (object[])disassembled;

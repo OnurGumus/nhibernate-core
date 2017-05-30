@@ -21,7 +21,7 @@ namespace NHibernate.Event.Default
 	/// </content>
 	public partial class DefaultUpdateEventListener : DefaultSaveOrUpdateEventListener
 	{
-		protected override async Task<object> PerformSaveOrUpdateAsync(SaveOrUpdateEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		protected override async Task<object> PerformSaveOrUpdateAsync(SaveOrUpdateEvent @event, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			// this implementation is supposed to tolerate incorrect unsaved-value
@@ -45,7 +45,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected override Task<object> SaveWithGeneratedOrRequestedIdAsync(SaveOrUpdateEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		protected override Task<object> SaveWithGeneratedOrRequestedIdAsync(SaveOrUpdateEvent @event, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

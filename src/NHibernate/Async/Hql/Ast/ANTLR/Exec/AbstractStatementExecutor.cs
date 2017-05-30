@@ -35,9 +35,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 	public abstract partial class AbstractStatementExecutor : IStatementExecutor
 	{
 
-		public abstract Task<int> ExecuteAsync(QueryParameters parameters, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task<int> ExecuteAsync(QueryParameters parameters, ISessionImplementor session, CancellationToken cancellationToken);
 
-		protected virtual async Task CreateTemporaryTableIfNecessaryAsync(IQueryable persister, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task CreateTemporaryTableIfNecessaryAsync(IQueryable persister, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			// Don't really know all the codes required to adequately decipher returned ADO exceptions here.
@@ -64,7 +64,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 		}
 
-		protected virtual async Task DropTemporaryTableIfNecessaryAsync(IQueryable persister, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task DropTemporaryTableIfNecessaryAsync(IQueryable persister, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (Factory.Dialect.DropTemporaryTableAfterUse())
@@ -131,7 +131,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		private partial class TmpIdTableCreationIsolatedWork : IIsolatedWork
 		{
 
-			public async Task DoWorkAsync(DbConnection connection, DbTransaction transaction, CancellationToken cancellationToken = default(CancellationToken))
+			public async Task DoWorkAsync(DbConnection connection, DbTransaction transaction, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				DbCommand stmnt = null;
@@ -170,7 +170,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		private partial class TmpIdTableDropIsolatedWork : IIsolatedWork
 		{
 
-			public async Task DoWorkAsync(DbConnection connection, DbTransaction transaction, CancellationToken cancellationToken = default(CancellationToken))
+			public async Task DoWorkAsync(DbConnection connection, DbTransaction transaction, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				DbCommand stmnt = null;

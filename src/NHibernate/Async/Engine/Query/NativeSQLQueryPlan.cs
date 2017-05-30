@@ -38,7 +38,7 @@ namespace NHibernate.Engine.Query
 	{
 
 		// DONE : H3.2 Executable query (now can be supported for named SQL query/ storedProcedure)
-		public async Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			CoordinateSharedCacheCleanup(session);

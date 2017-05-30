@@ -32,7 +32,7 @@ namespace NHibernate.Action
 
 		/// <summary>Execute this action</summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public abstract Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task ExecuteAsync(CancellationToken cancellationToken);
 
 		#endregion
 

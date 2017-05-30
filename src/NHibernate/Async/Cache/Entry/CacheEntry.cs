@@ -24,7 +24,7 @@ namespace NHibernate.Cache.Entry
 	public sealed partial class CacheEntry
 	{
 
-		public Task<object[]> AssembleAsync(object instance, object id, IEntityPersister persister, IInterceptor interceptor, 		                         ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object[]> AssembleAsync(object instance, object id, IEntityPersister persister, IInterceptor interceptor, 		                         ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (!persister.EntityName.Equals(subclass))
 			{
@@ -38,7 +38,7 @@ namespace NHibernate.Cache.Entry
 			return AssembleAsync(disassembledState, instance, id, persister, interceptor, session, cancellationToken);
 		}
 
-		private static async Task<object[]> AssembleAsync(object[] values, object result, object id, IEntityPersister persister, 		                                 IInterceptor interceptor, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		private static async Task<object[]> AssembleAsync(object[] values, object result, object id, IEntityPersister persister, 		                                 IInterceptor interceptor, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			//assembled state gets put in a new array (we read from cache by value!)

@@ -49,7 +49,7 @@ namespace NHibernate.Id
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The new identifier as a <see cref="short"/>, <see cref="int"/>, or <see cref="long"/>.</returns>
 		[MethodImpl()]
-		public virtual async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _generate.LockAsync())
@@ -61,13 +61,12 @@ namespace NHibernate.Id
 			}
 		}
 
-
 		#endregion
 		#region IPersistentIdentifierGenerator Members
 
 		#endregion
 
-		public override async Task<object> DoWorkInCurrentTransactionAsync(ISessionImplementor session, DbConnection conn, 														  DbTransaction transaction, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> DoWorkInCurrentTransactionAsync(ISessionImplementor session, DbConnection conn, 														  DbTransaction transaction, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			long result;

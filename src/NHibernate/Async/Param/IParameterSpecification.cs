@@ -31,6 +31,6 @@ namespace NHibernate.Param
 		/// <param name="queryParameters">The defined values for the current query execution.</param>
 		/// <param name="session">The session against which the current execution is occuring.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task BindAsync(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		Task BindAsync(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken);
 	}
 }

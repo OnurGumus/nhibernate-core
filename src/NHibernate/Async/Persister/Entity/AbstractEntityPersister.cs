@@ -49,7 +49,7 @@ namespace NHibernate.Persister.Entity
 	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata, IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable
 	{
 
-		public async Task<object[]> GetDatabaseSnapshotAsync(object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object[]> GetDatabaseSnapshotAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)
@@ -105,7 +105,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public Task<object> ForceVersionIncrementAsync(object id, object currentVersion, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object> ForceVersionIncrementAsync(object id, object currentVersion, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (!IsVersioned)
 				throw new AssertionFailure("cannot force version increment on non-versioned entity");
@@ -122,10 +122,14 @@ namespace NHibernate.Persister.Entity
 			}
 			async Task<object> InternalForceVersionIncrementAsync()
 			{
+
 				object nextVersion = await (VersionType.NextAsync(currentVersion, session, cancellationToken)).ConfigureAwait(false);
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Forcing version increment [" + MessageHelper.InfoString(this, id, Factory) + "; " + VersionType.ToLoggableString(currentVersion, Factory) + " -> " + VersionType.ToLoggableString(nextVersion, Factory) + "]");
+					log.Debug("Forcing version increment [" +
+					MessageHelper.InfoString(this, id, Factory) + "; " +
+					VersionType.ToLoggableString(currentVersion, Factory) + " -> " +
+					VersionType.ToLoggableString(nextVersion, Factory) + "]");
 				}
 
 				IExpectation expectation = Expectations.AppropriateExpectation(updateResultCheckStyles[0]);
@@ -148,10 +152,16 @@ namespace NHibernate.Persister.Entity
 				}
 				catch (DbException sqle)
 				{
-					var exceptionContext = new AdoExceptionContextInfo{SqlException = sqle, Message = "could not retrieve version: " + MessageHelper.InfoString(this, id, Factory), Sql = VersionSelectString.ToString(), EntityName = EntityName, EntityId = id};
+					var exceptionContext = new AdoExceptionContextInfo
+										{
+											SqlException = sqle,
+											Message = "could not retrieve version: " + MessageHelper.InfoString(this, id, Factory),
+											Sql = VersionSelectString.ToString(),
+											EntityName = EntityName,
+											EntityId = id
+										};
 					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 				}
-
 				return nextVersion;
 			}
 			return InternalForceVersionIncrementAsync();
@@ -160,7 +170,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Retrieve the version number
 		/// </summary>
-		public async Task<object> GetCurrentVersionAsync(object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> GetCurrentVersionAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)
@@ -205,7 +215,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public virtual Task LockAsync(object id, object version, object obj, LockMode lockMode, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual Task LockAsync(object id, object version, object obj, LockMode lockMode, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -221,7 +231,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public Task<object> LoadByUniqueKeyAsync(string propertyName, object uniqueKey, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object> LoadByUniqueKeyAsync(string propertyName, object uniqueKey, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -241,7 +251,7 @@ namespace NHibernate.Persister.Entity
 		/// Unmarshall the fields of a persistent instance from a result set,
 		/// without resolving associations or collections
 		/// </summary>
-		public async Task<object[]> HydrateAsync(DbDataReader rs, object id, object obj, ILoadable rootLoadable, 			string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object[]> HydrateAsync(DbDataReader rs, object id, object obj, ILoadable rootLoadable, 			string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)
@@ -351,7 +361,7 @@ namespace NHibernate.Persister.Entity
 		/// <remarks>
 		/// This form is used for PostInsertIdentifierGenerator-style ids (IDENTITY, select, etc).
 		/// </remarks>
-		protected Task<object> InsertAsync(object[] fields, bool[] notNull, SqlCommandInfo sql, object obj, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		protected Task<object> InsertAsync(object[] fields, bool[] notNull, SqlCommandInfo sql, object obj, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -367,7 +377,6 @@ namespace NHibernate.Persister.Entity
 						log.Debug("Version: " + Versioning.GetVersion(fields, this));
 					}
 				}
-
 				IBinder binder = new GeneratedIdentifierBinder(fields, notNull, session, obj, this);
 				return identityDelegate.PerformInsertAsync(sql, session, binder, cancellationToken);
 			}
@@ -384,7 +393,7 @@ namespace NHibernate.Persister.Entity
 		/// This for is used for all non-root tables as well as the root table
 		/// in cases where the identifier value is known before the insert occurs.
 		/// </remarks>
-		protected async Task InsertAsync(object id, object[] fields, bool[] notNull, int j, 			SqlCommandInfo sql, object obj, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		protected async Task InsertAsync(object id, object[] fields, bool[] notNull, int j, 			SqlCommandInfo sql, object obj, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			//check if the id comes from an alternate column
@@ -475,7 +484,7 @@ namespace NHibernate.Persister.Entity
 		}
 
 		/// <summary> Perform an SQL UPDATE or SQL INSERT</summary>
-		protected internal virtual async Task UpdateOrInsertAsync(object id, object[] fields, object[] oldFields, object rowId, 			bool[] includeProperty, int j, object oldVersion, object obj, SqlCommandInfo sql, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		protected internal virtual async Task UpdateOrInsertAsync(object id, object[] fields, object[] oldFields, object rowId, 			bool[] includeProperty, int j, object oldVersion, object obj, SqlCommandInfo sql, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (!IsInverseTable(j))
@@ -512,7 +521,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		protected async Task<bool> UpdateAsync(object id, object[] fields, object[] oldFields, object rowId, bool[] includeProperty, int j, 			object oldVersion, object obj, SqlCommandInfo sql, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		protected async Task<bool> UpdateAsync(object id, object[] fields, object[] oldFields, object rowId, bool[] includeProperty, int j, 			object oldVersion, object obj, SqlCommandInfo sql, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			bool useVersion = j == 0 && IsVersioned;
@@ -623,7 +632,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Perform an SQL DELETE
 		/// </summary>
-		public async Task DeleteAsync(object id, object version, int j, object obj, SqlCommandInfo sql, ISessionImplementor session, 											 object[] loadedState, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task DeleteAsync(object id, object version, int j, object obj, SqlCommandInfo sql, ISessionImplementor session, 											 object[] loadedState, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			//check if the id should come from another column
@@ -738,7 +747,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public async Task UpdateAsync(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, 			object[] oldFields, object oldVersion, object obj, object rowId, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task UpdateAsync(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, 			object[] oldFields, object oldVersion, object obj, object rowId, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			//note: dirtyFields==null means we had no snapshot, and we couldn't get one using select-before-update
@@ -804,7 +813,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public async Task<object> InsertAsync(object[] fields, object obj, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> InsertAsync(object[] fields, object obj, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			int span = TableSpan;
@@ -833,7 +842,7 @@ namespace NHibernate.Persister.Entity
 			return id;
 		}
 
-		public async Task InsertAsync(object id, object[] fields, object obj, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task InsertAsync(object id, object[] fields, object obj, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			int span = TableSpan;
@@ -856,7 +865,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public async Task DeleteAsync(object id, object version, object obj, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task DeleteAsync(object id, object version, object obj, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			int span = TableSpan;
@@ -899,7 +908,7 @@ namespace NHibernate.Persister.Entity
 		/// <summary>
 		/// Load an instance using the appropriate loader (as determined by <see cref="GetAppropriateLoader" />
 		/// </summary>
-		public Task<object> LoadAsync(object id, object optionalObject, LockMode lockMode, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object> LoadAsync(object id, object optionalObject, LockMode lockMode, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -921,7 +930,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public Task ProcessInsertGeneratedPropertiesAsync(object id, object entity, object[] state, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task ProcessInsertGeneratedPropertiesAsync(object id, object entity, object[] state, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (!HasInsertGeneratedProperties)
 			{
@@ -933,14 +942,17 @@ namespace NHibernate.Persister.Entity
 			}
 			async Task InternalProcessInsertGeneratedPropertiesAsync()
 			{
+
 				await (session.Batcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false); //force immediate execution of the insert
+
 				if (loaderName == null)
 				{
 					await (ProcessGeneratedPropertiesWithGeneratedSqlAsync(id, entity, state, session, sqlInsertGeneratedValuesSelectString, PropertyInsertGenerationInclusions, cancellationToken)).ConfigureAwait(false);
-				}
+			}
 				else
 				{
 					await (ProcessGeneratedPropertiesWithLoaderAsync(id, entity, session, cancellationToken)).ConfigureAwait(false);
+
 					// The loader has added the entity to the first-level cache. We must remove
 					// the entity from the first-level cache to avoid problems in the Save or SaveOrUpdate
 					// event listeners, which don't expect the entity to already be present in the 
@@ -951,7 +963,7 @@ namespace NHibernate.Persister.Entity
 			return InternalProcessInsertGeneratedPropertiesAsync();
 		}
 
-		public Task ProcessUpdateGeneratedPropertiesAsync(object id, object entity, object[] state, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task ProcessUpdateGeneratedPropertiesAsync(object id, object entity, object[] state, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (!HasUpdateGeneratedProperties)
 			{
@@ -963,7 +975,9 @@ namespace NHibernate.Persister.Entity
 			}
 			async Task InternalProcessUpdateGeneratedPropertiesAsync()
 			{
+
 				await (session.Batcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false); //force immediate execution of the update
+
 				if (loaderName == null)
 				{
 					await (ProcessGeneratedPropertiesWithGeneratedSqlAsync(id, entity, state, session, sqlUpdateGeneratedValuesSelectString, PropertyUpdateGenerationInclusions, cancellationToken)).ConfigureAwait(false);
@@ -979,7 +993,7 @@ namespace NHibernate.Persister.Entity
 			return InternalProcessUpdateGeneratedPropertiesAsync();
 		}
 
-		private async Task ProcessGeneratedPropertiesWithGeneratedSqlAsync(object id, object entity, object[] state, 			ISessionImplementor session, SqlString selectionSQL, ValueInclusion[] generationInclusions, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task ProcessGeneratedPropertiesWithGeneratedSqlAsync(object id, object entity, object[] state, 			ISessionImplementor session, SqlString selectionSQL, ValueInclusion[] generationInclusions, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(session.SessionId)) 
@@ -1025,7 +1039,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		private Task ProcessGeneratedPropertiesWithLoaderAsync(object id, object entity, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		private Task ProcessGeneratedPropertiesWithLoaderAsync(object id, object entity, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -1042,7 +1056,6 @@ namespace NHibernate.Persister.Entity
 				{
 					query.SetParameter(0, id, this.IdentifierType);
 				}
-
 				query.SetOptionalId(id);
 				query.SetOptionalEntityName(this.EntityName);
 				query.SetOptionalObject(entity);
@@ -1055,7 +1068,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public virtual Task<object[]> GetNaturalIdentifierSnapshotAsync(object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual Task<object[]> GetNaturalIdentifierSnapshotAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (!HasNaturalIdentifier)
 			{
@@ -1089,50 +1102,62 @@ namespace NHibernate.Persister.Entity
 				{
 					select.SetComment("get current natural-id state " + EntityName);
 				}
-
 				select.SetSelectClause(ConcretePropertySelectFragmentSansLeadingComma(RootAlias, naturalIdMarkers));
 				select.SetFromClause(FromTableFragment(RootAlias) + FromJoinFragment(RootAlias, true, false));
+
 				string[] aliasedIdColumns = StringHelper.Qualify(RootAlias, IdentifierColumnNames);
-				SqlString whereClause = new SqlString(SqlStringHelper.Join(new SqlString("=", Parameter.Placeholder, " and "), aliasedIdColumns), "=", Parameter.Placeholder, WhereJoinFragment(RootAlias, true, false));
+				SqlString whereClause = new SqlString(
+				SqlStringHelper.Join(new SqlString("=", Parameter.Placeholder, " and "), aliasedIdColumns),
+				"=", Parameter.Placeholder,
+				WhereJoinFragment(RootAlias, true, false));
+
 				SqlString sql = select.SetOuterJoins(SqlString.Empty, SqlString.Empty).SetWhereClause(whereClause).ToStatementString();
 				///////////////////////////////////////////////////////////////////////
+
 				object[] snapshot = new object[naturalIdPropertyCount];
-				using (new SessionIdLoggingContext(session.SessionId))
+				using (new SessionIdLoggingContext(session.SessionId)) 
+				try
+				{
+					var ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, IdentifierType.SqlTypes(factory), cancellationToken)).ConfigureAwait(false);
+					DbDataReader rs = null;
 					try
 					{
-						var ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, IdentifierType.SqlTypes(factory), cancellationToken)).ConfigureAwait(false);
-						DbDataReader rs = null;
-						try
+						IdentifierType.NullSafeSet(ps, id, 0, session);
+						rs = await (session.Batcher.ExecuteReaderAsync(ps, cancellationToken)).ConfigureAwait(false);
+						//if there is no resulting row, return null
+						if (!await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false))
 						{
-							IdentifierType.NullSafeSet(ps, id, 0, session);
-							rs = await (session.Batcher.ExecuteReaderAsync(ps, cancellationToken)).ConfigureAwait(false);
-							//if there is no resulting row, return null
-							if (!await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false))
-							{
-								return null;
-							}
-
-							for (int i = 0; i < naturalIdPropertyCount; i++)
-							{
-								snapshot[i] = await (extractionTypes[i].HydrateAsync(rs, GetPropertyAliases(string.Empty, naturalIdPropertyIndexes[i]), session, null, cancellationToken)).ConfigureAwait(false);
-								if (extractionTypes[i].IsEntityType)
-								{
-									snapshot[i] = await (extractionTypes[i].ResolveIdentifierAsync(snapshot[i], session, null, cancellationToken)).ConfigureAwait(false);
-								}
-							}
-
-							return snapshot;
+							return null;
 						}
-						finally
+
+						for (int i = 0; i < naturalIdPropertyCount; i++)
 						{
-							session.Batcher.CloseCommand(ps, rs);
+							snapshot[i] =
+							await (extractionTypes[i].HydrateAsync(rs, GetPropertyAliases(string.Empty, naturalIdPropertyIndexes[i]), session, null, cancellationToken)).ConfigureAwait(false);
+							if (extractionTypes[i].IsEntityType)
+							{
+								snapshot[i] = await (extractionTypes[i].ResolveIdentifierAsync(snapshot[i], session, null, cancellationToken)).ConfigureAwait(false);
+							}
 						}
+						return snapshot;
 					}
-					catch (DbException sqle)
+					finally
 					{
-						var exceptionContext = new AdoExceptionContextInfo{SqlException = sqle, Message = "could not retrieve snapshot: " + MessageHelper.InfoString(this, id, Factory), Sql = sql.ToString(), EntityName = EntityName, EntityId = id};
-						throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
+						session.Batcher.CloseCommand(ps, rs);
 					}
+				}
+				catch (DbException sqle)
+				{
+					var exceptionContext = new AdoExceptionContextInfo
+										{
+											SqlException = sqle,
+											Message = "could not retrieve snapshot: " + MessageHelper.InfoString(this, id, Factory),
+											Sql = sql.ToString(),
+											EntityName = EntityName,
+											EntityId = id
+										};
+					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
+				}
 			}
 			return InternalGetNaturalIdentifierSnapshotAsync();
 		}

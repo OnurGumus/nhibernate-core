@@ -29,7 +29,7 @@ namespace NHibernate.Impl
 	public partial class EnumerableImpl : IEnumerable, IEnumerator, IDisposable
 	{
 		
-		private async Task PostNextAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task PostNextAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("attempting to retrieve next results");
@@ -53,7 +53,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private async Task PostMoveNextAsync(bool hasNext, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task PostMoveNextAsync(bool hasNext, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			_startedReading = true;

@@ -22,6 +22,6 @@ namespace NHibernate.Cache
 	/// </content>
 	public partial interface IQueryCache
 	{
-		Task<IList> GetAsync(QueryKey key, ICacheAssembler[] returnTypes, bool isNaturalKeyLookup, ISet<string> spaces, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		Task<IList> GetAsync(QueryKey key, ICacheAssembler[] returnTypes, bool isNaturalKeyLookup, ISet<string> spaces, ISessionImplementor session, CancellationToken cancellationToken);
 	}
 }

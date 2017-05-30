@@ -28,7 +28,7 @@ namespace NHibernate.Type
 	public partial class DbTimestampType : TimestampType, IVersionType
 	{
 
-		public override Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -57,7 +57,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		private Task<object> GetCurrentTimestampAsync(ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		private Task<object> GetCurrentTimestampAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -75,7 +75,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		protected virtual async Task<object> UsePreparedStatementAsync(string timestampSelectString, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task<object> UsePreparedStatementAsync(string timestampSelectString, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var tsSelect = new SqlString(timestampSelectString);

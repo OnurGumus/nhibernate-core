@@ -30,14 +30,14 @@ namespace NHibernate.Engine
 		/// Get the current state of the entity as known to the underlying
 		/// database, or null if there is no corresponding row
 		/// </summary>
-		Task<object[]> GetDatabaseSnapshotAsync(object id, IEntityPersister persister, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object[]> GetDatabaseSnapshotAsync(object id, IEntityPersister persister, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Get the values of the natural id fields as known to the underlying
 		/// database, or null if the entity has no natural id or there is no
 		/// corresponding row.
 		/// </summary>
-		Task<object[]> GetNaturalIdSnapshotAsync(object id, IEntityPersister persister, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object[]> GetNaturalIdSnapshotAsync(object id, IEntityPersister persister, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Possibly unproxy the given reference and reassociate it with the current session.
@@ -45,7 +45,7 @@ namespace NHibernate.Engine
 		/// <param name="maybeProxy">The reference to be unproxied if it currently represents a proxy. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The unproxied instance. </returns>
-		Task<object> UnproxyAndReassociateAsync(object maybeProxy, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object> UnproxyAndReassociateAsync(object maybeProxy, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Force initialization of all non-lazy collections encountered during
@@ -53,6 +53,6 @@ namespace NHibernate.Engine
 		/// is the "outermost" load)
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task InitializeNonLazyCollectionsAsync(CancellationToken cancellationToken = default(CancellationToken));
+		Task InitializeNonLazyCollectionsAsync(CancellationToken cancellationToken);
 	}
 }

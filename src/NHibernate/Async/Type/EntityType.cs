@@ -29,7 +29,7 @@ namespace NHibernate.Type
 	public abstract partial class EntityType : AbstractType, IAssociationType
 	{
 
-		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -38,7 +38,7 @@ namespace NHibernate.Type
 			return NullSafeGetAsync(rs, new string[] {name}, session, owner, cancellationToken);
 		}
 
-		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (original == null)
@@ -87,18 +87,18 @@ namespace NHibernate.Type
 		/// <returns>
 		/// An instance of the object or <see langword="null" /> if the identifer was null.
 		/// </returns>
-		public override sealed async Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override sealed async Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			return await (ResolveIdentifierAsync(await (HydrateAsync(rs, names, session, owner, cancellationToken)).ConfigureAwait(false), session, owner, cancellationToken)).ConfigureAwait(false);
 		}
 
-		public abstract override Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken));
+		public abstract override Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Resolves the identifier to the actual object.
 		/// </summary>
-		protected async Task<object> ResolveIdentifierAsync(object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		protected async Task<object> ResolveIdentifierAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			string entityName = GetAssociatedEntityName();
@@ -124,7 +124,7 @@ namespace NHibernate.Type
 		/// <param name="owner"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		public override Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -168,7 +168,7 @@ namespace NHibernate.Type
 		/// <param name="session">The originating session. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The loaded entity </returns>
-		public async Task<object> LoadByUniqueKeyAsync(string entityName, string uniqueKeyPropertyName, object key, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> LoadByUniqueKeyAsync(string entityName, string uniqueKeyPropertyName, object key, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ISessionFactoryImplementor factory = session.Factory;

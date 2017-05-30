@@ -22,7 +22,7 @@ namespace NHibernate.Driver
 	public partial class SQLite20Driver : ReflectionBasedDriver
 	{
 
-        private static async Task Connection_StateChangeAsync(object sender, StateChangeEventArgs e, CancellationToken cancellationToken = default(CancellationToken))
+        private static async Task Connection_StateChangeAsync(object sender, StateChangeEventArgs e, CancellationToken cancellationToken)
         {
                cancellationToken.ThrowIfCancellationRequested();
             if ((e.OriginalState == ConnectionState.Broken || e.OriginalState == ConnectionState.Closed || e.OriginalState == ConnectionState.Connecting) &&

@@ -33,7 +33,7 @@ namespace NHibernate.Type
 		/// It only takes the first name from the string[] names parameter - that is a 
 		/// safe thing to do because a Nullable Type only has one field.
 		/// </remarks>
-		public override sealed Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override sealed Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -58,7 +58,7 @@ namespace NHibernate.Type
 		/// 
 		/// TODO: determine if this is needed
 		/// </remarks>
-		public virtual Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -84,7 +84,7 @@ namespace NHibernate.Type
 		/// is called and that method is responsible for retrieving the value.
 		/// </para>
 		/// </remarks>
-		public virtual async Task<object> NullSafeGetAsync(DbDataReader rs, string name, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task<object> NullSafeGetAsync(DbDataReader rs, string name, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			int index = rs.GetOrdinal(name);
@@ -136,7 +136,7 @@ namespace NHibernate.Type
 		/// should be in <see cref="NullSafeGetAsync(DbDataReader, String,CancellationToken)" />.
 		/// </para>
 		/// </remarks>
-		public override sealed Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override sealed Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

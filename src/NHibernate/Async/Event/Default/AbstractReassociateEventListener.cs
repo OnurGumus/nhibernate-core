@@ -35,7 +35,7 @@ namespace NHibernate.Event.Default
 		/// <param name="persister">The entity's persister instance. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> An EntityEntry representing the entity within this session. </returns>
-		protected async Task<EntityEntry> ReassociateAsync(AbstractEvent @event, object entity, object id, IEntityPersister persister, CancellationToken cancellationToken = default(CancellationToken))
+		protected async Task<EntityEntry> ReassociateAsync(AbstractEvent @event, object entity, object id, IEntityPersister persister, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)

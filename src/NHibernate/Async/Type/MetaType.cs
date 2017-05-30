@@ -24,21 +24,21 @@ namespace NHibernate.Type
 	public partial class MetaType : AbstractType
 	{
 
-		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object key = await (baseType.NullSafeGetAsync(rs, names, session, owner, cancellationToken)).ConfigureAwait(false);
 			return key == null ? null : values[key];
 		}
 
-		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object key = await (baseType.NullSafeGetAsync(rs, name, session, owner, cancellationToken)).ConfigureAwait(false);
 			return key == null ? null : values[key];
 		}
 
-		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, System.Collections.IDictionary copiedAlready, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, System.Collections.IDictionary copiedAlready, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

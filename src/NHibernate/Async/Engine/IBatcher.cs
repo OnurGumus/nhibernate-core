@@ -38,7 +38,7 @@ namespace NHibernate.Engine
 		/// An <see cref="DbCommand"/> that is ready to have the parameter values set
 		/// and then executed.
 		/// </returns>
-		Task<DbCommand> PrepareCommandAsync(CommandType commandType, SqlString sql, SqlType[] parameterTypes, CancellationToken cancellationToken = default(CancellationToken));
+		Task<DbCommand> PrepareCommandAsync(CommandType commandType, SqlString sql, SqlType[] parameterTypes, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Get a batchable <see cref="DbCommand"/> to use for inserting / deleting / updating
@@ -54,7 +54,7 @@ namespace NHibernate.Engine
 		/// in <paramref name="sql" />.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		Task<DbCommand> PrepareBatchCommandAsync(CommandType commandType, SqlString sql, SqlType[] parameterTypes, CancellationToken cancellationToken = default(CancellationToken));
+		Task<DbCommand> PrepareBatchCommandAsync(CommandType commandType, SqlString sql, SqlType[] parameterTypes, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Add an insert / delete / update to the current batch (might be called multiple times
@@ -62,13 +62,13 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="expectation">Determines whether the number of rows affected by query is correct.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken = default(CancellationToken));
+		Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Execute the batch
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task ExecuteBatchAsync(CancellationToken cancellationToken = default(CancellationToken));
+		Task ExecuteBatchAsync(CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Gets an <see cref="DbDataReader"/> by calling ExecuteReader on the <see cref="DbCommand"/>.
@@ -80,7 +80,7 @@ namespace NHibernate.Engine
 		/// The Batcher is responsible for ensuring that all of the Drivers rules for how many open
 		/// <see cref="DbDataReader"/>s it can have are followed.
 		/// </remarks>
-		Task<DbDataReader> ExecuteReaderAsync(DbCommand cmd, CancellationToken cancellationToken = default(CancellationToken));
+		Task<DbDataReader> ExecuteReaderAsync(DbCommand cmd, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Executes the <see cref="DbCommand"/>. 
@@ -92,6 +92,6 @@ namespace NHibernate.Engine
 		/// The Batcher is responsible for ensuring that all of the Drivers rules for how many open
 		/// <see cref="DbDataReader"/>s it can have are followed.
 		/// </remarks>
-		Task<int> ExecuteNonQueryAsync(DbCommand cmd, CancellationToken cancellationToken = default(CancellationToken));
+		Task<int> ExecuteNonQueryAsync(DbCommand cmd, CancellationToken cancellationToken);
 	}
 }

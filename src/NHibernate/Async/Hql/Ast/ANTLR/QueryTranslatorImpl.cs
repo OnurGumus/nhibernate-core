@@ -38,7 +38,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	public partial class QueryTranslatorImpl : IFilterTranslator
 	{
 
-		public async Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			// Delegate to the QueryLoader...
@@ -107,7 +107,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return results;
 		}
 
-		public Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -124,7 +124,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
-		public Task<int> ExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<int> ExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

@@ -30,7 +30,7 @@ namespace NHibernate.Collection.Generic
 	public partial class PersistentGenericBag<T> : AbstractPersistentCollection, IList<T>, IList
 	{
 
-		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -38,8 +38,8 @@ namespace NHibernate.Collection.Generic
 			}
 			try
 			{
-				var sn = (ICollection)snapshot;
-				return GetOrphansAsync(sn, (ICollection)_gbag, entityName, Session, cancellationToken);
+				var sn = (ICollection) snapshot;
+				return GetOrphansAsync(sn, (ICollection) _gbag, entityName, Session, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -54,7 +54,7 @@ namespace NHibernate.Collection.Generic
 		/// <param name="disassembled">The disassembled PersistentBag.</param>
 		/// <param name="owner">The owner object.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var array = (object[]) disassembled;
@@ -70,7 +70,7 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
-		public override async Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			// note that if we load this collection from a cartesian product

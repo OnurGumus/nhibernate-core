@@ -33,7 +33,7 @@ namespace NHibernate.Collection
 		/// <param name="disassembled"></param>
 		/// <param name="owner"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken = default(CancellationToken));
+		Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Reads the row from the <see cref="DbDataReader"/>.
@@ -47,7 +47,7 @@ namespace NHibernate.Collection
 		/// <param name="owner">The owner of this Collection.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The object that was contained in the row.</returns>
-		Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// To be called internally by the session, forcing
@@ -57,17 +57,17 @@ namespace NHibernate.Collection
 		/// <remarks>
 		/// This method is similar to <see cref="AbstractPersistentCollection.Initialize" />, except that different exceptions are thrown.
 		/// </remarks>
-		Task ForceInitializationAsync(CancellationToken cancellationToken = default(CancellationToken));
+		Task ForceInitializationAsync(CancellationToken cancellationToken);
 
 		/// <summary> Get the "queued" orphans</summary>
-		Task<ICollection> GetQueuedOrphansAsync(string entityName, CancellationToken cancellationToken = default(CancellationToken));
+		Task<ICollection> GetQueuedOrphansAsync(string entityName, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Called before inserting rows, to ensure that any surrogate keys are fully generated
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task PreInsertAsync(ICollectionPersister persister, CancellationToken cancellationToken = default(CancellationToken));
+		Task PreInsertAsync(ICollectionPersister persister, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Get all "orphaned" elements
@@ -80,6 +80,6 @@ namespace NHibernate.Collection
 		/// An <see cref="ICollection"/> that contains all of the elements
 		/// that have been orphaned.
 		/// </returns>
-		Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken = default(CancellationToken));
+		Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken);
 	}
 }

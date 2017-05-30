@@ -29,7 +29,7 @@ namespace NHibernate.Loader.Entity
 	public abstract partial class AbstractEntityLoader : OuterJoinLoader, IUniqueEntityLoader
 	{
 
-		public Task<object> LoadAsync(object id, object optionalObject, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object> LoadAsync(object id, object optionalObject, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -38,7 +38,7 @@ namespace NHibernate.Loader.Entity
 			return LoadAsync(session, id, optionalObject, id, cancellationToken);
 		}
 
-		protected virtual async Task<object> LoadAsync(ISessionImplementor session, object id, object optionalObject, object optionalId, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task<object> LoadAsync(ISessionImplementor session, object id, object optionalObject, object optionalId, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IList list = await (LoadEntityAsync(session, id, UniqueKeyType, optionalObject, entityName, optionalId, persister, cancellationToken)).ConfigureAwait(false);
@@ -66,7 +66,7 @@ namespace NHibernate.Loader.Entity
 			}
 		}
 
-		protected override Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, DbDataReader rs, 													   ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		protected override Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, DbDataReader rs, 													   ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

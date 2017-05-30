@@ -25,10 +25,10 @@ namespace NHibernate.Transaction
 	public partial class AdoNetWithDistributedTransactionFactory : ITransactionFactory
 	{
 
-		public async Task ExecuteWorkInIsolationAsync(ISessionImplementor session, IIsolatedWork work, bool transacted, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task ExecuteWorkInIsolationAsync(ISessionImplementor session, IIsolatedWork work, bool transacted, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (var tx = new TransactionScope(TransactionScopeOption.Suppress))
+			using (var tx = new TransactionScope(TransactionScopeOption.Suppress,TransactionScopeAsyncFlowOption.Enabled))
 			{
 				// instead of duplicating the logic, we suppress the DTC transaction and create
 				// our own transaction instead

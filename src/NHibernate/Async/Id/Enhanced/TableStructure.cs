@@ -33,7 +33,7 @@ namespace NHibernate.Id.Enhanced
 
 		#region Overrides of TransactionHelper
 
-		public override async Task<object> DoWorkInCurrentTransactionAsync(ISessionImplementor session, DbConnection conn, DbTransaction transaction, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> DoWorkInCurrentTransactionAsync(ISessionImplementor session, DbConnection conn, DbTransaction transaction, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			long result;
@@ -109,7 +109,7 @@ namespace NHibernate.Id.Enhanced
 
 			#region IAccessCallback Members
 
-			public virtual async Task<long> GetNextValueAsync(CancellationToken cancellationToken = default(CancellationToken))
+			public virtual async Task<long> GetNextValueAsync(CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				return Convert.ToInt64(await (_owner.DoWorkInNewTransactionAsync(_session, cancellationToken)).ConfigureAwait(false));

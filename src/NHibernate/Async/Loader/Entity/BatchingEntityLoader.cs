@@ -26,7 +26,7 @@ namespace NHibernate.Loader.Entity
 	public partial class BatchingEntityLoader : IUniqueEntityLoader
 	{
 
-		public async Task<object> LoadAsync(object id, object optionalObject, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> LoadAsync(object id, object optionalObject, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object[] batch =

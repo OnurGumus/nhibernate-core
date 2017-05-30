@@ -25,7 +25,7 @@ namespace NHibernate.Event.Default
 	public abstract partial class ReattachVisitor : ProxyVisitor
 	{
 
-		internal override async Task<object> ProcessComponentAsync(object component, IAbstractComponentType componentType, CancellationToken cancellationToken = default(CancellationToken))
+		internal override async Task<object> ProcessComponentAsync(object component, IAbstractComponentType componentType, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IType[] types = componentType.Subtypes;

@@ -22,7 +22,7 @@ namespace NHibernate.Event
 		/// <summary> Handle the given refresh event. </summary>
 		/// <param name="event">The refresh event to be handled.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task OnRefreshAsync(RefreshEvent @event, CancellationToken cancellationToken = default(CancellationToken));
+		Task OnRefreshAsync(RefreshEvent @event, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// 
@@ -30,6 +30,6 @@ namespace NHibernate.Event
 		/// <param name="event"></param>
 		/// <param name="refreshedAlready"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task OnRefreshAsync(RefreshEvent @event, IDictionary refreshedAlready, CancellationToken cancellationToken = default(CancellationToken));
+		Task OnRefreshAsync(RefreshEvent @event, IDictionary refreshedAlready, CancellationToken cancellationToken);
 	}
 }

@@ -28,6 +28,6 @@ namespace NHibernate.Connection
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>An open <see cref="DbConnection"/>.</returns>
-		Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken = default(CancellationToken));
+		Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken);
 	}
 }

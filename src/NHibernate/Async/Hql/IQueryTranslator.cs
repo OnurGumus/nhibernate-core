@@ -33,9 +33,9 @@ namespace NHibernate.Hql
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The query list results.</returns>
 		/// <exception cref="NHibernate.HibernateException"></exception>
-		Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken));
+		Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters, CancellationToken cancellationToken);
 
-		Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken = default(CancellationToken));
+		Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken);
 
 		// Not ported:
 		//IScrollableResults scroll(QueryParameters queryParameters, ISessionImplementor session);
@@ -48,6 +48,6 @@ namespace NHibernate.Hql
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The number of entities updated or deleted.</returns>
 		/// <exception cref="NHibernate.HibernateException"></exception>
-		Task<int> ExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		Task<int> ExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken);
 	}
 }

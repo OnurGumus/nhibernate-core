@@ -17,6 +17,6 @@ namespace NHibernate.Event
 	/// </content>
 	public partial interface IPreCollectionRemoveEventListener
 	{
-		Task OnPreRemoveCollectionAsync(PreCollectionRemoveEvent @event, CancellationToken cancellationToken = default(CancellationToken));
+		Task OnPreRemoveCollectionAsync(PreCollectionRemoveEvent @event, CancellationToken cancellationToken);
 	}
 }

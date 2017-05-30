@@ -22,7 +22,7 @@ namespace NHibernate.Event.Default
 	public partial class FlushVisitor : AbstractVisitor
 	{
 
-		internal override async Task<object> ProcessCollectionAsync(object collection, CollectionType type, CancellationToken cancellationToken = default(CancellationToken))
+		internal override async Task<object> ProcessCollectionAsync(object collection, CollectionType type, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (collection == CollectionType.UnfetchedCollection)

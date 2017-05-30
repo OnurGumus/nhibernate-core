@@ -25,7 +25,7 @@ namespace NHibernate.Type
 	public partial class OneToOneType : EntityType, IAssociationType
 	{
 
-		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IType type = GetIdentifierOrUniqueKeyType(session.Factory);
@@ -48,7 +48,7 @@ namespace NHibernate.Type
 			return identifier;
 		}
 
-		public override Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

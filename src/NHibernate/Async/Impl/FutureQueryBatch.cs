@@ -20,7 +20,7 @@ namespace NHibernate.Impl
     public partial class FutureQueryBatch : FutureBatch<IQuery, IMultiQuery>
     {
 
-    	protected override Task<IList> GetResultsFromAsync(IMultiQuery multiApproach, CancellationToken cancellationToken = default(CancellationToken))
+    	protected override Task<IList> GetResultsFromAsync(IMultiQuery multiApproach, CancellationToken cancellationToken)
     	{
     		if (cancellationToken.IsCancellationRequested)
     		{

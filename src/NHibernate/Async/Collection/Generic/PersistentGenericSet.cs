@@ -32,7 +32,7 @@ namespace NHibernate.Collection.Generic
 	public partial class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>
 	{
 
-		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -41,11 +41,10 @@ namespace NHibernate.Collection.Generic
 			try
 			{
 				var sn = new SetSnapShot<T>((IEnumerable<T>)snapshot);
+
 				// TODO: Avoid duplicating shortcuts and array copy, by making base class GetOrphans() more flexible
-				if (WrappedSet.Count == 0)
-					return Task.FromResult<ICollection>(sn);
-				if (((ICollection)sn).Count == 0)
-					return Task.FromResult<ICollection>(sn);
+				if (WrappedSet.Count == 0) return Task.FromResult<ICollection>(sn);
+				if (((ICollection)sn).Count == 0) return Task.FromResult<ICollection>(sn);
 				return GetOrphansAsync(sn, WrappedSet.ToArray(), entityName, Session, cancellationToken);
 			}
 			catch (Exception ex)
@@ -61,7 +60,7 @@ namespace NHibernate.Collection.Generic
 		/// <param name="disassembled">The disassembled PersistentSet.</param>
 		/// <param name="owner">The owner object.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var array = (object[])disassembled;
@@ -78,7 +77,7 @@ namespace NHibernate.Collection.Generic
 			SetInitialized();
 		}
 
-		public override async Task<object> ReadFromAsync(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> ReadFromAsync(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var element = await (role.ReadElementAsync(rs, owner, descriptor.SuffixedElementAliases, Session, cancellationToken)).ConfigureAwait(false);

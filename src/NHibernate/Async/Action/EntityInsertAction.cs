@@ -26,7 +26,7 @@ namespace NHibernate.Action
 	public sealed partial class EntityInsertAction : EntityAction
 	{
 
-		public override async Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task ExecuteAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IEntityPersister persister = Persister;
@@ -94,7 +94,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		protected override Task AfterTransactionCompletionProcessImplAsync(bool success, CancellationToken cancellationToken = default(CancellationToken))
+		protected override Task AfterTransactionCompletionProcessImplAsync(bool success, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -108,17 +108,16 @@ namespace NHibernate.Action
 				{
 					CacheKey ck = Session.GenerateCacheKey(Id, persister.IdentifierType, persister.RootEntityName);
 					bool put = persister.Cache.AfterInsert(ck, cacheEntry, version);
+
 					if (put && Session.Factory.Statistics.IsStatisticsEnabled)
 					{
 						Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
 					}
 				}
-
 				if (success)
 				{
 					return PostCommitInsertAsync(cancellationToken);
 				}
-
 				return Task.CompletedTask;
 			}
 			catch (Exception ex)
@@ -127,7 +126,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task PostInsertAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task PostInsertAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IPostInsertEventListener[] postListeners = Session.Listeners.PostInsertEventListeners;
@@ -141,7 +140,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task PostCommitInsertAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task PostCommitInsertAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IPostInsertEventListener[] postListeners = Session.Listeners.PostCommitInsertEventListeners;
@@ -155,7 +154,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task<bool> PreInsertAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<bool> PreInsertAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IPreInsertEventListener[] preListeners = Session.Listeners.PreInsertEventListeners;

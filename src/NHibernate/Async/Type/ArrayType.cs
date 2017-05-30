@@ -27,7 +27,7 @@ namespace NHibernate.Type
 	public partial class ArrayType : CollectionType
 	{
 
-		public override async Task<object> ReplaceElementsAsync(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> ReplaceElementsAsync(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			Array org = (Array) original;

@@ -30,7 +30,7 @@ namespace NHibernate.Dialect.Lock
 
 		#region ILockingStrategy Members
 
-		public Task LockAsync(object id, object version, object obj, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task LockAsync(object id, object version, object obj, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (!lockable.IsVersioned)
 			{
@@ -51,8 +51,10 @@ namespace NHibernate.Dialect.Lock
 					{
 						lockable.VersionType.NullSafeSet(st, version, 1, session);
 						int offset = 2;
+
 						lockable.IdentifierType.NullSafeSet(st, id, offset, session);
 						offset += lockable.IdentifierType.GetColumnSpan(factory);
+
 						if (lockable.IsVersioned)
 						{
 							lockable.VersionType.NullSafeSet(st, version, offset, session);
@@ -77,7 +79,14 @@ namespace NHibernate.Dialect.Lock
 				}
 				catch (Exception sqle)
 				{
-					var exceptionContext = new AdoExceptionContextInfo{SqlException = sqle, Message = "could not lock: " + MessageHelper.InfoString(lockable, id, factory), Sql = sql.ToString(), EntityName = lockable.EntityName, EntityId = id};
+					var exceptionContext = new AdoExceptionContextInfo
+				                       	{
+				                       		SqlException = sqle,
+				                       		Message = "could not lock: " + MessageHelper.InfoString(lockable, id, factory),
+				                       		Sql = sql.ToString(),
+				                       		EntityName = lockable.EntityName,
+				                       		EntityId = id
+				                       	};
 					throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, exceptionContext);
 				}
 			}

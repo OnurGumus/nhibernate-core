@@ -25,7 +25,7 @@ namespace NHibernate.Event.Default
 	public partial class DefaultEvictEventListener : IEvictEventListener
 	{
 
-		public virtual async Task OnEvictAsync(EvictEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task OnEvictAsync(EvictEvent @event, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IEventSource source = @event.Session;
@@ -65,7 +65,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected virtual async Task DoEvictAsync(object obj, EntityKey key, IEntityPersister persister, IEventSource session, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task DoEvictAsync(object obj, EntityKey key, IEntityPersister persister, IEventSource session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 

@@ -28,7 +28,7 @@ namespace NHibernate.Action
 	public sealed partial class EntityUpdateAction : EntityAction
 	{
 
-		public override async Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task ExecuteAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ISessionImplementor session = Session;
@@ -123,7 +123,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		protected override Task AfterTransactionCompletionProcessImplAsync(bool success, CancellationToken cancellationToken = default(CancellationToken))
+		protected override Task AfterTransactionCompletionProcessImplAsync(bool success, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -135,9 +135,11 @@ namespace NHibernate.Action
 				if (persister.HasCache)
 				{
 					CacheKey ck = Session.GenerateCacheKey(Id, persister.IdentifierType, persister.RootEntityName);
+
 					if (success && cacheEntry != null)
 					{
 						bool put = persister.Cache.AfterUpdate(ck, cacheEntry, nextVersion, slock);
+
 						if (put && Session.Factory.Statistics.IsStatisticsEnabled)
 						{
 							Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
@@ -148,12 +150,10 @@ namespace NHibernate.Action
 						persister.Cache.Release(ck, slock);
 					}
 				}
-
 				if (success)
 				{
 					return PostCommitUpdateAsync(cancellationToken);
 				}
-
 				return Task.CompletedTask;
 			}
 			catch (Exception ex)
@@ -162,7 +162,7 @@ namespace NHibernate.Action
 			}
 		}
 		
-		private async Task PostUpdateAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task PostUpdateAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IPostUpdateEventListener[] postListeners = Session.Listeners.PostUpdateEventListeners;
@@ -176,7 +176,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task PostCommitUpdateAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task PostCommitUpdateAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IPostUpdateEventListener[] postListeners = Session.Listeners.PostCommitUpdateEventListeners;
@@ -190,7 +190,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task<bool> PreUpdateAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<bool> PreUpdateAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IPreUpdateEventListener[] preListeners = Session.Listeners.PreUpdateEventListeners;

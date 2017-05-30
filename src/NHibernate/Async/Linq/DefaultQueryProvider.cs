@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Type;
@@ -22,7 +23,6 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Linq
 {
-	using System.Threading;
 
 	/// <content>
 	/// Contains generated async methods
@@ -30,7 +30,7 @@ namespace NHibernate.Linq
 	public partial class DefaultQueryProvider : INhQueryProvider
 	{
 
-		protected virtual async Task<object> ExecuteQueryAsync(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task<object> ExecuteQueryAsync(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IList results = await (query.ListAsync(cancellationToken)).ConfigureAwait(false);

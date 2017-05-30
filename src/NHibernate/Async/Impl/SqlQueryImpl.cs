@@ -39,6 +39,7 @@ namespace NHibernate.Impl
 				IDictionary<string, TypedValue> namedParams = NamedParams;
 				NativeSQLQuerySpecification spec = GenerateQuerySpecification(namedParams);
 				QueryParameters qp = GetQueryParameters(namedParams);
+
 				Before();
 				try
 				{
@@ -86,6 +87,7 @@ namespace NHibernate.Impl
 				IDictionary<string, TypedValue> namedParams = NamedParams;
 				NativeSQLQuerySpecification spec = GenerateQuerySpecification(namedParams);
 				QueryParameters qp = GetQueryParameters(namedParams);
+
 				Before();
 				try
 				{
@@ -128,7 +130,7 @@ namespace NHibernate.Impl
 			}
 			try
 			{
-				IDictionary<string, TypedValue> namedParams = NamedParams;
+				IDictionary<string,TypedValue> namedParams = NamedParams;
 				Before();
 				try
 				{
@@ -145,7 +147,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		protected internal override Task<IEnumerable<ITranslator>> GetTranslatorsAsync(ISessionImplementor sessionImplementor, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken))
+		protected internal override Task<IEnumerable<ITranslator>> GetTranslatorsAsync(ISessionImplementor sessionImplementor, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

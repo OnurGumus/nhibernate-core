@@ -28,6 +28,6 @@ namespace NHibernate.Id
 		/// <param name="obj">The entity for which the id is being generated.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The new identifier</returns>
-		Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken);
 	}
 }

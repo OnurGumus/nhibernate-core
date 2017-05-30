@@ -32,7 +32,7 @@ namespace NHibernate.Connection
 		/// <exception cref="Exception">
 		/// If there is any problem creating or opening the <see cref="DbConnection"/>.
 		/// </exception>
-		public override async Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("Obtaining DbConnection from Driver");

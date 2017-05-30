@@ -22,7 +22,7 @@ namespace NHibernate.Tool.hbm2ddl
 	public partial class SuppliedConnectionProviderConnectionHelper : IConnectionHelper
 	{
 
-		public async Task PrepareAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public async Task PrepareAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			connection = await (provider.GetConnectionAsync(cancellationToken)).ConfigureAwait(false);

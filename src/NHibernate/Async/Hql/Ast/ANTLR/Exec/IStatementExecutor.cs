@@ -29,6 +29,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The number of entities updated/deleted. </returns>
 		/// <exception cref="HibernateException"/>
-		Task<int> ExecuteAsync(QueryParameters parameters, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		Task<int> ExecuteAsync(QueryParameters parameters, ISessionImplementor session, CancellationToken cancellationToken);
 	}
 }

@@ -28,7 +28,7 @@ namespace NHibernate.Id.Insert
 
 		#region Overrides of AbstractReturningDelegate
 
-		protected internal override async Task<DbCommand> PrepareAsync(SqlCommandInfo insertSQL, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		protected internal override async Task<DbCommand> PrepareAsync(SqlCommandInfo insertSQL, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var command = await (session.Batcher.PrepareCommandAsync(CommandType.Text, insertSQL.Text, insertSQL.ParameterTypes, cancellationToken)).ConfigureAwait(false);
@@ -48,7 +48,7 @@ namespace NHibernate.Id.Insert
 			return command;
 		}
 
-		public override async Task<object> ExecuteAndExtractAsync(DbCommand insert, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> ExecuteAndExtractAsync(DbCommand insert, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			await (session.Batcher.ExecuteNonQueryAsync(insert, cancellationToken)).ConfigureAwait(false);

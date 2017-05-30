@@ -43,7 +43,7 @@ namespace NHibernate.Id
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The new identifier as a <see cref="Int16"/>, <see cref="Int32"/>, or <see cref="Int64"/>.</returns>
 		[MethodImpl()]
-		public override async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _generate.LockAsync())
@@ -65,7 +65,6 @@ namespace NHibernate.Id
 					if (log.IsDebugEnabled)
 						log.Debug("new hi value: " + hival);
 				}
-
 				return IdentifierGeneratorFactory.CreateNumber(hi + lo++, returnClass);
 			}
 		}

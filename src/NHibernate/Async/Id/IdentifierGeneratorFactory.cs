@@ -34,7 +34,7 @@ namespace NHibernate.Id
 		/// <param name="session">The <see cref="ISessionImplementor"/> the value is retrieved in.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The value for the identifier. </returns>
-		public static async Task<object> GetGeneratedIdentityAsync(DbDataReader rs, IType type, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task<object> GetGeneratedIdentityAsync(DbDataReader rs, IType type, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (!await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false))
@@ -65,7 +65,7 @@ namespace NHibernate.Id
 		/// Thrown if there is any problem getting the value from the <see cref="DbDataReader"/>
 		/// or with converting it to the <see cref="System.Type"/>.
 		/// </exception>
-		public static Task<object> GetAsync(DbDataReader rs, IType type, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public static Task<object> GetAsync(DbDataReader rs, IType type, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

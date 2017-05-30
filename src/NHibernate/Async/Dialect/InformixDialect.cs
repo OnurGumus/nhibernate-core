@@ -29,7 +29,7 @@ namespace NHibernate.Dialect
 	public partial class InformixDialect : Dialect
 	{
 
-		public override Task<DbDataReader> GetResultSetAsync(DbCommand statement, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<DbDataReader> GetResultSetAsync(DbCommand statement, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

@@ -22,7 +22,7 @@ namespace NHibernate.Id
 	public partial class CounterGenerator : IIdentifierGenerator
 	{
 
-		public Task<object> GenerateAsync(ISessionImplementor cache, object obj, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object> GenerateAsync(ISessionImplementor cache, object obj, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

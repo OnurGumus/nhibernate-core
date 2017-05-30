@@ -35,7 +35,7 @@ namespace NHibernate.DomainModel
 		#region IEntityPersister Members
 		#region IOptimisticCacheSource Members
 
-		public Task<object[]> GetNaturalIdentifierSnapshotAsync(object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object[]> GetNaturalIdentifierSnapshotAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -47,7 +47,7 @@ namespace NHibernate.DomainModel
 			}
 		}
 
-		public async Task<object> LoadAsync(object id, object optionalObject, LockMode lockMode, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> LoadAsync(object id, object optionalObject, LockMode lockMode, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			// fails when optional object is supplied
 			Custom clone = null;
@@ -64,12 +64,12 @@ namespace NHibernate.DomainModel
 			return clone;
 		}
 
-		public Task LockAsync(object id, object version, object obj, LockMode lockMode, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task LockAsync(object id, object version, object obj, LockMode lockMode, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			throw new NotSupportedException();
 		}
 
-		public Task InsertAsync(object id, object[] fields, object obj, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task InsertAsync(object id, object[] fields, object obj, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -82,12 +82,12 @@ namespace NHibernate.DomainModel
 			}
 		}
 
-		public Task<object> InsertAsync(object[] fields, object obj, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object> InsertAsync(object[] fields, object obj, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			throw new NotSupportedException();
 		}
 
-		public Task DeleteAsync(object id, object version, object obj, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task DeleteAsync(object id, object version, object obj, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -100,7 +100,7 @@ namespace NHibernate.DomainModel
 			}
 		}
 
-		public Task UpdateAsync(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, object[] oldFields, 		                   object oldVersion, object obj, object rowId, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task UpdateAsync(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, object[] oldFields, 		                   object oldVersion, object obj, object rowId, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -113,7 +113,7 @@ namespace NHibernate.DomainModel
 			}
 		}
 
-		public Task<object[]> GetDatabaseSnapshotAsync(object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object[]> GetDatabaseSnapshotAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -125,7 +125,7 @@ namespace NHibernate.DomainModel
 			}
 		}
 
-		public Task<object> GetCurrentVersionAsync(object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object> GetCurrentVersionAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -137,7 +137,7 @@ namespace NHibernate.DomainModel
 			}
 		}
 
-		public Task<object> ForceVersionIncrementAsync(object id, object currentVersion, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object> ForceVersionIncrementAsync(object id, object currentVersion, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -149,12 +149,12 @@ namespace NHibernate.DomainModel
 			}
 		}
 
-		public Task ProcessInsertGeneratedPropertiesAsync(object id, object entity, object[] state, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task ProcessInsertGeneratedPropertiesAsync(object id, object entity, object[] state, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			return Task.CompletedTask;
 		}
 
-		public Task ProcessUpdateGeneratedPropertiesAsync(object id, object entity, object[] state, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public Task ProcessUpdateGeneratedPropertiesAsync(object id, object entity, object[] state, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			return Task.CompletedTask;
 		}

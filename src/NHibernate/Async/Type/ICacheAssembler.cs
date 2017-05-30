@@ -26,12 +26,12 @@ namespace NHibernate.Type
 		/// <param name="owner">the parent entity object </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> the the object </returns>
-		Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Called before assembling a query result set from the query cache, to allow batch fetching
 		/// of entities missing from the second-level cache.
 		/// </summary>
-		Task BeforeAssembleAsync(object cached, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		Task BeforeAssembleAsync(object cached, ISessionImplementor session, CancellationToken cancellationToken);
 	}
 }

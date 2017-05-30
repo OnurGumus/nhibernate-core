@@ -35,7 +35,7 @@ namespace NHibernate.Event.Default
 		/// <param name="requestedLockMode">The lock mode being requested for locking. </param>
 		/// <param name="source">The session which is the source of the event being processed.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		protected virtual async Task UpgradeLockAsync(object entity, EntityEntry entry, LockMode requestedLockMode, ISessionImplementor source, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task UpgradeLockAsync(object entity, EntityEntry entry, LockMode requestedLockMode, ISessionImplementor source, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (requestedLockMode.GreaterThan(entry.LockMode))

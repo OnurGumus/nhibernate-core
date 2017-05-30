@@ -23,6 +23,6 @@ namespace NHibernate.Loader.Entity
 		/// Load an entity instance. If <c>OptionalObject</c> is supplied, load the entity
 		/// state into the given (uninitialized) object
 		/// </summary>
-		Task<object> LoadAsync(object id, object optionalObject, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object> LoadAsync(object id, object optionalObject, ISessionImplementor session, CancellationToken cancellationToken);
 	}
 }

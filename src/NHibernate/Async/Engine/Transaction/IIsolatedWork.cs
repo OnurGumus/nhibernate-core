@@ -25,6 +25,6 @@ namespace NHibernate.Engine.Transaction
 		/// <param name="connection">The ADP connection to use.</param>
 		/// <param name="transaction">The active transaction of the connection.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task DoWorkAsync(DbConnection connection, DbTransaction transaction, CancellationToken cancellationToken = default(CancellationToken));
+		Task DoWorkAsync(DbConnection connection, DbTransaction transaction, CancellationToken cancellationToken);
 	}
 }

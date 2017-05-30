@@ -23,7 +23,7 @@ namespace NHibernate.Cache.Entry
 	public partial class CollectionCacheEntry
 	{
 
-		public virtual async Task AssembleAsync(IPersistentCollection collection, ICollectionPersister persister, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task AssembleAsync(IPersistentCollection collection, ICollectionPersister persister, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			await (collection.InitializeFromCacheAsync(persister, state, owner, cancellationToken)).ConfigureAwait(false);

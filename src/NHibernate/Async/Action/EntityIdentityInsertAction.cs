@@ -24,7 +24,7 @@ namespace NHibernate.Action
 	public sealed partial class EntityIdentityInsertAction : EntityAction
 	{
 
-		public override async Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task ExecuteAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IEntityPersister persister = Persister;
@@ -70,7 +70,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task PostInsertAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task PostInsertAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (isDelayed)
@@ -88,7 +88,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task PostCommitInsertAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task PostCommitInsertAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IPostInsertEventListener[] postListeners = Session.Listeners.PostCommitInsertEventListeners;
@@ -102,7 +102,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task<bool> PreInsertAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<bool> PreInsertAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IPreInsertEventListener[] preListeners = Session.Listeners.PreInsertEventListeners;
@@ -118,7 +118,7 @@ namespace NHibernate.Action
 			return veto;
 		}
 
-		protected override Task AfterTransactionCompletionProcessImplAsync(bool success, CancellationToken cancellationToken = default(CancellationToken))
+		protected override Task AfterTransactionCompletionProcessImplAsync(bool success, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -136,7 +136,6 @@ namespace NHibernate.Action
 				{
 					return PostCommitInsertAsync(cancellationToken);
 				}
-
 				return Task.CompletedTask;
 			}
 			catch (Exception ex)

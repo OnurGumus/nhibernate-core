@@ -37,7 +37,7 @@ namespace NHibernate.Id
 		/// Thrown when a <see cref="IPersistentCollection"/> is passed in as the <c>obj</c> or
 		/// if the identifier of <c>obj</c> is null.
 		/// </exception>
-		public Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken)
 		{
 			if (obj is IPersistentCollection)
 			{

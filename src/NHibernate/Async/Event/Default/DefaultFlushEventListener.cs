@@ -19,7 +19,7 @@ namespace NHibernate.Event.Default
 	/// </content>
 	public partial class DefaultFlushEventListener : AbstractFlushingEventListener, IFlushEventListener
 	{
-		public virtual async Task OnFlushAsync(FlushEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task OnFlushAsync(FlushEvent @event, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IEventSource source = @event.Session;

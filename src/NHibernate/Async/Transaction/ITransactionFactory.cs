@@ -25,6 +25,6 @@ namespace NHibernate.Transaction
 	public partial interface ITransactionFactory
 	{
 
-		Task ExecuteWorkInIsolationAsync(ISessionImplementor session, IIsolatedWork work, bool transacted, CancellationToken cancellationToken = default(CancellationToken));
+		Task ExecuteWorkInIsolationAsync(ISessionImplementor session, IIsolatedWork work, bool transacted, CancellationToken cancellationToken);
 	}
 }

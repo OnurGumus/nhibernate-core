@@ -26,7 +26,7 @@ namespace NHibernate.Loader.Collection
 	public partial class SubselectOneToManyLoader : OneToManyLoader
 	{
 
-		public override Task InitializeAsync(object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task InitializeAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

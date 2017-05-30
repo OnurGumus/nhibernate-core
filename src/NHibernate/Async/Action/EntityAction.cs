@@ -28,9 +28,9 @@ namespace NHibernate.Action
 
 		#region IExecutable Members
 
-		public abstract Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task ExecuteAsync(CancellationToken cancellationToken);
 		
-		protected virtual Task AfterTransactionCompletionProcessImplAsync(bool success, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual Task AfterTransactionCompletionProcessImplAsync(bool success, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

@@ -26,13 +26,13 @@ namespace NHibernate.Proxy
 		/// <exception cref="HibernateException">
 		/// Thrown when the Proxy has no Session or the Session is closed or disconnected.
 		/// </exception>
-		Task InitializeAsync(CancellationToken cancellationToken = default(CancellationToken));
+		Task InitializeAsync(CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Return the underlying persistent object, initializing if necessary.
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The persistent object this proxy is proxying.</returns>
-		Task<object> GetImplementationAsync(CancellationToken cancellationToken = default(CancellationToken));
+		Task<object> GetImplementationAsync(CancellationToken cancellationToken);
 	}
 }

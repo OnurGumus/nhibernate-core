@@ -39,7 +39,7 @@ namespace NHibernate.Id
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
 		[MethodImpl()]
-		public async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _generate.LockAsync())
@@ -48,13 +48,11 @@ namespace NHibernate.Id
 				{
 					await (GetNextAsync(session, cancellationToken)).ConfigureAwait(false);
 				}
-
 				return IdentifierGeneratorFactory.CreateNumber(_next++, _returnClass);
 			}
 		}
 
-
-		private async Task GetNextAsync(ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task GetNextAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			Logger.Debug("fetching initial value: " + _sql);

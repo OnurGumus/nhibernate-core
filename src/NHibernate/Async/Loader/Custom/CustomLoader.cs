@@ -34,7 +34,7 @@ namespace NHibernate.Loader.Custom
 	public partial class CustomLoader : Loader
 	{
 
-		public Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -45,7 +45,7 @@ namespace NHibernate.Loader.Custom
 
 		// Not ported: scroll
 
-		protected override Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, DbDataReader rs, 		                                               ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		protected override Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, DbDataReader rs, 		                                               ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -73,7 +73,7 @@ namespace NHibernate.Loader.Custom
 			/// At this point, Loader has already processed all non-scalar result data.  We
 			/// just need to account for scalar result data here...
 			/// </remarks>
-			public async Task<object> BuildResultRowAsync(object[] data, DbDataReader resultSet, bool hasTransformer, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+			public async Task<object> BuildResultRowAsync(object[] data, DbDataReader resultSet, bool hasTransformer, ISessionImplementor session, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				object[] resultRow;
@@ -103,7 +103,7 @@ namespace NHibernate.Loader.Custom
 		/// </content>
 		public partial interface IResultColumnProcessor
 		{
-			Task<object> ExtractAsync(object[] data, DbDataReader resultSet, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+			Task<object> ExtractAsync(object[] data, DbDataReader resultSet, ISessionImplementor session, CancellationToken cancellationToken);
 		}
 
 		/// <content>
@@ -112,7 +112,7 @@ namespace NHibernate.Loader.Custom
 		public partial class NonScalarResultColumnProcessor : IResultColumnProcessor
 		{
 
-			public Task<object> ExtractAsync(object[] data, DbDataReader resultSet, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+			public Task<object> ExtractAsync(object[] data, DbDataReader resultSet, ISessionImplementor session, CancellationToken cancellationToken)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{
@@ -135,7 +135,7 @@ namespace NHibernate.Loader.Custom
 		public partial class ScalarResultColumnProcessor : IResultColumnProcessor
 		{
 
-			public Task<object> ExtractAsync(object[] data, DbDataReader resultSet, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+			public Task<object> ExtractAsync(object[] data, DbDataReader resultSet, ISessionImplementor session, CancellationToken cancellationToken)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{

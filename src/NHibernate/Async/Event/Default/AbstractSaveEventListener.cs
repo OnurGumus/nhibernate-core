@@ -41,7 +41,7 @@ namespace NHibernate.Event.Default
 		/// <param name="source">The session which is the source of this save event. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The id used to save the entity. </returns>
-		protected virtual Task<object> SaveWithRequestedIdAsync(object entity, object requestedId, string entityName, object anything, IEventSource source, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual Task<object> SaveWithRequestedIdAsync(object entity, object requestedId, string entityName, object anything, IEventSource source, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -75,7 +75,7 @@ namespace NHibernate.Event.Default
 		/// The id used to save the entity; may be null depending on the
 		/// type of id generator used and the requiresImmediateIdAccess value
 		/// </returns>
-		protected virtual async Task<object> SaveWithGeneratedIdAsync(object entity, string entityName, object anything, IEventSource source, bool requiresImmediateIdAccess, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task<object> SaveWithGeneratedIdAsync(object entity, string entityName, object anything, IEventSource source, bool requiresImmediateIdAccess, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IEntityPersister persister = source.GetEntityPersister(entityName, entity);
@@ -125,7 +125,7 @@ namespace NHibernate.Event.Default
 		/// The id used to save the entity; may be null depending on the
 		/// type of id generator used and the requiresImmediateIdAccess value
 		/// </returns>
-		protected virtual async Task<object> PerformSaveAsync(object entity, object id, IEntityPersister persister, bool useIdentityColumn, object anything, IEventSource source, bool requiresImmediateIdAccess, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task<object> PerformSaveAsync(object entity, object id, IEntityPersister persister, bool useIdentityColumn, object anything, IEventSource source, bool requiresImmediateIdAccess, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)
@@ -182,7 +182,7 @@ namespace NHibernate.Event.Default
 		/// The id used to save the entity; may be null depending on the
 		/// type of id generator used and the requiresImmediateIdAccess value
 		/// </returns>
-		protected virtual async Task<object> PerformSaveOrReplicateAsync(object entity, EntityKey key, IEntityPersister persister, bool useIdentityColumn, object anything, IEventSource source, bool requiresImmediateIdAccess, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task<object> PerformSaveOrReplicateAsync(object entity, EntityKey key, IEntityPersister persister, bool useIdentityColumn, object anything, IEventSource source, bool requiresImmediateIdAccess, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			Validate(entity, persister, source);
@@ -275,7 +275,7 @@ namespace NHibernate.Event.Default
 			return id;
 		}
 
-		protected virtual async Task<bool> VisitCollectionsBeforeSaveAsync(object entity, object id, object[] values, IType[] types, IEventSource source, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task<bool> VisitCollectionsBeforeSaveAsync(object entity, object id, object[] values, IType[] types, IEventSource source, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			WrapVisitor visitor = new WrapVisitor(source);
@@ -298,7 +298,7 @@ namespace NHibernate.Event.Default
 		/// True if the snapshot state changed such that
 		/// reinjection of the values into the entity is required.
 		/// </returns>
-		protected virtual async Task<bool> SubstituteValuesIfNecessaryAsync(object entity, object id, object[] values, IEntityPersister persister, ISessionImplementor source, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task<bool> SubstituteValuesIfNecessaryAsync(object entity, object id, object[] values, IEntityPersister persister, ISessionImplementor source, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			bool substitute = source.Interceptor.OnSave(entity, id, values, persister.PropertyNames, persister.PropertyTypes);
@@ -319,7 +319,7 @@ namespace NHibernate.Event.Default
 		/// <param name="entity">The entity to be saved. </param>
 		/// <param name="anything">Generally cascade-specific data </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		protected virtual async Task CascadeBeforeSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task CascadeBeforeSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			// cascade-save to many-to-one BEFORE the parent is saved
@@ -340,7 +340,7 @@ namespace NHibernate.Event.Default
 		/// <param name="entity">The entity being saved. </param>
 		/// <param name="anything">Generally cascade-specific data </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		protected virtual async Task CascadeAfterSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task CascadeAfterSaveAsync(IEventSource source, IEntityPersister persister, object entity, object anything, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			// cascade-save to collections AFTER the collection owner was saved
@@ -364,7 +364,7 @@ namespace NHibernate.Event.Default
 		/// <param name="source">The originating session. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The state. </returns>
-		protected virtual async Task<EntityState> GetEntityStateAsync(object entity, string entityName, EntityEntry entry, ISessionImplementor source, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task<EntityState> GetEntityStateAsync(object entity, string entityName, EntityEntry entry, ISessionImplementor source, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (entry != null)

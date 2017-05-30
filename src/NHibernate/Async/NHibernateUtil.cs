@@ -58,7 +58,6 @@ namespace NHibernate
 				{
 					return ((IPersistentCollection)proxy).ForceInitializationAsync(cancellationToken);
 				}
-
 				return Task.CompletedTask;
 			}
 			catch (Exception ex)

@@ -23,7 +23,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 	public static partial class SchemaMetadataUpdater
 	{
-		public static async Task UpdateAsync(ISessionFactory sessionFactory, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task UpdateAsync(ISessionFactory sessionFactory, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var factory = (ISessionFactoryImplementor) sessionFactory;
@@ -32,7 +32,7 @@ namespace NHibernate.Tool.hbm2ddl
 			factory.Dialect.Keywords.UnionWith(await (GetReservedWordsAsync(dialect, connectionHelper, cancellationToken)).ConfigureAwait(false));
 		}
 
-		public static async Task QuoteTableAndColumnsAsync(Configuration configuration, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task QuoteTableAndColumnsAsync(Configuration configuration, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ISet<string> reservedDb = await (GetReservedWordsAsync(configuration.GetDerivedProperties(), cancellationToken)).ConfigureAwait(false);
@@ -46,7 +46,7 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 		}
 
-		private static Task<ISet<string>> GetReservedWordsAsync(IDictionary<string, string> cfgProperties, CancellationToken cancellationToken = default(CancellationToken))
+		private static Task<ISet<string>> GetReservedWordsAsync(IDictionary<string, string> cfgProperties, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -64,7 +64,7 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 		}
 
-		private static async Task<ISet<string>> GetReservedWordsAsync(Dialect.Dialect dialect, IConnectionHelper connectionHelper, CancellationToken cancellationToken = default(CancellationToken))
+		private static async Task<ISet<string>> GetReservedWordsAsync(Dialect.Dialect dialect, IConnectionHelper connectionHelper, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ISet<string> reservedDb = new HashSet<string>();

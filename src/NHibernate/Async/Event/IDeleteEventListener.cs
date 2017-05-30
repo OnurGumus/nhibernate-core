@@ -22,8 +22,8 @@ namespace NHibernate.Event
 		/// <summary>Handle the given delete event. </summary>
 		/// <param name="event">The delete event to be handled. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task OnDeleteAsync(DeleteEvent @event, CancellationToken cancellationToken = default(CancellationToken));
+		Task OnDeleteAsync(DeleteEvent @event, CancellationToken cancellationToken);
 
-		Task OnDeleteAsync(DeleteEvent @event, ISet<object> transientEntities, CancellationToken cancellationToken = default(CancellationToken));
+		Task OnDeleteAsync(DeleteEvent @event, ISet<object> transientEntities, CancellationToken cancellationToken);
 	}
 }

@@ -25,7 +25,7 @@ namespace NHibernate.AdoNet
 	public partial class OracleDataClientBatchingBatcher : AbstractBatcher
 	{
 
-		public override Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -42,9 +42,11 @@ namespace NHibernate.AdoNet
 					lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(CurrentCommand);
 					var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
 					lineWithParameters = formatStyle.Formatter.Format(lineWithParameters);
-					_currentBatchCommandsLog.Append("command ").Append(_countOfCommands).Append(":").AppendLine(lineWithParameters);
+					_currentBatchCommandsLog.Append("command ")
+					.Append(_countOfCommands)
+					.Append(":")
+					.AppendLine(lineWithParameters);
 				}
-
 				if (Log.IsDebugEnabled)
 				{
 					Log.Debug("Adding to batch:" + lineWithParameters);
@@ -82,16 +84,15 @@ namespace NHibernate.AdoNet
 					{
 						_parameterIsAllNullsHashTable[currentParameter.ParameterName] = false;
 					}
-
 					parameterValueList.Add(currentParameter.Value);
 				}
 
 				_countOfCommands++;
+
 				if (_countOfCommands >= _batchSize)
 				{
 					return ExecuteBatchWithTimingAsync(_currentBatch, cancellationToken);
 				}
-
 				return Task.CompletedTask;
 			}
 			catch (Exception ex)
@@ -100,7 +101,7 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		protected override async Task DoExecuteBatchAsync(DbCommand ps, CancellationToken cancellationToken = default(CancellationToken))
+		protected override async Task DoExecuteBatchAsync(DbCommand ps, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (_currentBatch != null)

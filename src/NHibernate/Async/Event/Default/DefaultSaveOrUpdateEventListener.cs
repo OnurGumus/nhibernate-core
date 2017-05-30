@@ -26,7 +26,7 @@ namespace NHibernate.Event.Default
 	public partial class DefaultSaveOrUpdateEventListener : AbstractSaveEventListener, ISaveOrUpdateEventListener
 	{
 
-		public virtual async Task OnSaveOrUpdateAsync(SaveOrUpdateEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task OnSaveOrUpdateAsync(SaveOrUpdateEvent @event, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ISessionImplementor source = @event.Session;
@@ -60,7 +60,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected virtual async Task<object> PerformSaveOrUpdateAsync(SaveOrUpdateEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task<object> PerformSaveOrUpdateAsync(SaveOrUpdateEvent @event, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			EntityState entityState = await (GetEntityStateAsync(@event.Entity, @event.EntityName, @event.Entry, @event.Session, cancellationToken)).ConfigureAwait(false);
@@ -86,7 +86,7 @@ namespace NHibernate.Event.Default
 		/// <param name="event">The save event to be handled. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The entity's identifier after saving. </returns>
-		protected virtual async Task<object> EntityIsTransientAsync(SaveOrUpdateEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task<object> EntityIsTransientAsync(SaveOrUpdateEvent @event, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("saving transient instance");
@@ -118,7 +118,7 @@ namespace NHibernate.Event.Default
 		/// <param name="event">The initiating event. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The entity's identifier value after saving.</returns>
-		protected virtual Task<object> SaveWithGeneratedOrRequestedIdAsync(SaveOrUpdateEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual Task<object> SaveWithGeneratedOrRequestedIdAsync(SaveOrUpdateEvent @event, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -147,7 +147,7 @@ namespace NHibernate.Event.Default
 		/// </summary>
 		/// <param name="event">The update event to be handled. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		protected virtual Task EntityIsDetachedAsync(SaveOrUpdateEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual Task EntityIsDetachedAsync(SaveOrUpdateEvent @event, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -156,6 +156,7 @@ namespace NHibernate.Event.Default
 			try
 			{
 				log.Debug("updating detached instance");
+
 				if (@event.Session.PersistenceContext.IsEntryFor(@event.Entity))
 				{
 					//TODO: assertion only, could be optimized away
@@ -163,8 +164,11 @@ namespace NHibernate.Event.Default
 				}
 
 				object entity = @event.Entity;
+
 				IEntityPersister persister = @event.Session.GetEntityPersister(@event.EntityName, entity);
+
 				@event.RequestedId = GetUpdateId(entity, persister, @event.RequestedId);
+
 				return PerformUpdateAsync(@event, entity, persister, cancellationToken);
 			}
 			catch (Exception ex)
@@ -173,7 +177,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected virtual async Task PerformUpdateAsync(SaveOrUpdateEvent @event, object entity, IEntityPersister persister, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task PerformUpdateAsync(SaveOrUpdateEvent @event, object entity, IEntityPersister persister, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (!persister.IsMutable)
@@ -243,7 +247,7 @@ namespace NHibernate.Event.Default
 		/// <param name="persister">The defined persister for the entity being updated. </param>
 		/// <param name="entity">The entity being updated. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		private async Task CascadeOnUpdateAsync(SaveOrUpdateEvent @event, IEntityPersister persister, object entity, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task CascadeOnUpdateAsync(SaveOrUpdateEvent @event, IEntityPersister persister, object entity, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IEventSource source = @event.Session;

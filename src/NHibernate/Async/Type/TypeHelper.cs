@@ -25,12 +25,12 @@ namespace NHibernate.Type
 	public static partial class TypeHelper
 	{
 		
-		/// <summary>Apply the <see cref="ICacheAssembler.BeforeAssembleAsync(object,NHibernate.Engine.ISessionImplementor,CancellationToken)" /> operation across a series of values.</summary>
+		/// <summary>Apply the <see cref="ICacheAssembler.BeforeAssembleAsync(object,ISessionImplementor,CancellationToken)" /> operation across a series of values.</summary>
 		/// <param name="row">The values</param>
 		/// <param name="types">The value types</param>
 		/// <param name="session">The originating session</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public static async Task BeforeAssembleAsync(object[] row, ICacheAssembler[] types, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task BeforeAssembleAsync(object[] row, ICacheAssembler[] types, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			for (int i = 0; i < types.Length; i++)
@@ -43,7 +43,7 @@ namespace NHibernate.Type
 		}
 		
 		/// <summary>
-		/// Apply the <see cref="ICacheAssembler.AssembleAsync(object,NHibernate.Engine.ISessionImplementor,object,CancellationToken)" /> operation across a series of values.
+		/// Apply the <see cref="ICacheAssembler.AssembleAsync(object,ISessionImplementor,object,CancellationToken)" /> operation across a series of values.
 		/// </summary>
 		/// <param name="row">The values</param>
 		/// <param name="types">The value types</param>
@@ -51,7 +51,7 @@ namespace NHibernate.Type
 		/// <param name="owner">The entity "owning" the values</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		public static async Task<object[]> AssembleAsync(object[] row, ICacheAssembler[] types, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task<object[]> AssembleAsync(object[] row, ICacheAssembler[] types, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var assembled = new object[row.Length];
@@ -80,7 +80,7 @@ namespace NHibernate.Type
 		/// <param name="copiedAlready">Represent a cache of already replaced state</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The replaced state</returns>
-		public static async Task<object[]> ReplaceAsync(object[] original, object[] target, IType[] types, ISessionImplementor session, 																	 object owner, IDictionary copiedAlready, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task<object[]> ReplaceAsync(object[] original, object[] target, IType[] types, ISessionImplementor session, 																	 object owner, IDictionary copiedAlready, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var copied = new object[original.Length];
@@ -111,7 +111,7 @@ namespace NHibernate.Type
 		/// <param name="foreignKeyDirection">FK directionality to be applied to the replacement</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The replaced state</returns>
-		public static async Task<object[]> ReplaceAsync(object[] original, object[] target, IType[] types, 			ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task<object[]> ReplaceAsync(object[] original, object[] target, IType[] types, 			ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object[] copied = new object[original.Length];
@@ -141,10 +141,10 @@ namespace NHibernate.Type
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The replaced state</returns>
 		/// <remarks>
-		/// If the corresponding type is a component type, then apply <see cref="ReplaceAssociationsAsync(object[],object[],NHibernate.Type.IType[],NHibernate.Engine.ISessionImplementor,object,System.Collections.IDictionary,NHibernate.Type.ForeignKeyDirection,CancellationToken)" />
+		/// If the corresponding type is a component type, then apply <see cref="ReplaceAssociationsAsync(object[],object[],IType[],ISessionImplementor,object,IDictionary,ForeignKeyDirection,CancellationToken)" />
 		/// across the component subtypes but do not replace the component value itself.
 		/// </remarks>
-		public static async Task<object[]> ReplaceAssociationsAsync(object[] original, object[] target, IType[] types, 			ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task<object[]> ReplaceAssociationsAsync(object[] original, object[] target, IType[] types, 			ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object[] copied = new object[original.Length];

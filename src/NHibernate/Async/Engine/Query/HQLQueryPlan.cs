@@ -27,10 +27,10 @@ namespace NHibernate.Engine.Query
     /// </content>
     public partial interface IQueryPlan
     {
-        Task PerformListAsync(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, IList results, CancellationToken cancellationToken = default(CancellationToken));
-        Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, CancellationToken cancellationToken = default(CancellationToken));
-        Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken = default(CancellationToken));
-        Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken = default(CancellationToken));
+        Task PerformListAsync(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, IList results, CancellationToken cancellationToken);
+        Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, CancellationToken cancellationToken);
+        Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken);
+        Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken);
     }
 	/// <content>
 	/// Contains generated async methods
@@ -38,7 +38,7 @@ namespace NHibernate.Engine.Query
 	public partial class HQLQueryPlan : IQueryPlan
 	{
 
-		public async Task PerformListAsync(QueryParameters queryParameters, ISessionImplementor session, IList results, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task PerformListAsync(QueryParameters queryParameters, ISessionImplementor session, IList results, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (Log.IsDebugEnabled)
@@ -106,7 +106,7 @@ namespace NHibernate.Engine.Query
 			}
 		}
 
-		public async Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (Log.IsDebugEnabled)
@@ -131,13 +131,13 @@ namespace NHibernate.Engine.Query
 			return new JoinedEnumerable(results);
 		}
 
-		public async Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			return new SafetyEnumerable<T>(await (PerformIterateAsync(queryParameters, session, cancellationToken)).ConfigureAwait(false));
 		}
 
-        public async Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken)
         {
                cancellationToken.ThrowIfCancellationRequested();
             if (Log.IsDebugEnabled)

@@ -29,7 +29,7 @@ namespace NHibernate.Type
 	public partial class AnyType : AbstractType, IAbstractComponentType, IAssociationType
 	{
 
-		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -38,14 +38,14 @@ namespace NHibernate.Type
 			throw new NotSupportedException("object is a multicolumn type");
 		}
 
-		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			return await (ResolveAnyAsync((string)await (metaType.NullSafeGetAsync(rs, names[0], session, owner, cancellationToken)).ConfigureAwait(false), 
 				await (identifierType.NullSafeGetAsync(rs, names[1], session, owner, cancellationToken)).ConfigureAwait(false), session, cancellationToken)).ConfigureAwait(false);
 		}
 
-		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			string entityName = (string)await (metaType.NullSafeGetAsync(rs, names[0], session, owner, cancellationToken)).ConfigureAwait(false);
@@ -53,7 +53,7 @@ namespace NHibernate.Type
 			return new ObjectTypeCacheEntry(entityName, id);
 		}
 
-		public override Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -61,7 +61,7 @@ namespace NHibernate.Type
 			}
 			try
 			{
-				ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry)value;
+				ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry) value;
 				return ResolveAnyAsync(holder.entityName, holder.id, session, cancellationToken);
 			}
 			catch (Exception ex)
@@ -70,7 +70,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -79,7 +79,7 @@ namespace NHibernate.Type
 			throw new NotSupportedException("any mappings may not form part of a property-ref");
 		}
 
-		public override Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -88,7 +88,7 @@ namespace NHibernate.Type
 			try
 			{
 				ObjectTypeCacheEntry e = cached as ObjectTypeCacheEntry;
-				return (e == null) ? Task.FromResult<object>(null) : session.InternalLoadAsync(e.entityName, e.id, false, false, cancellationToken);
+				return (e == null) ? Task.FromResult<object>(null ): session.InternalLoadAsync(e.entityName, e.id, false, false, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -96,7 +96,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, 									   IDictionary copiedAlready, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner, 									   IDictionary copiedAlready, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -121,13 +121,13 @@ namespace NHibernate.Type
 			}
 		}
 
-		private Task<object> ResolveAnyAsync(string entityName, object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		private Task<object> ResolveAnyAsync(string entityName, object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return entityName == null || id == null ? Task.FromResult<object >(null ): session.InternalLoadAsync(entityName, id, false, false, cancellationToken);
+			return entityName == null || id == null ? Task.FromResult<object>(null ): session.InternalLoadAsync(entityName, id, false, false, cancellationToken);
 		}
 
 	}

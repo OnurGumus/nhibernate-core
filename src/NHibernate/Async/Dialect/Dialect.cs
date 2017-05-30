@@ -65,7 +65,7 @@ namespace NHibernate.Dialect
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The extracted result set. </returns>
 		/// <throws>  SQLException Indicates problems extracting the result set. </throws>
-		public virtual Task<DbDataReader> GetResultSetAsync(DbCommand statement, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual Task<DbDataReader> GetResultSetAsync(DbCommand statement, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

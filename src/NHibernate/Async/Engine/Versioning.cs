@@ -30,7 +30,7 @@ namespace NHibernate.Engine
 		/// <param name="session">The current <see cref="ISession" />.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>Returns the next value for the version.</returns>
-		public static async Task<object> IncrementAsync(object version, IVersionType versionType, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task<object> IncrementAsync(object version, IVersionType versionType, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object next = await (versionType.NextAsync(version, session, cancellationToken)).ConfigureAwait(false);
@@ -50,7 +50,7 @@ namespace NHibernate.Engine
 		/// <param name="session">The current <see cref="ISession" />.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>A seed value to initialize the versioned property with.</returns>
-		public static async Task<object> SeedAsync(IVersionType versionType, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task<object> SeedAsync(IVersionType versionType, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object seed = await (versionType.SeedAsync(session, cancellationToken)).ConfigureAwait(false);
@@ -71,7 +71,7 @@ namespace NHibernate.Engine
 		/// <param name="session">The current session, if any.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns><see langword="true" /> if the version property needs to be seeded with an initial value.</returns>
-		public static async Task<bool> SeedVersionAsync(object[] fields, int versionProperty, IVersionType versionType, bool? force, 																	 ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task<bool> SeedVersionAsync(object[] fields, int versionProperty, IVersionType versionType, bool? force, 																	 ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object initialVersion = fields[versionProperty];

@@ -25,7 +25,7 @@ namespace NHibernate.Type
 	public partial class CustomCollectionType : CollectionType
 	{
 
-		public override Task<object> ReplaceElementsAsync(object original, object target, object owner, IDictionary copyCache, 		                                       ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> ReplaceElementsAsync(object original, object target, object owner, IDictionary copyCache, 		                                       ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

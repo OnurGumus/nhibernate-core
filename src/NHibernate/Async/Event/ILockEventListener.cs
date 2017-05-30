@@ -20,6 +20,6 @@ namespace NHibernate.Event
 		/// <summary>Handle the given lock event. </summary>
 		/// <param name="event">The lock event to be handled. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task OnLockAsync(LockEvent @event, CancellationToken cancellationToken = default(CancellationToken));
+		Task OnLockAsync(LockEvent @event, CancellationToken cancellationToken);
 	}
 }

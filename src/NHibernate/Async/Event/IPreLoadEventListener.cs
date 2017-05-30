@@ -22,6 +22,6 @@ namespace NHibernate.Event
 		/// </summary>
 		/// <param name="event"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task OnPreLoadAsync(PreLoadEvent @event, CancellationToken cancellationToken = default(CancellationToken));
+		Task OnPreLoadAsync(PreLoadEvent @event, CancellationToken cancellationToken);
 	}
 }

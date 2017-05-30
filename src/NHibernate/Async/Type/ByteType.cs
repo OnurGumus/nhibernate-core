@@ -25,7 +25,7 @@ namespace NHibernate.Type
 	public partial class ByteType : PrimitiveType, IDiscriminatorType, IVersionType
 	{
 
-		public virtual Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -41,7 +41,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public virtual Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

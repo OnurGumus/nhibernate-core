@@ -37,7 +37,7 @@ namespace NHibernate.Driver
 		/// pick up the <see cref="DbDataReader"/> midstream so that the underlying <see cref="DbDataReader"/> can be closed 
 		/// so a new one can be opened.
 		/// </remarks>
-		public static async Task<NDataReader> CreateAsync(DbDataReader reader, bool isMidstream, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task<NDataReader> CreateAsync(DbDataReader reader, bool isMidstream, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var dataReader = new NDataReader();
@@ -89,7 +89,7 @@ namespace NHibernate.Driver
 			/// to start reading from.
 			/// </param>
 			/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-			internal static async Task<NResult> CreateAsync(DbDataReader reader, bool isMidstream, CancellationToken cancellationToken = default(CancellationToken))
+			internal static async Task<NResult> CreateAsync(DbDataReader reader, bool isMidstream, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				var result = new NResult

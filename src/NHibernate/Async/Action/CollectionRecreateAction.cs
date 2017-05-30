@@ -31,7 +31,7 @@ namespace NHibernate.Action
 		/// This method is called when a new non-null collection is persisted
 		/// or when an existing (non-null) collection is moved to a new owner
 		/// </remarks>
-		public override async Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task ExecuteAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			bool statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
@@ -58,7 +58,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task PreRecreateAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task PreRecreateAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IPreCollectionRecreateEventListener[] preListeners = Session.Listeners.PreCollectionRecreateEventListeners;
@@ -72,7 +72,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task PostRecreateAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task PostRecreateAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IPostCollectionRecreateEventListener[] postListeners = Session.Listeners.PostCollectionRecreateEventListeners;

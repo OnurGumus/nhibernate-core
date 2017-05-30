@@ -31,7 +31,7 @@ namespace NHibernate.Id
 		public partial class InsertSelectDelegate : AbstractReturningDelegate, IInsertGeneratedIdentifierDelegate
 		{
 
-			protected internal override Task<DbCommand> PrepareAsync(SqlCommandInfo insertSQL, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+			protected internal override Task<DbCommand> PrepareAsync(SqlCommandInfo insertSQL, ISessionImplementor session, CancellationToken cancellationToken)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{
@@ -40,7 +40,7 @@ namespace NHibernate.Id
 				return session.Batcher.PrepareCommandAsync(CommandType.Text, insertSQL.Text, insertSQL.ParameterTypes, cancellationToken);
 			}
 
-			public override async Task<object> ExecuteAndExtractAsync(DbCommand insert, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+			public override async Task<object> ExecuteAndExtractAsync(DbCommand insert, ISessionImplementor session, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				var rs = await (session.Batcher.ExecuteReaderAsync(insert, cancellationToken)).ConfigureAwait(false);
@@ -61,7 +61,7 @@ namespace NHibernate.Id
 		public partial class BasicDelegate : AbstractSelectingDelegate, IInsertGeneratedIdentifierDelegate
 		{
 
-			protected internal override Task<object> GetResultAsync(ISessionImplementor session, DbDataReader rs, object obj, CancellationToken cancellationToken = default(CancellationToken))
+			protected internal override Task<object> GetResultAsync(ISessionImplementor session, DbDataReader rs, object obj, CancellationToken cancellationToken)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{

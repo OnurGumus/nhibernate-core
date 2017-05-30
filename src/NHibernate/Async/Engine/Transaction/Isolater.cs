@@ -31,7 +31,7 @@ namespace NHibernate.Engine.Transaction
 		/// <param name="work">The work to be performed. </param>
 		/// <param name="session">The session from which this request is originating. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public static Task DoIsolatedWorkAsync(IIsolatedWork work, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public static Task DoIsolatedWorkAsync(IIsolatedWork work, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -47,7 +47,7 @@ namespace NHibernate.Engine.Transaction
 		/// <param name="work">The work to be performed. </param>
 		/// <param name="session">The session from which this request is originating. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public static Task DoNonTransactedWorkAsync(IIsolatedWork work, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public static Task DoNonTransactedWorkAsync(IIsolatedWork work, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

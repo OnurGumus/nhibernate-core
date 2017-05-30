@@ -34,7 +34,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 	public partial class BasicExecutor : AbstractStatementExecutor
 	{
 
-		public override async Task<int> ExecuteAsync(QueryParameters parameters, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<int> ExecuteAsync(QueryParameters parameters, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			CoordinateSharedCacheCleanup(session);

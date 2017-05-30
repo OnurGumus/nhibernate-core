@@ -35,7 +35,7 @@ namespace NHibernate.Persister.Collection
 	public partial class OneToManyPersister : AbstractCollectionPersister
 	{
 
-		protected override async Task<int> DoUpdateRowsAsync(object id, IPersistentCollection collection, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		protected override async Task<int> DoUpdateRowsAsync(object id, IPersistentCollection collection, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			// we finish all the "removes" first to take care of possible unique 

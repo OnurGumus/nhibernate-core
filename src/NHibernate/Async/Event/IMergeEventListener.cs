@@ -22,12 +22,12 @@ namespace NHibernate.Event
 		/// <summary> Handle the given merge event. </summary>
 		/// <param name="event">The merge event to be handled. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task OnMergeAsync(MergeEvent @event, CancellationToken cancellationToken = default(CancellationToken));
+		Task OnMergeAsync(MergeEvent @event, CancellationToken cancellationToken);
 
 		/// <summary> Handle the given merge event. </summary>
 		/// <param name="event">The merge event to be handled. </param>
 		/// <param name="copiedAlready"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task OnMergeAsync(MergeEvent @event, IDictionary copiedAlready, CancellationToken cancellationToken = default(CancellationToken));
+		Task OnMergeAsync(MergeEvent @event, IDictionary copiedAlready, CancellationToken cancellationToken);
 	}
 }

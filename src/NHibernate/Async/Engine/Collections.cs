@@ -30,7 +30,7 @@ namespace NHibernate.Engine
 		/// <param name="coll">The collection to be updated by unreachability. </param>
 		/// <param name="session">The session.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public static Task ProcessUnreachableCollectionAsync(IPersistentCollection coll, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public static Task ProcessUnreachableCollectionAsync(IPersistentCollection coll, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -53,7 +53,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private static Task ProcessDereferencedCollectionAsync(IPersistentCollection coll, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		private static Task ProcessDereferencedCollectionAsync(IPersistentCollection coll, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -64,8 +64,10 @@ namespace NHibernate.Engine
 				IPersistenceContext persistenceContext = session.PersistenceContext;
 				CollectionEntry entry = persistenceContext.GetCollectionEntry(coll);
 				ICollectionPersister loadedPersister = entry.LoadedPersister;
+
 				if (log.IsDebugEnabled && loadedPersister != null)
 					log.Debug("Collection dereferenced: " + MessageHelper.CollectionInfoString(loadedPersister, coll, entry.LoadedKey, session));
+
 				// do a check
 				bool hasOrphanDelete = loadedPersister != null && loadedPersister.HasOrphanDelete;
 				if (hasOrphanDelete)
@@ -96,7 +98,6 @@ namespace NHibernate.Engine
 					{
 						return Task.FromException<object>(new AssertionFailure("collection owner not associated with session: " + loadedPersister.Role));
 					}
-
 					EntityEntry e = persistenceContext.GetEntry(owner);
 					//only collections belonging to deleted entities are allowed to be dereferenced in the case of orphan delete
 					if (e != null && e.Status != Status.Deleted && e.Status != Status.Gone)
@@ -116,7 +117,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private static Task ProcessNeverReferencedCollectionAsync(IPersistentCollection coll, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		private static Task ProcessNeverReferencedCollectionAsync(IPersistentCollection coll, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -125,9 +126,12 @@ namespace NHibernate.Engine
 			try
 			{
 				CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(coll);
+
 				log.Debug("Found collection with unloaded owner: " + MessageHelper.CollectionInfoString(entry.LoadedPersister, coll, entry.LoadedKey, session));
+
 				entry.CurrentPersister = entry.LoadedPersister;
 				entry.CurrentKey = entry.LoadedKey;
+
 				return PrepareCollectionForUpdateAsync(coll, entry, session.Factory, cancellationToken);
 			}
 			catch (System.Exception ex)
@@ -144,7 +148,7 @@ namespace NHibernate.Engine
 		/// <param name="entity">The owner of the collection. </param>
 		/// <param name="session">The session.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public static Task ProcessReachableCollectionAsync(IPersistentCollection collection, CollectionType type, object entity, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public static Task ProcessReachableCollectionAsync(IPersistentCollection collection, CollectionType type, object entity, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -154,6 +158,7 @@ namespace NHibernate.Engine
 			{
 				collection.Owner = entity;
 				CollectionEntry ce = session.PersistenceContext.GetCollectionEntry(collection);
+
 				if (ce == null)
 				{
 					// refer to comment in StatefulPersistenceContext.addCollection()
@@ -167,15 +172,19 @@ namespace NHibernate.Engine
 					// We've been here before
 					return Task.FromException<object>(new HibernateException(string.Format("Found shared references to a collection: {0}", type.Role)));
 				}
-
 				ce.IsReached = true;
+
 				ISessionFactoryImplementor factory = session.Factory;
 				ICollectionPersister persister = factory.GetCollectionPersister(type.Role);
 				ce.CurrentPersister = persister;
 				ce.CurrentKey = type.GetKeyOfOwner(entity, session); //TODO: better to pass the id in as an argument?
+
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("Collection found: " + MessageHelper.CollectionInfoString(persister, collection, ce.CurrentKey, session) + ", was: " + MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, session) + (collection.WasInitialized ? " (initialized)" : " (uninitialized)"));
+					log.Debug("Collection found: " + 
+						  MessageHelper.CollectionInfoString(persister, collection, ce.CurrentKey, session) + ", was: " +
+						  MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, session) + 
+						  (collection.WasInitialized ? " (initialized)" : " (uninitialized)"));
 				}
 
 				return PrepareCollectionForUpdateAsync(collection, ce, factory, cancellationToken);
@@ -186,7 +195,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private static Task PrepareCollectionForUpdateAsync(IPersistentCollection collection, CollectionEntry entry, ISessionFactoryImplementor factory, CancellationToken cancellationToken = default(CancellationToken))
+		private static Task PrepareCollectionForUpdateAsync(IPersistentCollection collection, CollectionEntry entry, ISessionFactoryImplementor factory, CancellationToken cancellationToken)
 		{
 			//1. record the collection role that this collection is referenced by
 			//2. decide if the collection needs deleting/creating/updating (but don't actually schedule the action yet)
@@ -199,17 +208,23 @@ namespace NHibernate.Engine
 			}
 			try
 			{
+
 				entry.IsProcessed = true;
+
 				ICollectionPersister loadedPersister = entry.LoadedPersister;
 				ICollectionPersister currentPersister = entry.CurrentPersister;
 				if (loadedPersister != null || currentPersister != null)
 				{
 					// it is or was referenced _somewhere_
-					bool ownerChanged = loadedPersister != currentPersister || !currentPersister.KeyType.IsEqual(entry.LoadedKey, entry.CurrentKey, factory);
+					bool ownerChanged = loadedPersister != currentPersister ||
+					!currentPersister.KeyType.IsEqual(entry.LoadedKey, entry.CurrentKey, factory);
+
 					if (ownerChanged)
 					{
 						// do a check
-						bool orphanDeleteAndRoleChanged = loadedPersister != null && currentPersister != null && loadedPersister.HasOrphanDelete;
+						bool orphanDeleteAndRoleChanged = loadedPersister != null && 
+						currentPersister != null && loadedPersister.HasOrphanDelete;
+
 						if (orphanDeleteAndRoleChanged)
 						{
 							return Task.FromException<object>(new HibernateException("Don't change the reference to a collection with cascade=\"all-delete-orphan\": " + loadedPersister.Role));
@@ -237,7 +252,6 @@ namespace NHibernate.Engine
 						entry.IsDoupdate = true;
 					}
 				}
-
 				return Task.CompletedTask;
 			}
 			catch (System.Exception ex)

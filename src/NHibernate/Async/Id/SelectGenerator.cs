@@ -42,7 +42,7 @@ namespace NHibernate.Id
 		public partial class SelectGeneratorDelegate : AbstractSelectingDelegate
 		{
 
-			protected internal override async Task<object> GetResultAsync(ISessionImplementor session, DbDataReader rs, object entity, CancellationToken cancellationToken = default(CancellationToken))
+			protected internal override async Task<object> GetResultAsync(ISessionImplementor session, DbDataReader rs, object entity, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				if (!await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false))

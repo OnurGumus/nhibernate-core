@@ -31,7 +31,7 @@ namespace NHibernate.Id.Enhanced
 
 		#region Implementation of IIdentifierGenerator
 
-		public virtual Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

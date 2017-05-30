@@ -33,7 +33,7 @@ namespace NHibernate.Id.Enhanced
 			private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();
 
 			[MethodImpl()]
-			public override async Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken = default(CancellationToken))
+			public override async Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				using (await _generate.LockAsync())
@@ -48,6 +48,7 @@ namespace NHibernate.Id.Enhanced
 
 						// upperLimit defines the upper end of the bucket values
 						_upperLimit = (_lastSourceValue * IncrementSize) + 1;
+
 						// initialize value to the low end of the bucket
 						_value = _upperLimit - IncrementSize;
 					}
@@ -56,7 +57,6 @@ namespace NHibernate.Id.Enhanced
 						_lastSourceValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
 						_upperLimit = (_lastSourceValue * IncrementSize) + 1;
 					}
-
 					return Make(_value++);
 				}
 			}
@@ -72,7 +72,7 @@ namespace NHibernate.Id.Enhanced
 		public partial class NoopOptimizer : OptimizerSupport
 		{
 
-			public override async Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken = default(CancellationToken))
+			public override async Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				// We must use a local variable here to avoid concurrency issues.
@@ -102,7 +102,7 @@ namespace NHibernate.Id.Enhanced
 
 			#region IOptimizer Members
 
-			public abstract Task<object> GenerateAsync(IAccessCallback param, CancellationToken cancellationToken = default(CancellationToken));
+			public abstract Task<object> GenerateAsync(IAccessCallback param, CancellationToken cancellationToken);
 
 			#endregion
 		}
@@ -119,7 +119,7 @@ namespace NHibernate.Id.Enhanced
 			private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();
 
 			[MethodImpl()]
-			public override async Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken = default(CancellationToken))
+			public override async Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				using (await _generate.LockAsync())
@@ -149,7 +149,6 @@ namespace NHibernate.Id.Enhanced
 						_hiValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
 						_value = _hiValue - IncrementSize;
 					}
-
 					return Make(_value++);
 				}
 			}
@@ -167,7 +166,7 @@ namespace NHibernate.Id.Enhanced
 			private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();
 
 			[MethodImpl()]
-			public override async Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken = default(CancellationToken))
+			public override async Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				using (await _generate.LockAsync())
@@ -180,11 +179,9 @@ namespace NHibernate.Id.Enhanced
 						while (_value < 1)
 							_value++;
 					}
-
 					return Make(_value++);
 				}
 			}
-
 		}
 
 		#endregion

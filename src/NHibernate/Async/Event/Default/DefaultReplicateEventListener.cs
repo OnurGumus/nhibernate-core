@@ -24,7 +24,7 @@ namespace NHibernate.Event.Default
 	public partial class DefaultReplicateEventListener : AbstractSaveEventListener, IReplicateEventListener
 	{
 
-		public virtual async Task OnReplicateAsync(ReplicateEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task OnReplicateAsync(ReplicateEvent @event, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IEventSource source = @event.Session;
@@ -111,7 +111,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		private async Task PerformReplicationAsync(object entity, object id, object version, IEntityPersister persister, ReplicationMode replicationMode, IEventSource source, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task PerformReplicationAsync(object entity, object id, object version, IEntityPersister persister, ReplicationMode replicationMode, IEventSource source, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)
@@ -136,7 +136,7 @@ namespace NHibernate.Event.Default
 			await (CascadeAfterReplicateAsync(entity, persister, replicationMode, source, cancellationToken)).ConfigureAwait(false);
 		}
 
-		private async Task CascadeAfterReplicateAsync(object entity, IEntityPersister persister, ReplicationMode replicationMode, IEventSource source, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task CascadeAfterReplicateAsync(object entity, IEntityPersister persister, ReplicationMode replicationMode, IEventSource source, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			source.PersistenceContext.IncrementCascadeLevel();
@@ -150,7 +150,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected override Task<bool> SubstituteValuesIfNecessaryAsync(object entity, object id, object[] values, IEntityPersister persister, ISessionImplementor source, CancellationToken cancellationToken = default(CancellationToken))
+		protected override Task<bool> SubstituteValuesIfNecessaryAsync(object entity, object id, object[] values, IEntityPersister persister, ISessionImplementor source, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -166,7 +166,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		protected override async Task<bool> VisitCollectionsBeforeSaveAsync(object entity, object id, object[] values, Type.IType[] types, IEventSource source, CancellationToken cancellationToken = default(CancellationToken))
+		protected override async Task<bool> VisitCollectionsBeforeSaveAsync(object entity, object id, object[] values, Type.IType[] types, IEventSource source, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			//TODO: we use two visitors here, inefficient!

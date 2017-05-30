@@ -25,7 +25,7 @@ namespace NHibernate.Id.Insert
 
 		#region IInsertGeneratedIdentifierDelegate Members
 
-		public async Task<object> PerformInsertAsync(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> PerformInsertAsync(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			try
@@ -51,8 +51,8 @@ namespace NHibernate.Id.Insert
 
 		#endregion
 
-		protected internal abstract Task<DbCommand> PrepareAsync(SqlCommandInfo insertSQL, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		protected internal abstract Task<DbCommand> PrepareAsync(SqlCommandInfo insertSQL, ISessionImplementor session, CancellationToken cancellationToken);
 
-		public abstract Task<object> ExecuteAndExtractAsync(DbCommand insert, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task<object> ExecuteAndExtractAsync(DbCommand insert, ISessionImplementor session, CancellationToken cancellationToken);
 	}
 }

@@ -22,6 +22,6 @@ namespace NHibernate.Loader.Collection
 		/// <summary>
 		/// Initialize the given collection
 		/// </summary>
-		Task InitializeAsync(object id, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken));
+		Task InitializeAsync(object id, ISessionImplementor session, CancellationToken cancellationToken);
 	}
 }

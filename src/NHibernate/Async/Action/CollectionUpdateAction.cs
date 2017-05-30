@@ -28,7 +28,7 @@ namespace NHibernate.Action
 	public sealed partial class CollectionUpdateAction : CollectionAction
 	{
 
-		public override async Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task ExecuteAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object id = Key;
@@ -94,7 +94,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task PreUpdateAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task PreUpdateAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IPreCollectionUpdateEventListener[] preListeners = Session.Listeners.PreCollectionUpdateEventListeners;
@@ -108,7 +108,7 @@ namespace NHibernate.Action
 			}
 		}
 
-		private async Task PostUpdateAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task PostUpdateAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IPostCollectionUpdateEventListener[] postListeners = Session.Listeners.PostCollectionUpdateEventListeners;

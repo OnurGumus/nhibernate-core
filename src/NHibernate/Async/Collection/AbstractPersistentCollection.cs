@@ -37,7 +37,7 @@ namespace NHibernate.Collection
 		/// <param name="writing">currently obsolete</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <exception cref="LazyInitializationException">if we cannot initialize</exception>
-		protected virtual Task InitializeAsync(bool writing, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual Task InitializeAsync(bool writing, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -51,11 +51,9 @@ namespace NHibernate.Collection
 					{
 						return Task.FromException<object>(new LazyInitializationException("illegal access to loading collection"));
 					}
-
 					ThrowLazyInitializationExceptionIfNotConnected();
 					return session.InitializeCollectionAsync(this, writing, cancellationToken);
 				}
-
 				return Task.CompletedTask;
 			}
 			catch (Exception ex)
@@ -72,7 +70,7 @@ namespace NHibernate.Collection
 		/// <remarks>
 		/// This method is similar to <see cref="InitializeAsync(bool,CancellationToken)" />, except that different exceptions are thrown.
 		/// </remarks>
-		public virtual Task ForceInitializationAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public virtual Task ForceInitializationAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -86,20 +84,16 @@ namespace NHibernate.Collection
 					{
 						return Task.FromException<object>(new AssertionFailure("force initialize loading collection"));
 					}
-
 					if (session == null)
 					{
 						return Task.FromException<object>(new HibernateException("collection is not associated with any session"));
 					}
-
 					if (!session.IsConnected)
 					{
 						return Task.FromException<object>(new HibernateException("disconnected session"));
 					}
-
 					return session.InitializeCollectionAsync(this, false, cancellationToken);
 				}
-
 				return Task.CompletedTask;
 			}
 			catch (Exception ex)
@@ -108,7 +102,7 @@ namespace NHibernate.Collection
 			}
 		}
 
-		public Task<ICollection> GetQueuedOrphansAsync(string entityName, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<ICollection> GetQueuedOrphansAsync(string entityName, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -127,13 +121,11 @@ namespace NHibernate.Collection
 						{
 							additions.Add(op.AddedInstance);
 						}
-
 						if (op.Orphan != null)
 						{
 							removals.Add(op.Orphan);
 						}
 					}
-
 					return GetOrphansAsync(removals, additions, entityName, session, cancellationToken);
 				}
 
@@ -150,7 +142,7 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="persister"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public virtual Task PreInsertAsync(ICollectionPersister persister, CancellationToken cancellationToken = default(CancellationToken)) {			if (cancellationToken.IsCancellationRequested)
+		public virtual Task PreInsertAsync(ICollectionPersister persister, CancellationToken cancellationToken) {			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
@@ -168,14 +160,14 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Get all "orphaned" elements
 		/// </summary>
-		public abstract Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken);
 
 		/// <summary> 
 		/// Given a collection of entity instances that used to
 		/// belong to the collection, and a collection of instances
 		/// that currently belong, return a collection of orphans
 		/// </summary>
-		protected virtual async Task<ICollection> GetOrphansAsync(ICollection oldElements, ICollection currentElements, string entityName, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task<ICollection> GetOrphansAsync(ICollection oldElements, ICollection currentElements, string entityName, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			// short-circuit(s)
@@ -219,7 +211,7 @@ namespace NHibernate.Collection
 			return res;
 		}
 
-		public async Task IdentityRemoveAsync(IList list, object obj, string entityName, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task IdentityRemoveAsync(IList list, object obj, string entityName, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (obj != null && await (ForeignKeys.IsNotTransientSlowAsync(entityName, obj, session, cancellationToken)).ConfigureAwait(false))
@@ -254,7 +246,7 @@ namespace NHibernate.Collection
 		/// <param name="disassembled"></param>
 		/// <param name="owner"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public abstract Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Reads the row from the <see cref="DbDataReader"/>.
@@ -265,7 +257,7 @@ namespace NHibernate.Collection
 		/// <param name="owner">The owner of this Collection.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The object that was contained in the row.</returns>
-		public abstract Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, 										object owner, CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, 										object owner, CancellationToken cancellationToken);
 
 		#region - Hibernate Collection Proxy Classes
 

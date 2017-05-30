@@ -32,7 +32,7 @@ namespace NHibernate.Type
 	public abstract partial class CollectionType : AbstractType, IAssociationType
 	{
 
-		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -41,7 +41,7 @@ namespace NHibernate.Type
 			return NullSafeGetAsync(rs, new string[] { name }, session, owner, cancellationToken);
 		}
 
-		public override Task<object> NullSafeGetAsync(DbDataReader rs, string[] name, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> NullSafeGetAsync(DbDataReader rs, string[] name, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -50,7 +50,7 @@ namespace NHibernate.Type
 			return ResolveIdentifierAsync(null, session, owner, cancellationToken);
 		}
 
-		public override async Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			//we must use the "remembered" uk value, since it is 
@@ -66,7 +66,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<object> HydrateAsync(DbDataReader rs, string[] name, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> HydrateAsync(DbDataReader rs, string[] name, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -82,7 +82,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<object> ResolveIdentifierAsync(object key, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> ResolveIdentifierAsync(object key, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -98,16 +98,16 @@ namespace NHibernate.Type
 			}
 		}
 
-		private Task<object> ResolveKeyAsync(object key, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		private Task<object> ResolveKeyAsync(object key, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return key == null ? Task.FromResult<object >(null ): GetCollectionAsync(key, session, owner, cancellationToken);
+			return key == null ? Task.FromResult<object>(null ): GetCollectionAsync(key, session, owner, cancellationToken);
 		}
 
-		public async Task<object> GetCollectionAsync(object key, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> GetCollectionAsync(object key, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ICollectionPersister persister = GetPersister(session);
@@ -152,7 +152,7 @@ namespace NHibernate.Type
 			return collection.GetValue();
 		}
 
-		public override Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken = default(CancellationToken))
+		public override Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -161,7 +161,7 @@ namespace NHibernate.Type
 			throw new NotSupportedException("collection mappings may not form part of a property-ref");
 		}
 
-		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, 									   IDictionary copyCache, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, 									   IDictionary copyCache, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (original == null)
@@ -194,7 +194,7 @@ namespace NHibernate.Type
 			return result;
 		}
 
-		public virtual async Task<object> ReplaceElementsAsync(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task<object> ReplaceElementsAsync(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var elemType = GetElementType(session.Factory);

@@ -40,7 +40,7 @@ namespace NHibernate.Dialect
 		#endregion
 		#region Callable statement support
 
-		public override async Task<DbDataReader> GetResultSetAsync(DbCommand statement, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<DbDataReader> GetResultSetAsync(DbCommand statement, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var rdr = await (statement.ExecuteReaderAsync(cancellationToken)).ConfigureAwait(false);

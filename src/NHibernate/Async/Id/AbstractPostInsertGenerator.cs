@@ -30,7 +30,7 @@ namespace NHibernate.Id
 		/// <c>IdentityColumnIndicator</c> Indicates to the Session that identity (i.e. identity/autoincrement column)
 		/// key generation should be used.
 		/// </returns>
-		public Task<object> GenerateAsync(ISessionImplementor s, object obj, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object> GenerateAsync(ISessionImplementor s, object obj, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

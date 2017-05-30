@@ -29,7 +29,7 @@ namespace NHibernate.Type
 	{
 
 		public override async Task<object> ReplaceElementsAsync(
-			object original, 			object target, 			object owner, 			IDictionary copyCache, 			ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+			object original, 			object target, 			object owner, 			IDictionary copyCache, 			ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var elemType = GetElementType(session.Factory);

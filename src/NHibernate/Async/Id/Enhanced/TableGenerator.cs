@@ -37,7 +37,7 @@ namespace NHibernate.Id.Enhanced
 
 
 		[MethodImpl()]
-		public virtual async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await _generate.LockAsync())
@@ -45,7 +45,6 @@ namespace NHibernate.Id.Enhanced
 				return await (Optimizer.GenerateAsync(new TableAccessCallback(session, this), cancellationToken)).ConfigureAwait(false);
 			}
 		}
-
 
 
 		/// <content>
@@ -56,7 +55,7 @@ namespace NHibernate.Id.Enhanced
 
 			#region IAccessCallback Members
 
-			public async Task<long> GetNextValueAsync(CancellationToken cancellationToken = default(CancellationToken))
+			public async Task<long> GetNextValueAsync(CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				return Convert.ToInt64(await (owner.DoWorkInNewTransactionAsync(session, cancellationToken)).ConfigureAwait(false));
@@ -66,7 +65,7 @@ namespace NHibernate.Id.Enhanced
 		}
 
 
-		public override async Task<object> DoWorkInCurrentTransactionAsync(ISessionImplementor session, DbConnection conn, DbTransaction transaction, CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<object> DoWorkInCurrentTransactionAsync(ISessionImplementor session, DbConnection conn, DbTransaction transaction, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			long result;

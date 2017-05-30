@@ -24,6 +24,6 @@ namespace NHibernate.Id.Enhanced
 		/// <param name="callback">Callback to access the underlying value source. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The generated identifier value.</returns>
-		Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken = default(CancellationToken));
+		Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken);
 	}
 }

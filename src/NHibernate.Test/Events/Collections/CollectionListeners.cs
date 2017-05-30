@@ -6,7 +6,7 @@ using NHibernate.Impl;
 
 namespace NHibernate.Test.Events.Collections
 {
-	public class CollectionListeners
+	public partial class CollectionListeners
 	{
 		private readonly IList<AbstractCollectionEvent> events = new List<AbstractCollectionEvent>();
 
@@ -166,7 +166,7 @@ namespace NHibernate.Test.Events.Collections
 
 		#region Nested type: PostCollectionRecreateListener
 
-		public class PostCollectionRecreateListener : AbstractListener, IPostCollectionRecreateEventListener
+		public partial class PostCollectionRecreateListener : AbstractListener, IPostCollectionRecreateEventListener
 		{
 			public PostCollectionRecreateListener(CollectionListeners listeners) : base(listeners) {}
 
@@ -184,7 +184,7 @@ namespace NHibernate.Test.Events.Collections
 
 		#region Nested type: PostCollectionRemoveListener
 
-		public class PostCollectionRemoveListener : AbstractListener, IPostCollectionRemoveEventListener
+		public partial class PostCollectionRemoveListener : AbstractListener, IPostCollectionRemoveEventListener
 		{
 			public PostCollectionRemoveListener(CollectionListeners listeners) : base(listeners) {}
 
@@ -202,7 +202,7 @@ namespace NHibernate.Test.Events.Collections
 
 		#region Nested type: PostCollectionUpdateListener
 
-		public class PostCollectionUpdateListener : AbstractListener, IPostCollectionUpdateEventListener
+		public partial class PostCollectionUpdateListener : AbstractListener, IPostCollectionUpdateEventListener
 		{
 			public PostCollectionUpdateListener(CollectionListeners listeners) : base(listeners) {}
 
@@ -220,7 +220,7 @@ namespace NHibernate.Test.Events.Collections
 
 		#region Nested type: PreCollectionRecreateListener
 
-		public class PreCollectionRecreateListener : AbstractListener, IPreCollectionRecreateEventListener
+		public partial class PreCollectionRecreateListener : AbstractListener, IPreCollectionRecreateEventListener
 		{
 			public PreCollectionRecreateListener(CollectionListeners listeners) : base(listeners) {}
 
@@ -238,7 +238,7 @@ namespace NHibernate.Test.Events.Collections
 
 		#region Nested type: PreCollectionRemoveListener
 
-		public class PreCollectionRemoveListener : AbstractListener, IPreCollectionRemoveEventListener
+		public partial class PreCollectionRemoveListener : AbstractListener, IPreCollectionRemoveEventListener
 		{
 			public PreCollectionRemoveListener(CollectionListeners listeners) : base(listeners) {}
 
@@ -256,7 +256,7 @@ namespace NHibernate.Test.Events.Collections
 
 		#region Nested type: PreCollectionUpdateListener
 
-		public class PreCollectionUpdateListener : AbstractListener, IPreCollectionUpdateEventListener
+		public partial class PreCollectionUpdateListener : AbstractListener, IPreCollectionUpdateEventListener
 		{
 			public PreCollectionUpdateListener(CollectionListeners listeners) : base(listeners) {}
 

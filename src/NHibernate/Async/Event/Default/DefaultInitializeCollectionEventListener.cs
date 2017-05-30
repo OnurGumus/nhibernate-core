@@ -29,7 +29,7 @@ namespace NHibernate.Event.Default
 	{
 
 		/// <summary> called by a collection that wants to initialize itself</summary>
-		public virtual async Task OnInitializeCollectionAsync(InitializeCollectionEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task OnInitializeCollectionAsync(InitializeCollectionEvent @event, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IPersistentCollection collection = @event.Collection;
@@ -75,7 +75,7 @@ namespace NHibernate.Event.Default
 		}
 
 		/// <summary> Try to initialize a collection from the cache</summary>
-		private async Task<bool> InitializeCollectionFromCacheAsync(object id, ICollectionPersister persister, IPersistentCollection collection, ISessionImplementor source, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<bool> InitializeCollectionFromCacheAsync(object id, ICollectionPersister persister, IPersistentCollection collection, ISessionImplementor source, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 

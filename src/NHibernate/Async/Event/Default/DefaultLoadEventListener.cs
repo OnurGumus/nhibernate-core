@@ -30,7 +30,7 @@ namespace NHibernate.Event.Default
 	public partial class DefaultLoadEventListener : AbstractLockUpgradeEventListener, ILoadEventListener
 	{
 
-		public virtual async Task OnLoadAsync(LoadEvent @event, LoadType loadType, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task OnLoadAsync(LoadEvent @event, LoadType loadType, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ISessionImplementor source = @event.Session;
@@ -103,7 +103,7 @@ namespace NHibernate.Event.Default
 
 		/// <summary> Perfoms the load of an entity. </summary>
 		/// <returns> The loaded entity. </returns>
-		protected virtual async Task<object> LoadAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task<object> LoadAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (@event.InstanceToLoad != null)
@@ -140,7 +140,7 @@ namespace NHibernate.Event.Default
 		/// generate a new proxy, or perform an actual load.
 		/// </summary>
 		/// <returns> The result of the proxy/load operation.</returns>
-		protected virtual Task<object> ProxyOrLoadAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual Task<object> ProxyOrLoadAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -161,6 +161,7 @@ namespace NHibernate.Event.Default
 				else
 				{
 					IPersistenceContext persistenceContext = @event.Session.PersistenceContext;
+
 					// look for a proxy
 					object proxy = persistenceContext.GetProxy(keyToLoad);
 					if (proxy != null)
@@ -191,7 +192,7 @@ namespace NHibernate.Event.Default
 		/// Given that there is a pre-existing proxy.
 		/// Initialize it if necessary; narrow if necessary.
 		/// </summary>
-		private async Task<object> ReturnNarrowedProxyAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, IPersistenceContext persistenceContext, object proxy, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<object> ReturnNarrowedProxyAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, IPersistenceContext persistenceContext, object proxy, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("entity proxy found in session cache");
@@ -224,7 +225,7 @@ namespace NHibernate.Event.Default
 		/// given id in that cache and then perform the load.
 		/// </summary>
 		/// <returns> The loaded entity </returns>
-		protected virtual async Task<object> LockAndLoadAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, ISessionImplementor source, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task<object> LockAndLoadAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, ISessionImplementor source, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ISoftLock sLock = null;
@@ -268,7 +269,7 @@ namespace NHibernate.Event.Default
 		/// <param name="options">The load options. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The loaded entity, or null. </returns>
-		protected virtual async Task<object> DoLoadAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task<object> DoLoadAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (log.IsDebugEnabled)
@@ -323,7 +324,7 @@ namespace NHibernate.Event.Default
 		/// <param name="options">The load options. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The object loaded from the datasource, or null if not found. </returns>
-		protected virtual async Task<object> LoadFromDatasourceAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task<object> LoadFromDatasourceAsync(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ISessionImplementor source = @event.Session;
@@ -362,7 +363,7 @@ namespace NHibernate.Event.Default
 		/// session-level cache, it's current status within the session cache
 		/// is checked to see if it has previously been scheduled for deletion.
 		/// </remarks>
-		protected virtual async Task<object> LoadFromSessionCacheAsync(LoadEvent @event, EntityKey keyToLoad, LoadType options, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task<object> LoadFromSessionCacheAsync(LoadEvent @event, EntityKey keyToLoad, LoadType options, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ISessionImplementor session = @event.Session;
@@ -400,7 +401,7 @@ namespace NHibernate.Event.Default
 		/// <param name="options">The load options. </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The entity from the second-level cache, or null. </returns>
-		protected virtual Task<object> LoadFromSecondLevelCacheAsync(LoadEvent @event, IEntityPersister persister, LoadType options, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual Task<object> LoadFromSecondLevelCacheAsync(LoadEvent @event, IEntityPersister persister, LoadType options, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -409,12 +410,16 @@ namespace NHibernate.Event.Default
 			try
 			{
 				ISessionImplementor source = @event.Session;
-				bool useCache = persister.HasCache && ((source.CacheMode & CacheMode.Get) == CacheMode.Get) && @event.LockMode.LessThan(LockMode.Read);
+				bool useCache = persister.HasCache && ((source.CacheMode & CacheMode.Get) == CacheMode.Get)
+				&& @event.LockMode.LessThan(LockMode.Read);
+
 				if (useCache)
 				{
 					ISessionFactoryImplementor factory = source.Factory;
+
 					CacheKey ck = source.GenerateCacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName);
 					object ce = persister.Cache.Get(ck, source.Timestamp);
+
 					if (factory.Statistics.IsStatisticsEnabled)
 					{
 						if (ce == null)
@@ -431,7 +436,8 @@ namespace NHibernate.Event.Default
 
 					if (ce != null)
 					{
-						CacheEntry entry = (CacheEntry)persister.CacheEntryStructure.Destructure(ce, factory);
+						CacheEntry entry = (CacheEntry) persister.CacheEntryStructure.Destructure(ce, factory);
+
 						// Entity was found in second-level cache...
 						// NH: Different behavior (take a look to options.ExactPersister (NH-295))
 						if (!options.ExactPersister || persister.EntityMetamodel.SubclassEntityNames.Contains(entry.Subclass))
@@ -449,7 +455,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		private async Task<object> AssembleCacheEntryAsync(CacheEntry entry, object id, IEntityPersister persister, LoadEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<object> AssembleCacheEntryAsync(CacheEntry entry, object id, IEntityPersister persister, LoadEvent @event, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object optionalObject = @event.InstanceToLoad;

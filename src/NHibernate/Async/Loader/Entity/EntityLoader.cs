@@ -23,7 +23,7 @@ namespace NHibernate.Loader.Entity
 	public partial class EntityLoader : AbstractEntityLoader
 	{
 
-		public Task<object> LoadByUniqueKeyAsync(ISessionImplementor session, object key, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<object> LoadByUniqueKeyAsync(ISessionImplementor session, object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

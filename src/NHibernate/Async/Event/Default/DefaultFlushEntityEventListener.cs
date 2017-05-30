@@ -31,7 +31,7 @@ namespace NHibernate.Event.Default
 		/// <summary>
 		/// Flushes a single entity's state to the database, by scheduling an update action, if necessary
 		/// </summary>
-		public virtual async Task OnFlushEntityAsync(FlushEntityEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual async Task OnFlushEntityAsync(FlushEntityEvent @event, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object entity = @event.Entity;
@@ -70,7 +70,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		private async Task<object[]> GetValuesAsync(object entity, EntityEntry entry, bool mightBeDirty, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<object[]> GetValuesAsync(object entity, EntityEntry entry, bool mightBeDirty, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object[] loadedState = entry.LoadedState;
@@ -99,7 +99,7 @@ namespace NHibernate.Event.Default
 			return values;
 		}
 
-		private async Task CheckNaturalIdAsync(IEntityPersister persister, EntityEntry entry, object[] current, object[] loaded, ISessionImplementor session, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task CheckNaturalIdAsync(IEntityPersister persister, EntityEntry entry, object[] current, object[] loaded, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (persister.HasNaturalIdentifier && entry.Status != Status.ReadOnly)
@@ -136,7 +136,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		private async Task<bool> WrapCollectionsAsync(IEventSource session, IEntityPersister persister, IType[] types, object[] values, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<bool> WrapCollectionsAsync(IEventSource session, IEntityPersister persister, IType[] types, object[] values, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (persister.HasCollections)
@@ -160,7 +160,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		private async Task<bool> IsUpdateNecessaryAsync(FlushEntityEvent @event, bool mightBeDirty, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<bool> IsUpdateNecessaryAsync(FlushEntityEvent @event, bool mightBeDirty, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			Status status = @event.EntityEntry.Status;
@@ -185,7 +185,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		private async Task<bool> ScheduleUpdateAsync(FlushEntityEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<bool> ScheduleUpdateAsync(FlushEntityEvent @event, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			EntityEntry entry = @event.EntityEntry;
@@ -269,7 +269,7 @@ namespace NHibernate.Event.Default
 			return intercepted;
 		}
 
-		private async Task<object> GetNextVersionAsync(FlushEntityEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<object> GetNextVersionAsync(FlushEntityEvent @event, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			// Convience method to retrieve an entities next version value
@@ -309,7 +309,7 @@ namespace NHibernate.Event.Default
 		/// to synchronize its state to the database. Modifies the event by side-effect!
 		/// Note: this method is quite slow, avoid calling if possible!
 		/// </summary>
-		protected Task<bool> IsUpdateNecessaryAsync(FlushEntityEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		protected Task<bool> IsUpdateNecessaryAsync(FlushEntityEvent @event, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -319,12 +319,14 @@ namespace NHibernate.Event.Default
 			{
 				IEntityPersister persister = @event.EntityEntry.Persister;
 				Status status = @event.EntityEntry.Status;
+
 				if (!@event.DirtyCheckPossible)
 				{
 					return Task.FromResult<bool>(true);
 				}
 				else
 				{
+
 					int[] dirtyProperties = @event.DirtyProperties;
 					if (dirtyProperties != null && dirtyProperties.Length != 0)
 					{
@@ -342,7 +344,7 @@ namespace NHibernate.Event.Default
 			}
 		}
 
-		private async Task<bool> HasDirtyCollectionsAsync(FlushEntityEvent @event, IEntityPersister persister, Status status, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<bool> HasDirtyCollectionsAsync(FlushEntityEvent @event, IEntityPersister persister, Status status, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (IsCollectionDirtyCheckNecessary(persister, status))
@@ -360,7 +362,7 @@ namespace NHibernate.Event.Default
 		}
 
 		/// <summary> Perform a dirty check, and attach the results to the event</summary>
-		protected virtual async Task DirtyCheckAsync(FlushEntityEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+		protected virtual async Task DirtyCheckAsync(FlushEntityEvent @event, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object entity = @event.Entity;
@@ -434,7 +436,7 @@ namespace NHibernate.Event.Default
 		}
 
 
-		private async Task<object[]> GetDatabaseSnapshotAsync(ISessionImplementor session, IEntityPersister persister, object id, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<object[]> GetDatabaseSnapshotAsync(ISessionImplementor session, IEntityPersister persister, object id, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (persister.IsSelectBeforeUpdateRequired)

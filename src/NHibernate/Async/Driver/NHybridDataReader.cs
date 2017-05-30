@@ -28,7 +28,7 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="reader">The underlying DbDataReader to use.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public static Task<NHybridDataReader> CreateAsync(DbDataReader reader, CancellationToken cancellationToken = default(CancellationToken))
+		public static Task<NHybridDataReader> CreateAsync(DbDataReader reader, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -43,7 +43,7 @@ namespace NHibernate.Driver
 		/// <param name="reader">The underlying DbDataReader to use.</param>
 		/// <param name="inMemory"><see langword="true" /> if the contents of the DbDataReader should be read into memory right away.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public static async Task<NHybridDataReader> CreateAsync(DbDataReader reader, bool inMemory, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task<NHybridDataReader> CreateAsync(DbDataReader reader, bool inMemory, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var dataReader = new NHybridDataReader();
@@ -66,7 +66,7 @@ namespace NHibernate.Driver
 		/// <remarks>
 		/// This will result in a no op if the reader is closed or is already in memory.
 		/// </remarks>
-		public async Task ReadIntoMemoryAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public async Task ReadIntoMemoryAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (_reader.IsClosed == false && _reader.GetType() != typeof(NDataReader))
