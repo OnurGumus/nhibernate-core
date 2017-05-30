@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1700
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync
 	{
@@ -27,9 +26,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1700
 				cfg.Configure(TestConfigurationHelper.hibernateConfigFile);
 
 			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1700.Mappings.hbm.xml", GetType().Assembly);
-			await (new SchemaExport(cfg).CreateAsync(false, true, CancellationToken.None));
+			await (new SchemaExport(cfg).CreateAsync(false, true));
 
-			await (new SchemaExport(cfg).DropAsync(false, true, CancellationToken.None));
+			await (new SchemaExport(cfg).DropAsync(false, true));
 		}
 	}
 }

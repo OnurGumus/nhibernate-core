@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1794
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -26,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1794
 			{
 				await (session
 					.CreateQuery("select p.Name, c.Name from Person p join p.Children c")
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 			}
 		}
 
@@ -37,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1794
 			{
 				await (session
 					.CreateQuery("from Person p where p.UpdatedAt is null")
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 			}
 		}
 	}

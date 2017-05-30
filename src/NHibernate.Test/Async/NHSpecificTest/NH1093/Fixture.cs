@@ -61,11 +61,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1093
 		[Description("Without configured cache, shouldn't throw exception")]
 		public async Task NoExceptionAsync()
 		{
-			await (FillDbAsync(CancellationToken.None));
-			await (NormalListAsync(CancellationToken.None));
-			await (CriteriaQueryCacheAsync(CancellationToken.None));
-			await (HqlQueryCacheAsync(CancellationToken.None));
-			await (CleanupAsync(CancellationToken.None));
+			await (FillDbAsync());
+			await (NormalListAsync());
+			await (CriteriaQueryCacheAsync());
+			await (HqlQueryCacheAsync());
+			await (CleanupAsync());
 		}
 
 		private async Task HqlQueryCacheAsync(CancellationToken cancellationToken = default(CancellationToken))

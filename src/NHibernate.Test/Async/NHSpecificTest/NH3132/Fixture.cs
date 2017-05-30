@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3132
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -61,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3132
 			{
 				Product product = await (session.CreateCriteria(typeof (Product))
 					.Add(Restrictions.Eq("Name", "First"))
-					.UniqueResultAsync<Product>(CancellationToken.None));
+					.UniqueResultAsync<Product>());
 
 				Assert.IsNotNull(product);
 				Assert.AreEqual("First", product.Name);
@@ -75,18 +74,18 @@ namespace NHibernate.Test.NHSpecificTest.NH3132
 			{
 				var product = await (session.CreateCriteria(typeof(Product))
 					.Add(Restrictions.Eq("Name", "First"))
-					.UniqueResultAsync<Product>(CancellationToken.None));
+					.UniqueResultAsync<Product>());
 
 				Assert.That(product, Is.Not.Null);
 				product.Name = "Changed";
 
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 				
 				session.Clear();
 
 				var product1 = await (session.CreateCriteria(typeof(Product))
 					.Add(Restrictions.Eq("Name", "Changed"))
-					.UniqueResultAsync<Product>(CancellationToken.None));
+					.UniqueResultAsync<Product>());
 
 				Assert.That(product1, Is.Not.Null);
 				Assert.That(product1.Name, Is.EqualTo("Changed"));
@@ -100,19 +99,19 @@ namespace NHibernate.Test.NHSpecificTest.NH3132
 			{
 				var product = await (session.CreateCriteria(typeof(Product))
 					.Add(Restrictions.Eq("Name", "First"))
-					.UniqueResultAsync<Product>(CancellationToken.None));
+					.UniqueResultAsync<Product>());
 
 				Assert.That(product, Is.Not.Null);
 				product.Name = "Changed";
 				product.Lazy = "LazyChanged";
 
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 				
 				session.Clear();
 
 				var product1 = await (session.CreateCriteria(typeof(Product))
 					.Add(Restrictions.Eq("Name", "Changed"))
-					.UniqueResultAsync<Product>(CancellationToken.None));
+					.UniqueResultAsync<Product>());
 
 				Assert.That(product1, Is.Not.Null);
 				Assert.That(product1.Name, Is.EqualTo("Changed"));

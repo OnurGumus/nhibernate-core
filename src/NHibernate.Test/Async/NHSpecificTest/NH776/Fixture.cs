@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH776
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -32,14 +31,14 @@ namespace NHibernate.Test.NHSpecificTest.NH776
 			{
 				using (ISession session = sessions.OpenSession())
 				{
-					await (session.SaveAsync(a, CancellationToken.None));
+					await (session.SaveAsync(a));
 
-					await (session.FlushAsync(CancellationToken.None));
+					await (session.FlushAsync());
 				}
 
 				using (ISession session = sessions.OpenSession())
 				{
-					A loadedA = (A) await (session.LoadAsync(typeof(A), 1, CancellationToken.None));
+					A loadedA = (A) await (session.LoadAsync(typeof(A), 1));
 					Assert.IsNull(loadedA.NotProxied);
 					Assert.IsNull(loadedA.Proxied,
 					              "one-to-one to proxied types not handling missing associated classes correctly (as null)");
@@ -49,8 +48,8 @@ namespace NHibernate.Test.NHSpecificTest.NH776
 			{
 				using (ISession session = OpenSession())
 				{
-					await (session.DeleteAsync(a, CancellationToken.None));
-					await (session.FlushAsync(CancellationToken.None));
+					await (session.DeleteAsync(a));
+					await (session.FlushAsync());
 				}
 			}
 		}

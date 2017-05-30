@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1831
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -31,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1831
 			{
 				const string hql = @"SELECT dt FROM DocumentType dt WHERE dt.systemAction & :sysAct = :sysAct ";
 
-				await (s.CreateQuery(hql).SetParameter("sysAct", SystemAction.Denunciation).ListAsync(CancellationToken.None));
+				await (s.CreateQuery(hql).SetParameter("sysAct", SystemAction.Denunciation).ListAsync());
 			}
 		}
 	}

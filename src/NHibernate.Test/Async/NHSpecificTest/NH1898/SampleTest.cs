@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1898
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SampleTestAsync : BugTestCase
 	{
@@ -31,24 +30,24 @@ namespace NHibernate.Test.NHSpecificTest.NH1898
 				using (ITransaction tx = session.BeginTransaction())
 				{
 					var entity = new DomainClass {Id = 1, Data = "some oldValue data"};
-					await (session.SaveAsync(entity, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (session.SaveAsync(entity));
+					await (tx.CommitAsync());
 				}
 			}
 			using (ISession session = OpenSession())
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					await (session.GetNamedQuery("replaceQuery").SetString("old", "oldValue").SetString("new", "newValue").ExecuteUpdateAsync(CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (session.GetNamedQuery("replaceQuery").SetString("old", "oldValue").SetString("new", "newValue").ExecuteUpdateAsync());
+					await (tx.CommitAsync());
 				}
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					var entity = await (session.GetAsync<DomainClass>(1, CancellationToken.None));
+					var entity = await (session.GetAsync<DomainClass>(1));
 
 					Assert.AreEqual("some newValue data", entity.Data);
-					await (session.DeleteAsync(entity, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (session.DeleteAsync(entity));
+					await (tx.CommitAsync());
 				}
 			}
 		}

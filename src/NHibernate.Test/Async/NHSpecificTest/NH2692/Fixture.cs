@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2692
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -27,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2692
 			{
 				var result = await (session.Query<Parent>()
 									.Where(x => x.ChildComponents.Any())
-									.ToListAsync(CancellationToken.None));
+									.ToListAsync());
 
 				Assert.That(result, Has.Count.EqualTo(1));
 			}
@@ -41,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2692
 			{
 				var result = await (session.Query<Parent>()
 									.SelectMany(x => x.ChildComponents)
-									.ToListAsync(CancellationToken.None));
+									.ToListAsync());
 
 				Assert.That(result, Has.Count.EqualTo(1));
 			}
@@ -54,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2692
 			using (session.BeginTransaction())
 			{
 				var result = await (session.CreateQuery("select c from Parent as p join p.ChildComponents as c")
-									.ListAsync<ChildComponent>(CancellationToken.None));
+									.ListAsync<ChildComponent>());
 
 				Assert.That(result, Has.Count.EqualTo(1));
 			}

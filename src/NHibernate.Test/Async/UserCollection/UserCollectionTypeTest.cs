@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.UserCollection
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class UserCollectionTypeTestAsync : TestCase
 	{
@@ -38,17 +37,17 @@ namespace NHibernate.Test.UserCollection
 			User u = new User("max");
 			u.EmailAddresses.Add(new Email("max@hibernate.org"));
 			u.EmailAddresses.Add(new Email("max.andersen@jboss.com"));
-			await (s.SaveAsync(u, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(u));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			User u2 = (User) await (s.CreateCriteria(typeof(User)).UniqueResultAsync(CancellationToken.None));
+			User u2 = (User) await (s.CreateCriteria(typeof(User)).UniqueResultAsync());
 			Assert.IsTrue(NHibernateUtil.IsInitialized(u2.EmailAddresses));
 			Assert.AreEqual(2, u2.EmailAddresses.Count);
-			await (s.DeleteAsync(u2, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(u2));
+			await (t.CommitAsync());
 			s.Close();
 		}
 	}

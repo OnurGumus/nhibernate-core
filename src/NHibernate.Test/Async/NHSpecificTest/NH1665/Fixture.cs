@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1665
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -29,11 +28,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1665
 			session.BeginTransaction();
 
 			var e = new MyEntity { Name = "entity-1" };
-			await (session.SaveAsync(e, CancellationToken.None));
+			await (session.SaveAsync(e));
 			Assert.AreEqual(1, (int)session.GetIdentifier(e));
 
-			await (session.DeleteAsync(e, CancellationToken.None));
-			await (session.Transaction.CommitAsync(CancellationToken.None));
+			await (session.DeleteAsync(e));
+			await (session.Transaction.CommitAsync());
 			session.Close();
 		}
 	}

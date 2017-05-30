@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.Properties
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class DynamicEntityTestAsync : BugTestCase
 	{
@@ -57,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 				using (s.BeginTransaction())
 				{
 					var l = await (s.CreateQuery("from DynamicEntity de where de.SomeProps.Foo=:fooParam")
-						.SetString("fooParam", "Sweden").ListAsync(CancellationToken.None));
+						.SetString("fooParam", "Sweden").ListAsync());
 					Assert.AreEqual(1, l.Count);
 					var props = ((IDictionary)l[0])["SomeProps"];
 					Assert.AreEqual("IsCold", ((IDictionary)props)["Bar"]);

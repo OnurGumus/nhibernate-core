@@ -18,7 +18,6 @@ using Environment=NHibernate.Cfg.Environment;
 namespace NHibernate.Test.CacheTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class QueryCacheFixtureAsync : TestCase
 	{
@@ -39,28 +38,28 @@ namespace NHibernate.Test.CacheTest
 
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(simple, 1L, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(simple, 1L));
+				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
 				await (s
 					.CreateQuery("from Simple s where s = :s or s.Name = :name or s.Address = :address")
-					.SetEntity("s", await (s.LoadAsync(typeof(Simple), 1L, CancellationToken.None)))
+					.SetEntity("s", await (s.LoadAsync(typeof(Simple), 1L)))
 					.SetString("name", null)
 					.SetString("address", null)
 					.SetCacheable(true)
-					.UniqueResultAsync(CancellationToken.None));
+					.UniqueResultAsync());
 
 				// Run a second time, just to test the query cache
 				object result = await (s
 					.CreateQuery("from Simple s where s = :s or s.Name = :name or s.Address = :address")
-					.SetEntity("s", await (s.LoadAsync(typeof(Simple), 1L, CancellationToken.None)))
+					.SetEntity("s", await (s.LoadAsync(typeof(Simple), 1L)))
 					.SetString("name", null)
 					.SetString("address", null)
 					.SetCacheable(true)
-					.UniqueResultAsync(CancellationToken.None));
+					.UniqueResultAsync());
 
 				Assert.IsNotNull(result);
 				Assert.AreEqual(1L, (long) s.GetIdentifier(result));
@@ -68,8 +67,8 @@ namespace NHibernate.Test.CacheTest
 
 			using (ISession s = OpenSession())
 			{
-				await (s.DeleteAsync("from Simple", CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Simple"));
+				await (s.FlushAsync());
 			}
 		}
 	}

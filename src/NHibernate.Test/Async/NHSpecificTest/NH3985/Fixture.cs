@@ -14,7 +14,6 @@ using System;
 namespace NHibernate.Test.NHSpecificTest.NH3985
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// The test verifies that subsequent child sessions are not issued in already-disposed state.
 	/// </summary>
@@ -32,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3985
 
 				using (var childSession2 = rootSession.GetChildSession())
 				{
-					Assert.DoesNotThrowAsync(() => { return childSession2.GetAsync<Process>(Guid.NewGuid(), CancellationToken.None); });
+					Assert.DoesNotThrowAsync(() => { return childSession2.GetAsync<Process>(Guid.NewGuid()); });
 				}
 			}
 		}
@@ -47,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3985
 
 				using (var childSession2 = rootSession.GetChildSession())
 				{
-					Assert.DoesNotThrowAsync(() => { return childSession2.GetAsync<Process>(Guid.NewGuid(), CancellationToken.None); });
+					Assert.DoesNotThrowAsync(() => { return childSession2.GetAsync<Process>(Guid.NewGuid()); });
 				}
 			}
 		}

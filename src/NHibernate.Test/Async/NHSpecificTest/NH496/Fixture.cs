@@ -16,7 +16,6 @@ using Environment=NHibernate.Cfg.Environment;
 namespace NHibernate.Test.NHSpecificTest.NH496
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -38,8 +37,8 @@ namespace NHibernate.Test.NHSpecificTest.NH496
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(obj, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(obj));
+				await (t.CommitAsync());
 			}
 
 			try
@@ -47,8 +46,8 @@ namespace NHibernate.Test.NHSpecificTest.NH496
 				using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					Assert.ThrowsAsync<PropertyAccessException>(() => s.GetAsync(typeof(WronglyMappedClass), obj.Id, CancellationToken.None));
-					await (t.CommitAsync(CancellationToken.None));
+					Assert.ThrowsAsync<PropertyAccessException>(() => s.GetAsync(typeof(WronglyMappedClass), obj.Id));
+					await (t.CommitAsync());
 				}
 			}
 			finally
@@ -56,8 +55,8 @@ namespace NHibernate.Test.NHSpecificTest.NH496
 				using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					await (s.DeleteAsync(obj, CancellationToken.None));
-					await (t.CommitAsync(CancellationToken.None));
+					await (s.DeleteAsync(obj));
+					await (t.CommitAsync());
 				}
 			}
 		}

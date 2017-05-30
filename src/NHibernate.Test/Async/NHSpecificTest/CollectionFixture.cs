@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Tests loading of collections very simply.
 	/// </summary>
@@ -51,17 +50,17 @@ namespace NHibernate.Test.NHSpecificTest
 				parent.ChildrenNoAdd.Add(child);
 				child.Parent = parent;
 
-				await (s1.SaveAsync(parent, CancellationToken.None));
+				await (s1.SaveAsync(parent));
 				parentId = (int) s1.GetIdentifier(parent);
 
-				await (t1.CommitAsync(CancellationToken.None));
+				await (t1.CommitAsync());
 			}
 
 			// try to Load the object to make sure the save worked
 			using (ISession s2 = OpenSession())
 			using (ITransaction t2 = s2.BeginTransaction())
 			{
-				LLParent parent2 = (LLParent) await (s2.LoadAsync(typeof(LLParent), parentId, CancellationToken.None));
+				LLParent parent2 = (LLParent) await (s2.LoadAsync(typeof(LLParent), parentId));
 				Assert.AreEqual(1, parent2.ChildrenNoAdd.Count);
 			}
 		}
@@ -81,18 +80,18 @@ namespace NHibernate.Test.NHSpecificTest
 				parent.ChildrenNoAdd.Add(child);
 				child.Parent = parent;
 
-				await (s1.SaveAsync(parent, CancellationToken.None));
+				await (s1.SaveAsync(parent));
 				parentId = (int) s1.GetIdentifier(parent);
 				childId = (int) s1.GetIdentifier(child);
 
-				await (t1.CommitAsync(CancellationToken.None));
+				await (t1.CommitAsync());
 			}
 
 			// try to Load the object to make sure the save worked
 			using (ISession s2 = OpenSession())
 			using (ITransaction t2 = s2.BeginTransaction())
 			{
-				LLChildNoAdd child2 = (LLChildNoAdd) await (s2.LoadAsync(typeof(LLChildNoAdd), childId, CancellationToken.None));
+				LLChildNoAdd child2 = (LLChildNoAdd) await (s2.LoadAsync(typeof(LLChildNoAdd), childId));
 				Assert.AreEqual(parentId, (int) s2.GetIdentifier(child2.Parent));
 			}
 		}

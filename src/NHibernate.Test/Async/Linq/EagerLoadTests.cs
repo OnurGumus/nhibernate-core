@@ -27,7 +27,7 @@ namespace NHibernate.Test.Linq
 			var result = await (db.Orders
 			  .Select(o => o.Customer)
 			  .Fetch(c => c.Orders)
-			  .ToListAsync(CancellationToken.None));
+			  .ToListAsync());
 
 			session.Close();
 
@@ -39,7 +39,7 @@ namespace NHibernate.Test.Linq
 		public async Task CanSelectAndFetchHqlAsync()
 		{
 			//NH-3075
-			var result = await (this.session.CreateQuery("select c from Order o left join o.Customer c left join fetch c.Orders").ListAsync<Customer>(CancellationToken.None));
+			var result = await (this.session.CreateQuery("select c from Order o left join o.Customer c left join fetch c.Orders").ListAsync<Customer>());
 
 			session.Close();
 
@@ -50,7 +50,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task RelationshipsAreLazyLoadedByDefaultAsync()
 		{
-			var x = await (db.Customers.ToListAsync(CancellationToken.None));
+			var x = await (db.Customers.ToListAsync());
 
 			session.Close();
 
@@ -61,7 +61,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task RelationshipsCanBeEagerLoadedAsync()
 		{
-			var x = await (db.Customers.Fetch(c => c.Orders).ToListAsync(CancellationToken.None));
+			var x = await (db.Customers.Fetch(c => c.Orders).ToListAsync());
 
 			session.Close();
 
@@ -73,7 +73,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task MultipleRelationshipsCanBeEagerLoadedAsync()
 		{
-			var x = await (db.Employees.Fetch(e => e.Subordinates).Fetch(e => e.Orders).ToListAsync(CancellationToken.None));
+			var x = await (db.Employees.Fetch(e => e.Subordinates).Fetch(e => e.Orders).ToListAsync());
 
 			session.Close();
 
@@ -85,7 +85,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task NestedRelationshipsCanBeEagerLoadedAsync()
 		{
-			var x = await (db.Customers.FetchMany(c => c.Orders).ThenFetchMany(o => o.OrderLines).ToListAsync(CancellationToken.None));
+			var x = await (db.Customers.FetchMany(c => c.Orders).ThenFetchMany(o => o.OrderLines).ToListAsync());
 
 			session.Close();
 
@@ -102,7 +102,7 @@ namespace NHibernate.Test.Linq
 				// NH-2381 NH-2362
 				return (from p in session.Query<Product>().Fetch(a => a.Supplier)
 			 where p.ProductId == 1
-			 select p).ToListAsync(CancellationToken.None);
+			 select p).ToListAsync();
 			}
 			catch (System.Exception ex)
 			{
@@ -119,7 +119,7 @@ namespace NHibernate.Test.Linq
 				return (from s
 				in session.Query<Supplier>().FetchMany(a => a.Products)
 			 where s.SupplierId == 1
-			 select s).ToListAsync(CancellationToken.None);
+			 select s).ToListAsync();
 			}
 			catch (System.Exception ex)
 			{
@@ -136,7 +136,7 @@ namespace NHibernate.Test.Linq
 				return (from p
 				in session.Query<User>().Fetch(a => a.Role).ThenFetch(a => a.Entity)
 			 where p.Id == 1
-			 select p).ToListAsync(CancellationToken.None);
+			 select p).ToListAsync();
 			}
 			catch (System.Exception ex)
 			{
@@ -153,7 +153,7 @@ namespace NHibernate.Test.Linq
 				return (from p
 				in session.Query<Employee>().Fetch(a => a.Superior).ThenFetchMany(a => a.Orders)
 			 where p.EmployeeId == 1
-			 select p).ToListAsync(CancellationToken.None);
+			 select p).ToListAsync();
 			}
 			catch (System.Exception ex)
 			{
@@ -170,7 +170,7 @@ namespace NHibernate.Test.Linq
 				return (from s
 				in session.Query<Supplier>().FetchMany(a => a.Products).ThenFetch(a => a.Category)
 			 where s.SupplierId == 1
-			 select s).ToListAsync(CancellationToken.None);
+			 select s).ToListAsync();
 			}
 			catch (System.Exception ex)
 			{
@@ -187,7 +187,7 @@ namespace NHibernate.Test.Linq
 				return (from s
 				in session.Query<Supplier>().FetchMany(a => a.Products).ThenFetchMany(a => a.OrderLines)
 			 where s.SupplierId == 1
-			 select s).ToListAsync(CancellationToken.None);
+			 select s).ToListAsync();
 			}
 			catch (System.Exception ex)
 			{
@@ -201,13 +201,13 @@ namespace NHibernate.Test.Linq
 			//NH-2915
 			var firstOrderId = await (db.Orders.OrderBy(x => x.OrderId)
 				.Select(x => x.OrderId)
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			var orders = await (db.Orders
 				.Where(x => x.OrderId != firstOrderId)
 				.Fetch(x => x.Customer)
 				.OrderBy(x => x.OrderId)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.AreEqual(829, orders.Count);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].Customer));
@@ -219,13 +219,13 @@ namespace NHibernate.Test.Linq
 			//NH-2915
 			var firstOrderId = await (db.Orders.OrderBy(x => x.OrderId)
 				.Select(x => x.OrderId)
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			var orders = await (db.Orders
 				.Where(x => x.OrderId != firstOrderId)
 				.FetchMany(x => x.OrderLines)
 				.OrderBy(x => x.OrderId)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.AreEqual(829, orders.Count);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].OrderLines));
@@ -237,14 +237,14 @@ namespace NHibernate.Test.Linq
 			//NH-2915
 			var firstOrderId = await (db.Orders.OrderBy(x => x.OrderId)
 				.Select(x => x.OrderId)
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			var orders = await (db.Orders
 				.Where(x => x.OrderId != firstOrderId)
 				.FetchMany(x => x.OrderLines)
 				.ThenFetch(x => x.Product)
 				.OrderBy(x => x.OrderId)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.AreEqual(829, orders.Count);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].OrderLines));
@@ -257,13 +257,13 @@ namespace NHibernate.Test.Linq
 			//NH-3056
 			var firstOrderId = await (db.Orders.OrderBy(x => x.OrderId)
 				.Select(x => x.OrderId)
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			var orders = await (db.Orders
 				.Where(x => x.OrderId != firstOrderId)
 				.Fetch(x => x.Customer)
 				.Select(x => x)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.AreEqual(829, orders.Count);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].Customer));
@@ -275,13 +275,13 @@ namespace NHibernate.Test.Linq
 			//NH-3056
 			var firstOrderId = await (db.Orders.OrderBy(x => x.OrderId)
 				.Select(x => x.OrderId)
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			var orders = await (db.Orders
 				.Where(x => x.OrderId != firstOrderId)
 				.FetchMany(x => x.OrderLines)
 				.Select(x => x)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.AreEqual(829, orders.Count);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].OrderLines));
@@ -293,14 +293,14 @@ namespace NHibernate.Test.Linq
 			//NH-3056
 			var firstOrderId = await (db.Orders.OrderBy(x => x.OrderId)
 				.Select(x => x.OrderId)
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			var orders = await (db.Orders
 				.Where(x => x.OrderId != firstOrderId)
 				.FetchMany(x => x.OrderLines)
 				.ThenFetch(x => x.Product)
 				.Select(x => x)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.AreEqual(829, orders.Count);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].OrderLines));
@@ -312,13 +312,13 @@ namespace NHibernate.Test.Linq
 		{
 			var firstOrderId = await (db.Orders.OrderBy(x => x.OrderId)
 				.Select(x => x.OrderId)
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			var orders = await (db.Orders
 				.Where(x => x.OrderId != firstOrderId)
 				.Fetch(x => x.Customer)
 				.Where(x => true)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.AreEqual(829, orders.Count);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].Customer));
@@ -329,13 +329,13 @@ namespace NHibernate.Test.Linq
 		{
 			var firstOrderId = await (db.Orders.OrderBy(x => x.OrderId)
 				.Select(x => x.OrderId)
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			var orders = await (db.Orders
 				.Where(x => x.OrderId != firstOrderId)
 				.FetchMany(x => x.OrderLines)
 				.Where(x => true)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.AreEqual(829, orders.Count);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].OrderLines));
@@ -346,14 +346,14 @@ namespace NHibernate.Test.Linq
 		{
 			var firstOrderId = await (db.Orders.OrderBy(x => x.OrderId)
 				.Select(x => x.OrderId)
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			var orders = await (db.Orders
 				.Where(x => x.OrderId != firstOrderId)
 				.FetchMany(x => x.OrderLines)
 				.ThenFetch(x => x.Product)
 				.Where(x => true)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.AreEqual(829, orders.Count);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].OrderLines));
@@ -366,11 +366,11 @@ namespace NHibernate.Test.Linq
 			//NH-3186
 			var firstOrderId = await (db.Orders.OrderBy(x => x.OrderId)
 				.Select(x => x.OrderId)
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			var order = await (db.Orders
 				.Fetch(x => x.Shipper)
-				.SingleOrDefaultAsync(x => x.OrderId == firstOrderId, CancellationToken.None));
+				.SingleOrDefaultAsync(x => x.OrderId == firstOrderId));
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(order.Shipper));
 		}

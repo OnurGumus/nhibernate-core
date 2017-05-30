@@ -87,12 +87,12 @@ namespace NHibernate.Test.TypesTest
 						using (ISession s = OpenSession())
 						{
 							StringClass b = new StringClass {LongStringValue = new string('x', maxStringLength + 1)};
-							await (s.SaveAsync(b, CancellationToken.None));
-							await (s.FlushAsync(CancellationToken.None));
+							await (s.SaveAsync(b));
+							await (s.FlushAsync());
 						}
 					});
 
-				return AssertFailedInsertExceptionDetailsAndEmptyTableAsync(ex, CancellationToken.None);
+				return AssertFailedInsertExceptionDetailsAndEmptyTableAsync(ex);
 			}
 			catch (Exception ex)
 			{
@@ -119,13 +119,13 @@ namespace NHibernate.Test.TypesTest
 						using (ISession s = OpenSession())
 						{
 							StringClass b = new StringClass {StringValue = "0123456789a"};
-							await (s.SaveAsync(b, CancellationToken.None));
-							await (s.FlushAsync(CancellationToken.None));
+							await (s.SaveAsync(b));
+							await (s.FlushAsync());
 						}
 					},
 				"An exception was expected when trying to put too large a value into a column.");
 
-				return AssertFailedInsertExceptionDetailsAndEmptyTableAsync(ex, CancellationToken.None);
+				return AssertFailedInsertExceptionDetailsAndEmptyTableAsync(ex);
 			}
 			catch (Exception ex)
 			{

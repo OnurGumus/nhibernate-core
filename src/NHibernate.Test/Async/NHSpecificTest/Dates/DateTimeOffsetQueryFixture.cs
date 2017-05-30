@@ -21,7 +21,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.NHSpecificTest.Dates
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class DateTimeOffsetQueryFixtureAsync : FixtureBaseAsync
 	{
@@ -85,7 +84,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				var datesRecovered = await (s.CreateQuery("select cast(min(Sql_datetimeoffset), datetimeoffset) from AllDates").UniqueResultAsync<DateTimeOffset>(CancellationToken.None));
+				var datesRecovered = await (s.CreateQuery("select cast(min(Sql_datetimeoffset), datetimeoffset) from AllDates").UniqueResultAsync<DateTimeOffset>());
 				Assert.That(datesRecovered, Is.EqualTo(new DateTimeOffset(2012, 11, 1, 2, 0, 0, TimeSpan.FromHours(3))));
 			}
 		}
@@ -101,7 +100,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 				// provider can find a HQL name for datetimeoffset.
 
 				var datesRecovered = await ((from allDates in s.Query<AllDates>()
-									  select allDates.Sql_datetimeoffset).MinAsync(CancellationToken.None));
+									  select allDates.Sql_datetimeoffset).MinAsync());
 
 				Assert.That(datesRecovered, Is.EqualTo(new DateTimeOffset(2012, 11, 1, 2, 0, 0, TimeSpan.FromHours(3))));
 			}

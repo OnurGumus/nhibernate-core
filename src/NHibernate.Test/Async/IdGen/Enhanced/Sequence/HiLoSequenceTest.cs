@@ -15,7 +15,6 @@ using NHibernate.Id.Enhanced;
 namespace NHibernate.Test.IdGen.Enhanced.Sequence
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class HiLoSequenceTestAsync : TestCase
 	{
@@ -50,7 +49,7 @@ namespace NHibernate.Test.IdGen.Enhanced.Sequence
 					for (int i = 0; i < increment; i++)
 					{
 						entities[i] = new Entity("" + (i + 1));
-						await (session.SaveAsync(entities[i], CancellationToken.None));
+						await (session.SaveAsync(entities[i]));
 						Assert.That(generator.DatabaseStructure.TimesAccessed, Is.EqualTo(1)); // initialization
 						Assert.That(optimizer.LastSourceValue, Is.EqualTo(1)); // initialization
 						Assert.That(optimizer.LastValue, Is.EqualTo(i + 1));
@@ -59,22 +58,22 @@ namespace NHibernate.Test.IdGen.Enhanced.Sequence
 
 					// now force a "clock over"
 					entities[increment] = new Entity("" + increment);
-					await (session.SaveAsync(entities[increment], CancellationToken.None));
+					await (session.SaveAsync(entities[increment]));
 					Assert.That(generator.DatabaseStructure.TimesAccessed, Is.EqualTo(2));
 					Assert.That(optimizer.LastSourceValue, Is.EqualTo(2));
 					Assert.That(optimizer.LastValue, Is.EqualTo(increment + 1));
 					Assert.That(optimizer.HiValue, Is.EqualTo(increment * 2 + 1));
 
-					await (transaction.CommitAsync(CancellationToken.None));
+					await (transaction.CommitAsync());
 				}
 				using (ITransaction transaction = session.BeginTransaction())
 				{
 					for (int i = 0; i < entities.Length; i++)
 					{
 						Assert.That(entities[i].Id, Is.EqualTo(i + 1));
-						await (session.DeleteAsync(entities[i], CancellationToken.None));
+						await (session.DeleteAsync(entities[i]));
 					}
-					await (transaction.CommitAsync(CancellationToken.None));
+					await (transaction.CommitAsync());
 				}
 
 				session.Close();

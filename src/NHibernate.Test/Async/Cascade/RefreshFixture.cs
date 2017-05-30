@@ -43,14 +43,14 @@ namespace NHibernate.Test.Cascade
 					batch.CreateJob().ProcessingInstructions = "I know you can do it!";
 
 					// write the stuff to the database; at this stage all job.status values are zero
-					await (session.PersistAsync(batch, CancellationToken.None));
-					await (session.FlushAsync(CancellationToken.None));
+					await (session.PersistAsync(batch));
+					await (session.FlushAsync());
 
 					// behind the session's back, let's modify the statuses
-					await (UpdateStatusesAsync(session, CancellationToken.None));
+					await (UpdateStatusesAsync(session));
 
 					// Now lets refresh the persistent batch, and see if the refresh cascaded to the jobs collection elements
-					await (session.RefreshAsync(batch, CancellationToken.None));
+					await (session.RefreshAsync(batch));
 
 					foreach (Job job in batch.Jobs)
 					{
@@ -88,7 +88,7 @@ namespace NHibernate.Test.Cascade
 				using (ITransaction txn = session.BeginTransaction())
 				{
 					var batch = new JobBatch(DateTime.Now);
-					await (session.RefreshAsync(batch, CancellationToken.None));
+					await (session.RefreshAsync(batch));
 
 					txn.Rollback();
 				}
@@ -105,11 +105,11 @@ namespace NHibernate.Test.Cascade
 
 					var batch = new JobBatch(DateTime.Now);
 					batch.CreateJob().ProcessingInstructions = "Just do it!";
-					await (session.PersistAsync(batch, CancellationToken.None));
-					await (session.FlushAsync(CancellationToken.None));
+					await (session.PersistAsync(batch));
+					await (session.FlushAsync());
 
 					batch.CreateJob().ProcessingInstructions = "I know you can do it!";
-					await (session.RefreshAsync(batch, CancellationToken.None));
+					await (session.RefreshAsync(batch));
 					Assert.That(batch.Jobs.Count == 1);
 
 					txn.Rollback();
@@ -126,7 +126,7 @@ namespace NHibernate.Test.Cascade
 			var batch = new JobBatch { BatchDate = DateTime.Now, Id = 1 };
 			try
 			{
-				await (session.RefreshAsync(batch, CancellationToken.None));
+				await (session.RefreshAsync(batch));
 			}
 			catch (UnresolvableObjectException)
 			{

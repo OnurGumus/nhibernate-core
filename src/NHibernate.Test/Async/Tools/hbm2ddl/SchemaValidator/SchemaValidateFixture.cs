@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SchemaValidateFixtureAsync
 	{
@@ -26,10 +25,10 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 			const string resource = "NHibernate.Test.Tools.hbm2ddl.SchemaValidator.1_Version.hbm.xml";
 			var cfg = BuildConfiguration(resource);
 
-			await (new SchemaExport(cfg).ExecuteAsync(true, true, false, CancellationToken.None));
+			await (new SchemaExport(cfg).ExecuteAsync(true, true, false));
 
 			var validator = new Tool.hbm2ddl.SchemaValidator((cfg));
-			await (validator.ValidateAsync(CancellationToken.None));
+			await (validator.ValidateAsync());
 		}
 
 		[Test, SetCulture("tr-TR"), SetUICulture("tr-TR")]
@@ -50,10 +49,10 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 			const string resource = "NHibernate.Test.Tools.hbm2ddl.SchemaValidator.1_Version.hbm.xml";
 			var cfg = BuildConfiguration(resource);
 
-			await (new SchemaExport(cfg).ExecuteAsync(true, true, false, CancellationToken.None));
+			await (new SchemaExport(cfg).ExecuteAsync(true, true, false));
 
 			var validator = new Tool.hbm2ddl.SchemaValidator(cfg);
-			await (validator.ValidateAsync(CancellationToken.None));
+			await (validator.ValidateAsync());
 		}
 
 		[Test]
@@ -65,12 +64,12 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 			const string resource2 = "NHibernate.Test.Tools.hbm2ddl.SchemaValidator.2_Version.hbm.xml";
 			var cfgV2 = BuildConfiguration(resource2);
 
-			await (new SchemaExport(cfgV1).ExecuteAsync(true, true, false, CancellationToken.None));
+			await (new SchemaExport(cfgV1).ExecuteAsync(true, true, false));
 
 			var validatorV2 = new Tool.hbm2ddl.SchemaValidator(cfgV2);
 			try
 			{
-				await (validatorV2.ValidateAsync(CancellationToken.None));
+				await (validatorV2.ValidateAsync());
 			}
 			catch (HibernateException e)
 			{

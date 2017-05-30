@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.UserCollection.Parameterized
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class ParameterizedUserCollectionTypeFixtureAsync : TestCase
 	{
@@ -36,20 +35,20 @@ namespace NHibernate.Test.UserCollection.Parameterized
 			{
 				var entity = new Entity("tester");
 				entity.Values.Add("value-1");
-				await (s.PersistAsync(entity, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(entity));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var entity = await (s.GetAsync<Entity>("tester", CancellationToken.None));
+				var entity = await (s.GetAsync<Entity>("tester"));
 				Assert.IsTrue(NHibernateUtil.IsInitialized(entity.Values));
 				Assert.AreEqual(1, entity.Values.Count);
 				Assert.AreEqual("Hello", ((IDefaultableList) entity.Values).DefaultValue);
 
-				await (s.DeleteAsync(entity, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(entity));
+				await (t.CommitAsync());
 			}
 		}
 	}

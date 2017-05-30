@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.DataReaderWrapperTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -55,7 +54,7 @@ namespace NHibernate.Test.NHSpecificTest.DataReaderWrapperTest
 				var crit = s.CreateCriteria(typeof (TheEntity));
 				var multi = s.CreateMultiCriteria();
 				multi.Add(crit);
-				var res = (IList) (await (multi.ListAsync(CancellationToken.None)))[0];
+				var res = (IList) (await (multi.ListAsync()))[0];
 				Assert.That(res.Count, Is.EqualTo(1));
 			}
 		}

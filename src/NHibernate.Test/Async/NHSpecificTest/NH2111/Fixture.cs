@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2111
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -40,15 +39,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2111
 			a.LazyItems.Add("third string");
 
 			ISession s = OpenSession();
-			await (s.SaveOrUpdateAsync(a, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveOrUpdateAsync(a));
+			await (s.FlushAsync());
 			s.Close();
 
 			Assert.IsNotNull(((ICollection) a.LazyItems).SyncRoot);
 			Assert.AreEqual("first string", a.LazyItems[0]);
 
 			s = OpenSession();
-			a = (A)await (s.LoadAsync(typeof(A), a.Id, CancellationToken.None));
+			a = (A)await (s.LoadAsync(typeof(A), a.Id));
 
 			Assert.IsNotNull(((ICollection) a.LazyItems).SyncRoot);
 			Assert.AreEqual("first string", a.LazyItems[0]);

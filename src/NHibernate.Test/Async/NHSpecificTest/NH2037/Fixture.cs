@@ -12,7 +12,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH2037
 {
  	using System.Threading.Tasks;
- 	using System.Threading;
  	[TestFixture]
  	public class FixtureAsync : BugTestCase
 	{
@@ -32,24 +31,24 @@ namespace NHibernate.Test.NHSpecificTest.NH2037
 			using (ISession session = OpenSession())
 			using(var tx = session.BeginTransaction())
 			{
-				await (session.SaveAsync(city.Country, CancellationToken.None));
-				await (session.SaveAsync(city, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (session.SaveAsync(city.Country));
+				await (session.SaveAsync(city));
+				await (tx.CommitAsync());
  			}
  
 			using(ISession session = OpenSession())
 			using (var tx = session.BeginTransaction())
  			{
 				//THROW
-				await (session.SaveOrUpdateAsync(city, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (session.SaveOrUpdateAsync(city));
+				await (tx.CommitAsync());
  			}
  
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
  			{
-				Assert.IsNotNull(await (session.GetAsync<City>(city.Id, CancellationToken.None)));
-				await (tx.CommitAsync(CancellationToken.None));
+				Assert.IsNotNull(await (session.GetAsync<City>(city.Id)));
+				await (tx.CommitAsync());
  			}
 		}
  

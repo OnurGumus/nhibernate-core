@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2011
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -25,8 +24,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2011
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					await (session.SaveAsync(new Country {CountryCode = "SE"}, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (session.SaveAsync(new Country {CountryCode = "SE"}));
+					await (tx.CommitAsync());
 				}
 			}
 
@@ -41,13 +40,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2011
 				using (ITransaction tx = session.BeginTransaction())
 				{
 					mergedCopy = (Order) session.Merge(newOrder);
-					await (tx.CommitAsync(CancellationToken.None));
+					await (tx.CommitAsync());
 				}
 			}
 
 			using (ISession session = OpenSession())
 			{
-				var order = await (session.GetAsync<Order>(mergedCopy.Id, CancellationToken.None));
+				var order = await (session.GetAsync<Order>(mergedCopy.Id));
 				Assert.That(order.GroupComponent.Countries.Count, Is.EqualTo(1));
 			}
 
@@ -55,9 +54,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2011
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					await (session.DeleteAsync("from Order", CancellationToken.None));
-					await (session.DeleteAsync("from Country", CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (session.DeleteAsync("from Order"));
+					await (session.DeleteAsync("from Country"));
+					await (tx.CommitAsync());
 				}
 			}
 		}

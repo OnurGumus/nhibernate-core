@@ -45,21 +45,21 @@ namespace NHibernate.Test.NHSpecificTest.NH1869
 			using (var transaction = session.BeginTransaction())
 			{
 				_keyword = new Keyword();
-				await (session.SaveAsync(_keyword, CancellationToken.None));
+				await (session.SaveAsync(_keyword));
 
 				var nodeKeyword = new NodeKeyword();
 				nodeKeyword.NodeId = 1;
 				nodeKeyword.Keyword = _keyword;
-				await (session.SaveAsync(nodeKeyword, CancellationToken.None));
+				await (session.SaveAsync(nodeKeyword));
 
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (transaction.CommitAsync());
 			}
 
 			using (var session = sessions.OpenSession())
 			{
 				//If uncomment the line below the test will pass
 				//GetResult(session);
-				var result = await (GetResultAsync(session, CancellationToken.None));
+				var result = await (GetResultAsync(session));
 				Assert.That(result, Has.Count.EqualTo(2));
 				Assert.That(result[0], Has.Count.EqualTo(1));
 				Assert.That(result[1], Has.Count.EqualTo(1));

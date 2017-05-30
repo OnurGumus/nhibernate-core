@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH637
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
@@ -28,17 +27,17 @@ namespace NHibernate.Test.NHSpecificTest.NH637
 			using (ISession s = OpenSession())
 			using(ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(holder, CancellationToken.None));
+				await (s.SaveAsync(holder));
 
 				PointHolder result = (PointHolder) await (s
 				                                   	.CreateCriteria(typeof(PointHolder))
 				                                   	.Add(Expression.Between("Point", new Point(19, 9), new Point(21, 11)))
-				                                   	.UniqueResultAsync(CancellationToken.None));
+				                                   	.UniqueResultAsync());
 
 				Assert.AreSame(holder, result);
 
-				await (s.DeleteAsync(holder, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(holder));
+				await (t.CommitAsync());
 			}
 		}
 	}

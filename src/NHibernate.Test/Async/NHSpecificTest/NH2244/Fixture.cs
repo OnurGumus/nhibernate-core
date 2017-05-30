@@ -19,7 +19,6 @@ using NHibernate.Linq.Functions;
 namespace NHibernate.Test.NHSpecificTest.NH2244
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -38,10 +37,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2244
 			ISession s = OpenSession();
 			try
 			{
-				await (s.SaveAsync(new A { Phone = new PhoneNumber(1, "555-1111") }, CancellationToken.None));
-				await (s.SaveAsync(new A { Phone = new PhoneNumber(1, "555-2222") }, CancellationToken.None));
-				await (s.SaveAsync(new A { Phone = new PhoneNumber(1, "555-3333") }, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(new A { Phone = new PhoneNumber(1, "555-1111") }));
+				await (s.SaveAsync(new A { Phone = new PhoneNumber(1, "555-2222") }));
+				await (s.SaveAsync(new A { Phone = new PhoneNumber(1, "555-3333") }));
+				await (s.FlushAsync());
 			}
 			finally
 			{
@@ -51,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2244
 			s = OpenSession();
 			try
 			{
-				A item = await (s.Query<A>().Where(a => a.Phone == new PhoneNumber(1, "555-2222")).SingleAsync(CancellationToken.None));
+				A item = await (s.Query<A>().Where(a => a.Phone == new PhoneNumber(1, "555-2222")).SingleAsync());
 				Assert.AreEqual("555-2222", item.Phone.Number);
 			}
 			finally

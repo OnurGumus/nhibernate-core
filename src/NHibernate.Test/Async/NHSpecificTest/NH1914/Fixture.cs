@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1914
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -42,14 +41,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1914
 			using (ISession s = OpenSession())
 			{
 				ITransaction t = s.BeginTransaction();
-				await (s.SaveAsync(_IDS, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(_IDS));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
 				ITransaction t = s.BeginTransaction();
-				IDS _IDSRead = await (s.LoadAsync<IDS>(_IDS.Identifier, CancellationToken.None));
+				IDS _IDSRead = await (s.LoadAsync<IDS>(_IDS.Identifier));
 				
 				Assert.IsNotNull(_IDSRead);
 				Assert.IsNotNull(_IDSRead.CRSPLUTs);
@@ -57,8 +56,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1914
 				Assert.IsNotNull(_IDSRead.CRSPLUTs["a"].Values[0]);
 				Assert.IsNotNull(_IDSRead.CRSPLUTs["a"].Values[0].Entries);
 
-				await (s.DeleteAsync(_IDSRead, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(_IDSRead));
+				await (t.CommitAsync());
 			}
 		}
 

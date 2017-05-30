@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH266
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{
@@ -72,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 		{
 			// just do a straight load
 			ISession s = OpenSession();
-			A a = await (s.LoadAsync(typeof(A), aId, CancellationToken.None)) as A;
+			A a = await (s.LoadAsync(typeof(A), aId)) as A;
 			Assert.AreEqual("the a", a.Name);
 			s.Close();
 
@@ -81,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			s = OpenSession();
 			IQuery q = s.CreateQuery("from A as a where a.id = :id ");
 			q.SetParameter("id", aId);
-			a = await (q.UniqueResultAsync(CancellationToken.None)) as A;
+			a = await (q.UniqueResultAsync()) as A;
 			Assert.AreEqual("the a", a.Name);
 
 			s.Close();
@@ -90,7 +89,7 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			s = OpenSession();
 			ICriteria c = s.CreateCriteria(typeof(A));
 			c.Add(Expression.Eq("Id", aId));
-			a = await (c.UniqueResultAsync(CancellationToken.None)) as A;
+			a = await (c.UniqueResultAsync()) as A;
 
 			Assert.AreEqual("the a", a.Name);
 			s.Close();
@@ -104,7 +103,7 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 		public async Task SpecificSubclassAsync()
 		{
 			ISession s = OpenSession();
-			B b = await (s.LoadAsync(typeof(B), bId, CancellationToken.None)) as B;
+			B b = await (s.LoadAsync(typeof(B), bId)) as B;
 			Assert.AreEqual("the b", b.Name);
 			s.Close();
 
@@ -112,7 +111,7 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			s = OpenSession();
 			IQuery q = s.CreateQuery("from B as b where b.id = :id");
 			q.SetParameter("id", bId);
-			b = await (q.UniqueResultAsync(CancellationToken.None)) as B;
+			b = await (q.UniqueResultAsync()) as B;
 			Assert.AreEqual("the b", b.Name);
 			s.Close();
 
@@ -120,7 +119,7 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			s = OpenSession();
 			ICriteria c = s.CreateCriteria(typeof(B));
 			c.Add(Expression.Eq("Id", bId));
-			b = await (c.UniqueResultAsync(CancellationToken.None)) as B;
+			b = await (c.UniqueResultAsync()) as B;
 
 			Assert.AreEqual("the b", b.Name);
 			s.Close();

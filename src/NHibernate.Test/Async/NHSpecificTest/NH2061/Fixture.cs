@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2061
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{	
@@ -32,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2061
 			using (ITransaction tx = session.BeginTransaction())
 			{
 				mergedCopy = (Order)session.Merge(newOrder);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 			
 			Assert.That(mergedCopy, Is.Not.Null);

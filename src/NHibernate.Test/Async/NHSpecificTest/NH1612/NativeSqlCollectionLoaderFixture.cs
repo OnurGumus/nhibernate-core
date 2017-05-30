@@ -26,59 +26,59 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		public async Task LoadElementsWithWithSimpleHbmAliasInjectionAsync()
 		{
 			string[] routes = CreateRoutes();
-			Country country = await (LoadCountryWithNativeSQLAsync(CreateCountry(routes), "LoadCountryRoutesWithSimpleHbmAliasInjection", CancellationToken.None));
+			Country country = await (LoadCountryWithNativeSQLAsync(CreateCountry(routes), "LoadCountryRoutesWithSimpleHbmAliasInjection"));
 
 			Assert.That(country, Is.Not.Null);
 			Assert.That(country.Routes, Is.EquivalentTo(routes));
 
-			await (CleanupAsync(CancellationToken.None));
+			await (CleanupAsync());
 		}
 
 		[Test]
 		public async Task LoadElementsWithExplicitColumnMappingsAsync()
 		{
 			string[] routes = CreateRoutes();
-			Country country = await (LoadCountryWithNativeSQLAsync(CreateCountry(routes), "LoadCountryRoutesWithCustomAliases", CancellationToken.None));
+			Country country = await (LoadCountryWithNativeSQLAsync(CreateCountry(routes), "LoadCountryRoutesWithCustomAliases"));
 			Assert.That(country, Is.Not.Null);
 			Assert.That(country.Routes, Is.EquivalentTo(routes));
-			await (CleanupAsync(CancellationToken.None));
+			await (CleanupAsync());
 		}
 
 		[Test]
 		public async Task LoadCompositeElementsWithWithSimpleHbmAliasInjectionAsync()
 		{
 			IDictionary<int, AreaStatistics> stats = CreateStatistics();
-			Country country = await (LoadCountryWithNativeSQLAsync(CreateCountry(stats), "LoadAreaStatisticsWithSimpleHbmAliasInjection", CancellationToken.None));
+			Country country = await (LoadCountryWithNativeSQLAsync(CreateCountry(stats), "LoadAreaStatisticsWithSimpleHbmAliasInjection"));
 
 			Assert.That(country, Is.Not.Null);
 			Assert.That((ICollection) country.Statistics.Keys, Is.EquivalentTo((ICollection) stats.Keys), "Keys");
 			Assert.That((ICollection) country.Statistics.Values, Is.EquivalentTo((ICollection) stats.Values), "Elements");
-			await (CleanupWithPersonsAsync(CancellationToken.None));
+			await (CleanupWithPersonsAsync());
 		}
 
 		[Test]
 		public async Task LoadCompositeElementsWithWithComplexHbmAliasInjectionAsync()
 		{
 			IDictionary<int, AreaStatistics> stats = CreateStatistics();
-			Country country = await (LoadCountryWithNativeSQLAsync(CreateCountry(stats), "LoadAreaStatisticsWithComplexHbmAliasInjection", CancellationToken.None));
+			Country country = await (LoadCountryWithNativeSQLAsync(CreateCountry(stats), "LoadAreaStatisticsWithComplexHbmAliasInjection"));
 
 			Assert.That(country, Is.Not.Null);
 			Assert.That((ICollection) country.Statistics.Keys, Is.EquivalentTo((ICollection) stats.Keys), "Keys");
 			Assert.That((ICollection) country.Statistics.Values, Is.EquivalentTo((ICollection) stats.Values), "Elements");
-			await (CleanupWithPersonsAsync(CancellationToken.None));
+			await (CleanupWithPersonsAsync());
 		}
 
 		[Test]
 		public async Task LoadCompositeElementsWithWithCustomAliasesAsync()
 		{
 			IDictionary<int, AreaStatistics> stats = CreateStatistics();
-			Country country = await (LoadCountryWithNativeSQLAsync(CreateCountry(stats), "LoadAreaStatisticsWithCustomAliases", CancellationToken.None));
+			Country country = await (LoadCountryWithNativeSQLAsync(CreateCountry(stats), "LoadAreaStatisticsWithCustomAliases"));
 
 			Assert.That(country, Is.Not.Null);
 			Assert.That((ICollection) country.Statistics.Keys, Is.EquivalentTo((ICollection) stats.Keys), "Keys");
 			Assert.That((ICollection) country.Statistics.Values, Is.EquivalentTo((ICollection) stats.Values), "Elements");
 
-			await (CleanupWithPersonsAsync(CancellationToken.None));
+			await (CleanupWithPersonsAsync());
 		}
 
 		[Test]
@@ -86,16 +86,16 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		{
 			City[] cities = CreateCities();
 			Country country = CreateCountry(cities);
-			await (SaveAsync(country, CancellationToken.None));
+			await (SaveAsync(country));
 			using (ISession session = OpenSession())
 			{
 				var c =
 					await (session.GetNamedQuery("LoadCountryCitiesWithSimpleHbmAliasInjection").SetString("country_code", country.Code).
-						UniqueResultAsync<Country>(CancellationToken.None));
+						UniqueResultAsync<Country>());
 				Assert.That(c, Is.Not.Null);
 				Assert.That(c.Cities, Is.EquivalentTo(cities));
 			}
-			await (CleanupWithCitiesAsync(CancellationToken.None));
+			await (CleanupWithCitiesAsync());
 		}
 
 		[Test]
@@ -103,16 +103,16 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		{
 			City[] cities = CreateCities();
 			Country country = CreateCountry(cities);
-			await (SaveAsync(country, CancellationToken.None));
+			await (SaveAsync(country));
 			using (ISession session = OpenSession())
 			{
 				var c =
 					await (session.GetNamedQuery("LoadCountryCitiesWithComplexHbmAliasInjection").SetString("country_code", country.Code).
-						UniqueResultAsync<Country>(CancellationToken.None));
+						UniqueResultAsync<Country>());
 				Assert.That(c, Is.Not.Null);
 				Assert.That(c.Cities, Is.EquivalentTo(cities));
 			}
-			await (CleanupWithCitiesAsync(CancellationToken.None));
+			await (CleanupWithCitiesAsync());
 		}
 
 		[Test]
@@ -120,18 +120,18 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		{
 			City[] cities = CreateCities();
 			Country country = CreateCountry(cities);
-			await (SaveAsync(country, CancellationToken.None));
+			await (SaveAsync(country));
 			using (ISession session = OpenSession())
 			{
 				var c =
 					await (session.GetNamedQuery("LoadCountryCitiesWithCustomAliases").SetString("country_code", country.Code).
-						UniqueResultAsync<Country>(CancellationToken.None));
+						UniqueResultAsync<Country>());
 				Assert.That(c, Is.Not.Null);
 				Assert.That(c.Cities, Is.EquivalentTo(cities));
 			}
 
 			// cleanup
-			await (CleanupWithCitiesAsync(CancellationToken.None));
+			await (CleanupWithCitiesAsync());
 		}
 
 		[Test]
@@ -140,7 +140,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			IDictionary<int, AreaStatistics> stats = CreateStatistics();
 			try
 			{
-				await (LoadCountryWithNativeSQLAsync(CreateCountry(stats), "LoadAreaStatisticsWithFaultyHbmAliasInjection", CancellationToken.None));
+				await (LoadCountryWithNativeSQLAsync(CreateCountry(stats), "LoadAreaStatisticsWithFaultyHbmAliasInjection"));
 				Assert.Fail("Expected exception");
 			}
 			catch(QueryException)
@@ -150,7 +150,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			finally
 			{
 				// cleanup
-				await (CleanupWithPersonsAsync(CancellationToken.None));
+				await (CleanupWithPersonsAsync());
 			}
 		}
 
@@ -181,14 +181,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		{
 			string[] routes = CreateRoutes();
 			Country country = CreateCountry(routes);
-			await (SaveAsync(country, CancellationToken.None));
+			await (SaveAsync(country));
 			using (ISession session = OpenSession())
 			{
-				var c = await (session.GetAsync<Country>(country.Code, CancellationToken.None));
+				var c = await (session.GetAsync<Country>(country.Code));
 				Assert.That(c, Is.Not.Null, "country");
 				Assert.That(c.Routes, Is.EquivalentTo(routes), "country.Routes");
 			}
-			await (CleanupAsync(CancellationToken.None));
+			await (CleanupAsync());
 		}
 
 		[Test]
@@ -196,15 +196,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		{
 			IDictionary<int, AreaStatistics> stats = CreateStatistics();
 			Country country = CreateCountry(stats);
-			await (SaveAsync(country, CancellationToken.None));
+			await (SaveAsync(country));
 			using (ISession session = OpenSession())
 			{
-				var a = await (session.GetAsync<Area>(country.Code, CancellationToken.None));
+				var a = await (session.GetAsync<Area>(country.Code));
 				Assert.That(a, Is.Not.Null, "area");
 				Assert.That((ICollection) a.Statistics.Keys, Is.EquivalentTo((ICollection) stats.Keys), "area.Keys");
 				Assert.That((ICollection) a.Statistics.Values, Is.EquivalentTo((ICollection) stats.Values), "area.Elements");
 			}
-			await (CleanupWithPersonsAsync(CancellationToken.None));
+			await (CleanupWithPersonsAsync());
 		}
 
 		[Test]
@@ -212,15 +212,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		{
 			City[] cities = CreateCities();
 			Country country = CreateCountry(cities);
-			await (SaveAsync(country, CancellationToken.None));
+			await (SaveAsync(country));
 			using (ISession session = OpenSession())
 			{
-				var c = await (session.GetAsync<Country>(country.Code, CancellationToken.None));
+				var c = await (session.GetAsync<Country>(country.Code));
 
 				Assert.That(c, Is.Not.Null, "country");
 				Assert.That(c.Cities, Is.EquivalentTo(cities), "country.Cities");
 			}
-			await (CleanupWithCitiesAsync(CancellationToken.None));
+			await (CleanupWithCitiesAsync());
 		}
 
 		private async Task SaveAsync<TArea>(TArea area, CancellationToken cancellationToken = default(CancellationToken)) where TArea : Area
@@ -250,8 +250,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					await (session.GetNamedQuery("UpdateQueryWithoutResults").ExecuteUpdateAsync(CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (session.GetNamedQuery("UpdateQueryWithoutResults").ExecuteUpdateAsync());
+					await (tx.CommitAsync());
 				}
 			}
 		}
@@ -269,8 +269,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 				{
 					// Native SQL Query outcome is not validated against <return-*> 
 					// resultset declarations.
-					await (session.GetNamedQuery("ScalarQueryWithDefinedResultsetButNoResults").ExecuteUpdateAsync(CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (session.GetNamedQuery("ScalarQueryWithDefinedResultsetButNoResults").ExecuteUpdateAsync());
+					await (tx.CommitAsync());
 				}
 			}
 		}
@@ -288,7 +288,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 				{
 					// Native SQL Query outcome is not validated against <return-*> 
 					// resultset declarations.
-					var result = await (session.GetNamedQuery("ScalarQueryWithUndefinedResultset").UniqueResultAsync<int>(CancellationToken.None));
+					var result = await (session.GetNamedQuery("ScalarQueryWithUndefinedResultset").UniqueResultAsync<int>());
 					Assert.That(result, Is.EqualTo(1));
 				}
 			}
@@ -307,7 +307,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 				{
 					// Native SQL Query outcome is not validated against <return-*> 
 					// resultset declarations.
-					var result = await (session.GetNamedQuery("ScalarQueryWithDefinedResultset").UniqueResultAsync<int>(CancellationToken.None));
+					var result = await (session.GetNamedQuery("ScalarQueryWithDefinedResultset").UniqueResultAsync<int>());
 					Assert.That(result, Is.EqualTo(2));
 				}
 			}

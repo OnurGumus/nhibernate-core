@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2960
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -53,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2960
 			{
 				var result = await (session
 					.CreateQuery("from BarCode")
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				Assert.AreEqual(1, result.Count);
 			}
 		}
@@ -66,7 +65,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2960
 			{
 				var result = await (session
 					.CreateCriteria("BarCode")
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				Assert.AreEqual(1, result.Count);
 			}
 		}
@@ -79,7 +78,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2960
 			{
 				var result = await (session
 					.CreateQuery("from " + typeof(Entity).FullName)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				Assert.AreEqual(2, result.Count);
 			}
 		}
@@ -92,7 +91,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2960
 			{
 				var result = await (session
 					.CreateCriteria(typeof(Entity))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				Assert.AreEqual(2, result.Count);
 			}
 		}

@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1452
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -79,19 +78,19 @@ namespace NHibernate.Test.NHSpecificTest.NH1452
 						Description = "Test"
 					};
 
-				await (session.SaveAsync(product, CancellationToken.None));
+				await (session.SaveAsync(product));
 
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 
-				await (session.DeleteAsync(product, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.DeleteAsync(product));
+				await (session.FlushAsync());
 
 				session.Clear();
 
 				//try to query for this product
 				product = await (session.CreateCriteria(typeof (Product))
 								 .Add(Restrictions.Eq("ProductId", "XO1111"))
-								 .UniqueResultAsync<Product>(CancellationToken.None));
+								 .UniqueResultAsync<Product>());
 
 				Assert.That(product, Is.Null);
 			}
@@ -105,7 +104,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1452
 			{
 				var product = await (session.CreateCriteria(typeof (Product))
 									 .Add(Restrictions.Eq("ProductId", "XO1234"))
-									 .UniqueResultAsync<Product>(CancellationToken.None));
+									 .UniqueResultAsync<Product>());
 
 				Assert.That(product, Is.Not.Null);
 				Assert.That(product.Description, Is.EqualTo("Very good"));
@@ -123,20 +122,20 @@ namespace NHibernate.Test.NHSpecificTest.NH1452
 			{
 				var product = await (session.CreateCriteria(typeof (Product))
 									 .Add(Restrictions.Eq("ProductId", "XO1234"))
-									 .UniqueResultAsync<Product>(CancellationToken.None));
+									 .UniqueResultAsync<Product>());
 
 				Assert.That(product, Is.Not.Null);
 
 				product.Name = "TestValue";
 				product.Description = "TestValue";
 
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 				session.Clear();
 
 				//pull again
 				product = await (session.CreateCriteria(typeof (Product))
 								 .Add(Restrictions.Eq("ProductId", "XO1234"))
-								 .UniqueResultAsync<Product>(CancellationToken.None));
+								 .UniqueResultAsync<Product>());
 
 				Assert.That(product, Is.Not.Null);
 				Assert.That(product.Name, Is.EqualTo("TestValue"));

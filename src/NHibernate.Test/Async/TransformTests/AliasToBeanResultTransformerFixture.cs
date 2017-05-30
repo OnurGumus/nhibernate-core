@@ -169,55 +169,55 @@ namespace NHibernate.Test.TransformTests
 		[Test]
 		public Task WorkWithOutPublicParameterLessCtorAsync()
 		{
-			return AssertCardinalityAndSomethingAsync<WithOutPublicParameterLessCtor>(cancellationToken:CancellationToken.None);
+			return AssertCardinalityAndSomethingAsync<WithOutPublicParameterLessCtor>();
 		}
 
 		[Test]
 		public Task ToPublicProperties_WithoutAnyProjectionsAsync()
 		{
-			return AssertCardinalityNameAndIdAsync<PublicPropertiesSimpleDTO>(cancellationToken:CancellationToken.None);
+			return AssertCardinalityNameAndIdAsync<PublicPropertiesSimpleDTO>();
 		}
 
 		[Test]
 		public Task ToPrivateFields_WithoutAnyProjectionsAsync()
 		{
-			return AssertCardinalityNameAndIdAsync<PrivateFieldsSimpleDTO>(cancellationToken:CancellationToken.None);
+			return AssertCardinalityNameAndIdAsync<PrivateFieldsSimpleDTO>();
 		}
 
 		[Test]
 		public Task ToInheritedPublicProperties_WithoutProjectionsAsync()
 		{
-			return AssertCardinalityNameAndIdAsync<PublicInheritedPropertiesSimpleDTO>(cancellationToken:CancellationToken.None);
+			return AssertCardinalityNameAndIdAsync<PublicInheritedPropertiesSimpleDTO>();
 		}
 
 		[Test]
 		public Task ToInheritedPrivateFields_WithoutProjectionsAsync()
 		{
-			return AssertCardinalityNameAndIdAsync<PrivateInheritedFieldsSimpleDTO>(cancellationToken:CancellationToken.None);
+			return AssertCardinalityNameAndIdAsync<PrivateInheritedFieldsSimpleDTO>();
 		}
 
 		[Test]
 		public Task WorkWithPublicParameterLessCtor_FieldsAsync()
 		{
-			return AssertCardinalityAndSomethingAsync<PublicParameterLessCtor>(cancellationToken:CancellationToken.None);
+			return AssertCardinalityAndSomethingAsync<PublicParameterLessCtor>();
 		}
 
 		[Test]
 		public Task WorkWithPublicParameterLessCtor_PropertiesAsync()
 		{
-			return AssertCardinalityAndSomethingAsync<PublicParameterLessCtor>("select s.Name as Something from Simple s", CancellationToken.None);
+			return AssertCardinalityAndSomethingAsync<PublicParameterLessCtor>("select s.Name as Something from Simple s");
 		}
 
 		[Test]
 		public Task WorksWithStructAsync()
 		{
-			return AssertCardinalityAndSomethingAsync<TestStruct>(cancellationToken:CancellationToken.None);
+			return AssertCardinalityAndSomethingAsync<TestStruct>();
 		}
 
 		[Test]
 		public Task WorksWithNewPropertyAsync()
 		{
-			return AssertCardinalityNameAndIdAsync<NewPropertiesSimpleDTO>(cancellationToken:CancellationToken.None);
+			return AssertCardinalityNameAndIdAsync<NewPropertiesSimpleDTO>();
 		}
 
 		[Test]
@@ -228,7 +228,7 @@ namespace NHibernate.Test.TransformTests
 				var transformer = Transformers.AliasToBean<NewPropertiesSimpleDTO>();
 				var l = await (s.CreateSQLQuery("select id as ID, Name as NamE from Simple")
 						.SetResultTransformer(transformer)
-						.ListAsync<NewPropertiesSimpleDTO>(CancellationToken.None));
+						.ListAsync<NewPropertiesSimpleDTO>());
 				Assert.That(l.Count, Is.EqualTo(2));
 				Assert.That(l, Has.All.Not.Null);
 				Assert.That(l, Has.Some.Property("Name").EqualTo("Name1"));
@@ -249,7 +249,7 @@ namespace NHibernate.Test.TransformTests
 				{
 					return s.CreateSQLQuery("select * from Simple")
 						.SetResultTransformer(transformer)
-						.ListAsync<PropertiesInsensitivelyDuplicated>(CancellationToken.None);
+						.ListAsync<PropertiesInsensitivelyDuplicated>();
 				});
 			}
 		}
@@ -257,11 +257,11 @@ namespace NHibernate.Test.TransformTests
 		[Test]
 		public async Task SerializationAsync()
 		{
-			await (AssertSerializationAsync<PublicPropertiesSimpleDTO>(CancellationToken.None));
-			await (AssertSerializationAsync<PrivateFieldsSimpleDTO>(CancellationToken.None));
-			await (AssertSerializationAsync<PublicInheritedPropertiesSimpleDTO>(CancellationToken.None));
-			await (AssertSerializationAsync<PrivateInheritedFieldsSimpleDTO>(CancellationToken.None));
-			await (AssertSerializationAsync<NewPropertiesSimpleDTO>(CancellationToken.None));
+			await (AssertSerializationAsync<PublicPropertiesSimpleDTO>());
+			await (AssertSerializationAsync<PrivateFieldsSimpleDTO>());
+			await (AssertSerializationAsync<PublicInheritedPropertiesSimpleDTO>());
+			await (AssertSerializationAsync<PrivateInheritedFieldsSimpleDTO>());
+			await (AssertSerializationAsync<NewPropertiesSimpleDTO>());
 		}
 
 		private async Task AssertCardinalityNameAndIdAsync<T>(IResultTransformer transformer = null, CancellationToken cancellationToken = default(CancellationToken))

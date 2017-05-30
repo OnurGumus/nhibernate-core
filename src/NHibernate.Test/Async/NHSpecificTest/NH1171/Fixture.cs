@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1171
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -46,7 +45,7 @@ ORDER BY Name
 			{
 				var q = s.CreateSQLQuery(sql);
 				q.SetString("name", "Evgeny Potashnik");
-				await (q.ListAsync(CancellationToken.None));
+				await (q.ListAsync());
 			}
 		}
 
@@ -68,7 +67,7 @@ ORDER BY Name
 				{
 					var q = s.CreateSQLQuery(sql);
 					q.SetString("name", "Evgeny Potashnik");
-					await (q.ListAsync(CancellationToken.None));
+					await (q.ListAsync());
 				}
 				string message = ls.GetWholeLog();
 				Assert.That(message, Does.Contain("-- Comment with ' number 1"));

@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1280
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class NH1280FixtureAsync : BugTestCase
 	{
@@ -75,11 +74,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 									Restrictions.IsNotNull(Projections.GroupProperty("Id")), new ConstantProjection("yes"), new ConstantProjection("No"))))
 					.Add(Restrictions.Eq(Projections.GroupProperty("Name"), "Fred"))
 					.Add(Restrictions.Gt("Id", 2))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.AreEqual(2, list.Count);
 				Assert.AreEqual("Fred Fred", ((object[])list[0])[0]);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -93,10 +92,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 				int iq = await (s.CreateCriteria(typeof(Person))
 					.SetProjection(Projections.GroupProperty("IQ"))
 					.Add(Restrictions.Gt(Projections.Count("IQ"), 1))
-					.UniqueResultAsync<int>(CancellationToken.None));
+					.UniqueResultAsync<int>());
 
 				Assert.AreEqual(20, iq);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -110,10 +109,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 				string name = await (s.CreateCriteria(typeof(Person))
 					.SetProjection(Projections.GroupProperty("Name"))
 					.Add(Restrictions.Lt(Projections.Avg("IQ"), 20))
-					.UniqueResultAsync<string>(CancellationToken.None));
+					.UniqueResultAsync<string>());
 
 				Assert.AreEqual("Joe", name);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -127,10 +126,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 				string name = await (s.CreateCriteria(typeof(Person))
 					.SetProjection(Projections.GroupProperty("Name"))
 					.Add(Restrictions.Eq(Projections.GroupProperty("Name"), "Joe"))
-					.UniqueResultAsync<string>(CancellationToken.None));
+					.UniqueResultAsync<string>());
 
 				Assert.AreEqual("Joe", name);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -143,10 +142,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 				string name = await (s.CreateCriteria(typeof(Person))
 					.SetProjection(Projections.GroupProperty("Name"))
 					.Add(Restrictions.EqProperty("IQ", "ShoeSize"))
-					.UniqueResultAsync<string>(CancellationToken.None));
+					.UniqueResultAsync<string>());
 
 				Assert.AreEqual("Fred", name);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -159,11 +158,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 				IList list = await (s.CreateCriteria(typeof(Person))
 					.Add(Restrictions.Not(Restrictions.Eq(Projections.Property("IQ"), 40)))
 					.Add(Restrictions.Eq(Projections.Property("Name"), "Fred"))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.AreEqual(1, list.Count);
 				Assert.AreEqual("Fred", ((Person)list[0]).Name);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -184,11 +183,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 				IList list = await (s.CreateCriteria(typeof(Person), "p")
 					.Add(Subqueries.PropertyEq("Name", dc1))
 					.Add(Restrictions.Not(Subqueries.Eq("Sally", dc2)))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.AreEqual(1, list.Count);
 				Assert.AreEqual("Joe", ((Person)list[0]).Name);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -214,10 +213,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 
 				IList list = await (s.CreateCriteria(typeof(Person))
 					.Add(Subqueries.Eq("Fred Fred", dc2))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.AreEqual(5, list.Count); //yeah, it returns all five results. The key is that it didn't crash
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -242,11 +241,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 							new ConstantProjection(1),
 							new ConstantProjection(2)),
 						"Fr"))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.AreEqual(2, list.Count);
 				Assert.AreEqual("Fre", list[0]);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -260,10 +259,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 				int iq = await (s.CreateCriteria(typeof(Person))
 					.SetProjection(Projections.GroupProperty("IQ"))
 					.Add(Restrictions.Not(Restrictions.Le(Projections.Count("IQ"), 1)))
-					.UniqueResultAsync<int>(CancellationToken.None));
+					.UniqueResultAsync<int>());
 
 				Assert.AreEqual(20, iq);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 	}

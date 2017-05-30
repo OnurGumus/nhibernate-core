@@ -156,7 +156,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassBExtendedByA>().AnyAsync(CancellationToken.None));
+				var result = await (session.Query<DomainClassBExtendedByA>().AnyAsync());
 				Assert.IsTrue(result);
 			}
 		}
@@ -167,7 +167,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassBExtendedByA>().AnyAsync(dc => dc.Name == _searchName1, CancellationToken.None));
+				var result = await (session.Query<DomainClassBExtendedByA>().AnyAsync(dc => dc.Name == _searchName1));
 				Assert.IsTrue(result);
 			}
 		}
@@ -178,7 +178,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassCExtendedByD>().AnyAsync(CancellationToken.None));
+				var result = await (session.Query<DomainClassCExtendedByD>().AnyAsync());
 				Assert.IsTrue(result);
 			}
 		}
@@ -189,7 +189,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassCExtendedByD>().AnyAsync(dc => dc.Name == _searchName1, CancellationToken.None));
+				var result = await (session.Query<DomainClassCExtendedByD>().AnyAsync(dc => dc.Name == _searchName1));
 				Assert.IsTrue(result);
 			}
 		}
@@ -200,7 +200,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassE>().AnyAsync(CancellationToken.None));
+				var result = await (session.Query<DomainClassE>().AnyAsync());
 				Assert.IsTrue(result);
 			}
 		}
@@ -211,7 +211,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassE>().AnyAsync(dc => dc.Name == _searchName1, CancellationToken.None));
+				var result = await (session.Query<DomainClassE>().AnyAsync(dc => dc.Name == _searchName1));
 				Assert.IsTrue(result);
 			}
 		}
@@ -222,7 +222,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassF>().AnyAsync(CancellationToken.None));
+				var result = await (session.Query<DomainClassF>().AnyAsync());
 				Assert.IsFalse(result);
 			}
 		}
@@ -233,7 +233,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassF>().AnyAsync(dc => dc.Name == _searchName1, CancellationToken.None));
+				var result = await (session.Query<DomainClassF>().AnyAsync(dc => dc.Name == _searchName1));
 				Assert.IsFalse(result);
 			}
 		}
@@ -244,7 +244,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassGExtendedByH>().AnyAsync(CancellationToken.None));
+				var result = await (session.Query<DomainClassGExtendedByH>().AnyAsync());
 				Assert.IsTrue(result);
 			}
 		}
@@ -255,7 +255,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassGExtendedByH>().AnyAsync(dc => dc.Name == _searchName1, CancellationToken.None));
+				var result = await (session.Query<DomainClassGExtendedByH>().AnyAsync(dc => dc.Name == _searchName1));
 				Assert.IsTrue(result);
 			}
 		}
@@ -266,7 +266,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<object>().AnyAsync(CancellationToken.None));
+				var result = await (session.Query<object>().AnyAsync());
 				Assert.IsTrue(result);
 			}
 		}
@@ -275,35 +275,35 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		[Test, Ignore("Won't fix: requires reshaping the query")]
 		public Task AverageBBaseAsync()
 		{
-			return AverageAsync<DomainClassBExtendedByA>(1.5m, CancellationToken.None);
+			return AverageAsync<DomainClassBExtendedByA>(1.5m);
 		}
 
 		// Failing case till NH-3850 is fixed
 		[Test, Ignore("Won't fix: requires reshaping the query")]
 		public Task AverageCBaseAsync()
 		{
-			return AverageAsync<DomainClassCExtendedByD>(1.5m, CancellationToken.None);
+			return AverageAsync<DomainClassCExtendedByD>(1.5m);
 		}
 
 		// Non-reg case
 		[Test]
 		public Task AverageEAsync()
 		{
-			return AverageAsync<DomainClassE>(1.5m, CancellationToken.None);
+			return AverageAsync<DomainClassE>(1.5m);
 		}
 
 		// Non-reg case
 		[Test]
 		public Task AverageFAsync()
 		{
-			return AverageAsync<DomainClassF>(null, CancellationToken.None);
+			return AverageAsync<DomainClassF>(null);
 		}
 
 		// Failing case till NH-3850 is fixed
 		[Test, Ignore("Won't fix: requires reshaping the query")]
 		public Task AverageGBaseAsync()
 		{
-			return AverageAsync<DomainClassGExtendedByH>(2.5m, CancellationToken.None);
+			return AverageAsync<DomainClassGExtendedByH>(2.5m);
 		}
 
 		private async Task AverageAsync<DC>(decimal? expectedResult, CancellationToken cancellationToken = default(CancellationToken)) where DC : DomainClassBase
@@ -344,7 +344,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<object>().AverageAsync(o => (int?)2, CancellationToken.None));
+				var result = await (session.Query<object>().AverageAsync(o => (int?)2));
 				Assert.AreEqual(2, result);
 			}
 		}
@@ -355,7 +355,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassBExtendedByA>().CountAsync(CancellationToken.None));
+				var result = await (session.Query<DomainClassBExtendedByA>().CountAsync());
 				Assert.AreEqual(2, result);
 			}
 		}
@@ -366,7 +366,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassBExtendedByA>().CountAsync(dc => dc.Name == _searchName1, CancellationToken.None));
+				var result = await (session.Query<DomainClassBExtendedByA>().CountAsync(dc => dc.Name == _searchName1));
 				Assert.AreEqual(1, result);
 			}
 		}
@@ -377,7 +377,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassCExtendedByD>().CountAsync(CancellationToken.None));
+				var result = await (session.Query<DomainClassCExtendedByD>().CountAsync());
 				Assert.AreEqual(2, result);
 			}
 		}
@@ -388,7 +388,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassCExtendedByD>().CountAsync(dc => dc.Name == _searchName1, CancellationToken.None));
+				var result = await (session.Query<DomainClassCExtendedByD>().CountAsync(dc => dc.Name == _searchName1));
 				Assert.AreEqual(1, result);
 			}
 		}
@@ -399,7 +399,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassE>().CountAsync(CancellationToken.None));
+				var result = await (session.Query<DomainClassE>().CountAsync());
 				Assert.AreEqual(2, result);
 			}
 		}
@@ -410,7 +410,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassE>().CountAsync(dc => dc.Name == _searchName1, CancellationToken.None));
+				var result = await (session.Query<DomainClassE>().CountAsync(dc => dc.Name == _searchName1));
 				Assert.AreEqual(1, result);
 			}
 		}
@@ -421,7 +421,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassF>().CountAsync(CancellationToken.None));
+				var result = await (session.Query<DomainClassF>().CountAsync());
 				Assert.AreEqual(0, result);
 			}
 		}
@@ -432,7 +432,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassF>().CountAsync(dc => dc.Name == _searchName1, CancellationToken.None));
+				var result = await (session.Query<DomainClassF>().CountAsync(dc => dc.Name == _searchName1));
 				Assert.AreEqual(0, result);
 			}
 		}
@@ -443,7 +443,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassGExtendedByH>().CountAsync(CancellationToken.None));
+				var result = await (session.Query<DomainClassGExtendedByH>().CountAsync());
 				Assert.AreEqual(4, result);
 			}
 		}
@@ -454,7 +454,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassGExtendedByH>().CountAsync(dc => dc.Name == _searchName1, CancellationToken.None));
+				var result = await (session.Query<DomainClassGExtendedByH>().CountAsync(dc => dc.Name == _searchName1));
 				Assert.AreEqual(2, result);
 			}
 		}
@@ -465,7 +465,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<object>().CountAsync(CancellationToken.None));
+				var result = await (session.Query<object>().CountAsync());
 				Assert.AreEqual(_totalEntityCount, result);
 			}
 		}
@@ -478,7 +478,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassBExtendedByA>();
 				DomainClassBExtendedByA result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync(CancellationToken.None)); });
+				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync()); });
 				Assert.IsNotNull(result);
 				Assert.IsInstanceOf<DomainClassBExtendedByA>(result);
 			}
@@ -492,7 +492,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassBExtendedByA>();
 				DomainClassBExtendedByA result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync(dc => dc.Name == _searchName1, CancellationToken.None)); });
+				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync(dc => dc.Name == _searchName1)); });
 				Assert.IsNotNull(result);
 				Assert.AreEqual(_searchName1, result.Name);
 				Assert.IsInstanceOf<DomainClassBExtendedByA>(result);
@@ -507,7 +507,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassCExtendedByD>();
 				DomainClassCExtendedByD result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync(CancellationToken.None)); });
+				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync()); });
 				Assert.IsNotNull(result);
 				Assert.IsInstanceOf<DomainClassCExtendedByD>(result);
 			}
@@ -521,7 +521,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassCExtendedByD>();
 				DomainClassCExtendedByD result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync(dc => dc.Name == _searchName1, CancellationToken.None)); });
+				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync(dc => dc.Name == _searchName1)); });
 				Assert.IsNotNull(result);
 				Assert.AreEqual(_searchName1, result.Name);
 				Assert.IsInstanceOf<DomainClassCExtendedByD>(result);
@@ -536,7 +536,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassE>();
 				DomainClassE result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync(CancellationToken.None)); });
+				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync()); });
 				Assert.IsNotNull(result);
 				Assert.IsInstanceOf<DomainClassE>(result);
 			}
@@ -550,7 +550,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassE>();
 				DomainClassE result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync(dc => dc.Name == _searchName1, CancellationToken.None)); });
+				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync(dc => dc.Name == _searchName1)); });
 				Assert.IsNotNull(result);
 				Assert.AreEqual(_searchName1, result.Name);
 				Assert.IsInstanceOf<DomainClassE>(result);
@@ -565,7 +565,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassF>();
 				DomainClassF result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync(CancellationToken.None)); });
+				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync()); });
 				Assert.IsNull(result);
 			}
 		}
@@ -578,7 +578,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassF>();
 				DomainClassF result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync(dc => dc.Name == _searchName1, CancellationToken.None)); });
+				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync(dc => dc.Name == _searchName1)); });
 				Assert.IsNull(result);
 			}
 		}
@@ -591,7 +591,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassGExtendedByH>();
 				DomainClassGExtendedByH result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync(CancellationToken.None)); });
+				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync()); });
 				Assert.IsNotNull(result);
 				// If class type assert starts failing, maybe just ignore it: order of first on polymorphic queries looks unspecified to me.
 				Assert.IsInstanceOf<DomainClassGExtendedByH>(result);
@@ -606,7 +606,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassGExtendedByH>();
 				DomainClassGExtendedByH result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync(dc => dc.Name == _searchName1, CancellationToken.None)); });
+				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync(dc => dc.Name == _searchName1)); });
 				Assert.IsNotNull(result);
 				Assert.AreEqual(_searchName1, result.Name);
 				// If class type assert starts failing, maybe just ignore it: order of first on polymorphic queries looks unspecified to me.
@@ -622,7 +622,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<object>();
 				object result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync(CancellationToken.None)); });
+				Assert.DoesNotThrowAsync(async () => { result = await (query.FirstOrDefaultAsync()); });
 				Assert.IsNotNull(result);
 				// If class type assert starts failing, maybe just ignore it: order of first on polymorphic queries looks unspecified to me.
 				Assert.IsInstanceOf<DomainClassBExtendedByA>(result);
@@ -635,7 +635,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassBExtendedByA>().LongCountAsync(CancellationToken.None));
+				var result = await (session.Query<DomainClassBExtendedByA>().LongCountAsync());
 				Assert.AreEqual(2, result);
 			}
 		}
@@ -646,7 +646,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassBExtendedByA>().LongCountAsync(dc => dc.Name == _searchName1, CancellationToken.None));
+				var result = await (session.Query<DomainClassBExtendedByA>().LongCountAsync(dc => dc.Name == _searchName1));
 				Assert.AreEqual(1, result);
 			}
 		}
@@ -657,7 +657,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassCExtendedByD>().LongCountAsync(CancellationToken.None));
+				var result = await (session.Query<DomainClassCExtendedByD>().LongCountAsync());
 				Assert.AreEqual(2, result);
 			}
 		}
@@ -668,7 +668,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassCExtendedByD>().LongCountAsync(dc => dc.Name == _searchName1, CancellationToken.None));
+				var result = await (session.Query<DomainClassCExtendedByD>().LongCountAsync(dc => dc.Name == _searchName1));
 				Assert.AreEqual(1, result);
 			}
 		}
@@ -679,7 +679,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassE>().LongCountAsync(CancellationToken.None));
+				var result = await (session.Query<DomainClassE>().LongCountAsync());
 				Assert.AreEqual(2, result);
 			}
 		}
@@ -690,7 +690,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassE>().LongCountAsync(dc => dc.Name == _searchName1, CancellationToken.None));
+				var result = await (session.Query<DomainClassE>().LongCountAsync(dc => dc.Name == _searchName1));
 				Assert.AreEqual(1, result);
 			}
 		}
@@ -701,7 +701,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassF>().LongCountAsync(CancellationToken.None));
+				var result = await (session.Query<DomainClassF>().LongCountAsync());
 				Assert.AreEqual(0, result);
 			}
 		}
@@ -712,7 +712,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassF>().LongCountAsync(dc => dc.Name == _searchName1, CancellationToken.None));
+				var result = await (session.Query<DomainClassF>().LongCountAsync(dc => dc.Name == _searchName1));
 				Assert.AreEqual(0, result);
 			}
 		}
@@ -723,7 +723,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassGExtendedByH>().LongCountAsync(CancellationToken.None));
+				var result = await (session.Query<DomainClassGExtendedByH>().LongCountAsync());
 				Assert.AreEqual(4, result);
 			}
 		}
@@ -734,7 +734,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<DomainClassGExtendedByH>().LongCountAsync(dc => dc.Name == _searchName1, CancellationToken.None));
+				var result = await (session.Query<DomainClassGExtendedByH>().LongCountAsync(dc => dc.Name == _searchName1));
 				Assert.AreEqual(2, result);
 			}
 		}
@@ -745,7 +745,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<object>().LongCountAsync(CancellationToken.None));
+				var result = await (session.Query<object>().LongCountAsync());
 				Assert.AreEqual(_totalEntityCount, result);
 			}
 		}
@@ -754,35 +754,35 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		[Test]
 		public Task MaxBBaseAsync()
 		{
-			return MaxAsync<DomainClassBExtendedByA>(2, CancellationToken.None);
+			return MaxAsync<DomainClassBExtendedByA>(2);
 		}
 
 		// Failing case till NH-3850 is fixed
 		[Test]
 		public Task MaxCBaseAsync()
 		{
-			return MaxAsync<DomainClassCExtendedByD>(2, CancellationToken.None);
+			return MaxAsync<DomainClassCExtendedByD>(2);
 		}
 
 		// Non-reg case
 		[Test]
 		public Task MaxEAsync()
 		{
-			return MaxAsync<DomainClassE>(2, CancellationToken.None);
+			return MaxAsync<DomainClassE>(2);
 		}
 
 		// Non-reg case
 		[Test]
 		public Task MaxFAsync()
 		{
-			return MaxAsync<DomainClassF>(null, CancellationToken.None);
+			return MaxAsync<DomainClassF>(null);
 		}
 
 		// Failing case till NH-3850 is fixed
 		[Test]
 		public Task MaxGBaseAsync()
 		{
-			return MaxAsync<DomainClassGExtendedByH>(4, CancellationToken.None);
+			return MaxAsync<DomainClassGExtendedByH>(4);
 		}
 
 		private async Task MaxAsync<DC>(int? expectedResult, CancellationToken cancellationToken = default(CancellationToken)) where DC : DomainClassBase
@@ -838,35 +838,35 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		[Test]
 		public Task MinBBaseAsync()
 		{
-			return MinAsync<DomainClassBExtendedByA>(1, CancellationToken.None);
+			return MinAsync<DomainClassBExtendedByA>(1);
 		}
 
 		// Failing case till NH-3850 is fixed
 		[Test]
 		public Task MinCBaseAsync()
 		{
-			return MinAsync<DomainClassCExtendedByD>(1, CancellationToken.None);
+			return MinAsync<DomainClassCExtendedByD>(1);
 		}
 
 		// Non-reg case
 		[Test]
 		public Task MinEAsync()
 		{
-			return MinAsync<DomainClassE>(1, CancellationToken.None);
+			return MinAsync<DomainClassE>(1);
 		}
 
 		// Non-reg case
 		[Test]
 		public Task MinFAsync()
 		{
-			return MinAsync<DomainClassF>(null, CancellationToken.None);
+			return MinAsync<DomainClassF>(null);
 		}
 
 		// Non-reg case
 		[Test]
 		public Task MinGBaseAsync()
 		{
-			return MinAsync<DomainClassGExtendedByH>(1, CancellationToken.None);
+			return MinAsync<DomainClassGExtendedByH>(1);
 		}
 
 		private async Task MinAsync<DC>(int? expectedResult, CancellationToken cancellationToken = default(CancellationToken)) where DC : DomainClassBase
@@ -926,7 +926,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassBExtendedByA>();
 				DomainClassBExtendedByA result = null;
-				Assert.ThrowsAsync<InvalidOperationException>(async () => { result = await (query.SingleOrDefaultAsync(CancellationToken.None)); });
+				Assert.ThrowsAsync<InvalidOperationException>(async () => { result = await (query.SingleOrDefaultAsync()); });
 			}
 		}
 
@@ -938,7 +938,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassBExtendedByA>();
 				DomainClassBExtendedByA result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.SingleOrDefaultAsync(dc => dc.Name == _searchName1, CancellationToken.None)); });
+				Assert.DoesNotThrowAsync(async () => { result = await (query.SingleOrDefaultAsync(dc => dc.Name == _searchName1)); });
 				Assert.IsNotNull(result);
 				Assert.AreEqual(_searchName1, result.Name);
 				Assert.IsInstanceOf<DomainClassBExtendedByA>(result);
@@ -953,7 +953,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassCExtendedByD>();
 				DomainClassCExtendedByD result = null;
-				Assert.ThrowsAsync<InvalidOperationException>(async () => { result = await (query.SingleOrDefaultAsync(CancellationToken.None)); });
+				Assert.ThrowsAsync<InvalidOperationException>(async () => { result = await (query.SingleOrDefaultAsync()); });
 			}
 		}
 
@@ -965,7 +965,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassCExtendedByD>();
 				DomainClassCExtendedByD result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.SingleOrDefaultAsync(dc => dc.Name == _searchName1, CancellationToken.None)); });
+				Assert.DoesNotThrowAsync(async () => { result = await (query.SingleOrDefaultAsync(dc => dc.Name == _searchName1)); });
 				Assert.IsNotNull(result);
 				Assert.AreEqual(_searchName1, result.Name);
 				Assert.IsInstanceOf<DomainClassCExtendedByD>(result);
@@ -980,7 +980,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassE>();
 				DomainClassE result = null;
-				Assert.ThrowsAsync<InvalidOperationException>(async () => { result = await (query.SingleOrDefaultAsync(CancellationToken.None)); });
+				Assert.ThrowsAsync<InvalidOperationException>(async () => { result = await (query.SingleOrDefaultAsync()); });
 			}
 		}
 
@@ -992,7 +992,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassE>();
 				DomainClassE result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.SingleOrDefaultAsync(dc => dc.Name == _searchName1, CancellationToken.None)); });
+				Assert.DoesNotThrowAsync(async () => { result = await (query.SingleOrDefaultAsync(dc => dc.Name == _searchName1)); });
 				Assert.IsNotNull(result);
 				Assert.AreEqual(_searchName1, result.Name);
 				Assert.IsInstanceOf<DomainClassE>(result);
@@ -1007,7 +1007,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassF>();
 				DomainClassF result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.SingleOrDefaultAsync(CancellationToken.None)); });
+				Assert.DoesNotThrowAsync(async () => { result = await (query.SingleOrDefaultAsync()); });
 				Assert.IsNull(result);
 			}
 		}
@@ -1020,7 +1020,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassF>();
 				DomainClassF result = null;
-				Assert.DoesNotThrowAsync(async () => { result = await (query.SingleOrDefaultAsync(dc => dc.Name == _searchName1, CancellationToken.None)); });
+				Assert.DoesNotThrowAsync(async () => { result = await (query.SingleOrDefaultAsync(dc => dc.Name == _searchName1)); });
 				Assert.IsNull(result);
 			}
 		}
@@ -1033,7 +1033,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassGExtendedByH>();
 				DomainClassGExtendedByH result = null;
-				Assert.ThrowsAsync<InvalidOperationException>(async () => { result = await (query.SingleOrDefaultAsync(CancellationToken.None)); });
+				Assert.ThrowsAsync<InvalidOperationException>(async () => { result = await (query.SingleOrDefaultAsync()); });
 			}
 		}
 
@@ -1045,7 +1045,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<DomainClassGExtendedByH>();
 				DomainClassGExtendedByH result = null;
-				Assert.ThrowsAsync<InvalidOperationException>(async () => { result = await (query.SingleOrDefaultAsync(dc => dc.Name == _searchName1, CancellationToken.None)); });
+				Assert.ThrowsAsync<InvalidOperationException>(async () => { result = await (query.SingleOrDefaultAsync(dc => dc.Name == _searchName1)); });
 			}
 		}
 
@@ -1057,7 +1057,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				var query = session.Query<object>();
 				object result = null;
-				Assert.ThrowsAsync<InvalidOperationException>(async () => { result = await (query.SingleOrDefaultAsync(CancellationToken.None)); });
+				Assert.ThrowsAsync<InvalidOperationException>(async () => { result = await (query.SingleOrDefaultAsync()); });
 			}
 		}
 
@@ -1065,35 +1065,35 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		[Test]
 		public Task SumBBaseAsync()
 		{
-			return SumAsync<DomainClassBExtendedByA>(3, CancellationToken.None);
+			return SumAsync<DomainClassBExtendedByA>(3);
 		}
 
 		// Failing case till NH-3850 is fixed
 		[Test]
 		public Task SumCBaseAsync()
 		{
-			return SumAsync<DomainClassCExtendedByD>(3, CancellationToken.None);
+			return SumAsync<DomainClassCExtendedByD>(3);
 		}
 
 		// Non-reg case
 		[Test]
 		public Task SumEAsync()
 		{
-			return SumAsync<DomainClassE>(3, CancellationToken.None);
+			return SumAsync<DomainClassE>(3);
 		}
 
 		// Non-reg case
 		[Test]
 		public Task SumFAsync()
 		{
-			return SumAsync<DomainClassF>(null, CancellationToken.None);
+			return SumAsync<DomainClassF>(null);
 		}
 
 		// Failing case till NH-3850 is fixed
 		[Test]
 		public Task SumGBaseAsync()
 		{
-			return SumAsync<DomainClassGExtendedByH>(10, CancellationToken.None);
+			return SumAsync<DomainClassGExtendedByH>(10);
 		}
 
 		// Failing case till NH-3850 is fixed
@@ -1102,7 +1102,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		{
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<object>().SumAsync(o => (int?)2, CancellationToken.None));
+				var result = await (session.Query<object>().SumAsync(o => (int?)2));
 				Assert.AreEqual(_totalEntityCount * 2, result);
 			}
 		}

@@ -15,7 +15,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class CasingTestAsync : LinqTestCase
 	{
@@ -24,7 +23,7 @@ namespace NHibernate.Test.Linq
 		{
 			var name = await ((from e in db.Employees
 						where e.EmployeeId == 1
-						select e.FirstName.ToUpper()).SingleAsync(CancellationToken.None));
+						select e.FirstName.ToUpper()).SingleAsync());
 
 			Assert.That(name, Is.EqualTo("NANCY"));
 		}
@@ -34,7 +33,7 @@ namespace NHibernate.Test.Linq
 		{
 			var name = await ((from e in db.Employees
 						where e.EmployeeId == 1
-						select e.FirstName.ToUpperInvariant()).SingleAsync(CancellationToken.None));
+						select e.FirstName.ToUpperInvariant()).SingleAsync());
 
 			Assert.That(name, Is.EqualTo("NANCY"));
 		}
@@ -44,7 +43,7 @@ namespace NHibernate.Test.Linq
 		{
 			var name = await ((from e in db.Employees
 						where e.EmployeeId == 1
-						select e.FirstName.ToLower()).SingleAsync(CancellationToken.None));
+						select e.FirstName.ToLower()).SingleAsync());
 
 			Assert.That(name, Is.EqualTo("nancy"));
 		}
@@ -54,7 +53,7 @@ namespace NHibernate.Test.Linq
 		{
 			var name = await ((from e in db.Employees
 						where e.EmployeeId == 1
-						select e.FirstName.ToLowerInvariant()).SingleAsync(CancellationToken.None));
+						select e.FirstName.ToLowerInvariant()).SingleAsync());
 
 			Assert.That(name, Is.EqualTo("nancy"));
 		}

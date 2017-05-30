@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2697
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SampleTestAsync : BugTestCase
 	{
@@ -93,13 +92,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 			using (ISession session = this.OpenSession()) {
 				ArticleGroupItem item = new ArticleGroupItem();
 				item.Name = "Test article group";
-				await (session.SaveAsync(item, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.SaveAsync(item));
+				await (session.FlushAsync());
 			}
 
 			HQL = "from ArticleGroupItem";
 			using (ISession session = this.OpenSession()) {
-				result = await (session.CreateQuery(HQL).ListAsync<ArticleGroupItem>(CancellationToken.None));
+				result = await (session.CreateQuery(HQL).ListAsync<ArticleGroupItem>());
 			}
 			Assert.That(result.Count, Is.GreaterThan(0));
 		}
@@ -115,14 +114,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 				ArticleItem item = new ArticleItem();
 				item.Name = "Test article";
 				item.IsFavorite = 0;
-				await (session.SaveAsync("Article", item, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.SaveAsync("Article", item));
+				await (session.FlushAsync());
 			}
 
 			//here first problem, no entities are returned <========
 			HQL = "from Article";
 			using (ISession session = this.OpenSession()) {
-				result = await (session.CreateQuery(HQL).ListAsync<ArticleItem>(CancellationToken.None));
+				result = await (session.CreateQuery(HQL).ListAsync<ArticleItem>());
 			}
 			Assert.That(result.Count, Is.GreaterThan(0));
 		}
@@ -143,15 +142,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 				await (session.CreateQuery(HQL)
 							.SetInt16("Fav", isFavValue) //Exception !!
 							//.SetParameter("Fav", isFavValue) //Exception also !!
-							.ExecuteUpdateAsync(CancellationToken.None));
+							.ExecuteUpdateAsync());
 
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 			}
 
 			//Check if some articles have isFavorite=1
 			HQL = "from Article a where a.IsFavorite=1";
 			using (ISession session = this.OpenSession()) {
-				result = await (session.CreateQuery(HQL).ListAsync<ArticleItem>(CancellationToken.None));
+				result = await (session.CreateQuery(HQL).ListAsync<ArticleItem>());
 			}
 			Assert.That(result.Count, Is.GreaterThan(0));
 

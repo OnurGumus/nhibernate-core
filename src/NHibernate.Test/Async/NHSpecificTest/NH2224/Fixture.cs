@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2224
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync: BugTestCase
 	{
@@ -62,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2224
 						Projections.Property("DateOfChange")),
 						new string[] { "2010", DateTime.Now.Year.ToString() }));
 
-				var result = await (criteria.ListAsync(CancellationToken.None));
+				var result = await (criteria.ListAsync());
 				
 				Assert.That(result.Count, Is.EqualTo(1));
 			}

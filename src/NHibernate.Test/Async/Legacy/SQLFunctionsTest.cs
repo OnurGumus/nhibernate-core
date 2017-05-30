@@ -20,7 +20,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Legacy
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Summary description for SQLFunctionsTest.
 	/// </summary>
@@ -41,7 +40,7 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			IEnumerator iter = (await (s.CreateQuery("select max(s.Count) from s in class Simple").EnumerableAsync(CancellationToken.None))
+			IEnumerator iter = (await (s.CreateQuery("select max(s.Count) from s in class Simple").EnumerableAsync())
 )				.GetEnumerator();
 
 			if (Dialect is MySQLDialect
@@ -58,23 +57,23 @@ namespace NHibernate.Test.Legacy
 			simple.Address = "Simple Address";
 			simple.Pay = 45.8f;
 			simple.Count = 2;
-			await (s.SaveAsync(simple, 10L, CancellationToken.None));
+			await (s.SaveAsync(simple, 10L));
 
 			// Test to make sure allocating an specified object operates correctly.
 			Assert.AreEqual(1,
-(			                await (s.CreateQuery("select new S(s.Count, s.Address) from s in class Simple").ListAsync(CancellationToken.None))
+(			                await (s.CreateQuery("select new S(s.Count, s.Address) from s in class Simple").ListAsync())
 )			                	.Count);
 
 			// Quick check the base dialect functions operate correctly
 			Assert.AreEqual(1,
-(			                await (s.CreateQuery("select max(s.Count) from s in class Simple").ListAsync(CancellationToken.None))).Count);
+(			                await (s.CreateQuery("select max(s.Count) from s in class Simple").ListAsync())).Count);
 			Assert.AreEqual(1,
-(			                await (s.CreateQuery("select count(*) from s in class Simple").ListAsync(CancellationToken.None))).Count);
+(			                await (s.CreateQuery("select count(*) from s in class Simple").ListAsync())).Count);
 
 			if (Dialect is Oracle8iDialect)
 			{
 				// Check Oracle Dialect mix of dialect functions - no args (no parenthesis and single arg functions
-				IList rset = await (s.CreateQuery("select s.Name, sysdate, trunc(s.Pay), round(s.Pay) from s in class Simple").ListAsync(CancellationToken.None));
+				IList rset = await (s.CreateQuery("select s.Name, sysdate, trunc(s.Pay), round(s.Pay) from s in class Simple").ListAsync());
 				object[] row = (object[]) rset[0];
 				Assert.IsNotNull(row[0], "Name string should have been returned");
 				Assert.IsNotNull(row[1], "Todays Date should have been returned");
@@ -82,20 +81,20 @@ namespace NHibernate.Test.Legacy
 				Assert.AreEqual(46f, row[3], "round(45.8) result was incorrect");
 
 				simple.Pay = -45.8f;
-				await (s.UpdateAsync(simple, CancellationToken.None));
+				await (s.UpdateAsync(simple));
 
 				// Test type conversions while using nested functions (Float to Int).
-				rset = await (s.CreateQuery("select abs(round(s.Pay)) from s in class Simple").ListAsync(CancellationToken.None));
+				rset = await (s.CreateQuery("select abs(round(s.Pay)) from s in class Simple").ListAsync());
 				Assert.AreEqual(46f, rset[0], "abs(round(-45.8)) result was incorrect");
 
-				rset = await (s.CreateQuery("select left('abc', 2), right('abc', 2) from s in class Simple").ListAsync(CancellationToken.None));
+				rset = await (s.CreateQuery("select left('abc', 2), right('abc', 2) from s in class Simple").ListAsync());
 				row = (object[]) rset[0];
 				Assert.AreEqual("ab", row[0], "Left function is broken.");
 				Assert.AreEqual("bc", row[1], "Right function is broken.");
 
 				// Test a larger depth 3 function example - Not a useful combo other than for testing
 				Assert.AreEqual(1,
-(												await (s.CreateQuery("select trunc(round(length('A'))) from s in class Simple").ListAsync(CancellationToken.None))).Count);
+(												await (s.CreateQuery("select trunc(round(length('A'))) from s in class Simple").ListAsync())).Count);
 				// NOTE: In Oracle this will fail as the translator will expect two columns in return
 				//Assert.AreEqual(1,
 				//                s.CreateQuery("select trunc(round(sysdate)) from s in class Simple").List().Count);
@@ -116,8 +115,8 @@ namespace NHibernate.Test.Legacy
 			//	assertTrue( 0 == value.intValue() );
 			//}
 
-			await (s.DeleteAsync(simple, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(simple));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -128,12 +127,12 @@ namespace NHibernate.Test.Legacy
 			ITransaction t = s.BeginTransaction();
 			Simple simple = new Simple();
 			simple.Name = "Simple 1";
-			await (s.SaveAsync(simple, (long) 10, CancellationToken.None));
+			await (s.SaveAsync(simple, (long) 10));
 			IQuery q = s.CreateQuery("from s in class Simple where s.Name=:Name and s.Count=:Count");
 			q.SetProperties(simple);
-			Assert.AreEqual(simple, (await (q.ListAsync(CancellationToken.None)))[0]);
-			await (s.DeleteAsync(simple, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			Assert.AreEqual(simple, (await (q.ListAsync()))[0]);
+			await (s.DeleteAsync(simple));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -150,28 +149,28 @@ namespace NHibernate.Test.Legacy
 			Broken b = new Fixed();
 			b.Id = 123;
 			b.OtherId = "foobar";
-			await (s.SaveAsync(b, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(b));
+			await (s.FlushAsync());
 			b.Timestamp = DateTime.Now;
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.UpdateAsync(b, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.UpdateAsync(b));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			b = (Broken) await (s.LoadAsync(typeof(Broken), b, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			b = (Broken) await (s.LoadAsync(typeof(Broken), b));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.DeleteAsync(b, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(b));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -182,21 +181,21 @@ namespace NHibernate.Test.Legacy
 			ITransaction t = s.BeginTransaction();
 			Simple simple = new Simple();
 			simple.Name = "Simple 1";
-			await (s.SaveAsync(simple, (long) 10, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(simple, (long) 10));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.UpdateAsync(simple, (long) 10, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.UpdateAsync(simple, (long) 10));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.UpdateAsync(simple, (long) 10, CancellationToken.None));
-			await (s.DeleteAsync(simple, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.UpdateAsync(simple, (long) 10));
+			await (s.DeleteAsync(simple));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -208,8 +207,8 @@ namespace NHibernate.Test.Legacy
 			ITransaction t = s.BeginTransaction();
 			Simple simple = new Simple();
 			simple.Name = "Simple 1";
-			await (s.SaveAsync(simple, 10L, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(simple, 10L));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
@@ -218,24 +217,24 @@ namespace NHibernate.Test.Legacy
 			q.SetCacheable(true);
 			q.SetString(0, "Simple 1");
 
-			Assert.AreEqual(1, (await (q.ListAsync(CancellationToken.None))).Count);
-			Assert.AreEqual(1, (await (q.ListAsync(CancellationToken.None))).Count);
-			Assert.AreEqual(1, (await (q.ListAsync(CancellationToken.None))).Count);
+			Assert.AreEqual(1, (await (q.ListAsync())).Count);
+			Assert.AreEqual(1, (await (q.ListAsync())).Count);
+			Assert.AreEqual(1, (await (q.ListAsync())).Count);
 
 			q = s.CreateQuery("from Simple s where s.Name=:name");
 			q.SetCacheable(true);
 			q.SetString("name", "Simple 1");
-			Assert.AreEqual(1, (await (q.ListAsync(CancellationToken.None))).Count);
+			Assert.AreEqual(1, (await (q.ListAsync())).Count);
 
-			simple = (Simple) (await (q.ListAsync(CancellationToken.None)))[0];
+			simple = (Simple) (await (q.ListAsync()))[0];
 
 			q.SetString("name", "Simple 2");
-			Assert.AreEqual(0, (await (q.ListAsync(CancellationToken.None))).Count);
-			Assert.AreEqual(0, (await (q.ListAsync(CancellationToken.None))).Count);
+			Assert.AreEqual(0, (await (q.ListAsync())).Count);
+			Assert.AreEqual(0, (await (q.ListAsync())).Count);
 			simple.Name = "Simple 2";
-			Assert.AreEqual(1, (await (q.ListAsync(CancellationToken.None))).Count);
-			Assert.AreEqual(1, (await (q.ListAsync(CancellationToken.None))).Count);
-			await (t.CommitAsync(CancellationToken.None));
+			Assert.AreEqual(1, (await (q.ListAsync())).Count);
+			Assert.AreEqual(1, (await (q.ListAsync())).Count);
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
@@ -243,16 +242,16 @@ namespace NHibernate.Test.Legacy
 			q = s.CreateQuery("from Simple s where s.Name=:name");
 			q.SetString("name", "Simple 2");
 			q.SetCacheable(true);
-			Assert.AreEqual(1, (await (q.ListAsync(CancellationToken.None))).Count);
-			Assert.AreEqual(1, (await (q.ListAsync(CancellationToken.None))).Count);
-			await (t.CommitAsync(CancellationToken.None));
+			Assert.AreEqual(1, (await (q.ListAsync())).Count);
+			Assert.AreEqual(1, (await (q.ListAsync())).Count);
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.UpdateAsync(simple, 10L, CancellationToken.None));
-			await (s.DeleteAsync(simple, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.UpdateAsync(simple, 10L));
+			await (s.DeleteAsync(simple));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
@@ -260,9 +259,9 @@ namespace NHibernate.Test.Legacy
 			q = s.CreateQuery("from Simple s where s.Name=?");
 			q.SetCacheable(true);
 			q.SetString(0, "Simple 1");
-			Assert.AreEqual(0, (await (q.ListAsync(CancellationToken.None))).Count);
-			Assert.AreEqual(0, (await (q.ListAsync(CancellationToken.None))).Count);
-			await (t.CommitAsync(CancellationToken.None));
+			Assert.AreEqual(0, (await (q.ListAsync())).Count);
+			Assert.AreEqual(0, (await (q.ListAsync())).Count);
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -297,17 +296,17 @@ namespace NHibernate.Test.Legacy
 			ITransaction t = s.BeginTransaction();
 			Simple simple = new Simple();
 			simple.Name = "Simple 1";
-			await (s.SaveAsync(simple, 10L, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(simple, 10L));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IList result = await (s.CreateQuery(query).ListAsync(CancellationToken.None));
+			IList result = await (s.CreateQuery(query).ListAsync());
 			Assert.IsTrue(result[0] is Simple,
 			              "Unexpected result type [" + result[0].GetType().Name + "]");
-			await (s.DeleteAsync(result[0], CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(result[0]));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -318,52 +317,52 @@ namespace NHibernate.Test.Legacy
 			ITransaction t = s.BeginTransaction();
 			Simple simple = new Simple();
 			simple.Name = "Simple 1";
-			await (s.SaveAsync(simple, 10L, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(simple, 10L));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 			IQuery q = s.CreateQuery("from Simple s");
-			IList list = await (q.SetCacheable(true).ListAsync(CancellationToken.None));
+			IList list = await (q.SetCacheable(true).ListAsync());
 			Assert.AreEqual(1, list.Count);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 			q = s.CreateQuery("from Simple s");
-			list = await (q.SetCacheable(true).ListAsync(CancellationToken.None));
+			list = await (q.SetCacheable(true).ListAsync());
 			Assert.AreEqual(1, list.Count);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 			Simple simple2 = new Simple();
 			simple2.Count = 133;
-			await (s.SaveAsync(simple2, 12L, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(simple2, 12L));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 			q = s.CreateQuery("from Simple s");
-			list = await (q.SetCacheable(true).ListAsync(CancellationToken.None));
+			list = await (q.SetCacheable(true).ListAsync());
 			Assert.AreEqual(2, list.Count);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 			q = s.CreateQuery("from Simple s");
-			list = await (q.SetCacheable(true).ListAsync(CancellationToken.None));
+			list = await (q.SetCacheable(true).ListAsync());
 			Assert.AreEqual(2, list.Count);
 			foreach (object obj in list)
 			{
-				await (s.DeleteAsync(obj, CancellationToken.None));
+				await (s.DeleteAsync(obj));
 			}
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -374,8 +373,8 @@ namespace NHibernate.Test.Legacy
 			ITransaction t = s.BeginTransaction();
 			Simple simple = new Simple();
 			simple.Name = "Simple 1";
-			await (s.SaveAsync(simple, 10L, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(simple, 10L));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
@@ -384,31 +383,31 @@ namespace NHibernate.Test.Legacy
 			q.SetCacheRegion("foo");
 			q.SetCacheable(true);
 			q.SetString(0, "Simple 1");
-			Assert.AreEqual(1, (await (q.ListAsync(CancellationToken.None))).Count);
-			Assert.AreEqual(1, (await (q.ListAsync(CancellationToken.None))).Count);
-			Assert.AreEqual(1, (await (q.ListAsync(CancellationToken.None))).Count);
+			Assert.AreEqual(1, (await (q.ListAsync())).Count);
+			Assert.AreEqual(1, (await (q.ListAsync())).Count);
+			Assert.AreEqual(1, (await (q.ListAsync())).Count);
 
 			q = s.CreateQuery("from Simple s where s.Name=:name");
 			q.SetCacheRegion("foo");
 			q.SetCacheable(true);
 			q.SetString("name", "Simple 1");
-			Assert.AreEqual(1, (await (q.ListAsync(CancellationToken.None))).Count);
-			simple = (Simple) (await (q.ListAsync(CancellationToken.None)))[0];
+			Assert.AreEqual(1, (await (q.ListAsync())).Count);
+			simple = (Simple) (await (q.ListAsync()))[0];
 
 			q.SetString("name", "Simple 2");
-			Assert.AreEqual(0, (await (q.ListAsync(CancellationToken.None))).Count);
-			Assert.AreEqual(0, (await (q.ListAsync(CancellationToken.None))).Count);
+			Assert.AreEqual(0, (await (q.ListAsync())).Count);
+			Assert.AreEqual(0, (await (q.ListAsync())).Count);
 			simple.Name = "Simple 2";
-			Assert.AreEqual(1, (await (q.ListAsync(CancellationToken.None))).Count);
-			Assert.AreEqual(1, (await (q.ListAsync(CancellationToken.None))).Count);
-			await (t.CommitAsync(CancellationToken.None));
+			Assert.AreEqual(1, (await (q.ListAsync())).Count);
+			Assert.AreEqual(1, (await (q.ListAsync())).Count);
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.UpdateAsync(simple, 10L, CancellationToken.None));
-			await (s.DeleteAsync(simple, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.UpdateAsync(simple, 10L));
+			await (s.DeleteAsync(simple));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
@@ -417,9 +416,9 @@ namespace NHibernate.Test.Legacy
 			q.SetCacheRegion("foo");
 			q.SetCacheable(true);
 			q.SetString(0, "Simple 1");
-			Assert.AreEqual(0, (await (q.ListAsync(CancellationToken.None))).Count);
-			Assert.AreEqual(0, (await (q.ListAsync(CancellationToken.None))).Count);
-			await (t.CommitAsync(CancellationToken.None));
+			Assert.AreEqual(0, (await (q.ListAsync())).Count);
+			Assert.AreEqual(0, (await (q.ListAsync())).Count);
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -431,33 +430,33 @@ namespace NHibernate.Test.Legacy
 				ITransaction t = s.BeginTransaction();
 				Simple simple = new Simple();
 				simple.Name = "Simple 1";
-				await (s.SaveAsync(simple, (long) 10, CancellationToken.None));
+				await (s.SaveAsync(simple, (long) 10));
 
 				if (Dialect is DB2Dialect)
 				{
-					await (s.CreateQuery("from s in class Simple where repeat('foo', 3) = 'foofoofoo'").ListAsync(CancellationToken.None));
-					await (s.CreateQuery("from s in class Simple where repeat(s.Name, 3) = 'foofoofoo'").ListAsync(CancellationToken.None));
-					await (s.CreateQuery("from s in class Simple where repeat( lower(s.Name), 3 + (1-1) / 2) = 'foofoofoo'").ListAsync(CancellationToken.None));
+					await (s.CreateQuery("from s in class Simple where repeat('foo', 3) = 'foofoofoo'").ListAsync());
+					await (s.CreateQuery("from s in class Simple where repeat(s.Name, 3) = 'foofoofoo'").ListAsync());
+					await (s.CreateQuery("from s in class Simple where repeat( lower(s.Name), 3 + (1-1) / 2) = 'foofoofoo'").ListAsync());
 				}
 
-				Assert.AreEqual(1, (await (s.CreateQuery("from s in class Simple where upper(s.Name) = 'SIMPLE 1'").ListAsync(CancellationToken.None))).Count);
+				Assert.AreEqual(1, (await (s.CreateQuery("from s in class Simple where upper(s.Name) = 'SIMPLE 1'").ListAsync())).Count);
 				Assert.AreEqual(1,
 (				                await (s.CreateQuery(
 				                	"from s in class Simple where not( upper(s.Name)='yada' or 1=2 or 'foo'='bar' or not('foo'='foo') or 'foo' like 'bar')")
-				                	.ListAsync(CancellationToken.None))).Count);
+				                	.ListAsync())).Count);
 
 				if (!(Dialect is MySQLDialect) && !(Dialect is MsSql2000Dialect))
 				{
 					// Dialect.MckoiDialect and Dialect.InterbaseDialect also included
 					// My Sql has a funny concatenation operator
 					Assert.AreEqual(1,
-(					                await (s.CreateQuery("from s in class Simple where lower(s.Name || ' foo')='simple 1 foo'").ListAsync(CancellationToken.None))).Count);
+(					                await (s.CreateQuery("from s in class Simple where lower(s.Name || ' foo')='simple 1 foo'").ListAsync())).Count);
 				}
 
 				if ((Dialect is MsSql2000Dialect))
 				{
 					Assert.AreEqual(1,
-(					                await (s.CreateQuery("from s in class Simple where lower( s.Name + ' foo' ) = 'simple 1 foo'").ListAsync(CancellationToken.None))).
+(					                await (s.CreateQuery("from s in class Simple where lower( s.Name + ' foo' ) = 'simple 1 foo'").ListAsync())).
 					                	Count);
 				}
 
@@ -473,43 +472,43 @@ namespace NHibernate.Test.Legacy
 				other.Name = "Simple 2";
 				other.Count = 12;
 				simple.Other = other;
-				await (s.SaveAsync(other, (long) 20, CancellationToken.None));
-				Assert.AreEqual(1, (await (s.CreateQuery("from s in class Simple where upper( s.Other.Name )='SIMPLE 2'").ListAsync(CancellationToken.None))).Count);
-				Assert.AreEqual(0, (await (s.CreateQuery("from s in class Simple where not (upper(s.Other.Name)='SIMPLE 2')").ListAsync(CancellationToken.None))).Count);
+				await (s.SaveAsync(other, (long) 20));
+				Assert.AreEqual(1, (await (s.CreateQuery("from s in class Simple where upper( s.Other.Name )='SIMPLE 2'").ListAsync())).Count);
+				Assert.AreEqual(0, (await (s.CreateQuery("from s in class Simple where not (upper(s.Other.Name)='SIMPLE 2')").ListAsync())).Count);
 				Assert.AreEqual(1,
 (				                await (s.CreateQuery(
 				                	"select distinct s from s in class Simple where ( ( s.Other.Count + 3) = (15*2)/2 and s.Count = 69) or ( (s.Other.Count + 2) / 7 ) = 2")
-				                	.ListAsync(CancellationToken.None))).Count);
+				                	.ListAsync())).Count);
 				Assert.AreEqual(1,
 (				                await (s.CreateQuery(
 				                	"select s from s in class Simple where ( ( s.Other.Count + 3) = (15*2)/2 and s.Count = 69) or ( (s.Other.Count + 2) / 7 ) = 2 order by s.Other.Count")
-				                	.ListAsync(CancellationToken.None))).Count);
+				                	.ListAsync())).Count);
 
 				Simple min = new Simple();
 				min.Count = -1;
 
-				await (s.SaveAsync(min, (long) 30, CancellationToken.None));
+				await (s.SaveAsync(min, (long) 30));
 
 				if (Dialect.SupportsSubSelects && TestDialect.SupportsOperatorSome)
 				{
 					Assert.AreEqual(2,
 (					                await (s.CreateQuery(
 					                	"from s in class Simple where s.Count > ( select min(sim.Count) from sim in class NHibernate.DomainModel.Simple )")
-					                	.ListAsync(CancellationToken.None))).Count);
-					await (t.CommitAsync(CancellationToken.None));
+					                	.ListAsync())).Count);
+					await (t.CommitAsync());
 					t = s.BeginTransaction();
 					Assert.AreEqual(2,
 (					                await (s.CreateQuery(
 					                	"from s in class Simple where s = some( select sim from sim in class NHibernate.DomainModel.Simple where sim.Count>=0) and s.Count >= 0")
-					                	.ListAsync(CancellationToken.None))).Count);
+					                	.ListAsync())).Count);
 					Assert.AreEqual(1,
 (					                await (s.CreateQuery(
 					                	"from s in class Simple where s = some( select sim from sim in class NHibernate.DomainModel.Simple where sim.Other.Count=s.Other.Count ) and s.Other.Count > 0")
-					                	.ListAsync(CancellationToken.None))).Count);
+					                	.ListAsync())).Count);
 				}
 
 				IEnumerator enumer =
-(					await (s.CreateQuery("select sum(s.Count) from s in class Simple group by s.Count having sum(s.Count) > 10 ").EnumerableAsync(CancellationToken.None))
+(					await (s.CreateQuery("select sum(s.Count) from s in class Simple group by s.Count having sum(s.Count) > 10 ").EnumerableAsync())
 )						.GetEnumerator();
 				Assert.IsTrue(enumer.MoveNext());
 				Assert.AreEqual(12, (Int64) enumer.Current); // changed cast from Int32 to Int64 (H3.2)
@@ -518,7 +517,7 @@ namespace NHibernate.Test.Legacy
 				if (Dialect.SupportsSubSelects)
 				{
 					enumer =
-(						await (s.CreateQuery("select s.Count from s in class Simple group by s.Count having s.Count = 12").EnumerableAsync(CancellationToken.None))).
+(						await (s.CreateQuery("select s.Count from s in class Simple group by s.Count having s.Count = 12").EnumerableAsync())).
 							GetEnumerator();
 					Assert.IsTrue(enumer.MoveNext());
 				}
@@ -526,28 +525,28 @@ namespace NHibernate.Test.Legacy
 				enumer =
 (					await (s.CreateQuery(
 						"select s.id, s.Count, count(t), max(t.Date) from s in class Simple, t in class Simple where s.Count = t.Count group by s.id, s.Count order by s.Count")
-						.EnumerableAsync(CancellationToken.None))).GetEnumerator();
+						.EnumerableAsync())).GetEnumerator();
 
 				IQuery q = s.CreateQuery("from s in class Simple");
 				q.SetMaxResults(10);
-				Assert.AreEqual(3, (await (q.ListAsync(CancellationToken.None))).Count);
+				Assert.AreEqual(3, (await (q.ListAsync())).Count);
 
 				q = s.CreateQuery("from s in class Simple");
 				q.SetMaxResults(1);
-				Assert.AreEqual(1, (await (q.ListAsync(CancellationToken.None))).Count);
+				Assert.AreEqual(1, (await (q.ListAsync())).Count);
 
 				q = s.CreateQuery("from s in class Simple");
-				Assert.AreEqual(3, (await (q.ListAsync(CancellationToken.None))).Count);
+				Assert.AreEqual(3, (await (q.ListAsync())).Count);
 
 				q = s.CreateQuery("from s in class Simple where s.Name = ?");
 				q.SetString(0, "Simple 1");
-				Assert.AreEqual(1, (await (q.ListAsync(CancellationToken.None))).Count);
+				Assert.AreEqual(1, (await (q.ListAsync())).Count);
 
 				q = s.CreateQuery("from s in class Simple where s.Name = ? and upper(s.Name) = ?");
 				q.SetString(1, "SIMPLE 1");
 				q.SetString(0, "Simple 1");
 				q.SetFirstResult(0);
-				Assert.IsTrue((await (q.EnumerableAsync(CancellationToken.None))).GetEnumerator().MoveNext());
+				Assert.IsTrue((await (q.EnumerableAsync())).GetEnumerator().MoveNext());
 
 				q =
 					s.CreateQuery(
@@ -556,12 +555,12 @@ namespace NHibernate.Test.Legacy
 				q.SetString("foo", "Simple 1");
 				q.SetInt32("count", 69);
 				q.SetFirstResult(0);
-				Assert.IsTrue((await (q.EnumerableAsync(CancellationToken.None))).GetEnumerator().MoveNext());
+				Assert.IsTrue((await (q.EnumerableAsync())).GetEnumerator().MoveNext());
 
 				q = s.CreateQuery("select s.id from s in class Simple");
 				q.SetFirstResult(1);
 				q.SetMaxResults(2);
-				IEnumerable enumerable = await (q.EnumerableAsync(CancellationToken.None));
+				IEnumerable enumerable = await (q.EnumerableAsync());
 				int i = 0;
 				foreach (object obj in enumerable)
 				{
@@ -573,7 +572,7 @@ namespace NHibernate.Test.Legacy
 
 				q = s.CreateQuery("select all s, s.Other from s in class Simple where s = :s");
 				q.SetParameter("s", simple);
-				Assert.AreEqual(1, (await (q.ListAsync(CancellationToken.None))).Count);
+				Assert.AreEqual(1, (await (q.ListAsync())).Count);
 
 				q = s.CreateQuery("from s in class Simple where s.Name in (:name_list) and s.Count > :count");
 				IList list = new ArrayList(2);
@@ -581,12 +580,12 @@ namespace NHibernate.Test.Legacy
 				list.Add("foo");
 				q.SetParameterList("name_list", list);
 				q.SetParameter("count", (int) -1);
-				Assert.AreEqual(1, (await (q.ListAsync(CancellationToken.None))).Count);
+				Assert.AreEqual(1, (await (q.ListAsync())).Count);
 
-				await (s.DeleteAsync(other, CancellationToken.None));
-				await (s.DeleteAsync(simple, CancellationToken.None));
-				await (s.DeleteAsync(min, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(other));
+				await (s.DeleteAsync(simple));
+				await (s.DeleteAsync(min));
+				await (t.CommitAsync());
 			}
 		}
 	}

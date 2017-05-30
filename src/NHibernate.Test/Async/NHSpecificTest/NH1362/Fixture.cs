@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1362
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -28,25 +27,25 @@ namespace NHibernate.Test.NHSpecificTest.NH1362
 				ClassC c = new ClassC();
 				a.B = b;
 				a.B.CCollection.Add(c);
-				await (s.SaveAsync(a, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(a));
+				await (s.FlushAsync());
 				s.Clear();
 
-				ClassA loaded = await (s.LoadAsync<ClassA>(a.Id, CancellationToken.None));
+				ClassA loaded = await (s.LoadAsync<ClassA>(a.Id));
                 
 				//work with first child object
 				loaded.B = null;
-				await (s.RefreshAsync(loaded, CancellationToken.None));
+				await (s.RefreshAsync(loaded));
 				Assert.IsNotNull(loaded);
 				Assert.AreEqual(1, loaded.B.CCollection.Count);
 
 				//doesn't work with nested object
 				loaded.B.CCollection.Clear();
-				await (s.RefreshAsync(loaded, CancellationToken.None));
+				await (s.RefreshAsync(loaded));
 				Assert.AreEqual(1, loaded.B.CCollection.Count);
 
-				await (s.DeleteAsync(loaded, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(loaded));
+				await (tx.CommitAsync());
 			}
 		}
 	}

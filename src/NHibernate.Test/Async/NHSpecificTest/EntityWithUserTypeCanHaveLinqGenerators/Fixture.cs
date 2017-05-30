@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	[TestFixture]
 	public class FixtureAsync : TestCase
@@ -91,7 +90,7 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 				var newItem = new BarExample { Value = "Larry" };
 				var entities = await (session.Query<EntityWithUserTypeProperty>()
 					.Where(x => x.Example == newItem)
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.AreEqual(1, entities.Count);
 			}
@@ -106,7 +105,7 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 				var newItem = new BarExample { Value = "Larry" };
 				var entities = await (session.Query<EntityWithUserTypeProperty>()
 					.Where(x => x.Example.IsEquivalentTo(newItem))
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.AreEqual(2, entities.Count);
 			}
@@ -121,7 +120,7 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 				var newItem = new BarExample { Value = "Larry" };
 				var entities = await (session.Query<EntityWithUserTypeProperty>()
 					.Where(x => x.Example == newItem.MappedAs(NHibernateUtil.Custom(typeof(ExampleUserType))))
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.AreEqual(1, entities.Count);
 			}
@@ -136,7 +135,7 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 				var newItem = new BarExample { Value = "Larry" };
 				var entities = await (session.Query<EntityWithUserTypeProperty>()
 					.Where(x => x.Example.IsEquivalentTo(newItem.MappedAs(NHibernateUtil.Custom(typeof(ExampleUserType)))))
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.AreEqual(2, entities.Count);
 			}
@@ -150,7 +149,7 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 			{
 				var entities = await (session.Query<EntityWithUserTypeProperty>()
 					.Where(x => x.Name == "Bob")
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.AreEqual(1, entities.Count);
 			}
@@ -165,7 +164,7 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 				var newItem = new BarExample { Value = "Larry" };
 				var q = session.CreateQuery("from EntityWithUserTypeProperty e where e.Example = :exampleItem");
 				q.SetParameter("exampleItem", newItem);
-				var entities = await (q.ListAsync<EntityWithUserTypeProperty>(CancellationToken.None));
+				var entities = await (q.ListAsync<EntityWithUserTypeProperty>());
 
 				Assert.AreEqual(1, entities.Count);
 			}

@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1928
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -34,8 +33,8 @@ where
     and Age > 50
 ");
    
-                Assert.DoesNotThrowAsync(() => query.ListAsync(CancellationToken.None));
-                await (tx.CommitAsync(CancellationToken.None));
+                Assert.DoesNotThrowAsync(() => query.ListAsync());
+                await (tx.CommitAsync());
             }
         }
 
@@ -55,8 +54,8 @@ where
     and Age > 50
 -- this is a comment");
 
-				Assert.DoesNotThrowAsync(() => query.ListAsync(CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				Assert.DoesNotThrowAsync(() => query.ListAsync());
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -77,8 +76,8 @@ where
     and Age > 50
 ");
 
-                Assert.DoesNotThrowAsync(() => query.ListAsync(CancellationToken.None));
-                await (tx.CommitAsync(CancellationToken.None));
+                Assert.DoesNotThrowAsync(() => query.ListAsync());
+                await (tx.CommitAsync());
             }
         }
     }

@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Criteria.Lambda
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FunctionsIntegrationFixtureAsync : TestCase
 	{
@@ -56,7 +55,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				var sqrtOfAge = await (s.QueryOver<Person>()
 					.Where(p => p.Name == "p1")
 					.Select(p => Math.Round(p.Age.Sqrt(), 2))
-					.SingleOrDefaultAsync<object>(CancellationToken.None));
+					.SingleOrDefaultAsync<object>());
 
 				Assert.That(sqrtOfAge, Is.InstanceOf<double>());
 				Assert.That(string.Format("{0:0.00}", sqrtOfAge), Is.EqualTo((9.49).ToString()));
@@ -73,7 +72,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				var roundedValue = await (s.QueryOver<Person>()
 									.Where(p => p.Name == "p1")
 									.Select(p => Math.Round(p.Age.Sqrt()))
-									.SingleOrDefaultAsync<object>(CancellationToken.None));
+									.SingleOrDefaultAsync<object>());
 
 				Assert.That(roundedValue, Is.InstanceOf<double>());
 				Assert.That(roundedValue, Is.EqualTo(9));
@@ -89,7 +88,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				var roundedValue = await (s.QueryOver<Person>()
 									.Where(p => p.Name == "p1")
 									.Select(p => Math.Round((decimal) p.Age.Sqrt()))
-									.SingleOrDefaultAsync<object>(CancellationToken.None));
+									.SingleOrDefaultAsync<object>());
 
 				Assert.That(roundedValue, Is.InstanceOf<double>());
 				Assert.That(roundedValue, Is.EqualTo(9));
@@ -105,7 +104,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				var roundedValue = await (s.QueryOver<Person>()
 									.Where(p => p.Name == "p1")
 									.Select(p => Math.Round(p.Age.Sqrt() , 3))
-									.SingleOrDefaultAsync<object>(CancellationToken.None));
+									.SingleOrDefaultAsync<object>());
 
 				Assert.That(roundedValue, Is.InstanceOf<double>());
 				Assert.That(roundedValue, Is.EqualTo(9.487).Within(0.000001));
@@ -121,7 +120,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				var roundedValue = await (s.QueryOver<Person>()
 									.Where(p => p.Name == "p1")
 									.Select(p => Math.Round((decimal) p.Age.Sqrt(), 3))
-									.SingleOrDefaultAsync<object>(CancellationToken.None));
+									.SingleOrDefaultAsync<object>());
 
 				Assert.That(roundedValue, Is.InstanceOf<double>());
 				Assert.That(roundedValue, Is.EqualTo(9.487).Within(0.000001));
@@ -137,7 +136,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				var names = await (s.QueryOver<Person>()
 					.Where(p => p.Name == "pP3")
 					.Select(p => p.Name.Lower(), p => p.Name.Upper())
-					.SingleOrDefaultAsync<object[]>(CancellationToken.None));
+					.SingleOrDefaultAsync<object[]>());
 
 				Assert.That(names[0], Is.EqualTo("pp3"));
 				Assert.That(names[1], Is.EqualTo("PP3"));
@@ -153,7 +152,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				var name = await (s.QueryOver<Person>()
 					.Where(p => p.Name == "p1")
 					.Select(p => Projections.Concat(p.Name, ", ", p.Name))
-					.SingleOrDefaultAsync<string>(CancellationToken.None));
+					.SingleOrDefaultAsync<string>());
 
 				Assert.That(name, Is.EqualTo("p1, p1"));
 			}
@@ -167,7 +166,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			{
 				var persons = await (s.QueryOver<Person>()
 					.Where(p => p.BirthDate.Year == 2008)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.That(persons.Count, Is.EqualTo(1));
 				Assert.That(persons[0].Name, Is.EqualTo("p2"));
@@ -183,7 +182,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				var persons = await (s.QueryOver<Person>()
 					.Where(p => p.BirthDate.Year.IsIn(new[] { 2008, 2009 }))
 					.OrderBy(p => p.Name).Asc
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.That(persons.Count, Is.EqualTo(2));
 				Assert.That(persons[0].Name, Is.EqualTo("p1"));
@@ -200,7 +199,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				var yearOfBirth = await (s.QueryOver<Person>()
 					.Where(p => p.Name == "p2")
 					.Select(p => p.BirthDate.Year)
-					.SingleOrDefaultAsync<object>(CancellationToken.None));
+					.SingleOrDefaultAsync<object>());
 
 				Assert.That(yearOfBirth.GetType(), Is.EqualTo(typeof(int)));
 				Assert.That(yearOfBirth, Is.EqualTo(2008));
@@ -215,7 +214,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			{
 				var avgYear = await (s.QueryOver<Person>()
 					.SelectList(list => list.SelectAvg(p => p.BirthDate.Year))
-					.SingleOrDefaultAsync<object>(CancellationToken.None));
+					.SingleOrDefaultAsync<object>());
 
 				Assert.That(avgYear.GetType(), Is.EqualTo(typeof(double)));
 				Assert.That(string.Format("{0:0}", avgYear), Is.EqualTo("2008"));
@@ -230,7 +229,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			{
 				var persons = await (s.QueryOver<Person>()
 					.OrderBy(p => p.BirthDate.Year).Desc
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.That(persons.Count, Is.EqualTo(3));
 				Assert.That(persons[0].Name, Is.EqualTo("p1"));
@@ -247,7 +246,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			{
 				var persons = await (s.QueryOver<Person>()
 					.Where(p => p.BirthDate.Month == p.BirthDate.Day)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.That(persons.Count, Is.EqualTo(1));
 				Assert.That(persons[0].Name, Is.EqualTo("p2"));

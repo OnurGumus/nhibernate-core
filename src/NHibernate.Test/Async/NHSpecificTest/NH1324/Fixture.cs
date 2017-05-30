@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1324
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -31,8 +30,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1324
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				Person p = new Person("a", null, 4);
-				await (s.SaveAsync(p, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(p));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -40,16 +39,16 @@ namespace NHibernate.Test.NHSpecificTest.NH1324
 			{
 				int? result = await (s.CreateCriteria(typeof (Person))
 					.SetProjection(Projections.Property("IQ"))
-					.UniqueResultAsync<int?>(CancellationToken.None));
+					.UniqueResultAsync<int?>());
 				Assert.IsNull(result);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from Person", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Person"));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -60,8 +59,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1324
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				Person p = new Person("a", 4, 4);
-				await (s.SaveAsync(p, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(p));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -69,16 +68,16 @@ namespace NHibernate.Test.NHSpecificTest.NH1324
 			{
 				int? result = await (s.CreateCriteria(typeof(Person))
 					.SetProjection(Projections.Property("IQ"))
-					.UniqueResultAsync<int?>(CancellationToken.None));
+					.UniqueResultAsync<int?>());
 				Assert.AreEqual(4, result);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from Person", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Person"));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -89,24 +88,24 @@ namespace NHibernate.Test.NHSpecificTest.NH1324
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				Person p = new Person("a", null, 4);
-				await (s.SaveAsync(p, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(p));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				int? result = await (s.CreateQuery("select p.IQ from Person p")
-					.UniqueResultAsync<int?>(CancellationToken.None));
+					.UniqueResultAsync<int?>());
 				Assert.IsNull(result);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from Person", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Person"));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -117,24 +116,24 @@ namespace NHibernate.Test.NHSpecificTest.NH1324
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				Person p = new Person("a", 4, 4);
-				await (s.SaveAsync(p, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(p));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				int? result = await (s.CreateQuery("select p.IQ from Person p")
-					.UniqueResultAsync<int?>(CancellationToken.None));
+					.UniqueResultAsync<int?>());
 				Assert.AreEqual(4, result);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from Person", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Person"));
+				await (tx.CommitAsync());
 			}
 		}
 	}

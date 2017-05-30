@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1727
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -36,8 +35,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1727
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(b, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(b));
+				await (t.CommitAsync());
 			}
 			using (ISession s = OpenSession())
 			{
@@ -45,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1727
 				await (s.CreateQuery(hql)
 					.SetString("name", "Sweden")
 					.SetParameterList("aValues", new[] { 1, 3, 4 })
-					.ListAsync<ClassA>(CancellationToken.None));
+					.ListAsync<ClassA>());
 			}
 		}
 
@@ -60,8 +59,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1727
 			using(ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(b, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(b));
+				await (t.CommitAsync());
 			}
 			using(ISession s = OpenSession())
 			{
@@ -69,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1727
 				await (s.CreateQuery(hql)
 					.SetString("name", "Sweden")
 					.SetParameterList("aValues", new []{1,3,4})
-					.ListAsync<ClassA>(CancellationToken.None));
+					.ListAsync<ClassA>());
 			}
 		}
 

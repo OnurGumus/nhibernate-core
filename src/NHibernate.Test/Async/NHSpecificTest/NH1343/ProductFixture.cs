@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1343
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class ProductFixtureAsync : BugTestCase
 	{
@@ -36,13 +35,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1343
 			
 			using (ISession session = OpenSession())
 			{
-				await (session.SaveAsync(product1, CancellationToken.None));
-				await (session.SaveAsync(orderLine, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.SaveAsync(product1));
+				await (session.SaveAsync(orderLine));
+				await (session.FlushAsync());
 
 				IQuery query = session.GetNamedQuery("GetLinesForProduct");
 				query.SetParameter("product", product1);
-				IList<OrderLine> list = await (query.ListAsync<OrderLine>(CancellationToken.None));
+				IList<OrderLine> list = await (query.ListAsync<OrderLine>());
 				Assert.AreEqual(1, list.Count);
 			}
 		}
@@ -55,13 +54,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1343
 
 			using (ISession session = OpenSession())
 			{
-				await (session.SaveAsync(product1, CancellationToken.None));
-				await (session.SaveAsync(orderLine, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.SaveAsync(product1));
+				await (session.SaveAsync(orderLine));
+				await (session.FlushAsync());
 
 				IQuery query = session.GetNamedQuery("GetLinesForProductWithAlias");
 				query.SetParameter("product", product1);
-				IList<OrderLine> list = await (query.ListAsync<OrderLine>(CancellationToken.None));
+				IList<OrderLine> list = await (query.ListAsync<OrderLine>());
 				Assert.AreEqual(1, list.Count);
 			}
 		}

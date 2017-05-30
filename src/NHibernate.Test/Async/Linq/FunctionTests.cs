@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FunctionTestsAsync : LinqTestCase
 	{
@@ -27,7 +26,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from e in db.Employees
 						 where NHibernate.Linq.SqlMethods.Like(e.FirstName, "Ma%et")
-						 select e).ToListAsync(CancellationToken.None));
+						 select e).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 			Assert.That(query[0].FirstName, Is.EqualTo("Margaret"));
@@ -44,13 +43,13 @@ namespace NHibernate.Test.Linq
 
 				//This entity will be flushed to the db, but rolled back when the test completes
 
-				await (session.SaveAsync(new Employee { FirstName = employeeName, LastName = "LastName" }, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.SaveAsync(new Employee { FirstName = employeeName, LastName = "LastName" }));
+				await (session.FlushAsync());
 
 
 				var query = await ((from e in db.Employees
 				             where NHibernate.Linq.SqlMethods.Like(e.FirstName, employeeNameEscaped, escapeChar)
-				             select e).ToListAsync(CancellationToken.None));
+				             select e).ToListAsync());
 
 				Assert.That(query.Count, Is.EqualTo(1));
 				Assert.That(query[0].FirstName, Is.EqualTo(employeeName));
@@ -59,7 +58,7 @@ namespace NHibernate.Test.Linq
 				{
 					return (from e in db.Employees
 					 where NHibernate.Linq.SqlMethods.Like(e.FirstName, employeeNameEscaped, e.FirstName.First())
-					 select e).ToListAsync(CancellationToken.None);
+					 select e).ToListAsync();
 				});
 				tx.Rollback();
 			}
@@ -83,7 +82,7 @@ namespace NHibernate.Test.Linq
 			// risk of accidentally referencing NHibernate.Linq.SqlMethods.
 			var query = await ((from e in db.Employees
 						 where NHibernate.Test.Linq.FunctionTestsAsync.SqlMethods.Like(e.FirstName, "Ma%et")
-						 select e).ToListAsync(CancellationToken.None));
+						 select e).ToListAsync());
 			// ReSharper restore RedundantNameQualifier
 
 			Assert.That(query.Count, Is.EqualTo(1));
@@ -95,7 +94,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from e in db.Employees
 				where e.FirstName.Substring(0, 2) == "An"
-				select e).ToListAsync(CancellationToken.None));
+				select e).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -105,7 +104,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from e in db.Employees
 				where e.FirstName.Substring(3) == "rew"
-				select e).ToListAsync(CancellationToken.None));
+				select e).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 			Assert.That(query[0].FirstName, Is.EqualTo("Andrew"));
@@ -116,7 +115,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from e in db.Employees
 						 where e.FirstName.Substring(0, 2) == "An"
-						 select e.FirstName.Substring(3)).ToListAsync(CancellationToken.None));
+						 select e.FirstName.Substring(3)).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 			Assert.That(query[0], Is.EqualTo("rew")); //Andrew
@@ -145,14 +144,14 @@ namespace NHibernate.Test.Linq
 			if (!TestDialect.SupportsLocate)
 				Assert.Ignore("Locate function not supported.");
 
-			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync(CancellationToken.None));
+			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync());
 			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf('a') == 0).ToList();
 
 			var query = from e in db.Employees
 						let lowerName = e.FirstName.ToLower()
 						where lowerName.IndexOf('a') == 0
 						select lowerName;
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 
 			Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
 			await (ObjectDumper.WriteAsync(query));
@@ -164,14 +163,14 @@ namespace NHibernate.Test.Linq
 			if (!TestDialect.SupportsLocate)
 				Assert.Ignore("Locate function not supported.");
 
-			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync(CancellationToken.None));
+			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync());
 			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf('a', 2) == -1).ToList();
 
 			var query = from e in db.Employees
 						let lowerName = e.FirstName.ToLower()
 						where lowerName.IndexOf('a', 2) == -1
 						select lowerName;
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 
 			Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
 			await (ObjectDumper.WriteAsync(query));
@@ -183,14 +182,14 @@ namespace NHibernate.Test.Linq
 			if (!TestDialect.SupportsLocate)
 				Assert.Ignore("Locate function not supported.");
 
-			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync(CancellationToken.None));
+			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync());
 			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf("an") == 0).ToList();
 
 			var query = from e in db.Employees
 						let lowerName = e.FirstName.ToLower()
 						where lowerName.IndexOf("an") == 0
 						select lowerName;
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 
 			Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
 			await (ObjectDumper.WriteAsync(query));
@@ -202,14 +201,14 @@ namespace NHibernate.Test.Linq
 			if (!TestDialect.SupportsLocate)
 				Assert.Ignore("Locate function not supported.");
 
-			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync(CancellationToken.None));
+			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync());
 			var expected = raw.Select(x => x.ToLower()).Where(x => x.Contains("a")).Select(x => x.IndexOf("a", 1)).ToList();
 
 			var query = from e in db.Employees
 						let lowerName = e.FirstName.ToLower()
 						where lowerName.Contains("a")
 						select lowerName.IndexOf("a", 1);
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 
 			Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
 			await (ObjectDumper.WriteAsync(query));
@@ -242,7 +241,7 @@ namespace NHibernate.Test.Linq
 						where ol.Quantity.ToString() == "4"
 						select ol;
 
-			Assert.AreEqual(55, await (query.CountAsync(CancellationToken.None)));
+			Assert.AreEqual(55, await (query.CountAsync()));
 		}
 
 		[Test]
@@ -252,13 +251,13 @@ namespace NHibernate.Test.Linq
 						where ol.Quantity.ToString().Contains("5")
 						select ol;
 
-			Assert.AreEqual(498, await (query.CountAsync(CancellationToken.None)));
+			Assert.AreEqual(498, await (query.CountAsync()));
 		}
 
 		[Test]
 		public async Task CoalesceAsync()
 		{
-			Assert.AreEqual(2, await (session.Query<AnotherEntity>().CountAsync(e => (e.Input ?? "hello") == "hello", CancellationToken.None)));
+			Assert.AreEqual(2, await (session.Query<AnotherEntity>().CountAsync(e => (e.Input ?? "hello") == "hello")));
 		}
 
 		[Test]
@@ -269,18 +268,18 @@ namespace NHibernate.Test.Linq
 				AnotherEntity ae1 = new AnotherEntity {Input = " hi "};
 				AnotherEntity ae2 = new AnotherEntity {Input = "hi"};
 				AnotherEntity ae3 = new AnotherEntity {Input = "heh"};
-				await (session.SaveAsync(ae1, CancellationToken.None));
-				await (session.SaveAsync(ae2, CancellationToken.None));
-				await (session.SaveAsync(ae3, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.SaveAsync(ae1));
+				await (session.SaveAsync(ae2));
+				await (session.SaveAsync(ae3));
+				await (session.FlushAsync());
 
-				Assert.AreEqual(2, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.Trim() == "hi", CancellationToken.None)));
-				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimEnd() == " hi", CancellationToken.None)));
+				Assert.AreEqual(2, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.Trim() == "hi")));
+				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimEnd() == " hi")));
 
 				// Emulated trim does not support multiple trim characters, but for many databases it should work fine anyways.
-				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.Trim('h') == "e", CancellationToken.None)));
-				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimStart('h') == "eh", CancellationToken.None)));
-				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimEnd('h') == "he", CancellationToken.None)));
+				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.Trim('h') == "e")));
+				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimStart('h') == "eh")));
+				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimEnd('h') == "he")));
 
 				// Let it rollback to get rid of temporary changes.
 			}
@@ -291,12 +290,12 @@ namespace NHibernate.Test.Linq
 		{
 			using (session.BeginTransaction())
 			{
-				await (session.SaveAsync(new AnotherEntity {Input = " hi"}, CancellationToken.None));
-				await (session.SaveAsync(new AnotherEntity {Input = "hi"}, CancellationToken.None));
-				await (session.SaveAsync(new AnotherEntity {Input = "heh"}, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.SaveAsync(new AnotherEntity {Input = " hi"}));
+				await (session.SaveAsync(new AnotherEntity {Input = "hi"}));
+				await (session.SaveAsync(new AnotherEntity {Input = "heh"}));
+				await (session.FlushAsync());
 
-				Assert.That(await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimStart() == "hi", CancellationToken.None)), Is.EqualTo(2));
+				Assert.That(await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimStart() == "hi")), Is.EqualTo(2));
 
 				// Let it rollback to get rid of temporary changes.
 			}
@@ -307,7 +306,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from item in db.Users
 						 where item.Name.Equals("ayende")
-						 select item).ToListAsync(CancellationToken.None));
+						 select item).ToListAsync());
 			await (ObjectDumper.WriteAsync(query));
 		}
 
@@ -316,7 +315,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from item in db.Users
 						 where string.Equals(item.Name, "ayende")
-						 select item).ToListAsync(CancellationToken.None));
+						 select item).ToListAsync());
 			await (ObjectDumper.WriteAsync(query));
 		}
 
@@ -325,7 +324,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from item in db.Users
 						 where item.Id.Equals(-1)
-						 select item).ToListAsync(CancellationToken.None));
+						 select item).ToListAsync());
 
 			await (ObjectDumper.WriteAsync(query));
 		}

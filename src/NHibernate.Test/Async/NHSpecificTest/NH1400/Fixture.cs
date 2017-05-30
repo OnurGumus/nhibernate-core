@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1400
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync: BugTestCase
 	{
@@ -22,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1400
 		{
 			using (ISession s = OpenSession())
 			{
-				Assert.DoesNotThrowAsync(() => s.CreateQuery("from SimpleGeographicalAddress as dga where dga.Line2 = 'B1 P9, Scb, Ap. 18'").ListAsync(CancellationToken.None));
+				Assert.DoesNotThrowAsync(() => s.CreateQuery("from SimpleGeographicalAddress as dga where dga.Line2 = 'B1 P9, Scb, Ap. 18'").ListAsync());
 			}
 		}
 	}

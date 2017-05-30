@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaExportTests
 {
     using System.Threading.Tasks;
-    using System.Threading;
     /// <content>
     /// Contains generated async methods
     /// </content>
@@ -33,7 +32,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaExportTests
             var export = new SchemaExport(configuration);
             export.SetOutputFile(outputFileName);
 
-            await (export.CreateAsync(false, false, CancellationToken.None));
+            await (export.CreateAsync(false, false));
 
             Assert.IsTrue(File.Exists(outputFileName));
             Assert.IsTrue(new FileInfo(outputFileName).Length > 0);
@@ -50,7 +49,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaExportTests
             var outputFileName = Path.GetTempFileName();
             var export = new SchemaExport(configuration);
 
-            await (export.ExecuteAsync(null, false, false, new StreamWriter(outputFileName), CancellationToken.None));
+            await (export.ExecuteAsync(null, false, false, new StreamWriter(outputFileName)));
 
             Assert.IsTrue(File.Exists(outputFileName));
             Assert.IsTrue(new FileInfo(outputFileName).Length > 0);

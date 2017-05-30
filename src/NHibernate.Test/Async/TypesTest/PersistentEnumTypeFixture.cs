@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	/// <summary>
 	/// The Unit Test for the PersistentEnum Type.
@@ -41,15 +40,15 @@ namespace NHibernate.Test.TypesTest
 		{
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(p, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(p));
+				await (s.FlushAsync());
 			}
 
 			using (ISession s = sessions.OpenSession())
 			{
-				await (s.CreateQuery("select new PersistentEnumHolder(p.A, p.B) from PersistentEnumClass p").ListAsync(CancellationToken.None));
-				await (s.DeleteAsync("from PersistentEnumClass", CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.CreateQuery("select new PersistentEnumHolder(p.A, p.B) from PersistentEnumClass p").ListAsync());
+				await (s.DeleteAsync("from PersistentEnumClass"));
+				await (s.FlushAsync());
 			}
 		}
 
@@ -58,20 +57,20 @@ namespace NHibernate.Test.TypesTest
 		{
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(p, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(p));
+				await (s.FlushAsync());
 			}
 
 			ISession s2 = sessions.OpenSession();
 			try
 			{
 				Assert.ThrowsAsync<QueryException>(
-					() => s2.CreateQuery("select new PersistentEnumHolder(p.id, p.A, p.B) from PersistentEnumClass p").ListAsync(CancellationToken.None));
+					() => s2.CreateQuery("select new PersistentEnumHolder(p.id, p.A, p.B) from PersistentEnumClass p").ListAsync());
 			}
 			finally
 			{
-				await (s2.DeleteAsync("from PersistentEnumClass", CancellationToken.None));
-				await (s2.FlushAsync(CancellationToken.None));
+				await (s2.DeleteAsync("from PersistentEnumClass"));
+				await (s2.FlushAsync());
 				s2.Close();
 			}
 		}
@@ -82,17 +81,17 @@ namespace NHibernate.Test.TypesTest
 			var persistentEnumClass = new PersistentEnumClass {Id = 1, A = A.Two, B = B.One};
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(persistentEnumClass, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(persistentEnumClass));
+				await (s.FlushAsync());
 			}
 
 			using (ISession s = sessions.OpenSession())
 			{
-				var saved = await (s.GetAsync<PersistentEnumClass>(1, CancellationToken.None));
+				var saved = await (s.GetAsync<PersistentEnumClass>(1));
 				Assert.That(saved.A, Is.EqualTo(A.Two));
 				Assert.That(saved.B, Is.EqualTo(B.One));
-				await (s.DeleteAsync(saved, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync(saved));
+				await (s.FlushAsync());
 			}
 		}
 	}

@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class NH1611OneToOneIdentityFixtureAsync : BugTestCase
 	{
@@ -66,7 +65,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 				using(ITransaction tx = s.BeginTransaction())
 				{
 					ICriteria criteria = s.CreateCriteria(typeof (Primary));
-					IList<Primary> list = await (criteria.ListAsync<Primary>(CancellationToken.None));
+					IList<Primary> list = await (criteria.ListAsync<Primary>());
 					Assert.AreEqual("blarg", list[0].Description);
 					Assert.AreEqual("nuts", list[0].Adjunct.AdjunctDescription);
 

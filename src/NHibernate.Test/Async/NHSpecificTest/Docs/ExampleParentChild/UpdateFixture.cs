@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class UpdateFixtureAsync : TestCase
 	{
@@ -38,14 +37,14 @@ namespace NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild
 			Child child1 = new Child();
 			parent1.AddChild(child1);
 
-			long pId = (long) await (session1.SaveAsync(parent1, CancellationToken.None));
-			long cId = (long) await (session1.SaveAsync(child1, CancellationToken.None));
-			await (session1.FlushAsync(CancellationToken.None));
+			long pId = (long) await (session1.SaveAsync(parent1));
+			long cId = (long) await (session1.SaveAsync(child1));
+			await (session1.FlushAsync());
 			session1.Close();
 
 			ISession session2 = OpenSession();
-			Parent parent = await (session2.LoadAsync(typeof(Parent), pId, CancellationToken.None)) as Parent;
-			Child child = await (session2.LoadAsync(typeof(Child), cId, CancellationToken.None)) as Child;
+			Parent parent = await (session2.LoadAsync(typeof(Parent), pId)) as Parent;
+			Child child = await (session2.LoadAsync(typeof(Child), cId)) as Child;
 			session2.Close();
 
 			parent.AddChild(child);
@@ -53,15 +52,15 @@ namespace NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild
 			parent.AddChild(newChild);
 
 			ISession session = OpenSession();
-			await (session.UpdateAsync(parent, CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.UpdateAsync(parent));
+			await (session.FlushAsync());
 			session.Close();
 
 			// Clean up
 			using (ISession s = OpenSession())
 			{
-				await (s.DeleteAsync("from Parent", CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Parent"));
+				await (s.FlushAsync());
 			}
 		}
 	}

@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 			Configuration configuration = GetConfiguration();
 			SchemaExport export = new SchemaExport(configuration);
 			TextWriter tw = new StringWriter();
-			await (export.DropAsync(tw, false, CancellationToken.None));
+			await (export.DropAsync(tw, false));
 			string s = tw.ToString();
 
 			var dialect = Dialect.Dialect.GetDialect(configuration.Properties);
@@ -55,7 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 			Configuration configuration = GetConfiguration();
 			SchemaExport export = new SchemaExport(configuration);
 			TextWriter tw = new StringWriter();
-			await (export.CreateAsync(tw, false, CancellationToken.None));
+			await (export.CreateAsync(tw, false));
 			string s = tw.ToString();
 
 			var dialect = Dialect.Dialect.GetDialect(configuration.Properties);
@@ -81,7 +81,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 			SchemaValidator validator = new SchemaValidator(configuration);
 			try
 			{
-				await (validator.ValidateAsync(CancellationToken.None));
+				await (validator.ValidateAsync());
 			}
 			catch (HibernateException he)
 			{

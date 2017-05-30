@@ -22,7 +22,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class WhereTestsAsync : LinqTestCase
 	{
@@ -30,7 +29,7 @@ namespace NHibernate.Test.Linq
 		public async Task NoWhereClauseAsync()
 		{
 			var query = await ((from user in db.Users
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(3));
 		}
@@ -40,7 +39,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 where user.Name == "ayende" || true
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(3));
 		}
@@ -50,7 +49,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 where user.Name == "ayende" && false
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(0));
 		}
@@ -60,7 +59,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 where user.Name == "ayende"
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -70,7 +69,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 where user.Name == "ayende"
-						 select user).FirstAsync(CancellationToken.None));
+						 select user).FirstAsync());
 
 			Assert.That(query.Name, Is.EqualTo("ayende"));
 		}
@@ -84,7 +83,7 @@ namespace NHibernate.Test.Linq
 
 			Assert.ThrowsAsync<InvalidOperationException>(() =>
 				{
-					return users.FirstAsync(CancellationToken.None);
+					return users.FirstAsync();
 				});
 		}
 
@@ -93,7 +92,7 @@ namespace NHibernate.Test.Linq
 		{
 			var user = await ((from u in db.Users
 						where u.Name == "xxx"
-						select u).FirstOrDefaultAsync(CancellationToken.None));
+						select u).FirstOrDefaultAsync());
 
 			Assert.That(user, Is.Null);
 		}
@@ -107,7 +106,7 @@ namespace NHibernate.Test.Linq
 
 			Assert.ThrowsAsync<InvalidOperationException>(() =>
 				{
-					return users.SingleAsync(CancellationToken.None);
+					return users.SingleAsync();
 				});
 		}
 
@@ -119,7 +118,7 @@ namespace NHibernate.Test.Linq
 
 			Assert.ThrowsAsync<InvalidOperationException>(() =>
 				{
-					return users.SingleAsync(CancellationToken.None);
+					return users.SingleAsync();
 				});
 		}
 
@@ -128,7 +127,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 where user.Name == "xxx"
-						 select user).SingleOrDefaultAsync(CancellationToken.None));
+						 select user).SingleOrDefaultAsync());
 
 			Assert.That(query, Is.Null);
 		}
@@ -138,7 +137,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 where user.RegisteredAt >= new DateTime(2000, 1, 1)
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -149,7 +148,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 where user.RegisteredAt >= new DateTime(2000, 1, 1) && user.RegisteredAt <= new DateTime(2001, 1, 1)
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -159,7 +158,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 where user.Name == "ayende" && user.RegisteredAt == new DateTime(2010, 06, 17)
-						 select user).FirstOrDefaultAsync(CancellationToken.None));
+						 select user).FirstOrDefaultAsync());
 
 			Assert.That(query, Is.Not.Null);
 			Assert.That(query.Name, Is.EqualTo("ayende"));
@@ -171,7 +170,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 where user.RegisteredAt > new DateTime(2000, 1, 1)
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -181,7 +180,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 where user.RegisteredAt <= new DateTime(2000, 1, 1)
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -191,7 +190,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 where user.RegisteredAt < new DateTime(2000, 1, 1)
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -201,7 +200,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 where user.RegisteredAt <= new DateTime(2000, 1, 1) && user.Name == "nhibernate"
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -211,7 +210,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 where user.RegisteredAt <= new DateTime(2000, 1, 1) || user.Name == "nhibernate"
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -223,7 +222,7 @@ namespace NHibernate.Test.Linq
 						where u.Name == "ayende"
 						select u;
 
-			Assert.That(await (query.CountAsync(CancellationToken.None)), Is.EqualTo(1));
+			Assert.That(await (query.CountAsync()), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -231,7 +230,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 where user.LastLoginDate == null
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -241,7 +240,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 where user.LastLoginDate != null
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -257,7 +256,7 @@ namespace NHibernate.Test.Linq
 			var dynamicWhereClause = Expression.Lambda<Func<User, bool>>
 				(Expression.OrElse(expr1.Body, invokedExpr), expr1.Parameters);
 
-			var query = await (db.Users.Where(dynamicWhereClause).ToListAsync(CancellationToken.None));
+			var query = await (db.Users.Where(dynamicWhereClause).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -269,7 +268,7 @@ namespace NHibernate.Test.Linq
 						where user.Component.Property1 == "test1"
 						select user;
 
-			var list = await (query.ToListAsync(CancellationToken.None));
+			var list = await (query.ToListAsync());
 			Assert.That(list.Count, Is.EqualTo(1));
 		}
 
@@ -280,7 +279,7 @@ namespace NHibernate.Test.Linq
 						where user.Component.OtherComponent.OtherProperty1 == "othertest1"
 						select user;
 
-			var list = await (query.ToListAsync(CancellationToken.None));
+			var list = await (query.ToListAsync());
 			Assert.That(list.Count, Is.EqualTo(1));
 		}
 
@@ -291,7 +290,7 @@ namespace NHibernate.Test.Linq
 						where user.Role.Name == "Admin" && user.Role.IsActive
 						select new { user.Name, RoleName = user.Role.Name };
 
-			var list = await (query.ToListAsync(CancellationToken.None));
+			var list = await (query.ToListAsync());
 			Assert.That(list.Count, Is.EqualTo(1));
 		}
 
@@ -307,7 +306,7 @@ namespace NHibernate.Test.Linq
 								user.Role.Entity.Output
 							};
 
-			var list = await (query.ToListAsync(CancellationToken.None));
+			var list = await (query.ToListAsync());
 			Assert.That(list.Count, Is.EqualTo(1));
 		}
 
@@ -318,7 +317,7 @@ namespace NHibernate.Test.Linq
 						where user.Role == null
 						select new { user.Name, RoleName = user.Role.Name };
 
-			var list = await (query.ToListAsync(CancellationToken.None));
+			var list = await (query.ToListAsync());
 			Assert.That(list.Count, Is.EqualTo(1));
 		}
 
@@ -329,7 +328,7 @@ namespace NHibernate.Test.Linq
 						where user.Role != null
 						select new { user.Name, RoleName = user.Role.Name };
 
-			var list = await (query.ToListAsync(CancellationToken.None));
+			var list = await (query.ToListAsync());
 			Assert.That(list.Count, Is.EqualTo(2));
 		}
 
@@ -338,7 +337,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 where user.Name.Contains("yend")
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -361,7 +360,7 @@ namespace NHibernate.Test.Linq
 									 : (user.Name == null ? null : (bool?)user.Name.Contains("123")).Value);
 				// ReSharper restore SimplifyConditionalTernaryExpression
 
-				return query.ToListAsync(CancellationToken.None);
+				return query.ToListAsync();
 			}
 			catch (Exception ex)
 			{
@@ -416,7 +415,7 @@ namespace NHibernate.Test.Linq
 
 			var expr = Expression.Lambda<Func<Product, bool>>(condition, quantityIsNull.Parameters);
 
-			var results = await (db.Products.Where(expr).ToListAsync(CancellationToken.None));
+			var results = await (db.Products.Where(expr).ToListAsync());
 			Assert.That(results, Has.Count.EqualTo(1));
 		}
 		
@@ -427,7 +426,7 @@ namespace NHibernate.Test.Linq
 			// ReSharper disable SimplifyConditionalTernaryExpression
 			var query = await ((from u in db.Users
 						 where u.Name == null ? false : u.Name.Contains("yend")
-						 select u).ToListAsync(CancellationToken.None));
+						 select u).ToListAsync());
 			// ReSharper restore SimplifyConditionalTernaryExpression
 
 			Assert.That(query.Count, Is.EqualTo(1));
@@ -436,7 +435,7 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "NH-3261")]
 		public async Task UsersWithStringContainsAndNotNullNameHQLAsync()
 		{
-			var users = await (session.CreateQuery("from User u where (case when u.Name is null then 'false' else (case when u.Name LIKE '%yend%' then 'true' else 'false' end) end) = 'true'").ListAsync<User>(CancellationToken.None));
+			var users = await (session.CreateQuery("from User u where (case when u.Name is null then 'false' else (case when u.Name LIKE '%yend%' then 'true' else 'false' end) end) = 'true'").ListAsync<User>());
 
 			Assert.That(users.Count, Is.EqualTo(1));
 		}
@@ -448,7 +447,7 @@ namespace NHibernate.Test.Linq
 
 			var query = await ((from user in db.Users
 						 where names.Contains(user.Name)
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -460,7 +459,7 @@ namespace NHibernate.Test.Linq
 
 			var query = await ((from user in db.Users
 						 where names.Contains(user.Name)
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -473,7 +472,7 @@ namespace NHibernate.Test.Linq
 
 				var query = await ((from user in db.Users
 							 where names.Contains(user.Name)
-							 select user).ToListAsync(CancellationToken.None));
+							 select user).ToListAsync());
 
 				Assert.AreEqual(2, query.Count); 
 
@@ -485,7 +484,7 @@ namespace NHibernate.Test.Linq
 
 				var query = await ((from user in db.Users
 							 where names.Contains(user.Name)
-							 select user).ToListAsync(CancellationToken.None));
+							 select user).ToListAsync());
 
 				// This line fails with Expected: 1 But was: 0
 				// The SQL in NHProf shows that the where clause was executed as WHERE 1 = 0 as if names were empty
@@ -500,7 +499,7 @@ namespace NHibernate.Test.Linq
 
 			var query = await ((from user in db.Users
 						 where names.Contains(user.Name)
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(0));
 		}
@@ -513,7 +512,7 @@ namespace NHibernate.Test.Linq
 
 			var query = await ((from user in db.Users
 						 where names.Contains(user.Name)
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(0));
 		}
@@ -526,7 +525,7 @@ namespace NHibernate.Test.Linq
 
 			var query = await ((from user in db.Users
 						 where allNames.Where(n => n == "does not exist").Contains(user.Name)
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(0));
 		}
@@ -543,7 +542,7 @@ namespace NHibernate.Test.Linq
 			List<User> result = null;
 			Assert.DoesNotThrowAsync(async () =>
 				{
-					result = await (query.ToListAsync(CancellationToken.None));
+					result = await (query.ToListAsync());
 				});
 
 			Assert.That(result.Count, Is.EqualTo(2));
@@ -561,7 +560,7 @@ namespace NHibernate.Test.Linq
 			List<User> result = null;
 			Assert.DoesNotThrowAsync(async () =>
 				{
-					result = await (query.ToListAsync(CancellationToken.None));
+					result = await (query.ToListAsync());
 				});
 
 			Assert.That(result.Count, Is.EqualTo(2));
@@ -570,11 +569,11 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task TimesheetsWithCollectionContainsAsync()
 		{
-			var entry = await (session.GetAsync<TimesheetEntry>(1, CancellationToken.None));
+			var entry = await (session.GetAsync<TimesheetEntry>(1));
 
 			var timesheet = await ((from sheet in db.Timesheets
 							 where sheet.Entries.Contains(entry)
-							 select sheet).SingleAsync(CancellationToken.None));
+							 select sheet).SingleAsync());
 
 			Assert.That(timesheet.Id, Is.EqualTo(2));
 		}
@@ -584,7 +583,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 where !user.Name.Contains("yend")
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -596,7 +595,7 @@ namespace NHibernate.Test.Linq
 
 			var query = await ((from user in db.Users
 						 where !names.Contains(user.Name)
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -608,7 +607,7 @@ namespace NHibernate.Test.Linq
 
 			var query = await ((from user in db.Users
 						 where !names.Contains(user.Name)
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -616,11 +615,11 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task TimesheetsWithCollectionNotContainsAsync()
 		{
-			var entry = await (session.GetAsync<TimesheetEntry>(1, CancellationToken.None));
+			var entry = await (session.GetAsync<TimesheetEntry>(1));
 
 			var query = await ((from sheet in db.Timesheets
 						 where !sheet.Entries.Contains(entry)
-						 select sheet).ToListAsync(CancellationToken.None));
+						 select sheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -628,11 +627,11 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task TimesheetsWithEnumerableContainsAsync()
 		{
-			var user = await (session.GetAsync<User>(1, CancellationToken.None));
+			var user = await (session.GetAsync<User>(1));
 
 			var query = await ((from sheet in db.Timesheets
 						 where sheet.Users.Contains(user)
-						 select sheet).ToListAsync(CancellationToken.None));
+						 select sheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -641,7 +640,7 @@ namespace NHibernate.Test.Linq
 		public async Task SearchOnObjectTypeWithExtensionMethodAsync()
 		{
 			var query = await ((from o in session.Query<Animal>()
-						 select o).OfType<Dog>().ToListAsync(CancellationToken.None));
+						 select o).OfType<Dog>().ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -650,7 +649,7 @@ namespace NHibernate.Test.Linq
 		public async Task SearchOnObjectTypeUpCastWithExtensionMethodAsync()
 		{
 			var query = await ((from o in session.Query<Dog>()
-						 select o).Cast<Animal>().ToListAsync(CancellationToken.None));
+						 select o).Cast<Animal>().ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -659,7 +658,7 @@ namespace NHibernate.Test.Linq
 		public async Task SearchOnObjectTypeCastAsync()
 		{
 			var query = await ((from Dog o in session.Query<Dog>()
-						 select o).ToListAsync(CancellationToken.None));
+						 select o).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -669,7 +668,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from o in session.Query<Animal>()
 						 where o is Dog
-						 select o).ToListAsync(CancellationToken.None));
+						 select o).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -679,7 +678,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from o in session.Query<Animal>()
 						 where o is Mammal
-						 select o).ToListAsync(CancellationToken.None));
+						 select o).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(3));
 		}
@@ -687,7 +686,7 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "NH-3845")]
 		public async Task PolymorphicSearchOnObjectTypeWithOfTypeAsync()
 		{
-			var query = await (session.Query<Animal>().OfType<Mammal>().ToListAsync(CancellationToken.None));
+			var query = await (session.Query<Animal>().OfType<Mammal>().ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(3));
 		}
@@ -698,7 +697,7 @@ namespace NHibernate.Test.Linq
 			var featureSet = FeatureSet.HasMore;
 			var query = await ((from o in session.Query<User>()
 						 where (o.Features & featureSet) == featureSet
-						 select o).ToListAsync(CancellationToken.None));
+						 select o).ToListAsync());
 
 			Assert.That(query, Is.Not.Null);
 		}
@@ -709,7 +708,7 @@ namespace NHibernate.Test.Linq
 			var featureSet = FeatureSet.HasAll;
 			var query = await ((from o in session.Query<User>()
 						 where (o.Features & featureSet) == featureSet
-						 select o).ToListAsync(CancellationToken.None));
+						 select o).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -720,7 +719,7 @@ namespace NHibernate.Test.Linq
 			var featureSet = FeatureSet.HasThat;
 			var query = await ((from o in session.Query<User>()
 						 where ((o.Features | featureSet) & featureSet) == featureSet
-						 select o).ToListAsync(CancellationToken.None));
+						 select o).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(3));
 		}
@@ -732,7 +731,7 @@ namespace NHibernate.Test.Linq
 			{
 				return (from a in session.Query<Animal>().OfType<Cat>()
 			 where a.Pregnant
-			 select a.Id).FirstOrDefaultAsync(CancellationToken.None);
+			 select a.Id).FirstOrDefaultAsync();
 			}
 			catch (Exception ex)
 			{
@@ -747,7 +746,7 @@ namespace NHibernate.Test.Linq
 			{
 				return (from a in session.Query<Animal>().OfType<Cat>()
 			 where a.Pregnant
-			 select a).FirstOrDefaultAsync(CancellationToken.None);
+			 select a).FirstOrDefaultAsync();
 			}
 			catch (Exception ex)
 			{
@@ -763,7 +762,7 @@ namespace NHibernate.Test.Linq
 			var query = await (db.Timesheets
 						  .Where(predicate)
 						  .Where(predicate)
-						  .ToListAsync(CancellationToken.None));
+						  .ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -774,7 +773,7 @@ namespace NHibernate.Test.Linq
 			var serialNumbers = new List<string> { "5678", "789" };
 			var query = await ((from animal in db.Animals
 						 where animal.Father != null && serialNumbers.Contains(animal.Father.SerialNumber)
-						 select animal).ToListAsync(CancellationToken.None));
+						 select animal).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -786,7 +785,7 @@ namespace NHibernate.Test.Linq
 			var query = await ((from animal in db.Animals
 						 let father = animal.Father
 						 where father != null && serialNumbers.Contains(father.SerialNumber)
-						 select animal).ToListAsync(CancellationToken.None));
+						 select animal).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -800,7 +799,7 @@ namespace NHibernate.Test.Linq
 				// Comparison with p.ProductId is somewhat non-sensical - the point
 				// is that it should work also when it's not something that can be reduced
 				// to a constant zero.
-				var result = await (db.Products.Where(p => string.Compare(p.Name.ToLower(), "konbu") < (p.ProductId - p.ProductId)).ToListAsync(CancellationToken.None));
+				var result = await (db.Products.Where(p => string.Compare(p.Name.ToLower(), "konbu") < (p.ProductId - p.ProductId)).ToListAsync());
 
 				Assert.That(result, Has.Count.EqualTo(30));
 
@@ -818,7 +817,7 @@ namespace NHibernate.Test.Linq
 		{
 			using (var ls = new SqlLogSpy())
 			{
-				var result = await (db.Products.Where(expression).ToListAsync(CancellationToken.None));
+				var result = await (db.Products.Where(expression).ToListAsync());
 
 				Assert.That(result, Has.Count.EqualTo(expectedCount));
 
@@ -834,7 +833,7 @@ namespace NHibernate.Test.Linq
 			var result = await (db.Animals.Select(x => new
 			{
 				x.Children
-			}).FirstOrDefaultAsync(CancellationToken.None));
+			}).FirstOrDefaultAsync());
 
 			Assert.That(result, Is.Not.Null);
 			Assert.That(result.Children, Is.Not.Empty);

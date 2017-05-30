@@ -71,7 +71,7 @@ namespace NHibernate.Test.Cascade.Circle
 		[Test]
 		public async Task MergeEntityWithNonNullableTransientEntityAsync()
 		{
-			Route route = await (this.GetUpdatedDetachedEntityAsync(CancellationToken.None));
+			Route route = await (this.GetUpdatedDetachedEntityAsync());
 	
 			Node node = route.Nodes.First();
 			route.Nodes.Remove(node);
@@ -110,7 +110,7 @@ namespace NHibernate.Test.Cascade.Circle
 		[Test]
 		public async Task MergeEntityWithNonNullableEntityNullAsync()
 		{
-			Route route = await (GetUpdatedDetachedEntityAsync(CancellationToken.None));
+			Route route = await (GetUpdatedDetachedEntityAsync());
 			Node node = route.Nodes.First();
 			route.Nodes.Remove(node);
 			node.Route = null;
@@ -176,14 +176,14 @@ namespace NHibernate.Test.Cascade.Circle
 		[Test]
 		public async Task MergeRouteAsync()
 		{
-			Route route = await (this.GetUpdatedDetachedEntityAsync(CancellationToken.None));
+			Route route = await (this.GetUpdatedDetachedEntityAsync());
 	
 			ClearCounts();
 	
 			ISession s = base.OpenSession();
 			s.BeginTransaction();
 			s.Merge(route);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(4);
@@ -191,16 +191,16 @@ namespace NHibernate.Test.Cascade.Circle
 	
 			s = base.OpenSession();
 			s.BeginTransaction();
-			route = await (s.GetAsync<Route>(route.RouteId, CancellationToken.None));
+			route = await (s.GetAsync<Route>(route.RouteId));
 			CheckResults(route, true);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 		}
 		
 		[Test]
 		public async Task MergePickupNodeAsync()
 		{
-			Route route = await (GetUpdatedDetachedEntityAsync(CancellationToken.None));
+			Route route = await (GetUpdatedDetachedEntityAsync());
 	
 			ClearCounts();
 	
@@ -210,7 +210,7 @@ namespace NHibernate.Test.Cascade.Circle
 			Node pickupNode = route.Nodes.First(n => n.Name == "pickupNodeB");
 			pickupNode = (Node)s.Merge(pickupNode);
 			
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 
 			AssertInsertCount(4);
@@ -218,16 +218,16 @@ namespace NHibernate.Test.Cascade.Circle
 	
 			s = OpenSession();
 			s.BeginTransaction();
-			route = await (s.GetAsync<Route>(route.RouteId, CancellationToken.None));
+			route = await (s.GetAsync<Route>(route.RouteId));
 			CheckResults(route, false);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 		}
 		
 		[Test]
 		public async Task MergeDeliveryNodeAsync()
 		{
-			Route route = await (GetUpdatedDetachedEntityAsync(CancellationToken.None));
+			Route route = await (GetUpdatedDetachedEntityAsync());
 	
 			ClearCounts();
 	
@@ -237,7 +237,7 @@ namespace NHibernate.Test.Cascade.Circle
 			Node deliveryNode = route.Nodes.First(n => n.Name == "deliveryNodeB");
 			deliveryNode = (Node)s.Merge(deliveryNode);
 			
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 
 			AssertInsertCount(4);
@@ -245,23 +245,23 @@ namespace NHibernate.Test.Cascade.Circle
 	
 			s = OpenSession();
 			s.BeginTransaction();
-			route = await (s.GetAsync<Route>(route.RouteId, CancellationToken.None));
+			route = await (s.GetAsync<Route>(route.RouteId));
 			CheckResults(route, false);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 		}
 		
 		[Test]
 		public async Task MergeTourAsync()
 		{
-			Route route = await (GetUpdatedDetachedEntityAsync(CancellationToken.None));
+			Route route = await (GetUpdatedDetachedEntityAsync());
 	
 			ClearCounts();
 	
 			ISession s = OpenSession();
 			s.BeginTransaction();
 			Tour tour = (Tour)s.Merge(route.Nodes.First().Tour);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(4);
@@ -269,16 +269,16 @@ namespace NHibernate.Test.Cascade.Circle
 	
 			s = OpenSession();
 			s.BeginTransaction();
-			route = await (s.GetAsync<Route>(route.RouteId, CancellationToken.None));
+			route = await (s.GetAsync<Route>(route.RouteId));
 			CheckResults(route, false);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 		}
 		
 		[Test]
 		public async Task MergeTransportAsync()
 		{
-			Route route = await (GetUpdatedDetachedEntityAsync(CancellationToken.None));
+			Route route = await (GetUpdatedDetachedEntityAsync());
 	
 			ClearCounts();
 	
@@ -295,7 +295,7 @@ namespace NHibernate.Test.Cascade.Circle
 	
 			transport = (Transport)s.Merge(transport);
 	
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(4);
@@ -303,9 +303,9 @@ namespace NHibernate.Test.Cascade.Circle
 	
 			s = OpenSession();
 			s.BeginTransaction();
-			route = await (s.GetAsync<Route>(route.RouteId, CancellationToken.None));
+			route = await (s.GetAsync<Route>(route.RouteId));
 			CheckResults(route, false);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 		}
 		

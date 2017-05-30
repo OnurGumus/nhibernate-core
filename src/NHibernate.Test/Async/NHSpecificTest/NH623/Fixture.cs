@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH623
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -68,7 +67,7 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 			IList result;
 			Document d;
 
-			result = await (session.CreateCriteria(typeof(Document)).ListAsync(CancellationToken.None));
+			result = await (session.CreateCriteria(typeof(Document)).ListAsync());
 			d = result[0] as Document;
 
 			// collection is lazy loaded an so it is also filtered so we will get here one element
@@ -76,7 +75,7 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 
 			session.Clear();
 
-			result = await (session.CreateCriteria(typeof(Document)).SetFetchMode("Pages", FetchMode.Join).ListAsync(CancellationToken.None));
+			result = await (session.CreateCriteria(typeof(Document)).SetFetchMode("Pages", FetchMode.Join).ListAsync());
 			d = result[0] as Document;
 
 			// this assertion fails because if the collection is eager fetched it will contain all elements and will ignore the where clause.

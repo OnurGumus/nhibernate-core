@@ -18,7 +18,6 @@ using System;
 namespace NHibernate.Test.NHSpecificTest.NH2664
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{
@@ -97,7 +96,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2664
 			using (var session = OpenSession())
 			{
 				var product =
-					await ((from p in session.Query<Product>() where p.Properties["Name"] == "First Product" select p).SingleAsync(CancellationToken.None));
+					await ((from p in session.Query<Product>() where p.Properties["Name"] == "First Product" select p).SingleAsync());
 
 				Assert.IsNotNull(product);
 				Assert.AreEqual("First Product", product.Properties["Name"]);
@@ -112,14 +111,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2664
 				// Query by name
 				var product1 = await ((from p in session.Query<Product>()
 								where p.Properties["Name"] == "First Product"
-								select p).SingleAsync(CancellationToken.None));
+								select p).SingleAsync());
 				Assert.That(product1.ProductId, Is.EqualTo("1"));
 
 				// Query by description (this test is to verify that the dictionary
 				// index isn't cached from the query above.
 				var product2 = await ((from p in session.Query<Product>()
 								where p.Properties["Description"] == "Second Description"
-								select p).SingleAsync(CancellationToken.None));
+								select p).SingleAsync());
 				Assert.That(product2.ProductId, Is.EqualTo("2"));
 			}
 		}

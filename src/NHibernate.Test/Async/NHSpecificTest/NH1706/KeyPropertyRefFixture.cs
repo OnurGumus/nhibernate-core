@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1706
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class KeyPropertyRefFixtureAsync : BugTestCase
 	{
@@ -29,14 +28,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1706
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.SaveAsync(a, CancellationToken.None));
-				await (s.SaveAsync(b, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(a));
+				await (s.SaveAsync(b));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				var newA = await (s.GetAsync<A>(a.Id, CancellationToken.None));
+				var newA = await (s.GetAsync<A>(a.Id));
 
 				Assert.AreEqual(1, newA.Items.Count);
 			}
@@ -45,9 +44,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1706
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from B", CancellationToken.None));
-				await (s.DeleteAsync("from A", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from B"));
+				await (s.DeleteAsync("from A"));
+				await (tx.CommitAsync());
 			}
 		}
 	}

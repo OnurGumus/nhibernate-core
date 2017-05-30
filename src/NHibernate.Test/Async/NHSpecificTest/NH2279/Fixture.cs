@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2279
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -40,12 +39,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2279
 			a.Items.Add("c");
 
 			ISession s = OpenSession();
-			await (s.SaveOrUpdateAsync(a, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveOrUpdateAsync(a));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			a = (A)await (s.LoadAsync(typeof(A), a.Id, CancellationToken.None));
+			a = (A)await (s.LoadAsync(typeof(A), a.Id));
 			CollectionAssert.AreEquivalent(new[] {"a", "b", "c"}, a.Items);
 
 			// Add and remove a "transient" item.
@@ -63,12 +62,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2279
 			a.Items.Insert(3, "h");
 
 			// Save and then see if we get what we expect.
-			await (s.SaveOrUpdateAsync(a, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveOrUpdateAsync(a));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			a = (A)await (s.LoadAsync(typeof(A), a.Id, CancellationToken.None));
+			a = (A)await (s.LoadAsync(typeof(A), a.Id));
 			CollectionAssert.AreEquivalent(new [] {"c", "e", "f", "g", "h"}, a.Items);
 
 			// Test changing a value by index directly.
@@ -76,15 +75,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2279
 
 			string[] expected = a.Items.Cast<string>().ToArray();
 
-			await (s.SaveOrUpdateAsync(a, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveOrUpdateAsync(a));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			a = (A)await (s.LoadAsync(typeof(A), a.Id, CancellationToken.None));
+			a = (A)await (s.LoadAsync(typeof(A), a.Id));
 			CollectionAssert.AreEquivalent(expected, a.Items);
 
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 			s.Close();
 		}
 
@@ -142,13 +141,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2279
 			b4.Cs.Add(c6);
 
 			ISession s = OpenSession();
-			await (s.SaveAsync(a1, CancellationToken.None));
-			await (s.SaveAsync(a2, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(a1));
+			await (s.SaveAsync(a2));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			IList<A> results = (await (s.CreateQuery("from A a join fetch a.Bs b join fetch b.Cs").ListAsync<A>(CancellationToken.None))).Distinct().ToList();
+			IList<A> results = (await (s.CreateQuery("from A a join fetch a.Bs b join fetch b.Cs").ListAsync<A>())).Distinct().ToList();
 
 			Assert.That(results, Has.Count.EqualTo(2));
 			A ta1 = results.Single(a => a.Name == "a1");

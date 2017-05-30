@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.GenericTest.Methods
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{
@@ -80,7 +79,7 @@ namespace NHibernate.Test.GenericTest.Methods
 			{
 				IList<One> results2 = await (s2.CreateCriteria( typeof( One ) )
 					.Add( Expression.Eq( "X", 20 ) )
-					.ListAsync<One>(CancellationToken.None));
+					.ListAsync<One>());
 
 				Assert.AreEqual( 1, results2.Count );
 
@@ -97,7 +96,7 @@ namespace NHibernate.Test.GenericTest.Methods
 			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
-				IList<One> results = await (s.CreateQuery( "from One" ).ListAsync<One>(CancellationToken.None));
+				IList<One> results = await (s.CreateQuery( "from One" ).ListAsync<One>());
 
 				Assert.AreEqual( 1, results.Count );
 			}
@@ -109,7 +108,7 @@ namespace NHibernate.Test.GenericTest.Methods
 			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
-				IEnumerable<One> results = await (s.CreateQuery( "from One" ).EnumerableAsync<One>(CancellationToken.None));
+				IEnumerable<One> results = await (s.CreateQuery( "from One" ).EnumerableAsync<One>());
 				IEnumerator<One> en = results.GetEnumerator();
 
 				Assert.IsTrue( en.MoveNext() );
@@ -123,13 +122,13 @@ namespace NHibernate.Test.GenericTest.Methods
 			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
-				One one2 = ( One ) await (s.CreateQuery( "from One" ).UniqueResultAsync(CancellationToken.None));
-				IList<Many> results = await ((await (s.CreateFilterAsync( one2.Manies, "where X = 10" , CancellationToken.None))
-)					.ListAsync<Many>(CancellationToken.None));
+				One one2 = ( One ) await (s.CreateQuery( "from One" ).UniqueResultAsync());
+				IList<Many> results = await ((await (s.CreateFilterAsync( one2.Manies, "where X = 10" ))
+)					.ListAsync<Many>());
 
 				Assert.AreEqual( 1, results.Count );
 				Assert.AreEqual( 10, results[ 0 ].X );
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -139,15 +138,15 @@ namespace NHibernate.Test.GenericTest.Methods
 			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
-				One one2 = ( One ) await (s.CreateQuery( "from One" ).UniqueResultAsync(CancellationToken.None));
-				IEnumerable<Many> results = await ((await (s.CreateFilterAsync( one2.Manies, "where X = 10" , CancellationToken.None))
-)					.EnumerableAsync<Many>(CancellationToken.None));
+				One one2 = ( One ) await (s.CreateQuery( "from One" ).UniqueResultAsync());
+				IEnumerable<Many> results = await ((await (s.CreateFilterAsync( one2.Manies, "where X = 10" ))
+)					.EnumerableAsync<Many>());
 				IEnumerator<Many> en = results.GetEnumerator();
 
 				Assert.IsTrue( en.MoveNext() );
 				Assert.AreEqual( 10, en.Current.X );
 				Assert.IsFalse( en.MoveNext() );
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 		}
 	}

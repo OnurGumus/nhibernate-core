@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1092
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync: BugTestCase
 	{
@@ -23,12 +22,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1092
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new Subscriber1 {Username = "u11"}, CancellationToken.None));
-				await (s.SaveAsync(new Subscriber1 {Username = "u12"}, CancellationToken.None));
-				await (s.SaveAsync(new Subscriber1 {Username = "u13"}, CancellationToken.None));
-				await (s.SaveAsync(new Subscriber2 {Username = "u21"}, CancellationToken.None));
-				await (s.SaveAsync(new Subscriber2 {Username = "u22"}, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new Subscriber1 {Username = "u11"}));
+				await (s.SaveAsync(new Subscriber1 {Username = "u12"}));
+				await (s.SaveAsync(new Subscriber1 {Username = "u13"}));
+				await (s.SaveAsync(new Subscriber2 {Username = "u21"}));
+				await (s.SaveAsync(new Subscriber2 {Username = "u22"}));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -37,16 +36,16 @@ namespace NHibernate.Test.NHSpecificTest.NH1092
 				var count =
 					await (s.CreateQuery("select count(*) from SubscriberAbstract SA where SA.Username like :username")
 					.SetString("username","u%")
-					.UniqueResultAsync<long>(CancellationToken.None));
+					.UniqueResultAsync<long>());
 				Assert.That(count, Is.EqualTo(5));
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.CreateQuery("delete from SubscriberAbstract").ExecuteUpdateAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.CreateQuery("delete from SubscriberAbstract").ExecuteUpdateAsync());
+				await (t.CommitAsync());
 			}
 		}
 	}

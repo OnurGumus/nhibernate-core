@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Summary description for StringClobTypeFixture.
 	/// </summary>
@@ -32,15 +31,15 @@ namespace NHibernate.Test.TypesTest
 			ISession s = OpenSession();
 			StringClobClass b = new StringClobClass();
 			b.StringClob = "foo/bar/baz";
-			await (s.SaveAsync(b, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(b));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			b = (StringClobClass) await (s.LoadAsync(typeof(StringClobClass), b.Id, CancellationToken.None));
+			b = (StringClobClass) await (s.LoadAsync(typeof(StringClobClass), b.Id));
 			Assert.AreEqual("foo/bar/baz", b.StringClob);
-			await (s.DeleteAsync(b, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(b));
+			await (s.FlushAsync());
 			s.Close();
 		}
 
@@ -53,17 +52,17 @@ namespace NHibernate.Test.TypesTest
 				StringClobClass b = new StringClobClass();
 				b.StringClob = longString;
 
-				await (s.SaveAsync(b, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(b));
+				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
 				StringClobClass b = (StringClobClass) await (s.CreateCriteria(
-				                                      	typeof(StringClobClass)).UniqueResultAsync(CancellationToken.None));
+				                                      	typeof(StringClobClass)).UniqueResultAsync());
 				Assert.AreEqual(longString, b.StringClob);
-				await (s.DeleteAsync(b, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync(b));
+				await (s.FlushAsync());
 			}
 		}
 
@@ -74,17 +73,17 @@ namespace NHibernate.Test.TypesTest
 			{
 				StringClobClass b = new StringClobClass();
 				b.StringClob = null;
-				await (s.SaveAsync(b, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(b));
+				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
 				StringClobClass b = (StringClobClass) await (s.CreateCriteria(
-				                                      	typeof(StringClobClass)).UniqueResultAsync(CancellationToken.None));
+				                                      	typeof(StringClobClass)).UniqueResultAsync());
 				Assert.IsNull(b.StringClob);
-				await (s.DeleteAsync(b, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync(b));
+				await (s.FlushAsync());
 			}
 		}
 	}

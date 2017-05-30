@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2721
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -50,13 +49,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2721
 
             using (ISession s = OpenSession())
             {
-                await (s.SaveOrUpdateAsync(a, CancellationToken.None));
-                await (s.FlushAsync(CancellationToken.None));
+                await (s.SaveOrUpdateAsync(a));
+                await (s.FlushAsync());
             }
 
             using (ISession s = OpenSession())
             {
-                a = (A) await (s.LoadAsync(typeof (A), a.Id, CancellationToken.None));
+                a = (A) await (s.LoadAsync(typeof (A), a.Id));
                 CollectionAssert.AreEquivalent(new[] {"b1", "b2", "b3"}, a.Bs.Select(b => b.Name));
 
                 B removed = a.Bs[2];
@@ -66,13 +65,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2721
                 Assert.IsNotNull(a.Bs[1].A);
                 Assert.IsNotNull(a.Bs[2].A);
                 CollectionAssert.AreEquivalent(new[] {"b1", "b3", "b2"}, a.Bs.Select(b => b.Name));
-                await (s.SaveOrUpdateAsync(a, CancellationToken.None));
-                await (s.FlushAsync(CancellationToken.None));
+                await (s.SaveOrUpdateAsync(a));
+                await (s.FlushAsync());
             }
 
             using (ISession s = OpenSession())
             {
-                a = (A) await (s.LoadAsync(typeof (A), a.Id, CancellationToken.None));
+                a = (A) await (s.LoadAsync(typeof (A), a.Id));
                 CollectionAssert.AreEquivalent(new[] { "b1", "b3", "b2" }, a.Bs.Select(b => b.Name));
             }
 		}

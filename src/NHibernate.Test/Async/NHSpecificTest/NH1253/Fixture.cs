@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1253
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -30,9 +29,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1253
 				var q = s.CreateQuery("from Car c where c.Make in (:param1) or c.Model in (:param11)");
 				q.SetParameterList("param11", new string[] {"Model1", "Model2"});
 				q.SetParameterList("param1", new string[] {"Make1", "Make2"});
-				var cars = await (q.ListAsync<Car>(CancellationToken.None));
+				var cars = await (q.ListAsync<Car>());
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -45,9 +44,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1253
 				var q = s.CreateQuery("from Car c where c.Make in (:param1) or c.Model in (:param11)");
 				q.SetParameterList("param1", new string[] {"Model1", "Model2"});
 				q.SetParameterList("param11", new string[] {"Make1", "Make2"});
-				var cars = await (q.ListAsync<Car>(CancellationToken.None));
+				var cars = await (q.ListAsync<Car>());
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -61,9 +60,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1253
 				var q = s.CreateQuery("from Car c where c.Id in (:foo) or c.Id = :foobar");
 				q.SetParameterList("foo", new long[] {1, 2});
 				q.SetInt64("foobar", 3);
-				var cars = await (q.ListAsync<Car>(CancellationToken.None));
+				var cars = await (q.ListAsync<Car>());
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -76,9 +75,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1253
 				var q = s.CreateQuery("from Car c where c.Make in (:param11) or c.Model in (:param1)");
 				q.SetParameterList("param11", new string[] {"One", "Two"});
 				q.SetParameterList("param1", new string[] {"One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve"});
-				var cars = await (q.ListAsync(CancellationToken.None));
+				var cars = await (q.ListAsync());
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -97,9 +96,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1253
 					.Add("from Car c where c.Make in (:param1) or c.Model in (:param11)")
 					.SetParameterList("param11", new string[] {"Model1", "Model2"})
 					.SetParameterList("param1", new string[] {"Make1", "Make2"})
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 	}

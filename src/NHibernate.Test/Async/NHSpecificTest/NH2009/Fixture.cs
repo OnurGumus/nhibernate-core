@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2009
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -30,32 +29,32 @@ namespace NHibernate.Test.NHSpecificTest.NH2009
 				User user1 = new User();
 				user1.FullName = "First User";
 				user1.UserName = "User1";
-				await (session.SaveAsync(user1, CancellationToken.None));
+				await (session.SaveAsync(user1));
 
 				User user2 = new User();
 				user2.FullName = "Second User";
 				user2.UserName = "User2";
-				await (session.SaveAsync(user2, CancellationToken.None));
+				await (session.SaveAsync(user2));
 
 				savedBlogPost.Title = "Post 1";
 				savedBlogPost.Poster = user1;
-				await (session.SaveAsync(savedBlogPost, CancellationToken.None));
+				await (session.SaveAsync(savedBlogPost));
 
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 				session.Clear();
 			}
 			
 			using (ISession session = OpenSession())
 			{
-				var user = await (session.GetAsync<BlogPost>(savedBlogPost.ID, CancellationToken.None));
+				var user = await (session.GetAsync<BlogPost>(savedBlogPost.ID));
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				await (session.DeleteAsync("from User", CancellationToken.None));
-				await (session.DeleteAsync("from BlogPost", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync("from User"));
+				await (session.DeleteAsync("from BlogPost"));
+				await (tx.CommitAsync());
 			}
 		}
 	}

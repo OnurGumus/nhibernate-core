@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH962
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class NH962FixtureAsync : BugTestCase
 	{
@@ -35,17 +34,17 @@ namespace NHibernate.Test.NHSpecificTest.NH962
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				await (session.SaveAsync(child, CancellationToken.None));
+				await (session.SaveAsync(child));
 				Assert.IsTrue(session.Contains(parent));
 				Assert.AreNotEqual(Guid.Empty, parent.Id);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				await (session.DeleteAsync(child, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync(child));
+				await (tx.CommitAsync());
 			}
 		}
 	}

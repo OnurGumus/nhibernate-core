@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2976
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -60,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2976
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var employer = await (session.GetAsync<Employer>(_employerId, CancellationToken.None));
+				var employer = await (session.GetAsync<Employer>(_employerId));
 
 				Assert.IsFalse(NHibernateUtil.IsInitialized(employer.Employees1)); // Just make sure the dictionary really is not initialized
 

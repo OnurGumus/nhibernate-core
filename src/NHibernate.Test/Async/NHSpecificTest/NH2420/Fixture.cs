@@ -87,7 +87,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 					await (connection.OpenAsync(CancellationToken.None));
 					using (s = Sfi.OpenSession(connection))
 					{
-						await (s.SaveAsync(new MyTable { String = "hello!" }, CancellationToken.None));
+						await (s.SaveAsync(new MyTable { String = "hello!" }));
 					}
 					connection.Close();
 				}

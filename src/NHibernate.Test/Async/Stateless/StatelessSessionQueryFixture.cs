@@ -89,42 +89,42 @@ namespace NHibernate.Test.Stateless
 		public async Task CriteriaAsync()
 		{
 			var testData = new TestData(sessions);
-			await (testData.createDataAsync(CancellationToken.None));
+			await (testData.createDataAsync());
 
 			using (IStatelessSession s = sessions.OpenStatelessSession())
 			{
-				Assert.AreEqual(1, (await (s.CreateCriteria<Contact>().ListAsync(CancellationToken.None))).Count);
+				Assert.AreEqual(1, (await (s.CreateCriteria<Contact>().ListAsync())).Count);
 			}
 
-			await (testData.cleanDataAsync(CancellationToken.None));
+			await (testData.cleanDataAsync());
 		}
 
 		[Test]
 		public async Task CriteriaWithSelectFetchModeAsync()
 		{
 			var testData = new TestData(sessions);
-			await (testData.createDataAsync(CancellationToken.None));
+			await (testData.createDataAsync());
 
 			using (IStatelessSession s = sessions.OpenStatelessSession())
 			{
-				Assert.AreEqual(1, (await (s.CreateCriteria<Contact>().SetFetchMode("Org", FetchMode.Select).ListAsync(CancellationToken.None))).Count);
+				Assert.AreEqual(1, (await (s.CreateCriteria<Contact>().SetFetchMode("Org", FetchMode.Select).ListAsync())).Count);
 			}
 
-			await (testData.cleanDataAsync(CancellationToken.None));
+			await (testData.cleanDataAsync());
 		}
 
 		[Test]
 		public async Task HqlAsync()
 		{
 			var testData = new TestData(sessions);
-			await (testData.createDataAsync(CancellationToken.None));
+			await (testData.createDataAsync());
 
 			using (IStatelessSession s = sessions.OpenStatelessSession())
 			{
-				Assert.AreEqual(1, (await (s.CreateQuery("from Contact c join fetch c.Org join fetch c.Org.Country").ListAsync<Contact>(CancellationToken.None))).Count);
+				Assert.AreEqual(1, (await (s.CreateQuery("from Contact c join fetch c.Org join fetch c.Org.Country").ListAsync<Contact>())).Count);
 			}
 
-			await (testData.cleanDataAsync(CancellationToken.None));
+			await (testData.cleanDataAsync());
 		}
 	}
 }

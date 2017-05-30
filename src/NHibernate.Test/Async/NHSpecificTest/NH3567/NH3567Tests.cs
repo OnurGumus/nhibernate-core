@@ -15,7 +15,6 @@ using NHibernate.Dialect;
 namespace NHibernate.Test.NHSpecificTest.NH3567
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class NH3567TestsAsync : BugTestCase
 	{
@@ -73,11 +72,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3567
 				session.FlushMode = FlushMode.Auto;
 				using (var transaction = session.BeginTransaction())
 				{
-					var post = await (session.QueryOver<Post>().Where(x => x.Content == "Post 1").SingleOrDefaultAsync(CancellationToken.None));
+					var post = await (session.QueryOver<Post>().Where(x => x.Content == "Post 1").SingleOrDefaultAsync());
 
 					post.Content = "1";
 
-					var comments = await (session.QueryOver<Comment>().JoinQueryOver(x => x.Post).Where(x => x.Content == "1").ListAsync(CancellationToken.None));
+					var comments = await (session.QueryOver<Comment>().JoinQueryOver(x => x.Post).Where(x => x.Content == "1").ListAsync());
 					Assert.That(comments.Count, Is.EqualTo(2), "Query over returned something different than 2");
 
 					post.Content = "I";
@@ -87,10 +86,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3567
 					var numberOfComments =
 (						await (session.CreateCriteria(typeof(Comment))
 							.Add(Subqueries.PropertyIn("Post.Id", subquery))
-							.ListAsync(CancellationToken.None))).Count;
+							.ListAsync())).Count;
 					Assert.That(numberOfComments, Is.EqualTo(2), "Query with sub-query returned an invalid number of rows.");
 
-					var site = await (session.GetAsync<Site>(1, CancellationToken.None));
+					var site = await (session.GetAsync<Site>(1));
 					site.Name = "Site 3";
 
 					subquery = DetachedCriteria.For(typeof(Post))
@@ -100,7 +99,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3567
 					numberOfComments =
 (						await (session.CreateCriteria(typeof(Comment))
 							.Add(Subqueries.PropertyIn("Post.Id", subquery))
-							.ListAsync(CancellationToken.None))).Count;
+							.ListAsync())).Count;
 
 					Assert.That(numberOfComments, Is.EqualTo(2), "Query with sub-query returned an invalid number of rows.");
 

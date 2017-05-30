@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1801
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -34,34 +33,34 @@ namespace NHibernate.Test.NHSpecificTest.NH1801
 					var c1 = new C {Name = "C1", A = a1};
 					var c2 = new C {Name = "C2", A = a2};
 
-					await (s.SaveAsync(a1, CancellationToken.None));
-					await (s.SaveAsync(a2, CancellationToken.None));
-					await (s.SaveAsync(b1, CancellationToken.None));
-					await (s.SaveAsync(b2, CancellationToken.None));
-					await (s.SaveAsync(c1, CancellationToken.None));
-					await (s.SaveAsync(c2, CancellationToken.None));
+					await (s.SaveAsync(a1));
+					await (s.SaveAsync(a2));
+					await (s.SaveAsync(b1));
+					await (s.SaveAsync(b2));
+					await (s.SaveAsync(c1));
+					await (s.SaveAsync(c2));
 
-					await (s.FlushAsync(CancellationToken.None));
+					await (s.FlushAsync());
 				}
 
 				using (ISession s = OpenSession())
 				{
-					IList res = await (s.CreateQuery("from B b, C c where b.A = c.A and b.Id = :id").SetInt32("id", 1).ListAsync(CancellationToken.None));
+					IList res = await (s.CreateQuery("from B b, C c where b.A = c.A and b.Id = :id").SetInt32("id", 1).ListAsync());
 
 					Assert.That(res, Has.Count.EqualTo(1));
 
-					await (s.FlushAsync(CancellationToken.None));
+					await (s.FlushAsync());
 				}
 			}
 			finally
 			{
 				using (ISession s = OpenSession())
 				{
-					await (s.DeleteAsync("from B", CancellationToken.None));
-					await (s.DeleteAsync("from C", CancellationToken.None));
-					await (s.DeleteAsync("from A", CancellationToken.None));
+					await (s.DeleteAsync("from B"));
+					await (s.DeleteAsync("from C"));
+					await (s.DeleteAsync("from A"));
 
-					await (s.FlushAsync(CancellationToken.None));
+					await (s.FlushAsync());
 				}
 			}
 		}

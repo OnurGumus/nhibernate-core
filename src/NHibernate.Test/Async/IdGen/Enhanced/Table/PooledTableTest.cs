@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.IdGen.Enhanced.Table
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class PooledTableTestAsync : TestCase
 	{
@@ -50,7 +49,7 @@ namespace NHibernate.Test.IdGen.Enhanced.Table
 					for (int i = 0; i < increment; i++)
 					{
 						entities[i] = new Entity("" + (i + 1));
-						await (s.SaveAsync(entities[i], CancellationToken.None));
+						await (s.SaveAsync(entities[i]));
 						Assert.That(generator.TableAccessCount, Is.EqualTo(2)); // initialization calls seq twice
 						Assert.That(optimizer.LastSourceValue, Is.EqualTo(increment + 1));  // initialization calls seq twice
 						Assert.That(optimizer.LastValue, Is.EqualTo(i + 1));
@@ -58,12 +57,12 @@ namespace NHibernate.Test.IdGen.Enhanced.Table
 
 					// now force a "clock over"
 					entities[increment] = new Entity("" + increment);
-					await (s.SaveAsync(entities[increment], CancellationToken.None));
+					await (s.SaveAsync(entities[increment]));
 					Assert.That(generator.TableAccessCount, Is.EqualTo(3)); // initialization (2) + clock over
 					Assert.That(optimizer.LastSourceValue, Is.EqualTo((increment * 2) + 1)); // initialization (2) + clock over
 					Assert.That(optimizer.LastValue, Is.EqualTo(increment + 1));
 
-					await (transaction.CommitAsync(CancellationToken.None));
+					await (transaction.CommitAsync());
 				}
 
 				using (ITransaction transaction = s.BeginTransaction())
@@ -71,9 +70,9 @@ namespace NHibernate.Test.IdGen.Enhanced.Table
 					for (int i = 0; i < entities.Length; i++)
 					{
 						Assert.That(entities[i].Id, Is.EqualTo(i + 1));
-						await (s.DeleteAsync(entities[i], CancellationToken.None));
+						await (s.DeleteAsync(entities[i]));
 					}
-					await (transaction.CommitAsync(CancellationToken.None));
+					await (transaction.CommitAsync());
 				}
 			}
 		}

@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2846
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -82,7 +81,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2846
 				var count = await (session.Query<Post>()
 					.Fetch(p => p.Category)
 					.FetchMany(p => p.Comments)
-					.CountAsync(CancellationToken.None));
+					.CountAsync());
 
 				Assert.AreEqual(1, count);
 

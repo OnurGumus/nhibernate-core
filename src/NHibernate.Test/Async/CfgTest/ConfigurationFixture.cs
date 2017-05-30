@@ -24,7 +24,6 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Test.CfgTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Summary description for ConfigurationFixture.
 	/// </summary>
@@ -56,7 +55,7 @@ namespace NHibernate.Test.CfgTest
 
 			cfg.AddClass(typeof(Simple));
 
-			await (new SchemaExport(cfg).CreateAsync(true, true, CancellationToken.None));
+			await (new SchemaExport(cfg).CreateAsync(true, true));
 
 			ISessionFactory factory = cfg.BuildSessionFactory();
 		}
@@ -101,7 +100,7 @@ namespace NHibernate.Test.CfgTest
 				.SetDefaultNamespace(typeof(LocatedInTestAssembly).Namespace)
 				.AddXmlString(hbmFromTest);
 
-				return cfg.BuildSessionFactory().CloseAsync(CancellationToken.None);
+				return cfg.BuildSessionFactory().CloseAsync();
 			}
 			catch (Exception ex)
 			{

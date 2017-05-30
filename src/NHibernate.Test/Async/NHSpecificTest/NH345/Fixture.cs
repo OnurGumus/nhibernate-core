@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH345
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -47,28 +46,28 @@ namespace NHibernate.Test.NHSpecificTest.NH345
 				Project project2 = new Project();
 				project2.Client = client2;
 
-				await (s.SaveAsync(client1, CancellationToken.None));
-				await (s.SaveAsync(client2, CancellationToken.None));
-				await (s.SaveAsync(project1, CancellationToken.None));
-				await (s.SaveAsync(project2, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(client1));
+				await (s.SaveAsync(client2));
+				await (s.SaveAsync(project1));
+				await (s.SaveAsync(project2));
+				await (s.FlushAsync());
 
 				IList listAsc = await (s.CreateQuery(
-					"select p from Project as p order by p.Client.Name asc").ListAsync(CancellationToken.None));
+					"select p from Project as p order by p.Client.Name asc").ListAsync());
 
 				Assert.AreEqual(2, listAsc.Count);
 				Assert.AreSame(project1, listAsc[0]);
 				Assert.AreSame(project2, listAsc[1]);
 
 				IList listDesc = await (s.CreateQuery(
-					"select p from Project as p order by p.Client.Name desc").ListAsync(CancellationToken.None));
+					"select p from Project as p order by p.Client.Name desc").ListAsync());
 				Assert.AreEqual(2, listDesc.Count);
 				Assert.AreSame(project1, listDesc[1]);
 				Assert.AreSame(project2, listDesc[0]);
 
-				await (s.DeleteAsync("from Project", CancellationToken.None));
-				await (s.DeleteAsync("from Client", CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Project"));
+				await (s.DeleteAsync("from Client"));
+				await (s.FlushAsync());
 			}
 		}
 	}

@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1757
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync: BugTestCase
 	{
@@ -27,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1757
 				var query = s.CreateSQLQuery("SELECT SimpleEntity.*, 123 as field_not_in_entitytype FROM SimpleEntity")
 					.AddEntity(typeof(SimpleEntity)) 
 					.AddScalar("field_not_in_entitytype", NHibernateUtil.Int64); 
-				IList<Object[]> result = await (query.ListAsync<Object[]>(CancellationToken.None)); 
+				IList<Object[]> result = await (query.ListAsync<Object[]>()); 
 			}
 		}
 	}

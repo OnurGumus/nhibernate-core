@@ -135,18 +135,18 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			using (ISession s = sf.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new Order {From = "from", Column = "column", And = "order"}, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new Order {From = "from", Column = "column", And = "order"}));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = sf.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from Order", CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Order"));
+				await (t.CommitAsync());
 			}
 
-			await (new SchemaExport(configuration).DropAsync(false, false, CancellationToken.None));
+			await (new SchemaExport(configuration).DropAsync(false, false));
 		}
 
 		[Test]

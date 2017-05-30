@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.CompositeId
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Summary description for ClassWithCompositeIdFixture.
 	/// </summary>
@@ -101,10 +100,10 @@ namespace NHibernate.Test.CompositeId
 			    theSecondClass = new ClassWithCompositeId(secondId);
 			    theSecondClass.OneProperty = 10;
 
-			    await (s.SaveAsync(theClass, CancellationToken.None));
-			    await (s.SaveAsync(theSecondClass, CancellationToken.None));
+			    await (s.SaveAsync(theClass));
+			    await (s.SaveAsync(theSecondClass));
 
-			    await (t.CommitAsync(CancellationToken.None));
+			    await (t.CommitAsync());
 			}
 
 			// verify they were inserted and test the SELECT
@@ -113,17 +112,17 @@ namespace NHibernate.Test.CompositeId
 			using (ISession s2 = OpenSession())
 			using (ITransaction t2 = s2.BeginTransaction())
 			{
-				theClass2 = (ClassWithCompositeId) await (s2.LoadAsync(typeof(ClassWithCompositeId), id, CancellationToken.None));
+				theClass2 = (ClassWithCompositeId) await (s2.LoadAsync(typeof(ClassWithCompositeId), id));
 				Assert.AreEqual(id, theClass2.Id);
 
 				IList results2 = await (s2.CreateCriteria(typeof(ClassWithCompositeId))
 				                   .Add(Expression.Eq("Id", secondId))
-				                   .ListAsync(CancellationToken.None));
+				                   .ListAsync());
 
 				Assert.AreEqual(1, results2.Count);
 				theSecondClass2 = (ClassWithCompositeId) results2[0];
 
-				ClassWithCompositeId theClass2Copy = (ClassWithCompositeId) await (s2.LoadAsync(typeof(ClassWithCompositeId), id, CancellationToken.None));
+				ClassWithCompositeId theClass2Copy = (ClassWithCompositeId) await (s2.LoadAsync(typeof(ClassWithCompositeId), id));
 
 				// verify the same results through Criteria & Load were achieved
 				Assert.AreSame(theClass2, theClass2Copy);
@@ -139,28 +138,28 @@ namespace NHibernate.Test.CompositeId
 				theClass2.OneProperty = 6;
 				theSecondClass2.OneProperty = 11;
 
-				await (s2.UpdateAsync(theClass2, CancellationToken.None));
-				await (s2.UpdateAsync(theSecondClass2, CancellationToken.None));
+				await (s2.UpdateAsync(theClass2));
+				await (s2.UpdateAsync(theSecondClass2));
 
-				await (t2.CommitAsync(CancellationToken.None));
+				await (t2.CommitAsync());
 			}
 
 			// lets verify the update went through
 			using (ISession s3 = OpenSession())
 			using (ITransaction t3 = s3.BeginTransaction())
 			{
-				ClassWithCompositeId theClass3 = (ClassWithCompositeId) await (s3.LoadAsync(typeof(ClassWithCompositeId), id, CancellationToken.None));
-				ClassWithCompositeId theSecondClass3 = (ClassWithCompositeId) await (s3.LoadAsync(typeof(ClassWithCompositeId), secondId, CancellationToken.None));
+				ClassWithCompositeId theClass3 = (ClassWithCompositeId) await (s3.LoadAsync(typeof(ClassWithCompositeId), id));
+				ClassWithCompositeId theSecondClass3 = (ClassWithCompositeId) await (s3.LoadAsync(typeof(ClassWithCompositeId), secondId));
 
 				// check the update properties
 				Assert.AreEqual(theClass3.OneProperty, theClass2.OneProperty);
 				Assert.AreEqual(theSecondClass3.OneProperty, theSecondClass2.OneProperty);
 
 				// test the delete method
-				await (s3.DeleteAsync(theClass3, CancellationToken.None));
-				await (s3.DeleteAsync(theSecondClass3, CancellationToken.None));
+				await (s3.DeleteAsync(theClass3));
+				await (s3.DeleteAsync(theSecondClass3));
 
-				await (t3.CommitAsync(CancellationToken.None));
+				await (t3.CommitAsync());
 			}
 
 			// lets verify the delete went through
@@ -168,7 +167,7 @@ namespace NHibernate.Test.CompositeId
 			{
 				try
 				{
-					ClassWithCompositeId theClass4 = (ClassWithCompositeId) await (s4.LoadAsync(typeof(ClassWithCompositeId), id, CancellationToken.None));
+					ClassWithCompositeId theClass4 = (ClassWithCompositeId) await (s4.LoadAsync(typeof(ClassWithCompositeId), id));
 				}
 				catch (ObjectNotFoundException)
 				{
@@ -177,7 +176,7 @@ namespace NHibernate.Test.CompositeId
 
 				IList results = await (s4.CreateCriteria(typeof(ClassWithCompositeId))
 				                  .Add(Expression.Eq("Id", secondId))
-				                  .ListAsync(CancellationToken.None));
+				                  .ListAsync());
 
 				Assert.AreEqual(0, results.Count);
 			}
@@ -194,8 +193,8 @@ namespace NHibernate.Test.CompositeId
 			// back for
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(cId, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(cId));
+				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -204,7 +203,7 @@ namespace NHibernate.Test.CompositeId
 				c.Add(Expression.Eq("Id", id));
 
 				// right now just want to see if the Criteria is valid
-				IList results = await (c.ListAsync(CancellationToken.None));
+				IList results = await (c.ListAsync());
 
 				Assert.AreEqual(1, results.Count);
 			}
@@ -223,10 +222,10 @@ namespace NHibernate.Test.CompositeId
 				ClassWithCompositeId theSecondClass = new ClassWithCompositeId(secondId);
 				theSecondClass.OneProperty = 10;
 
-				await (s.SaveAsync(theClass, CancellationToken.None));
-				await (s.SaveAsync(theSecondClass, CancellationToken.None));
+				await (s.SaveAsync(theClass));
+				await (s.SaveAsync(theSecondClass));
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s2 = OpenSession())
@@ -235,7 +234,7 @@ namespace NHibernate.Test.CompositeId
 
 				hql.SetString("keyString", id.KeyString);
 
-				IList results = await (hql.ListAsync(CancellationToken.None));
+				IList results = await (hql.ListAsync());
 
 				Assert.AreEqual(1, results.Count);
 			}

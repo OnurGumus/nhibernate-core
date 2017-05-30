@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2856
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : TestCaseMappingByCode
 	{
@@ -59,7 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2856
 
 				sessions.Statistics.Clear();
 
-				var result = await (query.ToListAsync(CancellationToken.None)); // Execute the query
+				var result = await (query.ToListAsync()); // Execute the query
 
 				Assert.That(result.Count, Is.EqualTo(1));
 				Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(1));
@@ -67,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2856
 
 				sessions.Statistics.Clear();
 
-				var cachedResult = await (query.ToListAsync(CancellationToken.None)); // Re-execute the query
+				var cachedResult = await (query.ToListAsync()); // Re-execute the query
 
 				Assert.That(cachedResult.Count, Is.EqualTo(1));
 				Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(0));

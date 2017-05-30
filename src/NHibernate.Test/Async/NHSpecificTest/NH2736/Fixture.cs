@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2736
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -83,7 +82,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2736
 				var query = session.CreateQuery("select o.Id, i.Id from SalesOrder o left join o.Items i with i.Quantity = :pQuantity take :pTake");
 				query.SetParameter("pQuantity", 1);
 				query.SetParameter("pTake", 2);
-				var result = await (query.ListAsync(CancellationToken.None));
+				var result = await (query.ListAsync());
 				Assert.That(result.Count, Is.EqualTo(2));
 			}
 		}

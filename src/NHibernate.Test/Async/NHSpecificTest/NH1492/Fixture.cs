@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1492
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -31,9 +30,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1492
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(eDel, CancellationToken.None));
-				await (s.SaveAsync(eGood, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(eDel));
+				await (s.SaveAsync(eGood));
+				await (t.CommitAsync());
 			}
 
 			// Retrive (check if the entity was well persisted)
@@ -43,15 +42,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1492
 				s.EnableFilter("excludeDeletedRows").SetParameter("deleted", "Y");
 
 				IQuery q = s.CreateQuery("FROM ChildEntity c WHERE c.Parent.Code = :parentCode").SetParameter("parentCode", 2);
-				childs=	await (q.ListAsync<ChildEntity>(CancellationToken.None));
+				childs=	await (q.ListAsync<ChildEntity>());
 			}
 			Assert.AreEqual(1, childs.Count);
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from Entity", CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Entity"));
+				await (t.CommitAsync());
 			}
 		}
 	}

@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3070
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : TestCaseMappingByCode
 	{
@@ -47,13 +46,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3070
 				using (var t = s.BeginTransaction())
 				{
 					var emp = new Employee();
-					await (s.SaveAsync(emp, CancellationToken.None));
-					await (t.CommitAsync(CancellationToken.None));
+					await (s.SaveAsync(emp));
+					await (t.CommitAsync());
 				}
 
 				using (var session = OpenSession())
 				{
-					var emps = await (session.QueryOver<Employee>().ListAsync(CancellationToken.None));
+					var emps = await (session.QueryOver<Employee>().ListAsync());
 					var emp = emps[0];
 
 					// THIS ASSERT WILL FAIL 
@@ -65,8 +64,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3070
 				using (var s = OpenSession())
 				using (var t = s.BeginTransaction())
 				{
-					await (s.DeleteAsync("from Employee", CancellationToken.None));
-					await (t.CommitAsync(CancellationToken.None));
+					await (s.DeleteAsync("from Employee"));
+					await (t.CommitAsync());
 				}
 			}
 		}

@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1101
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	// http://nhibernate.jira.com/browse/NH-1101
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
@@ -33,21 +32,21 @@ namespace NHibernate.Test.NHSpecificTest.NH1101
 			using (ISession s = OpenSession())
 			using(ITransaction t = s.BeginTransaction())
 			{
-				savedId = await (s.SaveAsync(a, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				savedId = await (s.SaveAsync(a));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				a = await (s.GetAsync<A>(savedId, CancellationToken.None));
+				a = await (s.GetAsync<A>(savedId));
 
 				IStatistics statistics = sessions.Statistics;
 				statistics.Clear();
 
 				Assert.IsNotNull(a.B); // an instance of B was created
-				await (s.FlushAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.FlushAsync());
+				await (t.CommitAsync());
 
 				// since we don't change anyproperties in a.B there are no dirty entity to commit
 				Assert.AreEqual(0, statistics.PrepareStatementCount);
@@ -57,14 +56,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1101
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				a = await (s.LoadAsync<A>(savedId, CancellationToken.None));
+				a = await (s.LoadAsync<A>(savedId));
 
 				IStatistics statistics = sessions.Statistics;
 				statistics.Clear();
 
 				Assert.IsNotNull(a.B); // an instance of B was created
-				await (s.FlushAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.FlushAsync());
+				await (t.CommitAsync());
 
 				Assert.AreEqual(0, statistics.PrepareStatementCount);
 			}
@@ -72,8 +71,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1101
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from A", CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from A"));
+				await (t.CommitAsync());
 			}
 		}
 	}

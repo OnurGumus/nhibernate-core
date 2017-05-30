@@ -59,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			try
 			{
 				isDynamic = false;
-				return ComponentFieldNotInserted_GenericAsync(typeof(Parent), CancellationToken.None);
+				return ComponentFieldNotInserted_GenericAsync(typeof(Parent));
 			}
 			catch (Exception ex)
 			{
@@ -73,7 +73,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			try
 			{
 				isDynamic = true;
-				return ComponentFieldNotInserted_GenericAsync(typeof(DynamicParent), CancellationToken.None);
+				return ComponentFieldNotInserted_GenericAsync(typeof(DynamicParent));
 			}
 			catch (Exception ex)
 			{
@@ -131,7 +131,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			try
 			{
 				isDynamic = false;
-				return ComponentFieldNotUpdated_GenericAsync(typeof(Parent), CancellationToken.None);
+				return ComponentFieldNotUpdated_GenericAsync(typeof(Parent));
 			}
 			catch (Exception ex)
 			{
@@ -145,7 +145,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			try
 			{
 				isDynamic = true;
-				return ComponentFieldNotUpdated_GenericAsync(typeof(DynamicParent), CancellationToken.None);
+				return ComponentFieldNotUpdated_GenericAsync(typeof(DynamicParent));
 			}
 			catch (Exception ex)
 			{
@@ -187,7 +187,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			try
 			{
 				isDynamic = false;
-				return SubComponentFieldNotInserted_GenericAsync(typeof(Parent), CancellationToken.None);
+				return SubComponentFieldNotInserted_GenericAsync(typeof(Parent));
 			}
 			catch (Exception ex)
 			{
@@ -201,7 +201,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			try
 			{
 				isDynamic = false;
-				return SubComponentFieldNotInserted_GenericAsync(typeof(DynamicParent), CancellationToken.None);
+				return SubComponentFieldNotInserted_GenericAsync(typeof(DynamicParent));
 			}
 			catch (Exception ex)
 			{
@@ -259,7 +259,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			try
 			{
 				isDynamic = false;
-				return SubComponentFieldNotUpdated_GenericAsync(typeof(Parent), CancellationToken.None);
+				return SubComponentFieldNotUpdated_GenericAsync(typeof(Parent));
 			}
 			catch (Exception ex)
 			{
@@ -273,7 +273,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 			try
 			{
 				isDynamic = false;
-				return SubComponentFieldNotUpdated_GenericAsync(typeof(DynamicParent), CancellationToken.None);
+				return SubComponentFieldNotUpdated_GenericAsync(typeof(DynamicParent));
 			}
 			catch (Exception ex)
 			{

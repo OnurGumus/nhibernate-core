@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.ExpressionTest.SubQueries
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SubQueriesSqlFixtureAsync : TestCase
 	{
@@ -94,7 +93,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 			{
 				IList list = await (s.CreateCriteria(typeof(Blog), "blog")
 					.Add(Subqueries.Exists(dc))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				Assert.AreEqual(1, list.Count);
 			}
 		}
@@ -112,7 +111,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 				DetachedCriteria dc = DetachedCriteria.For(typeof(Blog))
 					.CreateCriteria("Posts", "post")
 					.Add(Subqueries.Exists(comment));
-				IList list = await (dc.GetExecutableCriteria(s).ListAsync(CancellationToken.None));
+				IList list = await (dc.GetExecutableCriteria(s).ListAsync());
 				Assert.AreEqual(1, list.Count);
 			}
 		}

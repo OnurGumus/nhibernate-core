@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH473
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync:BugTestCase
 	{
@@ -53,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH473
 			{
 				var result = await (session.CreateCriteria(typeof (Parent))
 					.SetFetchMode("Children", FetchMode.Join)
-					.ListAsync<Parent>(CancellationToken.None));
+					.ListAsync<Parent>());
 				Assert.That(result[0].Children[0].Name,Is.EqualTo("Ayende"));
 				Assert.That(result[0].Children[1].Name, Is.EqualTo("Dario"));
 				Assert.That(result[0].Children[2].Name, Is.EqualTo("Fabio"));
@@ -68,7 +67,7 @@ namespace NHibernate.Test.NHSpecificTest.NH473
 			{
 				var result = await (session.CreateCriteria(typeof(Parent))
 					.SetFetchMode("Children", FetchMode.Join)
-					.UniqueResultAsync<Parent>(CancellationToken.None));
+					.UniqueResultAsync<Parent>());
 				Assert.That(result.Children[0].Name, Is.EqualTo("Ayende"));
 				Assert.That(result.Children[1].Name, Is.EqualTo("Dario"));
 				Assert.That(result.Children[2].Name, Is.EqualTo("Fabio"));

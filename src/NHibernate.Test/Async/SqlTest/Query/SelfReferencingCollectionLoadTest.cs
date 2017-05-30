@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.SqlTest.Query
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SelfReferencingCollectionLoadTestAsync : TestCase
 	{
@@ -35,11 +34,11 @@ namespace NHibernate.Test.SqlTest.Query
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					await (session.SaveAsync(new Item(1, 2), CancellationToken.None));
-					await (session.SaveAsync(new Item(2, 3), CancellationToken.None));
-					await (session.SaveAsync(new Item(3, 1), CancellationToken.None));
+					await (session.SaveAsync(new Item(1, 2)));
+					await (session.SaveAsync(new Item(2, 3)));
+					await (session.SaveAsync(new Item(3, 1)));
 
-					await (tx.CommitAsync(CancellationToken.None));
+					await (tx.CommitAsync());
 				}
 			}
 
@@ -47,12 +46,12 @@ namespace NHibernate.Test.SqlTest.Query
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					var item1 = (Item) await (session.GetAsync(typeof (Item), 1, CancellationToken.None));
+					var item1 = (Item) await (session.GetAsync(typeof (Item), 1));
 					Assert.AreEqual(2, item1.AlternativeItems.Count);
 
-					await (session.DeleteAsync("from Item", CancellationToken.None));
+					await (session.DeleteAsync("from Item"));
 
-					await (tx.CommitAsync(CancellationToken.None));
+					await (tx.CommitAsync());
 				}
 			}
 		}

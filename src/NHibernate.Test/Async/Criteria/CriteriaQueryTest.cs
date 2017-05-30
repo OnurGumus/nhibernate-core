@@ -22,7 +22,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Criteria
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class CriteriaQueryTestAsync : TestCase
 	{
@@ -60,10 +59,10 @@ namespace NHibernate.Test.Criteria
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
-				await (session.SaveAsync(c1, CancellationToken.None));
-				await (session.SaveAsync(c2, CancellationToken.None));
-				await (session.SaveAsync(c3, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (session.SaveAsync(c1));
+				await (session.SaveAsync(c2));
+				await (session.SaveAsync(c3));
+				await (t.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
@@ -73,7 +72,7 @@ namespace NHibernate.Test.Criteria
 				example.Description = "&%1";
 				IList result =
 					await (session.CreateCriteria(typeof(Course)).Add(
-						Example.Create(example).IgnoreCase().EnableLike().SetEscapeCharacter('&')).ListAsync(CancellationToken.None));
+						Example.Create(example).IgnoreCase().EnableLike().SetEscapeCharacter('&')).ListAsync());
 				Assert.AreEqual(1, result.Count);
 			}
 
@@ -84,17 +83,17 @@ namespace NHibernate.Test.Criteria
 				example.Description = "&%%";
 				IList result =
 					await (session.CreateCriteria(typeof(Course)).Add(
-						Example.Create(example).IgnoreCase().EnableLike().SetEscapeCharacter('&')).ListAsync(CancellationToken.None));
+						Example.Create(example).IgnoreCase().EnableLike().SetEscapeCharacter('&')).ListAsync());
 				Assert.AreEqual(2, result.Count);
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
-				await (session.DeleteAsync(c1, CancellationToken.None));
-				await (session.DeleteAsync(c2, CancellationToken.None));
-				await (session.DeleteAsync(c3, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync(c1));
+				await (session.DeleteAsync(c2));
+				await (session.DeleteAsync(c3));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -107,17 +106,17 @@ namespace NHibernate.Test.Criteria
 			Course course = new Course();
 			course.CourseCode = "HIB";
 			course.Description = "Hibernate Training";
-			await (session.SaveAsync(course, CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.SaveAsync(course));
+			await (session.FlushAsync());
 			session.Clear();
 			//IScrollableResults sr = session.CreateCriteria(typeof(Course)).Scroll();
 			//Assert.IsTrue( sr.Next() );
 			//course = (Course) sr[0];
 			Assert.IsNotNull(course);
 			//sr.Close();
-			await (session.DeleteAsync(course, CancellationToken.None));
+			await (session.DeleteAsync(course));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			session.Close();
 		}
 
@@ -134,7 +133,7 @@ namespace NHibernate.Test.Criteria
 
 				await (session.CreateCriteria(typeof(Student))
 					.Add(Subqueries.PropertyEq("Name", dc))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 			}
 		}
 
@@ -147,7 +146,7 @@ namespace NHibernate.Test.Criteria
 			Course hibernateCourse = new Course();
 			hibernateCourse.CourseCode = "HIB";
 			hibernateCourse.Description = "Hibernate Training";
-			await (session.SaveAsync(hibernateCourse, CancellationToken.None));
+			await (session.SaveAsync(hibernateCourse));
 
 			DetachedCriteria subcriteria = DetachedCriteria.For<Enrolment>("e");
 			subcriteria.Add(Expression.EqProperty("e.CourseCode", "c.CourseCode"));
@@ -157,11 +156,11 @@ namespace NHibernate.Test.Criteria
 			criteria.SetProjection(Projections.Count("id"));
 			criteria.Add(Expression.Or(Subqueries.Le(5D, subcriteria), Subqueries.IsNull(subcriteria)));
 
-			object o = await (criteria.GetExecutableCriteria(session).UniqueResultAsync(CancellationToken.None));
+			object o = await (criteria.GetExecutableCriteria(session).UniqueResultAsync());
 			Assert.AreEqual(1, o);
 
-			await (session.DeleteAsync(hibernateCourse, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (session.DeleteAsync(hibernateCourse));
+			await (t.CommitAsync());
 			session.Close();
 		}
 
@@ -174,12 +173,12 @@ namespace NHibernate.Test.Criteria
 			Course course = new Course();
 			course.CourseCode = "HIB";
 			course.Description = "Hibernate Training";
-			await (session.SaveAsync(course, CancellationToken.None));
+			await (session.SaveAsync(course));
 
 			Student gavin = new Student();
 			gavin.Name = "Gavin King";
 			gavin.StudentNumber = 232;
-			await (session.SaveAsync(gavin, CancellationToken.None));
+			await (session.SaveAsync(gavin));
 
 			Enrolment enrolment2 = new Enrolment();
 			enrolment2.Course = course;
@@ -189,7 +188,7 @@ namespace NHibernate.Test.Criteria
 			enrolment2.Student = gavin;
 			enrolment2.StudentNumber = gavin.StudentNumber;
 			gavin.Enrolments.Add(enrolment2);
-			await (session.SaveAsync(enrolment2, CancellationToken.None));
+			await (session.SaveAsync(enrolment2));
 
 			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
 				.Add(Property.ForName("StudentNumber").Eq(232L))
@@ -199,23 +198,23 @@ namespace NHibernate.Test.Criteria
 			{
 				await (session.CreateCriteria(typeof (Student))
 					.Add(Subqueries.PropertyEqAll("Name", dc))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 			}
 
 			await (session.CreateCriteria(typeof(Student))
 				.Add(Subqueries.Exists(dc))
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			if (TestDialect.SupportsOperatorAll)
 			{
 				await (session.CreateCriteria(typeof (Student))
 					.Add(Property.ForName("Name").EqAll(dc))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 			}
 
 			await (session.CreateCriteria(typeof(Student))
 				.Add(Subqueries.In("Gavin King", dc))
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			DetachedCriteria dc2 = DetachedCriteria.For(typeof(Student), "st")
 				.Add(Property.ForName("st.StudentNumber").EqProperty("e.StudentNumber"))
@@ -223,7 +222,7 @@ namespace NHibernate.Test.Criteria
 
 			await (session.CreateCriteria(typeof(Enrolment), "e")
 				.Add(Subqueries.Eq("Gavin King", dc2))
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			DetachedCriteria dc3 = DetachedCriteria.For(typeof(Student), "st")
 				.CreateCriteria("Enrolments")
@@ -233,7 +232,7 @@ namespace NHibernate.Test.Criteria
 
 			await (session.CreateCriteria(typeof(Enrolment), "e")
 				.Add(Subqueries.Eq("Gavin King", dc3))
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			DetachedCriteria courseCriteria = DetachedCriteria.For(typeof(Course))
 				.Add(Property.ForName("Description").Eq("Hibernate Training"))
@@ -246,13 +245,13 @@ namespace NHibernate.Test.Criteria
 			DetachedCriteria studentCriteria = DetachedCriteria.For(typeof(Student))
 				.Add(Subqueries.Exists(enrolmentCriteria));
 
-			object result = await (studentCriteria.GetExecutableCriteria(session).UniqueResultAsync(CancellationToken.None));
+			object result = await (studentCriteria.GetExecutableCriteria(session).UniqueResultAsync());
 			Assert.AreSame(gavin, result);
 
-			await (session.DeleteAsync(enrolment2, CancellationToken.None));
-			await (session.DeleteAsync(gavin, CancellationToken.None));
-			await (session.DeleteAsync(course, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (session.DeleteAsync(enrolment2));
+			await (session.DeleteAsync(gavin));
+			await (session.DeleteAsync(course));
+			await (t.CommitAsync());
 			session.Close();
 		}
 		
@@ -271,7 +270,7 @@ namespace NHibernate.Test.Criteria
 				course = new Course();
 				course.CourseCode = "HIB";
 				course.Description = "Hibernate Training";
-				await (session.SaveAsync(course, CancellationToken.None));
+				await (session.SaveAsync(course));
 				
 				odessaWa = new CityState("Odessa", "WA");
 	
@@ -279,7 +278,7 @@ namespace NHibernate.Test.Criteria
 				gavin.Name = "Gavin King";
 				gavin.StudentNumber = 232;
 				gavin.CityState = odessaWa;
-				await (session.SaveAsync(gavin, CancellationToken.None));
+				await (session.SaveAsync(gavin));
 	
 				enrolment2 = new Enrolment();
 				enrolment2.Course = course;
@@ -290,7 +289,7 @@ namespace NHibernate.Test.Criteria
 				enrolment2.StudentNumber = gavin.StudentNumber;
 				gavin.Enrolments.Add(enrolment2);
 				
-				await (session.PersistAsync(enrolment2, CancellationToken.None));
+				await (session.PersistAsync(enrolment2));
 	
 				dc = DetachedCriteria.For<Student>()
 					.Add(Property.ForName("CityState").Eq(odessaWa))
@@ -298,9 +297,9 @@ namespace NHibernate.Test.Criteria
 		
 				await (session.CreateCriteria<Student>()
 					.Add(Subqueries.Exists(dc))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			if (TestDialect.SupportsOperatorAll)
@@ -312,7 +311,7 @@ namespace NHibernate.Test.Criteria
 					{
 						await (session.CreateCriteria<Student>()
 							.Add(Subqueries.PropertyEqAll("CityState", dc))
-							.ListAsync(CancellationToken.None));
+							.ListAsync());
 
 						Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
 					}
@@ -333,7 +332,7 @@ namespace NHibernate.Test.Criteria
 					{
 						await (session.CreateCriteria<Student>()
 							.Add(Property.ForName("CityState").EqAll(dc))
-							.ListAsync(CancellationToken.None));
+							.ListAsync());
 
 						Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
 					}
@@ -355,7 +354,7 @@ namespace NHibernate.Test.Criteria
 				{
 					await (session.CreateCriteria<Student>()
 						.Add(Subqueries.In(odessaWa, dc))
-						.ListAsync(CancellationToken.None));
+						.ListAsync());
 					
 					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
 				}
@@ -380,7 +379,7 @@ namespace NHibernate.Test.Criteria
 				{
 					await (session.CreateCriteria<Student>("st2")
 						.Add( Subqueries.Eq(odessaWa, dc2))
-						.ListAsync(CancellationToken.None));
+						.ListAsync());
 					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
 				}
 				catch (NHibernate.Exceptions.GenericADOException)
@@ -405,7 +404,7 @@ namespace NHibernate.Test.Criteria
 				{
 					await (session.CreateCriteria<Enrolment>("e")
 						.Add(Subqueries.Eq(odessaWa, dc3))
-						.ListAsync(CancellationToken.None));
+						.ListAsync());
 					
 					Assert.Fail("should have failed because cannot compare subquery results with multiple columns");
 				}
@@ -422,10 +421,10 @@ namespace NHibernate.Test.Criteria
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
-				await (session.DeleteAsync(enrolment2, CancellationToken.None));
-				await (session.DeleteAsync(gavin, CancellationToken.None));
-				await (session.DeleteAsync(course, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync(enrolment2));
+				await (session.DeleteAsync(gavin));
+				await (session.DeleteAsync(course));
+				await (t.CommitAsync());
 			}
 		}
 		
@@ -440,7 +439,7 @@ namespace NHibernate.Test.Criteria
 				.CreateAlias("mother", "m")
 				.Add(Property.ForName("m.class").Eq(typeof(Reptile)));
 			ICriteria cloned = CriteriaTransformer.Clone(c);
-			await (cloned.ListAsync(CancellationToken.None));
+			await (cloned.ListAsync());
 			t.Rollback();
 			s.Close();
 		}
@@ -459,7 +458,7 @@ namespace NHibernate.Test.Criteria
 			ICriteria cloned = CriteriaTransformer.TransformToRowCount(c);
 
 
-			await (cloned.ListAsync(CancellationToken.None));
+			await (cloned.ListAsync());
 			t.Rollback();
 			s.Close();
 		}
@@ -485,20 +484,20 @@ namespace NHibernate.Test.Criteria
 			Student bizarroGavin = new Student();
 			bizarroGavin.Name = "Gavin King";
 			bizarroGavin.StudentNumber = 666;
-			await (session.SaveAsync(bizarroGavin, CancellationToken.None));
-			await (session.SaveAsync(gavin, CancellationToken.None));
+			await (session.SaveAsync(bizarroGavin));
+			await (session.SaveAsync(gavin));
 
 			IList result = await (dc.GetExecutableCriteria(session)
 				.SetMaxResults(3)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(2, result.Count);
 			Assert.AreEqual(232L, result[0]);
 			Assert.AreEqual(666L, result[1]);
 
-			await (session.DeleteAsync(gavin, CancellationToken.None));
-			await (session.DeleteAsync(bizarroGavin, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (session.DeleteAsync(gavin));
+			await (session.DeleteAsync(bizarroGavin));
+			await (t.CommitAsync());
 			session.Close();
 		}
 
@@ -508,13 +507,13 @@ namespace NHibernate.Test.Criteria
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
-				await (session.SaveAsync(new Student { Name = "Mengano", StudentNumber = 232 }, CancellationToken.None));
-				await (session.SaveAsync(new Student { Name = "Ayende", StudentNumber = 999 }, CancellationToken.None));
-				await (session.SaveAsync(new Student { Name = "Fabio", StudentNumber = 123 }, CancellationToken.None));
-				await (session.SaveAsync(new Student { Name = "Merlo", StudentNumber = 456 }, CancellationToken.None));
-				await (session.SaveAsync(new Student { Name = "Fulano", StudentNumber = 0 }, CancellationToken.None));
+				await (session.SaveAsync(new Student { Name = "Mengano", StudentNumber = 232 }));
+				await (session.SaveAsync(new Student { Name = "Ayende", StudentNumber = 999 }));
+				await (session.SaveAsync(new Student { Name = "Fabio", StudentNumber = 123 }));
+				await (session.SaveAsync(new Student { Name = "Merlo", StudentNumber = 456 }));
+				await (session.SaveAsync(new Student { Name = "Fulano", StudentNumber = 0 }));
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
@@ -528,17 +527,17 @@ namespace NHibernate.Test.Criteria
 
 				var result = await (session.CreateCriteria(typeof(Student))
 					.Add(Subqueries.PropertyIn("Name", dc))
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 
 				Assert.That(result.Count, Is.EqualTo(3));
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
-				await (session.CreateQuery("delete from Student").ExecuteUpdateAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (session.CreateQuery("delete from Student").ExecuteUpdateAsync());
+				await (t.CommitAsync());
 			}
 		}
 
@@ -548,13 +547,13 @@ namespace NHibernate.Test.Criteria
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
-				await (session.SaveAsync(new Student { Name = "Mengano", StudentNumber = 232 }, CancellationToken.None));
-				await (session.SaveAsync(new Student { Name = "Ayende", StudentNumber = 999 }, CancellationToken.None));
-				await (session.SaveAsync(new Student { Name = "Fabio", StudentNumber = 123 }, CancellationToken.None));
-				await (session.SaveAsync(new Student { Name = "Merlo", StudentNumber = 456 }, CancellationToken.None));
-				await (session.SaveAsync(new Student { Name = "Fulano", StudentNumber = 0 }, CancellationToken.None));
+				await (session.SaveAsync(new Student { Name = "Mengano", StudentNumber = 232 }));
+				await (session.SaveAsync(new Student { Name = "Ayende", StudentNumber = 999 }));
+				await (session.SaveAsync(new Student { Name = "Fabio", StudentNumber = 123 }));
+				await (session.SaveAsync(new Student { Name = "Merlo", StudentNumber = 456 }));
+				await (session.SaveAsync(new Student { Name = "Fulano", StudentNumber = 0 }));
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
@@ -570,20 +569,20 @@ namespace NHibernate.Test.Criteria
 				var result = await (session.CreateCriteria(typeof(Student))
 					.Add(Subqueries.PropertyIn("Name", dc))
 					.AddOrder(Order.Asc("StudentNumber"))
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 
 				Assert.That(result.Count, Is.EqualTo(2));
 				Assert.That(result[0].StudentNumber, Is.EqualTo(456));
 				Assert.That(result[1].StudentNumber, Is.EqualTo(999));
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
-				await (session.CreateQuery("delete from Student").ExecuteUpdateAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (session.CreateQuery("delete from Student").ExecuteUpdateAsync());
+				await (t.CommitAsync());
 			}
 		}
 
@@ -593,13 +592,13 @@ namespace NHibernate.Test.Criteria
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
-				await (session.SaveAsync(new Student {Name = "Mengano", StudentNumber = 232}, CancellationToken.None));
-				await (session.SaveAsync(new Student {Name = "Ayende", StudentNumber = 999}, CancellationToken.None));
-				await (session.SaveAsync(new Student {Name = "Fabio", StudentNumber = 123}, CancellationToken.None));
-				await (session.SaveAsync(new Student {Name = "Merlo", StudentNumber = 456}, CancellationToken.None));
-				await (session.SaveAsync(new Student {Name = "Fulano", StudentNumber = 0}, CancellationToken.None));
+				await (session.SaveAsync(new Student {Name = "Mengano", StudentNumber = 232}));
+				await (session.SaveAsync(new Student {Name = "Ayende", StudentNumber = 999}));
+				await (session.SaveAsync(new Student {Name = "Fabio", StudentNumber = 123}));
+				await (session.SaveAsync(new Student {Name = "Merlo", StudentNumber = 456}));
+				await (session.SaveAsync(new Student {Name = "Fulano", StudentNumber = 0}));
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
@@ -609,19 +608,19 @@ namespace NHibernate.Test.Criteria
 					.Add(Restrictions.Gt("StudentNumber", 0L))
 					.AddOrder(Order.Asc("StudentNumber"))
 					.SetFirstResult(1).SetMaxResults(2)
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				Assert.That(result.Count, Is.EqualTo(2));
 				Assert.That(result[0].StudentNumber, Is.EqualTo(232));
 				Assert.That(result[1].StudentNumber, Is.EqualTo(456));
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
-				await (session.CreateQuery("delete from Student").ExecuteUpdateAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (session.CreateQuery("delete from Student").ExecuteUpdateAsync());
+				await (t.CommitAsync());
 			}
 		}
 
@@ -631,13 +630,13 @@ namespace NHibernate.Test.Criteria
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
-				await (session.SaveAsync(new Student {Name = "Mengano", StudentNumber = 232}, CancellationToken.None));
-				await (session.SaveAsync(new Student {Name = "Ayende", StudentNumber = 999}, CancellationToken.None));
-				await (session.SaveAsync(new Student {Name = "Fabio", StudentNumber = 123}, CancellationToken.None));
-				await (session.SaveAsync(new Student {Name = "Merlo", StudentNumber = 456}, CancellationToken.None));
-				await (session.SaveAsync(new Student {Name = "Fulano", StudentNumber = 0}, CancellationToken.None));
+				await (session.SaveAsync(new Student {Name = "Mengano", StudentNumber = 232}));
+				await (session.SaveAsync(new Student {Name = "Ayende", StudentNumber = 999}));
+				await (session.SaveAsync(new Student {Name = "Fabio", StudentNumber = 123}));
+				await (session.SaveAsync(new Student {Name = "Merlo", StudentNumber = 456}));
+				await (session.SaveAsync(new Student {Name = "Fulano", StudentNumber = 0}));
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
@@ -647,21 +646,21 @@ namespace NHibernate.Test.Criteria
 					.Add(Restrictions.Gt("StudentNumber", 0L))
 					.AddOrder(Order.Asc("StudentNumber"))
 					.SetFirstResult(1)
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 
 				Assert.That(result.Count, Is.EqualTo(3));
 				Assert.That(result[0].StudentNumber, Is.EqualTo(232));
 				Assert.That(result[1].StudentNumber, Is.EqualTo(456));
 				Assert.That(result[2].StudentNumber, Is.EqualTo(999));
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
-				await (session.CreateQuery("delete from Student").ExecuteUpdateAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (session.CreateQuery("delete from Student").ExecuteUpdateAsync());
+				await (t.CommitAsync());
 			}
 		}
 
@@ -681,14 +680,14 @@ namespace NHibernate.Test.Criteria
 			Student bizarroGavin = new Student();
 			bizarroGavin.Name = "Gavin King";
 			bizarroGavin.StudentNumber = 666;
-			await (session.SaveAsync(bizarroGavin, CancellationToken.None));
-			await (session.SaveAsync(gavin, CancellationToken.None));
+			await (session.SaveAsync(bizarroGavin));
+			await (session.SaveAsync(gavin));
 
 			IList result = await (CriteriaTransformer.Clone(dc)
 				.AddOrder(Order.Asc("StudentNumber"))
 				.GetExecutableCriteria(session)
 				.SetMaxResults(3)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(2, result.Count);
 			Assert.AreEqual(232L, result[0]);
@@ -697,12 +696,12 @@ namespace NHibernate.Test.Criteria
 			int count = (int)await (CriteriaTransformer.Clone(dc)
 								.SetProjection(Projections.RowCount())
 								.GetExecutableCriteria(session)
-								.UniqueResultAsync(CancellationToken.None));
+								.UniqueResultAsync());
 			Assert.AreEqual(2, count);
 
-			await (session.DeleteAsync(gavin, CancellationToken.None));
-			await (session.DeleteAsync(bizarroGavin, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (session.DeleteAsync(gavin));
+			await (session.DeleteAsync(bizarroGavin));
+			await (t.CommitAsync());
 			session.Close();
 		}
 
@@ -715,17 +714,17 @@ namespace NHibernate.Test.Criteria
 			Course course = new Course();
 			course.CourseCode = "HIB";
 			course.Description = "Hibernate Training";
-			await (s.SaveAsync(course, CancellationToken.None));
+			await (s.SaveAsync(course));
 
 			Student gavin = new Student();
 			gavin.Name = "Gavin King";
 			gavin.StudentNumber = 666;
-			await (s.SaveAsync(gavin, CancellationToken.None));
+			await (s.SaveAsync(gavin));
 
 			Student xam = new Student();
 			xam.Name = "Max Rydahl Andersen";
 			xam.StudentNumber = 101;
-			await (s.SaveAsync(xam, CancellationToken.None));
+			await (s.SaveAsync(xam));
 
 			Enrolment enrolment1 = new Enrolment();
 			enrolment1.Course = course;
@@ -735,7 +734,7 @@ namespace NHibernate.Test.Criteria
 			enrolment1.Student = xam;
 			enrolment1.StudentNumber = xam.StudentNumber;
 			xam.Enrolments.Add(enrolment1);
-			await (s.SaveAsync(enrolment1, CancellationToken.None));
+			await (s.SaveAsync(enrolment1));
 
 			Enrolment enrolment2 = new Enrolment();
 			enrolment2.Course = course;
@@ -745,7 +744,7 @@ namespace NHibernate.Test.Criteria
 			enrolment2.Student = gavin;
 			enrolment2.StudentNumber = gavin.StudentNumber;
 			gavin.Enrolments.Add(enrolment2);
-			await (s.SaveAsync(enrolment2, CancellationToken.None));
+			await (s.SaveAsync(enrolment2));
 
 			IList list = await (s.CreateCriteria(typeof(Enrolment))
 				.CreateAlias("Student", "s")
@@ -755,13 +754,13 @@ namespace NHibernate.Test.Criteria
 								.Add(Projections.Property("s.Name"))
 								.Add(Projections.Property("c.Description")))
 				.SetCacheable(true)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(2, list.Count);
 			Assert.AreEqual(2, ((object[])list[0]).Length);
 			Assert.AreEqual(2, ((object[])list[1]).Length);
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
@@ -775,13 +774,13 @@ namespace NHibernate.Test.Criteria
 								.Add(Projections.Property("s.Name"))
 								.Add(Projections.Property("c.Description")))
 				.SetCacheable(true)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(2, list.Count);
 			Assert.AreEqual(2, ((object[])list[0]).Length);
 			Assert.AreEqual(2, ((object[])list[1]).Length);
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
@@ -795,19 +794,19 @@ namespace NHibernate.Test.Criteria
 								.Add(Projections.Property("s.Name"))
 								.Add(Projections.Property("c.Description")))
 				.SetCacheable(true)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(2, list.Count);
 			Assert.AreEqual(2, ((object[])list[0]).Length);
 			Assert.AreEqual(2, ((object[])list[1]).Length);
 
-			await (s.DeleteAsync(enrolment1, CancellationToken.None));
-			await (s.DeleteAsync(enrolment2, CancellationToken.None));
-			await (s.DeleteAsync(course, CancellationToken.None));
-			await (s.DeleteAsync(gavin, CancellationToken.None));
-			await (s.DeleteAsync(xam, CancellationToken.None));
+			await (s.DeleteAsync(enrolment1));
+			await (s.DeleteAsync(enrolment2));
+			await (s.DeleteAsync(course));
+			await (s.DeleteAsync(gavin));
+			await (s.DeleteAsync(xam));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -823,24 +822,24 @@ namespace NHibernate.Test.Criteria
 				Course course = new Course();
 				course.CourseCode = "HIB";
 				course.Description = "Hibernate Training";
-				await (s.SaveAsync(course, CancellationToken.None));
+				await (s.SaveAsync(course));
 
 
 				Student gavin = new Student();
 				gavin.Name = "Gavin King";
 				gavin.StudentNumber = 667;
-				await (s.SaveAsync(gavin, CancellationToken.None));
+				await (s.SaveAsync(gavin));
 
 				Student ayende = new Student();
 				ayende.Name = "Ayende Rahien";
 				ayende.StudentNumber = 1337;
-				await (s.SaveAsync(ayende, CancellationToken.None));
+				await (s.SaveAsync(ayende));
 
 
 				Student xam = new Student();
 				xam.Name = "Max Rydahl Andersen";
 				xam.StudentNumber = 101;
-				await (s.SaveAsync(xam, CancellationToken.None));
+				await (s.SaveAsync(xam));
 
 				Enrolment enrolment = new Enrolment();
 				enrolment.Course = course;
@@ -850,7 +849,7 @@ namespace NHibernate.Test.Criteria
 				enrolment.Student = xam;
 				enrolment.StudentNumber = xam.StudentNumber;
 				xam.Enrolments.Add(enrolment);
-				await (s.SaveAsync(enrolment, CancellationToken.None));
+				await (s.SaveAsync(enrolment));
 
 				enrolment = new Enrolment();
 				enrolment.Course = course;
@@ -860,8 +859,8 @@ namespace NHibernate.Test.Criteria
 				enrolment.Student = ayende;
 				enrolment.StudentNumber = ayende.StudentNumber;
 				ayende.Enrolments.Add(enrolment);
-				await (s.SaveAsync(enrolment, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(enrolment));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -870,12 +869,12 @@ namespace NHibernate.Test.Criteria
 					.SetFirstResult(1)
 					.SetMaxResults(10)
 					.AddOrder(Order.Asc("StudentNumber"))
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				foreach (Student student in list)
 				{
 					foreach (Enrolment enrolment in student.Enrolments)
 					{
-						await (NHibernateUtil.InitializeAsync(enrolment, CancellationToken.None));
+						await (NHibernateUtil.InitializeAsync(enrolment));
 					}
 				}
 
@@ -884,17 +883,17 @@ namespace NHibernate.Test.Criteria
 				key.StudentNumber = 101;// xam
 				//since we didn't load xam's entrollments before (skipped by orderring)
 				//it should not be already loaded
-				Enrolment shouldNotBeLoaded = (Enrolment)await (s.LoadAsync(typeof(Enrolment), key, CancellationToken.None));
+				Enrolment shouldNotBeLoaded = (Enrolment)await (s.LoadAsync(typeof(Enrolment), key));
 				Assert.IsFalse(NHibernateUtil.IsInitialized(shouldNotBeLoaded));
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from Enrolment", CancellationToken.None));
-				await (s.DeleteAsync("from Student", CancellationToken.None));
-				await (s.DeleteAsync("from Course", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Enrolment"));
+				await (s.DeleteAsync("from Student"));
+				await (s.DeleteAsync("from Course"));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -907,17 +906,17 @@ namespace NHibernate.Test.Criteria
 			Course course = new Course();
 			course.CourseCode = "HIB";
 			course.Description = "Hibernate Training";
-			await (s.SaveAsync(course, CancellationToken.None));
+			await (s.SaveAsync(course));
 
 			Student gavin = new Student();
 			gavin.Name = "Gavin King";
 			gavin.StudentNumber = 667;
-			await (s.SaveAsync(gavin, CancellationToken.None));
+			await (s.SaveAsync(gavin));
 
 			Student xam = new Student();
 			xam.Name = "Max Rydahl Andersen";
 			xam.StudentNumber = 101;
-			await (s.SaveAsync(xam, CancellationToken.None));
+			await (s.SaveAsync(xam));
 
 			Enrolment enrolment = new Enrolment();
 			enrolment.Course = course;
@@ -927,7 +926,7 @@ namespace NHibernate.Test.Criteria
 			enrolment.Student = xam;
 			enrolment.StudentNumber = xam.StudentNumber;
 			xam.Enrolments.Add(enrolment);
-			await (s.SaveAsync(enrolment, CancellationToken.None));
+			await (s.SaveAsync(enrolment));
 
 			enrolment = new Enrolment();
 			enrolment.Course = course;
@@ -937,13 +936,13 @@ namespace NHibernate.Test.Criteria
 			enrolment.Student = gavin;
 			enrolment.StudentNumber = gavin.StudentNumber;
 			gavin.Enrolments.Add(enrolment);
-			await (s.SaveAsync(enrolment, CancellationToken.None));
+			await (s.SaveAsync(enrolment));
 
 			//s.flush();
 
 			int count = (int)await (s.CreateCriteria(typeof(Enrolment))
 								.SetProjection(Projections.Count("StudentNumber").SetDistinct())
-								.UniqueResultAsync(CancellationToken.None));
+								.UniqueResultAsync());
 			Assert.AreEqual(2, count);
 
 			object obj = await (s.CreateCriteria(typeof(Enrolment))
@@ -953,7 +952,7 @@ namespace NHibernate.Test.Criteria
 								.Add(Projections.Min("StudentNumber"))
 								.Add(Projections.Avg("StudentNumber"))
 				)
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 			object[] result = (object[])obj;
 
 			Assert.AreEqual(2, result[0]);
@@ -971,7 +970,7 @@ namespace NHibernate.Test.Criteria
 				.Add(Expression.Lt("StudentNumber", 668L))
 				.AddOrder(Order.Asc("stNumber"))
 				.SetResultTransformer(CriteriaSpecification.AliasToEntityMap)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(1, resultWithMaps.Count);
 			IDictionary m1 = (IDictionary)resultWithMaps[0];
@@ -983,7 +982,7 @@ namespace NHibernate.Test.Criteria
 				.SetProjection(Projections.Property("StudentNumber").As("stNumber"))
 				.AddOrder(Order.Desc("stNumber"))
 				.SetResultTransformer(CriteriaSpecification.AliasToEntityMap)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(2, resultWithMaps.Count);
 			IDictionary m0 = (IDictionary)resultWithMaps[0];
@@ -1002,7 +1001,7 @@ namespace NHibernate.Test.Criteria
 				)
 				.AddOrder(Order.Desc("studentName"))
 				.SetResultTransformer(Transformers.AliasToBean(typeof(StudentDTO)))
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(2, resultWithAliasedBean.Count);
 
@@ -1025,7 +1024,7 @@ namespace NHibernate.Test.Criteria
 								.Add(Projections.Property("c.CourseCode"))
 								.Add(Projections.Property("c.Description"))
 				)
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 
 			ProjectionList p1 = Projections.ProjectionList()
 				.Add(Projections.Count("StudentNumber"))
@@ -1043,7 +1042,7 @@ namespace NHibernate.Test.Criteria
 
 			object[] array = (object[])await (s.CreateCriteria(typeof(Enrolment))
 											.SetProjection(Projections.ProjectionList().Add(p1).Add(p2))
-											.UniqueResultAsync(CancellationToken.None));
+											.UniqueResultAsync());
 
 			Assert.AreEqual(7, array.Length);
 
@@ -1052,7 +1051,7 @@ namespace NHibernate.Test.Criteria
 
 			object r = await (s.CreateCriteria(typeof(Enrolment))
 											.SetProjection(pp1)
-											.UniqueResultAsync(CancellationToken.None));
+											.UniqueResultAsync());
 			Assert.AreEqual(typeof(Int64), r.GetType());
 
 			IList list = await (s.CreateCriteria(typeof(Enrolment))
@@ -1063,7 +1062,7 @@ namespace NHibernate.Test.Criteria
 								.Add(Projections.Count("st.StudentNumber").SetDistinct())
 								.Add(Projections.GroupProperty("Year"))
 				)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(2, list.Count);
 
@@ -1071,14 +1070,14 @@ namespace NHibernate.Test.Criteria
 				.Add(Expression.IdEq(667L))
 				.SetFetchMode("enrolments", FetchMode.Join)
 				//.setFetchMode("enrolments.course", FetchMode.JOIN) //TODO: would love to make that work...
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 			Assert.AreSame(gavin, g);
 
-			await (s.DeleteAsync(gavin, CancellationToken.None));
-			await (s.DeleteAsync(xam, CancellationToken.None));
-			await (s.DeleteAsync(course, CancellationToken.None));
+			await (s.DeleteAsync(gavin));
+			await (s.DeleteAsync(xam));
+			await (s.DeleteAsync(course));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -1091,17 +1090,17 @@ namespace NHibernate.Test.Criteria
 			Course course = new Course();
 			course.CourseCode = "HIB";
 			course.Description = "Hibernate Training";
-			await (s.SaveAsync(course, CancellationToken.None));
+			await (s.SaveAsync(course));
 
 			Student gavin = new Student();
 			gavin.Name = "Gavin King";
 			gavin.StudentNumber = 667;
-			await (s.SaveAsync(gavin, CancellationToken.None));
+			await (s.SaveAsync(gavin));
 
 			Student xam = new Student();
 			xam.Name = "Max Rydahl Andersen";
 			xam.StudentNumber = 101;
-			await (s.SaveAsync(xam, CancellationToken.None));
+			await (s.SaveAsync(xam));
 
 			Enrolment enrolment = new Enrolment();
 			enrolment.Course = course;
@@ -1111,7 +1110,7 @@ namespace NHibernate.Test.Criteria
 			enrolment.Student = xam;
 			enrolment.StudentNumber = xam.StudentNumber;
 			xam.Enrolments.Add(enrolment);
-			await (s.SaveAsync(enrolment, CancellationToken.None));
+			await (s.SaveAsync(enrolment));
 
 			enrolment = new Enrolment();
 			enrolment.Course = course;
@@ -1121,14 +1120,14 @@ namespace NHibernate.Test.Criteria
 			enrolment.Student = gavin;
 			enrolment.StudentNumber = gavin.StudentNumber;
 			gavin.Enrolments.Add(enrolment);
-			await (s.SaveAsync(enrolment, CancellationToken.None));
+			await (s.SaveAsync(enrolment));
 
 			//s.flush();
 
 			ICriteria criteriaToBeCloned = s.CreateCriteria(typeof(Enrolment))
 				.SetProjection(Projections.Count("StudentNumber").SetDistinct());
 			int count = (int)await (CriteriaTransformer.Clone(criteriaToBeCloned)
-								.UniqueResultAsync(CancellationToken.None));
+								.UniqueResultAsync());
 			Assert.AreEqual(2, count);
 
 			ICriteria criteriaToClone = s.CreateCriteria(typeof(Enrolment))
@@ -1139,7 +1138,7 @@ namespace NHibernate.Test.Criteria
 								.Add(Projections.Avg("StudentNumber"))
 				);
 			object obj = await (CriteriaTransformer.Clone(criteriaToClone)
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 			object[] result = (object[])obj;
 
 			Assert.AreEqual(2, result[0]);
@@ -1158,7 +1157,7 @@ namespace NHibernate.Test.Criteria
 				.AddOrder(Order.Asc("stNumber"))
 				.SetResultTransformer(CriteriaSpecification.AliasToEntityMap);
 			IList resultWithMaps = await (CriteriaTransformer.Clone(criteriaToClone2)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(1, resultWithMaps.Count);
 			IDictionary m1 = (IDictionary)resultWithMaps[0];
@@ -1171,7 +1170,7 @@ namespace NHibernate.Test.Criteria
 				.AddOrder(Order.Desc("stNumber"))
 				.SetResultTransformer(CriteriaSpecification.AliasToEntityMap);
 			resultWithMaps = await (CriteriaTransformer.Clone(criteria)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(2, resultWithMaps.Count);
 			IDictionary m0 = (IDictionary)resultWithMaps[0];
@@ -1191,7 +1190,7 @@ namespace NHibernate.Test.Criteria
 				.AddOrder(Order.Desc("studentName"))
 				.SetResultTransformer(Transformers.AliasToBean(typeof(StudentDTO)));
 			IList resultWithAliasedBean = await (CriteriaTransformer.Clone(criteriaToClone3)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(2, resultWithAliasedBean.Count);
 
@@ -1215,7 +1214,7 @@ namespace NHibernate.Test.Criteria
 								.Add(Projections.Property("c.Description"))
 				);
 			await (CriteriaTransformer.Clone(complexCriteriaToBeCloned)
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 
 			ProjectionList p1 = Projections.ProjectionList()
 				.Add(Projections.Count("StudentNumber"))
@@ -1234,7 +1233,7 @@ namespace NHibernate.Test.Criteria
 			object[] array = (object[])await (CriteriaTransformer.Clone(
 											s.CreateCriteria(typeof(Enrolment))
 												.SetProjection(Projections.ProjectionList().Add(p1).Add(p2))
-											).UniqueResultAsync(CancellationToken.None));
+											).UniqueResultAsync());
 
 			Assert.AreEqual(7, array.Length);
 
@@ -1247,7 +1246,7 @@ namespace NHibernate.Test.Criteria
 								.Add(Projections.GroupProperty("Year"))
 				);
 			IList list = await (CriteriaTransformer.Clone(criteriaToClone5)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(2, list.Count);
 
@@ -1255,14 +1254,14 @@ namespace NHibernate.Test.Criteria
 				.Add(Expression.IdEq(667L))
 				.SetFetchMode("enrolments", FetchMode.Join);
 			object g = await (CriteriaTransformer.Clone(criteriaToClone6)
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 			Assert.AreSame(gavin, g);
 
-			await (s.DeleteAsync(gavin, CancellationToken.None));
-			await (s.DeleteAsync(xam, CancellationToken.None));
-			await (s.DeleteAsync(course, CancellationToken.None));
+			await (s.DeleteAsync(gavin));
+			await (s.DeleteAsync(xam));
+			await (s.DeleteAsync(course));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -1276,7 +1275,7 @@ namespace NHibernate.Test.Criteria
 			course.CourseCode = "HIB";
 			course.Description = "Hibernate Training";
 			course.CourseMeetings.Add(new CourseMeeting(course, "Monday", 1, "1313 Mockingbird Lane"));
-			await (s.SaveAsync(course, CancellationToken.None));
+			await (s.SaveAsync(course));
 
 			Student gavin = new Student();
 			gavin.Name = "Gavin King";
@@ -1284,12 +1283,12 @@ namespace NHibernate.Test.Criteria
 			CityState odessaWa = new CityState("Odessa", "WA");
 			gavin.CityState = odessaWa;
 			gavin.PreferredCourse = course;
-			await (s.SaveAsync(gavin, CancellationToken.None));
+			await (s.SaveAsync(gavin));
 
 			Student xam = new Student();
 			xam.Name = "Max Rydahl Andersen";
 			xam.StudentNumber = 101;
-			await (s.SaveAsync(xam, CancellationToken.None));
+			await (s.SaveAsync(xam));
 
 			Enrolment enrolment = new Enrolment();
 			enrolment.Course = course;
@@ -1299,7 +1298,7 @@ namespace NHibernate.Test.Criteria
 			enrolment.Student = xam;
 			enrolment.StudentNumber = xam.StudentNumber;
 			xam.Enrolments.Add(enrolment);
-			await (s.SaveAsync(enrolment, CancellationToken.None));
+			await (s.SaveAsync(enrolment));
 
 			enrolment = new Enrolment();
 			enrolment.Course = course;
@@ -1309,8 +1308,8 @@ namespace NHibernate.Test.Criteria
 			enrolment.Student = gavin;
 			enrolment.StudentNumber = gavin.StudentNumber;
 			gavin.Enrolments.Add(enrolment);
-			await (s.SaveAsync(enrolment, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(enrolment));
+			await (s.FlushAsync());
 
 			// Subtest #1
 			IList resultList = await (s.CreateCriteria<Enrolment>()
@@ -1319,7 +1318,7 @@ namespace NHibernate.Test.Criteria
 					.Add(Property.ForName("Course"), "course")
 					.Add(Property.ForName("Semester"), "semester")
 					.Add(Property.ForName("Year"), "year")
-				).ListAsync(CancellationToken.None));
+				).ListAsync());
 
 			Assert.That(resultList.Count, Is.EqualTo(2));
 			
@@ -1339,7 +1338,7 @@ namespace NHibernate.Test.Criteria
 					.Add(Property.ForName("Name"), "name")
 					.Add(Property.ForName("CityState"), "cityState")
 					.Add(Property.ForName("PreferredCourse"), "preferredCourse")
-				).ListAsync(CancellationToken.None));
+				).ListAsync());
 			
 			Assert.That(resultList.Count, Is.EqualTo(2));
 			
@@ -1369,7 +1368,7 @@ namespace NHibernate.Test.Criteria
 					.Add(Property.ForName("Name"), "name")
 					.Add(Property.ForName("CityState"), "cityState")
 					.Add(Property.ForName("PreferredCourse"), "preferredCourse")
-				).ListAsync(CancellationToken.None));
+				).ListAsync());
 			
 			Assert.That(resultList.Count, Is.EqualTo(1));
 
@@ -1381,7 +1380,7 @@ namespace NHibernate.Test.Criteria
 					.Add(Property.ForName("Name"), "name")
 					.Add(Property.ForName("CityState"), "cityState")
 					.Add(Property.ForName("PreferredCourse"), "preferredCourse")
-				).UniqueResultAsync(CancellationToken.None));
+				).UniqueResultAsync());
 			
 			Assert.That(aResult, Is.Not.Null);
 			Assert.That(aResult.Length, Is.EqualTo(4));
@@ -1393,7 +1392,7 @@ namespace NHibernate.Test.Criteria
 			// Subtest #5
 			int count = (int)await (s.CreateCriteria(typeof(Enrolment))
 								.SetProjection(Property.ForName("StudentNumber").Count().SetDistinct())
-								.UniqueResultAsync(CancellationToken.None));
+								.UniqueResultAsync());
 			
 			Assert.AreEqual(2, count);
 
@@ -1405,7 +1404,7 @@ namespace NHibernate.Test.Criteria
 								.Add(Property.ForName("StudentNumber").Min())
 								.Add(Property.ForName("StudentNumber").Avg())
 				)
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 			
 			object[] result = (object[])obj;
 
@@ -1421,7 +1420,7 @@ namespace NHibernate.Test.Criteria
 				.Add(Property.ForName("CourseCode").Like("HIB", MatchMode.Start))
 				.Add(Property.ForName("Year").Eq((short)1999))
 				.AddOrder(Property.ForName("StudentNumber").Asc())
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 
 			// Subtest #8
 			IList resultWithMaps = await (s.CreateCriteria(typeof(Enrolment))
@@ -1433,7 +1432,7 @@ namespace NHibernate.Test.Criteria
 				.Add(Property.ForName("StudentNumber").Lt(668L))
 				.AddOrder(Property.ForName("StudentNumber").Asc())
 				.SetResultTransformer(CriteriaSpecification.AliasToEntityMap)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(1, resultWithMaps.Count);
 			
@@ -1446,7 +1445,7 @@ namespace NHibernate.Test.Criteria
 				.SetProjection(Property.ForName("StudentNumber").As("stNumber"))
 				.AddOrder(Order.Desc("stNumber"))
 				.SetResultTransformer(CriteriaSpecification.AliasToEntityMap)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(2, resultWithMaps.Count);
 
@@ -1465,7 +1464,7 @@ namespace NHibernate.Test.Criteria
 				)
 				.AddOrder(Order.Desc("studentName"))
 				.SetResultTransformer(Transformers.AliasToBean(typeof(StudentDTO)))
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(2, resultWithAliasedBean.Count);
 
@@ -1482,7 +1481,7 @@ namespace NHibernate.Test.Criteria
 				)
 				.AddOrder(Order.Desc("id"))
 				.SetResultTransformer(Transformers.AliasToBean<CourseMeeting>())
-				.UniqueResultAsync<CourseMeeting>(CancellationToken.None));
+				.UniqueResultAsync<CourseMeeting>());
 	
 			Assert.That(courseMeetingDto.Id, Is.Not.Null);
 			Assert.That(courseMeetingDto.Id.CourseCode, Is.EqualTo(course.CourseCode));
@@ -1507,7 +1506,7 @@ namespace NHibernate.Test.Criteria
 					.Add(Property.ForName("c.CourseCode"))
 					.Add(Property.ForName("c.Description"))
 				)
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 
 			// Subtest #14
 			ProjectionList p1 = Projections.ProjectionList()
@@ -1526,7 +1525,7 @@ namespace NHibernate.Test.Criteria
 
 			object[] array = (object[])await (s.CreateCriteria(typeof(Enrolment))
 											.SetProjection(Projections.ProjectionList().Add(p1).Add(p2))
-											.UniqueResultAsync(CancellationToken.None));
+											.UniqueResultAsync());
 			
 			Assert.AreEqual(7, array.Length);
 
@@ -1539,7 +1538,7 @@ namespace NHibernate.Test.Criteria
 					.Add(Property.ForName("st.StudentNumber").Count().SetDistinct())
 					.Add(Property.ForName("Year").Group())
 				)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(2, list.Count);
 
@@ -1554,7 +1553,7 @@ namespace NHibernate.Test.Criteria
 				)
 				.AddOrder(Order.Asc("courseCode"))
 				.AddOrder(Order.Asc("studentNumber"))
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 	
 			Assert.That(list.Count, Is.EqualTo(2));
 
@@ -1569,15 +1568,15 @@ namespace NHibernate.Test.Criteria
 				)
 				.AddOrder(Order.Asc("cCode"))
 				.AddOrder(Order.Asc("stNumber"))
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 	
 			Assert.That(list.Count, Is.EqualTo(2));
 
-			await (s.DeleteAsync(gavin, CancellationToken.None));
-			await (s.DeleteAsync(xam, CancellationToken.None));
-			await (s.DeleteAsync(course, CancellationToken.None));
+			await (s.DeleteAsync(gavin));
+			await (s.DeleteAsync(xam));
+			await (s.DeleteAsync(course));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 		}
 		
@@ -1590,20 +1589,20 @@ namespace NHibernate.Test.Criteria
 			Course course = new Course();
 			course.CourseCode = "HIB";
 			course.Description = "Hibernate Training";
-			await (s.SaveAsync(course, CancellationToken.None));
+			await (s.SaveAsync(course));
 
 			Student gavin = new Student();
 			gavin.Name = "Gavin King";
 			gavin.StudentNumber = 667;
 			gavin.CityState = new CityState("Odessa", "WA");;
-			await (s.SaveAsync(gavin, CancellationToken.None));
+			await (s.SaveAsync(gavin));
 
 			Student xam = new Student();
 			xam.Name = "Max Rydahl Andersen";
 			xam.StudentNumber = 101;
 			xam.PreferredCourse = course;
 			xam.CityState = new CityState("Odessa", "WA");;
-			await (s.SaveAsync(xam, CancellationToken.None));
+			await (s.SaveAsync(xam));
 
 			Enrolment enrolment = new Enrolment();
 			enrolment.Course = course;
@@ -1613,7 +1612,7 @@ namespace NHibernate.Test.Criteria
 			enrolment.Student = xam;
 			enrolment.StudentNumber = xam.StudentNumber;
 			xam.Enrolments.Add(enrolment);
-			await (s.SaveAsync(enrolment, CancellationToken.None));
+			await (s.SaveAsync(enrolment));
 
 			enrolment = new Enrolment();
 			enrolment.Course = course;
@@ -1623,12 +1622,12 @@ namespace NHibernate.Test.Criteria
 			enrolment.Student = gavin;
 			enrolment.StudentNumber = gavin.StudentNumber;
 			gavin.Enrolments.Add(enrolment);
-			await (s.SaveAsync(enrolment, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(enrolment));
+			await (s.FlushAsync());
 			
 			object result = await (s.CreateCriteria<Student>()
 				.SetProjection(Projections.Distinct(Property.ForName("CityState")))
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 			
 			Assert.That(result, Is.InstanceOf<CityState>());
 			Assert.That(((CityState)result).City, Is.EqualTo("Odessa"));
@@ -1637,7 +1636,7 @@ namespace NHibernate.Test.Criteria
 			result = await (s.CreateCriteria<Student>()
 				.SetProjection(Projections.Distinct(Property.ForName("CityState").As("cityState")))
 				.AddOrder(Order.Asc("cityState"))
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 			
 			Assert.That(result, Is.InstanceOf<CityState>());
 			Assert.That(((CityState)result).City, Is.EqualTo("Odessa"));
@@ -1645,17 +1644,17 @@ namespace NHibernate.Test.Criteria
 	
 			result = await (s.CreateCriteria<Student>()
 				.SetProjection(Projections.Count("CityState.City"))
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 			
 			Assert.That(result, Is.EqualTo(2));
 	
 			result = await (s.CreateCriteria<Student>()
 				.SetProjection(Projections.CountDistinct("CityState.City"))
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 			
 			Assert.That(result, Is.EqualTo(1));
 			
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 //			s = OpenSession();
@@ -1726,11 +1725,11 @@ namespace NHibernate.Test.Criteria
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.DeleteAsync(gavin, CancellationToken.None));
-			await (s.DeleteAsync(xam, CancellationToken.None));
-			await (s.DeleteAsync(course, CancellationToken.None));
+			await (s.DeleteAsync(gavin));
+			await (s.DeleteAsync(xam));
+			await (s.DeleteAsync(course));
 	
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -1743,20 +1742,20 @@ namespace NHibernate.Test.Criteria
 			Course course = new Course();
 			course.CourseCode = "HIB";
 			course.Description = "Hibernate Training";
-			await (s.SaveAsync(course, CancellationToken.None));
+			await (s.SaveAsync(course));
 
 			Student gavin = new Student();
 			gavin.Name = "Gavin King";
 			gavin.StudentNumber = 667;
 			gavin.CityState = new CityState("Odessa", "WA");;
-			await (s.SaveAsync(gavin, CancellationToken.None));
+			await (s.SaveAsync(gavin));
 
 			Student xam = new Student();
 			xam.Name = "Max Rydahl Andersen";
 			xam.StudentNumber = 101;
 			xam.PreferredCourse = course;
 			xam.CityState = new CityState("Odessa", "WA");;
-			await (s.SaveAsync(xam, CancellationToken.None));
+			await (s.SaveAsync(xam));
 
 			Enrolment enrolment = new Enrolment();
 			enrolment.Course = course;
@@ -1766,7 +1765,7 @@ namespace NHibernate.Test.Criteria
 			enrolment.Student = xam;
 			enrolment.StudentNumber = xam.StudentNumber;
 			xam.Enrolments.Add(enrolment);
-			await (s.SaveAsync(enrolment, CancellationToken.None));
+			await (s.SaveAsync(enrolment));
 
 			enrolment = new Enrolment();
 			enrolment.Course = course;
@@ -1776,12 +1775,12 @@ namespace NHibernate.Test.Criteria
 			enrolment.Student = gavin;
 			enrolment.StudentNumber = gavin.StudentNumber;
 			gavin.Enrolments.Add(enrolment);
-			await (s.SaveAsync(enrolment, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(enrolment));
+			await (s.FlushAsync());
 	
 			object result = await (s.CreateCriteria<Student>()
 				.SetProjection(Projections.GroupProperty("CityState"))
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 			
 			Assert.That(result, Is.InstanceOf<CityState>());
 			Assert.That(((CityState)result).City, Is.EqualTo("Odessa"));
@@ -1789,7 +1788,7 @@ namespace NHibernate.Test.Criteria
 	
 			result = await (s.CreateCriteria<Student>("st")
 				.SetProjection(Projections.GroupProperty("st.CityState"))
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 
 			Assert.That(result, Is.InstanceOf<CityState>());
 			Assert.That(((CityState)result).City, Is.EqualTo("Odessa"));
@@ -1798,7 +1797,7 @@ namespace NHibernate.Test.Criteria
 			result = await (s.CreateCriteria<Student>("st")
 				.SetProjection(Projections.GroupProperty("st.CityState"))
 				.AddOrder(Order.Asc("CityState"))
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 			
 			Assert.That(result, Is.InstanceOf<CityState>());
 			Assert.That(((CityState)result).City, Is.EqualTo("Odessa"));
@@ -1807,7 +1806,7 @@ namespace NHibernate.Test.Criteria
 			result = await (s.CreateCriteria<Student>("st")
 				.SetProjection(Projections.GroupProperty("st.CityState").As("cityState"))
 				.AddOrder(Order.Asc("cityState"))
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 			
 			Assert.That(result, Is.InstanceOf<CityState>());
 			Assert.That(((CityState)result).City, Is.EqualTo("Odessa"));
@@ -1816,7 +1815,7 @@ namespace NHibernate.Test.Criteria
 			result = await (s.CreateCriteria<Student>("st")
 				.SetProjection(Projections.GroupProperty("st.CityState").As("cityState"))
 				.AddOrder(Order.Asc("cityState"))
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 			
 			Assert.That(result, Is.InstanceOf<CityState>());
 			Assert.That(((CityState)result).City, Is.EqualTo("Odessa"));
@@ -1826,7 +1825,7 @@ namespace NHibernate.Test.Criteria
 				.SetProjection(Projections.GroupProperty("st.CityState").As("cityState"))
 				.Add(Restrictions.Eq("st.CityState", new CityState("Odessa", "WA")))
 				.AddOrder(Order.Asc("cityState"))
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 			
 			Assert.That(result, Is.InstanceOf<CityState>());
 			Assert.That(((CityState)result).City, Is.EqualTo("Odessa"));
@@ -1840,13 +1839,13 @@ namespace NHibernate.Test.Criteria
 					.Add(Property.ForName("st.CityState").Group())
 					.Add(Property.ForName("Year").Group())
 				)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 	
-			await (s.DeleteAsync(gavin, CancellationToken.None));
-			await (s.DeleteAsync(xam, CancellationToken.None));
-			await (s.DeleteAsync(course, CancellationToken.None));
+			await (s.DeleteAsync(gavin));
+			await (s.DeleteAsync(xam));
+			await (s.DeleteAsync(course));
 	
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 		}
 		
@@ -1859,17 +1858,17 @@ namespace NHibernate.Test.Criteria
 			Course course = new Course();
 			course.CourseCode = "HIB";
 			course.Description = "Hibernate Training";
-			await (s.SaveAsync(course, CancellationToken.None));
+			await (s.SaveAsync(course));
 
 			Student gavin = new Student();
 			gavin.Name = "Gavin King";
 			gavin.StudentNumber = 667;
-			await (s.SaveAsync(gavin, CancellationToken.None));
+			await (s.SaveAsync(gavin));
 
 			Student xam = new Student();
 			xam.Name = "Max Rydahl Andersen";
 			xam.StudentNumber = 101;
-			await (s.SaveAsync(xam, CancellationToken.None));
+			await (s.SaveAsync(xam));
 
 			Enrolment enrolment = new Enrolment();
 			enrolment.Course = course;
@@ -1879,7 +1878,7 @@ namespace NHibernate.Test.Criteria
 			enrolment.Student = xam;
 			enrolment.StudentNumber = xam.StudentNumber;
 			xam.Enrolments.Add(enrolment);
-			await (s.SaveAsync(enrolment, CancellationToken.None));
+			await (s.SaveAsync(enrolment));
 
 			enrolment = new Enrolment();
 			enrolment.Course = course;
@@ -1889,13 +1888,13 @@ namespace NHibernate.Test.Criteria
 			enrolment.Student = gavin;
 			enrolment.StudentNumber = gavin.StudentNumber;
 			gavin.Enrolments.Add(enrolment);
-			await (s.SaveAsync(enrolment, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(enrolment));
+			await (s.FlushAsync());
 
 			int count = (int)await (CriteriaTransformer.Clone(s.CreateCriteria(typeof(Enrolment))
 															.SetProjection(Property.ForName("StudentNumber").Count().SetDistinct())
 								)
-								.UniqueResultAsync(CancellationToken.None));
+								.UniqueResultAsync());
 			Assert.AreEqual(2, count);
 
 			object obj = await (CriteriaTransformer.Clone(s.CreateCriteria(typeof(Enrolment))
@@ -1906,7 +1905,7 @@ namespace NHibernate.Test.Criteria
 																	.Add(Property.ForName("StudentNumber").Avg())
 													)
 				)
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 			object[] result = (object[])obj;
 
 			Assert.AreEqual(2, result[0]);
@@ -1923,7 +1922,7 @@ namespace NHibernate.Test.Criteria
 					.Add(Property.ForName("Year").Eq((short)1999))
 					.AddOrder(Property.ForName("StudentNumber").Asc())
 				)
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 
 			ICriteria clonedCriteriaProjection = CriteriaTransformer.Clone(s.CreateCriteria(typeof(Enrolment))
 																			.SetProjection(Projections.ProjectionList()
@@ -1936,7 +1935,7 @@ namespace NHibernate.Test.Criteria
 																			.SetResultTransformer(CriteriaSpecification.AliasToEntityMap)
 				);
 			IList resultWithMaps = await (clonedCriteriaProjection
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(1, resultWithMaps.Count);
 			IDictionary m1 = (IDictionary)resultWithMaps[0];
@@ -1949,7 +1948,7 @@ namespace NHibernate.Test.Criteria
 														.AddOrder(Order.Desc("stNumber"))
 														.SetResultTransformer(CriteriaSpecification.AliasToEntityMap)
 				)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(2, resultWithMaps.Count);
 			IDictionary m0 = (IDictionary)resultWithMaps[0];
@@ -1969,7 +1968,7 @@ namespace NHibernate.Test.Criteria
 																		.AddOrder(Order.Desc("studentName"))
 																		.SetResultTransformer(Transformers.AliasToBean(typeof(StudentDTO)))
 				)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(2, resultWithAliasedBean.Count);
 
@@ -1993,7 +1992,7 @@ namespace NHibernate.Test.Criteria
 								.Add(Property.ForName("c.Description"))
 				);
 			await (CriteriaTransformer.Clone(complexCriteriaWithProjections)
-				.UniqueResultAsync(CancellationToken.None));
+				.UniqueResultAsync());
 
 			ProjectionList p1 = Projections.ProjectionList()
 				.Add(Property.ForName("StudentNumber").Count())
@@ -2012,7 +2011,7 @@ namespace NHibernate.Test.Criteria
 			object[] array = (object[])await (CriteriaTransformer.Clone(s.CreateCriteria(typeof(Enrolment))
 																	.SetProjection(Projections.ProjectionList().Add(p1).Add(p2))
 											)
-											.UniqueResultAsync(CancellationToken.None));
+											.UniqueResultAsync());
 			Assert.AreEqual(7, array.Length);
 
 			IList list = await (CriteriaTransformer.Clone(s.CreateCriteria(typeof(Enrolment))
@@ -2024,15 +2023,15 @@ namespace NHibernate.Test.Criteria
 																	.Add(Property.ForName("Year").Group())
 													)
 				)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(2, list.Count);
 
-			await (s.DeleteAsync(gavin, CancellationToken.None));
-			await (s.DeleteAsync(xam, CancellationToken.None));
-			await (s.DeleteAsync(course, CancellationToken.None));
+			await (s.DeleteAsync(gavin));
+			await (s.DeleteAsync(xam));
+			await (s.DeleteAsync(course));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -2044,11 +2043,11 @@ namespace NHibernate.Test.Criteria
 
 			await (s.CreateCriteria(typeof(Reptile))
 				.Add(Expression.IsEmpty("offspring"))
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			await (s.CreateCriteria(typeof(Reptile))
 				.Add(Expression.IsNotEmpty("offspring"))
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			t.Rollback();
 			s.Close();
@@ -2064,7 +2063,7 @@ namespace NHibernate.Test.Criteria
 			ICriteria c = s.CreateCriteria<Animal>("a")
 				.CreateAlias("mother", "m")
 				.Add(Property.ForName("m.class").Eq(typeof(Reptile)));
-			await (c.ListAsync(CancellationToken.None));
+			await (c.ListAsync());
 			t.Rollback();
 			s.Close();
 		}
@@ -2074,8 +2073,8 @@ namespace NHibernate.Test.Criteria
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.CreateCriteria(typeof(Course)).SetProjection(Projections.Property("CourseCode")).ListAsync(CancellationToken.None));
-			await (s.CreateCriteria(typeof(Course)).SetProjection(Projections.Id()).ListAsync(CancellationToken.None));
+			await (s.CreateCriteria(typeof(Course)).SetProjection(Projections.Property("CourseCode")).ListAsync());
+			await (s.CreateCriteria(typeof(Course)).SetProjection(Projections.Id()).ListAsync());
 			t.Rollback();
 			s.Close();
 		}
@@ -2089,17 +2088,17 @@ namespace NHibernate.Test.Criteria
 				Course course = new Course();
 				course.CourseCode = "HIB";
 				course.Description = "Hibernate Training";
-				await (s.SaveAsync(course, CancellationToken.None));
+				await (s.SaveAsync(course));
 				
 				Student gavin = new Student();
 				gavin.Name = "Gavin King";
 				gavin.StudentNumber = 667;
-				await (s.SaveAsync(gavin, CancellationToken.None));
+				await (s.SaveAsync(gavin));
 				
 				Student xam = new Student();
 				xam.Name = "Max Rydahl Andersen";
 				xam.StudentNumber = 101;
-				await (s.SaveAsync(xam, CancellationToken.None));
+				await (s.SaveAsync(xam));
 	
 				Enrolment enrolment = new Enrolment();
 				enrolment.Course = course;
@@ -2109,7 +2108,7 @@ namespace NHibernate.Test.Criteria
 				enrolment.Student = xam;
 				enrolment.StudentNumber = xam.StudentNumber;
 				gavin.Enrolments.Add(enrolment);
-				await (s.SaveAsync(enrolment, CancellationToken.None));
+				await (s.SaveAsync(enrolment));
 				
 				enrolment = new Enrolment();
 				enrolment.Course = course;
@@ -2119,13 +2118,13 @@ namespace NHibernate.Test.Criteria
 				enrolment.Student = gavin;
 				enrolment.StudentNumber = gavin.StudentNumber;
 				gavin.Enrolments.Add(enrolment);
-				await (s.SaveAsync(enrolment, CancellationToken.None));
+				await (s.SaveAsync(enrolment));
 	
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 				
 				IList enrolments = (IList)await (s.CreateCriteria<Enrolment>()
 					.SetProjection(Projections.Id())
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				
 				t.Rollback();
 			}
@@ -2140,17 +2139,17 @@ namespace NHibernate.Test.Criteria
 				Course course = new Course();
 				course.CourseCode = "HIB";
 				course.Description = "Hibernate Training";
-				await (s.SaveAsync(course, CancellationToken.None));
+				await (s.SaveAsync(course));
 				
 				Student gavin = new Student();
 				gavin.Name = "Gavin King";
 				gavin.StudentNumber = 667;
-				await (s.SaveAsync(gavin, CancellationToken.None));
+				await (s.SaveAsync(gavin));
 				
 				Student xam = new Student();
 				xam.Name = "Max Rydahl Andersen";
 				xam.StudentNumber = 101;
-				await (s.SaveAsync(xam, CancellationToken.None));
+				await (s.SaveAsync(xam));
 	
 				Enrolment enrolment = new Enrolment();
 				enrolment.Course = course;
@@ -2160,7 +2159,7 @@ namespace NHibernate.Test.Criteria
 				enrolment.Student = xam;
 				enrolment.StudentNumber = xam.StudentNumber;
 				gavin.Enrolments.Add(enrolment);
-				await (s.SaveAsync(enrolment, CancellationToken.None));
+				await (s.SaveAsync(enrolment));
 				
 				enrolment = new Enrolment();
 				enrolment.Course = course;
@@ -2170,16 +2169,16 @@ namespace NHibernate.Test.Criteria
 				enrolment.Student = gavin;
 				enrolment.StudentNumber = gavin.StudentNumber;
 				gavin.Enrolments.Add(enrolment);
-				await (s.SaveAsync(enrolment, CancellationToken.None));
+				await (s.SaveAsync(enrolment));
 	
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 				
 				IList data = (IList)await (s.CreateCriteria<Enrolment>()
 					.SetProjection(Projections.ProjectionList()
 						.Add(Projections.Property("Semester"))
 						.Add(Projections.Property("Year"))
 						.Add(Projections.Id()))
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 				
 				t.Rollback();
 			}
@@ -2195,10 +2194,10 @@ namespace NHibernate.Test.Criteria
 				course.CourseCode = "HIB";
 				course.Description = "Hibernate Training";
 				course.CourseMeetings.Add(new CourseMeeting(course, "Monday", 1, "1313 Mockingbird Lane"));
-				await (s.SaveAsync(course, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(course));
+				await (s.FlushAsync());
 		
-				IList data = (IList)await (s.CreateCriteria<CourseMeeting>().SetProjection(Projections.Id()).ListAsync(CancellationToken.None));
+				IList data = (IList)await (s.CreateCriteria<CourseMeeting>().SetProjection(Projections.Id()).ListAsync());
 
 				t.Rollback();
 			}
@@ -2214,12 +2213,12 @@ namespace NHibernate.Test.Criteria
 				course.CourseCode = "HIB";
 				course.Description = "Hibernate Training";
 				course.CourseMeetings.Add(new CourseMeeting(course, "Monday", 1, "1313 Mockingbird Lane"));
-				await (s.SaveAsync(course, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(course));
+				await (s.FlushAsync());
 		
 				IList data = (IList)await (s.CreateCriteria<CourseMeeting>()
 					.SetProjection(Projections.Id().As("id"))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				t.Rollback();
 			}
@@ -2235,12 +2234,12 @@ namespace NHibernate.Test.Criteria
 				gaith.Name = "Gaith Bell";
 				gaith.StudentNumber = 123;
 				gaith.CityState = new CityState("Chicago", "Illinois");
-				await (s.SaveAsync(gaith, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(gaith));
+				await (s.FlushAsync());
 		
 				IList cityStates = (IList)await (s.CreateCriteria<Student>()
 					.SetProjection(Projections.Property("CityState"))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				
 				t.Rollback();
 			}
@@ -2256,14 +2255,14 @@ namespace NHibernate.Test.Criteria
 				gaith.Name = "Gaith Bell";
 				gaith.StudentNumber = 123;
 				gaith.CityState = new CityState("Chicago", "Illinois");
-				await (s.SaveAsync(gaith, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(gaith));
+				await (s.FlushAsync());
 	
 				IList data = (IList)await (s.CreateCriteria<Student>()
 					.SetProjection(Projections.ProjectionList()
 						.Add(Projections.Property("CityState"))
 						.Add(Projections.Property("Name")))
-						.ListAsync(CancellationToken.None));
+						.ListAsync());
 				
 				t.Rollback();
 			}
@@ -2274,8 +2273,8 @@ namespace NHibernate.Test.Criteria
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.CreateCriteria<Course>().SetProjection(Projections.Property("CourseCode")).ListAsync(CancellationToken.None));
-			await (CriteriaTransformer.Clone(s.CreateCriteria(typeof(Course)).SetProjection(Projections.Id())).ListAsync(CancellationToken.None));
+			await (s.CreateCriteria<Course>().SetProjection(Projections.Property("CourseCode")).ListAsync());
+			await (CriteriaTransformer.Clone(s.CreateCriteria(typeof(Course)).SetProjection(Projections.Id())).ListAsync());
 			t.Rollback();
 			s.Close();
 		}
@@ -2289,37 +2288,37 @@ namespace NHibernate.Test.Criteria
 			Course courseA = new Course();
 			courseA.CourseCode = "HIB-A";
 			courseA.Description = "Hibernate Training A";
-			await (session.SaveAsync(courseA, CancellationToken.None));
+			await (session.SaveAsync(courseA));
 
 			Course courseB = new Course();
 			courseB.CourseCode = "HIB-B";
 			courseB.Description = "Hibernate Training B";
-			await (session.SaveAsync(courseB, CancellationToken.None));
+			await (session.SaveAsync(courseB));
 
 			Student gavin = new Student();
 			gavin.Name = "Gavin King";
 			gavin.StudentNumber = 232;
 			gavin.PreferredCourse = courseA;
-			await (session.SaveAsync(gavin, CancellationToken.None));
+			await (session.SaveAsync(gavin));
 
 			Student leonardo = new Student();
 			leonardo.Name = "Leonardo Quijano";
 			leonardo.StudentNumber = 233;
 			leonardo.PreferredCourse = courseB;
-			await (session.SaveAsync(leonardo, CancellationToken.None));
+			await (session.SaveAsync(leonardo));
 
 			Student johnDoe = new Student();
 			johnDoe.Name = "John Doe";
 			johnDoe.StudentNumber = 235;
 			johnDoe.PreferredCourse = null;
-			await (session.SaveAsync(johnDoe, CancellationToken.None));
+			await (session.SaveAsync(johnDoe));
 
 			ICriteria criteria = session.CreateCriteria(typeof(Student))
 				.SetProjection(Property.ForName("PreferredCourse.CourseCode"))
 				.CreateCriteria("PreferredCourse", JoinType.LeftOuterJoin)
 				.AddOrder(Order.Asc("CourseCode"));
 
-			IList result = await (CriteriaTransformer.Clone(criteria).ListAsync(CancellationToken.None));
+			IList result = await (CriteriaTransformer.Clone(criteria).ListAsync());
 
 			Assert.AreEqual(3, result.Count);
 
@@ -2336,36 +2335,36 @@ namespace NHibernate.Test.Criteria
 			Course courseA = new Course();
 			courseA.CourseCode = "HIB-A";
 			courseA.Description = "Hibernate Training A";
-			await (session.SaveAsync(courseA, CancellationToken.None));
+			await (session.SaveAsync(courseA));
 
 			Course courseB = new Course();
 			courseB.CourseCode = "HIB-B";
 			courseB.Description = "Hibernate Training B";
-			await (session.SaveAsync(courseB, CancellationToken.None));
+			await (session.SaveAsync(courseB));
 
 			Student gavin = new Student();
 			gavin.Name = "Gavin King";
 			gavin.StudentNumber = 232;
 			gavin.PreferredCourse = courseA;
-			await (session.SaveAsync(gavin, CancellationToken.None));
+			await (session.SaveAsync(gavin));
 
 			Student leonardo = new Student();
 			leonardo.Name = "Leonardo Quijano";
 			leonardo.StudentNumber = 233;
 			leonardo.PreferredCourse = courseB;
-			await (session.SaveAsync(leonardo, CancellationToken.None));
+			await (session.SaveAsync(leonardo));
 
 			Student johnDoe = new Student();
 			johnDoe.Name = "John Doe";
 			johnDoe.StudentNumber = 235;
 			johnDoe.PreferredCourse = null;
-			await (session.SaveAsync(johnDoe, CancellationToken.None));
+			await (session.SaveAsync(johnDoe));
 
 			IList result = await (session.CreateCriteria(typeof(Student))
 				.SetProjection(Property.ForName("PreferredCourse.CourseCode"))
 				.CreateCriteria("PreferredCourse", JoinType.LeftOuterJoin)
 				.AddOrder(Order.Asc("CourseCode"))
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 			Assert.AreEqual(3, result.Count);
 			// can't be sure of NULL comparison ordering aside from they should
 			// either come first or last
@@ -2385,7 +2384,7 @@ namespace NHibernate.Test.Criteria
 				.SetFetchMode("PreferredCourse", FetchMode.Join)
 				.CreateCriteria("PreferredCourse", JoinType.LeftOuterJoin)
 				.AddOrder(Order.Asc("CourseCode"))
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 			Assert.AreEqual(3, result.Count);
 			Assert.IsNotNull(result[0]);
 			Assert.IsNotNull(result[1]);
@@ -2395,18 +2394,18 @@ namespace NHibernate.Test.Criteria
 				.SetFetchMode("PreferredCourse", FetchMode.Join)
 				.CreateAlias("PreferredCourse", "pc", JoinType.LeftOuterJoin)
 				.AddOrder(Order.Asc("pc.CourseCode"))
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 			Assert.AreEqual(3, result.Count);
 			Assert.IsNotNull(result[0]);
 			Assert.IsNotNull(result[1]);
 			Assert.IsNotNull(result[2]);
 
-			await (session.DeleteAsync(gavin, CancellationToken.None));
-			await (session.DeleteAsync(leonardo, CancellationToken.None));
-			await (session.DeleteAsync(johnDoe, CancellationToken.None));
-			await (session.DeleteAsync(courseA, CancellationToken.None));
-			await (session.DeleteAsync(courseB, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (session.DeleteAsync(gavin));
+			await (session.DeleteAsync(leonardo));
+			await (session.DeleteAsync(johnDoe));
+			await (session.DeleteAsync(courseA));
+			await (session.DeleteAsync(courseB));
+			await (t.CommitAsync());
 			session.Close();
 		}
 
@@ -2417,7 +2416,7 @@ namespace NHibernate.Test.Criteria
 			{
 				Assert.ThrowsAsync<QueryException>(() => session.CreateCriteria(typeof(Enrolment))
 					.Add(Expression.Eq("Student", 10)) // Type mismatch!
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 			}
 		}
 
@@ -2432,20 +2431,20 @@ namespace NHibernate.Test.Criteria
 				bo2.Description = "Meter";
 				MaterialUnitable dv = new DeviceDef();
 				dv.Description = "Printer";
-				await (s.SaveAsync(bo1, CancellationToken.None));
-				await (s.SaveAsync(bo2, CancellationToken.None));
-				await (s.SaveAsync(dv, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(bo1));
+				await (s.SaveAsync(bo2));
+				await (s.SaveAsync(dv));
+				await (s.FlushAsync());
 
 				MaterialUnit mu = new MaterialUnit(bo1, "S1");
-				await (s.SaveAsync(mu, CancellationToken.None));
+				await (s.SaveAsync(mu));
 				mu = new MaterialUnit(bo1, "S2");
-				await (s.SaveAsync(mu, CancellationToken.None));
+				await (s.SaveAsync(mu));
 				mu = new MaterialUnit(bo2, "M1");
-				await (s.SaveAsync(mu, CancellationToken.None));
+				await (s.SaveAsync(mu));
 				mu = new MaterialUnit(dv, "D1");
-				await (s.SaveAsync(mu, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(mu));
+				await (s.FlushAsync());
 			}
 
 			using (ISession session = OpenSession())
@@ -2453,15 +2452,15 @@ namespace NHibernate.Test.Criteria
 				IList l = await (session.CreateCriteria(typeof(MaterialUnit), "mu")
 					.CreateAlias("mu.Material", "ma")
 					.Add(Property.ForName("ma.class").Eq(typeof(MaterialUnitable)))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				Assert.AreEqual(3, l.Count);
 			}
 
 			using (ISession s = OpenSession())
 			{
-				await (s.DeleteAsync("from MaterialUnit", CancellationToken.None));
-				await (s.DeleteAsync("from MaterialResource", CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync("from MaterialUnit"));
+				await (s.DeleteAsync("from MaterialResource"));
+				await (s.FlushAsync());
 			}
 		}
 
@@ -2486,18 +2485,18 @@ namespace NHibernate.Test.Criteria
 			Student bizarroGavin = new Student();
 			bizarroGavin.Name = "Gavin King";
 			bizarroGavin.StudentNumber = 666;
-			await (session.SaveAsync(bizarroGavin, CancellationToken.None));
-			await (session.SaveAsync(gavin, CancellationToken.None));
+			await (session.SaveAsync(bizarroGavin));
+			await (session.SaveAsync(gavin));
 
 			IList result = await (dc.GetExecutableCriteria(session)
 				.SetMaxResults(3)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(2, result.Count);
 
-			await (session.DeleteAsync(gavin, CancellationToken.None));
-			await (session.DeleteAsync(bizarroGavin, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (session.DeleteAsync(gavin));
+			await (session.DeleteAsync(bizarroGavin));
+			await (t.CommitAsync());
 			session.Close();
 		}
 
@@ -2523,20 +2522,20 @@ namespace NHibernate.Test.Criteria
 			Student bizarroGavin = new Student();
 			bizarroGavin.Name = "Gavin King";
 			bizarroGavin.StudentNumber = 666;
-			await (session.SaveAsync(bizarroGavin, CancellationToken.None));
-			await (session.SaveAsync(gavin, CancellationToken.None));
+			await (session.SaveAsync(bizarroGavin));
+			await (session.SaveAsync(gavin));
 
 			IList result = await (dc.GetExecutableCriteria(session)
 				.SetMaxResults(3)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(2));
 			Assert.That(result[0], Is.InstanceOf(typeof(Student)));
 			Assert.That(result[1], Is.InstanceOf(typeof(Student)));
 
-			await (session.DeleteAsync(gavin, CancellationToken.None));
-			await (session.DeleteAsync(bizarroGavin, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (session.DeleteAsync(gavin));
+			await (session.DeleteAsync(bizarroGavin));
+			await (t.CommitAsync());
 			session.Close();
 		}
 		
@@ -2554,14 +2553,14 @@ namespace NHibernate.Test.Criteria
 				.SetCacheable(true);
 				Assert.That(sessions.Statistics.QueryCacheMissCount,Is.EqualTo(0));
 				Assert.That(sessions.Statistics.QueryCacheHitCount, Is.EqualTo(0));
-				await (dc.GetExecutableCriteria(session).ListAsync(CancellationToken.None));
+				await (dc.GetExecutableCriteria(session).ListAsync());
 				Assert.That(sessions.Statistics.QueryCacheMissCount, Is.EqualTo(1));
 
 				dc = DetachedCriteria.For(typeof(Student))
 				.Add(Property.ForName("Name").Eq("Gavin King"))
 				.SetProjection(Property.ForName("StudentNumber"))
 				.SetCacheable(true);
-				await (dc.GetExecutableCriteria(session).ListAsync(CancellationToken.None));
+				await (dc.GetExecutableCriteria(session).ListAsync());
 
 				Assert.That(sessions.Statistics.QueryCacheMissCount, Is.EqualTo(1));
 				Assert.That(sessions.Statistics.QueryCacheHitCount, Is.EqualTo(1));
@@ -2580,7 +2579,7 @@ namespace NHibernate.Test.Criteria
 				.SetMaxResults(1)
 				.AddOrder(new Order("bodyWeight", true));
 
-			await (crit.ListAsync<Animal>(CancellationToken.None));
+			await (crit.ListAsync<Animal>());
 
 			t.Rollback();
 			s.Close();
@@ -2599,15 +2598,15 @@ namespace NHibernate.Test.Criteria
 				Student gavin = new Student();
 				gavin.Name = "Gavin King";
 				gavin.StudentNumber = 232;
-				await (session.SaveAsync(gavin, CancellationToken.None));
+				await (session.SaveAsync(gavin));
 
-				IList result = await (c.ListAsync(CancellationToken.None));
+				IList result = await (c.ListAsync());
 
 				Assert.AreEqual(0, result.Count);
 
-				await (session.DeleteAsync(gavin, CancellationToken.None));
+				await (session.DeleteAsync(gavin));
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -2628,10 +2627,10 @@ namespace NHibernate.Test.Criteria
 				ICriteria rowCount = CriteriaTransformer.TransformToRowCount(criteria);
 
 				// IMPORTANT: The problem is executing BOTH queries at the same time... not just one
-				await (criteria.ListAsync(CancellationToken.None));
-				await (rowCount.ListAsync(CancellationToken.None));
+				await (criteria.ListAsync());
+				await (rowCount.ListAsync());
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 		}
 	
@@ -2648,7 +2647,7 @@ namespace NHibernate.Test.Criteria
 
 				ICriteria countCriteria = CriteriaTransformer.TransformToRowCount(crit);
 
-				await (countCriteria.ListAsync(CancellationToken.None));
+				await (countCriteria.ListAsync());
 
 				t.Rollback();
 			}
@@ -2668,7 +2667,7 @@ namespace NHibernate.Test.Criteria
 							Projections.Constant(0),
 							Projections.Constant(1))));
 
-				await (criteria.ListAsync(CancellationToken.None));
+				await (criteria.ListAsync());
 			}
 		}
 
@@ -2682,25 +2681,25 @@ namespace NHibernate.Test.Criteria
 				Course courseA = new Course();
 				courseA.CourseCode = "HIB-A";
 				courseA.Description = "Hibernate Training A";
-				await (session.SaveAsync(courseA, CancellationToken.None));
+				await (session.SaveAsync(courseA));
 			
 				Student gavin = new Student();
 				gavin.Name = "Gavin King";
 				gavin.StudentNumber = 232;
 				gavin.PreferredCourse = courseA;
-				await (session.SaveAsync(gavin, CancellationToken.None));
+				await (session.SaveAsync(gavin));
 			
 				Student leonardo = new Student();
 				leonardo.Name = "Leonardo Quijano";
 				leonardo.StudentNumber = 233;
 				leonardo.PreferredCourse = courseA;
-				await (session.SaveAsync(leonardo, CancellationToken.None));
+				await (session.SaveAsync(leonardo));
 			
 				Student johnDoe = new Student();
 				johnDoe.Name = "John Doe";
 				johnDoe.StudentNumber = 235;
 				johnDoe.PreferredCourse = null;
-				await (session.SaveAsync(johnDoe, CancellationToken.None));
+				await (session.SaveAsync(johnDoe));
 			
 				IProjection conditional =
 					Projections.Conditional(
@@ -2713,14 +2712,14 @@ namespace NHibernate.Test.Criteria
 				criteria.SetFirstResult(1);
 				IList result = await (criteria.SetProjection(Projections.Alias(conditional, "CheckName"))
 					.AddOrder(Order.Asc("CheckName"))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 	
-				await (session.DeleteAsync(gavin, CancellationToken.None));
-				await (session.DeleteAsync(leonardo, CancellationToken.None));
-				await (session.DeleteAsync(johnDoe, CancellationToken.None));
-				await (session.DeleteAsync(courseA, CancellationToken.None));
+				await (session.DeleteAsync(gavin));
+				await (session.DeleteAsync(leonardo));
+				await (session.DeleteAsync(johnDoe));
+				await (session.DeleteAsync(courseA));
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -2730,8 +2729,8 @@ namespace NHibernate.Test.Criteria
 			Student john = new Student { Name = "John" };
 			using (ISession session = this.OpenSession())
 			{
-				await (session.SaveAsync(john, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.SaveAsync(john));
+				await (session.FlushAsync());
 			}
 
 			using (ISession session = this.OpenSession())
@@ -2740,7 +2739,7 @@ namespace NHibernate.Test.Criteria
 
 				criteria.Add(new LikeExpression(Projections.Property("Name"), "John", MatchMode.Anywhere));
 
-				Assert.AreEqual(1, (await (criteria.ListAsync(CancellationToken.None))).Count);
+				Assert.AreEqual(1, (await (criteria.ListAsync())).Count);
 			}
 
 			using (ISession session = this.OpenSession())
@@ -2749,13 +2748,13 @@ namespace NHibernate.Test.Criteria
 
 				criteria.Add(new LikeExpression("Name", "John"));
 
-				Assert.AreEqual(1, (await (criteria.ListAsync(CancellationToken.None))).Count);
+				Assert.AreEqual(1, (await (criteria.ListAsync())).Count);
 			}
 
 			using (ISession session = this.OpenSession())
 			{
-				await (session.DeleteAsync(john, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.DeleteAsync(john));
+				await (session.FlushAsync());
 			}
 		}
 
@@ -2768,7 +2767,7 @@ namespace NHibernate.Test.Criteria
 
 				criteria.Add(Restrictions.Like(Projections.Constant("Name"), "John", MatchMode.Anywhere));
 
-				await (criteria.ListAsync(CancellationToken.None));
+				await (criteria.ListAsync());
 			}
 		}
 
@@ -2781,7 +2780,7 @@ namespace NHibernate.Test.Criteria
 
 				criteria.Add(Restrictions.InsensitiveLike(Projections.Constant("Name"), "John", MatchMode.Anywhere));
 
-				await (criteria.ListAsync(CancellationToken.None));
+				await (criteria.ListAsync());
 			}
 		}
 
@@ -2795,30 +2794,30 @@ namespace NHibernate.Test.Criteria
 					Course courseA = new Course();
 					courseA.CourseCode = "HIB-A";
 					courseA.Description = "Hibernate Training A";
-					await (session.PersistAsync(courseA, CancellationToken.None));
+					await (session.PersistAsync(courseA));
 					
 					Course courseB = new Course();
 					courseB.CourseCode = "HIB-B";
 					courseB.Description = "Hibernate Training B";
-					await (session.PersistAsync(courseB, CancellationToken.None));
+					await (session.PersistAsync(courseB));
 
 					Student gavin = new Student();
 					gavin.Name = "Gavin King";
 					gavin.StudentNumber = 232;
 					gavin.PreferredCourse = courseA;
-					await (session.PersistAsync(gavin, CancellationToken.None));
+					await (session.PersistAsync(gavin));
 
 					Student leonardo = new Student();
 					leonardo.Name = "Leonardo Quijano";
 					leonardo.StudentNumber = 233;
 					leonardo.PreferredCourse = courseB;
-					await (session.PersistAsync(leonardo, CancellationToken.None));
+					await (session.PersistAsync(leonardo));
 
 					Student johnDoe = new Student();
 					johnDoe.Name = "John Doe";
 					johnDoe.StudentNumber = 235;
 					johnDoe.PreferredCourse = null;
-					await (session.PersistAsync(johnDoe, CancellationToken.None));
+					await (session.PersistAsync(johnDoe));
 
 					// test == on one value exists
 					IList<string> result = await (session.CreateCriteria<Student>()
@@ -2826,7 +2825,7 @@ namespace NHibernate.Test.Criteria
 							Restrictions.Eq("pc.CourseCode", "HIB-A"))
 						.SetProjection(Property.ForName("pc.CourseCode"))
 						.AddOrder(Order.Asc("pc.CourseCode"))
-						.ListAsync<string>(CancellationToken.None));
+						.ListAsync<string>());
 					
 					// can't be sure of NULL comparison ordering aside from they should
 					// either come first or last
@@ -2848,7 +2847,7 @@ namespace NHibernate.Test.Criteria
 							Restrictions.Eq("pc.CourseCode", "HIB-R"))
 						.SetProjection(Property.ForName("pc.CourseCode"))
 						.AddOrder(Order.Asc("pc.CourseCode"))
-						.ListAsync<string>(CancellationToken.None));
+						.ListAsync<string>());
 
 					Assert.AreEqual(3, result.Count);
 					Assert.IsNull(result[2]);
@@ -2861,7 +2860,7 @@ namespace NHibernate.Test.Criteria
 							Restrictions.Not(Restrictions.Eq("pc.CourseCode", "HIB-A")))
 						.SetProjection(Property.ForName("pc.CourseCode"))
 						.AddOrder(Order.Asc("pc.CourseCode"))
-						.ListAsync<string>(CancellationToken.None));
+						.ListAsync<string>());
 
 					Assert.AreEqual(3, result.Count);
 
@@ -2886,7 +2885,7 @@ namespace NHibernate.Test.Criteria
 						.SetProjection(Property.ForName("pc.CourseCode"))
 						.AddOrder(Order.Asc("pc.CourseCode"));
 					var clonedCriteria = CriteriaTransformer.Clone(criteria);
-					result = await (clonedCriteria.ListAsync<string>(CancellationToken.None));
+					result = await (clonedCriteria.ListAsync<string>());
 
 					Assert.AreEqual(3, result.Count);
 
@@ -2904,13 +2903,13 @@ namespace NHibernate.Test.Criteria
 						Assert.IsNull(result[2]);
 					}
 					
-					await (session.DeleteAsync(gavin, CancellationToken.None));
-					await (session.DeleteAsync(leonardo, CancellationToken.None));
-					await (session.DeleteAsync(johnDoe, CancellationToken.None));
-					await (session.DeleteAsync(courseA, CancellationToken.None));
-					await (session.DeleteAsync(courseB, CancellationToken.None));
+					await (session.DeleteAsync(gavin));
+					await (session.DeleteAsync(leonardo));
+					await (session.DeleteAsync(johnDoe));
+					await (session.DeleteAsync(courseA));
+					await (session.DeleteAsync(courseB));
 
-					await (t.CommitAsync(CancellationToken.None));
+					await (t.CommitAsync());
 				}
 			}
 		}
@@ -2933,10 +2932,10 @@ namespace NHibernate.Test.Criteria
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
-				await (session.SaveAsync(c1, CancellationToken.None));
-				await (session.SaveAsync(c2, CancellationToken.None));
-				await (session.SaveAsync(c3, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (session.SaveAsync(c1));
+				await (session.SaveAsync(c2));
+				await (session.SaveAsync(c3));
+				await (t.CommitAsync());
 			}
 
 			// this particular selection is commented out if collation is not Latin1_General_BIN
@@ -2954,7 +2953,7 @@ namespace NHibernate.Test.Criteria
 			{
 				// order the courses after all descriptions have been converted to lower case
 				IList result =
-					await (session.CreateCriteria(typeof (Course)).AddOrder(Order.Asc("Description").IgnoreCase()).ListAsync(CancellationToken.None));
+					await (session.CreateCriteria(typeof (Course)).AddOrder(Order.Asc("Description").IgnoreCase()).ListAsync());
 				Assert.AreEqual(3, result.Count);
 				Course firstResult = (Course) result[0];
 				Assert.IsTrue(firstResult.Description.Contains("advanced csharp"), "Description should have 'advanced csharp', but has " + firstResult.Description);
@@ -2963,10 +2962,10 @@ namespace NHibernate.Test.Criteria
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
-				await (session.DeleteAsync(c1, CancellationToken.None));
-				await (session.DeleteAsync(c2, CancellationToken.None));
-				await (session.DeleteAsync(c3, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync(c1));
+				await (session.DeleteAsync(c2));
+				await (session.DeleteAsync(c3));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -2981,12 +2980,12 @@ namespace NHibernate.Test.Criteria
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				await (session.SaveAsync(new Student { Name = "Ricardo Peres", StudentNumber = 666, CityState = new CityState("Coimbra", "Portugal") }, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.SaveAsync(new Student { Name = "Ricardo Peres", StudentNumber = 666, CityState = new CityState("Coimbra", "Portugal") }));
+				await (session.FlushAsync());
 
 				var ec = dc.GetExecutableCriteria(session);
 				var countExec = CriteriaTransformer.TransformToRowCount(ec);
-				var countRes = await (countExec.UniqueResultAsync(CancellationToken.None));
+				var countRes = await (countExec.UniqueResultAsync());
 
 				Assert.AreEqual(countRes, 1);
 			}

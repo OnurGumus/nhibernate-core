@@ -15,7 +15,6 @@ using System.Collections.Generic;
 namespace NHibernate.Test.Stateless
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class StatelessWithRelationsFixtureAsync : TestCase
 	{
@@ -48,8 +47,8 @@ namespace NHibernate.Test.Stateless
 					Mother = rm,
 					Childs = new HashSet<Reptile> { rc1, rc2 }
 				};
-				await (s.SaveAsync("ReptilesFamily", rfamily, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync("ReptilesFamily", rfamily));
+				await (tx.CommitAsync());
 			}
 
 			const string humanFather = "Fred";
@@ -66,36 +65,36 @@ namespace NHibernate.Test.Stateless
 					Mother = hm,
 					Childs = new HashSet<Human> { hc1 }
 				};
-				await (s.SaveAsync("HumanFamily", hfamily, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync("HumanFamily", hfamily));
+				await (tx.CommitAsync());
 			}
 
 			using (IStatelessSession s = sessions.OpenStatelessSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				IList<Family<Human>> hf = await (s.CreateQuery("from HumanFamily").ListAsync<Family<Human>>(CancellationToken.None));
+				IList<Family<Human>> hf = await (s.CreateQuery("from HumanFamily").ListAsync<Family<Human>>());
 				Assert.That(hf.Count, Is.EqualTo(1));
 				Assert.That(hf[0].Father.Name, Is.EqualTo(humanFather));
 				Assert.That(hf[0].Mother.Name, Is.EqualTo(humanMother));
 				Assert.That(NHibernateUtil.IsInitialized(hf[0].Childs), Is.True, "No lazy collection should be initialized");
 				//Assert.That(hf[0].Childs, Is.Null, "Collections should be ignored by stateless session.");
 
-				IList<Family<Reptile>> rf = await (s.CreateQuery("from ReptilesFamily").ListAsync<Family<Reptile>>(CancellationToken.None));
+				IList<Family<Reptile>> rf = await (s.CreateQuery("from ReptilesFamily").ListAsync<Family<Reptile>>());
 				Assert.That(rf.Count, Is.EqualTo(1));
 				Assert.That(rf[0].Father.Description, Is.EqualTo(crocodileFather));
 				Assert.That(rf[0].Mother.Description, Is.EqualTo(crocodileMother));
 				Assert.That(NHibernateUtil.IsInitialized(hf[0].Childs), Is.True, "No lazy collection should be initialized");
 				//Assert.That(rf[0].Childs, Is.Null, "Collections should be ignored by stateless session.");
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from HumanFamily", CancellationToken.None));
-				await (s.DeleteAsync("from ReptilesFamily", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from HumanFamily"));
+				await (s.DeleteAsync("from ReptilesFamily"));
+				await (tx.CommitAsync());
 			}
 		}
 

@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2703
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -61,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2703
 				// Expected join order: a --> c --> b
 
 				// This query should not throw
-				await (query.ListAsync(CancellationToken.None));
+				await (query.ListAsync());
 			}
 		}
 
@@ -81,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2703
 				// Expected join order: a --> b --> c
 
 				// This query should not throw
-				await (query.ListAsync(CancellationToken.None));
+				await (query.ListAsync());
 			}
 		}
 	}

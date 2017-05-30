@@ -130,22 +130,22 @@ namespace NHibernate.Test.NHSpecificTest.NH1882
 				author.Publisher = publisher;
 				publisher.Authors.Add(author);
 				author.Books.Add(new Book("Reflections on a Wimpy Kid", author));
-				await (s1.SaveAsync(author, CancellationToken.None));
-				await (s1.Transaction.CommitAsync(CancellationToken.None));
+				await (s1.SaveAsync(author));
+				await (s1.Transaction.CommitAsync());
 				s1.Clear();
 				using (var s2 = OpenSession())
 				{
 					s2.BeginTransaction();
-					publisher = await (s2.GetAsync<Publisher>(publisher.Id, CancellationToken.None));
+					publisher = await (s2.GetAsync<Publisher>(publisher.Id));
 					publisher.Name = "random nally";
-					await (s2.FlushAsync(CancellationToken.None));
-					await (s2.Transaction.CommitAsync(CancellationToken.None));
+					await (s2.FlushAsync());
+					await (s2.Transaction.CommitAsync());
 					s2.Clear();
 					using (var s3 = OpenSession())
 					{
 						s3.BeginTransaction();
-						await (s3.DeleteAsync(author, CancellationToken.None));
-						await (s3.Transaction.CommitAsync(CancellationToken.None));
+						await (s3.DeleteAsync(author));
+						await (s3.Transaction.CommitAsync());
 						s3.Clear();
 						s3.Close();
 					}

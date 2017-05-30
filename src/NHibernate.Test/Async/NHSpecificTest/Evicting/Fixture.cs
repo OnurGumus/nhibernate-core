@@ -15,7 +15,6 @@ using NHibernate.Stat;
 namespace NHibernate.Test.NHSpecificTest.Evicting
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -59,14 +58,14 @@ namespace NHibernate.Test.NHSpecificTest.Evicting
 			using (var session = sessions.OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				var employee = await (session.LoadAsync<Employee>(1, CancellationToken.None));
+				var employee = await (session.LoadAsync<Employee>(1));
 				Assert.IsTrue(session.Contains(employee));
 
-				await (session.EvictAsync(employee, CancellationToken.None));
+				await (session.EvictAsync(employee));
 
 				Assert.IsFalse(session.Contains(employee));
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -80,11 +79,11 @@ namespace NHibernate.Test.NHSpecificTest.Evicting
 				var employee = new Employee();
 				Assert.IsFalse(session.Contains(employee));
 
-				await (session.EvictAsync(employee, CancellationToken.None));
+				await (session.EvictAsync(employee));
 
 				Assert.IsFalse(session.Contains(employee));
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -99,20 +98,20 @@ namespace NHibernate.Test.NHSpecificTest.Evicting
 				using (var session2 = sessions.OpenSession())
 				using (var tx2 = session2.BeginTransaction())
 				{
-					var employee = await (session2.LoadAsync<Employee>(1, CancellationToken.None));
+					var employee = await (session2.LoadAsync<Employee>(1));
 					Assert.IsFalse(session1.Contains(employee));
 					Assert.IsTrue(session2.Contains(employee));
 
-					await (session1.EvictAsync(employee, CancellationToken.None));
+					await (session1.EvictAsync(employee));
 
 					Assert.IsFalse(session1.Contains(employee));
 
 					Assert.IsTrue(session2.Contains(employee));
 
-					await (tx2.CommitAsync(CancellationToken.None));
+					await (tx2.CommitAsync());
 				}
 				
-				await (tx1.CommitAsync(CancellationToken.None));
+				await (tx1.CommitAsync());
 			}
 		}
 	

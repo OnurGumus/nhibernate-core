@@ -15,7 +15,6 @@ using System.Collections.Generic;
 namespace NHibernate.Test.NHSpecificTest.NH2230
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -34,14 +33,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2230
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				poid = await (s.SaveAsync(entity, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				poid = await (s.SaveAsync(entity));
+				await (tx.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				var savedEntity = await (s.GetAsync<MyEntity>(poid, CancellationToken.None));
+				var savedEntity = await (s.GetAsync<MyEntity>(poid));
 				var myComponentWithParent = savedEntity.Component;
 				Assert.That(myComponentWithParent, Is.Not.Null);
 				Assert.That(myComponentWithParent.Parent, Is.SameAs(savedEntity));
@@ -50,8 +49,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2230
 				Assert.That(savedEntity.Children.Select(c => c.Something), Is.EquivalentTo(new [] {"B", "C"}));
 				Assert.That(savedEntity.Children.All(c => ReferenceEquals(c.Parent, savedEntity)), Is.True);
 
-				await (s.DeleteAsync(savedEntity, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(savedEntity));
+				await (tx.CommitAsync());
 			}
 		}
 	}

@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1691
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -55,8 +54,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1691
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					await (session.SaveAsync(nest, CancellationToken.None));
-					await (transaction.CommitAsync(CancellationToken.None));
+					await (session.SaveAsync(nest));
+					await (transaction.CommitAsync());
 					nestId = nest.Id;
 				}
 			}
@@ -65,8 +64,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1691
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					var loadedNest = await (session.LoadAsync<Nest>(nestId, CancellationToken.None));
-					await (transaction.CommitAsync(CancellationToken.None));
+					var loadedNest = await (session.LoadAsync<Nest>(nestId));
+					await (transaction.CommitAsync());
 
 					Assert.AreEqual(2, loadedNest.ComplexComponents.Count);
 					Assert.IsNotNull(((DeepComponent) loadedNest.ComplexComponents[0]).Component.SubComponent.Nested.SubName1);
@@ -78,8 +77,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1691
 			{
 				using (ITransaction t = s.BeginTransaction())
 				{
-					await (s.DeleteAsync("from Nest", CancellationToken.None));
-					await (t.CommitAsync(CancellationToken.None));
+					await (s.DeleteAsync("from Nest"));
+					await (t.CommitAsync());
 				}
 			}
 		}
@@ -97,8 +96,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1691
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					await (session.SaveAsync(nest, CancellationToken.None));
-					await (transaction.CommitAsync(CancellationToken.None));
+					await (session.SaveAsync(nest));
+					await (transaction.CommitAsync());
 					nestId = nest.Id;
 				}
 			}
@@ -107,8 +106,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1691
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					var nest2 = await (session.LoadAsync<Nest>(nestId, CancellationToken.None));
-					await (transaction.CommitAsync(CancellationToken.None));
+					var nest2 = await (session.LoadAsync<Nest>(nestId));
+					await (transaction.CommitAsync());
 
 					Assert.IsNotNull(((Component) nest2.Components[0]).SubComponent.Nested.SubName);
 				}
@@ -118,8 +117,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1691
 			{
 				using (ITransaction t = s.BeginTransaction())
 				{
-					await (s.DeleteAsync("from Nest", CancellationToken.None));
-					await (t.CommitAsync(CancellationToken.None));
+					await (s.DeleteAsync("from Nest"));
+					await (t.CommitAsync());
 				}
 			}
 		}

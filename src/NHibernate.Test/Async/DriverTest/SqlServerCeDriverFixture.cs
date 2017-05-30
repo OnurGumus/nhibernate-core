@@ -19,7 +19,6 @@ using System.Collections.Generic;
 namespace NHibernate.Test.DriverTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	[TestFixture]
 	public class SqlServerCeDriverFixtureAsync : TestCase
@@ -64,15 +63,15 @@ namespace NHibernate.Test.DriverTest
 				entity.StringClob = new String('a', 8193);
 				entity.BinaryBlob = new byte[8193];
 
-				await (s.SaveAsync(entity, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(entity));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
 				SqlServerCeEntity entity =
 					await (s.CreateCriteria(typeof(SqlServerCeEntity))
-						.UniqueResultAsync<SqlServerCeEntity>(CancellationToken.None));
+						.UniqueResultAsync<SqlServerCeEntity>());
 
 				Assert.That(entity.StringProp, Is.EqualTo("a small string"));
 				Assert.That(entity.BinaryProp.Length, Is.EqualTo(100));
@@ -95,8 +94,8 @@ namespace NHibernate.Test.DriverTest
 				entity.StringClob = new String('a', 8193);
 				entity.BinaryBlob = new byte[8193];
 
-				await (s.SaveAsync(entity, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(entity));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -105,7 +104,7 @@ namespace NHibernate.Test.DriverTest
 					await (s.CreateCriteria(typeof(SqlServerCeEntity))
 						.Add(Restrictions.Eq("StringProp", "a small string"))
 						.Add(Restrictions.Eq("BinaryProp", System.Text.ASCIIEncoding.ASCII.GetBytes("binary string")))
-						.ListAsync<SqlServerCeEntity>(CancellationToken.None));
+						.ListAsync<SqlServerCeEntity>());
 
 				Assert.That(entities.Count, Is.EqualTo(1));
 			}

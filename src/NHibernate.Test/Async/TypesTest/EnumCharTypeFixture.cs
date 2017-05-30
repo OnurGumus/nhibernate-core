@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class EnumCharTypeFixtureAsync : TypeFixtureBase
 	{
@@ -56,10 +55,10 @@ namespace NHibernate.Test.TypesTest
 		{
 			using (ISession s = OpenSession())
 			{
-				EnumCharClass basic = (EnumCharClass) await (s.LoadAsync(typeof (EnumCharClass), 1, CancellationToken.None));
+				EnumCharClass basic = (EnumCharClass) await (s.LoadAsync(typeof (EnumCharClass), 1));
 				Assert.AreEqual(SampleCharEnum.Dimmed, basic.EnumValue);
 
-				EnumCharClass basic2 = (EnumCharClass) await (s.LoadAsync(typeof (EnumCharClass), 2, CancellationToken.None));
+				EnumCharClass basic2 = (EnumCharClass) await (s.LoadAsync(typeof (EnumCharClass), 2));
 				Assert.AreEqual(SampleCharEnum.On, basic2.EnumValue);
 			}
 		}
@@ -73,12 +72,12 @@ namespace NHibernate.Test.TypesTest
 				IQuery q = s.CreateQuery("from EnumCharClass as ecc where ecc.EnumValue=:value");
 
 				q.SetParameter("value", SampleCharEnum.On,new EnumCharType<SampleCharEnum>());
-				results = await (q.ListAsync(CancellationToken.None));
+				results = await (q.ListAsync());
 
 				Assert.AreEqual(1, results.Count, "only 1 was 'On'");
 
 				q.SetParameter("value", SampleCharEnum.Off, new EnumCharType<SampleCharEnum>());
-				results = await (q.ListAsync(CancellationToken.None));
+				results = await (q.ListAsync());
 
 				Assert.AreEqual(0, results.Count, "should not be any in the 'Off' status");
 			}
@@ -93,12 +92,12 @@ namespace NHibernate.Test.TypesTest
 				IQuery q = s.CreateQuery("from EnumCharClass as ecc where ecc.EnumValue=:value");
 
 				q.SetString("value", "N");
-				results = await (q.ListAsync(CancellationToken.None));
+				results = await (q.ListAsync());
 
 				Assert.AreEqual(1, results.Count, "only 1 was \"N\" string");
 
 				q.SetString("value", "F");
-				results = await (q.ListAsync(CancellationToken.None));
+				results = await (q.ListAsync());
 
 				Assert.AreEqual(0, results.Count, "should not be any in the \"F\" string");
 			}
@@ -113,12 +112,12 @@ namespace NHibernate.Test.TypesTest
 				IQuery q = s.CreateQuery("from EnumCharClass as ecc where ecc.EnumValue=:value");
 
 				q.SetCharacter("value", 'N');
-				results = await (q.ListAsync(CancellationToken.None));
+				results = await (q.ListAsync());
 
 				Assert.AreEqual(1, results.Count, "only 1 was 'N' char");
 
 				q.SetCharacter("value", 'F');
-				results = await (q.ListAsync(CancellationToken.None));
+				results = await (q.ListAsync());
 
 				Assert.AreEqual(0, results.Count, "should not be any in the 'F' char");
 			}
@@ -135,22 +134,22 @@ namespace NHibernate.Test.TypesTest
 
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(foo, CancellationToken.None));
-				await (s.SaveAsync(bar, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(foo));
+				await (s.SaveAsync(bar));
+				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				await (s.LoadAsync<EnumCharFoo>(1, CancellationToken.None));
-				await (s.LoadAsync<EnumCharBar>(2, CancellationToken.None));
+				await (s.LoadAsync<EnumCharFoo>(1));
+				await (s.LoadAsync<EnumCharBar>(2));
 
 				EnumCharBaz baz;
 
-				baz = await (s.LoadAsync<EnumCharBaz>(1, CancellationToken.None));
+				baz = await (s.LoadAsync<EnumCharBaz>(1));
 				Assert.AreEqual(SampleCharEnum.Dimmed, baz.Type);
 
-				baz = await (s.LoadAsync<EnumCharBaz>(2, CancellationToken.None));
+				baz = await (s.LoadAsync<EnumCharBaz>(2));
 				Assert.AreEqual(SampleCharEnum.Off, baz.Type);
 			}
 		}

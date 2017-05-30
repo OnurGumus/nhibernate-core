@@ -20,20 +20,19 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture]
     public class OperatorTestsAsync : LinqTestCase
     {
         [Test]
         public async Task ModAsync()
         {
-            Assert.AreEqual(2, await (session.Query<TimesheetEntry>().Where(a => a.NumberOfHours % 7 == 0).CountAsync(CancellationToken.None)));
+            Assert.AreEqual(2, await (session.Query<TimesheetEntry>().Where(a => a.NumberOfHours % 7 == 0).CountAsync()));
         }
 
 		[Test]
 		public async Task UnaryMinusAsync()
 		{
-			Assert.AreEqual(1, await (session.Query<TimesheetEntry>().CountAsync(a => -a.NumberOfHours == -7, CancellationToken.None)));
+			Assert.AreEqual(1, await (session.Query<TimesheetEntry>().CountAsync(a => -a.NumberOfHours == -7)));
 		}
 
 		[Test]
@@ -43,7 +42,7 @@ namespace NHibernate.Test.Linq
 			var param = Expression.Parameter(typeof(TimesheetEntry), "e");
 			var expr = Expression.Equal(Expression.UnaryPlus(Expression.PropertyOrField(param, "NumberOfHours")), Expression.Constant(7));
 			var predicate = Expression.Lambda<Func<TimesheetEntry, bool>>(expr, param);
-			Assert.AreEqual(1, await (session.Query<TimesheetEntry>().CountAsync(predicate, CancellationToken.None)));
+			Assert.AreEqual(1, await (session.Query<TimesheetEntry>().CountAsync(predicate)));
 		}
 	}
 }

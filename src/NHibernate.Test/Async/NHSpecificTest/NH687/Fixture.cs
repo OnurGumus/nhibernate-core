@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH687
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -46,22 +45,22 @@ namespace NHibernate.Test.NHSpecificTest.NH687
 				int child1Id, child2Id;
 				using (ISession session = sessions.OpenSession())
 				{
-					await (session.SaveAsync(foo, CancellationToken.None));
+					await (session.SaveAsync(foo));
 
 					child1Id = foo.Children[0].Id;
 					child2Id = foo.Children[1].Id;
-					await (session.FlushAsync(CancellationToken.None));
+					await (session.FlushAsync());
 				}
 
 				using (ISession session = sessions.OpenSession())
 				{
-					Foo r = await (session.GetAsync<Foo>(foo.Id, CancellationToken.None));
+					Foo r = await (session.GetAsync<Foo>(foo.Id));
 					Assert.IsNotNull(r);
 
-					Foo child1a = await (session.GetAsync<Foo>(child1Id, CancellationToken.None));
+					Foo child1a = await (session.GetAsync<Foo>(child1Id));
 					Assert.IsNotNull(child1a);
 
-					Foo child2a = await (session.GetAsync<Foo>(child2Id, CancellationToken.None));
+					Foo child2a = await (session.GetAsync<Foo>(child2Id));
 					Assert.IsNotNull(child2a);
 				}
 			}
@@ -69,11 +68,11 @@ namespace NHibernate.Test.NHSpecificTest.NH687
 			{
 				using (ISession session = OpenSession())
 				{
-					await (session.DeleteAsync(foo, CancellationToken.None));
-					await (session.DeleteAsync(foo.FooBar, CancellationToken.None));
-					await (session.DeleteAsync(bar1, CancellationToken.None));
-					await (session.DeleteAsync(bar2, CancellationToken.None));
-					await (session.FlushAsync(CancellationToken.None));
+					await (session.DeleteAsync(foo));
+					await (session.DeleteAsync(foo.FooBar));
+					await (session.DeleteAsync(bar1));
+					await (session.DeleteAsync(bar2));
+					await (session.FlushAsync());
 				}
 			}
 		}

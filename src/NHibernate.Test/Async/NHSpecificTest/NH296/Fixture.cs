@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH296
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -33,29 +32,29 @@ namespace NHibernate.Test.NHSpecificTest.NH296
 
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(stock, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(stock));
+				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				stock = (Stock) await (s.GetAsync(typeof(Stock), stock.ProductPK, CancellationToken.None));
+				stock = (Stock) await (s.GetAsync(typeof(Stock), stock.ProductPK));
 				Assert.IsNotNull(stock);
 			}
 
 			using (ISession s = OpenSession())
 			{
-				stock = (Stock) await (s.GetAsync(typeof(Product), stock.ProductPK, CancellationToken.None));
+				stock = (Stock) await (s.GetAsync(typeof(Product), stock.ProductPK));
 				Assert.IsNotNull(stock);
 
 				stock.Property = 10;
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				await (s.DeleteAsync(stock, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync(stock));
+				await (s.FlushAsync());
 			}
 		}
 	}

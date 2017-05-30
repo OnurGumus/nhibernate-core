@@ -45,9 +45,9 @@ namespace NHibernate.Test.ReadOnly
 			dp.X = 0.1M;
 			dp.Y = (decimal)System.Math.Cos((double)dp.X);
 			dp.Description = "original";
-			await (s.SaveAsync(dp, CancellationToken.None));
+			await (s.SaveAsync(dp));
 			long dpId = dp.Id;
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(1);
@@ -56,25 +56,25 @@ namespace NHibernate.Test.ReadOnly
 	
 			s = OpenSession();
 			s.BeginTransaction();
-			dp = await (s.LoadAsync<DataPoint>(dpId, CancellationToken.None));
+			dp = await (s.LoadAsync<DataPoint>(dpId));
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False, "was initialized");
 			s.SetReadOnly(dp, true);
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False, "was initialized during SetReadOnly");
 			dp.Description = "changed";
 			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True, "was not initialized during mod");
 			Assert.That(dp.Description, Is.EqualTo("changed"), "desc not changed in memory");
-			await (s.FlushAsync(CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.FlushAsync());
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
 	
 			s = OpenSession();
 			s.BeginTransaction();
-			IList list = await (s.CreateQuery("from DataPoint where Description = 'changed'").ListAsync(CancellationToken.None));
+			IList list = await (s.CreateQuery("from DataPoint where Description = 'changed'").ListAsync());
 			Assert.That(list.Count, Is.EqualTo(0), "change written to database");
-			Assert.That(await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync(CancellationToken.None)), Is.EqualTo(1));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			Assert.That(await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync()), Is.EqualTo(1));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 			
 			AssertUpdateCount(0);
@@ -151,7 +151,7 @@ namespace NHibernate.Test.ReadOnly
 				DataPoint dp = new DataPoint();
 				dp.X = i * 0.1M;
 				dp.Y = (decimal)System.Math.Cos((double)dp.X);
-				await (s.SaveAsync(dp, CancellationToken.None));
+				await (s.SaveAsync(dp));
 			}
 	
 			AssertInsertCount(0);
@@ -160,7 +160,7 @@ namespace NHibernate.Test.ReadOnly
 			// NH-specific: Replace use of Scroll with List
 			IList<DataPoint> sr = await (s.CreateQuery("from DataPoint dp order by dp.X asc")
 					.SetReadOnly(true)
-					.ListAsync<DataPoint>(CancellationToken.None));
+					.ListAsync<DataPoint>());
 	
 			AssertInsertCount(100);
 			AssertUpdateCount(0);
@@ -169,9 +169,9 @@ namespace NHibernate.Test.ReadOnly
 			foreach(DataPoint dp in sr)
 			{
 				Assert.That(s.IsReadOnly(dp), Is.False);
-				await (s.DeleteAsync(dp, CancellationToken.None));
+				await (s.DeleteAsync(dp));
 			}
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -189,10 +189,10 @@ namespace NHibernate.Test.ReadOnly
 			dp.Description = "original";
 			dp.X = 0.1M;
 			dp.Y = (decimal)System.Math.Cos((double)dp.X);
-			await (s.SaveAsync(dp, CancellationToken.None));
+			await (s.SaveAsync(dp));
 			s.SetReadOnly(dp, true);
 			dp.Description = "different";
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(1);
@@ -201,26 +201,26 @@ namespace NHibernate.Test.ReadOnly
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			dp = await (s.GetAsync<DataPoint>(dp.Id, CancellationToken.None));
+			dp = await (s.GetAsync<DataPoint>(dp.Id));
 			s.SetReadOnly(dp, true);
 			Assert.That(dp.Description, Is.EqualTo("original"));
 			dp.Description = "changed";
 			Assert.That(dp.Description, Is.EqualTo("changed"));
-			await (s.RefreshAsync(dp, CancellationToken.None));
+			await (s.RefreshAsync(dp));
 			Assert.That(dp.Description, Is.EqualTo("original"));
 			dp.Description = "changed";
 			Assert.That(dp.Description, Is.EqualTo("changed"));
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 	
 			AssertInsertCount(0);
 			AssertUpdateCount(0);
 	
 			s.Clear();
 			t = s.BeginTransaction();
-			dp = await (s.GetAsync<DataPoint>(dp.Id, CancellationToken.None));
+			dp = await (s.GetAsync<DataPoint>(dp.Id));
 			Assert.That(dp.Description, Is.EqualTo("original"));
-			await (s.DeleteAsync(dp, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(dp));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -239,8 +239,8 @@ namespace NHibernate.Test.ReadOnly
 			dp.Description = "original";
 			dp.X = 0.1M;
 			dp.Y = (decimal)System.Math.Cos((double)dp.X);
-			await (s.SaveAsync(dp, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(dp));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(1);
@@ -249,26 +249,26 @@ namespace NHibernate.Test.ReadOnly
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			dp = await (s.GetAsync<DataPoint>(dp.Id, CancellationToken.None));
+			dp = await (s.GetAsync<DataPoint>(dp.Id));
 			s.SetReadOnly(dp, true);
 			Assert.That(dp.Description, Is.EqualTo("original"));
 			dp.Description = "changed";
 			Assert.That(dp.Description, Is.EqualTo("changed"));
-			await (s.RefreshAsync(dp, CancellationToken.None));
+			await (s.RefreshAsync(dp));
 			Assert.That(dp.Description, Is.EqualTo("original"));
 			dp.Description = "changed";
 			Assert.That(dp.Description, Is.EqualTo("changed"));
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 	
 			AssertInsertCount(0);
 			AssertUpdateCount(0);
 	
 			s.Clear();
 			t = s.BeginTransaction();
-			dp = await (s.GetAsync<DataPoint>(dp.Id, CancellationToken.None));
+			dp = await (s.GetAsync<DataPoint>(dp.Id));
 			Assert.That(dp.Description, Is.EqualTo("original"));
-			await (s.DeleteAsync(dp, CancellationToken.None));;
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(dp));;
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -287,8 +287,8 @@ namespace NHibernate.Test.ReadOnly
 			dp.Description = "original";
 			dp.X = 0.1M;
 			dp.Y = (decimal)System.Math.Cos((double)dp.X);
-			await (s.SaveAsync(dp, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(dp));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(1);
@@ -299,27 +299,27 @@ namespace NHibernate.Test.ReadOnly
 			t = s.BeginTransaction();
 			dp.Description = "changed";
 			Assert.That(dp.Description, Is.EqualTo("changed"));
-			await (s.RefreshAsync(dp, CancellationToken.None));
+			await (s.RefreshAsync(dp));
 			Assert.That(dp.Description, Is.EqualTo("original"));
 			Assert.That(s.IsReadOnly(dp), Is.False);
 			s.SetReadOnly(dp, true);
 			dp.Description = "changed";
 			Assert.That(dp.Description, Is.EqualTo("changed"));
-			await (s.EvictAsync(dp, CancellationToken.None));
-			await (s.RefreshAsync(dp, CancellationToken.None));
+			await (s.EvictAsync(dp));
+			await (s.RefreshAsync(dp));
 			Assert.That(dp.Description, Is.EqualTo("original"));
 			Assert.That(s.IsReadOnly(dp), Is.False);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 	
 			AssertInsertCount(0);
 			AssertUpdateCount(0);
 	
 			s.Clear();
 			t = s.BeginTransaction();
-			dp = await (s.GetAsync<DataPoint>(dp.Id, CancellationToken.None));
+			dp = await (s.GetAsync<DataPoint>(dp.Id));
 			Assert.That(dp.Description, Is.EqualTo("original"));
-			await (s.DeleteAsync(dp, CancellationToken.None));;
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(dp));;
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -336,8 +336,8 @@ namespace NHibernate.Test.ReadOnly
 			DataPoint dp = new DataPoint();
 			dp.X = 0.1M;
 			dp.Y = (decimal)System.Math.Cos((double)dp.X);
-			await (s.SaveAsync(dp, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(dp));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(1);
@@ -346,10 +346,10 @@ namespace NHibernate.Test.ReadOnly
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			dp = await (s.GetAsync<DataPoint>(dp.Id, CancellationToken.None));
+			dp = await (s.GetAsync<DataPoint>(dp.Id));
 			s.SetReadOnly(dp, true);
-			await (s.DeleteAsync(dp, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(dp));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -357,9 +357,9 @@ namespace NHibernate.Test.ReadOnly
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IList list = await (s.CreateQuery("from DataPoint where Description='done!'").ListAsync(CancellationToken.None));
+			IList list = await (s.CreateQuery("from DataPoint where Description='done!'").ListAsync());
 			Assert.That(list.Count, Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -373,8 +373,8 @@ namespace NHibernate.Test.ReadOnly
 			DataPoint dp = new DataPoint();
 			dp.X = 0.1M;
 			dp.Y = (decimal)System.Math.Cos((double)dp.X);
-			await (s.SaveAsync(dp, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(dp));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(1);
@@ -383,11 +383,11 @@ namespace NHibernate.Test.ReadOnly
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			dp = await (s.GetAsync<DataPoint>(dp.Id, CancellationToken.None));
+			dp = await (s.GetAsync<DataPoint>(dp.Id));
 			s.SetReadOnly(dp, true);
 			dp.Description = "a DataPoint";
-			await (s.DeleteAsync(dp, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(dp));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -396,9 +396,9 @@ namespace NHibernate.Test.ReadOnly
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IList list = await (s.CreateQuery("from DataPoint where Description='done!'").ListAsync(CancellationToken.None));
+			IList list = await (s.CreateQuery("from DataPoint where Description='done!'").ListAsync());
 			Assert.That(list.Count, Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 		}
 	
@@ -415,9 +415,9 @@ namespace NHibernate.Test.ReadOnly
 				dp = new DataPoint();
 				dp.X = i * 0.1M;
 				dp.Y = (decimal)System.Math.Cos((double)dp.X);
-				await (s.SaveAsync(dp, CancellationToken.None));
+				await (s.SaveAsync(dp));
 			}
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(100);
@@ -426,13 +426,13 @@ namespace NHibernate.Test.ReadOnly
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			DataPoint dpLast = await (s.GetAsync<DataPoint>(dp.Id, CancellationToken.None));
+			DataPoint dpLast = await (s.GetAsync<DataPoint>(dp.Id));
 			Assert.That(s.IsReadOnly(dpLast), Is.False);
 			
 			// NH-specific: Replace use of Scroll with List
 			IList<DataPoint> sr = await (s.CreateQuery("from DataPoint dp order by dp.X asc")
 					.SetReadOnly(true)
-					.ListAsync<DataPoint>(CancellationToken.None));
+					.ListAsync<DataPoint>());
 			
 			int nExpectedChanges = 0;
 			int index = 0;
@@ -455,7 +455,7 @@ namespace NHibernate.Test.ReadOnly
 				}
 				nextDp.Description = "done!";
 			}
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Clear();
 	
 			AssertInsertCount(0);
@@ -463,10 +463,10 @@ namespace NHibernate.Test.ReadOnly
 			ClearCounts();
 	
 			t = s.BeginTransaction();
-			IList list = await (s.CreateQuery("from DataPoint where Description='done!'").ListAsync(CancellationToken.None));
+			IList list = await (s.CreateQuery("from DataPoint where Description='done!'").ListAsync());
 			Assert.That(list.Count, Is.EqualTo(nExpectedChanges));
-			Assert.That(await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync(CancellationToken.None)), Is.EqualTo(100));
-			await (t.CommitAsync(CancellationToken.None));
+			Assert.That(await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync()), Is.EqualTo(100));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -485,9 +485,9 @@ namespace NHibernate.Test.ReadOnly
 				dp = new DataPoint();
 				dp.X = i * 0.1M;
 				dp.Y = (decimal)System.Math.Cos((double)dp.X);
-				await (s.SaveAsync(dp, CancellationToken.None));
+				await (s.SaveAsync(dp));
 			}
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(100);
@@ -496,7 +496,7 @@ namespace NHibernate.Test.ReadOnly
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			DataPoint dpLast = await (s.GetAsync<DataPoint>(dp.Id, CancellationToken.None));
+			DataPoint dpLast = await (s.GetAsync<DataPoint>(dp.Id));
 			Assert.That(s.IsReadOnly(dpLast), Is.False);
 			s.SetReadOnly(dpLast, true);
 			Assert.That(s.IsReadOnly(dpLast), Is.True);
@@ -507,7 +507,7 @@ namespace NHibernate.Test.ReadOnly
 			// NH-specific: Replace use of Scroll with List
 			IList<DataPoint> sr = await (s.CreateQuery("from DataPoint dp order by dp.X asc")
 					.SetReadOnly(false)
-					.ListAsync<DataPoint>(CancellationToken.None));
+					.ListAsync<DataPoint>());
 
 			int nExpectedChanges = 0;
 			int index = 0;
@@ -530,17 +530,17 @@ namespace NHibernate.Test.ReadOnly
 				}
 				nextDp.Description = "done!";
 			}
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Clear();
 	
 			AssertUpdateCount(nExpectedChanges);
 			ClearCounts();
 	
 			t = s.BeginTransaction();
-			IList list = await (s.CreateQuery("from DataPoint where Description='done!'").ListAsync(CancellationToken.None));
+			IList list = await (s.CreateQuery("from DataPoint where Description='done!'").ListAsync());
 			Assert.That(list.Count, Is.EqualTo(nExpectedChanges));
-			Assert.That(await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync(CancellationToken.None)), Is.EqualTo(100));
-			await (t.CommitAsync(CancellationToken.None));
+			Assert.That(await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync()), Is.EqualTo(100));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -560,9 +560,9 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.BeginTransaction();
 			TextHolder holder = new TextHolder(origText);
-			await (s.SaveAsync(holder, CancellationToken.None));
+			await (s.SaveAsync(holder));
 			long id = holder.Id;
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(1);
@@ -571,21 +571,21 @@ namespace NHibernate.Test.ReadOnly
 	
 			s = OpenSession();
 			s.BeginTransaction();
-			holder = await (s.GetAsync<TextHolder>(id, CancellationToken.None));
+			holder = await (s.GetAsync<TextHolder>(id));
 			s.SetReadOnly(holder, true);
 			holder.TheText = newText;
-			await (s.FlushAsync(CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.FlushAsync());
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
 	
 			s = OpenSession();
 			s.BeginTransaction();
-			holder = await (s.GetAsync<TextHolder>(id, CancellationToken.None));
+			holder = await (s.GetAsync<TextHolder>(id));
 			Assert.That(origText, Is.EqualTo(holder.TheText), "change written to database");
-			await (s.DeleteAsync(holder, CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(holder));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -602,8 +602,8 @@ namespace NHibernate.Test.ReadOnly
 			DataPoint dp = new DataPoint();
 			dp.X = 0.1M;
 			dp.Y = (decimal)System.Math.Cos((double)dp.X);
-			await (s.SaveAsync(dp, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(dp));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(1);
@@ -614,21 +614,21 @@ namespace NHibernate.Test.ReadOnly
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			DataPoint dpManaged = await (s.GetAsync<DataPoint>(dp.Id, CancellationToken.None));
+			DataPoint dpManaged = await (s.GetAsync<DataPoint>(dp.Id));
 			s.SetReadOnly(dpManaged, true);
 			DataPoint dpMerged = (DataPoint)s.Merge(dp);
 			Assert.That(dpManaged, Is.SameAs(dpMerged));
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			dpManaged = await (s.GetAsync<DataPoint>(dp.Id, CancellationToken.None));
+			dpManaged = await (s.GetAsync<DataPoint>(dp.Id));
 			Assert.That(dpManaged.Description, Is.Null);
-			await (s.DeleteAsync(dpManaged, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(dpManaged));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);

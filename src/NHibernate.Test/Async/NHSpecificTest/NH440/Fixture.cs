@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH440
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	///This is a test class for one_to_one_bug.Fruit and is intended
 	///to contain all one_to_one_bug.Fruit Unit Tests
@@ -71,13 +70,13 @@ namespace NHibernate.Test.NHSpecificTest.NH440
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				await (session.SaveAsync(apple, CancellationToken.None));
-				await (session.SaveAsync(fruit, CancellationToken.None));
+				await (session.SaveAsync(apple));
+				await (session.SaveAsync(fruit));
 
-				Assert.IsNotNull(await (session.GetAsync(typeof(Apple), apple.Id, CancellationToken.None)));
-				Assert.IsNotNull(await (session.GetAsync(typeof(Fruit), fruit.Id, CancellationToken.None)));
+				Assert.IsNotNull(await (session.GetAsync(typeof(Apple), apple.Id)));
+				Assert.IsNotNull(await (session.GetAsync(typeof(Fruit), fruit.Id)));
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -93,24 +92,24 @@ namespace NHibernate.Test.NHSpecificTest.NH440
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				await (session.SaveAsync(apple, CancellationToken.None));
-				await (session.SaveAsync(fruit, CancellationToken.None));
+				await (session.SaveAsync(apple));
+				await (session.SaveAsync(fruit));
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				Apple apple2 = (Apple) await (session.GetAsync(typeof(Apple), apple.Id, CancellationToken.None));
-				Fruit fruit2 = (Fruit) await (session.GetAsync(typeof(Fruit), fruit.Id, CancellationToken.None));
+				Apple apple2 = (Apple) await (session.GetAsync(typeof(Apple), apple.Id));
+				Fruit fruit2 = (Fruit) await (session.GetAsync(typeof(Fruit), fruit.Id));
 
 				Assert.IsNotNull(apple2);
 				Assert.IsNotNull(fruit2);
 
 				Assert.AreSame(apple2, fruit2.TheApple);
 				Assert.AreSame(fruit2, apple2.TheFruit);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -126,20 +125,20 @@ namespace NHibernate.Test.NHSpecificTest.NH440
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				await (session.SaveAsync(apple, CancellationToken.None));
-				await (session.SaveAsync(fruit, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (session.SaveAsync(apple));
+				await (session.SaveAsync(fruit));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				Fruit fruit2 = (Fruit) await (session.GetAsync(typeof(Fruit), fruit.Id, CancellationToken.None));
+				Fruit fruit2 = (Fruit) await (session.GetAsync(typeof(Fruit), fruit.Id));
 				Assert.IsNotNull(fruit2);
 				IList results = await (session
 					.CreateQuery("from Apple a where a.TheFruit = ?")
 					.SetParameter(0, fruit2)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.AreEqual(1, results.Count);
 				Apple apple2 = (Apple) results[0];
@@ -147,7 +146,7 @@ namespace NHibernate.Test.NHSpecificTest.NH440
 
 				Assert.AreSame(apple2, fruit2.TheApple);
 				Assert.AreSame(fruit2, apple2.TheFruit);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 	}

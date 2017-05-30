@@ -79,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			{
 				using (var s = sessions.OpenSession())
 				{
-					await (s.SaveAsync(new Nums {ID = 29, NumA = 1, NumB = 3}, CancellationToken.None));
+					await (s.SaveAsync(new Nums {ID = 29, NumA = 1, NumB = 3}));
 				}
 				tx.Complete();
 			}
@@ -88,7 +88,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			{
 				using (var s = sessions.OpenSession())
 				{
-					var nums = await (s.LoadAsync<Nums>(29, CancellationToken.None));
+					var nums = await (s.LoadAsync<Nums>(29));
 					Assert.AreEqual(1, nums.NumA);
 					Assert.AreEqual(3, nums.NumB);
 				}
@@ -103,7 +103,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			{
 				using (var s = sessions.OpenSession(connection))
 				{
-					var nums = await (s.LoadAsync<Nums>(29, CancellationToken.None));
+					var nums = await (s.LoadAsync<Nums>(29));
 					Assert.AreEqual(1, nums.NumA);
 					Assert.AreEqual(3, nums.NumB);
 				}
@@ -113,9 +113,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			using (var s = sessions.OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				var nums = await (s.LoadAsync<Nums>(29, CancellationToken.None));
-				await (s.DeleteAsync(nums, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				var nums = await (s.LoadAsync<Nums>(29));
+				await (s.DeleteAsync(nums));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -127,7 +127,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			{
 				using (ISession s = sessions.OpenSession())
 				{
-					id = await (s.SaveAsync(new Nums { NumA = 1, NumB = 2, ID = 5 }, CancellationToken.None));
+					id = await (s.SaveAsync(new Nums { NumA = 1, NumB = 2, ID = 5 }));
 				}
 				tx.Complete();
 			}
@@ -135,11 +135,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				Nums nums = await (s.GetAsync<Nums>(id, CancellationToken.None));
+				Nums nums = await (s.GetAsync<Nums>(id));
 				Assert.IsNotNull(nums);
-				await (s.DeleteAsync(nums, CancellationToken.None));
+				await (s.DeleteAsync(nums));
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -152,7 +152,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 				using (ISession s = sessions.OpenSession())
 				{
 					s.FlushMode = FlushMode.Never;
-					id = await (s.SaveAsync(new Nums { NumA = 1, NumB = 2, ID = 5 }, CancellationToken.None));
+					id = await (s.SaveAsync(new Nums { NumA = 1, NumB = 2, ID = 5 }));
 				}
 				tx.Complete();
 			}
@@ -160,9 +160,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				Nums nums = await (s.GetAsync<Nums>(id, CancellationToken.None));
+				Nums nums = await (s.GetAsync<Nums>(id));
 				Assert.IsNull(nums);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -179,11 +179,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 				using (ISession s2 = sessions.OpenSession())
 				{
 
-					id1 = await (s1.SaveAsync(new Nums { NumA = 1, NumB = 2, ID = 5 }, CancellationToken.None));
-					await (s1.FlushAsync(CancellationToken.None));
+					id1 = await (s1.SaveAsync(new Nums { NumA = 1, NumB = 2, ID = 5 }));
+					await (s1.FlushAsync());
 
-					id2 = await (s2.SaveAsync(new Nums { NumA = 1, NumB = 2, ID = 6 }, CancellationToken.None));
-					await (s2.FlushAsync(CancellationToken.None));
+					id2 = await (s2.SaveAsync(new Nums { NumA = 1, NumB = 2, ID = 6 }));
+					await (s2.FlushAsync());
 
 					tx.Complete();
 				}
@@ -192,15 +192,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				Nums nums = await (s.GetAsync<Nums>(id1, CancellationToken.None));
+				Nums nums = await (s.GetAsync<Nums>(id1));
 				Assert.IsNotNull(nums);
-				await (s.DeleteAsync(nums, CancellationToken.None));
+				await (s.DeleteAsync(nums));
 
-				nums = await (s.GetAsync<Nums>(id2, CancellationToken.None));
+				nums = await (s.GetAsync<Nums>(id2));
 				Assert.IsNotNull(nums);
-				await (s.DeleteAsync(nums, CancellationToken.None));
+				await (s.DeleteAsync(nums));
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -217,9 +217,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 				using (ISession s2 = sessions.OpenSession())
 				{
 
-					id1 = await (s1.SaveAsync(new Nums { NumA = 1, NumB = 2, ID = 5 }, CancellationToken.None));
+					id1 = await (s1.SaveAsync(new Nums { NumA = 1, NumB = 2, ID = 5 }));
 
-					id2 = await (s2.SaveAsync(new Nums { NumA = 1, NumB = 2, ID = 6 }, CancellationToken.None));
+					id2 = await (s2.SaveAsync(new Nums { NumA = 1, NumB = 2, ID = 6 }));
 
 					tx.Complete();
 				}
@@ -228,15 +228,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				Nums nums = await (s.GetAsync<Nums>(id1, CancellationToken.None));
+				Nums nums = await (s.GetAsync<Nums>(id1));
 				Assert.IsNotNull(nums);
-				await (s.DeleteAsync(nums, CancellationToken.None));
+				await (s.DeleteAsync(nums));
 
-				nums = await (s.GetAsync<Nums>(id2, CancellationToken.None));
+				nums = await (s.GetAsync<Nums>(id2));
 				Assert.IsNotNull(nums);
-				await (s.DeleteAsync(nums, CancellationToken.None));
+				await (s.DeleteAsync(nums));
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 	}

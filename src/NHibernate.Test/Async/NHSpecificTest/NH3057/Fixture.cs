@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3057
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -52,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3057
 			{
 				var entities = await (session.Query<AClass>()
 					.Where(a => a.Bs.Any(b => b.InheritedProperty == "B2"))
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.AreEqual(1, entities.Count);
 				Assert.AreEqual(1, entities[0].Id);
@@ -66,7 +65,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3057
 			using (session.BeginTransaction())
 			{
 				var entities = await (session.CreateQuery("from AClass a where exists (from a.Bs b where b.InheritedProperty = 'B2')")
-					.ListAsync<AClass>(CancellationToken.None));
+					.ListAsync<AClass>());
 
 				Assert.AreEqual(1, entities.Count);
 				Assert.AreEqual(1, entities[0].Id);

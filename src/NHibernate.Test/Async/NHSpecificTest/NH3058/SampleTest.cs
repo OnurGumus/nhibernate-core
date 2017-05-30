@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3058
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SampleTestAsync : BugTestCase
 	{
@@ -79,7 +78,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3058
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				var book = await (s.LoadAsync<DomainClass>(1, CancellationToken.None));
+				var book = await (s.LoadAsync<DomainClass>(1));
 				
 				Assert.False(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"));
 
@@ -88,7 +87,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3058
 				Assert.That(value, Is.EqualTo("Some text"));
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.True);
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 	}

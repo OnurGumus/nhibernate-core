@@ -81,7 +81,7 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 				            .CreateCriteria("ManagedEmployees")
 				            .Add(Restrictions.Eq("Position", "parent"))
 				            .SetResultTransformer(new RootEntityResultTransformer())
-				            .ListAsync(CancellationToken.None));
+				            .ListAsync());
 				Assert.That(list, Has.Count.EqualTo(1));
 				Assert.That(list[0], Is.Not.Null);
 				Assert.That(list[0], Is.TypeOf<Employee>());
@@ -98,7 +98,7 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 				            .CreateCriteria("Amounts")
 				            .Add(Restrictions.Gt("Amount", 5m))
 				            .SetResultTransformer(new RootEntityResultTransformer())
-				            .ListAsync(CancellationToken.None));
+				            .ListAsync());
 				Assert.That(list, Has.Count.EqualTo(1));
 				Assert.That(list[0], Is.Not.Null);
 				Assert.That(list[0], Is.TypeOf<Employee>());
@@ -137,7 +137,7 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 				                                                       .SetProjection(Projections.Id())
 				                                                       .CreateCriteria("Amounts")
 				                                                       .Add(Restrictions.Gt("Amount", 5m))))
-				            .ListAsync(CancellationToken.None));
+				            .ListAsync());
 				Assert.That(list, Has.Count.EqualTo(1));
 				Assert.That(list[0], Is.Not.Null);
 				Assert.That(list[0], Is.TypeOf<Employee>());

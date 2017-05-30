@@ -14,7 +14,6 @@ using NHibernate.Cfg;
 namespace NHibernate.Test.NHSpecificTest.NH2112
 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture]
     public class FixtureAsync : BugTestCase
     {
@@ -46,22 +45,22 @@ namespace NHibernate.Test.NHSpecificTest.NH2112
                 a = new A();
                 a.Name = "A";
                 B b1 = new B{ Name = "B1"};
-                await (s.SaveAsync(b1, CancellationToken.None));
+                await (s.SaveAsync(b1));
                 B b2 = new B{ Name = "B2"};
-                await (s.SaveAsync(b2, CancellationToken.None));
+                await (s.SaveAsync(b2));
                 a.Map.Add(b1 , "B1Text");
                 a.Map.Add(b2, "B2Text");
-                await (s.SaveAsync(a, CancellationToken.None));
-                await (s.FlushAsync(CancellationToken.None));
-                await (tx.CommitAsync(CancellationToken.None));
+                await (s.SaveAsync(a));
+                await (s.FlushAsync());
+                await (tx.CommitAsync());
             }
             ClearCounts();
             using (ISession s = OpenSession())
             using (ITransaction tx = s.BeginTransaction())
             {
                 A aCopy = (A)s.Merge(a);
-                await (s.FlushAsync(CancellationToken.None));
-                await (tx.CommitAsync(CancellationToken.None));
+                await (s.FlushAsync());
+                await (tx.CommitAsync());
             }
             AssertUpdateCount(0);
             AssertInsertCount(0);

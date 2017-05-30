@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH276
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{
@@ -60,19 +59,19 @@ namespace NHibernate.Test.NHSpecificTest.NH276
 			it.Location = madison;
 
 			ISession s = OpenSession();
-			await (s.SaveAsync(madison, CancellationToken.None));
-			await (s.SaveAsync(college, CancellationToken.None));
-			await (s.SaveAsync(acctg, CancellationToken.None));
-			await (s.SaveAsync(hr, CancellationToken.None));
-			await (s.SaveAsync(it, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(madison));
+			await (s.SaveAsync(college));
+			await (s.SaveAsync(acctg));
+			await (s.SaveAsync(hr));
+			await (s.SaveAsync(it));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
 
 			ICriteria c = s.CreateCriteria(typeof(Office));
 			c.Add(Expression.Eq("Location.Id", madison.Id));
-			IList results = await (c.ListAsync(CancellationToken.None));
+			IList results = await (c.ListAsync());
 
 			Assert.AreEqual(2, results.Count, "2 objects");
 			foreach (Office office in results)
@@ -82,7 +81,7 @@ namespace NHibernate.Test.NHSpecificTest.NH276
 
 			c = s.CreateCriteria(typeof(Office));
 			c.Add(Expression.Eq("Location.Id", college.Id));
-			results = await (c.ListAsync(CancellationToken.None));
+			results = await (c.ListAsync());
 
 			Assert.AreEqual(1, results.Count, "1 objects");
 			foreach (Office office in results)
@@ -90,9 +89,9 @@ namespace NHibernate.Test.NHSpecificTest.NH276
 				Assert.AreEqual(college.Id, office.Location.Id, "same location as criteria specified");
 			}
 
-			await (s.DeleteAsync("from Office ", CancellationToken.None));
-			await (s.DeleteAsync("from Building", CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync("from Office "));
+			await (s.DeleteAsync("from Building"));
+			await (s.FlushAsync());
 			s.Close();
 		}
 	}

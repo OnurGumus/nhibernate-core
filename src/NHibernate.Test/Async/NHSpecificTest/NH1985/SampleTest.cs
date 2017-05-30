@@ -45,10 +45,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1985
 					{
 						using (ITransaction trans = session.BeginTransaction())
 						{
-							var entity = await (session.GetAsync<DomainClass>(1, CancellationToken.None));
-							await (session.DeleteAsync(entity, CancellationToken.None));
+							var entity = await (session.GetAsync<DomainClass>(1));
+							await (session.DeleteAsync(entity));
 
-							await (trans.CommitAsync(CancellationToken.None)); // This used to throw...
+							await (trans.CommitAsync()); // This used to throw...
 						}
 					});
 			}
@@ -83,10 +83,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1985
 					{
 						using (ITransaction trans = session.BeginTransaction())
 						{
-							var entity = await (session.GetAsync<DomainClass>(1, CancellationToken.None));
-							await (session.DeleteAsync(entity, CancellationToken.None));
+							var entity = await (session.GetAsync<DomainClass>(1));
+							await (session.DeleteAsync(entity));
 
-							await (trans.CommitAsync(CancellationToken.None));
+							await (trans.CommitAsync());
 						}
 					});
 			}

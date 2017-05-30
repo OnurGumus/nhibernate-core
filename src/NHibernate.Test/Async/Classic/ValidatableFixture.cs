@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Classic
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class ValidatableFixtureAsync : TestCase
 	{
@@ -36,8 +35,8 @@ namespace NHibernate.Test.Classic
 			{
 				using (ISession s = OpenSession())
 				{
-					await (s.SaveAsync(new Video(), CancellationToken.None));
-					await (s.FlushAsync(CancellationToken.None));
+					await (s.SaveAsync(new Video()));
+					await (s.FlushAsync());
 				}
 				Assert.Fail("Saved an invalid entity");
 			}
@@ -49,9 +48,9 @@ namespace NHibernate.Test.Classic
 			Video v = new Video("Shinobi", 10, 10);
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(v, CancellationToken.None));
-				await (s.DeleteAsync(v, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(v));
+				await (s.DeleteAsync(v));
+				await (s.FlushAsync());
 			}
 		}
 
@@ -61,8 +60,8 @@ namespace NHibernate.Test.Classic
 			Video v = new Video("Shinobi", 10, 10);
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(v, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(v));
+				await (s.FlushAsync());
 			}
 			int savedId = v.Id;
 			// update detached
@@ -71,8 +70,8 @@ namespace NHibernate.Test.Classic
 			{
 				using (ISession s = OpenSession())
 				{
-					await (s.UpdateAsync(v, CancellationToken.None));
-					await (s.FlushAsync(CancellationToken.None));
+					await (s.UpdateAsync(v));
+					await (s.FlushAsync());
 				}
 				Assert.Fail("Updated an invalid entity");
 			}
@@ -84,12 +83,12 @@ namespace NHibernate.Test.Classic
 			// update in the same session
 			using (ISession s = OpenSession())
 			{
-				Video vu = (Video)await (s.GetAsync(typeof(Video), savedId, CancellationToken.None));
+				Video vu = (Video)await (s.GetAsync(typeof(Video), savedId));
 				vu.Width = 0;
 				try
 				{
-					await (s.UpdateAsync(vu, CancellationToken.None));
-					await (s.FlushAsync(CancellationToken.None));
+					await (s.UpdateAsync(vu));
+					await (s.FlushAsync());
 					Assert.Fail("Updated an invalid entity");
 				}
 				catch (ValidationFailure)
@@ -101,8 +100,8 @@ namespace NHibernate.Test.Classic
 			// cleanup
 			using (ISession s = OpenSession())
 			{
-				await (s.DeleteAsync(v, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync(v));
+				await (s.FlushAsync());
 			}
 		}
 
@@ -112,8 +111,8 @@ namespace NHibernate.Test.Classic
 			Video v = new Video("Shinobi", 10, 10);
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(v, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(v));
+				await (s.FlushAsync());
 			}
 			v.Heigth = 0;
 			try
@@ -121,7 +120,7 @@ namespace NHibernate.Test.Classic
 				using (ISession s = OpenSession())
 				{
 					s.Merge(v);
-					await (s.FlushAsync(CancellationToken.None));
+					await (s.FlushAsync());
 				}
 				Assert.Fail("Updated an invalid entity");
 			}
@@ -136,7 +135,7 @@ namespace NHibernate.Test.Classic
 				using (ISession s = OpenSession())
 				{
 					s.Merge(v1);
-					await (s.FlushAsync(CancellationToken.None));
+					await (s.FlushAsync());
 				}
 				Assert.Fail("saved an invalid entity");
 			}
@@ -150,8 +149,8 @@ namespace NHibernate.Test.Classic
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from Video", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Video"));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -161,11 +160,11 @@ namespace NHibernate.Test.Classic
 			Video v = new Video("Shinobi", 10, 10);
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(v, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(v));
+				await (s.FlushAsync());
 				// Validatable not called in deletation
-				await (s.DeleteAsync(v, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync(v));
+				await (s.FlushAsync());
 			}
 		}
 

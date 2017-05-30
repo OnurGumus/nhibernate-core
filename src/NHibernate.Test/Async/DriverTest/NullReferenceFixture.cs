@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.DriverTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// http://nhibernate.jira.com/browse/NH-177
 	/// </summary>
@@ -45,7 +44,7 @@ namespace NHibernate.Test.DriverTest
 				s = OpenSession();
 				IQuery q = s.CreateQuery("from Simple s where s.Name = :missing");
 				Assert.IsNotNull(q);
-				await (q.ListAsync(CancellationToken.None));
+				await (q.ListAsync());
 			}
 			catch (QueryException ae)
 			{
@@ -71,7 +70,7 @@ namespace NHibernate.Test.DriverTest
 				IQuery q = s.CreateQuery("from Simple s where s.Name = :missing");
 				Assert.IsNotNull(q);
 				q.SetString("missing", "nhibernate");
-				IList list = await (q.ListAsync(CancellationToken.None));
+				IList list = await (q.ListAsync());
 				Assert.IsNotNull(list);
 			}
 			catch (Exception e)

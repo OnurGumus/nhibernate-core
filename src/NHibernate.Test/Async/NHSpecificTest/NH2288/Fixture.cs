@@ -54,7 +54,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2288
 				cfg.SetProperty(Environment.DefaultCatalog, "nhibernate");
 				cfg.SetProperty(Environment.DefaultSchema, "dbo");
 				cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2288.AclassWithNothing.hbm.xml", GetType().Assembly);
-				return AssertThatCheckOnTableExistenceIsCorrectAsync(cfg, CancellationToken.None);
+				return AssertThatCheckOnTableExistenceIsCorrectAsync(cfg);
 			}
 			catch (System.Exception ex)
 			{
@@ -72,7 +72,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2288
 				cfg.SetProperty(Environment.DefaultCatalog, "nhibernate");
 				cfg.SetProperty(Environment.DefaultSchema, "somethingDifferent");
 				cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2288.AclassWithDefault.hbm.xml", GetType().Assembly);
-				return AssertThatCheckOnTableExistenceIsCorrectAsync(cfg, CancellationToken.None);
+				return AssertThatCheckOnTableExistenceIsCorrectAsync(cfg);
 			}
 			catch (System.Exception ex)
 			{
@@ -90,7 +90,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2288
 				cfg.SetProperty(Environment.DefaultCatalog, "nhibernate");
 				cfg.SetProperty(Environment.DefaultSchema, "somethingDifferent");
 				cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2288.AclassWithSpecific.hbm.xml", GetType().Assembly);
-				return AssertThatCheckOnTableExistenceIsCorrectAsync(cfg, CancellationToken.None);
+				return AssertThatCheckOnTableExistenceIsCorrectAsync(cfg);
 			}
 			catch (System.Exception ex)
 			{
@@ -108,7 +108,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2288
 				cfg.SetProperty(Environment.DefaultCatalog, "nhibernate");
 				cfg.SetProperty(Environment.DefaultSchema, "somethingDifferent");
 				cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2288.AclassWithDefault.hbm.xml", GetType().Assembly);
-				return AssertThatCheckOnTableExistenceIsCorrectAsync(cfg, CancellationToken.None);
+				return AssertThatCheckOnTableExistenceIsCorrectAsync(cfg);
 			}
 			catch (System.Exception ex)
 			{

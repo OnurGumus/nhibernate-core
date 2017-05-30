@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2201
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -56,7 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2201
 					await (s.CreateMultiCriteria()
 						.Add<Parent>(s.CreateCriteria<Parent>())
 						.Add<Parent>(s.CreateCriteria<Parent>())
-						.ListAsync(CancellationToken.None));
+						.ListAsync());
 
 				var result1 = (IList<Parent>)results[0];
 				var result2 = (IList<Parent>)results[1];

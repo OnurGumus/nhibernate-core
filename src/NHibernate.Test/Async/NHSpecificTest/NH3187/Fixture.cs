@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3187
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture, Ignore("Not fixed yet.")]
 	public class FixtureAsync : BugTestCase
 	{
@@ -54,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3187
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var station = await (session.Query<Station>().SingleAsync(CancellationToken.None));
+				var station = await (session.Query<Station>().SingleAsync());
 
 				var policemen = station.Policemen;
 

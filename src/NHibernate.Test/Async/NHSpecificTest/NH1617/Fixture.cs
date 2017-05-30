@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1617
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -69,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1617
 				using (ITransaction tran = session.BeginTransaction())
 				{
 					string sql = "from User";
-					IList<User> list = await (session.CreateQuery(sql).ListAsync<User>(CancellationToken.None));
+					IList<User> list = await (session.CreateQuery(sql).ListAsync<User>());
 					Assert.That(list.Count, Is.EqualTo(1));
 					Assert.That(list[0].OrderStatus, Is.EqualTo(2));
 				}

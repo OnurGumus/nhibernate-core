@@ -173,7 +173,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1507
 				//explicit join
 				IList results =
 					await (session.CreateQuery("select count(*) from Order as entity join entity.Employee ee "
-										+ "where ee.PostalCode='66666' or entity.ShipCountry='Deadville'").ListAsync(CancellationToken.None));
+										+ "where ee.PostalCode='66666' or entity.ShipCountry='Deadville'").ListAsync());
 
 				//Debug.Assert(list[0].Equals(191), "Wrong number of orders, returned: " + list[0].ToString());
 				Assert.AreEqual(2, results[0]);
@@ -188,7 +188,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1507
 				//implicit join
 				IList results =
 					await (session.CreateQuery("select count(*) from Order as entity "
-										+ "where entity.Employee.PostalCode='66666' or entity.ShipCountry='Deadville'").ListAsync(CancellationToken.None));
+										+ "where entity.Employee.PostalCode='66666' or entity.ShipCountry='Deadville'").ListAsync());
 
 				Assert.AreEqual(2, results[0]);
 			}

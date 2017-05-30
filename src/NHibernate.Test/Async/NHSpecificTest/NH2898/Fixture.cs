@@ -63,7 +63,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 				var list = await (session.CreateCriteria(typeof (ItemWithLazyProperty))
 					.Add(Restrictions.Gt("Id", 2))
 					.SetCacheable(true)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				Assert.AreEqual(3, list.Count);
 
 				using (var cmd = session.Connection.CreateCommand())
@@ -79,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 				var list = await (session.CreateCriteria(typeof (ItemWithLazyProperty))
 					.Add(Restrictions.Gt("Id", 2))
 					.SetCacheable(true)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				Assert.AreEqual(3, list.Count);
 			}
 		}
@@ -91,7 +91,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 			{
 				var list = await (session.CreateQuery("from ItemWithLazyProperty i where i.Id > 2")
 					.SetCacheable(true)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				Assert.AreEqual(3, list.Count);
 
 				using (var cmd = session.Connection.CreateCommand())
@@ -106,7 +106,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 				//should bring from cache
 				var list = await (session.CreateQuery("from ItemWithLazyProperty i where i.Id > 2")
 					.SetCacheable(true)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				Assert.AreEqual(3, list.Count);
 			}
 		}

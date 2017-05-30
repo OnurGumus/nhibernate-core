@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1579
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class NH1579FixtureAsync : BugTestCase
 	{
@@ -34,8 +33,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1579
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					await (session.SaveAsync(cart, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (session.SaveAsync(cart));
+					await (tx.CommitAsync());
 				}
 			}
 
@@ -43,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1579
 			{
 				IQuery query = session.CreateQuery("FROM Fruit f WHERE f.Container.id = :containerID");
 				query.SetGuid("containerID", cart.ID);
-				IList<Fruit> fruit = await (query.ListAsync<Fruit>(CancellationToken.None));
+				IList<Fruit> fruit = await (query.ListAsync<Fruit>());
 				Assert.AreEqual(2, fruit.Count);
 			}
 
@@ -51,8 +50,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1579
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					await (session.DeleteAsync("FROM Entity", CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (session.DeleteAsync("FROM Entity"));
+					await (tx.CommitAsync());
 				}
 			}
 		}

@@ -19,7 +19,6 @@ using Environment=NHibernate.Cfg.Environment;
 namespace NHibernate.Test.Naturalid.Mutable
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class MutableNaturalIdFixtureAsync : TestCase
 	{
@@ -46,8 +45,8 @@ namespace NHibernate.Test.Naturalid.Mutable
 			ISession s = OpenSession();
 			s.BeginTransaction();
 			User u = new User("gavin", "hb", "secret");
-			await (s.PersistAsync(u, CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(u));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 
 			FieldInfo name = u.GetType().GetField("name",
@@ -57,8 +56,8 @@ namespace NHibernate.Test.Naturalid.Mutable
 			s.BeginTransaction();
 			try
 			{
-				await (s.UpdateAsync(u, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.UpdateAsync(u));
+				await (s.Transaction.CommitAsync());
 			}
 			catch (HibernateException)
 			{
@@ -75,8 +74,8 @@ namespace NHibernate.Test.Naturalid.Mutable
 
 			s = OpenSession();
 			s.BeginTransaction();
-			await (s.DeleteAsync(u, CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(u));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 		}
 
@@ -90,11 +89,11 @@ namespace NHibernate.Test.Naturalid.Mutable
 
 			object nullUser =
 				await (s.CreateCriteria(typeof (User)).Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb")).SetCacheable(
-					true).UniqueResultAsync(CancellationToken.None));
+					true).UniqueResultAsync());
 
 			Assert.That(nullUser, Is.Null);
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			Assert.AreEqual(1, sessions.Statistics.QueryExecutionCount);
@@ -105,9 +104,9 @@ namespace NHibernate.Test.Naturalid.Mutable
 			t = s.BeginTransaction();
 
 			User u = new User("gavin", "hb", "secret");
-			await (s.PersistAsync(u, CancellationToken.None));
+			await (s.PersistAsync(u));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			sessions.Statistics.Clear();
@@ -118,11 +117,11 @@ namespace NHibernate.Test.Naturalid.Mutable
 			u =
 				(User)
 				await (s.CreateCriteria(typeof (User)).Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb")).SetCacheable(
-					true).UniqueResultAsync(CancellationToken.None));
+					true).UniqueResultAsync());
 
 			Assert.That(u, Is.Not.Null);
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			Assert.AreEqual(1, sessions.Statistics.QueryExecutionCount);
@@ -137,11 +136,11 @@ namespace NHibernate.Test.Naturalid.Mutable
 			u =
 				(User)
 				await (s.CreateCriteria(typeof (User)).Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb")).SetCacheable(
-					true).UniqueResultAsync(CancellationToken.None));
+					true).UniqueResultAsync());
 
-			await (s.DeleteAsync(u, CancellationToken.None));
+			await (s.DeleteAsync(u));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			Assert.AreEqual(0, sessions.Statistics.QueryExecutionCount);
@@ -154,11 +153,11 @@ namespace NHibernate.Test.Naturalid.Mutable
 
 			nullUser =
 				await (s.CreateCriteria(typeof (User)).Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb")).SetCacheable(
-					true).UniqueResultAsync(CancellationToken.None));
+					true).UniqueResultAsync());
 
 			Assert.That(nullUser, Is.Null);
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			Assert.AreEqual(1, sessions.Statistics.QueryExecutionCount);
@@ -173,9 +172,9 @@ namespace NHibernate.Test.Naturalid.Mutable
 			ITransaction t = s.BeginTransaction();
 
 			User u = new User("gavin", "hb", "secret");
-			await (s.PersistAsync(u, CancellationToken.None));
+			await (s.PersistAsync(u));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			sessions.Statistics.Clear();
@@ -185,11 +184,11 @@ namespace NHibernate.Test.Naturalid.Mutable
 
 			u = (User) await (s.CreateCriteria(typeof (User))
 				.Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb"))
-				.SetCacheable(true).UniqueResultAsync(CancellationToken.None));
+				.SetCacheable(true).UniqueResultAsync());
 
 			Assert.That(u, Is.Not.Null);
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			Assert.AreEqual(1, sessions.Statistics.QueryExecutionCount);
@@ -200,9 +199,9 @@ namespace NHibernate.Test.Naturalid.Mutable
 			t = s.BeginTransaction();
 
 			User v = new User("xam", "hb", "foobar");
-			await (s.PersistAsync(v, CancellationToken.None));
+			await (s.PersistAsync(v));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			sessions.Statistics.Clear();
@@ -212,7 +211,7 @@ namespace NHibernate.Test.Naturalid.Mutable
 
 			u = (User) await (s.CreateCriteria(typeof (User))
 				.Add(Restrictions.NaturalId().Set("name", "xam").Set("org", "hb"))
-				.SetCacheable(true).UniqueResultAsync(CancellationToken.None));
+				.SetCacheable(true).UniqueResultAsync());
 
 			Assert.That(u, Is.Not.Null);
 			Assert.AreEqual(1, sessions.Statistics.QueryExecutionCount);
@@ -220,19 +219,19 @@ namespace NHibernate.Test.Naturalid.Mutable
 
 			u = (User)await (s.CreateCriteria(typeof(User))
 				.Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb"))
-				.SetCacheable(true).UniqueResultAsync(CancellationToken.None));
+				.SetCacheable(true).UniqueResultAsync());
 			Assert.That(u, Is.Not.Null);
 			Assert.AreEqual(1, sessions.Statistics.QueryExecutionCount);
 			Assert.AreEqual(1, sessions.Statistics.QueryCacheHitCount);
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.DeleteAsync("from User", CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync("from User"));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -243,19 +242,19 @@ namespace NHibernate.Test.Naturalid.Mutable
 			ITransaction t = s.BeginTransaction();
 
 			User u = new User("emmanuel", "hb", "bh");
-			await (s.PersistAsync(u, CancellationToken.None));
+			await (s.PersistAsync(u));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			u = (User) await (s.CreateQuery("from User u where u.name = :name").SetParameter("name", "emmanuel").UniqueResultAsync(CancellationToken.None));
+			u = (User) await (s.CreateQuery("from User u where u.name = :name").SetParameter("name", "emmanuel").UniqueResultAsync());
 			Assert.AreEqual("emmanuel", u.Name);
-			await (s.DeleteAsync(u, CancellationToken.None));
+			await (s.DeleteAsync(u));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 		}
 	}

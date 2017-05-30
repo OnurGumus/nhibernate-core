@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1710
 				var script = new StringBuilder();
 				new SchemaExport(cfg).Create(sl => script.AppendLine(sl), true);
 				Assert.That(script.ToString(), Does.Contain(expectedExportString));
-				return new SchemaExport(cfg).DropAsync(false, true, CancellationToken.None);
+				return new SchemaExport(cfg).DropAsync(false, true);
 			}
 			catch (System.Exception ex)
 			{

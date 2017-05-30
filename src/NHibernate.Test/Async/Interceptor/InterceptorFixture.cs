@@ -15,7 +15,6 @@ using NHibernate.Type;
 namespace NHibernate.Test.Interceptor
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class InterceptorFixtureAsync : TestCase
 	{
@@ -38,17 +37,17 @@ namespace NHibernate.Test.Interceptor
 			ISession s = OpenSession(new CollectionInterceptor());
 			ITransaction t = s.BeginTransaction();
 			User u = new User("Gavin", "nivag");
-			await (s.PersistAsync(u, CancellationToken.None));
+			await (s.PersistAsync(u));
 			u.Password = "vagni";
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			u = await (s.GetAsync<User>("Gavin", CancellationToken.None));
+			u = await (s.GetAsync<User>("Gavin"));
 			Assert.AreEqual(2, u.Actions.Count);
-			await (s.DeleteAsync(u, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(u));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -58,18 +57,18 @@ namespace NHibernate.Test.Interceptor
 			ISession s = OpenSession(new PropertyInterceptor());
 			ITransaction t = s.BeginTransaction();
 			User u = new User("Gavin", "nivag");
-			await (s.PersistAsync(u, CancellationToken.None));
+			await (s.PersistAsync(u));
 			u.Password = "vagni";
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			u = await (s.GetAsync<User>("Gavin", CancellationToken.None));
+			u = await (s.GetAsync<User>("Gavin"));
 			Assert.IsTrue(u.Created.HasValue);
 			Assert.IsTrue(u.LastUpdated.HasValue);
-			await (s.DeleteAsync(u, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(u));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -93,23 +92,23 @@ namespace NHibernate.Test.Interceptor
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			User u = new User("Josh", "test");
-			await (s.PersistAsync(u, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(u));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession(new HHH1921Interceptor());
 			t = s.BeginTransaction();
-			u = await (s.GetAsync<User>(u.Name, CancellationToken.None));
+			u = await (s.GetAsync<User>(u.Name));
 			u.Password = "nottest";
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			u = await (s.GetAsync<User>("Josh", CancellationToken.None));
+			u = await (s.GetAsync<User>("Josh"));
 			Assert.AreEqual("test", u.Password);
-			await (s.DeleteAsync(u, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(u));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -150,17 +149,17 @@ namespace NHibernate.Test.Interceptor
 			Assert.IsNotNull(i.Details);
 			Assert.AreEqual(checkPerm, i.Details.Perm1);
 			Assert.AreEqual(checkComment, i.Details.Comment);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			i = await (s.GetAsync<Image>(i.Id, CancellationToken.None));
+			i = await (s.GetAsync<Image>(i.Id));
 			Assert.IsNotNull(i.Details);
 			Assert.AreEqual(checkPerm, i.Details.Perm1);
 			Assert.AreEqual(checkComment, i.Details.Comment);
-			await (s.DeleteAsync(i, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(i));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -173,18 +172,18 @@ namespace NHibernate.Test.Interceptor
 
 			ITransaction t = s.BeginTransaction();
 			User u = new User("Gavin", "nivag");
-			await (s.PersistAsync(u, CancellationToken.None));
+			await (s.PersistAsync(u));
 			u.Password = "vagni";
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IList logs = await (s.CreateCriteria(typeof(Log)).ListAsync(CancellationToken.None));
+			IList logs = await (s.CreateCriteria(typeof(Log)).ListAsync());
 			Assert.AreEqual(2, logs.Count);
-			await (s.DeleteAsync(u, CancellationToken.None));
-			await (s.DeleteAsync("from Log", CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(u));
+			await (s.DeleteAsync("from Log"));
+			await (t.CommitAsync());
 			s.Close();
 		}
 	}

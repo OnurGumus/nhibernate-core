@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Extralazy
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class ExtraLazyFixtureAsync : TestCase
 	{
@@ -41,17 +40,17 @@ namespace NHibernate.Test.Extralazy
 			using (ITransaction t = s.BeginTransaction())
 			{
 				await (s.CreateSQLQuery("insert into Users (Name,Password) values('gavin','secret')")
-					.UniqueResultAsync(CancellationToken.None));
+					.UniqueResultAsync());
 				await (s.CreateSQLQuery("insert into Photos (Title,Owner) values('PRVaaa','gavin')")
-					.UniqueResultAsync(CancellationToken.None));
+					.UniqueResultAsync());
 				await (s.CreateSQLQuery("insert into Photos (Title,Owner) values('PUBbbb','gavin')")
-					.UniqueResultAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+					.UniqueResultAsync());
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				var gavin = await (s.GetAsync<User>("gavin", CancellationToken.None));
+				var gavin = await (s.GetAsync<User>("gavin"));
 				Assert.AreEqual(1, gavin.Photos.Count);
 				Assert.IsFalse(NHibernateUtil.IsInitialized(gavin.Documents));
 			}
@@ -60,11 +59,11 @@ namespace NHibernate.Test.Extralazy
 			using (ITransaction t = s.BeginTransaction())
 			{
 				await (s.CreateSQLQuery("delete from Photos")
-					.UniqueResultAsync(CancellationToken.None));
+					.UniqueResultAsync());
 				await (s.CreateSQLQuery("delete from Users")
-					.UniqueResultAsync(CancellationToken.None));
+					.UniqueResultAsync());
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 			sessions.Evict(typeof (User));
 			sessions.Evict(typeof (Photo));
@@ -85,36 +84,36 @@ namespace NHibernate.Test.Extralazy
 				hia2 = new Document("HiA2", "blah blah blah blah", gavin);
 				gavin.Documents.Add(hia); // NH: added ; I don't understand how can work in H3.2.5 without add
 				gavin.Documents.Add(hia2); // NH: added 
-				await (s.PersistAsync(gavin, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(gavin));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", CancellationToken.None));
+				gavin = await (s.GetAsync<User>("gavin"));
 				Assert.AreEqual(2, gavin.Documents.Count);
 				gavin.Documents.Remove(hia2);
 				Assert.IsFalse(gavin.Documents.Contains(hia2));
 				Assert.IsTrue(gavin.Documents.Contains(hia));
 				Assert.AreEqual(1, gavin.Documents.Count);
 				Assert.IsFalse(NHibernateUtil.IsInitialized(gavin.Documents));
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				gavin = await (s.GetAsync<User>("gavin", CancellationToken.None));
+				gavin = await (s.GetAsync<User>("gavin"));
 				Assert.AreEqual(1, gavin.Documents.Count);
 				Assert.IsFalse(gavin.Documents.Contains(hia2));
 				Assert.IsTrue(gavin.Documents.Contains(hia));
 				Assert.IsFalse(NHibernateUtil.IsInitialized(gavin.Documents));
-				Assert.That(await (s.GetAsync<Document>("HiA2", CancellationToken.None)), Is.Null);
+				Assert.That(await (s.GetAsync<Document>("HiA2")), Is.Null);
 				gavin.Documents.Clear();
 				Assert.IsTrue(NHibernateUtil.IsInitialized(gavin.Documents));
-				await (s.DeleteAsync(gavin, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(gavin));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -133,16 +132,16 @@ namespace NHibernate.Test.Extralazy
 				g = new Group("developers");
 				g.Users.Add("gavin", gavin);
 				g.Users.Add("turin", turin);
-				await (s.PersistAsync(g, CancellationToken.None));
+				await (s.PersistAsync(g));
 				gavin.Session.Add("foo", new SessionAttribute("foo", "foo bar baz"));
 				gavin.Session.Add("bar", new SessionAttribute("bar", "foo bar baz 2"));
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				g = await (s.GetAsync<Group>("developers", CancellationToken.None));
+				g = await (s.GetAsync<Group>("developers"));
 				gavin = (User) g.Users["gavin"];
 				turin = (User) g.Users["turin"];
 				Assert.That(gavin, Is.Not.Null);
@@ -153,10 +152,10 @@ namespace NHibernate.Test.Extralazy
 				Assert.That(turin.Session.ContainsKey("foo"), Is.False);
 				Assert.IsFalse(NHibernateUtil.IsInitialized(gavin.Session));
 				Assert.IsFalse(NHibernateUtil.IsInitialized(turin.Session));
-				await (s.DeleteAsync(gavin, CancellationToken.None));
-				await (s.DeleteAsync(turin, CancellationToken.None));
-				await (s.DeleteAsync(g, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(gavin));
+				await (s.DeleteAsync(turin));
+				await (s.DeleteAsync(g));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -175,16 +174,16 @@ namespace NHibernate.Test.Extralazy
 				g = new Group("developers");
 				g.Users.Add("gavin", gavin);
 				g.Users.Add("turin", turin);
-				await (s.PersistAsync(g, CancellationToken.None));
+				await (s.PersistAsync(g));
 				gavin.Session.Add("foo", new SessionAttribute("foo", "foo bar baz"));
 				gavin.Session.Add("bar", new SessionAttribute("bar", "foo bar baz 2"));
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				g = await (s.GetAsync<Group>("developers", CancellationToken.None));
+				g = await (s.GetAsync<Group>("developers"));
 				gavin = (User) g.Users["gavin"];
 				turin = (User) g.Users["turin"];
 				Assert.IsFalse(NHibernateUtil.IsInitialized(g.Users));
@@ -192,22 +191,22 @@ namespace NHibernate.Test.Extralazy
 				gavin.Session.Remove("foo");
 				Assert.IsTrue(NHibernateUtil.IsInitialized(g.Users));
 				Assert.IsTrue(NHibernateUtil.IsInitialized(gavin.Session));
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				g = await (s.GetAsync<Group>("developers", CancellationToken.None));
+				g = await (s.GetAsync<Group>("developers"));
 				//Assert.IsTrue( g.Users.IsEmpty() );
 				//Assert.IsFalse( NHibernateUtil.IsInitialized( g.getUsers() ) );
-				gavin = await (s.GetAsync<User>("gavin", CancellationToken.None));
+				gavin = await (s.GetAsync<User>("gavin"));
 				Assert.IsFalse(gavin.Session.ContainsKey("foo"));
 				Assert.IsFalse(NHibernateUtil.IsInitialized(gavin.Session));
-				await (s.DeleteAsync(gavin, CancellationToken.None));
-				await (s.DeleteAsync(turin, CancellationToken.None));
-				await (s.DeleteAsync(g, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(gavin));
+				await (s.DeleteAsync(turin));
+				await (s.DeleteAsync(g));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -227,51 +226,51 @@ namespace NHibernate.Test.Extralazy
 				g = new Group("developers");
 				g.Users.Add("gavin", gavin);
 				g.Users.Add("turin", turin);
-				await (s.PersistAsync(g, CancellationToken.None));
+				await (s.PersistAsync(g));
 				gavin.Session.Add("foo", new SessionAttribute("foo", "foo bar baz"));
 				gavin.Session.Add("bar", new SessionAttribute("bar", "foo bar baz 2"));
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				g = await (s.GetAsync<Group>("developers", CancellationToken.None));
+				g = await (s.GetAsync<Group>("developers"));
 				Assert.AreEqual(2, g.Users.Count);
 				g.Users.Remove("turin");
 				smap = ((User) g.Users["gavin"]).Session;
 				Assert.AreEqual(2, smap.Count);
 				smap.Remove("bar");
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				g = await (s.GetAsync<Group>("developers", CancellationToken.None));
+				g = await (s.GetAsync<Group>("developers"));
 				Assert.AreEqual(1, g.Users.Count);
 				smap = ((User) g.Users["gavin"]).Session;
 				Assert.AreEqual(1, smap.Count);
 				gavin = (User) g.Users["gavin"]; // NH: put in JAVA return the previous value
 				g.Users["gavin"] = turin;
-				await (s.DeleteAsync(gavin, CancellationToken.None));
-				Assert.AreEqual(0, await (s.CreateQuery("select count(*) from SessionAttribute").UniqueResultAsync<long>(CancellationToken.None)));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(gavin));
+				Assert.AreEqual(0, await (s.CreateQuery("select count(*) from SessionAttribute").UniqueResultAsync<long>()));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				g = await (s.GetAsync<Group>("developers", CancellationToken.None));
+				g = await (s.GetAsync<Group>("developers"));
 				Assert.AreEqual(1, g.Users.Count);
 				turin = (User) g.Users["turin"];
 				smap = turin.Session;
 				Assert.AreEqual(0, smap.Count);
-				Assert.AreEqual(1L, await (s.CreateQuery("select count(*) from User").UniqueResultAsync<long>(CancellationToken.None)));
-				await (s.DeleteAsync(g, CancellationToken.None));
-				await (s.DeleteAsync(turin, CancellationToken.None));
-				Assert.AreEqual(0, await (s.CreateQuery("select count(*) from User").UniqueResultAsync<long>(CancellationToken.None)));
-				await (t.CommitAsync(CancellationToken.None));
+				Assert.AreEqual(1L, await (s.CreateQuery("select count(*) from User").UniqueResultAsync<long>()));
+				await (s.DeleteAsync(g));
+				await (s.DeleteAsync(turin));
+				Assert.AreEqual(0, await (s.CreateQuery("select count(*) from User").UniqueResultAsync<long>()));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -285,26 +284,26 @@ namespace NHibernate.Test.Extralazy
 				User turin = new User("turin", "tiger");
 				gavin.Session.Add("foo", new SessionAttribute("foo", "foo bar baz"));
 				gavin.Session.Add("bar", new SessionAttribute("bar", "foo bar baz 2"));
-				await (s.PersistAsync(gavin, CancellationToken.None));
-				await (s.PersistAsync(turin, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.PersistAsync(gavin));
+				await (s.PersistAsync(turin));
+				await (s.FlushAsync());
 				s.Clear();
 
-				IList results = await (s.GetNamedQuery("UserSessionData").SetParameter("uname", "%in").ListAsync(CancellationToken.None));
+				IList results = await (s.GetNamedQuery("UserSessionData").SetParameter("uname", "%in").ListAsync());
 				Assert.AreEqual(2, results.Count);
 				// NH Different behavior : NH1612, HHH-2831
 				gavin = (User) results[0];
 				Assert.AreEqual("gavin", gavin.Name);
 				Assert.AreEqual(2, gavin.Session.Count);
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from SessionAttribute", CancellationToken.None));
-				await (s.DeleteAsync("from User", CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from SessionAttribute"));
+				await (s.DeleteAsync("from User"));
+				await (t.CommitAsync());
 			}
 		}
 	}

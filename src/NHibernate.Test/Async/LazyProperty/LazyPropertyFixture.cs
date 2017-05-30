@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.LazyProperty
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class LazyPropertyFixtureAsync : TestCase
 	{
@@ -71,13 +70,13 @@ namespace NHibernate.Test.LazyProperty
 		{
 			using (ISession s = OpenSession())
 			{
-				var book = await (s.LoadAsync<Book>(1, CancellationToken.None));
+				var book = await (s.LoadAsync<Book>(1));
 
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Id"), Is.False);
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Name"), Is.False);
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
 
-				await (NHibernateUtil.InitializeAsync(book, CancellationToken.None));
+				await (NHibernateUtil.InitializeAsync(book));
 
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Id"), Is.True);
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Name"), Is.True);
@@ -90,7 +89,7 @@ namespace NHibernate.Test.LazyProperty
 		{
 			using (ISession s = OpenSession())
 			{
-				var book = await (s.GetAsync<Book>(1, CancellationToken.None));
+				var book = await (s.GetAsync<Book>(1));
 
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Id"), Is.True);
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "Name"), Is.True);
@@ -103,7 +102,7 @@ namespace NHibernate.Test.LazyProperty
 		{
 			using (ISession s = OpenSession())
 			{
-				var book = await (s.GetAsync<Book>(1, CancellationToken.None));
+				var book = await (s.GetAsync<Book>(1));
 
 				Assert.That(book.ALotOfText, Is.EqualTo("a lot of text ..."));
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.True);
@@ -115,7 +114,7 @@ namespace NHibernate.Test.LazyProperty
 		{
 			using (ISession s = OpenSession())
 			{
-				var book = await (s.GetAsync<Book>(1, CancellationToken.None));
+				var book = await (s.GetAsync<Book>(1));
 
 				Assert.That(book.Name, Is.EqualTo("some name"));
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
@@ -128,7 +127,7 @@ namespace NHibernate.Test.LazyProperty
 			Book book;
 			using (ISession s = OpenSession())
 			{
-				book = await (s.GetAsync<Book>(1, CancellationToken.None));
+				book = await (s.GetAsync<Book>(1));
 			}
 
 			using (ISession s = OpenSession())
@@ -145,17 +144,17 @@ namespace NHibernate.Test.LazyProperty
 			using (ISession s = OpenSession())
 			using (var trans = s.BeginTransaction())
 			{
-				book = await (s.GetAsync<Book>(1, CancellationToken.None));
+				book = await (s.GetAsync<Book>(1));
 				book.Name += "updated";
 
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
-				await (trans.CommitAsync(CancellationToken.None));
+				await (trans.CommitAsync());
 			}
 
 
 			using (ISession s = OpenSession())
 			{
-				book = await (s.GetAsync<Book>(1, CancellationToken.None));
+				book = await (s.GetAsync<Book>(1));
 				Assert.That(book.Name, Is.EqualTo("some nameupdated"));
 			}
 		}

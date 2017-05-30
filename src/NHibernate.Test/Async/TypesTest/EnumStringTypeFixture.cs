@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class EnumStringTypeFixtureAsync : TypeFixtureBase
 	{
@@ -55,10 +54,10 @@ namespace NHibernate.Test.TypesTest
 		{
 			ISession s = OpenSession();
 
-			EnumStringClass basic = (EnumStringClass) await (s.LoadAsync(typeof(EnumStringClass), 1, CancellationToken.None));
+			EnumStringClass basic = (EnumStringClass) await (s.LoadAsync(typeof(EnumStringClass), 1));
 			Assert.AreEqual(SampleEnum.Dimmed, basic.EnumValue);
 
-			EnumStringClass basic2 = (EnumStringClass) await (s.LoadAsync(typeof(EnumStringClass), 2, CancellationToken.None));
+			EnumStringClass basic2 = (EnumStringClass) await (s.LoadAsync(typeof(EnumStringClass), 2));
 			Assert.AreEqual(SampleEnum.On, basic2.EnumValue);
 
 			s.Close();
@@ -71,12 +70,12 @@ namespace NHibernate.Test.TypesTest
 
 			IQuery q = s.CreateQuery("from EnumStringClass as esc where esc.EnumValue=:enumValue");
 			q.SetParameter("enumValue", SampleEnum.On, new SampleEnumType());
-			IList results = await (q.ListAsync(CancellationToken.None));
+			IList results = await (q.ListAsync());
 
 			Assert.AreEqual(1, results.Count, "only 1 was 'On'");
 
 			q.SetParameter("enumValue", SampleEnum.Off, new SampleEnumType());
-			results = await (q.ListAsync(CancellationToken.None));
+			results = await (q.ListAsync());
 
 			Assert.AreEqual(0, results.Count, "should not be any in the 'Off' status");
 
@@ -88,12 +87,12 @@ namespace NHibernate.Test.TypesTest
 
 			q = s.CreateQuery("from EnumStringClass as esc where esc.EnumValue=:stringValue");
 			q.SetString("stringValue", "On");
-			results = await (q.ListAsync(CancellationToken.None));
+			results = await (q.ListAsync());
 
 			Assert.AreEqual(1, results.Count, "only 1 was 'On' string");
 
 			q.SetString("stringValue", "Off");
-			results = await (q.ListAsync(CancellationToken.None));
+			results = await (q.ListAsync());
 
 			Assert.AreEqual(0, results.Count, "should not be any in the 'Off' string");
 

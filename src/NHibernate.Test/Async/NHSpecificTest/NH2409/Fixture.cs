@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2409
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -33,23 +32,23 @@ namespace NHibernate.Test.NHSpecificTest.NH2409
 
 				var message = new Message {Contest = contest2 };
 
-				await (session.SaveAsync(contest1, CancellationToken.None));
-				await (session.SaveAsync(contest2, CancellationToken.None));
-				await (session.SaveAsync(user, CancellationToken.None));
+				await (session.SaveAsync(contest1));
+				await (session.SaveAsync(contest2));
+				await (session.SaveAsync(user));
 
-				await (session.SaveAsync(message, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (session.SaveAsync(message));
+				await (tx.CommitAsync());
 			}
 
 			using (var session = OpenSession())
 			{
-				var contest2 = await (session.CreateCriteria<Contest>().Add(Restrictions.IdEq(2)).UniqueResultAsync<Contest>(CancellationToken.None));
-				var user = (await (session.CreateCriteria<User>().ListAsync<User>(CancellationToken.None))).Single();
+				var contest2 = await (session.CreateCriteria<Contest>().Add(Restrictions.IdEq(2)).UniqueResultAsync<Contest>());
+				var user = (await (session.CreateCriteria<User>().ListAsync<User>())).Single();
 
 				var msgs = await (session.CreateCriteria<Message>()
 					.Add(Restrictions.Eq("Contest", contest2))
 					.CreateAlias("Readings", "mr", JoinType.LeftOuterJoin, Restrictions.Eq("mr.User", user))
-					.ListAsync<Message>(CancellationToken.None));
+					.ListAsync<Message>());
 				
 				Assert.AreEqual(1, msgs.Count, "We should be able to find our message despite any left outer joins");
 			}

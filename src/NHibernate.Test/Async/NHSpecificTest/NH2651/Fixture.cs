@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2651
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -65,13 +64,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2651
 					.Add(Restrictions.Eq("Id", 1))
 					.Add(likeExpression);
 
-				var result1 = await (criteria1.UniqueResultAsync<Model>(CancellationToken.None));
+				var result1 = await (criteria1.UniqueResultAsync<Model>());
 
 				var criteria2 = session.CreateCriteria<Model>()
 					.Add(Restrictions.Eq("Id", 2))
 					.Add(likeExpression);
 
-				var result2 = await (criteria2.UniqueResultAsync<Model>(CancellationToken.None));
+				var result2 = await (criteria2.UniqueResultAsync<Model>());
 
 				Assert.IsNull(result1);
 				Assert.IsNotNull(result2);

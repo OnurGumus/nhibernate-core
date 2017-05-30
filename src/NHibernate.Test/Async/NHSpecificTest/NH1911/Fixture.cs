@@ -16,7 +16,6 @@ using NHibernate.Criterion;
 namespace NHibernate.Test.NHSpecificTest.NH1911
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
@@ -64,7 +63,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1911
 					.SetProjection(Projections.ProjectionList()
 						.Add(Projections.RowCount())
 						.Add(Projections.Sum(isError)))
-					.ListAsync<object[]>(CancellationToken.None));
+					.ListAsync<object[]>());
 
 				Assert.That(actual.Count, Is.EqualTo(1));
 				Assert.That(actual[0][0], Is.EqualTo(3));

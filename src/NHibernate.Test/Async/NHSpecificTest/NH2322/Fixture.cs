@@ -16,7 +16,6 @@ using System.Diagnostics;
 namespace NHibernate.Test.NHSpecificTest.NH2322
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -45,15 +44,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2322
 			using (ITransaction t = s.BeginTransaction())
 			{
 				var p = new Person { Name = "inserted name" };
-				await (s.SaveAsync(p, CancellationToken.None));
+				await (s.SaveAsync(p));
 				id = p.Id;
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				var p = await (s.GetAsync<Person>(id, CancellationToken.None));
+				var p = await (s.GetAsync<Person>(id));
 				p.Name = "changing the name...";
 
 				Assert.That(delegate() { t.Commit(); }, Throws.Nothing);

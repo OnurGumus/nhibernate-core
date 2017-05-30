@@ -26,7 +26,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	[TestFixture]
 	public class BooleanMethodExtensionExampleAsync : LinqTestCase
@@ -48,7 +47,7 @@ namespace NHibernate.Test.Linq
 		[Test, Ignore("It work only with full-text indexes enabled.")]
 		public async Task CanUseMyCustomExtensionAsync()
 		{
-			List<Customer> contacts = await ((from c in db.Customers where c.ContactName.FreeText("Thomas") select c).ToListAsync(CancellationToken.None));
+			List<Customer> contacts = await ((from c in db.Customers where c.ContactName.FreeText("Thomas") select c).ToListAsync());
 			Assert.That(contacts.Count, Is.GreaterThan(0));
 			Assert.That(contacts.Select(c => c.ContactName).All(c => c.Contains("Thomas")), Is.True);
 		}

@@ -34,10 +34,10 @@ namespace NHibernate.Test.VersionTest.Db
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			var guy = new User { Username = "guy" };
-			await (s.PersistAsync(guy, CancellationToken.None));
+			await (s.PersistAsync(guy));
 			var admin = new Group {Name = "admin"};
-			await (s.PersistAsync(admin, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(admin));
+			await (t.CommitAsync());
 			s.Close();
 
 			DateTime guyTimestamp = guy.Timestamp;
@@ -48,11 +48,11 @@ namespace NHibernate.Test.VersionTest.Db
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			guy = await (s.GetAsync<User>(guy.Id, CancellationToken.None));
-			admin = await (s.GetAsync<Group>(admin.Id, CancellationToken.None));
+			guy = await (s.GetAsync<User>(guy.Id));
+			admin = await (s.GetAsync<Group>(admin.Id));
 			guy.Groups.Add(admin);
 			admin.Users.Add(guy);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			Assert.That(!NHibernateUtil.Timestamp.IsEqual(guyTimestamp, guy.Timestamp), "owner version not incremented");
@@ -62,18 +62,18 @@ namespace NHibernate.Test.VersionTest.Db
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			guy = await (s.GetAsync<User>(guy.Id, CancellationToken.None));
+			guy = await (s.GetAsync<User>(guy.Id));
 			guy.Groups.Clear();
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			Assert.That(!NHibernateUtil.Timestamp.IsEqual(guyTimestamp, guy.Timestamp), "owner version not incremented");
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.DeleteAsync(await (s.LoadAsync<User>(guy.Id, CancellationToken.None)), CancellationToken.None));
-			await (s.DeleteAsync(await (s.LoadAsync<Group>(admin.Id, CancellationToken.None)), CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(await (s.LoadAsync<User>(guy.Id))));
+			await (s.DeleteAsync(await (s.LoadAsync<Group>(admin.Id))));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -83,20 +83,20 @@ namespace NHibernate.Test.VersionTest.Db
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			var guy = new User {Username = "guy"};
-			await (s.PersistAsync(guy, CancellationToken.None));
+			await (s.PersistAsync(guy));
 			var perm = new Permission {Name = "silly", Access = "user", Context = "rw"};
-			await (s.PersistAsync(perm, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(perm));
+			await (t.CommitAsync());
 			s.Close();
 
 			DateTime guyTimestamp = guy.Timestamp;
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			guy = await (s.GetAsync<User>(guy.Id, CancellationToken.None));
-			perm = await (s.GetAsync<Permission>(perm.Id, CancellationToken.None));
+			guy = await (s.GetAsync<User>(guy.Id));
+			perm = await (s.GetAsync<Permission>(perm.Id));
 			guy.Permissions.Add(perm);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			const string ownerVersionWasIncremented = "owner version was incremented ({0:o} => {1:o})";
@@ -106,9 +106,9 @@ namespace NHibernate.Test.VersionTest.Db
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			guy = await (s.GetAsync<User>(guy.Id, CancellationToken.None));
+			guy = await (s.GetAsync<User>(guy.Id));
 			guy.Permissions.Clear();
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			Assert.That(NHibernateUtil.Timestamp.IsEqual(guyTimestamp, guy.Timestamp),
@@ -116,9 +116,9 @@ namespace NHibernate.Test.VersionTest.Db
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.DeleteAsync(await (s.LoadAsync<User>(guy.Id, CancellationToken.None)), CancellationToken.None));
-			await (s.DeleteAsync(await (s.LoadAsync<Permission>(perm.Id, CancellationToken.None)), CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(await (s.LoadAsync<User>(guy.Id))));
+			await (s.DeleteAsync(await (s.LoadAsync<Permission>(perm.Id))));
+			await (t.CommitAsync());
 			s.Close();
 		}
 	}

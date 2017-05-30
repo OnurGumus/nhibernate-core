@@ -17,7 +17,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq.ByMethod
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class OrderByTestsAsync : LinqTestCase
 	{
@@ -35,7 +34,7 @@ namespace NHibernate.Test.Linq.ByMethod
 						orderby g.Key
 						select new { Country = g.Key, Count = g.Count() };
 
-			var ids = await (query.ToListAsync(CancellationToken.None));
+			var ids = await (query.ToListAsync());
 			Assert.NotNull(ids);
 			AssertOrderedBy.Ascending(ids, arg => arg.Country);
 		}
@@ -47,7 +46,7 @@ namespace NHibernate.Test.Linq.ByMethod
 						orderby c.CustomerId
 						select c.CustomerId;
 
-			var ids = await (query.ToListAsync(CancellationToken.None));
+			var ids = await (query.ToListAsync());
 
 			if (ids.Count > 1)
 			{
@@ -62,7 +61,7 @@ namespace NHibernate.Test.Linq.ByMethod
 						orderby c.CustomerId descending
 						select c.CustomerId;
 
-			var ids = await (query.ToListAsync(CancellationToken.None));
+			var ids = await (query.ToListAsync());
 
 			if (ids.Count > 1)
 			{
@@ -81,7 +80,7 @@ namespace NHibernate.Test.Linq.ByMethod
 									 TotalQuantity = o.OrderLines.Sum(c => c.Quantity)
 								 })
 				.OrderBy(s => s.TotalQuantity)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(830));
 
@@ -95,7 +94,7 @@ namespace NHibernate.Test.Linq.ByMethod
 						orderby c.Orders.Count
 						select c;
 
-			var customers = await (query.ToListAsync(CancellationToken.None));
+			var customers = await (query.ToListAsync());
 
 			// Verify ordering for first 10 customers - to avoid loading all orders.
 			AssertOrderedBy.Ascending(customers.Take(10).ToList(), customer => customer.Orders.Count);
@@ -108,7 +107,7 @@ namespace NHibernate.Test.Linq.ByMethod
 						orderby c.Orders.Count descending
 						select c;
 
-			var customers = await (query.ToListAsync(CancellationToken.None));
+			var customers = await (query.ToListAsync());
 
 			// Verify ordering for first 10 customers - to avoid loading all orders.
 			AssertOrderedBy.Descending(customers.Take(10).ToList(), customer => customer.Orders.Count);
@@ -122,7 +121,7 @@ namespace NHibernate.Test.Linq.ByMethod
 						orderby c.Address.Country, c.Address.City
 						select c.Address.City;
 
-			var ids = await (query.ToListAsync(CancellationToken.None));
+			var ids = await (query.ToListAsync());
 
 			if (ids.Count > 1)
 			{
@@ -138,7 +137,7 @@ namespace NHibernate.Test.Linq.ByMethod
 						orderby c.Address.Country descending, c.Address.City descending
 						select c.Address.City;
 
-			var ids = await (query.ToListAsync(CancellationToken.None));
+			var ids = await (query.ToListAsync());
 
 			if (ids.Count > 1)
 			{
@@ -154,7 +153,7 @@ namespace NHibernate.Test.Linq.ByMethod
 						orderby c.Address.Country ascending, c.Address.City descending
 						select c.Address.City;
 
-			var ids = await (query.ToListAsync(CancellationToken.None));
+			var ids = await (query.ToListAsync());
 
 			if (ids.Count > 1)
 			{
@@ -167,13 +166,13 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			// Check preconditions.
 			var allAnimalsWithNullFather = from a in db.Animals where a.Father == null select a;
-			Assert.Greater(await (allAnimalsWithNullFather.CountAsync(CancellationToken.None)), 0);
+			Assert.Greater(await (allAnimalsWithNullFather.CountAsync()), 0);
 			// Check join result.
 			var allAnimals = db.Animals;
 			var orderedAnimals = from a in db.Animals orderby a.Father.SerialNumber select a;
 			// ReSharper disable RemoveToList.2
 			// We to ToList() first or it skips the generation of the joins.
-			Assert.AreEqual((await (allAnimals.ToListAsync(CancellationToken.None))).Count(), (await (orderedAnimals.ToListAsync(CancellationToken.None))).Count());
+			Assert.AreEqual((await (allAnimals.ToListAsync())).Count(), (await (orderedAnimals.ToListAsync())).Count());
 			// ReSharper restore RemoveToList.2
 		}
 
@@ -187,7 +186,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			var result = await ((from order in db.Orders
 						  where order == db.Orders.OrderByDescending(x => x.OrderDate).First(x => x.Customer == order.Customer)
 						  orderby order.Customer.CustomerId
-						  select order).ToListAsync(CancellationToken.None));
+						  select order).ToListAsync());
 
 			AssertOrderedBy.Ascending(result.Take(5).ToList(), x => x.Customer.CustomerId);
 		}
@@ -202,7 +201,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			var result = await ((from order in db.Orders
 						  where order == db.Orders.OrderByDescending(x => x.OrderDate).First(x => x.Customer == order.Customer)
 						  orderby order.ShippingDate descending
-						  select order).ToListAsync(CancellationToken.None));
+						  select order).ToListAsync());
 
 			// Different databases may sort null either first or last.
 			// We only bother about the non-null values here.
@@ -216,7 +215,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			try
 			{
-				return db.Orders.OrderBy(o => o.Shipper == null ? 0 : o.Shipper.ShipperId).Skip(3).Take(4).ToListAsync(CancellationToken.None);
+				return db.Orders.OrderBy(o => o.Shipper == null ? 0 : o.Shipper.ShipperId).Skip(3).Take(4).ToListAsync();
 			}
 			catch (System.Exception ex)
 			{
@@ -229,7 +228,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			try
 			{
-				return db.Orders.Select(o => o.ShippedTo).Distinct().OrderBy(o => o).Take(1000).ToListAsync(CancellationToken.None);
+				return db.Orders.Select(o => o.ShippedTo).Distinct().OrderBy(o => o).Take(1000).ToListAsync();
 			}
 			catch (System.Exception ex)
 			{

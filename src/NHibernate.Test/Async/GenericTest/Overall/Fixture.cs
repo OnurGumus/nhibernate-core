@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.GenericTest.Overall
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{
@@ -39,15 +38,15 @@ namespace NHibernate.Test.GenericTest.Overall
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				await (session.SaveAsync(entity, CancellationToken.None));
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (session.SaveAsync(entity));
+				await (transaction.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				await (session.DeleteAsync(entity, CancellationToken.None));
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync(entity));
+				await (transaction.CommitAsync());
 			}
 		}
 
@@ -65,15 +64,15 @@ namespace NHibernate.Test.GenericTest.Overall
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				await (session.SaveAsync(entity, CancellationToken.None));
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (session.SaveAsync(entity));
+				await (transaction.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				await (session.DeleteAsync(entity, CancellationToken.None));
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync(entity));
+				await (transaction.CommitAsync());
 			}
 		}
 	}

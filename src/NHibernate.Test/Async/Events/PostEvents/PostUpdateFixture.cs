@@ -40,22 +40,22 @@ namespace NHibernate.Test.Events.PostEvents
 			                                                                          			eArgs =>
 			                                                                          			Assert.That(eArgs.OldState, Is.Not.Null))
 			                                                                          	};
-			await (FillDbAsync(CancellationToken.None));
+			await (FillDbAsync());
 			using (var ls = new LogSpy(typeof (AssertOldStatePostListener)))
 			{
 				using (ISession s = OpenSession())
 				{
 					using (ITransaction tx = s.BeginTransaction())
 					{
-						IList<SimpleEntity> l = await (s.CreateCriteria<SimpleEntity>().ListAsync<SimpleEntity>(CancellationToken.None));
+						IList<SimpleEntity> l = await (s.CreateCriteria<SimpleEntity>().ListAsync<SimpleEntity>());
 						l[0].Description = "Modified";
-						await (tx.CommitAsync(CancellationToken.None));
+						await (tx.CommitAsync());
 					}
 				}
 				Assert.That(ls.GetWholeLog(), Does.Contain(AssertOldStatePostListener.LogMessage));
 			}
 
-			await (DbCleanupAsync(CancellationToken.None));
+			await (DbCleanupAsync());
 			((SessionFactoryImpl) sessions).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[0];
 		}
 
@@ -68,23 +68,23 @@ namespace NHibernate.Test.Events.PostEvents
 			                                                                          			eArgs =>
 			                                                                          			Assert.That(eArgs.OldState, Is.Not.Null))
 			                                                                          	};
-			await (FillDbAsync(CancellationToken.None));
+			await (FillDbAsync());
 			using (var ls = new LogSpy(typeof (AssertOldStatePostListener)))
 			{
 				using (ISession s = OpenSession())
 				{
 					using (ITransaction tx = s.BeginTransaction())
 					{
-						IList<SimpleEntity> l = await (s.CreateCriteria<SimpleEntity>().ListAsync<SimpleEntity>(CancellationToken.None));
+						IList<SimpleEntity> l = await (s.CreateCriteria<SimpleEntity>().ListAsync<SimpleEntity>());
 						l[0].Description = "Modified";
-						await (s.UpdateAsync(l[0], CancellationToken.None));
-						await (tx.CommitAsync(CancellationToken.None));
+						await (s.UpdateAsync(l[0]));
+						await (tx.CommitAsync());
 					}
 				}
 				Assert.That(ls.GetWholeLog(), Does.Contain(AssertOldStatePostListener.LogMessage));
 			}
 
-			await (DbCleanupAsync(CancellationToken.None));
+			await (DbCleanupAsync());
 			((SessionFactoryImpl) sessions).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[0];
 		}
 
@@ -97,15 +97,15 @@ namespace NHibernate.Test.Events.PostEvents
 			                                                                          			eArgs =>
 			                                                                          			Assert.That(eArgs.OldState, Is.Not.Null))
 			                                                                          	};
-			await (FillDbAsync(CancellationToken.None));
+			await (FillDbAsync());
 			SimpleEntity toModify;
 			using (ISession s = OpenSession())
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					IList<SimpleEntity> l = await (s.CreateCriteria<SimpleEntity>().ListAsync<SimpleEntity>(CancellationToken.None));
+					IList<SimpleEntity> l = await (s.CreateCriteria<SimpleEntity>().ListAsync<SimpleEntity>());
 					toModify = l[0];
-					await (tx.CommitAsync(CancellationToken.None));
+					await (tx.CommitAsync());
 				}
 			}
 			toModify.Description = "Modified";
@@ -116,13 +116,13 @@ namespace NHibernate.Test.Events.PostEvents
 					using (ITransaction tx = s.BeginTransaction())
 					{
 						s.Merge(toModify);
-						await (tx.CommitAsync(CancellationToken.None));
+						await (tx.CommitAsync());
 					}
 				}
 				Assert.That(ls.GetWholeLog(), Does.Contain(AssertOldStatePostListener.LogMessage));
 			}
 
-			await (DbCleanupAsync(CancellationToken.None));
+			await (DbCleanupAsync());
 			((SessionFactoryImpl) sessions).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[0];
 		}
 
@@ -137,15 +137,15 @@ namespace NHibernate.Test.Events.PostEvents
 			                                                                          			eArgs =>
 			                                                                          			Assert.That(eArgs.OldState, Is.Null))
 			                                                                          	};
-			await (FillDbAsync(CancellationToken.None));
+			await (FillDbAsync());
 			SimpleEntity toModify;
 			using (ISession s = OpenSession())
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					IList<SimpleEntity> l = await (s.CreateCriteria<SimpleEntity>().ListAsync<SimpleEntity>(CancellationToken.None));
+					IList<SimpleEntity> l = await (s.CreateCriteria<SimpleEntity>().ListAsync<SimpleEntity>());
 					toModify = l[0];
-					await (tx.CommitAsync(CancellationToken.None));
+					await (tx.CommitAsync());
 				}
 			}
 			toModify.Description = "Modified";
@@ -155,14 +155,14 @@ namespace NHibernate.Test.Events.PostEvents
 				{
 					using (ITransaction tx = s.BeginTransaction())
 					{
-						await (s.UpdateAsync(toModify, CancellationToken.None));
-						await (tx.CommitAsync(CancellationToken.None));
+						await (s.UpdateAsync(toModify));
+						await (tx.CommitAsync());
 					}
 				}
 				Assert.That(ls.GetWholeLog(), Does.Contain(AssertOldStatePostListener.LogMessage));
 			}
 
-			await (DbCleanupAsync(CancellationToken.None));
+			await (DbCleanupAsync());
 			((SessionFactoryImpl) sessions).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[0];
 		}
 
@@ -175,15 +175,15 @@ namespace NHibernate.Test.Events.PostEvents
 			                                                                          			eArgs =>
 			                                                                          			Assert.That(eArgs.OldState, Is.Not.Null))
 			                                                                          	};
-			await (FillDbAsync(CancellationToken.None));
+			await (FillDbAsync());
 			SimpleEntity toModify;
 			using (ISession s = OpenSession())
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					IList<SimpleEntity> l = await (s.CreateCriteria<SimpleEntity>().ListAsync<SimpleEntity>(CancellationToken.None));
+					IList<SimpleEntity> l = await (s.CreateCriteria<SimpleEntity>().ListAsync<SimpleEntity>());
 					toModify = l[0];
-					await (tx.CommitAsync(CancellationToken.None));
+					await (tx.CommitAsync());
 				}
 			}
 			using (var ls = new LogSpy(typeof(AssertOldStatePostListener)))
@@ -192,16 +192,16 @@ namespace NHibernate.Test.Events.PostEvents
 				{
 					using (ITransaction tx = s.BeginTransaction())
 					{
-						await (s.LockAsync(toModify, LockMode.None, CancellationToken.None));
+						await (s.LockAsync(toModify, LockMode.None));
 						toModify.Description = "Modified";
-						await (s.UpdateAsync(toModify, CancellationToken.None));
-						await (tx.CommitAsync(CancellationToken.None));
+						await (s.UpdateAsync(toModify));
+						await (tx.CommitAsync());
 					}
 				}
 				Assert.That(ls.GetWholeLog(), Does.Contain(AssertOldStatePostListener.LogMessage));
 			}
 
-			await (DbCleanupAsync(CancellationToken.None));
+			await (DbCleanupAsync());
 			((SessionFactoryImpl)sessions).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[0];
 		}
 		private async Task DbCleanupAsync(CancellationToken cancellationToken = default(CancellationToken))

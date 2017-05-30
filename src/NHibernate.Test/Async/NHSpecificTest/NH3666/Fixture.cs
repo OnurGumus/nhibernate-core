@@ -17,7 +17,6 @@ using System.Text;
 namespace NHibernate.Test.NHSpecificTest.NH3666
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -57,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3666
 				var result = await (session.CreateSQLQuery("SELECT * FROM Entity WHERE Property = 'Test2'")
 				                    .AddEntity(typeof(Entity))
 				                    .SetCacheable(true)
-				                    .ListAsync<Entity>(CancellationToken.None));
+				                    .ListAsync<Entity>());
 
 				CollectionAssert.IsNotEmpty(result);
 
@@ -75,7 +74,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3666
 				var result = await (session.GetNamedQuery("QueryName")
 				                    .SetCacheable(true)
 				                    .SetString("prop", "Test2")
-				                    .ListAsync<Entity>(CancellationToken.None));
+				                    .ListAsync<Entity>());
 
 				CollectionAssert.IsNotEmpty(result);
 

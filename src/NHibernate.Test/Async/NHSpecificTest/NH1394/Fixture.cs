@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1394
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -74,7 +73,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 			using (ISession s = OpenSession())
 			{
 				ICriteria c = s.CreateCriteria(typeof (Person)).AddOrder(Order.Desc(Projections.Property("IQ")));
-				IList<Person> list = await (c.ListAsync<Person>(CancellationToken.None));
+				IList<Person> list = await (c.ListAsync<Person>());
 
 				for (int i = 0; i < list.Count - 1; i++)
 				{
@@ -96,7 +95,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 
 					ICriteria c = s.CreateCriteria(typeof (Person)).AddOrder(Order.Asc(Projections.SubQuery(dc)));
 					Console.WriteLine("list()");
-					IList<Person> list = await (c.ListAsync<Person>(CancellationToken.None));
+					IList<Person> list = await (c.ListAsync<Person>());
 					int nullRelationOffSet = 2;
 					if (Dialect is Oracle8iDialect || Dialect is PostgreSQLDialect)
 					{
@@ -120,7 +119,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 					Restrictions.EqProperty("this.Id", "sub.Id"));
 
 				ICriteria c = s.CreateCriteria(typeof (Person)).AddOrder(Order.Desc(Projections.SubQuery(dc)));
-				IList<Person> list = await (c.ListAsync<Person>(CancellationToken.None));
+				IList<Person> list = await (c.ListAsync<Person>());
 
 				int nullRelationOffSet = 0;
 				if (Dialect is Oracle8iDialect || Dialect is PostgreSQLDialect)
@@ -144,7 +143,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 					s.CreateCriteria(typeof (Person)).AddOrder(
 						Order.Asc(Projections.SqlFunction(arithmaticAddition, NHibernateUtil.GuessType(typeof (double)),
 						                                  Projections.Property("IQ"), Projections.Property("ShoeSize"))));
-				IList<Person> list = await (c.ListAsync<Person>(CancellationToken.None));
+				IList<Person> list = await (c.ListAsync<Person>());
 
 				for (int i = 0; i < list.Count - 1; i++)
 				{
@@ -163,7 +162,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 					s.CreateCriteria(typeof (Person)).AddOrder(
 						Order.Desc(Projections.SqlFunction(arithmaticAddition, NHibernateUtil.GuessType(typeof (double)),
 						                                   Projections.Property("IQ"), Projections.Property("ShoeSize"))));
-				IList<Person> list = await (c.ListAsync<Person>(CancellationToken.None));
+				IList<Person> list = await (c.ListAsync<Person>());
 
 				for (int i = 0; i < list.Count - 1; i++)
 				{

@@ -16,7 +16,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq.ByMethod
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class GetValueOrDefaultTestsAsync : LinqTestCase
 	{
@@ -44,7 +43,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			var orders = await (db.Orders
 						   .Where(x => (x.Freight ?? 100) > 0)
-						   .ToListAsync(CancellationToken.None));
+						   .ToListAsync());
 
 			Assert.AreEqual(830, orders.Count);
 		}
@@ -54,7 +53,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			var orders = await (db.Orders
 						   .Where(x => x.Freight.GetValueOrDefault(100) > 0)
-						   .ToListAsync(CancellationToken.None));
+						   .ToListAsync());
 
 			Assert.AreEqual(830, orders.Count);
 		}
@@ -64,7 +63,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			var orders = await (db.Orders
 						   .Where(x => x.Freight.GetValueOrDefault() > 0)
-						   .ToListAsync(CancellationToken.None));
+						   .ToListAsync());
 
 			Assert.AreEqual(830, orders.Count);
 		}

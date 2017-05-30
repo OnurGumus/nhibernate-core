@@ -49,7 +49,7 @@ namespace NHibernate.Test.TypeParameters
 		[Test]
 		public async Task SaveAsync()
 		{
-			await (DeleteDataAsync(CancellationToken.None));
+			await (DeleteDataAsync());
 
 			ISession s = OpenSession();
 
@@ -58,9 +58,9 @@ namespace NHibernate.Test.TypeParameters
 			Widget obj = new Widget();
 			obj.ValueThree = 5;
 
-			int id = (int) await (s.SaveAsync(obj, CancellationToken.None));
+			int id = (int) await (s.SaveAsync(obj));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
@@ -89,38 +89,38 @@ namespace NHibernate.Test.TypeParameters
 			              "Default value should have been mapped to null");
 			reader.Close();
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
-            await (DeleteDataAsync(CancellationToken.None));
+            await (DeleteDataAsync());
         }
 
 		[Test]
 		public async Task LoadingAsync()
 		{
-			await (InitDataAsync(CancellationToken.None));
+			await (InitDataAsync());
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
 			Widget obj = (Widget) await (s.CreateQuery("from Widget o where o.Str = :string")
-			                      	.SetString("string", "all-normal").UniqueResultAsync(CancellationToken.None));
+			                      	.SetString("string", "all-normal").UniqueResultAsync());
 			Assert.AreEqual(obj.ValueOne, 7, "Non-Default value incorrectly loaded");
 			Assert.AreEqual(obj.ValueTwo, 8, "Non-Default value incorrectly loaded");
 			Assert.AreEqual(obj.ValueThree, 9, "Non-Default value incorrectly loaded");
 			Assert.AreEqual(obj.ValueFour, 10, "Non-Default value incorrectly loaded");
 
 			obj = (Widget) await (s.CreateQuery("from Widget o where o.Str = :string")
-			               	.SetString("string", "all-default").UniqueResultAsync(CancellationToken.None));
+			               	.SetString("string", "all-default").UniqueResultAsync());
 			Assert.AreEqual(obj.ValueOne, 1, "Default value incorrectly loaded");
 			Assert.AreEqual(obj.ValueTwo, 2, "Default value incorrectly loaded");
 			Assert.AreEqual(obj.ValueThree, -1, "Default value incorrectly loaded");
 			Assert.AreEqual(obj.ValueFour, -5, "Default value incorrectly loaded");
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
-            await (DeleteDataAsync(CancellationToken.None));
+            await (DeleteDataAsync());
         }
 
 		private async Task InitDataAsync(CancellationToken cancellationToken = default(CancellationToken))

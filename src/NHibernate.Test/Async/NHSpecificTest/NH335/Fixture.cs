@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH335
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -85,7 +84,7 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 			using (ITransaction tx = session.BeginTransaction())
 			{
 				IQuery query = session.CreateQuery("from Thing");
-				IList list = await (query.ListAsync(CancellationToken.None));
+				IList list = await (query.ListAsync());
 
 				Assert.AreEqual(numAbcThings + numOtherThings, list.Count,
 				                String.Format("There should be {0} Things.", numAbcThings + numOtherThings));
@@ -94,7 +93,7 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 				{
 					Assert.IsTrue(thing is Thing);
 				}
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -105,7 +104,7 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 			using (ITransaction tx = session.BeginTransaction())
 			{
 				IQuery query = session.CreateQuery("from AbcThing");
-				IList list = await (query.ListAsync(CancellationToken.None));
+				IList list = await (query.ListAsync());
 
 				Assert.AreEqual(numAbcThings, list.Count,
 				                String.Format("There should be {0} AbcThings.", numAbcThings));
@@ -114,14 +113,14 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 				{
 					Assert.IsTrue(thing is AbcThing);
 				}
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
 				IQuery query = session.CreateQuery("from OtherThing");
-				IList list = await (query.ListAsync(CancellationToken.None));
+				IList list = await (query.ListAsync());
 
 				Assert.AreEqual(numAbcThings, list.Count,
 				                String.Format("There should be {0} OtherThings.", numAbcThings));
@@ -131,7 +130,7 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 					Assert.IsTrue(thing is OtherThing);
 				}
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -141,26 +140,26 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				await (session.DeleteAsync("from AbcThing", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync("from AbcThing"));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
 				IQuery abcThingQuery = session.CreateQuery("from AbcThing");
-				IList abcThings = await (abcThingQuery.ListAsync(CancellationToken.None));
+				IList abcThings = await (abcThingQuery.ListAsync());
 
 				Assert.AreEqual(0, abcThings.Count,
 				                "All AbcThings should have been deleted.");
 
 				IQuery otherThingQuery = session.CreateQuery("from OtherThing");
-				IList otherThings = await (otherThingQuery.ListAsync(CancellationToken.None));
+				IList otherThings = await (otherThingQuery.ListAsync());
 
 				Assert.AreEqual(numOtherThings, otherThings.Count,
 				                "No OtherThings should have been deleted.");
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 	}

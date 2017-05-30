@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2214
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -67,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2214
 					.AddOrder(Order.Asc("Name"));
 
 				var query = criteria.GetExecutableCriteria(session);
-				var result = await (query.ListAsync(CancellationToken.None));
+				var result = await (query.ListAsync());
 
 				Assert.That(result[0], Is.EqualTo("Name2"));
 				Assert.That(result[1], Is.EqualTo("Name3"));
@@ -91,7 +90,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2214
 
 				var query = criteria.GetExecutableCriteria(session);
 
-				Assert.ThrowsAsync<HibernateException>(() => query.ListAsync(CancellationToken.None));
+				Assert.ThrowsAsync<HibernateException>(() => query.ListAsync());
 			}
 		}
 
@@ -107,7 +106,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2214
 				             orderby t.Name
 				             select t.Name).Distinct().Skip((page - 1)*rows).Take(rows);
 
-				var result = await (query.ToListAsync(CancellationToken.None));
+				var result = await (query.ToListAsync());
 
 				Assert.That(result[0], Is.EqualTo("Name2"));
 				Assert.That(result[1], Is.EqualTo("Name3"));

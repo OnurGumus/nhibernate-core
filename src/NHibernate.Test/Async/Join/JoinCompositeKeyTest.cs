@@ -16,7 +16,6 @@ using System.Collections;
 namespace NHibernate.Test.Join
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class JoinCompositeKeyTestAsync : TestCase
 	{
@@ -82,12 +81,12 @@ namespace NHibernate.Test.Join
 			emp.Title = "Rock Star";
 			objectsNeedDeleting.Add(emp);
 
-			await (s.SaveAsync(emp, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(emp));
+			await (s.FlushAsync());
 			s.Clear();
 
 			EmployeePk pk = new EmployeePk(1, 100);
-			EmployeeWithCompositeKey retrieved = await (s.GetAsync<EmployeeWithCompositeKey>(pk, CancellationToken.None));
+			EmployeeWithCompositeKey retrieved = await (s.GetAsync<EmployeeWithCompositeKey>(pk));
 
 			Assert.IsNotNull(retrieved);
 			Assert.AreEqual(emp.StartDate, retrieved.StartDate);

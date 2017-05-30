@@ -78,15 +78,15 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 			{
 				var p = CreateParent();
 				p.Child.Always = false;
-				await (s.SaveAsync(p, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(p));
+				await (tx.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			{
 				EnableFilters(s);
-				var resCriteria = await (JoinGraphUsingCriteriaAsync(s, CancellationToken.None));
-				var resHql = await (JoinGraphUsingHqlAsync(s, CancellationToken.None));
+				var resCriteria = await (JoinGraphUsingCriteriaAsync(s));
+				var resHql = await (JoinGraphUsingHqlAsync(s));
 
 				Assert.That(resCriteria.Count, Is.EqualTo(0));
 				Assert.That(resHql.Count, Is.EqualTo(0));
@@ -99,15 +99,15 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				await (s.SaveAsync(CreateParent(), CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(CreateParent()));
+				await (tx.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			{
 				EnableFilters(s);
-				var resCriteria = await (JoinGraphUsingCriteriaAsync(s, CancellationToken.None));
-				var resHql = await (JoinGraphUsingHqlAsync(s, CancellationToken.None));
+				var resCriteria = await (JoinGraphUsingCriteriaAsync(s));
+				var resHql = await (JoinGraphUsingHqlAsync(s));
 
 				Assert.That(resCriteria.Count, Is.EqualTo(1));
 				Assert.That(resCriteria[0].Child, Is.Not.Null);
@@ -126,8 +126,8 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 				var p = CreateParent();
 				p.ParentString = "a";
 				p.Child.ChildString = "b";
-				await (s.SaveAsync(p, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(p));
+				await (tx.CommitAsync());
 			}
 			IList<Parent> resCriteria;
 			IList<Parent> resHql;
@@ -139,13 +139,13 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 				               .SetFetchMode("Child", FetchMode.Join)
 				               .Add(Restrictions.Eq("p.ParentString", "a"))
 				               .Add(Restrictions.Eq("c.ChildString", "b"))
-				               .ListAsync<Parent>(CancellationToken.None));
+				               .ListAsync<Parent>());
 
 				resHql = await (s.CreateQuery(
 					          @"select p from Parent p
 				                join fetch p.Child c
 				                where p.ParentString='a' and c.ChildString='b'")
-				          .ListAsync<Parent>(CancellationToken.None));
+				          .ListAsync<Parent>());
 			}
 			Assert.That(resCriteria.Count, Is.EqualTo(1));
 			Assert.That(resCriteria[0].Child, Is.Not.Null);
@@ -161,15 +161,15 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 			using (var tx = s.BeginTransaction())
 			{
 				var p = CreateParent();
-				await (s.SaveAsync(p, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(p));
+				await (tx.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			{
 				EnableFilters(s);
-				var resCriteria = await (JoinGraphUsingCriteriaAsync(s, CancellationToken.None));
-				var resHql = await (JoinGraphUsingHqlAsync(s, CancellationToken.None));
+				var resCriteria = await (JoinGraphUsingCriteriaAsync(s));
+				var resHql = await (JoinGraphUsingHqlAsync(s));
 
 				Assert.That(resCriteria.Count, Is.EqualTo(1));
 				Assert.That(resCriteria[0].Address, Is.Not.Null);
@@ -191,16 +191,16 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 					new Child {IsActive = false},
 					new Child {IsActive = true}
 				};
-				await (s.SaveAsync(p, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(p));
+				await (tx.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			{
 				var f = s.EnableFilter("active");
 				f.SetParameter("active", true);
-				var resCriteria = await (JoinGraphUsingCriteriaAsync(s, CancellationToken.None));
-				var resHql = await (JoinGraphUsingHqlAsync(s, CancellationToken.None));
+				var resCriteria = await (JoinGraphUsingCriteriaAsync(s));
+				var resHql = await (JoinGraphUsingHqlAsync(s));
 
 				Assert.That(resCriteria.Count, Is.EqualTo(1));
 				Assert.That(resCriteria[0].Children.Count, Is.EqualTo(2));
@@ -222,16 +222,16 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 					new Child {IsActive = false},
 					new Child {IsActive = true}
 				};
-				await (s.SaveAsync(p, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(p));
+				await (tx.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			{
 				var f = s.EnableFilter("active");
 				f.SetParameter("active", true);
-				var resCriteria = await (s.CreateCriteria(typeof(Parent)).SetFetchMode("Children", FetchMode.Join).ListAsync<Parent>(CancellationToken.None));
-				var resHql = await (s.CreateQuery("select p from Parent p join fetch p.Children").ListAsync<Parent>(CancellationToken.None));
+				var resCriteria = await (s.CreateCriteria(typeof(Parent)).SetFetchMode("Children", FetchMode.Join).ListAsync<Parent>());
+				var resHql = await (s.CreateQuery("select p from Parent p join fetch p.Children").ListAsync<Parent>());
 
 				Assert.That(resCriteria[0].Children.Count, Is.EqualTo(2));
 				Assert.That(resHql[0].Children.Count, Is.EqualTo(2));
@@ -244,8 +244,8 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				await (s.SaveAsync(CreateParent(), CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(CreateParent()));
+				await (tx.CommitAsync());
 			}
 			using (var s = OpenSession())
 			using (s.BeginTransaction())
@@ -255,10 +255,10 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 
 				var resCriteria = await (s.CreateCriteria(typeof(Parent))
 				                   .SetFetchMode("Address", FetchMode.Join)
-				                   .ListAsync<Parent>(CancellationToken.None));
+				                   .ListAsync<Parent>());
 
 				var resHql = await (s.CreateQuery("select p from Parent p join p.Address")
-				              .ListAsync<Parent>(CancellationToken.None));
+				              .ListAsync<Parent>());
 
 				Assert.That(resCriteria.Count, Is.EqualTo(1));
 				Assert.That(resCriteria[0].Address, Is.Not.Null);

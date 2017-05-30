@@ -46,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest
 				// load the object and check default values
 				using (ISession s2 = OpenSession())
 				{
-					GetSetHelper gs = (GetSetHelper) await (s2.LoadAsync(typeof(GetSetHelper), 1, CancellationToken.None));
+					GetSetHelper gs = (GetSetHelper) await (s2.LoadAsync(typeof(GetSetHelper), 1));
 
 					Assert.AreEqual(new int(), gs.A);
 					Assert.AreEqual(new TimeSpan(), gs.B);

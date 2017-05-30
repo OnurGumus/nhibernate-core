@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1313
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	// http://nhibernate.jira.com/browse/NH-1313
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
@@ -43,18 +42,18 @@ namespace NHibernate.Test.NHSpecificTest.NH1313
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.SaveAsync(a, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(a));
+				await (tx.CommitAsync());
 			}
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				DateTime result =
 					await (s.CreateCriteria(typeof (A)).SetProjection(new SqlFunctionProjection("MyCurrentTime", NHibernateUtil.DateTime)).
-						UniqueResultAsync<DateTime>(CancellationToken.None));
+						UniqueResultAsync<DateTime>());
 				// we are simply checking that the function is parsed and executed
-				await (s.DeleteAsync(a, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(a));
+				await (tx.CommitAsync());
 			}
 		}
 

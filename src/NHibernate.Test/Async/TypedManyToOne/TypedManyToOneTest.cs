@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypedManyToOne
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class TypedManyToOneTestAsync : TestCase
 	{
@@ -57,14 +56,14 @@ namespace NHibernate.Test.TypedManyToOne
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.PersistAsync(cust, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(cust));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				IList results = await (s.CreateQuery("from Customer cust left join fetch cust.BillingAddress where cust.CustomerId='abc123'").ListAsync(CancellationToken.None));
+				IList results = await (s.CreateQuery("from Customer cust left join fetch cust.BillingAddress where cust.CustomerId='abc123'").ListAsync());
 				//IList results = s.CreateQuery("from Customer cust left join fetch cust.BillingAddress left join fetch cust.ShippingAddress").List();
 				cust = (Customer)results[0];
 				Assert.That(NHibernateUtil.IsInitialized(cust.ShippingAddress), Is.False);
@@ -73,22 +72,22 @@ namespace NHibernate.Test.TypedManyToOne
 				Assert.That(cust.ShippingAddress.Zip, Is.EqualTo("30326"));
 				Assert.That(cust.BillingAddress.AddressId.Type, Is.EqualTo("BILLING"));
 				Assert.That(cust.ShippingAddress.AddressId.Type, Is.EqualTo("SHIPPING"));
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveOrUpdateAsync(cust, CancellationToken.None));
+				await (s.SaveOrUpdateAsync(cust));
 				ship = cust.ShippingAddress;
 				cust.ShippingAddress = null;
-				await (s.DeleteAsync("ShippingAddress", ship, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync("ShippingAddress", ship));
+				await (s.FlushAsync());
 
-				Assert.That(await (s.GetAsync("ShippingAddress", ship.AddressId, CancellationToken.None)), Is.Null);
-				await (s.DeleteAsync(cust, CancellationToken.None));
+				Assert.That(await (s.GetAsync("ShippingAddress", ship.AddressId)), Is.Null);
+				await (s.DeleteAsync(cust));
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -102,20 +101,20 @@ namespace NHibernate.Test.TypedManyToOne
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.PersistAsync(cust, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(cust));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				IList results = await (s.CreateQuery("from Customer cust left join fetch cust.BillingAddress where cust.CustomerId='xyz123'").ListAsync(CancellationToken.None));
+				IList results = await (s.CreateQuery("from Customer cust left join fetch cust.BillingAddress where cust.CustomerId='xyz123'").ListAsync());
 				//IList results = s.CreateQuery("from Customer cust left join fetch cust.BillingAddress left join fetch cust.ShippingAddress").List();
 				cust = (Customer)results[0];
 				Assert.That(cust.ShippingAddress, Is.Null);
 				Assert.That(cust.BillingAddress, Is.Null);
-				await (s.DeleteAsync(cust, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(cust));
+				await (t.CommitAsync());
 			}
 		}
 	}

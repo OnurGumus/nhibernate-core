@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.ListIndex
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class ListIndexFixtureAsync : TestCase
 	{
@@ -60,12 +59,12 @@ namespace NHibernate.Test.ListIndex
 			a.Items.Add(b2);
 
 			ISession s = OpenSession();
-			await (s.SaveAsync(a, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(a));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			A newA = await (s.GetAsync<A>(TheId, CancellationToken.None));
+			A newA = await (s.GetAsync<A>(TheId));
 
 			Assert.AreEqual(2, newA.Items.Count);
 			int counter = 1;

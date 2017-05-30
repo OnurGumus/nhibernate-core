@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1584
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class TestFixtureAsync : BugTestCase
 	{
@@ -47,8 +46,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1584
 			{
 				using (ITransaction trx = session.BeginTransaction())
 				{
-					await (session.SaveAsync(newInstance, CancellationToken.None));
-					await (trx.CommitAsync(CancellationToken.None));
+					await (session.SaveAsync(newInstance));
+					await (trx.CommitAsync());
 				}
 			}
 
@@ -58,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1584
 			using (ISession session = OpenSession())
 			{
 				ICriteria criteria = session.CreateCriteria(typeof (Cat));
-				var loaded = await (criteria.Add(Restrictions.Eq("Id", newInstance.Id)).UniqueResultAsync<Male>(CancellationToken.None));
+				var loaded = await (criteria.Add(Restrictions.Eq("Id", newInstance.Id)).UniqueResultAsync<Male>());
 
 				Assert.IsNotNull(loaded.Coat);
 			}

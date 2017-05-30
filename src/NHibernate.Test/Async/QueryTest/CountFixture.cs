@@ -18,7 +18,6 @@ using Environment=NHibernate.Cfg.Environment;
 namespace NHibernate.Test.QueryTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class CountFixtureAsync
 	{
@@ -32,10 +31,10 @@ namespace NHibernate.Test.QueryTest
 
 			using (ISession s = sf.OpenSession())
 			{
-				object count = await (s.CreateQuery("select count(*) from Simple").UniqueResultAsync(CancellationToken.None));
+				object count = await (s.CreateQuery("select count(*) from Simple").UniqueResultAsync());
 				Assert.IsTrue(count is Int64);
 			}
-			await (sf.CloseAsync(CancellationToken.None));
+			await (sf.CloseAsync());
 		}
 
 		[Test]
@@ -50,10 +49,10 @@ namespace NHibernate.Test.QueryTest
 
 			using (ISession s = sf.OpenSession())
 			{
-				object count = await (s.CreateQuery("select count(*) from Simple").UniqueResultAsync(CancellationToken.None));
+				object count = await (s.CreateQuery("select count(*) from Simple").UniqueResultAsync());
 				Assert.IsTrue(count is Int32);
 			}
-			await (sf.CloseAsync(CancellationToken.None));
+			await (sf.CloseAsync());
 		}
 	}
 }

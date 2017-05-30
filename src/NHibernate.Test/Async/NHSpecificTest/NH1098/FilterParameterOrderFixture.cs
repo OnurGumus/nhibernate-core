@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1098
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FilterParameterOrderFixtureAsync : BugTestCase
 	{
@@ -102,7 +101,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1098
 				// => OK, parameter are in correct order: filter #1, pos #1, filter #2, pos #2
 				//
 
-				IList<A> result = await (crit.ListAsync<A>(CancellationToken.None));
+				IList<A> result = await (crit.ListAsync<A>());
 				Assert.AreEqual(1, result.Count);
 			}
 		}
@@ -141,7 +140,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1098
 				// => ERROR, parameters are in wrong order: filter #1, filter #2, named #1, named #2
 				//
 
-				IList<A> result = await (query.ListAsync<A>(CancellationToken.None));
+				IList<A> result = await (query.ListAsync<A>());
 				Assert.AreEqual(1, result.Count);
 			}
 		}
@@ -180,7 +179,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1098
 				// => OK, parameters are in correct order: filter #1, pos 12, filter #2, pos #2
 				//
 
-				IList<A> result = await (query.ListAsync<A>(CancellationToken.None));
+				IList<A> result = await (query.ListAsync<A>());
 				Assert.AreEqual(1, result.Count);
 			}
 		}
@@ -204,7 +203,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1098
 				//
 				// => ERROR, parameters are in wrong order: named ValC, named Text
 
-				var a = await (query.UniqueResultAsync<A>(CancellationToken.None));
+				var a = await (query.UniqueResultAsync<A>());
 
 				Assert.AreEqual(a.C[1], "Text1");
 			}

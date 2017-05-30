@@ -140,7 +140,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1483
 		[Test]
 		public Task LoadSubclassFromSecondLevelCacheAsync()
 		{
-			return TestLoadFromSecondLevelCacheAsync<SubClass>(CancellationToken.None);
+			return TestLoadFromSecondLevelCacheAsync<SubClass>();
 		}
 
 		/// <summary>
@@ -149,7 +149,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1483
 		[Test]
 		public Task LoadSubclassFromSecondLevelCacheAsBaseClassAsync()
 		{
-			return TestLoadFromSecondLevelCacheAsync<BaseClass>(CancellationToken.None);
+			return TestLoadFromSecondLevelCacheAsync<BaseClass>();
 		}
 	}
 }

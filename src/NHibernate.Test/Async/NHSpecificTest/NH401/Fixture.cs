@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH401
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -31,14 +30,14 @@ namespace NHibernate.Test.NHSpecificTest.NH401
 			using (ISession s = OpenSession())
 			{
 				Club club1 = new Club();
-				clubId = await (s.SaveAsync(club1, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				clubId = await (s.SaveAsync(club1));
+				await (s.FlushAsync());
 			}
 
 			Clubmember mem = new Clubmember();
 
 			ISession sess2 = OpenSession();
-			mem.Club = (Club) await (sess2.GetAsync(typeof(Club), clubId, CancellationToken.None));
+			mem.Club = (Club) await (sess2.GetAsync(typeof(Club), clubId));
 			sess2.Close();
 
 			ISession sess = OpenSession();
@@ -46,14 +45,14 @@ namespace NHibernate.Test.NHSpecificTest.NH401
 			mem.Joindate = DateTime.Now;
 
 			sess.Merge(mem);
-			await (sess.FlushAsync(CancellationToken.None));
+			await (sess.FlushAsync());
 
 			sess.Close();
 
 			using (ISession s = OpenSession())
 			{
-				await (s.DeleteAsync("from System.Object", CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync("from System.Object"));
+				await (s.FlushAsync());
 			}
 		}
 	}

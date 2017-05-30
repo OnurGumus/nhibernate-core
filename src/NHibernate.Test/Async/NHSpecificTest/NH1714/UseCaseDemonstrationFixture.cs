@@ -46,9 +46,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1714
 				using (var tx = session.BeginTransaction())
 				{
 					var entity = new DomainClass();
-					await (session.SaveAsync(entity, CancellationToken.None));
+					await (session.SaveAsync(entity));
 
-					await (tx.CommitAsync(CancellationToken.None));
+					await (tx.CommitAsync());
 				}
 			}
 
@@ -56,9 +56,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1714
 			{
 				using (var tx = session.BeginTransaction())
 				{
-					await (session.DeleteAsync("from DomainClass", CancellationToken.None));
-					await (session.DeleteAsync("from LogClass", CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (session.DeleteAsync("from DomainClass"));
+					await (session.DeleteAsync("from LogClass"));
+					await (tx.CommitAsync());
 				}
 			}
 		}

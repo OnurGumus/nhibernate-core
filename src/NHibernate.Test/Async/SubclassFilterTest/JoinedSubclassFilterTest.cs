@@ -37,16 +37,16 @@ namespace NHibernate.Test.SubclassFilterTest
 			s.EnableFilter("region").SetParameter("userRegion", "US");
 			ITransaction t = s.BeginTransaction();
 
-			await (PrepareTestDataAsync(s, CancellationToken.None));
+			await (PrepareTestDataAsync(s));
 			s.Clear();
 
 			IList results;
 
-			results = await (s.CreateQuery("from Person").ListAsync(CancellationToken.None));
+			results = await (s.CreateQuery("from Person").ListAsync());
 			Assert.AreEqual(4, results.Count, "Incorrect qry result count");
 			s.Clear();
 
-			results = await (s.CreateQuery("from Employee").ListAsync(CancellationToken.None));
+			results = await (s.CreateQuery("from Employee").ListAsync());
 			Assert.AreEqual(2, results.Count, "Incorrect qry result count");
 
 			foreach (Person p in  results)
@@ -69,7 +69,7 @@ namespace NHibernate.Test.SubclassFilterTest
 			// filters into collection assocations,
 			// although we'd need some way to apply the appropriate alias in that
 			// scenario.
-			results = (await (s.CreateQuery("from Person as p left join fetch p.Minions").ListAsync<Person>(CancellationToken.None))).Distinct().ToList();
+			results = (await (s.CreateQuery("from Person as p left join fetch p.Minions").ListAsync<Person>())).Distinct().ToList();
 			Assert.AreEqual(4, results.Count, "Incorrect qry result count");
 			foreach (Person p in results)
 			{
@@ -83,7 +83,7 @@ namespace NHibernate.Test.SubclassFilterTest
 
 			s.Clear();
 
-			results = (await (s.CreateQuery("from Employee as p left join fetch p.Minions").ListAsync<Employee>(CancellationToken.None))).Distinct().ToList();
+			results = (await (s.CreateQuery("from Employee as p left join fetch p.Minions").ListAsync<Employee>())).Distinct().ToList();
 			Assert.AreEqual(2, results.Count, "Incorrect qry result count");
 			foreach (Person p in results)
 			{
@@ -95,15 +95,15 @@ namespace NHibernate.Test.SubclassFilterTest
 				}
 			}
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.DeleteAsync("from Customer c where c.ContactOwner is not null", CancellationToken.None));
-			await (s.DeleteAsync("from Employee e where e.Manager is not null", CancellationToken.None));
-			await (s.DeleteAsync("from Person", CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync("from Customer c where c.ContactOwner is not null"));
+			await (s.DeleteAsync("from Employee e where e.Manager is not null"));
+			await (s.DeleteAsync("from Person"));
+			await (t.CommitAsync());
 			s.Close();
 		}
 

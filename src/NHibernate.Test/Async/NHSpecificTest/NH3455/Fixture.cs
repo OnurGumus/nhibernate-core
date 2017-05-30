@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3455
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -80,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3455
 									.OrderBy(p => p.Age)
 									.Desc
 									.TransformUsing(Transformers.AliasToBean<PersonDto>())
-									.ListAsync<PersonDto>(CancellationToken.None));
+									.ListAsync<PersonDto>());
 
 				Assert.That(people.Count, Is.EqualTo(2));
 				Assert.That(people, Is.Ordered.By("Age").Descending);
@@ -103,7 +102,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3455
 									.SetProjection(selectList)
 									.AddOrder(order)
 									.SetResultTransformer(Transformers.AliasToBean<PersonDto>())
-									.ListAsync<PersonDto>(CancellationToken.None));
+									.ListAsync<PersonDto>());
 
 				Assert.That(people.Count, Is.EqualTo(2));
 				Assert.That(people, Is.Ordered.By("Age").Descending);

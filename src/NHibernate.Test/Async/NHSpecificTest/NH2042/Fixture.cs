@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2042
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -51,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2042
 			{
 				var result = await ((from e in session.Query<Person>()
 							  where e.Name == "Bob"
-							  select e).SingleAsync(CancellationToken.None));
+							  select e).SingleAsync());
 
 				Assert.That(((Owner) result).Test, Is.EqualTo(1));
 			}

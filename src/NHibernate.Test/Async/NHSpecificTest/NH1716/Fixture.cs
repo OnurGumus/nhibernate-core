@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1716
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -36,13 +35,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1716
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.SaveAsync(entity, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(entity));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				Assert.AreEqual(time, (await (s.GetAsync<ClassA>(entity.Id, CancellationToken.None))).Time);
+				Assert.AreEqual(time, (await (s.GetAsync<ClassA>(entity.Id))).Time);
 			}
 		}
 
@@ -54,13 +53,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1716
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.SaveAsync(entity, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(entity));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				Assert.AreEqual(time, (await (s.GetAsync<ClassA>(entity.Id, CancellationToken.None))).Time);
+				Assert.AreEqual(time, (await (s.GetAsync<ClassA>(entity.Id))).Time);
 			}
 		}
 
@@ -72,13 +71,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1716
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.SaveAsync(entity, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(entity));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				Assert.AreEqual(time, (await (s.GetAsync<ClassA>(entity.Id, CancellationToken.None))).Time);
+				Assert.AreEqual(time, (await (s.GetAsync<ClassA>(entity.Id))).Time);
 			}
 		}
 
@@ -90,13 +89,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1716
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.SaveAsync(entity, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(entity));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				Assert.AreEqual(0, (await (s.GetAsync<ClassA>(entity.Id, CancellationToken.None))).Time.Days);
+				Assert.AreEqual(0, (await (s.GetAsync<ClassA>(entity.Id))).Time.Days);
 			}
 		}
 	}

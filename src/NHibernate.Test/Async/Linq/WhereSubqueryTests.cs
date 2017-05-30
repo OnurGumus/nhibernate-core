@@ -18,7 +18,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class WhereSubqueryTestsAsync : LinqTestCase
 	{
@@ -27,7 +26,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where !timesheet.Entries.Any()
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -38,7 +37,7 @@ namespace NHibernate.Test.Linq
 // ReSharper disable UseMethodAny.1
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.Count() >= 1
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 // ReSharper restore UseMethodAny.1
 
 			Assert.That(query.Count, Is.EqualTo(2));
@@ -50,7 +49,7 @@ namespace NHibernate.Test.Linq
 // ReSharper disable UseMethodAny.1
 			var query = await ((from timesheet in db.Timesheets
 						 where 1 <= timesheet.Entries.Count()
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 // ReSharper restore UseMethodAny.1
 
 			Assert.That(query.Count, Is.EqualTo(2));
@@ -61,7 +60,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.Count() > timesheet.Id
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -71,7 +70,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Id < timesheet.Entries.Count()
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -81,7 +80,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.Average(e => e.NumberOfHours) > 12
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -91,7 +90,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where 12 < timesheet.Entries.Average(e => e.NumberOfHours)
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -102,7 +101,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.Average(e => e.NumberOfHours) < timesheet.Id
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -113,7 +112,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Id > timesheet.Entries.Average(e => e.NumberOfHours)
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -123,7 +122,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.Max(e => e.NumberOfHours) == 14
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -133,7 +132,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where 14 == timesheet.Entries.Max(e => e.NumberOfHours)
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -143,7 +142,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.Max(e => e.NumberOfHours) > timesheet.Id
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -153,7 +152,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Id < timesheet.Entries.Max(e => e.NumberOfHours)
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -163,7 +162,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.Min(e => e.NumberOfHours) < 7
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -173,7 +172,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where 7 > timesheet.Entries.Min(e => e.NumberOfHours)
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -183,7 +182,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.Min(e => e.NumberOfHours) > timesheet.Id
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -193,7 +192,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Id < timesheet.Entries.Min(e => e.NumberOfHours)
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -203,7 +202,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.Sum(e => e.NumberOfHours) <= 20
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -213,7 +212,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where 20 >= timesheet.Entries.Sum(e => e.NumberOfHours)
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -224,7 +223,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.Sum(e => e.NumberOfHours) <= timesheet.Id
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -235,7 +234,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Id >= timesheet.Entries.Sum(e => e.NumberOfHours)
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
@@ -245,7 +244,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.Any(e => e.Comments.Contains("testing"))
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -255,7 +254,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.AsQueryable().Any(e => e.Comments.Contains("testing"))
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -267,7 +266,7 @@ namespace NHibernate.Test.Linq
 
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.AsQueryable().Any(predicate)
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -284,7 +283,7 @@ namespace NHibernate.Test.Linq
 
 			var query = await ((from category in db.Categories
 						 where category.Products.AsQueryable().Any(predicate1)
-						 select category).ToListAsync(CancellationToken.None));
+						 select category).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(6));
 		}
@@ -298,7 +297,7 @@ namespace NHibernate.Test.Linq
 
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.AsQueryable().Any(predicate)
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -310,7 +309,7 @@ namespace NHibernate.Test.Linq
 
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.AsQueryable().Any(predicate)
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -320,7 +319,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.AsQueryable().Any(e => !new[] { 1 }.Contains(e.Id))
-						 select timesheet).ToListAsync(CancellationToken.None));
+						 select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -332,7 +331,7 @@ namespace NHibernate.Test.Linq
 join c.Order o
 where o.Customer.CustomerId = 'VINET'
 	and not exists (from c.Order.Employee.Subordinates x where x.EmployeeId = 100)
-").ListAsync<OrderLine>(CancellationToken.None));
+").ListAsync<OrderLine>());
 
 			Assert.That(lines.Count, Is.EqualTo(10));
 		}
@@ -343,7 +342,7 @@ where o.Customer.CustomerId = 'VINET'
 			var lines = await (session.CreateQuery(@"from OrderLine c
 where c.Order.Customer.CustomerId = 'VINET'
 	and not exists (from c.Order.Employee.Subordinates x where x.EmployeeId = 100)
-").ListAsync<OrderLine>(CancellationToken.None));
+").ListAsync<OrderLine>());
 
 			Assert.That(lines.Count, Is.EqualTo(10));
 		}
@@ -355,7 +354,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 			var lines = await ((from l in db.OrderLines
 						 where l.Order.Customer.CustomerId == "VINET"
 						 where !l.Order.Employee.Subordinates.Any(x => x.EmployeeId == 100)
-						 select l).ToListAsync(CancellationToken.None));
+						 select l).ToListAsync());
 // ReSharper restore SimplifyLinqExpression
 
 			Assert.That(lines.Count, Is.EqualTo(10));
@@ -366,7 +365,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 		{
 			var query = await ((from order in db.Orders
 						 where order.OrderLines.Any()
-						 select order).ToListAsync(CancellationToken.None));
+						 select order).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(830));
 		}
@@ -379,7 +378,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 
 			var query = await ((from order in db.Orders
 						 where subquery.Contains(order)
-						 select order).ToListAsync(CancellationToken.None));
+						 select order).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(830));
 		}
@@ -392,7 +391,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 
 			var query = await ((from order in db.Orders
 						 where subquery.Contains(order.OrderId)
-						 select order).ToListAsync(CancellationToken.None));
+						 select order).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(830));
 		}
@@ -405,7 +404,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 
 			var query = await ((from order in db.Orders
 						 where subquery.Any(x => x.OrderId == order.OrderId)
-						 select order).ToListAsync(CancellationToken.None));
+						 select order).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(830));
 		}
@@ -415,7 +414,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 		{
 			var query = await ((from order in db.Orders
 						 where order.OrderLines.Any(x => x.Quantity == 5)
-						 select order).ToListAsync(CancellationToken.None));
+						 select order).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(61));
 		}
@@ -429,7 +428,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 
 			var query = await ((from order in db.Orders
 						 where subquery.Contains(order)
-						 select order).ToListAsync(CancellationToken.None));
+						 select order).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(61));
 		}
@@ -443,7 +442,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 
 			var query = await ((from order in db.Orders
 						 where subquery.Contains(order.OrderId)
-						 select order).ToListAsync(CancellationToken.None));
+						 select order).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(61));
 		}
@@ -457,7 +456,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 
 			var query = await ((from order in db.Orders
 						 where subquery.Any(x => x.OrderId == order.OrderId)
-						 select order).ToListAsync(CancellationToken.None));
+						 select order).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(61));
 		}
@@ -467,7 +466,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 		{
 			var query = await ((from c in db.Categories
 						 where c.Products.Any(p => p.Discontinued)
-						 select c).ToListAsync(CancellationToken.None));
+						 select c).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(5));
 		}
@@ -483,7 +482,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 
 			var query = await ((from order in db.Orders
 						 where subquery.Contains(order)
-						 select order).ToListAsync(CancellationToken.None));
+						 select order).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(61));
 		}
@@ -496,7 +495,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 								 where c.Name == "Confections"
 								 select c).Contains(p.Category)
 						  select p)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(13));
 		}
@@ -507,13 +506,13 @@ where c.Order.Customer.CustomerId = 'VINET'
 // ReSharper disable RedundantEnumerableCastCall
 			var categories = (await ((from c in db.Categories
 							  where c.Name == "Confections"
-							  select c).ToListAsync(CancellationToken.None))).OfType<ProductCategory>();
+							  select c).ToListAsync())).OfType<ProductCategory>();
 // ReSharper restore RedundantEnumerableCastCall
 
 			var result = await ((from p in db.Products
 						  where categories.Contains(p.Category)
 						  select p)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(13));
 		}
@@ -528,7 +527,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 			var result = await ((from p in db.Products
 						  where categories.Contains(p.Category)
 						  select p)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(13));
 		}
@@ -543,7 +542,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 			var result = await (db.Orders
 				.Where(x => sq.Contains(x.OrderId))
 				.Select(x => x.OrderId)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(388));
 		}
@@ -559,7 +558,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 						.Where(sh => sh.ShipperId == ol.Order.Shipper.ShipperId)
 						.Select(sh => sh.PhoneNumber)
 						.FirstOrDefault()
-				})).ToListAsync(CancellationToken.None));
+				})).ToListAsync());
 
 			Assert.That(list.Count, Is.EqualTo(2155));
 		}
@@ -575,7 +574,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 						.Where(sh => sh == ol.Order.Shipper)
 						.Select(sh => sh.PhoneNumber)
 						.FirstOrDefault()
-				}).ToListAsync(CancellationToken.None));
+				}).ToListAsync());
 
 			Assert.That(list.Count, Is.EqualTo(2155));
 		}
@@ -591,7 +590,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 						.Where(sh => sh.Shipper.ShipperId == ol.Order.Shipper.ShipperId)
 						.Select(sh => sh.Shipper.PhoneNumber)
 						.FirstOrDefault()
-				}).ToListAsync(CancellationToken.None));
+				}).ToListAsync());
 
 			Assert.That(list.Count, Is.EqualTo(2155));
 		}
@@ -605,7 +604,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 								 && c == p.Category
 								 select p.Discontinued).FirstOrDefault() == false
 						  select p)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(13));
 		}
@@ -615,7 +614,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 		{
 			var result = await ((from c in db.Categories
 						  where c.Products.OrderBy(p => p.ProductId).Select(p => p.Discontinued).FirstOrDefault() == false
-						  select c).ToListAsync(CancellationToken.None));
+						  select c).ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(7));
 		}
@@ -631,7 +630,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 								 && c == p.Category
 								 select new{R=p.Discontinued}).FirstOrDefault().R == false
 						  select p)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(13));
 		}
@@ -645,7 +644,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 								 && c == p.Category
 								 select p.Name).FirstOrDefault() == p.Name
 						  select p)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(13));
 		}
@@ -660,7 +659,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 			var result = await (db.Products
 				.Select(p => new {Name = p.Name, Pr2 = new {ReorderLevel = p.ReorderLevel}})
 				.Where(pr1 => (pr1.Pr2 == null ? (int?) null : pr1.Pr2.ReorderLevel) > 6)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(45));
 		}
@@ -685,7 +684,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 			var result = await (db.Products
 				.Select(p => new Pr1 { Name = p.Name, Pr2 = new Pr2 { ReorderLevel = p.ReorderLevel } })
 				.Where(pr1 => (pr1.Pr2 == null ? (int?)null : pr1.Pr2.ReorderLevel) > 6)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(45));
 		}

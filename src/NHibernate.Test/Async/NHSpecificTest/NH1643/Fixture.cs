@@ -15,7 +15,6 @@ using NHibernate.Stat;
 namespace NHibernate.Test.NHSpecificTest.NH1643
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -35,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1643
 				dept.Id = 11;
 				dept.Name = "Animal Testing";
 
-				await (sess.SaveAsync(dept, CancellationToken.None));
+				await (sess.SaveAsync(dept));
 
 				Employee emp = new Employee();
 				emp.Id = 1;
@@ -43,9 +42,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1643
 				emp.LastName = "Doe";
                 emp.Departments.Add(dept);
 
-				await (sess.SaveAsync(emp, CancellationToken.None));
+				await (sess.SaveAsync(emp));
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 
 				employeeId = emp.Id;
 			}
@@ -53,10 +52,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1643
             using (ISession sess = OpenSession())
             using (ITransaction tx = sess.BeginTransaction())
             {
-                var load = await (sess.LoadAsync<Employee>(employeeId, CancellationToken.None));
+                var load = await (sess.LoadAsync<Employee>(employeeId));
                 Assert.AreEqual(1, load.Departments.Count);
 
-                await (tx.CommitAsync(CancellationToken.None));
+                await (tx.CommitAsync());
             }
 
 
@@ -64,9 +63,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1643
 			using (ISession sess = OpenSession())
 			using (ITransaction tx = sess.BeginTransaction())
 			{
-				await (sess.DeleteAsync("from Employee", CancellationToken.None));
-				await (sess.DeleteAsync("from Department", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (sess.DeleteAsync("from Employee"));
+				await (sess.DeleteAsync("from Department"));
+				await (tx.CommitAsync());
 			}
 		}
 	}

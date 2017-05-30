@@ -24,35 +24,35 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public async Task EmptySumCastNullableDecimalAsync()
 		{
-			decimal total = await (db.OrderLines.Where(ol => false).SumAsync(ol => (decimal?)ol.Discount, CancellationToken.None)) ?? 0;
+			decimal total = await (db.OrderLines.Where(ol => false).SumAsync(ol => (decimal?)ol.Discount)) ?? 0;
 			Assert.AreEqual(0, total);
 		}
 
 		[Test]
 		public async Task SumDecimalAsync()
 		{
-			decimal total = await (db.OrderLines.SumAsync(ol => ol.Discount, CancellationToken.None));
+			decimal total = await (db.OrderLines.SumAsync(ol => ol.Discount));
 			Assert.Greater(total, 0);
 		}
 
 		[Test]
 		public async Task EmptySumNullableDecimalAsync()
 		{
-			decimal total = await (db.Orders.Where(ol => false).SumAsync(ol => ol.Freight, CancellationToken.None)) ?? 0;
+			decimal total = await (db.Orders.Where(ol => false).SumAsync(ol => ol.Freight)) ?? 0;
 			Assert.AreEqual(0, total);
 		}
 
 		[Test]
 		public async Task SumNullableDecimalAsync()
 		{
-			decimal? total = await (db.Orders.SumAsync(ol => ol.Freight, CancellationToken.None));
+			decimal? total = await (db.Orders.SumAsync(ol => ol.Freight));
 			Assert.Greater(total, 0);
 		}
 
 		[Test]
 		public async Task SumSingleAsync()
 		{
-			float total = await (db.Products.SumAsync(p => p.ShippingWeight, CancellationToken.None));
+			float total = await (db.Products.SumAsync(p => p.ShippingWeight));
 			Assert.Greater(total, 0);
 		}
 	}

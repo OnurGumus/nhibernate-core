@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1192
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -52,15 +51,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1192
 			using (session.BeginTransaction())
 			{
 				var query = session.CreateQuery("from ObjectA o where (o.FontType & 1) > 0");
-				var result = await (query.ListAsync(CancellationToken.None));
+				var result = await (query.ListAsync());
 				
 				Assert.That(result, Has.Count.EqualTo(1));
 				query = session.CreateQuery("from ObjectA o where (o.FontType & 2) > 0");
-				result = await (query.ListAsync(CancellationToken.None));
+				result = await (query.ListAsync());
 				Assert.That(result, Has.Count.EqualTo(2));
 
 				query = session.CreateQuery("from ObjectA o where (o.FontType & 4) > 0");
-				result = await (query.ListAsync(CancellationToken.None));
+				result = await (query.ListAsync());
 				Assert.That(result, Has.Count.EqualTo(1));
 			}
 		}
@@ -72,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1192
 			using (session.BeginTransaction())
 			{
 				var query = session.CreateQuery("from ObjectA o where (o.FontType | 2)  = (1|2) ");
-				var result = await (query.ListAsync(CancellationToken.None));
+				var result = await (query.ListAsync());
 				Assert.That(result, Has.Count.EqualTo(1));
 			}
 		}

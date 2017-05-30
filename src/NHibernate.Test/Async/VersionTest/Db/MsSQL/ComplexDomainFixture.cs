@@ -14,7 +14,6 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.VersionTest.Db.MsSQL
 {
-	using System.Threading;
 	[TestFixture]
 	public class ComplexDomainFixtureAsync : TestCase
 	{
@@ -43,12 +42,12 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 				var foo = new Foo {AField = 42};
 				foo.AddBar(bar);
 
-				await (session.SaveAsync(foo, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
-				await (session.EvictAsync(bar, CancellationToken.None));
-				await (session.EvictAsync(foo, CancellationToken.None));
+				await (session.SaveAsync(foo));
+				await (session.FlushAsync());
+				await (session.EvictAsync(bar));
+				await (session.EvictAsync(foo));
 
-				var retrievedBar = await (session.GetAsync<Bar>(bar.Id, CancellationToken.None));
+				var retrievedBar = await (session.GetAsync<Bar>(bar.Id));
 
 				// At this point the assumption is that bar and retrievedBar should have 
 				// identical values, but represent two different POCOs. The asserts below 
@@ -66,8 +65,8 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 			using (ISession session = OpenSession())
 			{
 				session.BeginTransaction();
-				await (session.DeleteAsync("from Bar", CancellationToken.None));
-				await (session.Transaction.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync("from Bar"));
+				await (session.Transaction.CommitAsync());
 			}
 		}
 	}

@@ -18,7 +18,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class ProjectionsTestsAsync : LinqTestCase
 	{
@@ -28,7 +27,7 @@ namespace NHibernate.Test.Linq
 			var query = await ((from user in db.Users
 						 where user.Name == "ayende"
 						 select user.Name)
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 			Assert.AreEqual("ayende", query);
 		}
 
@@ -38,7 +37,7 @@ namespace NHibernate.Test.Linq
 			var query = await ((from user in db.Users
 						 orderby user.Id
 						 select new { user.Id, GreaterThan2 = user.Id > 2 ? "Yes" : "No" })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 			Assert.AreEqual("No", query[0].GreaterThan2);
 			Assert.AreEqual("No", query[1].GreaterThan2);
 			Assert.AreEqual("Yes", query[2].GreaterThan2);
@@ -49,7 +48,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 select new { user.Name, user.Id, Id2 = user.Id * 2 })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 			Assert.AreEqual(3, query.Count);
 			foreach (var user in query)
 			{
@@ -62,7 +61,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 select new { user.Name, user.Id, Id2 = user.Id - 2 })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 			Assert.AreEqual(3, query.Count);
 			foreach (var user in query)
 			{
@@ -75,7 +74,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 select new { user.Name, user.Id, Id2 = (user.Id * 10) / 2 })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 			Assert.AreEqual(3, query.Count);
 			foreach (var user in query)
 			{
@@ -88,7 +87,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 select new { user.Name, user.Id, Id2 = (user.Id + 101) })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 			Assert.AreEqual(3, query.Count);
 			foreach (var user in query)
 			{
@@ -104,7 +103,7 @@ namespace NHibernate.Test.Linq
 						 select new { DoubleName = user.Name + " " + user.Name, user.RegisteredAt }
 
 						)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.AreEqual("ayende ayende", query[0].DoubleName);
 			Assert.AreEqual("nhibernate nhibernate", query[1].DoubleName);
@@ -122,7 +121,7 @@ namespace NHibernate.Test.Linq
 			var query = await ((from user in db.Users
 						 orderby user.Id
 						 select new KeyValuePair<string, DateTime>(user.Name, user.RegisteredAt))
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.AreEqual("ayende", query[0].Key);
 			Assert.AreEqual("rahien", query[1].Key);
@@ -140,7 +139,7 @@ namespace NHibernate.Test.Linq
 			var query = await ((from user in db.Users
 						 orderby user.Id
 						 select new { user.Name, user.RegisteredAt })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 			Assert.AreEqual("ayende", query[0].Name);
 			Assert.AreEqual("rahien", query[1].Name);
 			Assert.AreEqual("nhibernate", query[2].Name);
@@ -155,7 +154,7 @@ namespace NHibernate.Test.Linq
 		public async Task ProjectUserNamesAsync()
 		{
 			var query = await ((from user in db.Users
-						 select user.Name).ToListAsync(CancellationToken.None));
+						 select user.Name).ToListAsync());
 			Assert.AreEqual(3, query.Count);
 			Assert.AreEqual(3, query.Intersect(new[] { "ayende", "rahien", "nhibernate" }).Count());
 		}
@@ -167,7 +166,7 @@ namespace NHibernate.Test.Linq
 							from user in db.Users
 							orderby user.Id
 							select FormatName(user.Name, user.LastLoginDate)
-						).ToListAsync(CancellationToken.None));
+						).ToListAsync());
 
 			Assert.AreEqual(3, query.Count);
 			Assert.IsTrue(query[0].StartsWith("User ayende logged in at"));
@@ -182,7 +181,7 @@ namespace NHibernate.Test.Linq
 							from user in db.Users
 							orderby user.Id
 							select new { Title = FormatName(user.Name, user.LastLoginDate) }
-						).ToListAsync(CancellationToken.None));
+						).ToListAsync());
 
 			Assert.AreEqual(3, query.Count);
 			Assert.IsTrue(query[0].Title.StartsWith("User ayende logged in at"));
@@ -197,7 +196,7 @@ namespace NHibernate.Test.Linq
 							from user in db.Users
 							orderby user.Id
 							select new { Title = "User " + user.Name + " logged in at " + user.LastLoginDate }
-						).ToListAsync(CancellationToken.None));
+						).ToListAsync());
 
 			Assert.AreEqual(3, query.Count);
 			Assert.IsTrue(query[0].Title.StartsWith("User ayende logged in at"));
@@ -215,7 +214,7 @@ namespace NHibernate.Test.Linq
 							Category = "something"
 						};
 
-			var firstUser = await (query.FirstAsync(CancellationToken.None));
+			var firstUser = await (query.FirstAsync());
 			Assert.IsNotNull(firstUser);
 			Assert.That(firstUser.Category, Is.EqualTo("something"));
 		}
@@ -224,7 +223,7 @@ namespace NHibernate.Test.Linq
 		public async Task CanProjectManyCollectionsAsync()
 		{
 			var query = db.Orders.SelectMany(o => o.OrderLines);
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 			Assert.That(result.Count, Is.EqualTo(2155));
 		}
 
@@ -232,7 +231,7 @@ namespace NHibernate.Test.Linq
 		public async Task CanProjectCollectionsAsync()
 		{
 			var query = db.Orders.Select(o => o.OrderLines);
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 			Assert.That(result.Count, Is.EqualTo(830));
 		}
 
@@ -240,7 +239,7 @@ namespace NHibernate.Test.Linq
 		public async Task CanProjectCollectionsInsideAnonymousTypeAsync()
 		{
 			var query = db.Orders.Select(o => new { o.OrderId, o.OrderLines });
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 			Assert.That(result.Count, Is.EqualTo(830));
 		}
 
@@ -252,7 +251,7 @@ namespace NHibernate.Test.Linq
 			var query = from o in db.Orders
 						select new { o, o.OrderLines };
 
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 			Assert.That(result.Count, Is.EqualTo(830));
 			Assert.That(result[0].o.OrderLines, Is.EquivalentTo(result[0].OrderLines));
 		}
@@ -265,7 +264,7 @@ namespace NHibernate.Test.Linq
 			var query = from o in db.Orders
 						select new { o.OrderLines, o };
 
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 			Assert.That(result.Count, Is.EqualTo(830));
 			Assert.That(result[0].o.OrderLines, Is.EquivalentTo(result[0].OrderLines));
 		}
@@ -278,7 +277,7 @@ namespace NHibernate.Test.Linq
 			var query = from o in db.Orders
 						select new { o.OrderLines, A = 1, B = 2 };
 
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 			Assert.That(result.Count, Is.EqualTo(830));
 		}
 
@@ -290,7 +289,7 @@ namespace NHibernate.Test.Linq
 			var query = from o in db.Orders
 						select new { OrderLines = o.OrderLines.ToList() };
 
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 			Assert.That(result.Count, Is.EqualTo(830));
 		}
 
@@ -306,7 +305,7 @@ namespace NHibernate.Test.Linq
 								ReferenceDescription = "OrderLine"
 							};
 
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 			Assert.That(result.Count, Is.EqualTo(830));
 			Assert.That(result[0].ExpandedElement.OrderLines, Is.EquivalentTo(result[0].ProjectedProperty0));
 		}
@@ -323,7 +322,7 @@ namespace NHibernate.Test.Linq
 								ReferenceDescription = "OrderLine"
 							};
 
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 			Assert.That(result.Count, Is.EqualTo(830));
 			Assert.That(result[0].ExpandedElement.OrderLines, Is.EquivalentTo(result[0].ProjectedProperty0));
 		}
@@ -346,7 +345,7 @@ namespace NHibernate.Test.Linq
 					ReferenceDescription = "Supplier"
 				};
 
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 			Assert.That(result, Has.Count.EqualTo(77));
 			Assert.That(result[0].ExpandedElement.Supplier, Is.EqualTo(result[0].ProjectedProperty0.ExpandedElement));
 			Assert.That(result[0].ExpandedElement.Supplier.Products,
@@ -371,7 +370,7 @@ namespace NHibernate.Test.Linq
 					ReferenceDescription = "Supplier"
 				};
 
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 			Assert.That(result, Has.Count.EqualTo(77));
 			Assert.That(result[0].ExpandedElement.Supplier, Is.EqualTo(result[0].ProjectedProperty0.ExpandedElement));
 			Assert.That(result[0].ExpandedElement.Supplier.Products,
@@ -396,7 +395,7 @@ namespace NHibernate.Test.Linq
 					ReferenceDescription = "Supplier"
 				};
 
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 			Assert.That(result, Has.Count.EqualTo(77));
 			Assert.That(result.Single(x => x.ExpandedElement.ProductId == 1).ProjectedProperty0.ProjectedProperty0.Count(),
 				Is.EqualTo(3));
@@ -413,7 +412,7 @@ namespace NHibernate.Test.Linq
 							index = Array.IndexOf(lookup[1 + item.Id % 4].Codes, 1 + item.Id % 4, 0) / 7,
 						};
 
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(3));
 		}
@@ -429,7 +428,7 @@ namespace NHibernate.Test.Linq
 							index = lookup[1 + item.Id % 4],
 						};
 
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(3));
 		}
@@ -445,7 +444,7 @@ namespace NHibernate.Test.Linq
 							index = lookup[1 + item.Id % 4],
 						};
 
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(3));
 		}
@@ -461,7 +460,7 @@ namespace NHibernate.Test.Linq
 							isPresent  = lookup.ContainsKey(item.Id),
 						};
 
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(3));
 		}
@@ -477,7 +476,7 @@ namespace NHibernate.Test.Linq
 							isPresent = lookup.Contains(item.Id),
 						};
 
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(3));
 		}
@@ -493,7 +492,7 @@ namespace NHibernate.Test.Linq
 							isPresent = lookup.Contains(item.Id),
 						};
 
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(3));
 		}
@@ -511,7 +510,7 @@ namespace NHibernate.Test.Linq
 									   Value = value.Substring(item.Id % 10),
 								   };
 
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(3));
 			Assert.That(result[0].Value, Is.EqualTo(value.Substring(result[0].Start)));

@@ -18,7 +18,6 @@ using NHibernate.Transaction;
 namespace NHibernate.Test.NHSpecificTest.SessionIdLoggingContextTest
 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture, Explicit("This is a performance test and take a while.")]
     public class PerfTestAsync : BugTestCase
     {
@@ -35,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.SessionIdLoggingContextTest
                     .SetFetchMode("Children", FetchMode.Join)
                     .SetResultTransformer(Transformers.DistinctRootEntity)
                     .Add(Restrictions.Eq("Name", "Parent"))
-                    .ListAsync<ClassA>(CancellationToken.None));
+                    .ListAsync<ClassA>());
                 Console.WriteLine(TimeSpan.FromTicks(DateTime.Now.Ticks-ticksAtStart));
                 Assert.AreEqual(noOfParents, res.Count);
                 Assert.AreEqual(noOfChildrenForEachParent, res[0].Children.Count);

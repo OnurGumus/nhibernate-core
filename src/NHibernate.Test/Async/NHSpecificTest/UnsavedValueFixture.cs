@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Summary description for UnsavedValueTest.
 	/// </summary>
@@ -40,8 +39,8 @@ namespace NHibernate.Test.NHSpecificTest
 			// open the first session to SaveOrUpdate it - should be Save
 			ISession s1 = OpenSession();
 			ITransaction t1 = s1.BeginTransaction();
-			await (s1.SaveOrUpdateAsync(unsavedToSave, CancellationToken.None));
-			await (t1.CommitAsync(CancellationToken.None));
+			await (s1.SaveOrUpdateAsync(unsavedToSave));
+			await (t1.CommitAsync());
 			s1.Close();
 
 			// simple should have been inserted - generating a new key for it
@@ -54,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 			IList results2 = await (s2.CreateCriteria(typeof(UnsavedType))
 				.Add(Expression.Eq("Id", unsavedToSave.Id))
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(1, results2.Count, "Should have found a match for the new Id");
 
@@ -63,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest
 			// make sure it has the same Id
 			Assert.AreEqual(unsavedToSave.Id, unsavedToUpdate.Id, "Should have the same Id");
 
-			await (t2.CommitAsync(CancellationToken.None));
+			await (t2.CommitAsync());
 			s2.Close();
 
 			// passing it to the UI for modification
@@ -73,9 +72,9 @@ namespace NHibernate.Test.NHSpecificTest
 			ISession s3 = OpenSession();
 			ITransaction t3 = s3.BeginTransaction();
 
-			await (s3.SaveOrUpdateAsync(unsavedToUpdate, CancellationToken.None));
+			await (s3.SaveOrUpdateAsync(unsavedToUpdate));
 
-			await (t3.CommitAsync(CancellationToken.None));
+			await (t3.CommitAsync());
 			s3.Close();
 
 			// make sure it has the same Id - if the Id has changed then that means it
@@ -87,16 +86,16 @@ namespace NHibernate.Test.NHSpecificTest
 			ISession s4 = OpenSession();
 			ITransaction t4 = s4.BeginTransaction();
 
-			IList results4 = await (s4.CreateCriteria(typeof(UnsavedType)).ListAsync(CancellationToken.None));
+			IList results4 = await (s4.CreateCriteria(typeof(UnsavedType)).ListAsync());
 			Assert.AreEqual(1, results4.Count, "Should only be one item");
 
 			// lets make sure the object was updated
 			UnsavedType unsavedToDelete = (UnsavedType) results4[0];
 			Assert.AreEqual(unsavedToUpdate.TypeName, unsavedToDelete.TypeName);
 
-			await (s4.DeleteAsync(unsavedToDelete, CancellationToken.None));
+			await (s4.DeleteAsync(unsavedToDelete));
 
-			await (t4.CommitAsync(CancellationToken.None));
+			await (t4.CommitAsync());
 			s4.Close();
 
 			// lets make sure the object was deleted
@@ -104,7 +103,7 @@ namespace NHibernate.Test.NHSpecificTest
 			ISession s5 = OpenSession();
 			try
 			{
-				UnsavedType unsavedNull = (UnsavedType) await (s5.LoadAsync(typeof(UnsavedType), unsavedToDelete.Id, CancellationToken.None));
+				UnsavedType unsavedNull = (UnsavedType) await (s5.LoadAsync(typeof(UnsavedType), unsavedToDelete.Id));
 				Assert.IsNull(unsavedNull);
 			}
 			catch (ObjectNotFoundException onfe)

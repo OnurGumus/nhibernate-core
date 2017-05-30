@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.SystemTransactions
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class TransactionFixtureAsync : TestCase
 	{
@@ -33,7 +32,7 @@ namespace NHibernate.Test.SystemTransactions
 			using(TransactionScope tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				W s = new W();
-				await (session.SaveAsync(s, CancellationToken.None));
+				await (session.SaveAsync(s));
 				identifier = s.Id;
 				tx.Complete();
 			}
@@ -41,9 +40,9 @@ namespace NHibernate.Test.SystemTransactions
 			using (ISession session = sessions.OpenSession())
 			using (TransactionScope tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
-				W w = await (session.GetAsync<W>(identifier, CancellationToken.None));
+				W w = await (session.GetAsync<W>(identifier));
 				Assert.IsNotNull(w);
-				await (session.DeleteAsync(w, CancellationToken.None));
+				await (session.DeleteAsync(w));
 				tx.Complete();
 			}
 		}

@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Tests for mapping a type="Time" for a DateTime Property to a database field.
 	/// </summary>
@@ -45,13 +44,13 @@ namespace NHibernate.Test.NHSpecificTest
 			BasicTime basic = Create(1);
 
 			ISession s = OpenSession();
-			await (s.SaveAsync(basic, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(basic));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
 
-			BasicTime basicLoaded = (BasicTime) await (s.LoadAsync(typeof(BasicTime), 1, CancellationToken.None));
+			BasicTime basicLoaded = (BasicTime) await (s.LoadAsync(typeof(BasicTime), 1));
 
 			Assert.IsNotNull(basicLoaded);
 			Assert.IsFalse(basic == basicLoaded);
@@ -60,8 +59,8 @@ namespace NHibernate.Test.NHSpecificTest
 			Assert.AreEqual(basic.TimeValue.Minute, basicLoaded.TimeValue.Minute);
 			Assert.AreEqual(basic.TimeValue.Second, basicLoaded.TimeValue.Second);
 
-			await (s.DeleteAsync(basicLoaded, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(basicLoaded));
+			await (s.FlushAsync());
 			s.Close();
 		}
 
@@ -73,23 +72,23 @@ namespace NHibernate.Test.NHSpecificTest
 			BasicTime basic = Create(1);
 
 			ISession s = OpenSession();
-			await (s.SaveAsync(basic, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(basic));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
 
-			BasicTime basicLoaded = (BasicTime) await (s.LoadAsync(typeof(BasicTime), 1, CancellationToken.None));
+			BasicTime basicLoaded = (BasicTime) await (s.LoadAsync(typeof(BasicTime), 1));
 
 			Assert.AreEqual(0, basicLoaded.TimeArray.Length);
 
 			basicLoaded.TimeArray = new DateTime[] {new DateTime(2000, 01, 01, 12, 1, 1), new DateTime(1500, 1, 1)};
 
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			basic = (BasicTime) await (s.LoadAsync(typeof(BasicTime), 1, CancellationToken.None));
+			basic = (BasicTime) await (s.LoadAsync(typeof(BasicTime), 1));
 			// make sure the 0 index saved with values in Time
 			Assert.AreEqual(12, basic.TimeArray[0].Hour);
 			Assert.AreEqual(1, basic.TimeArray[0].Minute);
@@ -99,8 +98,8 @@ namespace NHibernate.Test.NHSpecificTest
 			// meaning of DbType.Time.  If not written to the db it will have the value
 			// of an uninitialized DateTime - which is the min value.
 			Assert.AreEqual(DateTime.MinValue, basic.TimeArray[1], "date before 1753 should not have been written");
-			await (s.DeleteAsync(basic, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(basic));
+			await (s.FlushAsync());
 			s.Close();
 		}
 
@@ -112,28 +111,28 @@ namespace NHibernate.Test.NHSpecificTest
 			BasicTime basic = Create(1);
 
 			ISession s = OpenSession();
-			await (s.SaveAsync(basic, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(basic));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			basic = (BasicTime) await (s.LoadAsync(typeof(BasicTime), 1, CancellationToken.None));
+			basic = (BasicTime) await (s.LoadAsync(typeof(BasicTime), 1));
 
 			basic.TimeValue = new DateTime(2000, 12, 1, 13, 1, 2);
 
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
 			// make sure the update went through
-			BasicTime basicLoaded = (BasicTime) await (s.LoadAsync(typeof(BasicTime), 1, CancellationToken.None));
+			BasicTime basicLoaded = (BasicTime) await (s.LoadAsync(typeof(BasicTime), 1));
 
 			Assert.AreEqual(13, basicLoaded.TimeValue.Hour);
 			Assert.AreEqual(1, basicLoaded.TimeValue.Minute);
 			Assert.AreEqual(2, basicLoaded.TimeValue.Second);
 
-			await (s.DeleteAsync(basicLoaded, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(basicLoaded));
+			await (s.FlushAsync());
 			s.Close();
 		}
 

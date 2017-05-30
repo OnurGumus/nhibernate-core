@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1502
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -65,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1502
 				criteria.AddOrder(Order.Asc(
 				                  	Projections.SqlFunction(arithmaticMultiplication, NHibernateUtil.GuessType(typeof (int)),
 				                  	                        Projections.Property("IQ"), Projections.Constant(-1))));
-				IList<Person> results=await (criteria.ListAsync<Person>(CancellationToken.None));
+				IList<Person> results=await (criteria.ListAsync<Person>());
 				Assert.AreEqual(5, results.Count);
 				Assert.AreEqual("Sally", results[0].Name);
 				Assert.AreEqual("Joe", results[4].Name);

@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1891
 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture]
     public class FixtureAsync : TestCase
     {
@@ -51,14 +50,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1891
 
             ISession s = OpenSession();
 
-            await (s.SaveAsync(b, CancellationToken.None));
-            await (s.SaveAsync(a, CancellationToken.None));
-            await (s.FlushAsync(CancellationToken.None));
+            await (s.SaveAsync(b));
+            await (s.SaveAsync(a));
+            await (s.FlushAsync());
             s.Close();
 
             s = OpenSession();
 
-            a = await (s.GetAsync<A>(a.Id, CancellationToken.None));
+            a = await (s.GetAsync<A>(a.Id));
 
             Assert.AreEqual(1, a.FormulaCount);
 

@@ -14,7 +14,6 @@ using System.Collections.Generic;
 namespace NHibernate.Test.NHSpecificTest.NH1773
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -27,20 +26,20 @@ namespace NHibernate.Test.NHSpecificTest.NH1773
 				{
 					Country c = new Country() {Id = 100, Name = "US"};
 					Person p = new Person() {Age = 35, Name = "My Name", Id=1, Country = c};
-					await (s.SaveAsync(c, CancellationToken.None));
-					await (s.SaveAsync(p, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (s.SaveAsync(c));
+					await (s.SaveAsync(p));
+					await (tx.CommitAsync());
 				}
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				IList<PersonResult> result = await (s.CreateQuery("select new PersonResult(p, current_timestamp()) from Person p left join fetch p.Country").ListAsync<PersonResult>(CancellationToken.None));
+				IList<PersonResult> result = await (s.CreateQuery("select new PersonResult(p, current_timestamp()) from Person p left join fetch p.Country").ListAsync<PersonResult>());
 
 				Assert.AreEqual("My Name", result[0].Person.Name);
 				Assert.IsTrue(NHibernateUtil.IsInitialized(result[0].Person.Country));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 

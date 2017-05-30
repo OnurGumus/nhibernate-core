@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Unionsubclass
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class UnionSubclassFixtureAsync : TestCase
 	{
@@ -38,7 +37,7 @@ namespace NHibernate.Test.Unionsubclass
 				using (ITransaction t = s.BeginTransaction())
 				{
 					Location mel = new Location("Earth");
-					await (s.SaveAsync(mel, CancellationToken.None));
+					await (s.SaveAsync(mel));
 
 					Human gavin = new Human();
 					gavin.Identity = "gavin";
@@ -49,7 +48,7 @@ namespace NHibernate.Test.Unionsubclass
 					gavin.Info.Add("bar");
 					gavin.Info.Add("y");
 
-					await (t.CommitAsync(CancellationToken.None));
+					await (t.CommitAsync());
 				}
 				s.Close();
 			}
@@ -58,11 +57,11 @@ namespace NHibernate.Test.Unionsubclass
 			{
 				using (ITransaction t = s.BeginTransaction())
 				{
-					Human gavin = (Human)await (s.CreateCriteria(typeof(Human)).UniqueResultAsync(CancellationToken.None));
+					Human gavin = (Human)await (s.CreateCriteria(typeof(Human)).UniqueResultAsync());
 					Assert.AreEqual(gavin.Info.Count, 2);
-					await (s.DeleteAsync(gavin, CancellationToken.None));
-					await (s.DeleteAsync(gavin.Location, CancellationToken.None));
-					await (t.CommitAsync(CancellationToken.None));
+					await (s.DeleteAsync(gavin));
+					await (s.DeleteAsync(gavin.Location));
+					await (t.CommitAsync());
 				}
 				s.Close();
 			}
@@ -74,7 +73,7 @@ namespace NHibernate.Test.Unionsubclass
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			Location mel = new Location("Earth");
-			await (s.SaveAsync(mel, CancellationToken.None));
+			await (s.SaveAsync(mel));
 
 			Human gavin = new Human();
 			gavin.Identity = "gavin";
@@ -87,22 +86,22 @@ namespace NHibernate.Test.Unionsubclass
 			max.Location = mel;
 			mel.AddBeing(gavin);
 
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 			s.Clear();
 
 			IList list =
 				await (s.CreateCriteria(typeof(Human)).SetFetchMode("location", FetchMode.Join).SetFetchMode("location.beings",
-																																															 FetchMode.Join).ListAsync(CancellationToken.None));
+																																															 FetchMode.Join).ListAsync());
 
 			for (int i = 0; i < list.Count; i++)
 			{
 				Human h = (Human)list[i];
 				Assert.IsTrue(NHibernateUtil.IsInitialized(h.Location));
 				Assert.IsTrue(NHibernateUtil.IsInitialized(h.Location.Beings));
-				await (s.DeleteAsync(h, CancellationToken.None));
+				await (s.DeleteAsync(h));
 			}
-			await (s.DeleteAsync(await (s.GetAsync<Location>(mel.Id, CancellationToken.None)), CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(await (s.GetAsync<Location>(mel.Id))));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -113,8 +112,8 @@ namespace NHibernate.Test.Unionsubclass
 			ITransaction t = s.BeginTransaction();
 			Location mel = new Location("Melbourne, Australia");
 			Location mars = new Location("Mars");
-			await (s.SaveAsync(mel, CancellationToken.None));
-			await (s.SaveAsync(mars, CancellationToken.None));
+			await (s.SaveAsync(mel));
+			await (s.SaveAsync(mars));
 
 			Human gavin = new Human();
 			gavin.Identity = "gavin";
@@ -140,44 +139,44 @@ namespace NHibernate.Test.Unionsubclass
 			x23y4.Hive = hive;
 			hive.Members.Add(yy3dk);
 			yy3dk.Hive = hive;
-			await (s.PersistAsync(hive, CancellationToken.None));
+			await (s.PersistAsync(hive));
 
 			yy3dk.Hivemates.Add(x23y4);
 			x23y4.Hivemates.Add(yy3dk);
 
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 			s.Clear();
 
-			hive = (Hive)await (s.CreateQuery("from Hive h").UniqueResultAsync(CancellationToken.None));
+			hive = (Hive)await (s.CreateQuery("from Hive h").UniqueResultAsync());
 			Assert.IsFalse(NHibernateUtil.IsInitialized(hive.Members));
 			Assert.AreEqual(2, hive.Members.Count);
 
 			s.Clear();
 
-			hive = (Hive)await (s.CreateQuery("from Hive h left join fetch h.location left join fetch h.members").UniqueResultAsync(CancellationToken.None));
+			hive = (Hive)await (s.CreateQuery("from Hive h left join fetch h.location left join fetch h.members").UniqueResultAsync());
 			Assert.IsTrue(NHibernateUtil.IsInitialized(hive.Members));
 			Assert.AreEqual(2, hive.Members.Count);
 
 			s.Clear();
 
-			x23y4 = (Alien)await (s.CreateQuery("from Alien a left join fetch a.hivemates where a.identity like 'x%'").UniqueResultAsync(CancellationToken.None));
+			x23y4 = (Alien)await (s.CreateQuery("from Alien a left join fetch a.hivemates where a.identity like 'x%'").UniqueResultAsync());
 			Assert.IsTrue(NHibernateUtil.IsInitialized(x23y4.Hivemates));
 			Assert.AreEqual(1, x23y4.Hivemates.Count);
 
 			s.Clear();
 
-			x23y4 = (Alien)await (s.CreateQuery("from Alien a where a.identity like 'x%'").UniqueResultAsync(CancellationToken.None));
+			x23y4 = (Alien)await (s.CreateQuery("from Alien a where a.identity like 'x%'").UniqueResultAsync());
 			Assert.IsFalse(NHibernateUtil.IsInitialized(x23y4.Hivemates));
 			Assert.AreEqual(1, x23y4.Hivemates.Count);
 
 			s.Clear();
 
-			x23y4 = (Alien)(await (s.CreateCriteria(typeof(Alien)).AddOrder(Order.Asc("identity")).ListAsync(CancellationToken.None)))[0];
-			await (s.DeleteAsync(x23y4.Hive, CancellationToken.None));
-			await (s.DeleteAsync(await (s.GetAsync<Location>(mel.Id, CancellationToken.None)), CancellationToken.None));
-			await (s.DeleteAsync(await (s.GetAsync<Location>(mars.Id, CancellationToken.None)), CancellationToken.None));
-			Assert.IsTrue((await (s.CreateQuery("from Being").ListAsync(CancellationToken.None))).Count == 0);
-			await (t.CommitAsync(CancellationToken.None));
+			x23y4 = (Alien)(await (s.CreateCriteria(typeof(Alien)).AddOrder(Order.Asc("identity")).ListAsync()))[0];
+			await (s.DeleteAsync(x23y4.Hive));
+			await (s.DeleteAsync(await (s.GetAsync<Location>(mel.Id))));
+			await (s.DeleteAsync(await (s.GetAsync<Location>(mars.Id))));
+			Assert.IsTrue((await (s.CreateQuery("from Being").ListAsync())).Count == 0);
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -188,8 +187,8 @@ namespace NHibernate.Test.Unionsubclass
 			ITransaction t = s.BeginTransaction();
 			Location mel = new Location("Melbourne, Australia");
 			Location mars = new Location("Mars");
-			await (s.SaveAsync(mel, CancellationToken.None));
-			await (s.SaveAsync(mars, CancellationToken.None));
+			await (s.SaveAsync(mel));
+			await (s.SaveAsync(mars));
 
 			Human gavin = new Human();
 			gavin.Identity = "gavin";
@@ -207,51 +206,51 @@ namespace NHibernate.Test.Unionsubclass
 			hive.Location = mars;
 			hive.Members.Add(x23y4);
 			x23y4.Hive = hive;
-			await (s.PersistAsync(hive, CancellationToken.None));
+			await (s.PersistAsync(hive));
 
 			Thing thing = new Thing();
 			thing.Description = "some thing";
 			thing.Owner = gavin;
 			gavin.Things.Add(thing);
-			await (s.SaveAsync(thing, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(thing));
+			await (s.FlushAsync());
 
 			s.Clear();
 
-			thing = (Thing)await (s.CreateQuery("from Thing t left join fetch t.owner").UniqueResultAsync(CancellationToken.None));
+			thing = (Thing)await (s.CreateQuery("from Thing t left join fetch t.owner").UniqueResultAsync());
 			Assert.IsTrue(NHibernateUtil.IsInitialized(thing.Owner));
 			Assert.AreEqual("gavin", thing.Owner.Identity);
 			s.Clear();
 
-			thing = (Thing)await (s.CreateQuery("select t from Thing t left join t.owner where t.owner.identity='gavin'").UniqueResultAsync(CancellationToken.None));
+			thing = (Thing)await (s.CreateQuery("select t from Thing t left join t.owner where t.owner.identity='gavin'").UniqueResultAsync());
 			Assert.IsFalse(NHibernateUtil.IsInitialized(thing.Owner));
 			Assert.AreEqual("gavin", thing.Owner.Identity);
 			s.Clear();
 
-			gavin = (Human)await (s.CreateQuery("from Human h left join fetch h.things").UniqueResultAsync(CancellationToken.None));
+			gavin = (Human)await (s.CreateQuery("from Human h left join fetch h.things").UniqueResultAsync());
 			Assert.IsTrue(NHibernateUtil.IsInitialized(gavin.Things));
 			Assert.AreEqual("some thing", ((Thing)gavin.Things[0]).Description);
 			s.Clear();
 
-			Assert.AreEqual(2, (await (s.CreateQuery("from Being b left join fetch b.things").ListAsync(CancellationToken.None))).Count);
+			Assert.AreEqual(2, (await (s.CreateQuery("from Being b left join fetch b.things").ListAsync())).Count);
 			s.Clear();
 
-			gavin = (Human)await (s.CreateQuery("from Being b join fetch b.things").UniqueResultAsync(CancellationToken.None));
+			gavin = (Human)await (s.CreateQuery("from Being b join fetch b.things").UniqueResultAsync());
 			Assert.IsTrue(NHibernateUtil.IsInitialized(gavin.Things));
 			Assert.AreEqual("some thing", ((Thing)gavin.Things[0]).Description);
 			s.Clear();
 
-			gavin = (Human)await (s.CreateQuery("select h from Human h join h.things t where t.description='some thing'").UniqueResultAsync(CancellationToken.None));
+			gavin = (Human)await (s.CreateQuery("select h from Human h join h.things t where t.description='some thing'").UniqueResultAsync());
 			Assert.IsFalse(NHibernateUtil.IsInitialized(gavin.Things));
 			Assert.AreEqual("some thing", ((Thing)gavin.Things[0]).Description);
 			s.Clear();
 
-			gavin = (Human)await (s.CreateQuery("select b from Being b join b.things t where t.description='some thing'").UniqueResultAsync(CancellationToken.None));
+			gavin = (Human)await (s.CreateQuery("select b from Being b join b.things t where t.description='some thing'").UniqueResultAsync());
 			Assert.IsFalse(NHibernateUtil.IsInitialized(gavin.Things));
 			Assert.AreEqual("some thing", ((Thing)gavin.Things[0]).Description);
 			s.Clear();
 
-			thing = await (s.GetAsync<Thing>(thing.Id, CancellationToken.None));
+			thing = await (s.GetAsync<Thing>(thing.Id));
 			Assert.IsFalse(NHibernateUtil.IsInitialized(thing.Owner));
 			Assert.AreEqual("gavin", thing.Owner.Identity);
 
@@ -259,20 +258,20 @@ namespace NHibernate.Test.Unionsubclass
 			thing.Owner = x23y4;
 			x23y4.Things.Add(thing);
 
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 			s.Clear();
 
-			thing = await (s.GetAsync<Thing>(thing.Id, CancellationToken.None));
+			thing = await (s.GetAsync<Thing>(thing.Id));
 			Assert.IsFalse(NHibernateUtil.IsInitialized(thing.Owner));
 			Assert.AreEqual("x23y4$$hu%3", thing.Owner.Identity);
 
-			await (s.DeleteAsync(thing, CancellationToken.None));
-			x23y4 = (Alien)await (s.CreateCriteria(typeof(Alien)).UniqueResultAsync(CancellationToken.None));
-			await (s.DeleteAsync(x23y4.Hive, CancellationToken.None));
-			await (s.DeleteAsync(await (s.GetAsync<Location>(mel.Id, CancellationToken.None)), CancellationToken.None));
-			await (s.DeleteAsync(await (s.GetAsync<Location>(mars.Id, CancellationToken.None)), CancellationToken.None));
-			Assert.AreEqual(0, (await (s.CreateQuery("from Being").ListAsync(CancellationToken.None))).Count);
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(thing));
+			x23y4 = (Alien)await (s.CreateCriteria(typeof(Alien)).UniqueResultAsync());
+			await (s.DeleteAsync(x23y4.Hive));
+			await (s.DeleteAsync(await (s.GetAsync<Location>(mel.Id))));
+			await (s.DeleteAsync(await (s.GetAsync<Location>(mars.Id))));
+			Assert.AreEqual(0, (await (s.CreateQuery("from Being").ListAsync())).Count);
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -285,9 +284,9 @@ namespace NHibernate.Test.Unionsubclass
 				Location mel = new Location("Melbourne, Australia");
 				Location atl = new Location("Atlanta, GA");
 				Location mars = new Location("Mars");
-				await (s.SaveAsync(mel, CancellationToken.None));
-				await (s.SaveAsync(atl, CancellationToken.None));
-				await (s.SaveAsync(mars, CancellationToken.None));
+				await (s.SaveAsync(mel));
+				await (s.SaveAsync(atl));
+				await (s.SaveAsync(mars));
 
 				Human gavin = new Human();
 				gavin.Identity = "gavin";
@@ -305,14 +304,14 @@ namespace NHibernate.Test.Unionsubclass
 				hive.Location = mars;
 				hive.Members.Add(x23y4);
 				x23y4.Hive = hive;
-				await (s.PersistAsync(hive, CancellationToken.None));
+				await (s.PersistAsync(hive));
 
-				Assert.AreEqual(2, (await (s.CreateQuery("from Being").ListAsync(CancellationToken.None))).Count);
-				Assert.AreEqual(1, (await (s.CreateQuery("from Being b where b.class = Alien").ListAsync(CancellationToken.None))).Count);
-				Assert.AreEqual(1, (await (s.CreateQuery("from Alien").ListAsync(CancellationToken.None))).Count);
+				Assert.AreEqual(2, (await (s.CreateQuery("from Being").ListAsync())).Count);
+				Assert.AreEqual(1, (await (s.CreateQuery("from Being b where b.class = Alien").ListAsync())).Count);
+				Assert.AreEqual(1, (await (s.CreateQuery("from Alien").ListAsync())).Count);
 				s.Clear();
 
-				IList<Being> beings = await (s.CreateQuery("from Being b left join fetch b.location").ListAsync<Being>(CancellationToken.None));
+				IList<Being> beings = await (s.CreateQuery("from Being b left join fetch b.location").ListAsync<Being>());
 				foreach (Being b in beings)
 				{
 					Assert.IsTrue(NHibernateUtil.IsInitialized(b.Location));
@@ -323,7 +322,7 @@ namespace NHibernate.Test.Unionsubclass
 				Assert.AreEqual(2, beings.Count);
 				s.Clear();
 
-				beings = await (s.CreateQuery("from Being").ListAsync<Being>(CancellationToken.None));
+				beings = await (s.CreateQuery("from Being").ListAsync<Being>());
 				foreach (Being b in beings)
 				{
 					Assert.IsFalse(NHibernateUtil.IsInitialized(b.Location));
@@ -334,7 +333,7 @@ namespace NHibernate.Test.Unionsubclass
 				Assert.AreEqual(2, beings.Count);
 				s.Clear();
 
-				IList<Location> locations = await (s.CreateQuery("from Location").ListAsync<Location>(CancellationToken.None));
+				IList<Location> locations = await (s.CreateQuery("from Location").ListAsync<Location>());
 				int count = 0;
 				foreach (Location l in locations)
 				{
@@ -349,7 +348,7 @@ namespace NHibernate.Test.Unionsubclass
 				Assert.AreEqual(3, locations.Count);
 				s.Clear();
 
-				locations = await (s.CreateQuery("from Location loc left join fetch loc.beings").ListAsync<Location>(CancellationToken.None));
+				locations = await (s.CreateQuery("from Location loc left join fetch loc.beings").ListAsync<Location>());
 				count = 0;
 				foreach (Location l in locations)
 				{
@@ -365,23 +364,23 @@ namespace NHibernate.Test.Unionsubclass
 				Assert.AreEqual(3, locations.Count);
 				s.Clear();
 
-				gavin = await (s.GetAsync<Human>(gavin.Id, CancellationToken.None));
-				atl = await (s.GetAsync<Location>(atl.Id, CancellationToken.None));
+				gavin = await (s.GetAsync<Human>(gavin.Id));
+				atl = await (s.GetAsync<Location>(atl.Id));
 
 				atl.AddBeing(gavin);
-				Assert.AreEqual(1, (await (s.CreateQuery("from Human h where h.location.name like '%GA'").ListAsync(CancellationToken.None))).Count);
-				await (s.DeleteAsync(gavin, CancellationToken.None));
-				x23y4 = (Alien) await (s.CreateCriteria(typeof (Alien)).UniqueResultAsync(CancellationToken.None));
-				await (s.DeleteAsync(x23y4.Hive, CancellationToken.None));
-				Assert.AreEqual(0, (await (s.CreateQuery("from Being").ListAsync(CancellationToken.None))).Count);
-				await (t.CommitAsync(CancellationToken.None));
+				Assert.AreEqual(1, (await (s.CreateQuery("from Human h where h.location.name like '%GA'").ListAsync())).Count);
+				await (s.DeleteAsync(gavin));
+				x23y4 = (Alien) await (s.CreateCriteria(typeof (Alien)).UniqueResultAsync());
+				await (s.DeleteAsync(x23y4.Hive));
+				Assert.AreEqual(0, (await (s.CreateQuery("from Being").ListAsync())).Count);
+				await (t.CommitAsync());
 				s.Close();
 			}
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from Location", CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Location"));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -402,20 +401,20 @@ namespace NHibernate.Test.Unionsubclass
 			steve.Sex = 'M';
 			steve.Salary = 0;
 			mel.AddBeing(steve);
-			await (s.PersistAsync(mel, CancellationToken.None));
-			await (tx.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(mel));
+			await (tx.CommitAsync());
 			s.Close();
 			s = OpenSession();
 			tx = s.BeginTransaction();
 			IQuery q = s.CreateQuery("from Being h where h.identity = :name1 or h.identity = :name2");
 			q.SetString("name1", "marc");
 			q.SetString("name2", "steve");
-			IList result = await (q.ListAsync(CancellationToken.None));
+			IList result = await (q.ListAsync());
 			Assert.AreEqual(2, result.Count);
-			await (s.DeleteAsync(result[0], CancellationToken.None));
-			await (s.DeleteAsync(result[1], CancellationToken.None));
-			await (s.DeleteAsync(((Human)result[0]).Location, CancellationToken.None));
-			await (tx.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(result[0]));
+			await (s.DeleteAsync(result[1]));
+			await (s.DeleteAsync(((Human)result[0]).Location));
+			await (tx.CommitAsync());
 			s.Close();
 		}
 	}

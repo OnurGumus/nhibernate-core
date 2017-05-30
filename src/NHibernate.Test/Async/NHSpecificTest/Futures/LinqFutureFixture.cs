@@ -16,7 +16,6 @@ using System.Linq;
 namespace NHibernate.Test.NHSpecificTest.Futures
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class LinqFutureFixtureAsync : FutureFixture
 	{
@@ -31,10 +30,10 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 				var p1 = new Person { Name = "inserted name" };
 				var p2 = new Person { Name = null };
 
-				await (s.SaveAsync(p1, CancellationToken.None));
-				await (s.SaveAsync(p2, CancellationToken.None));
+				await (s.SaveAsync(p1));
+				await (s.SaveAsync(p2));
 				personId = p2.Id;
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -47,8 +46,8 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from Person", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Person"));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -63,9 +62,9 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 				var p1 = new Person { Name = "Parent" };
 				var p2 = new Person { Parent = p1, Name = "Child" };
 				p1.Children.Add(p2);
-				await (s.SaveAsync(p1, CancellationToken.None));
-				await (s.SaveAsync(p2, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(p1));
+				await (s.SaveAsync(p2));
+				await (tx.CommitAsync());
 
 				s.Clear(); // we don't want caching
 			}
@@ -95,8 +94,8 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from Person", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Person"));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -111,9 +110,9 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 				var p1 = new Person { Name = "Parent" };
 				var p2 = new Person { Parent = p1, Name = "Child" };
 				p1.Children.Add(p2);
-				await (s.SaveAsync(p1, CancellationToken.None));
-				await (s.SaveAsync(p2, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(p1));
+				await (s.SaveAsync(p2));
+				await (tx.CommitAsync());
 
 				s.Clear(); // we don't want caching
 			}
@@ -142,8 +141,8 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from Person", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Person"));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -157,10 +156,10 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 				var p1 = new Person { Name = "inserted name" };
 				var p2 = new Person { Name = null };
 
-				await (s.SaveAsync(p1, CancellationToken.None));
-				await (s.SaveAsync(p2, CancellationToken.None));
+				await (s.SaveAsync(p1));
+				await (s.SaveAsync(p2));
 				personId = p2.Id;
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			using (var s = sessions.OpenSession())
@@ -176,8 +175,8 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from Person", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Person"));
+				await (tx.CommitAsync());
 			}
 		}
 	}

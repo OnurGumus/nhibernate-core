@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2044
 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture]
     public class SampleTestAsync : BugTestCase
     {
@@ -54,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2044
             {
                 ICriteria criteria = session.CreateCriteria(typeof(DomainClass), "domain");
                 criteria.Add(NHibernate.Criterion.Expression.Eq("Symbol", 's').IgnoreCase());
-                IList<DomainClass> list = await (criteria.ListAsync<DomainClass>(CancellationToken.None));
+                IList<DomainClass> list = await (criteria.ListAsync<DomainClass>());
 
                 Assert.AreEqual(1, list.Count);
                 

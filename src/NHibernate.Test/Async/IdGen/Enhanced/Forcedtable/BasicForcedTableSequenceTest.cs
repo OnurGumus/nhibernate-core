@@ -15,7 +15,6 @@ using System.Collections;
 namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class BasicForcedTableSequenceTestAsync : TestCase
 	{
@@ -49,13 +48,13 @@ namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 					for (int i = 0; i < count; i++)
 					{
 						entities[i] = new Entity("" + (i + 1));
-						await (session.SaveAsync(entities[i], CancellationToken.None));
+						await (session.SaveAsync(entities[i]));
 						long expectedId = i + 1;
 						Assert.That(entities[i].Id, Is.EqualTo(expectedId));
 						Assert.That(generator.DatabaseStructure.TimesAccessed, Is.EqualTo(expectedId));
 						Assert.That(generator.Optimizer.LastSourceValue, Is.EqualTo(expectedId));
 					}
-					await (transaction.CommitAsync(CancellationToken.None));
+					await (transaction.CommitAsync());
 				}
 
 				using (ITransaction transaction = session.BeginTransaction())
@@ -63,9 +62,9 @@ namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 					for (int i = 0; i < count; i++)
 					{
 						Assert.That(entities[i].Id, Is.EqualTo(i + 1));
-						await (session.DeleteAsync(entities[i], CancellationToken.None));
+						await (session.DeleteAsync(entities[i]));
 					}
-					await (transaction.CommitAsync(CancellationToken.None));
+					await (transaction.CommitAsync());
 				}
 
 				session.Close();

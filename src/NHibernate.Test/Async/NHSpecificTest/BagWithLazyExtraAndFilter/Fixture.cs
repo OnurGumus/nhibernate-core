@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.BagWithLazyExtraAndFilter
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync: BugTestCase
 	{
@@ -32,30 +31,30 @@ namespace NHibernate.Test.NHSpecificTest.BagWithLazyExtraAndFilter
 					{
 						machineRequest
 					}
-				}, CancellationToken.None));
-				await (s.SaveAsync(machineRequest, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				}));
+				await (s.SaveAsync(machineRequest));
+				await (s.Transaction.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			{
-				var env = await (s.LoadAsync<Env>(1L, CancellationToken.None));
+				var env = await (s.LoadAsync<Env>(1L));
 				Assert.AreEqual(1, env.RequestsFailed.Count);
 			}
 
 			using (var s = OpenSession())
 			{
 				s.EnableFilter("CurrentOnly");
-				var env = await (s.LoadAsync<Env>(1L, CancellationToken.None));
+				var env = await (s.LoadAsync<Env>(1L));
 				Assert.AreEqual(0, env.RequestsFailed.Count);
 			}
 
 			using (var s = OpenSession())
 			{
 				s.BeginTransaction();
-				await (s.DeleteAsync(await (s.LoadAsync<MachineRequest>(2L, CancellationToken.None)), CancellationToken.None));
-				await (s.DeleteAsync(await (s.LoadAsync<Env>(1L, CancellationToken.None)), CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(await (s.LoadAsync<MachineRequest>(2L))));
+				await (s.DeleteAsync(await (s.LoadAsync<Env>(1L))));
+				await (s.Transaction.CommitAsync());
 			}
 		}
 	}

@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.ConnectionTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture,Ignore("Not yet supported. Need AutoClosed feature.(TransactionContext)")]
 	public class ThreadLocalCurrentSessionTestAsync : ConnectionManagementTestCase
 	{
@@ -50,7 +49,7 @@ namespace NHibernate.Test.ConnectionTest
 		{
 			ISession session = sessions.OpenSession();
 			session.BeginTransaction();
-			await (session.Transaction.CommitAsync(CancellationToken.None));
+			await (session.Transaction.CommitAsync());
 			Assert.IsFalse(session.IsOpen, "session open after txn completion");
 			Assert.IsFalse(TestableThreadLocalContext.IsSessionBound(session), "session still bound after txn completion");
 			

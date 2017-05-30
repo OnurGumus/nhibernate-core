@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2093
  {
    using System.Threading.Tasks;
-   using System.Threading;
   [TestFixture]
   public class FixtureAsync : BugTestCase
   {
@@ -28,15 +27,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2093
           var person = new Person { Id = 1, Name = "Person1" };
           var employee = new Employee { Id = 1, Name = "Emp1", Person = person };
 
-          await (s.SaveAsync(person, CancellationToken.None));
-          await (s.SaveAsync(employee, CancellationToken.None));
+          await (s.SaveAsync(person));
+          await (s.SaveAsync(employee));
 
-          await (s.FlushAsync(CancellationToken.None));
+          await (s.FlushAsync());
         }
 
         using (var s = OpenSession())
         {
-          var person = await (s.LoadAsync<Person>(1, CancellationToken.None));
+          var person = await (s.LoadAsync<Person>(1));
 
           var type = NHibernateProxyHelper.GuessClass(person);
 
@@ -45,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2093
 
         using (var s = OpenSession())
         {
-          var person = await (s.GetAsync<Person>(1, CancellationToken.None));
+          var person = await (s.GetAsync<Person>(1));
 
           var type = NHibernateProxyHelper.GuessClass(person);
 
@@ -56,10 +55,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2093
       {
         using (var s = OpenSession())
         {
-          await (s.DeleteAsync("from Employee", CancellationToken.None));
-          await (s.DeleteAsync("from Person", CancellationToken.None));
+          await (s.DeleteAsync("from Employee"));
+          await (s.DeleteAsync("from Person"));
 
-          await (s.FlushAsync(CancellationToken.None));
+          await (s.FlushAsync());
         }
       }
     }
@@ -74,19 +73,19 @@ namespace NHibernate.Test.NHSpecificTest.NH2093
           var person = new Person { Id = 1, Name = "Person1" };
           var employee = new Employee { Id = 1, Name = "Emp1", Person = person };
 
-          await (s.SaveAsync(person, CancellationToken.None));
-          await (s.SaveAsync(employee, CancellationToken.None));
+          await (s.SaveAsync(person));
+          await (s.SaveAsync(employee));
 
-          await (s.FlushAsync(CancellationToken.None));
+          await (s.FlushAsync());
         }
 
         using (var s = OpenSession())
         {
-          var person = await (s.GetAsync<Person>(1, CancellationToken.None));
+          var person = await (s.GetAsync<Person>(1));
 
           var list = await (s.CreateQuery("from Employee where Person = :p")
             .SetEntity("p", person)
-            .ListAsync<Employee>(CancellationToken.None));
+            .ListAsync<Employee>());
 
           Assert.AreEqual(list.Count, 1);
         }
@@ -95,10 +94,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2093
       {
         using (var s = OpenSession())
         {
-          await (s.DeleteAsync("from Employee", CancellationToken.None));
-          await (s.DeleteAsync("from Person", CancellationToken.None));
+          await (s.DeleteAsync("from Employee"));
+          await (s.DeleteAsync("from Person"));
 
-          await (s.FlushAsync(CancellationToken.None));
+          await (s.FlushAsync());
         }
       }
     }

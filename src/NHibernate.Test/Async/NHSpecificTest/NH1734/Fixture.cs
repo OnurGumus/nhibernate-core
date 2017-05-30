@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1734
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync:BugTestCase
 	{
@@ -51,21 +50,21 @@ namespace NHibernate.Test.NHSpecificTest.NH1734
 			    double delta = 0.0000000000001;
 
 				var query=session.CreateQuery("select sum(Amount*Price) from Product");
-				var result=await (query.UniqueResultAsync(CancellationToken.None));
+				var result=await (query.UniqueResultAsync());
 				Assert.That(result, Is.InstanceOf(typeof (double)));
                 Assert.AreEqual(43.2 * 3 * 2, (double)result, delta);
 				query = session.CreateQuery("select sum(Price*Amount) from Product");
-				result = await (query.UniqueResultAsync(CancellationToken.None));
+				result = await (query.UniqueResultAsync());
 				Assert.That(result, Is.InstanceOf(typeof(double)));
                 Assert.AreEqual(43.2 * 3 * 2, (double)result, delta);
 
 				query = session.CreateQuery("select sum(Price) from Product");
-				result = await (query.UniqueResultAsync(CancellationToken.None));
+				result = await (query.UniqueResultAsync());
 				Assert.That(result, Is.InstanceOf(typeof(double)));
                 Assert.AreEqual(43.2 * 2, (double)result, delta);
 
 				query = session.CreateQuery("select sum(Amount) from Product");
-				result = await (query.UniqueResultAsync(CancellationToken.None));
+				result = await (query.UniqueResultAsync());
 				Assert.That(result, Is.InstanceOf(typeof(Int64)));
 				Assert.That(result, Is.EqualTo(6));
 			}

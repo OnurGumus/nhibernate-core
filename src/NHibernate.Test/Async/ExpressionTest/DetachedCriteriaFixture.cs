@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.ExpressionTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class DetachedCriteriaFixtureAsync : TestCase
 	{
@@ -32,8 +31,8 @@ namespace NHibernate.Test.ExpressionTest
 			{
 				Componentizable master = new Componentizable();
 				master.NickName = "master";
-				await (s.SaveAsync(master, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(master));
+				await (s.FlushAsync());
 			}
 
 			DetachedCriteria detachedCriteria = DetachedCriteria.For(typeof(Componentizable));
@@ -41,10 +40,10 @@ namespace NHibernate.Test.ExpressionTest
 
 			using (ISession s = OpenSession())
 			{
-				Componentizable componentizable = (Componentizable) await (detachedCriteria.GetExecutableCriteria(s).UniqueResultAsync(CancellationToken.None));
+				Componentizable componentizable = (Componentizable) await (detachedCriteria.GetExecutableCriteria(s).UniqueResultAsync());
 				Assert.AreEqual("master", componentizable.NickName);
-				await (s.DeleteAsync(componentizable, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync(componentizable));
+				await (s.FlushAsync());
 			}
 		}
 	}

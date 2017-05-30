@@ -58,19 +58,19 @@ namespace NHibernate.Test.NHSpecificTest.NH2302
                 // create and save the entity
                 StringLengthEntity entity = new StringLengthEntity();
                 entity.StringHugeLength = str;
-                await (sess.SaveAsync(entity, CancellationToken.None));
-                await (tx.CommitAsync(CancellationToken.None));
+                await (sess.SaveAsync(entity));
+                await (tx.CommitAsync());
                 id = entity.ID;
             }
 
             using (ISession sess = OpenSession())
             using (ITransaction tx = sess.BeginTransaction())
             {
-                StringLengthEntity loaded = await (sess.GetAsync<StringLengthEntity>(id, CancellationToken.None));
+                StringLengthEntity loaded = await (sess.GetAsync<StringLengthEntity>(id));
                 Assert.IsNotNull(loaded);
                 Assert.AreEqual(12000, loaded.StringHugeLength.Length);
                 Assert.AreEqual(str, loaded.StringHugeLength);
-                await (tx.CommitAsync(CancellationToken.None));
+                await (tx.CommitAsync());
             }
         }
 
@@ -87,19 +87,19 @@ namespace NHibernate.Test.NHSpecificTest.NH2302
                 // create and save the entity
                 StringLengthEntity entity = new StringLengthEntity();
                 entity.StringSqlType = str;
-                await (sess.SaveAsync(entity, CancellationToken.None));
-                await (tx.CommitAsync(CancellationToken.None));
+                await (sess.SaveAsync(entity));
+                await (tx.CommitAsync());
                 id = entity.ID;
             }
 
             using (ISession sess = OpenSession())
             using (ITransaction tx = sess.BeginTransaction())
             {
-                StringLengthEntity loaded = await (sess.GetAsync<StringLengthEntity>(id, CancellationToken.None));
+                StringLengthEntity loaded = await (sess.GetAsync<StringLengthEntity>(id));
                 Assert.IsNotNull(loaded);
                 Assert.AreEqual(12000, loaded.StringSqlType.Length);
                 Assert.AreEqual(str, loaded.StringSqlType);
-                await (tx.CommitAsync(CancellationToken.None));
+                await (tx.CommitAsync());
             }
         }
 
@@ -116,19 +116,19 @@ namespace NHibernate.Test.NHSpecificTest.NH2302
                 // create and save the entity
                 StringLengthEntity entity = new StringLengthEntity();
                 entity.BlobSqlType = str;
-                await (sess.SaveAsync(entity, CancellationToken.None));
-                await (tx.CommitAsync(CancellationToken.None));
+                await (sess.SaveAsync(entity));
+                await (tx.CommitAsync());
                 id = entity.ID;
             }
 
             using (ISession sess = OpenSession())
             using (ITransaction tx = sess.BeginTransaction())
             {
-                StringLengthEntity loaded = await (sess.GetAsync<StringLengthEntity>(id, CancellationToken.None));
+                StringLengthEntity loaded = await (sess.GetAsync<StringLengthEntity>(id));
                 Assert.IsNotNull(loaded);
                 Assert.AreEqual(12000, loaded.BlobSqlType.Length);
                 Assert.AreEqual(str, loaded.BlobSqlType);
-                await (tx.CommitAsync(CancellationToken.None));
+                await (tx.CommitAsync());
             }
         }
 
@@ -145,19 +145,19 @@ namespace NHibernate.Test.NHSpecificTest.NH2302
 						// create and save the entity
 						StringLengthEntity entity = new StringLengthEntity();
 						entity.BlobLength = str;
-						await (sess.SaveAsync(entity, CancellationToken.None));
-						await (tx.CommitAsync(CancellationToken.None));
+						await (sess.SaveAsync(entity));
+						await (tx.CommitAsync());
 						id = entity.ID;
 					}
 
 					using (ISession sess = OpenSession())
 					using (ITransaction tx = sess.BeginTransaction())
 					{
-						StringLengthEntity loaded = await (sess.GetAsync<StringLengthEntity>(id, CancellationToken.None));
+						StringLengthEntity loaded = await (sess.GetAsync<StringLengthEntity>(id));
 						Assert.IsNotNull(loaded);
 						Assert.AreEqual(12000, loaded.BlobLength.Length);
 						Assert.AreEqual(str, loaded.BlobLength);
-						await (tx.CommitAsync(CancellationToken.None));
+						await (tx.CommitAsync());
 					}
 				}
 
@@ -174,19 +174,19 @@ namespace NHibernate.Test.NHSpecificTest.NH2302
 						// create and save the entity
 						StringLengthEntity entity = new StringLengthEntity();
 						entity.Blob = str;
-						await (sess.SaveAsync(entity, CancellationToken.None));
-						await (tx.CommitAsync(CancellationToken.None));
+						await (sess.SaveAsync(entity));
+						await (tx.CommitAsync());
 						id = entity.ID;
 					}
 
 					using (ISession sess = OpenSession())
 					using (ITransaction tx = sess.BeginTransaction())
 					{
-						StringLengthEntity loaded = await (sess.GetAsync<StringLengthEntity>(id, CancellationToken.None));
+						StringLengthEntity loaded = await (sess.GetAsync<StringLengthEntity>(id));
 						Assert.IsNotNull(loaded);
 						Assert.AreEqual(12000, loaded.Blob.Length);
 						Assert.AreEqual(str, loaded.Blob);
-						await (tx.CommitAsync(CancellationToken.None));
+						await (tx.CommitAsync());
 					}
 				}
 

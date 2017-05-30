@@ -57,15 +57,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3234
 							},
 					};
 
-				await (SaveAsync(session, widget, CancellationToken.None));
-				await (EvictAsync(session, widget, CancellationToken.None));
+				await (SaveAsync(session, widget));
+				await (EvictAsync(session, widget));
 
 				widget.Levels.Add(new GridLevel());
 
-				await (SaveAsync(session, widget, CancellationToken.None));
-				await (EvictAsync(session, widget, CancellationToken.None));
+				await (SaveAsync(session, widget));
+				await (EvictAsync(session, widget));
 
-				var loaded = await (session.GetAsync<GridWidget>(widget.Id, CancellationToken.None));
+				var loaded = await (session.GetAsync<GridWidget>(widget.Id));
 
 				Assert.That(loaded.Levels.Count, Is.EqualTo(3));
 			}
@@ -85,16 +85,16 @@ namespace NHibernate.Test.NHSpecificTest.NH3234
 							},
 					};
 
-				await (SaveAsync(session, widget, CancellationToken.None));
-				await (EvictAsync(session, widget, CancellationToken.None));
+				await (SaveAsync(session, widget));
+				await (EvictAsync(session, widget));
 
 				widget.Levels.Clear();
 				widget.Levels.Add(new GridLevel());
 
-				await (SaveAsync(session, widget, CancellationToken.None));
-				await (EvictAsync(session, widget, CancellationToken.None));
+				await (SaveAsync(session, widget));
+				await (EvictAsync(session, widget));
 
-				var loaded = await (session.GetAsync<GridWidget>(widget.Id, CancellationToken.None));
+				var loaded = await (session.GetAsync<GridWidget>(widget.Id));
 
 				Assert.That(loaded.Levels.Count, Is.EqualTo(1));
 			}

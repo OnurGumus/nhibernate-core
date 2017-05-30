@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1301
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -30,22 +29,22 @@ namespace NHibernate.Test.NHSpecificTest.NH1301
 			{
 				ClassA a = new ClassA();
 				a.BCollection.Add(new ClassB());
-				await (s.SaveAsync(a, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(a));
+				await (s.FlushAsync());
 				s.Clear();
 
 				//dont know if proxy should be able to refresh
 				//so I eager/join load here just to show it doesn't work anyhow...
 				ClassA loaded = (await (s.CreateCriteria(typeof(ClassA))
 												.SetFetchMode("BCollection", FetchMode.Join)
-												.ListAsync<ClassA>(CancellationToken.None)))[0];
+												.ListAsync<ClassA>()))[0];
 				Assert.AreEqual(1, a.BCollection.Count);
 				loaded.BCollection.RemoveAt(0);
 				Assert.AreEqual(0, loaded.BCollection.Count);
-				await (s.RefreshAsync(loaded, CancellationToken.None));
+				await (s.RefreshAsync(loaded));
 				Assert.AreEqual(1, loaded.BCollection.Count);
-				await (s.DeleteAsync(loaded, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(loaded));
+				await (tx.CommitAsync());
 			}
 		}
 	}

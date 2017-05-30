@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.DynamicEntity.Interceptor
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class InterceptorDynamicEntityAsync : TestCase
 	{
@@ -42,12 +41,12 @@ namespace NHibernate.Test.DynamicEntity.Interceptor
 			session.BeginTransaction();
 			Company company = ProxyHelper.NewCompanyProxy();
 			company.Name = "acme";
-			await (session.SaveAsync(company, CancellationToken.None));
+			await (session.SaveAsync(company));
 			Customer customer = ProxyHelper.NewCustomerProxy();
 			customer.Name = "Steve";
 			customer.Company = company;
-			await (session.SaveAsync(customer, CancellationToken.None));
-			await (session.Transaction.CommitAsync(CancellationToken.None));
+			await (session.SaveAsync(customer));
+			await (session.Transaction.CommitAsync());
 			session.Close();
 
 			Assert.IsNotNull(company.Id, "company id not assigned");
@@ -56,48 +55,48 @@ namespace NHibernate.Test.DynamicEntity.Interceptor
 			// Test loading these dyna-proxies, along with flush processing
 			session = OpenSession();
 			session.BeginTransaction();
-			customer = await (session.LoadAsync<Customer>(customer.Id, CancellationToken.None));
+			customer = await (session.LoadAsync<Customer>(customer.Id));
 			Assert.IsFalse(NHibernateUtil.IsInitialized(customer), "should-be-proxy was initialized");
 
 			customer.Name = "other";
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.FlushAsync());
 			Assert.IsFalse(NHibernateUtil.IsInitialized(customer.Company), "should-be-proxy was initialized");
 
-			await (session.RefreshAsync(customer, CancellationToken.None));
+			await (session.RefreshAsync(customer));
 			Assert.AreEqual("other", customer.Name, "name not updated");
 			Assert.AreEqual("acme", customer.Company.Name, "company association not correct");
 
-			await (session.Transaction.CommitAsync(CancellationToken.None));
+			await (session.Transaction.CommitAsync());
 			session.Close();
 
 			// Test detached entity re-attachment with these dyna-proxies
 			customer.Name = "Steve";
 			session = OpenSession();
 			session.BeginTransaction();
-			await (session.UpdateAsync(customer, CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
-			await (session.RefreshAsync(customer, CancellationToken.None));
+			await (session.UpdateAsync(customer));
+			await (session.FlushAsync());
+			await (session.RefreshAsync(customer));
 			Assert.AreEqual("Steve", customer.Name, "name not updated");
-			await (session.Transaction.CommitAsync(CancellationToken.None));
+			await (session.Transaction.CommitAsync());
 			session.Close();
 
 			// Test querying
 			session = OpenSession();
 			session.BeginTransaction();
-			int count = (await (session.CreateQuery("from Customer").ListAsync(CancellationToken.None))).Count;
+			int count = (await (session.CreateQuery("from Customer").ListAsync())).Count;
 			Assert.AreEqual(1, count, "querying dynamic entity");
 			session.Clear();
-			count = (await (session.CreateQuery("from Person").ListAsync(CancellationToken.None))).Count;
+			count = (await (session.CreateQuery("from Person").ListAsync())).Count;
 			Assert.AreEqual(1, count, "querying dynamic entity");
-			await (session.Transaction.CommitAsync(CancellationToken.None));
+			await (session.Transaction.CommitAsync());
 			session.Close();
 
 			// test deleteing
 			session = OpenSession();
 			session.BeginTransaction();
-			await (session.DeleteAsync(company, CancellationToken.None));
-			await (session.DeleteAsync(customer, CancellationToken.None));
-			await (session.Transaction.CommitAsync(CancellationToken.None));
+			await (session.DeleteAsync(company));
+			await (session.DeleteAsync(customer));
+			await (session.Transaction.CommitAsync());
 			session.Close();
 		}
 	}

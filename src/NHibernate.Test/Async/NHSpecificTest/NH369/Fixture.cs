@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH369
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync
 	{
@@ -28,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH369
 				return cfg
 				.AddClass(typeof(BaseClass))
 				.AddClass(typeof(KeyManyToOneClass))
-				.BuildSessionFactory().CloseAsync(CancellationToken.None);
+				.BuildSessionFactory().CloseAsync();
 			}
 			catch (Exception ex)
 			{

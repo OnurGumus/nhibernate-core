@@ -19,7 +19,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3505
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -42,12 +41,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3505
 			try
 			{
 			    var teacher = new Teacher {Name = "Wise Man"};
-				await (s.SaveAsync(teacher, CancellationToken.None));
+				await (s.SaveAsync(teacher));
 			    teacherId = teacher.Id;
 			    var student = new Student {Name = "Rebelious Teenager", Teacher = teacher};
-			    await (s.SaveAsync(student, CancellationToken.None));
+			    await (s.SaveAsync(student));
 			    studentId = student.Id;
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 			}
 			finally
 			{
@@ -60,12 +59,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3505
 			    var trans = ss.BeginTransaction();
                 try
                 {
-                    var student = await (ss.GetAsync<Student>(studentId, CancellationToken.None));
+                    var student = await (ss.GetAsync<Student>(studentId));
                     Assert.AreEqual(teacherId, student.Teacher.Id);
                     Assert.AreEqual("Rebelious Teenager", student.Name);
                     student.Name = "Young Protege";
-                    await (ss.UpdateAsync(student, CancellationToken.None));
-                    await (trans.CommitAsync(CancellationToken.None));
+                    await (ss.UpdateAsync(student));
+                    await (trans.CommitAsync());
                 }
                 catch
                 {
@@ -81,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3505
 			s = OpenSession();
 			try
 			{
-			    var student = await (s.GetAsync<Student>(studentId, CancellationToken.None));
+			    var student = await (s.GetAsync<Student>(studentId));
                 Assert.AreEqual(teacherId, student.Teacher.Id);
 			    Assert.AreEqual("Young Protege", student.Name);
 			}

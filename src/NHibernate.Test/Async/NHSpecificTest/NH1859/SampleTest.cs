@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1859
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SampleTestAsync : BugTestCase
 	{
@@ -44,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1859
 			{
 				IQuery qry = session.CreateSQLQuery("select /* first comment */ o.* /* second comment*/ from domainclass o")
 					.AddEntity("o", typeof (DomainClass));
-				var res = await (qry.ListAsync<DomainClass>(CancellationToken.None));
+				var res = await (qry.ListAsync<DomainClass>());
 				Assert.AreEqual(res[0].Id, 1);
 			}
 		}

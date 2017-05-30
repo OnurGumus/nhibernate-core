@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1904
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class StructFixtureAsync : BugTestCase
 	{
@@ -36,13 +35,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1904
 					Issued = DateTime.Now,
 					BillingAddress = new Address { Line = "84 rue du 22 septembre", City = "Courbevoie", ZipCode = "92400", Country = "France" }
 				};
-				await (session.SaveAsync(invoice, CancellationToken.None));
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (session.SaveAsync(invoice));
+				await (transaction.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
 			{
-				var invoices = await (session.CreateCriteria<Invoice>().ListAsync<Invoice>(CancellationToken.None));
+				var invoices = await (session.CreateCriteria<Invoice>().ListAsync<Invoice>());
 			}
 		}
 

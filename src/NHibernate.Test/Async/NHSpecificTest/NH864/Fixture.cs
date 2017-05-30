@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH864
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -25,17 +24,17 @@ namespace NHibernate.Test.NHSpecificTest.NH864
 			using (ISession s = OpenSession())
 			{
 				ObjectWithNullableInt32 obj = new ObjectWithNullableInt32();
-				await (s.SaveAsync(obj, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(obj));
+				await (s.FlushAsync());
 
 				obj.NullInt32 = 1;
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 
 				obj.NullInt32 = NullableInt32.Default;
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 
-				await (s.DeleteAsync(obj, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync(obj));
+				await (s.FlushAsync());
 			}
 		}
 	}

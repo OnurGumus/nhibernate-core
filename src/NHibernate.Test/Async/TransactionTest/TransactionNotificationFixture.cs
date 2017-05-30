@@ -31,7 +31,7 @@ namespace NHibernate.Test.TransactionTest
 			using (ISession session = sessions.OpenSession(interceptor))
 			{
 				ITransaction tx = session.BeginTransaction();
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 				Assert.That(interceptor.afterTransactionBeginCalled, Is.EqualTo(1));
 				Assert.That(interceptor.beforeTransactionCompletionCalled, Is.EqualTo(1));
 				Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(1));

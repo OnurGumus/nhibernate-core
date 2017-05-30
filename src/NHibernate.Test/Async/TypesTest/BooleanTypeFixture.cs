@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// The Unit Tests for the BooleanType.
 	/// </summary>
@@ -35,17 +34,17 @@ namespace NHibernate.Test.TypesTest
 			basic.BooleanValue = true;
 
 			ISession s = OpenSession();
-			await (s.SaveAsync(basic, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(basic));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			basic = (BooleanClass) await (s.LoadAsync(typeof(BooleanClass), 1, CancellationToken.None));
+			basic = (BooleanClass) await (s.LoadAsync(typeof(BooleanClass), 1));
 
 			Assert.AreEqual(true, basic.BooleanValue);
 
-			await (s.DeleteAsync(basic, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(basic));
+			await (s.FlushAsync());
 			s.Close();
 		}
 	}

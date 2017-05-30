@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SimpleComponentFixtureAsync : TestCase
 	{
@@ -67,13 +66,13 @@ namespace NHibernate.Test.NHSpecificTest
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				SimpleComponent simpleComp = (SimpleComponent) await (s.LoadAsync(typeof(SimpleComponent), 10L, CancellationToken.None));
+				SimpleComponent simpleComp = (SimpleComponent) await (s.LoadAsync(typeof(SimpleComponent), 10L));
 
 				Assert.AreEqual(10L, simpleComp.Key);
 				Assert.AreEqual("TestCreated", simpleComp.Audit.CreatedUserId);
 				Assert.AreEqual("TestUpdated", simpleComp.Audit.UpdatedUserId);
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 		}
 	}

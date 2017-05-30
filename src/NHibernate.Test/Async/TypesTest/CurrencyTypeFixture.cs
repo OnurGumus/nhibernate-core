@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class CurrencyTypeFixtureAsync : TypeFixtureBase
 	{
@@ -31,17 +30,17 @@ namespace NHibernate.Test.TypesTest
 
 			var basic = new CurrencyClass {CurrencyValue = expected};
 			ISession s = OpenSession();
-			object savedId = await (s.SaveAsync(basic, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			object savedId = await (s.SaveAsync(basic));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			basic = await (s.LoadAsync<CurrencyClass>(savedId, CancellationToken.None));
+			basic = await (s.LoadAsync<CurrencyClass>(savedId));
 
 			Assert.AreEqual(expected, basic.CurrencyValue);
 
-			await (s.DeleteAsync(basic, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(basic));
+			await (s.FlushAsync());
 			s.Close();
 		}
 

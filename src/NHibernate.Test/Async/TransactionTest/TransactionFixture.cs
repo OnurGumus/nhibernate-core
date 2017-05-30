@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.TransactionTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class TransactionFixtureAsync : TestCase
 	{
@@ -33,7 +32,7 @@ namespace NHibernate.Test.TransactionTest
 			{
 				using (ITransaction t1 = session.BeginTransaction())
 				{
-					await (t1.CommitAsync(CancellationToken.None));
+					await (t1.CommitAsync());
 				}
 
 				using (ITransaction t2 = session.BeginTransaction())
@@ -53,7 +52,7 @@ namespace NHibernate.Test.TransactionTest
 				{
 					ITransaction t = s.BeginTransaction();
 					t.Dispose();
-					Assert.ThrowsAsync<ObjectDisposedException>(() => t.CommitAsync(CancellationToken.None));
+					Assert.ThrowsAsync<ObjectDisposedException>(() => t.CommitAsync());
 				}
 				return Task.CompletedTask;
 			}
@@ -72,21 +71,21 @@ namespace NHibernate.Test.TransactionTest
 				{
 				}
 
-				await (s.CreateQuery("from Simple").ListAsync(CancellationToken.None));
+				await (s.CreateQuery("from Simple").ListAsync());
 
 				using (ITransaction t = s.BeginTransaction())
 				{
-					await (t.CommitAsync(CancellationToken.None));
+					await (t.CommitAsync());
 				}
 
-				await (s.CreateQuery("from Simple").ListAsync(CancellationToken.None));
+				await (s.CreateQuery("from Simple").ListAsync());
 
 				using (ITransaction t = s.BeginTransaction())
 				{
 					t.Rollback();
 				}
 
-				await (s.CreateQuery("from Simple").ListAsync(CancellationToken.None));
+				await (s.CreateQuery("from Simple").ListAsync());
 			}
 		}
 
@@ -100,7 +99,7 @@ namespace NHibernate.Test.TransactionTest
 					Assert.AreSame(t, s.Transaction);
 					Assert.IsFalse(s.Transaction.WasCommitted);
 					Assert.IsFalse(s.Transaction.WasRolledBack);
-					await (t.CommitAsync(CancellationToken.None));
+					await (t.CommitAsync());
 
 					// ISession.Transaction returns a new transaction
 					// if the previous one completed!

@@ -82,13 +82,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 		[Test]
 		public async Task UpdateConflictDetectedByNHAsync()
 		{
-			Person p1 = await (LoadPersonAsync(CancellationToken.None));
-			Person p2 = await (LoadPersonAsync(CancellationToken.None));
+			Person p1 = await (LoadPersonAsync());
+			Person p2 = await (LoadPersonAsync());
 
 			p1.IdentificationNumber++;
 			p2.IdentificationNumber += 2;
 
-			await (SavePersonAsync(p1, CancellationToken.None));
+			await (SavePersonAsync(p1));
 			Assert.That(p1.Version, Is.EqualTo(person.Version + 1));
 
 			var expectedException = sessions.Settings.IsBatchVersionedDataEnabled
@@ -107,26 +107,26 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 		[Test]
 		public async Task UpdateConflictDetectedBySQLServerAsync()
 		{
-			Person p1 = await (LoadPersonAsync(CancellationToken.None));
+			Person p1 = await (LoadPersonAsync());
 
 			p1.IdentificationNumber++;
 
 			using (var session1 = OpenSession())
 			using (var tr1 = BeginTransaction(session1))
 			{
-				await (session1.SaveOrUpdateAsync(p1, CancellationToken.None));
-				await (session1.FlushAsync(CancellationToken.None));
+				await (session1.SaveOrUpdateAsync(p1));
+				await (session1.FlushAsync());
 
 				using (var session2 = OpenSession())
 				using (var tr2 = BeginTransaction(session2))
 				{
-					var p2 = await (session2.GetAsync<Person>(person.Id, CancellationToken.None));
+					var p2 = await (session2.GetAsync<Person>(person.Id));
 					p2.IdentificationNumber += 2;
 
-					await (tr1.CommitAsync(CancellationToken.None));
+					await (tr1.CommitAsync());
 					Assert.That(p1.Version, Is.EqualTo(person.Version + 1));
 
-					await (session2.SaveOrUpdateAsync(p2, CancellationToken.None));
+					await (session2.SaveOrUpdateAsync(p2));
 
 					var expectedException = sessions.Settings.IsBatchVersionedDataEnabled
 						? (IConstraint) Throws.InstanceOf<StaleStateException>()

@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2907
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Similar to NH-2113 but with dynamic entity
 	/// </summary>
@@ -29,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2907
 			using (var tx = s.BeginTransaction())
 			{
 				var grp = new Group();
-				await (s.SaveAsync(grp, CancellationToken.None));
+				await (s.SaveAsync(grp));
 
 				var loanId = new Dictionary<string, object>
 								{
@@ -41,9 +40,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2907
 									{"CompId", loanId}, 
 									{"Name", "money!!!"}
 								};
-				await (s.SaveAsync("Loan", loan, CancellationToken.None));
+				await (s.SaveAsync("Loan", loan));
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			bool isInitialized;
@@ -51,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2907
 			using (var tx = s.BeginTransaction())
 			{
 				var loan = await (s.CreateQuery("select l from Loan l")
-					 .UniqueResultAsync<IDictionary>(CancellationToken.None));
+					 .UniqueResultAsync<IDictionary>());
 
 				var compId = (IDictionary)loan["CompId"];
 				var group = compId["Group"];
@@ -60,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2907
 
 				isInitialized = NHibernateUtil.IsInitialized(group);
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 			Assert.That(isInitialized, Is.False);
 		}

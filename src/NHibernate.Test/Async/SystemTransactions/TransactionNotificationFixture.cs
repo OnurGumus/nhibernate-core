@@ -34,13 +34,13 @@ namespace NHibernate.Test.SystemTransactions
 			{
 				using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
-					await (session.CreateCriteria<object>().ListAsync(CancellationToken.None));
+					await (session.CreateCriteria<object>().ListAsync());
 					scope.Complete();
 				}
 
 				using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
-					await (session.CreateCriteria<object>().ListAsync(CancellationToken.None));
+					await (session.CreateCriteria<object>().ListAsync());
 					scope.Complete();
 				}
 			}
@@ -57,7 +57,7 @@ namespace NHibernate.Test.SystemTransactions
 			{
 				using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
-					await (session.CreateCriteria<object>().ListAsync(CancellationToken.None));
+					await (session.CreateCriteria<object>().ListAsync());
 					scope.Complete();
 				}
 			}

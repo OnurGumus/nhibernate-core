@@ -15,7 +15,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq
 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture]
     public class PropertyMethodMappingTestsAsync : LinqTestCase
     {
@@ -23,7 +22,7 @@ namespace NHibernate.Test.Linq
         public async Task CanExecuteCountInSelectClauseAsync()
         {
             var results = await (db.Timesheets
-                .Select(t => t.Entries.Count).ToListAsync(CancellationToken.None));
+                .Select(t => t.Entries.Count).ToListAsync());
 
             Assert.AreEqual(3, results.Count);
             Assert.AreEqual(0, results[0]);
@@ -35,7 +34,7 @@ namespace NHibernate.Test.Linq
         public async Task CanExecuteCountInWhereClauseAsync()
         {
             var results = await (db.Timesheets
-                .Where(t => t.Entries.Count >= 2).ToListAsync(CancellationToken.None));
+                .Where(t => t.Entries.Count >= 2).ToListAsync());
 
             Assert.AreEqual(2, results.Count);
         }

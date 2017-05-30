@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypeParameters
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class DefinedTypeForIdFixtureAsync : TestCase
 	{
@@ -39,9 +38,9 @@ namespace NHibernate.Test.TypeParameters
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				savedId1 = await (s.SaveAsync(new EntityCustomId(), CancellationToken.None));
-				savedId2 = await (s.SaveAsync(new EntityCustomId(), CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				savedId1 = await (s.SaveAsync(new EntityCustomId()));
+				savedId2 = await (s.SaveAsync(new EntityCustomId()));
+				await (t.CommitAsync());
 			}
 
 			Assert.That(savedId1, Is.LessThan(200), "should be work with custo parameters");
@@ -51,8 +50,8 @@ namespace NHibernate.Test.TypeParameters
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.CreateQuery("delete from EntityCustomId").ExecuteUpdateAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.CreateQuery("delete from EntityCustomId").ExecuteUpdateAsync());
+				await (t.CommitAsync());
 			}
 		}
 	}

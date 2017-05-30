@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Criteria.Lambda
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class ProjectIntegrationFixtureAsync : TestCase
 	{
@@ -63,7 +62,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				var actual = (await (s.QueryOver<Person>(() => personAlias)
 					.Select(p => p.Name, p => personAlias.Age)
 					.OrderBy(p => p.Age).Asc
-					.ListAsync<object[]>(CancellationToken.None))
+					.ListAsync<object[]>())
 )					.Select(props => new
 					{
 						TestName = (string) props[0],
@@ -84,7 +83,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				var actual = await (s.QueryOver<Person>()
 						.Select(p => p.Age)
 						.OrderBy(p => p.Age).Asc
-						.ListAsync<int>(CancellationToken.None));
+						.ListAsync<int>());
 
 				Assert.That(actual[0], Is.EqualTo(20));
 			}
@@ -103,7 +102,7 @@ namespace NHibernate.Test.Criteria.Lambda
 						.Select(Projections.RowCount()).WithAlias(() => summary.Count))
 					.OrderByAlias(() => summary.Name).Asc
 					.TransformUsing(Transformers.AliasToBean<PersonSummary>())
-					.ListAsync<PersonSummary>(CancellationToken.None));
+					.ListAsync<PersonSummary>());
 
 				Assert.That(actual.Count, Is.EqualTo(2));
 				Assert.That(actual[0].Name, Is.EqualTo("test person 1"));

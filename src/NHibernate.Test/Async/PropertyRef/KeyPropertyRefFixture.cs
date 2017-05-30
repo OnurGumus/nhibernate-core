@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.PropertyRef
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class KeyPropertyRefFixtureAsync : TestCase
 	{
@@ -54,13 +53,13 @@ namespace NHibernate.Test.PropertyRef
 			b.Name = "Second";
 
 			ISession s = OpenSession();
-			await (s.SaveAsync(a, CancellationToken.None));
-			await (s.SaveAsync(b, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(a));
+			await (s.SaveAsync(b));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			A newA = await (s.GetAsync<A>(a.Id, CancellationToken.None));
+			A newA = await (s.GetAsync<A>(a.Id));
 
 			Assert.AreEqual(1, newA.Items.Count);
 			s.Close();

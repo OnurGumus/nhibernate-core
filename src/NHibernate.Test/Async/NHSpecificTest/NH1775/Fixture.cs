@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1775
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -47,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1775
 				// &
 				IList<DTO> result = await (s.CreateQuery("select new DTO(m.Id, concat(m.FirstName, ' ', m.LastName)) from Member m where (m.Roles & :roles) = :roles")
 					.SetInt32("roles", 1)
-					.ListAsync<DTO>(CancellationToken.None));
+					.ListAsync<DTO>());
 
 				Assert.AreEqual(2, result.Count);
 				Assert.IsTrue(
@@ -60,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1775
 				result = await (s.CreateQuery("select new DTO(m.Id, concat(m.FirstName, ' ', m.LastName)) from Member m where (m.Roles & (:firstRole | :secondRole)) = (:firstRole | :secondRole)")
 					.SetInt32("firstRole", 1)
 					.SetInt32("secondRole", 4)
-					.ListAsync<DTO>(CancellationToken.None));
+					.ListAsync<DTO>());
 
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual("Bob OneAndFour", result[0].Name);
@@ -68,7 +67,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1775
 				// !
 				result = await (s.CreateQuery("select new DTO(m.Id, concat(m.FirstName, ' ', m.LastName)) from Member m where (m.Roles & (!(!:roles))) = :roles")
 					.SetInt32("roles", 1)
-					.ListAsync<DTO>(CancellationToken.None));
+					.ListAsync<DTO>());
 
 				Assert.AreEqual(2, result.Count);
 				Assert.IsTrue(
@@ -77,7 +76,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1775
 								(result[0].Name == "Bob OneAndFour" && result[1].Name == "Bob One")
 							);
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 

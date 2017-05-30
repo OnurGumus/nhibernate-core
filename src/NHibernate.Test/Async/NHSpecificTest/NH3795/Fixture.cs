@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3795
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Tests in this class only failed when the code was build with the Roslyn compiler which is included in Visual Studio 2015
 	/// </summary>
@@ -40,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 				 .SelectList(
 					 list => list
 						 .Select(() => AAliasField.Id).WithAlias(() => rowalias.Id))
-				 .ListAsync(CancellationToken.None));
+				 .ListAsync());
 			}
 		}
 
@@ -54,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 				 .SelectList(
 					 list => list
 						 .Select(() => ((B) AAliasField).Count).WithAlias(() => rowalias.Count))
-				 .ListAsync(CancellationToken.None));
+				 .ListAsync());
 			}
 		}
 
@@ -69,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 				 .SelectList(
 					 list => list
 						 .Select(() => ChildAliasField.Id).WithAlias(() => rowalias.Id))
-				 .ListAsync(CancellationToken.None));
+				 .ListAsync());
 			}
 		}
 
@@ -84,7 +83,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 				 .SelectList(
 					 list => list
 						 .Select(() => ChildAliasField.Id).WithAlias(() => rowalias.Id))
-				 .ListAsync(CancellationToken.None));
+				 .ListAsync());
 			}
 		}
 
@@ -100,7 +99,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 					 list => list
 						 .Select(() => aAlias.Id)
 						 .WithAlias(() => rowalias.Id))
-				 .ListAsync(CancellationToken.None));
+				 .ListAsync());
 			}
 		}
 
@@ -115,7 +114,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 				 .SelectList(
 					 list => list.Select(() => ((B) aAlias).Count)
 								 .WithAlias(() => rowalias.Count))
-				 .ListAsync(CancellationToken.None));
+				 .ListAsync());
 			}
 		}
 
@@ -132,7 +131,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 				 .SelectList(
 					 list => list.Select(() => childAlias.Id)
 								 .WithAlias(() => rowalias.Id))
-				 .ListAsync(CancellationToken.None));
+				 .ListAsync());
 			}
 		}
 
@@ -149,7 +148,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 				 .SelectList(
 					 list => list.Select(() => childAlias.Id)
 								 .WithAlias(() => rowalias.Id))
-				 .ListAsync(CancellationToken.None));
+				 .ListAsync());
 			}
 		}
 	}

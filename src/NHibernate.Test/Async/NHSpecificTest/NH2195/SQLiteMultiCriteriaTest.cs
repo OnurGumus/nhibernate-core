@@ -20,7 +20,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2195
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SQLiteMultiCriteriaTestAsync : BugTestCase
 	{
@@ -77,9 +76,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2195
 				criteriaWithPagination.SetFirstResult(0).SetMaxResults(1);
 				criteriaWithRowCount.SetProjection(Projections.RowCountInt64());
 
-				IList<DomainClass> list = await (criteriaWithPagination.ListAsync<DomainClass>(CancellationToken.None));
+				IList<DomainClass> list = await (criteriaWithPagination.ListAsync<DomainClass>());
 
-				Assert.AreEqual(2, await (criteriaWithRowCount.UniqueResultAsync<long>(CancellationToken.None)));
+				Assert.AreEqual(2, await (criteriaWithRowCount.UniqueResultAsync<long>()));
 				Assert.AreEqual(1, list.Count);
 			}
 		}
@@ -96,9 +95,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2195
 				criteriaWithPagination.SetFirstResult(0).SetMaxResults(1);
 				criteriaWithRowCount.SetProjection(Projections.RowCountInt64());
 
-				IList<DomainClass> list = await (criteriaWithPagination.ListAsync<DomainClass>(CancellationToken.None));
+				IList<DomainClass> list = await (criteriaWithPagination.ListAsync<DomainClass>());
 
-				Assert.AreEqual(2, await (criteriaWithRowCount.UniqueResultAsync<long>(CancellationToken.None)));
+				Assert.AreEqual(2, await (criteriaWithRowCount.UniqueResultAsync<long>()));
 				Assert.AreEqual(1, list.Count);
 			}
 		}
@@ -123,11 +122,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2195
 				multiCriteria.Add(criteriaWithPagination);
 				multiCriteria.Add(criteriaWithRowCount);
 
-				IList results = await (multiCriteria.ListAsync(CancellationToken.None));
+				IList results = await (multiCriteria.ListAsync());
 				long numResults = (long)((IList)results[1])[0];
 				IList list = (IList)results[0];
 
-				Assert.AreEqual(2, await (criteriaWithRowCount.UniqueResultAsync<long>(CancellationToken.None)));
+				Assert.AreEqual(2, await (criteriaWithRowCount.UniqueResultAsync<long>()));
 				Assert.AreEqual(1, list.Count);
 			}
 		}
@@ -152,12 +151,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2195
 				multiCriteria.Add(criteriaWithPagination);
 				multiCriteria.Add(criteriaWithRowCount);
 
-				IList results = await (multiCriteria.ListAsync(CancellationToken.None));
+				IList results = await (multiCriteria.ListAsync());
 
 				long numResults = (long)((IList)results[1])[0];
 				IList list = (IList)results[0];
 
-				Assert.AreEqual(2, await (criteriaWithRowCount.UniqueResultAsync<long>(CancellationToken.None)));
+				Assert.AreEqual(2, await (criteriaWithRowCount.UniqueResultAsync<long>()));
 				Assert.AreEqual(1, list.Count);
 			}
 		}

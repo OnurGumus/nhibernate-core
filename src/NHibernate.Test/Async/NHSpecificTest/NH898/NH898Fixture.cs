@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH898
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class NH898FixtureAsync : BugTestCase
 	{
@@ -41,24 +40,24 @@ namespace NHibernate.Test.NHSpecificTest.NH898
 			using (ITransaction t = s.BeginTransaction())
 			{
 				ClassA a = new ClassA();
-				await (s.SaveAsync(a, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(a));
+				await (t.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
-				IList l = await (session.CreateQuery("from ClassA a left join fetch a.B b").ListAsync(CancellationToken.None));
+				IList l = await (session.CreateQuery("from ClassA a left join fetch a.B b").ListAsync());
 				Console.Write(l.ToString());
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using(ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from ClassA", CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from ClassA"));
+				await (s.FlushAsync());
+				await (t.CommitAsync());
 			}
 		}
 	}

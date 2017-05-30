@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1144
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -58,10 +57,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1144
 					{
 						foreach (MainClass mainClass in mc)
 						{
-							await (s.SaveAsync(mainClass, CancellationToken.None));
+							await (s.SaveAsync(mainClass));
 						}
 
-						await (tx.CommitAsync(CancellationToken.None));
+						await (tx.CommitAsync());
 						foreach (LoggingEvent loggingEvent in spy.Appender.GetEvents())
 						{
 							if ("Executing batch".Equals(loggingEvent.MessageObject))
@@ -78,8 +77,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1144
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					await (s.DeleteAsync("from MainClass", CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (s.DeleteAsync("from MainClass"));
+					await (tx.CommitAsync());
 				}
 			}
 

@@ -19,7 +19,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2392
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -38,8 +37,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2392
 			ISession s = OpenSession();
 			try
 			{
-				await (s.SaveAsync(new A { StringData1 = "first", StringData2 = "second" }, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(new A { StringData1 = "first", StringData2 = "second" }));
+				await (s.FlushAsync());
 			}
 			finally
 			{
@@ -49,10 +48,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2392
 			s = OpenSession();
 			try
 			{
-				A a = (await (s.CreateCriteria<A>().ListAsync<A>(CancellationToken.None))).First();
+				A a = (await (s.CreateCriteria<A>().ListAsync<A>())).First();
 				a.MyPhone = new PhoneNumber(1, null);
-				await (s.SaveAsync(a, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(a));
+				await (s.FlushAsync());
 			}
 			finally
 			{
@@ -62,10 +61,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2392
 			s = OpenSession();
 			try
 			{
-				A a = (await (s.CreateCriteria<A>().ListAsync<A>(CancellationToken.None))).First();
+				A a = (await (s.CreateCriteria<A>().ListAsync<A>())).First();
 				a.MyPhone = new PhoneNumber(1, "555-1234");
-				await (s.SaveAsync(a, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(a));
+				await (s.FlushAsync());
 			}
 			finally
 			{

@@ -17,7 +17,6 @@ using System.Text;
 namespace NHibernate.Test.NHSpecificTest.NH1064
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -50,10 +49,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1064
 			{
 				a1 = new TypeA("a1");
 				a1.C = new TypeC("c1", "c1");
-				await (s.SaveAsync(a1.C, CancellationToken.None));
-				await (s.SaveAsync(a1, CancellationToken.None));
+				await (s.SaveAsync(a1.C));
+				await (s.SaveAsync(a1));
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -64,7 +63,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1064
 					.SetFetchMode("C", FetchMode.Join);
 				// According to the issue description, the following line
 				// would have thown an NHibernate.ADOException before the fix
-				IList result = await (crit.ListAsync(CancellationToken.None));
+				IList result = await (crit.ListAsync());
 
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual(a1.Id, (result[0] as TypeA).Id);
@@ -72,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1064
 				Assert.AreEqual(a1.C.Id, (result[0] as TypeA).C.Id);
 				Assert.AreEqual(a1.C.Name, (result[0] as TypeA).C.Name);
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 	}

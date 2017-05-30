@@ -14,7 +14,6 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.VersionTest.Db.MsSQL
 {
-	using System.Threading;
 	[TestFixture]
 	public class LazyVersionTestAsync : TestCase
 	{
@@ -39,17 +38,17 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				await (session.SaveAsync(new ProductWithVersionAndLazyProperty { Id = 1, Summary = "Testing, 1, 2, 3" }, CancellationToken.None));
+				await (session.SaveAsync(new ProductWithVersionAndLazyProperty { Id = 1, Summary = "Testing, 1, 2, 3" }));
 
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 
 				session.Clear();
 
-				var p = await (session.GetAsync<ProductWithVersionAndLazyProperty>(1, CancellationToken.None));
+				var p = await (session.GetAsync<ProductWithVersionAndLazyProperty>(1));
 
 				p.Summary += ", 4!";
 
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 			}
 		}
 	}

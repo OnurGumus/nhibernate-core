@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3142
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class ChildrenTestAsync : BugTestCase
 	{
@@ -75,7 +74,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3142
 		{
 			using (var session = OpenSession())
 			{
-				var entities = await (session.CreateQuery("from DomainParent").ListAsync<DomainParent>(CancellationToken.None));
+				var entities = await (session.CreateQuery("from DomainParent").ListAsync<DomainParent>());
 
 				foreach (var parent in entities)
 					Assert.AreEqual(3, parent.Children.Count);
@@ -87,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3142
 		{
 			using (var session = OpenSession())
 			{
-				var entities = await (session.CreateQuery("from DomainParentWithComponentId").ListAsync<DomainParentWithComponentId>(CancellationToken.None));
+				var entities = await (session.CreateQuery("from DomainParentWithComponentId").ListAsync<DomainParentWithComponentId>());
 
 				foreach (var parent in entities)
 					Assert.AreEqual(3, parent.Children.Count);

@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Summary description for SessionCacheTest.
 	/// </summary>
@@ -40,12 +39,12 @@ namespace NHibernate.Test
 				s.Date = DateTime.Now;
 				s.Name = "dummy collection name " + i;
 				s.Pay = i * 1279L;
-				await (fixture.SaveAsync(s, i, CancellationToken.None));
+				await (fixture.SaveAsync(s, i));
 			}
 
-			await (fixture.FlushAsync(CancellationToken.None));
+			await (fixture.FlushAsync());
 
-			IList list = await (fixture.CreateCriteria(typeof(Simple)).ListAsync(CancellationToken.None));
+			IList list = await (fixture.CreateCriteria(typeof(Simple)).ListAsync());
 
 			Assert.IsNotNull(list);
 			Assert.IsTrue(list.Count == 5);
@@ -56,12 +55,12 @@ namespace NHibernate.Test
 			Assert.IsTrue(list.Count == 5);
 			Assert.IsFalse(fixture.Contains(list[2]));
 
-			await (fixture.FlushAsync(CancellationToken.None));
+			await (fixture.FlushAsync());
 
 			Assert.IsTrue(list.Count == 5);
 
-			await (fixture.DeleteAsync("from System.Object o", CancellationToken.None));
-			await (fixture.FlushAsync(CancellationToken.None));
+			await (fixture.DeleteAsync("from System.Object o"));
+			await (fixture.FlushAsync());
 			fixture.Close();
 		}
 
@@ -73,7 +72,7 @@ namespace NHibernate.Test
 			// First, prime the fixture session to think the entity does not exist
 			try
 			{
-				await (fixture.LoadAsync(typeof(Simple), -1L, CancellationToken.None));
+				await (fixture.LoadAsync(typeof(Simple), -1L));
 			}
 			catch (ObjectNotFoundException)
 			{
@@ -92,8 +91,8 @@ namespace NHibernate.Test
 				oneSimple.Date = DateTime.Now;
 				oneSimple.Pay = 1000000f;
 
-				await (anotherSession.SaveAsync(oneSimple, -1L, CancellationToken.None));
-				await (anotherSession.FlushAsync(CancellationToken.None));
+				await (anotherSession.SaveAsync(oneSimple, -1L));
+				await (anotherSession.FlushAsync());
 			}
 			finally
 			{
@@ -103,7 +102,7 @@ namespace NHibernate.Test
 			// Verify that the original session is still unable to see the new entry...
 			try
 			{
-				await (fixture.LoadAsync(typeof(Simple), -1L, CancellationToken.None));
+				await (fixture.LoadAsync(typeof(Simple), -1L));
 			}
 			catch (ObjectNotFoundException)
 			{
@@ -115,10 +114,10 @@ namespace NHibernate.Test
 			string failedMessage = "Unable to load entity with id = -1.";
 			try
 			{
-				Simple dummy = await (fixture.LoadAsync(typeof(Simple), -1L, CancellationToken.None)) as Simple;
+				Simple dummy = await (fixture.LoadAsync(typeof(Simple), -1L)) as Simple;
 				Assert.IsNotNull(dummy, failedMessage);
-				await (fixture.DeleteAsync(dummy, CancellationToken.None));
-				await (fixture.FlushAsync(CancellationToken.None));
+				await (fixture.DeleteAsync(dummy));
+				await (fixture.FlushAsync());
 			}
 			catch (ObjectNotFoundException)
 			{

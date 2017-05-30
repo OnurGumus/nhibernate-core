@@ -18,7 +18,6 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Test.NHSpecificTest.NH2484
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -40,20 +39,20 @@ namespace NHibernate.Test.NHSpecificTest.NH2484
 			
 			using (ISession session = OpenSession())
 			{
-				await (session.SaveOrUpdateAsync(model, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.SaveOrUpdateAsync(model));
+				await (session.FlushAsync());
 				id = model.Id;
 				Assert.That(id, Is.GreaterThan(-1));
 			}
 			using (ISession session = OpenSession())
 			{
-				model = await (session.GetAsync<ClassWithImage>(id, CancellationToken.None));
+				model = await (session.GetAsync<ClassWithImage>(id));
 				Assert.That(model.Image.Size, Is.EqualTo(imageSize)); // Ensure type is not truncated
 			}
 			using (ISession session = OpenSession())
 			{
-				await (session.CreateQuery("delete from ClassWithImage").ExecuteUpdateAsync(CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.CreateQuery("delete from ClassWithImage").ExecuteUpdateAsync());
+				await (session.FlushAsync());
 			}
 			
 			stream.Dispose();
@@ -72,20 +71,20 @@ namespace NHibernate.Test.NHSpecificTest.NH2484
 			
 			using (ISession session = OpenSession())
 			{
-				await (session.SaveOrUpdateAsync(model, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.SaveOrUpdateAsync(model));
+				await (session.FlushAsync());
 				id = model.Id;
 				Assert.That(id, Is.GreaterThan(-1));
 			}
 			using (ISession session = OpenSession())
 			{
-				model = await (session.GetAsync<ClassWithSerializableType>(id, CancellationToken.None));
+				model = await (session.GetAsync<ClassWithSerializableType>(id));
 				Assert.That(((Image)model.Image).Size, Is.EqualTo(imageSize)); // Ensure type is not truncated
 			}
 			using (ISession session = OpenSession())
 			{
-				await (session.CreateQuery("delete from ClassWithSerializableType").ExecuteUpdateAsync(CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.CreateQuery("delete from ClassWithSerializableType").ExecuteUpdateAsync());
+				await (session.FlushAsync());
 			}
 			
 			stream.Dispose();

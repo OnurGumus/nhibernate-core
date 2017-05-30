@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2490
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -32,8 +31,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2490
 						LongContent = "LongLongLongLongLong",
 						LongContent2 = "LongLongLongLongLong2",
 					};
-					await (s.SaveAsync(item1, CancellationToken.None));
-					await (t.CommitAsync(CancellationToken.None));
+					await (s.SaveAsync(item1));
+					await (t.CommitAsync());
 				}
 
 				// this is the real meat of the test
@@ -51,8 +50,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2490
 				using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					await (s.DeleteAsync("from Derived", CancellationToken.None));
-					await (t.CommitAsync(CancellationToken.None));
+					await (s.DeleteAsync("from Derived"));
+					await (t.CommitAsync());
 				}
 			}
 		}

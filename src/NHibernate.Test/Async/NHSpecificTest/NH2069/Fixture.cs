@@ -20,7 +20,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2069
 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture]
     public class FixtureAsync : BugTestCase
     {
@@ -61,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2069
         {
             using (ISession session = base.OpenSession())
             {
-                ITest b = await (session.CreateQuery("from Test").UniqueResultAsync<Test>(CancellationToken.None));
+                ITest b = await (session.CreateQuery("from Test").UniqueResultAsync<Test>());
     
                 Assert.IsNotNull(b);
     

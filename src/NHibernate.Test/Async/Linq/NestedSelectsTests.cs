@@ -17,7 +17,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class NestedSelectsTestsAsync : LinqTestCase
 	{
@@ -30,7 +29,7 @@ namespace NHibernate.Test.Linq
 									 o.OrderId,
 									 OrderLinesIds = o.OrderLines.Select(ol => ol.Id).ToArray()
 								 })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(orders.Count, Is.EqualTo(830));
 		}
@@ -43,7 +42,7 @@ namespace NHibernate.Test.Linq
 								 {
 									 OrderLinesIds = o.OrderLines.Select(ol => ol.Id).ToArray()
 								 })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(orders.Count, Is.EqualTo(830));
 		}
@@ -57,7 +56,7 @@ namespace NHibernate.Test.Linq
 									 o.OrderId,
 									 OrderLinesIds = o.OrderLines.Select(ol => ol.Id)
 								 })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(orders.Count, Is.EqualTo(830));
 			Assert.That(orders[0].OrderLinesIds, Is.InstanceOf<ReadOnlyCollection<long>>());
@@ -78,7 +77,7 @@ namespace NHibernate.Test.Linq
 																		 ol.Discount
 																	 }).ToArray()
 							})
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(orders.Count, Is.EqualTo(830));
 		}
@@ -99,7 +98,7 @@ namespace NHibernate.Test.Linq
 																		 ol.Discount
 																	 }).ToArray()
 							})
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(orders.Count, Is.EqualTo(830));
 		}
@@ -114,7 +113,7 @@ namespace NHibernate.Test.Linq
 								o.Id,
 								Users = o.Users.Select(x => x.LastLoginDate).ToArray()
 							})
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
 			Assert.That(timesheets[0].Users, Is.Not.Empty);
@@ -131,7 +130,7 @@ namespace NHibernate.Test.Linq
 								LastLoginDates = o.Users.Select(u => u.LastLoginDate).ToArray(),
 								EntriesIds = o.Entries.Select(e => e.Id).ToArray()
 							})
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
 			Assert.That(timesheets[0].LastLoginDates, Is.Not.Empty);
@@ -147,7 +146,7 @@ namespace NHibernate.Test.Linq
 								o.Id,
 								Users = o.Users.Select(x => x)
 							})
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
 			Assert.That(timesheets[0].Users, Is.Not.Empty);
@@ -163,7 +162,7 @@ namespace NHibernate.Test.Linq
 								o,
 								Users = o.Users.Select(x => x)
 							})
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
 			Assert.That(timesheets[0].Users, Is.Not.Empty);
@@ -178,7 +177,7 @@ namespace NHibernate.Test.Linq
 							{
 								Users = o.Users.Select(x => x)
 							})
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
 			Assert.That(timesheets[0].Users, Is.Not.Empty);
@@ -195,7 +194,7 @@ namespace NHibernate.Test.Linq
 								Users = o.Users.Select(x => x),
 								Entries = o.Entries.Select(x => x)
 							})
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
 			Assert.That(timesheets[0].Users, Is.Not.Empty);
@@ -212,7 +211,7 @@ namespace NHibernate.Test.Linq
 								Users = o.Users.Select(x => x),
 								Entries = o.Entries.Select(x => x)
 							})
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
 			Assert.That(timesheets[0].Users, Is.Not.Empty);
@@ -228,7 +227,7 @@ namespace NHibernate.Test.Linq
 								Users = o.Users.Select(x => x),
 								Entries = o.Entries.Select(x => x)
 							})
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
 			Assert.That(timesheets[0].Users, Is.Not.Empty);
@@ -244,7 +243,7 @@ namespace NHibernate.Test.Linq
 							o.Id,
 							o.Users
 						})
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
 			Assert.That(timesheets[0].Users, Is.Not.Empty);
@@ -260,7 +259,7 @@ namespace NHibernate.Test.Linq
 							o,
 							o.Users
 						})
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
 			Assert.That(timesheets[0].Users, Is.Not.Empty);
@@ -275,7 +274,7 @@ namespace NHibernate.Test.Linq
 							{
 								o.Users
 							})
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
 			Assert.That(timesheets[0].Users, Is.Not.Empty);
@@ -292,7 +291,7 @@ namespace NHibernate.Test.Linq
 							o.Users,
 							o.Entries
 						})
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
 			Assert.That(timesheets[0].Users, Is.Not.Empty);
@@ -309,7 +308,7 @@ namespace NHibernate.Test.Linq
 							o.Users,
 							o.Entries
 						})
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
 			Assert.That(timesheets[0].Users, Is.Not.Empty);
@@ -325,7 +324,7 @@ namespace NHibernate.Test.Linq
 								o.Users,
 								o.Entries
 							})
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
 			Assert.That(timesheets[0].Users, Is.Not.Empty);
@@ -341,7 +340,7 @@ namespace NHibernate.Test.Linq
 								o.EmployeeId,
 								SubordinatesIds = o.Subordinates.Select(so => so.EmployeeId).ToArray()
 							})
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(emplyees.Count, Is.EqualTo(9));
 		}
@@ -358,7 +357,7 @@ namespace NHibernate.Test.Linq
 										.Select(ol => ol.Id)
 										.ToArray()
 								 })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(orders.Count, Is.EqualTo(830));
 			Assert.That(orders[0].OrderLinesIds, Is.Empty);

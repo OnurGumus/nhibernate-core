@@ -93,7 +93,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1925
                                 d2 = customer
                         )
                         and customer.Name = :name
-                ", CancellationToken.None);
+                ");
 		}
 
 		[Test]
@@ -107,7 +107,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1925
                     where
                         invoice.Number = (select max(invoice2.Number) from customer.Invoices invoice2)
                         and customer.Name = :name
-                ", CancellationToken.None);
+                ");
 		}
 	}
 }

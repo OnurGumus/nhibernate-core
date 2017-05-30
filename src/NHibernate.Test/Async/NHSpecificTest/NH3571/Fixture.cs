@@ -18,7 +18,6 @@ using System;
 namespace NHibernate.Test.NHSpecificTest.NH3571
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{
@@ -97,7 +96,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3571
 				query.SetString("name", "First Product");
 				//var product = query.List<Product>().FirstOrDefault();
 				var product =
-					await ((from p in session.Query<Product>() where (string) p.Details.Properties["Name"] == "First Product" select p).SingleAsync(CancellationToken.None));
+					await ((from p in session.Query<Product>() where (string) p.Details.Properties["Name"] == "First Product" select p).SingleAsync());
 
 				Assert.IsNotNull(product);
 				Assert.AreEqual("First Product", product.Details.Properties["Name"]);
@@ -113,14 +112,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3571
 				// Query by name
 				var product1 = await ((from p in session.Query<Product>()
 								where (string) p.Details.Properties["Name"] == "First Product"
-								select p).SingleAsync(CancellationToken.None));
+								select p).SingleAsync());
 				Assert.That(product1.ProductId, Is.EqualTo("1"));
 
 				// Query by description (this test is to verify that the dictionary
 				// index isn't cached from the query above.
 				var product2 = await ((from p in session.Query<Product>()
 								where (string) p.Details.Properties["Description"] == "Second Description"
-								select p).SingleAsync(CancellationToken.None));
+								select p).SingleAsync());
 				Assert.That(product2.ProductId, Is.EqualTo("2"));
 			}
 		}

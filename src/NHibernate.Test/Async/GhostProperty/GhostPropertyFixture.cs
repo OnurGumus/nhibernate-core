@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.GhostProperty
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class GhostPropertyFixtureAsync : TestCase
 	{
@@ -83,7 +82,7 @@ namespace NHibernate.Test.GhostProperty
 		{
 			using (ISession s = OpenSession())
 			{
-				var order = await (s.GetAsync<Order>(1, CancellationToken.None));
+				var order = await (s.GetAsync<Order>(1));
 
 				Assert.IsTrue(order.Payment is WireTransfer);
 			}
@@ -94,7 +93,7 @@ namespace NHibernate.Test.GhostProperty
 		{
 			using (ISession s = OpenSession())
 			{
-				var order = await (s.GetAsync<Order>(1, CancellationToken.None));
+				var order = await (s.GetAsync<Order>(1));
 				Assert.IsFalse(NHibernateUtil.IsPropertyInitialized(order, "Payment"));
 			}
 		}
@@ -104,9 +103,9 @@ namespace NHibernate.Test.GhostProperty
 		{
 			using (ISession s = OpenSession())
 			{
-				var order = await (s.GetAsync<Order>(1, CancellationToken.None));
+				var order = await (s.GetAsync<Order>(1));
 
-				Assert.AreSame(order.Payment, await (s.LoadAsync<Payment>(1, CancellationToken.None)));
+				Assert.AreSame(order.Payment, await (s.LoadAsync<Payment>(1)));
 			}
 		}
 
@@ -115,8 +114,8 @@ namespace NHibernate.Test.GhostProperty
 		{
 			using (ISession s = OpenSession())
 			{
-				var payment = await (s.LoadAsync<Payment>(1, CancellationToken.None));
-				var order = await (s.GetAsync<Order>(1, CancellationToken.None));
+				var payment = await (s.LoadAsync<Payment>(1));
+				var order = await (s.GetAsync<Order>(1));
 
 				Assert.AreSame(order.Payment, payment);
 			}
@@ -131,7 +130,7 @@ namespace NHibernate.Test.GhostProperty
 				Order order;
 				using (var ls = new SqlLogSpy())
 				{
-					order = await (s.GetAsync<Order>(1, CancellationToken.None));
+					order = await (s.GetAsync<Order>(1));
 					var logMessage = ls.GetWholeLog();
 					Assert.That(logMessage, Does.Not.Contain("FROM Payment"));
 				}
@@ -151,7 +150,7 @@ namespace NHibernate.Test.GhostProperty
 				Order order;
 				using (var ls = new SqlLogSpy())
 				{
-					order = await (s.GetAsync<Order>(1, CancellationToken.None));
+					order = await (s.GetAsync<Order>(1));
 					var logMessage = ls.GetWholeLog();
 					Assert.That(logMessage, Does.Not.Contain("ALazyProperty"));
 					Assert.That(logMessage, Does.Contain("NoLazyProperty"));

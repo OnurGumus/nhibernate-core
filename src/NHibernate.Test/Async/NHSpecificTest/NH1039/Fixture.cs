@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1039
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -49,13 +48,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1039
 				set.Add("555-4321");
 				person.Properties.Add("Phones", set);
 
-				await (s.SaveAsync(person, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(person));
+				await (tx.CommitAsync());
 			}
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				Person person = (Person)await (s.CreateCriteria(typeof(Person)).UniqueResultAsync(CancellationToken.None));
+				Person person = (Person)await (s.CreateCriteria(typeof(Person)).UniqueResultAsync());
 
 				Assert.AreEqual("1", person.ID);
 				Assert.AreEqual("John Doe", person.Name);

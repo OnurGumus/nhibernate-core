@@ -17,7 +17,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	[TestFixture]
 	public class PagingTestsAsync : LinqTestCase
@@ -30,7 +29,7 @@ namespace NHibernate.Test.Linq
 						 .Select(p => new { p.ProductId, p.Name })
 						 .Skip(5).Take(10)
 						 .Select(a => new { a.Name, a.ProductId })
-						 .ToListAsync(CancellationToken.None));
+						 .ToListAsync());
 
 			Assert.That(list, Has.Count.EqualTo(10));
 		}
@@ -46,7 +45,7 @@ namespace NHibernate.Test.Linq
 							.Select(p => new { p.ProductId, p.Name })
 							.Skip(5).Take(10)
 							.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
-							.ToListAsync(CancellationToken.None));
+							.ToListAsync());
 
 			Assert.That(list, Has.Count.EqualTo(10));
 		}
@@ -59,7 +58,7 @@ namespace NHibernate.Test.Linq
 				.Select(p => new ProductProjection { ProductId = p.ProductId, Name = p.Name })
 				.Skip(5).Take(10)
 				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(list, Has.Count.EqualTo(10));
 		}
@@ -73,7 +72,7 @@ namespace NHibernate.Test.Linq
 				.OrderBy(x => x.ProductId)
 				.Skip(5).Take(10)
 				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(list, Has.Count.EqualTo(10));
 		}
@@ -87,7 +86,7 @@ namespace NHibernate.Test.Linq
 				.OrderBy(x => x.ProductId)
 				.Skip(5).Take(10)
 				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(list, Has.Count.EqualTo(10));
 		}
@@ -102,7 +101,7 @@ namespace NHibernate.Test.Linq
 				.OrderBy(x => x.ProductId)
 				.Skip(5).Take(10)
 				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(list, Has.Count.EqualTo(10));
 		}
@@ -117,7 +116,7 @@ namespace NHibernate.Test.Linq
 				.OrderBy(x => x.ProductId)
 				.Skip(5).Take(10)
 				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(list, Has.Count.EqualTo(10));
 		}
@@ -126,7 +125,7 @@ namespace NHibernate.Test.Linq
 		public async Task PagedProductsWithOuterWhereClauseOrderedNestedAnonymousAsync()
 		{
 			// NH-2588 and NH-3326
-			var inMemoryIds = (await (db.Products.ToListAsync(CancellationToken.None))
+			var inMemoryIds = (await (db.Products.ToListAsync())
 )				.OrderByDescending(x => x.ProductId)
 				.Select(p => new { p.ProductId, p.Name, p.UnitsInStock })
 				.Skip(10).Take(20)
@@ -140,7 +139,7 @@ namespace NHibernate.Test.Linq
 				.Skip(10).Take(20)
 				.Where(x => x.ProductId > 0)
 				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
 		}
@@ -149,7 +148,7 @@ namespace NHibernate.Test.Linq
 		public async Task PagedProductsWithOuterWhereClauseOrderedNestedAnonymousEquivalentAsync()
 		{
 			// NH-2588 and NH-3326
-			var inMemoryIds = (await (db.Products.ToListAsync(CancellationToken.None))
+			var inMemoryIds = (await (db.Products.ToListAsync())
 )				.OrderByDescending(x => x.ProductId)
 				.Select(p => new { p.ProductId, p.Name, p.UnitsInStock })
 				.Skip(10).Take(20)
@@ -167,7 +166,7 @@ namespace NHibernate.Test.Linq
 				.Where(x => subquery.Contains(x))
 				.Where(x => x.ProductId > 0)
 				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
 		}
@@ -176,7 +175,7 @@ namespace NHibernate.Test.Linq
 		public async Task PagedProductsWithOuterWhereClauseOrderedNestedClassAsync()
 		{
 			// NH-2588 and NH-3326
-			var inMemoryIds = (await (db.Products.ToListAsync(CancellationToken.None))
+			var inMemoryIds = (await (db.Products.ToListAsync())
 )				.OrderByDescending(x => x.ProductId)
 				.Select(p => new ProductProjection { ProductId = p.ProductId, Name = p.Name })
 				.Skip(10).Take(20)
@@ -190,7 +189,7 @@ namespace NHibernate.Test.Linq
 				.Skip(10).Take(20)
 				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
 				.Where(x => x.ProductId > 0)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
 		}
@@ -199,7 +198,7 @@ namespace NHibernate.Test.Linq
 		public async Task PagedProductsWithOuterWhereClauseOrderedNestedClassEquivalentAsync()
 		{
 			// NH-2588 and NH-3326
-			var inMemoryIds = (await (db.Products.ToListAsync(CancellationToken.None))
+			var inMemoryIds = (await (db.Products.ToListAsync())
 )				.OrderByDescending(x => x.ProductId)
 				.Select(p => new ProductProjection { ProductId = p.ProductId, Name = p.Name })
 				.Skip(10).Take(20)
@@ -217,7 +216,7 @@ namespace NHibernate.Test.Linq
 				.Where(x => subquery.Contains(x))
 				.Where(x => x.ProductId > 0)
 				.Select(a => new { ExpandedElement = a, a.Name, a.ProductId })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
 		}
@@ -226,7 +225,7 @@ namespace NHibernate.Test.Linq
 		public async Task Customers1to5Async()
 		{
 			var q = (from c in db.Customers select c.CustomerId).Take(5);
-			var query = await (q.ToListAsync(CancellationToken.None));
+			var query = await (q.ToListAsync());
 
 			Assert.AreEqual(5, query.Count);
 		}
@@ -236,7 +235,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from c in db.Customers
 						 orderby c.CustomerId
-						 select c.CustomerId).Skip(10).Take(10).ToListAsync(CancellationToken.None));
+						 select c.CustomerId).Skip(10).Take(10).ToListAsync());
 			Assert.AreEqual(query[0], "BSBEV");
 			Assert.AreEqual(10, query.Count);
 		}
@@ -246,19 +245,19 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from c in db.Customers
 							orderby c.CustomerId
-							select c.CustomerId).Skip(10).Take(10).ToListAsync(CancellationToken.None));
+							select c.CustomerId).Skip(10).Take(10).ToListAsync());
 			Assert.AreEqual(query[0], "BSBEV");
 			Assert.AreEqual(10, query.Count);
 
 			query = await ((from c in db.Customers
 						orderby c.CustomerId
-						select c.CustomerId).Skip(20).Take(10).ToListAsync(CancellationToken.None));
+						select c.CustomerId).Skip(20).Take(10).ToListAsync());
 			Assert.AreNotEqual(query[0], "BSBEV");
 			Assert.AreEqual(10, query.Count);
 
 			query = await ((from c in db.Customers
 						orderby c.CustomerId
-						select c.CustomerId).Skip(10).Take(20).ToListAsync(CancellationToken.None));
+						select c.CustomerId).Skip(10).Take(20).ToListAsync());
 			Assert.AreEqual(query[0], "BSBEV");
 			Assert.AreEqual(20, query.Count);
 		}
@@ -271,7 +270,7 @@ namespace NHibernate.Test.Linq
 					 orderby c.CustomerId
 					 select c.CustomerId).Take(5).Take(6);
 			
-			var query = await (q.ToListAsync(CancellationToken.None));
+			var query = await (q.ToListAsync());
 
 			Assert.AreEqual(5, query.Count);
 			Assert.AreEqual("ALFKI", query[0]);
@@ -283,7 +282,7 @@ namespace NHibernate.Test.Linq
 		public async Task CustomersChainedSkipAsync()
 		{
 			var q = (from c in db.Customers select c.CustomerId).Skip(10).Skip(5);
-			var query = await (q.ToListAsync(CancellationToken.None));
+			var query = await (q.ToListAsync());
 			Assert.AreEqual(query[0], "CONSH");
 			Assert.AreEqual(76, query.Count);
 		}
@@ -293,14 +292,14 @@ namespace NHibernate.Test.Linq
 		public async Task CountAfterTakeShouldReportTheCorrectNumberAsync()
 		{
 			var users = db.Customers.Skip(3).Take(10);
-			Assert.AreEqual(10, await (users.CountAsync(CancellationToken.None)));
+			Assert.AreEqual(10, await (users.CountAsync()));
 		}
 
 		[Test]
 		public async Task OrderedPagedProductsWithOuterProjectionAsync()
 		{
 			//NH-3108
-			var inMemoryIds = (await (db.Products.ToListAsync(CancellationToken.None))
+			var inMemoryIds = (await (db.Products.ToListAsync())
 )				.OrderBy(p => p.ProductId)
 				.Skip(10).Take(20)
 				.Select(p => p.ProductId)
@@ -310,7 +309,7 @@ namespace NHibernate.Test.Linq
 				.OrderBy(p => p.ProductId) 
 				.Skip(10).Take(20) 
 				.Select(p => p.ProductId) 
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
 		}
@@ -319,7 +318,7 @@ namespace NHibernate.Test.Linq
 		public async Task OrderedPagedProductsWithInnerProjectionAsync()
 		{
 			//NH-3108 (not failing)
-			var inMemoryIds = (await (db.Products.ToListAsync(CancellationToken.None)) 
+			var inMemoryIds = (await (db.Products.ToListAsync()) 
 )				.OrderBy(p => p.ProductId) 
 				.Select(p => p.ProductId)
 				.Skip(10).Take(20)
@@ -329,7 +328,7 @@ namespace NHibernate.Test.Linq
 				.OrderBy(p => p.ProductId) 
 				.Select(p => p.ProductId)
 				.Skip(10).Take(20)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
 		}
@@ -338,7 +337,7 @@ namespace NHibernate.Test.Linq
 		public async Task DescendingOrderedPagedProductsWithOuterProjectionAsync()
 		{
 			//NH-3108
-			var inMemoryIds = (await (db.Products.ToListAsync(CancellationToken.None))
+			var inMemoryIds = (await (db.Products.ToListAsync())
 )				.OrderByDescending(p => p.ProductId)
 				.Skip(10).Take(20)
 				.Select(p => p.ProductId)
@@ -348,7 +347,7 @@ namespace NHibernate.Test.Linq
 				.OrderByDescending(p => p.ProductId) 
 				.Skip(10).Take(20) 
 				.Select(p => p.ProductId) 
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
 		}
@@ -357,7 +356,7 @@ namespace NHibernate.Test.Linq
 		public async Task DescendingOrderedPagedProductsWithInnerProjectionAsync()
 		{
 			//NH-3108 (not failing)
-			var inMemoryIds = (await (db.Products.ToListAsync(CancellationToken.None))
+			var inMemoryIds = (await (db.Products.ToListAsync())
 )				.OrderByDescending(p => p.ProductId) 
 				.Select(p => p.ProductId)
 				.Skip(10).Take(20)
@@ -367,7 +366,7 @@ namespace NHibernate.Test.Linq
 				.OrderByDescending(p => p.ProductId) 
 				.Select(p => p.ProductId)
 				.Skip(10).Take(20)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
 		}
@@ -379,7 +378,7 @@ namespace NHibernate.Test.Linq
 				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
 
 			//NH-2588
-			var inMemoryIds = (await (db.Products.ToListAsync(CancellationToken.None))
+			var inMemoryIds = (await (db.Products.ToListAsync())
 )				.OrderByDescending(x => x.ProductId)
 				.Skip(10).Take(20)
 				.Where(x => x.UnitsInStock > 0)
@@ -389,7 +388,7 @@ namespace NHibernate.Test.Linq
 				.OrderByDescending(x => x.ProductId)
 				.Skip(10).Take(20)
 				.Where(x => x.UnitsInStock > 0)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
 		}
@@ -401,7 +400,7 @@ namespace NHibernate.Test.Linq
 				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
 
 			//NH-2588
-			var inMemoryIds = (await (db.Products.ToListAsync(CancellationToken.None))
+			var inMemoryIds = (await (db.Products.ToListAsync())
 )				.OrderByDescending(x => x.ProductId)
 				.Skip(10).Take(20)
 				.Where(x => x.UnitsInStock > 0)
@@ -413,7 +412,7 @@ namespace NHibernate.Test.Linq
 				.Skip(10).Take(20)
 				.Where(x => x.UnitsInStock > 0)
 				.OrderBy(x => x.Name)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
 		}
@@ -425,7 +424,7 @@ namespace NHibernate.Test.Linq
 				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
 
 			//NH-2588
-			var inMemoryIds = (await (db.Products.ToListAsync(CancellationToken.None))
+			var inMemoryIds = (await (db.Products.ToListAsync())
 )				.Where(x => x.UnitsInStock < 100)
 				.OrderByDescending(x => x.ProductId)
 				.Skip(10).Take(20)
@@ -439,7 +438,7 @@ namespace NHibernate.Test.Linq
 				.Skip(10).Take(20)
 				.Where(x => x.UnitsInStock > 0)
 				.OrderBy(x => x.Name)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
 		}
@@ -451,7 +450,7 @@ namespace NHibernate.Test.Linq
 				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
 
 			//NH-2588
-			var inMemoryIds = (await (db.Products.ToListAsync(CancellationToken.None))
+			var inMemoryIds = (await (db.Products.ToListAsync())
 )				.OrderByDescending(x => x.ProductId)
 				.Skip(10).Take(20)
 				.Where(x => x.UnitsInStock > 0)
@@ -465,7 +464,7 @@ namespace NHibernate.Test.Linq
 				.Where(x => subquery.Contains(x))
 				.Where(x => x.UnitsInStock > 0)
 				.OrderByDescending(x => x.ProductId)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
 		}
@@ -477,7 +476,7 @@ namespace NHibernate.Test.Linq
 				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
 
 			//NH-2588
-			var inMemoryIds = (await (db.Products.ToListAsync(CancellationToken.None))
+			var inMemoryIds = (await (db.Products.ToListAsync())
 )				.OrderByDescending(x => x.ProductId)
 				.Skip(10).Take(20)
 				.Where(x => x.UnitsInStock > 0)
@@ -489,7 +488,7 @@ namespace NHibernate.Test.Linq
 				.Skip(10).Take(20)
 				.Where(x => x.UnitsInStock > 0)
 				.Select(x => x.ProductId)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
 		}
@@ -501,7 +500,7 @@ namespace NHibernate.Test.Linq
 				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
 
 			//NH-2588
-			var inMemoryIds = (await (db.Products.ToListAsync(CancellationToken.None))
+			var inMemoryIds = (await (db.Products.ToListAsync())
 )				.OrderByDescending(x => x.ProductId)
 				.Skip(10).Take(20)
 				.Where(x => x.UnitsInStock > 0)
@@ -513,7 +512,7 @@ namespace NHibernate.Test.Linq
 				.Skip(10).Take(20)
 				.Where(x => x.UnitsInStock > 0)
 				.Select(x => new { x.ProductId })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
 		}

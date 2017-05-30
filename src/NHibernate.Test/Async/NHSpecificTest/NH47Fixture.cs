@@ -78,7 +78,7 @@ namespace NHibernate.Test.NHSpecificTest
 					al[j] = ut;
 				}
 
-				tspan = tspan.Add(await (BatchInsertAsync(al, CancellationToken.None)));
+				tspan = tspan.Add(await (BatchInsertAsync(al)));
 			}
 
 			Console.WriteLine("Finish average in " + (tspan.TotalMilliseconds / times).ToString() + " milliseconds for " +

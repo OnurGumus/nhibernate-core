@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH479
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -35,9 +34,9 @@ namespace NHibernate.Test.NHSpecificTest.NH479
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(main, CancellationToken.None));
-				await (s.SaveAsync(aggregate, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(main));
+				await (s.SaveAsync(aggregate));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -46,14 +45,14 @@ namespace NHibernate.Test.NHSpecificTest.NH479
 				{
 					s.Merge(main);
 					s.Merge(aggregate);
-					await (t.CommitAsync(CancellationToken.None));
+					await (t.CommitAsync());
 				}
 
 				using (ITransaction t = s.BeginTransaction())
 				{
-					await (s.DeleteAsync("from Aggregate", CancellationToken.None));
-					await (s.DeleteAsync("from Main", CancellationToken.None));
-					await (t.CommitAsync(CancellationToken.None));
+					await (s.DeleteAsync("from Aggregate"));
+					await (s.DeleteAsync("from Main"));
+					await (t.CommitAsync());
 				}
 			}
 		}

@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2779
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -26,20 +25,20 @@ namespace NHibernate.Test.NHSpecificTest.NH2779
 			using (ITransaction tx = session.BeginTransaction())
 			{
 				Order order = new Order { OrderId = "Order-1", InternalOrderId = 1 };
-				await (session.SaveAsync(order, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (session.SaveAsync(order));
+				await (tx.CommitAsync());
 			}
 
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			using (new LogSpy(LogManager.GetLogger("NHibernate"), Level.All)) //  <-- Logging must be set DEBUG to reproduce bug
 			{
-				Order order = await (session.GetAsync<Order>("Order-1", CancellationToken.None));
+				Order order = await (session.GetAsync<Order>("Order-1"));
 				Assert.IsNotNull(order);
 
 				// Cleanup
-				await (session.DeleteAsync(order, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync(order));
+				await (tx.CommitAsync());
 			}
 		}
 	}

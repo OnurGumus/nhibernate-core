@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3609
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -65,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3609
 											Restrictions.Eq(Projections.Property<Entity>(x => x.Name), "FOO"),
 											Projections.Constant("", NHibernateUtil.String),
 											Projections.Constant(null, NHibernateUtil.String))).WithAlias(() => mappingEntity.Count))
-						).TransformUsing(Transformers.AliasToBean<MappingEntity>()).ListAsync<MappingEntity>(CancellationToken.None)
+						).TransformUsing(Transformers.AliasToBean<MappingEntity>()).ListAsync<MappingEntity>()
 					);
 			}
 		}
@@ -87,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3609
 											Restrictions.Eq(Projections.Property<Entity>(x => x.Name), "FOO"),
 											Projections.Constant("", NHibernateUtil.String),
 											Projections.Constant(null, NHibernateUtil.String))).WithAlias(() => mappingEntity.Count))
-						).TransformUsing(Transformers.AliasToBean<MappingEntity>()).ListAsync<MappingEntity>(CancellationToken.None)
+						).TransformUsing(Transformers.AliasToBean<MappingEntity>()).ListAsync<MappingEntity>()
 					);
 			}
 		}
@@ -113,7 +112,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3609
 											Projections.Constant(1),
 											Projections.Constant(2)))
 											   .WithAlias(() => mappingEntity.Count))
-						).TransformUsing(Transformers.AliasToBean<MappingEntity>()).ListAsync<MappingEntity>(CancellationToken.None)
+						).TransformUsing(Transformers.AliasToBean<MappingEntity>()).ListAsync<MappingEntity>()
 					);
 			}
 		}

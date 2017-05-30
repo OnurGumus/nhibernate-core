@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2296
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -69,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2296
 			{
 				var orders = await (s.CreateQuery("select o from Order o") 
 					.SetMaxResults(2)
-					.ListAsync<Order>(CancellationToken.None));
+					.ListAsync<Order>());
 
 				// trigger lazy-loading of products, using subselect fetch. 
 				string sr = orders[0].Products[0].StatusReason;

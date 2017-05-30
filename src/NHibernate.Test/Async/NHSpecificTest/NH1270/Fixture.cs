@@ -37,7 +37,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1270
 				(new SchemaExport(conf)).Create(s => sb.AppendLine(s), true);
 
 				Assert.That(sb.ToString(), Does.Contain("FK_RoleInUser").And.Contains("FK_UserInRole"));
-				return (new SchemaExport(conf)).DropAsync(false, true, CancellationToken.None);
+				return (new SchemaExport(conf)).DropAsync(false, true);
 			}
 			catch (System.Exception ex)
 			{

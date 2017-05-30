@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2094
 {
   using System.Threading.Tasks;
-  using System.Threading;
   [TestFixture]
   public class FixtureAsync : BugTestCase
   {
@@ -26,16 +25,16 @@ namespace NHibernate.Test.NHSpecificTest.NH2094
 		{
 		  var p = new Person { Id = 1, Name = "Person1", LazyField = "Long field"};
  
-		  await (s.SaveAsync(p, CancellationToken.None));
+		  await (s.SaveAsync(p));
 
-		  await (s.FlushAsync(CancellationToken.None));
+		  await (s.FlushAsync());
 		}
 
 		Person person;
 
 		using (var s = OpenSession())
 		{
-		  person = await (s.GetAsync<Person>(1, CancellationToken.None));
+		  person = await (s.GetAsync<Person>(1));
 
 		  Assert.AreEqual("Person1", person.Name);
 		  Assert.AreEqual("Long field", person.LazyField);
@@ -48,9 +47,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2094
 	  {
 		using (var s = OpenSession())
 		{
-		  await (s.DeleteAsync("from Person", CancellationToken.None));
+		  await (s.DeleteAsync("from Person"));
 
-		  await (s.FlushAsync(CancellationToken.None));
+		  await (s.FlushAsync());
 		}
 	  }
 	}
@@ -64,16 +63,16 @@ namespace NHibernate.Test.NHSpecificTest.NH2094
 				{
 					var p = new Person { Id = 1, Name = "Person1", LazyField = "Long field" };
 
-					await (s.SaveAsync(p, CancellationToken.None));
+					await (s.SaveAsync(p));
 
-					await (s.FlushAsync(CancellationToken.None));
+					await (s.FlushAsync());
 				}
 
 				Person person;
 
 				using (var s = OpenSession())
 				{
-					person = await (s.GetAsync<Person>(1, CancellationToken.None));
+					person = await (s.GetAsync<Person>(1));
 				}
 				string personName;
 				Assert.That(() => personName = person.Name, Throws.Nothing);
@@ -82,9 +81,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2094
 			{
 				using (var s = OpenSession())
 				{
-					await (s.DeleteAsync("from Person", CancellationToken.None));
+					await (s.DeleteAsync("from Person"));
 
-					await (s.FlushAsync(CancellationToken.None));
+					await (s.FlushAsync());
 				}
 			}
 		}
@@ -98,16 +97,16 @@ namespace NHibernate.Test.NHSpecificTest.NH2094
 				{
 					var p = new Person { Id = 1, Name = "Person1", LazyField = "Long field" };
 
-					await (s.SaveAsync(p, CancellationToken.None));
+					await (s.SaveAsync(p));
 
-					await (s.FlushAsync(CancellationToken.None));
+					await (s.FlushAsync());
 				}
 
 				Person person;
 
 				using (var s = OpenSession())
 				{
-					person = await (s.GetAsync<Person>(1, CancellationToken.None));
+					person = await (s.GetAsync<Person>(1));
 				}
 				string lazyField;
 				var lazyException = Assert.Throws<LazyInitializationException>(() => lazyField = person.LazyField);
@@ -118,9 +117,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2094
 			{
 				using (var s = OpenSession())
 				{
-					await (s.DeleteAsync("from Person", CancellationToken.None));
+					await (s.DeleteAsync("from Person"));
 
-					await (s.FlushAsync(CancellationToken.None));
+					await (s.FlushAsync());
 				}
 			}
 		}

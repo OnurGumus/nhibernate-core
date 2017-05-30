@@ -15,17 +15,16 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq.ByMethod
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class AnyTestsAsync : LinqTestCase
 	{
 		[Test]
 		public async Task AnySublistAsync()
 		{
-			var orders = await (db.Orders.Where(o => o.OrderLines.Any(ol => ol.Quantity == 5)).ToListAsync(CancellationToken.None));
+			var orders = await (db.Orders.Where(o => o.OrderLines.Any(ol => ol.Quantity == 5)).ToListAsync());
 			Assert.That(orders.Count, Is.EqualTo(61));
 
-			orders = await (db.Orders.Where(o => o.OrderLines.Any(ol => ol.Order == null)).ToListAsync(CancellationToken.None));
+			orders = await (db.Orders.Where(o => o.OrderLines.Any(ol => ol.Order == null)).ToListAsync());
 			Assert.That(orders.Count, Is.EqualTo(0));
 		}
 
@@ -36,7 +35,7 @@ namespace NHibernate.Test.Linq.ByMethod
 						where c.ContactName == "Bob" &&
 							  (c.CompanyName == "NormalooCorp" ||
 							   c.Orders.Any(o => o.OrderLines.Any(ol => ol.Discount < 20 && ol.Discount >= 10)))
-						select c).ToListAsync(CancellationToken.None));
+						select c).ToListAsync());
 
 			Assert.That(test.Count, Is.EqualTo(0));
 		}
@@ -45,7 +44,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		public async Task ManyToManyAnyAsync()
 		{
 			var test = db.Orders.Where(o => o.Employee.FirstName == "test");
-			var result = await (test.Where(o => o.Employee.Territories.Any(t => t.Description == "test")).ToListAsync(CancellationToken.None));
+			var result = await (test.Where(o => o.Employee.Territories.Any(t => t.Description == "test")).ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(0));
 		}
@@ -54,7 +53,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		public async Task AnyWithCountAsync()
 		{
 			var result = await (db.Orders
-				.AnyAsync(p => p.OrderLines.Count == 0, CancellationToken.None));
+				.AnyAsync(p => p.OrderLines.Count == 0));
 
 			Assert.That(result, Is.False);
 		}
@@ -63,7 +62,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		public async Task AnyWithFetchAsync()
 		{
 			//NH-3241
-			var result = await (db.Orders.Fetch(x => x.Customer).FetchMany(x => x.OrderLines).AnyAsync(CancellationToken.None));
+			var result = await (db.Orders.Fetch(x => x.Customer).FetchMany(x => x.OrderLines).AnyAsync());
 		}
 	}
 }

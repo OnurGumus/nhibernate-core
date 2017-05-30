@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3041
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class OneToOneToPropertyReferenceAsync : TestCaseMappingByCode
 	{
@@ -96,9 +95,9 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3041
 		{
 			using (var session = OpenSession())
 			{
-				var person1 = await (session.GetAsync<Person>(1, CancellationToken.None));
-				var person2 = await (session.GetAsync<Person>(2, CancellationToken.None));
-				var personDetail = await (session.Query<PersonDetail>().SingleAsync(CancellationToken.None));
+				var person1 = await (session.GetAsync<Person>(1));
+				var person2 = await (session.GetAsync<Person>(2));
+				var personDetail = await (session.Query<PersonDetail>().SingleAsync());
 
 				Assert.IsNull(person2.PersonDetail);
 				Assert.IsNotNull(person1.PersonDetail);

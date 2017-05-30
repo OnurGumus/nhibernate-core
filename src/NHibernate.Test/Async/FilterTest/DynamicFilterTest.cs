@@ -34,13 +34,13 @@ namespace NHibernate.Test.FilterTest
 		public async Task SecondLevelCachedCollectionsFilteringAsync()
 		{
 			TestData testData = new TestData(this);
-			await (testData.PrepareAsync(CancellationToken.None));
+			await (testData.PrepareAsync());
 
 			ISession session = OpenSession();
 
 			// Force a collection into the second level cache, with its non-filtered elements
-			Salesperson sp = (Salesperson) await (session.LoadAsync(typeof(Salesperson), testData.steveId, CancellationToken.None));
-			await (NHibernateUtil.InitializeAsync(sp.Orders, CancellationToken.None));
+			Salesperson sp = (Salesperson) await (session.LoadAsync(typeof(Salesperson), testData.steveId));
+			await (NHibernateUtil.InitializeAsync(sp.Orders));
 			ICollectionPersister persister = ((ISessionFactoryImplementor) sessions)
 				.GetCollectionPersister(typeof(Salesperson).FullName + ".Orders");
 			Assert.IsTrue(persister.HasCache, "No cache for collection");
@@ -55,7 +55,7 @@ namespace NHibernate.Test.FilterTest
 			session.EnableFilter("fulfilledOrders").SetParameter("asOfDate", testData.lastMonth);
 			sp = (Salesperson) await (session.CreateQuery("from Salesperson as s where s.id = :id")
 			                   	.SetInt64("id", testData.steveId)
-			                   	.UniqueResultAsync(CancellationToken.None));
+			                   	.UniqueResultAsync());
 			Assert.AreEqual(1, sp.Orders.Count, "Filtered-collection not bypassing 2L-cache");
 
 			CollectionCacheEntry cachedData2 = (CollectionCacheEntry)persister.Cache.Cache.Get(cacheKey);
@@ -66,14 +66,14 @@ namespace NHibernate.Test.FilterTest
 
 			session = OpenSession();
 			session.EnableFilter("fulfilledOrders").SetParameter("asOfDate", testData.lastMonth);
-			sp = (Salesperson) await (session.LoadAsync(typeof(Salesperson), testData.steveId, CancellationToken.None));
+			sp = (Salesperson) await (session.LoadAsync(typeof(Salesperson), testData.steveId));
 			Assert.AreEqual(1, sp.Orders.Count, "Filtered-collection not bypassing 2L-cache");
 
 			session.Close();
 
 			// Finally, make sure that the original cached version did not get over-written
 			session = OpenSession();
-			sp = (Salesperson) await (session.LoadAsync(typeof(Salesperson), testData.steveId, CancellationToken.None));
+			sp = (Salesperson) await (session.LoadAsync(typeof(Salesperson), testData.steveId));
 			Assert.AreEqual(2, sp.Orders.Count, "Actual cached version got over-written");
 
 			session.Close();
@@ -84,14 +84,14 @@ namespace NHibernate.Test.FilterTest
 		public async Task CombinedClassAndCollectionFiltersEnabledAsync()
 		{
 			TestData testData = new TestData(this);
-			await (testData.PrepareAsync(CancellationToken.None));
+			await (testData.PrepareAsync());
 
 			ISession session = OpenSession();
 			session.EnableFilter("regionlist").SetParameterList("regions", new string[] {"LA", "APAC"});
 			session.EnableFilter("fulfilledOrders").SetParameter("asOfDate", testData.lastMonth);
 
 			// test retreival through hql with the collection as non-eager
-			IList salespersons = await (session.CreateQuery("select s from Salesperson as s").ListAsync(CancellationToken.None));
+			IList salespersons = await (session.CreateQuery("select s from Salesperson as s").ListAsync());
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 			Salesperson sp = (Salesperson) salespersons[0];
 			Assert.AreEqual(1, sp.Orders.Count, "Incorrect order count");
@@ -99,7 +99,7 @@ namespace NHibernate.Test.FilterTest
 			session.Clear();
 
 			// test retreival through hql with the collection join fetched
-			salespersons = await (session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").ListAsync(CancellationToken.None));
+			salespersons = await (session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").ListAsync());
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 			sp = (Salesperson) salespersons[0];
 			Assert.AreEqual(sp.Orders.Count, 1, "Incorrect order count");
@@ -112,30 +112,30 @@ namespace NHibernate.Test.FilterTest
 		public async Task FiltersWithQueryCacheAsync()
 		{
 			TestData testData = new TestData(this);
-			await (testData.PrepareAsync(CancellationToken.None));
+			await (testData.PrepareAsync());
 
 			ISession session = OpenSession();
 			session.EnableFilter("regionlist").SetParameterList("regions", new string[] {"LA", "APAC"});
 			session.EnableFilter("fulfilledOrders").SetParameter("asOfDate", testData.lastMonth);
 
 			// test retreival through hql with the collection as non-eager
-			IList salespersons = await (session.CreateQuery("select s from Salesperson as s").SetCacheable(true).ListAsync(CancellationToken.None));
+			IList salespersons = await (session.CreateQuery("select s from Salesperson as s").SetCacheable(true).ListAsync());
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 
 			// Try a second time, to make use of query cache
-			salespersons = await (session.CreateQuery("select s from Salesperson as s").SetCacheable(true).ListAsync(CancellationToken.None));
+			salespersons = await (session.CreateQuery("select s from Salesperson as s").SetCacheable(true).ListAsync());
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 
 			session.Clear();
 
 			// test retreival through hql with the collection join fetched
 			salespersons =
-				await (session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").SetCacheable(true).ListAsync(CancellationToken.None));
+				await (session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").SetCacheable(true).ListAsync());
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 
 			// A second time, to make use of query cache
 			salespersons =
-				await (session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").SetCacheable(true).ListAsync(CancellationToken.None));
+				await (session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").SetCacheable(true).ListAsync());
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 
 			session.Close();
@@ -150,7 +150,7 @@ namespace NHibernate.Test.FilterTest
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			log.Info("Starting HQL filter tests");
 			TestData testData = new TestData(this);
-			await (testData.PrepareAsync(CancellationToken.None));
+			await (testData.PrepareAsync());
 
 			ISession session = OpenSession();
 			session.EnableFilter("region").SetParameter("region", "APAC");
@@ -159,13 +159,13 @@ namespace NHibernate.Test.FilterTest
 				.SetParameter("asOfDate", testData.lastMonth);
 
 			log.Info("HQL against Salesperson...");
-			IList results = await (session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").ListAsync(CancellationToken.None));
+			IList results = await (session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").ListAsync());
 			Assert.IsTrue(results.Count == 1, "Incorrect filtered HQL result count [" + results.Count + "]");
 			Salesperson result = (Salesperson) results[0];
 			Assert.IsTrue(result.Orders.Count == 1, "Incorrect collectionfilter count");
 
 			log.Info("HQL against Product...");
-			results = await (session.CreateQuery("from Product as p where p.StockNumber = ?").SetInt32(0, 124).ListAsync(CancellationToken.None));
+			results = await (session.CreateQuery("from Product as p where p.StockNumber = ?").SetInt32(0, 124).ListAsync());
 			Assert.IsTrue(results.Count == 1);
 
 			session.Close();
@@ -180,7 +180,7 @@ namespace NHibernate.Test.FilterTest
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			log.Info("Starting Criteria-query filter tests");
 			TestData testData = new TestData(this);
-			await (testData.PrepareAsync(CancellationToken.None));
+			await (testData.PrepareAsync());
 
 			ISession session = OpenSession();
 			session.EnableFilter("region").SetParameter("region", "APAC");
@@ -194,14 +194,14 @@ namespace NHibernate.Test.FilterTest
 			log.Info("Criteria query against Salesperson...");
 			IList salespersons = await (session.CreateCriteria(typeof(Salesperson))
 				.SetFetchMode("orders", FetchMode.Join)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 			Assert.AreEqual(1, ((Salesperson) salespersons[0]).Orders.Count, "Incorrect order count");
 
 			log.Info("Criteria query against Product...");
 			IList products = await (session.CreateCriteria(typeof(Product))
 				.Add(Expression.Eq("StockNumber", 124))
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 			Assert.AreEqual(1, products.Count, "Incorrect product count");
 
 			session.Close();
@@ -214,7 +214,7 @@ namespace NHibernate.Test.FilterTest
 		{
 			using (var testData = new TestData(this))
 			{
-				await (testData.PrepareAsync(CancellationToken.None));
+				await (testData.PrepareAsync());
 
 				// the subquery...
 				var subquery = DetachedCriteria
@@ -230,11 +230,11 @@ namespace NHibernate.Test.FilterTest
 					var result = await (session
 						.CreateCriteria<Order>()
 						.Add(Subqueries.In("steve", subquery))
-						.ListAsync(CancellationToken.None));
+						.ListAsync());
 
 					Assert.That(result.Count, Is.EqualTo(1));
 
-					await (transaction.CommitAsync(CancellationToken.None));
+					await (transaction.CommitAsync());
 				}
 			}
 		}
@@ -248,7 +248,7 @@ namespace NHibernate.Test.FilterTest
 			log.Info("Starting Criteria-subquery filter tests");
 			using (var testData = new TestData(this))
 			{
-				await (testData.PrepareAsync(CancellationToken.None));
+				await (testData.PrepareAsync());
 
 				using (var session = OpenSession())
 				{
@@ -261,14 +261,14 @@ namespace NHibernate.Test.FilterTest
 
 					var departmentsQuery = session.CreateCriteria<Department>().
 						Add(Subqueries.PropertyIn("Id", salespersonSubquery));
-					var departments = await (departmentsQuery.ListAsync<Department>(CancellationToken.None));
+					var departments = await (departmentsQuery.ListAsync<Department>());
 
 					Assert.That(departments.Count, Is.EqualTo(1), "Incorrect department count");
 
 					log.Info("Criteria query against Department with a subquery on Salesperson in the FooBar reqion...");
 
 					session.EnableFilter("region").SetParameter("region", "Foobar");
-					departments = await (departmentsQuery.ListAsync<Department>(CancellationToken.None));
+					departments = await (departmentsQuery.ListAsync<Department>());
 
 					Assert.That(departments.Count, Is.EqualTo(0), "Incorrect department count");
 
@@ -284,7 +284,7 @@ namespace NHibernate.Test.FilterTest
 					var orders = await (session.CreateCriteria<Order>()
 						.Add(Subqueries.Exists(lineItemSubquery))
 						.Add(Restrictions.Eq("Buyer", "gavin"))
-						.ListAsync<Order>(CancellationToken.None));
+						.ListAsync<Order>());
 
 					Assert.That(orders.Count, Is.EqualTo(1), "Incorrect orders count");
 
@@ -307,7 +307,7 @@ namespace NHibernate.Test.FilterTest
 						.CreateCriteria<Order>()
 						.Add(Subqueries.Exists(lineItemSubquery))
 						.Add(Restrictions.Eq("Buyer", "gavin"))
-						.ListAsync<Order>(CancellationToken.None));
+						.ListAsync<Order>());
 
 					Assert.That(orders.Count, Is.EqualTo(1), "Incorrect orders count");
 
@@ -319,7 +319,7 @@ namespace NHibernate.Test.FilterTest
 					orders = await (session.CreateCriteria<Order>()
 						.Add(Subqueries.Exists(lineItemSubquery))
 						.Add(Restrictions.Eq("Buyer", "gavin"))
-						.ListAsync<Order>(CancellationToken.None));
+						.ListAsync<Order>());
 
 					Assert.That(orders.Count, Is.EqualTo(0), "Incorrect orders count");
 
@@ -337,13 +337,13 @@ namespace NHibernate.Test.FilterTest
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			log.Info("Starting get() filter tests (eager assoc. fetching).");
 			TestData testData = new TestData(this);
-			await (testData.PrepareAsync(CancellationToken.None));
+			await (testData.PrepareAsync());
 
 			ISession session = OpenSession();
 			session.EnableFilter("region").SetParameter("region", "APAC");
 
 			log.Info("Performing get()...");
-			Salesperson salesperson = (Salesperson) await (session.GetAsync(typeof(Salesperson), testData.steveId, CancellationToken.None));
+			Salesperson salesperson = (Salesperson) await (session.GetAsync(typeof(Salesperson), testData.steveId));
 			Assert.IsNotNull(salesperson);
 			Assert.AreEqual(1, salesperson.Orders.Count, "Incorrect order count");
 
@@ -359,14 +359,14 @@ namespace NHibernate.Test.FilterTest
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			log.Info("Starting one-to-many collection loader filter tests.");
 			TestData testData = new TestData(this);
-			await (testData.PrepareAsync(CancellationToken.None));
+			await (testData.PrepareAsync());
 
 			ISession session = OpenSession();
 			session.EnableFilter("seniorSalespersons")
 				.SetParameter("asOfDate", testData.lastMonth);
 
 			log.Info("Performing Load of Department...");
-			Department department = (Department) await (session.LoadAsync(typeof(Department), testData.deptId, CancellationToken.None));
+			Department department = (Department) await (session.LoadAsync(typeof(Department), testData.deptId));
 			ISet<Salesperson> salespersons = department.Salespersons;
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 
@@ -382,14 +382,14 @@ namespace NHibernate.Test.FilterTest
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			log.Info("Starting one-to-many collection loader filter tests.");
 			TestData testData = new TestData(this);
-			await (testData.PrepareAsync(CancellationToken.None));
+			await (testData.PrepareAsync());
 
 			ISession session = OpenSession();
 			session.EnableFilter("regionlist")
 				.SetParameterList("regions", new string[] {"LA", "APAC"});
 
 			log.Debug("Performing query of Salespersons");
-			IList salespersons = await (session.CreateQuery("from Salesperson").ListAsync(CancellationToken.None));
+			IList salespersons = await (session.CreateQuery("from Salesperson").ListAsync());
 			Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 
 			session.Close();
@@ -400,7 +400,7 @@ namespace NHibernate.Test.FilterTest
 		public async Task ManyToManyFilterOnCriteriaAsync()
 		{
 			TestData testData = new TestData(this);
-			await (testData.PrepareAsync(CancellationToken.None));
+			await (testData.PrepareAsync());
 
 			ISession session = OpenSession();
 			session.EnableFilter("effectiveDate").SetParameter("asOfDate", DateTime.Today);
@@ -408,7 +408,7 @@ namespace NHibernate.Test.FilterTest
 			Product prod = (Product) await (session.CreateCriteria(typeof(Product))
 			                         	.SetResultTransformer(new DistinctRootEntityResultTransformer())
 			                         	.Add(Expression.Eq("id", testData.prod1Id))
-			                         	.UniqueResultAsync(CancellationToken.None));
+			                         	.UniqueResultAsync());
 
 			Assert.IsNotNull(prod);
 			Assert.AreEqual(1, prod.Categories.Count, "Incorrect Product.categories count for filter");
@@ -421,12 +421,12 @@ namespace NHibernate.Test.FilterTest
 		public async Task ManyToManyFilterOnLoadAsync()
 		{
 			TestData testData = new TestData(this);
-			await (testData.PrepareAsync(CancellationToken.None));
+			await (testData.PrepareAsync());
 
 			ISession session = OpenSession();
 			session.EnableFilter("effectiveDate").SetParameter("asOfDate", DateTime.Today);
 
-			Product prod = (Product) await (session.GetAsync(typeof(Product), testData.prod1Id, CancellationToken.None));
+			Product prod = (Product) await (session.GetAsync(typeof(Product), testData.prod1Id));
 
 			//long initLoadCount = sessions.Statistics.CollectionLoadCount;
 			//long initFetchCount = sessions.Statistics.CollectionFetchCount;
@@ -468,7 +468,7 @@ namespace NHibernate.Test.FilterTest
 		public async Task ManyToManyOnCollectionLoadAfterHQLAsync()
 		{
 			TestData testData = new TestData(this);
-			await (testData.PrepareAsync(CancellationToken.None));
+			await (testData.PrepareAsync());
 
 			ISession session = OpenSession();
 			session.EnableFilter("effectiveDate").SetParameter("asOfDate", DateTime.Today);
@@ -476,7 +476,7 @@ namespace NHibernate.Test.FilterTest
 			// Force the categories to not get initialized here
 			IList result = await (session.CreateQuery("from Product as p where p.id = :id")
 				.SetInt64("id", testData.prod1Id)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 			Assert.IsTrue(result.Count > 0, "No products returned from HQL");
 
 			Product prod = (Product) result[0];
@@ -491,12 +491,12 @@ namespace NHibernate.Test.FilterTest
 		public async Task ManyToManyFilterOnQueryAsync()
 		{
 			TestData testData = new TestData(this);
-			await (testData.PrepareAsync(CancellationToken.None));
+			await (testData.PrepareAsync());
 
 			ISession session = OpenSession();
 			session.EnableFilter("effectiveDate").SetParameter("asOfDate", DateTime.Today);
 
-			IList result = await (session.CreateQuery("from Product p inner join fetch p.Categories").ListAsync(CancellationToken.None));
+			IList result = await (session.CreateQuery("from Product p inner join fetch p.Categories").ListAsync());
 			Assert.IsTrue(result.Count > 0, "No products returned from HQL many-to-many filter case");
 
 			Product prod = (Product) result[0];
@@ -512,11 +512,11 @@ namespace NHibernate.Test.FilterTest
 		public async Task ManyToManyBaseAsync()
 		{
 			TestData testData = new TestData(this);
-			await (testData.PrepareAsync(CancellationToken.None));
+			await (testData.PrepareAsync());
 
 			ISession session = OpenSession();
 
-			Product prod = (Product) await (session.GetAsync(typeof(Product), testData.prod1Id, CancellationToken.None));
+			Product prod = (Product) await (session.GetAsync(typeof(Product), testData.prod1Id));
 
 			// TODO H3: Statistics
 			//long initLoadCount = sessions.Statistics.CollectionLoadCount;
@@ -560,13 +560,13 @@ namespace NHibernate.Test.FilterTest
 		public async Task ManyToManyBaseThruCriteriaAsync()
 		{
 			TestData testData = new TestData(this);
-			await (testData.PrepareAsync(CancellationToken.None));
+			await (testData.PrepareAsync());
 
 			ISession session = OpenSession();
 
 			IList result = await (session.CreateCriteria(typeof(Product))
 				.Add(Expression.Eq("id", testData.prod1Id))
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Product prod = (Product) result[0];
 

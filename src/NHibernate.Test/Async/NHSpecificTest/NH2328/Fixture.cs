@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2328
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -60,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2328
 				var boxes =
 					await (s.QueryOver<ToyBox>()
 						.Where(t => t.Shape is Square)
-						.ListAsync(CancellationToken.None));
+						.ListAsync());
 
 				Assert.That(boxes.Count, Is.EqualTo(1));
 				Assert.That(boxes[0].Name, Is.EqualTo("Box2"));
@@ -75,7 +74,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2328
 				var boxes =
 					await ((from t in s.Query<ToyBox>()
 					 where t.Shape is Square
-					 select t).ToListAsync(CancellationToken.None));
+					 select t).ToListAsync());
 
 				Assert.That(boxes.Count, Is.EqualTo(1));
 				Assert.That(boxes[0].Name, Is.EqualTo("Box2"));
@@ -89,7 +88,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2328
 			{
 				var boxes =
 					await (s.CreateQuery("from ToyBox t where t.Shape.class = Square")
-						.ListAsync<ToyBox>(CancellationToken.None));
+						.ListAsync<ToyBox>());
 
 				Assert.That(boxes.Count, Is.EqualTo(1));
 				Assert.That(boxes[0].Name, Is.EqualTo("Box2"));
@@ -103,7 +102,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2328
 			{
 				var boxes =
 					await (s.CreateQuery("from ToyBox t where Square = t.Shape.class")
-						.ListAsync<ToyBox>(CancellationToken.None));
+						.ListAsync<ToyBox>());
 
 				Assert.That(boxes.Count, Is.EqualTo(1));
 				Assert.That(boxes[0].Name, Is.EqualTo("Box2"));

@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH525
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -31,17 +30,17 @@ namespace NHibernate.Test.NHSpecificTest.NH525
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(obj, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(obj));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				AbstractBase baseObj = (AbstractBase) await (s.LoadAsync(typeof(AbstractBase), obj.Id, CancellationToken.None));
+				AbstractBase baseObj = (AbstractBase) await (s.LoadAsync(typeof(AbstractBase), obj.Id));
 				Assert.AreEqual(NonAbstract.AbstractMethodResult, baseObj.AbstractMethod());
-				await (s.DeleteAsync(baseObj, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(baseObj));
+				await (t.CommitAsync());
 			}
 		}
 	}

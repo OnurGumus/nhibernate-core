@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH739
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -26,24 +25,24 @@ namespace NHibernate.Test.NHSpecificTest.NH739
 			using (ISession sess = OpenSession())
 			{
 				Cat c = new Cat();
-				await (sess.SaveAsync(c, CancellationToken.None));
+				await (sess.SaveAsync(c));
 				catId = c.Id;
-				await (sess.FlushAsync(CancellationToken.None));
+				await (sess.FlushAsync());
 			}
 
 			using (ISession sess = OpenSession())
 			{
-				Cat c = (Cat) await (sess.GetAsync(typeof(Cat), catId, CancellationToken.None));
+				Cat c = (Cat) await (sess.GetAsync(typeof(Cat), catId));
 				Cat kitten = new Cat();
 				c.Children.Add(kitten);
 				kitten.Mother = c;
-				await (sess.SaveAsync(kitten, CancellationToken.None));
+				await (sess.SaveAsync(kitten));
 
 				Assert.AreEqual(1, c.Children.Count); //Test will fail here, the c.Children.Count is 2 here
 
-				await (sess.DeleteAsync(c, CancellationToken.None));
-				await (sess.DeleteAsync(kitten, CancellationToken.None));
-				await (sess.FlushAsync(CancellationToken.None));
+				await (sess.DeleteAsync(c));
+				await (sess.DeleteAsync(kitten));
+				await (sess.FlushAsync());
 			}
 		}
 	}

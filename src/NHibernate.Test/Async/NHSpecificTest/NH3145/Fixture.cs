@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3145
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -33,9 +32,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3145
 					{
 						Base = item1
 					};
-					await (s.SaveAsync(item1, CancellationToken.None));
-					await (s.SaveAsync(root, CancellationToken.None));
-					await (t.CommitAsync(CancellationToken.None));
+					await (s.SaveAsync(item1));
+					await (s.SaveAsync(root));
+					await (t.CommitAsync());
 				}
 
 				// This will succeed if either:
@@ -46,11 +45,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3145
 				using (var s = OpenSession())
 				using (var t = s.BeginTransaction())
 				{
-					var root = await (s.CreateQuery("from Root").UniqueResultAsync<Root>(CancellationToken.None));
-					await (NHibernateUtil.InitializeAsync(root.Base, CancellationToken.None));
+					var root = await (s.CreateQuery("from Root").UniqueResultAsync<Root>());
+					await (NHibernateUtil.InitializeAsync(root.Base));
 					var q = s.CreateQuery("from Derived d where d = ?")
 						.SetEntity(0, root.Base);
-					await (q.ListAsync(CancellationToken.None));
+					await (q.ListAsync());
 				}
 			}
 			finally
@@ -58,9 +57,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3145
 				using (var s = OpenSession())
 				using (var t = s.BeginTransaction())
 				{
-					await (s.DeleteAsync("from Root", CancellationToken.None));
-					await (s.DeleteAsync("from Derived", CancellationToken.None));
-					await (t.CommitAsync(CancellationToken.None));
+					await (s.DeleteAsync("from Root"));
+					await (s.DeleteAsync("from Derived"));
+					await (t.CommitAsync());
 				}
 			}
 		}

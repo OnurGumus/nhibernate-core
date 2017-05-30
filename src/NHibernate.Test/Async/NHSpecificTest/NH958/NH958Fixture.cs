@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH958
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
     public class NH958FixtureAsync : BugTestCase
     {
@@ -35,8 +34,8 @@ namespace NHibernate.Test.NHSpecificTest.NH958
 					person.AddHobby(new Hobby("Hobby_" + i.ToString()));
 				}
 
-				await (session.SaveOrUpdateAsync(person, CancellationToken.None));
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (session.SaveOrUpdateAsync(person));
+				await (transaction.CommitAsync());
 			}
 
 			person.Hobbies.Clear();
@@ -45,14 +44,14 @@ namespace NHibernate.Test.NHSpecificTest.NH958
 			using (ITransaction transaction = session.BeginTransaction())
 			{
 				person = session.Merge(person);
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (transaction.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				await (session.DeleteAsync(person, CancellationToken.None));
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync(person));
+				await (transaction.CommitAsync());
 			}
 		}
 
@@ -65,8 +64,8 @@ namespace NHibernate.Test.NHSpecificTest.NH958
 			using (ITransaction transaction = session.BeginTransaction())
 			{
 				person = new Male("Test");
-				await (session.SaveAsync(person, CancellationToken.None));
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (session.SaveAsync(person));
+				await (transaction.CommitAsync());
 			}
 
 			person.AddHobby(new Hobby("Hobby_1"));
@@ -77,14 +76,14 @@ namespace NHibernate.Test.NHSpecificTest.NH958
             {
                 // the transient hobby "test" is inserted and updated
                 person = session.Merge(person);
-                await (transaction.CommitAsync(CancellationToken.None));
+                await (transaction.CommitAsync());
             }
 
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				await (session.DeleteAsync(person, CancellationToken.None));
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync(person));
+				await (transaction.CommitAsync());
 			}
         }
     }

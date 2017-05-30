@@ -83,17 +83,17 @@ namespace NHibernate.Test.NHSpecificTest.NH2207
 			using (var tx = session.BeginTransaction())
 			{
 				var concrete = new DomainClass{Date = expectedStoredValue.AddMinutes(90)};
-				savedId = await (session.SaveAsync(concrete, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				savedId = await (session.SaveAsync(concrete));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				var savedObj = await (session.GetAsync<DomainClass>(savedId, CancellationToken.None));
+				var savedObj = await (session.GetAsync<DomainClass>(savedId));
 				Assert.That(savedObj.Date, Is.EqualTo(expectedStoredValue));
-				await (session.DeleteAsync(savedObj, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync(savedObj));
+				await (tx.CommitAsync());
 			}
 		}
 	}

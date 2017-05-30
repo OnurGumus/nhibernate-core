@@ -54,7 +54,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1443
 				cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1443.AclassWithNothing.hbm.xml", GetType().Assembly);
 				cfg.SetProperty(Environment.DefaultCatalog, "nhibernate");
 				cfg.SetProperty(Environment.DefaultSchema, "dbo");
-				return BugAsync(cfg, CancellationToken.None);
+				return BugAsync(cfg);
 			}
 			catch (System.Exception ex)
 			{
@@ -69,7 +69,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1443
 			{
 				Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
 				cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1443.AclassWithDefault.hbm.xml", GetType().Assembly);
-				return BugAsync(cfg, CancellationToken.None);
+				return BugAsync(cfg);
 			}
 			catch (System.Exception ex)
 			{
@@ -84,7 +84,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1443
 			{
 				Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
 				cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1443.AclassWithSpecific.hbm.xml", GetType().Assembly);
-				return BugAsync(cfg, CancellationToken.None);
+				return BugAsync(cfg);
 			}
 			catch (System.Exception ex)
 			{
@@ -101,7 +101,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1443
 				cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1443.AclassWithDefault.hbm.xml", GetType().Assembly);
 				cfg.SetProperty(Environment.DefaultCatalog, "somethingDifferent");
 				cfg.SetProperty(Environment.DefaultSchema, "somethingDifferent");
-				return BugAsync(cfg, CancellationToken.None);
+				return BugAsync(cfg);
 			}
 			catch (System.Exception ex)
 			{

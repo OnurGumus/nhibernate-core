@@ -18,7 +18,6 @@ using NHibernate.Criterion;
 namespace NHibernate.Test.NHSpecificTest.NH2057
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -31,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2057
 			{
 				using (s = (SessionImpl)OpenSession())
 				{
-					await (s.GetAsync<Person>(1, CancellationToken.None));
+					await (s.GetAsync<Person>(1));
 				}
 				//not closed because the tx is opened yet
 				Assert.False(s.IsClosed);

@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1857
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FullJoinTestAsync : BugTestCase
 	{
@@ -74,7 +73,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1857
 			{
 				var q = session.CreateQuery("from Employee as e full join e.Department");
 
-				var result = await (q.ListAsync(CancellationToken.None));
+				var result = await (q.ListAsync());
 
 				Assert.AreEqual(3, result.Count);
 			}

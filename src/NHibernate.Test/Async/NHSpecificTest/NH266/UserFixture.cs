@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH266
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class UserFixtureAsync : TestCase
 	{
@@ -69,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 		public async Task WhereAttributeAsync()
 		{
 			ISession s = OpenSession();
-			IList list = await (s.CreateQuery("from User").ListAsync(CancellationToken.None));
+			IList list = await (s.CreateQuery("from User").ListAsync());
 
 			foreach (User u in list)
 			{
@@ -82,7 +81,7 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			s = OpenSession();
 			IQuery q = s.CreateQuery("from User as u where u.Name = :name");
 			q.SetParameter("name", "active user");
-			list = await (q.ListAsync(CancellationToken.None));
+			list = await (q.ListAsync());
 
 			Assert.AreEqual(1, list.Count, "only 1 active user with that name");
 			Assert.AreEqual(1, ((User) list[0]).IsActive, "should be active");
@@ -90,7 +89,7 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			// verify that even a user with a value in the db is 
 			// still not found even though a row exists
 			q.SetParameter("name", "inactive user");
-			list = await (q.ListAsync(CancellationToken.None));
+			list = await (q.ListAsync());
 			Assert.AreEqual(0, list.Count, "no 'inactive user' according to where clause");
 			s.Close();
 

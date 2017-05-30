@@ -17,7 +17,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq.ByMethod
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class CountTestsAsync : LinqTestCase
 	{
@@ -33,7 +32,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			var result = await (db.Orders
 				.Select(x => x.ShippingDate)
 				.Distinct()
-				.CountAsync(CancellationToken.None));
+				.CountAsync());
 
 			Assert.That(result, Is.EqualTo(387));
 		}
@@ -44,7 +43,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			//NH-2722
 			var result = await (db.Orders
 				.Select(x => x.ShippingDate)
-				.CountAsync(CancellationToken.None));
+				.CountAsync());
 
 			Assert.That(result, Is.EqualTo(809));
 		}
@@ -54,7 +53,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			//NH-2722
 			var result = await (db.Orders
-				.CountAsync(CancellationToken.None));
+				.CountAsync());
 
 			Assert.That(result, Is.EqualTo(830));
 		}
@@ -66,7 +65,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			var result = await (db.Orders
 				.Select(x => x.ShippingDate)
 				.Distinct()
-				.LongCountAsync(CancellationToken.None));
+				.LongCountAsync());
 
 			Assert.That(result, Is.EqualTo(387));
 		}
@@ -77,7 +76,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			//NH-2722
 			var result = await (db.Orders
 				.Select(x => x.ShippingDate)
-				.LongCountAsync(CancellationToken.None));
+				.LongCountAsync());
 
 			Assert.That(result, Is.EqualTo(809));
 		}
@@ -87,7 +86,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			//NH-2722
 			var result = await (db.Orders
-				.LongCountAsync(CancellationToken.None));
+				.LongCountAsync());
 
 			Assert.That(result, Is.EqualTo(830));
 		}
@@ -103,7 +102,7 @@ namespace NHibernate.Test.Linq.ByMethod
 							into temp
 							select new { temp.Key, count = temp.Count() };
 
-			var result = await (query.ToListAsync(CancellationToken.None));
+			var result = await (query.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(77));
 		}

@@ -23,13 +23,13 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public Task CanQueryOnEnumStoredAsInt32_High_1Async()
 		{
-			return CanQueryOnEnumStoredAsInt32Async(EnumStoredAsInt32.High, 1, CancellationToken.None);
+			return CanQueryOnEnumStoredAsInt32Async(EnumStoredAsInt32.High, 1);
 		}
 
 		[Test]
 		public Task CanQueryOnEnumStoredAsInt32_Unspecified_2Async()
 		{
-			return CanQueryOnEnumStoredAsInt32Async(EnumStoredAsInt32.Unspecified, 2, CancellationToken.None);
+			return CanQueryOnEnumStoredAsInt32Async(EnumStoredAsInt32.Unspecified, 2);
 		}
 
 
@@ -45,14 +45,14 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public Task CanQueryOnEnumStoredAsString_Meduim_2Async()
 		{
-			return CanQueryOnEnumStoredAsStringAsync(EnumStoredAsString.Medium, 2, CancellationToken.None);
+			return CanQueryOnEnumStoredAsStringAsync(EnumStoredAsString.Medium, 2);
 
 		}
 
 		[Test]
 		public Task CanQueryOnEnumStoredAsString_Small_1Async()
 		{
-			return CanQueryOnEnumStoredAsStringAsync(EnumStoredAsString.Small, 1, CancellationToken.None);
+			return CanQueryOnEnumStoredAsStringAsync(EnumStoredAsString.Small, 1);
 
 		}
 

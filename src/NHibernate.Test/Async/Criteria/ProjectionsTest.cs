@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Criteria
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class ProjectionsTestAsync : TestCase
 	{
@@ -75,7 +74,7 @@ namespace NHibernate.Test.Criteria
 						new ConstantProjection(" "),
 						Projections.Property("Name")
 					))
-					.UniqueResultAsync<string>(CancellationToken.None));
+					.UniqueResultAsync<string>());
 				Assert.AreEqual("ayende ayende", result);
 			}
 		}
@@ -96,7 +95,7 @@ namespace NHibernate.Test.Criteria
 						Projections.Constant(" "),
 						Projections.Property("Name")
 					))
-					.UniqueResultAsync<string>(CancellationToken.None));
+					.UniqueResultAsync<string>());
 				Assert.AreEqual("27 ayende", result);
 			}
 		}
@@ -108,7 +107,7 @@ namespace NHibernate.Test.Criteria
 			{
 				long result = await (session.CreateCriteria(typeof(Student))
 					.SetProjection(new AddNumberProjection("id", 15))
-					.UniqueResultAsync<long>(CancellationToken.None));
+					.UniqueResultAsync<long>());
 				Assert.AreEqual(42L, result);
 			}
 		}
@@ -125,7 +124,7 @@ namespace NHibernate.Test.Criteria
 							Projections.Constant("yes"),
 							Projections.Constant("no"))
 					)
-					.UniqueResultAsync<string>(CancellationToken.None));
+					.UniqueResultAsync<string>());
 				Assert.AreEqual("yes", result);
 
 
@@ -136,7 +135,7 @@ namespace NHibernate.Test.Criteria
 							Projections.Constant("yes"),
 							Projections.Constant("no"))
 					)
-					.UniqueResultAsync<string>(CancellationToken.None));
+					.UniqueResultAsync<string>());
 				Assert.AreEqual("no", result);
 			}
 		}
@@ -148,7 +147,7 @@ namespace NHibernate.Test.Criteria
 			{
 				IList<Student> list = await (session.CreateCriteria(typeof(Student))
 					.Add(Expression.In(Projections.Id(), new object[] { 27 }))
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				Assert.AreEqual(27L, list[0].StudentNumber);
 			}
 		}
@@ -161,7 +160,7 @@ namespace NHibernate.Test.Criteria
 			{
 				IList<Student> list = await (session.CreateCriteria(typeof(Student))
 					.Add(Expression.Like(Projections.Property("Name"), "aye", MatchMode.Start))
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				Assert.AreEqual(27L, list[0].StudentNumber);
 			}
 		}
@@ -173,7 +172,7 @@ namespace NHibernate.Test.Criteria
 			{
 				IList<Student> list = await (session.CreateCriteria(typeof(Student))
 					.Add(Expression.InsensitiveLike(Projections.Property("Name"), "AYE", MatchMode.Start))
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				Assert.AreEqual(27L, list[0].StudentNumber);
 			}
 		}
@@ -185,7 +184,7 @@ namespace NHibernate.Test.Criteria
 			{
 				IList<Student> list = await (session.CreateCriteria(typeof(Student))
 					.Add(Expression.IdEq(Projections.Id()))
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				Assert.AreEqual(27L, list[0].StudentNumber);
 			}
 		}
@@ -197,7 +196,7 @@ namespace NHibernate.Test.Criteria
 			{
 				IList<Student> list = await (session.CreateCriteria(typeof(Student))
 					.Add(Expression.Eq(Projections.Id(), 27L))
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				Assert.AreEqual(27L, list[0].StudentNumber);
 			}
 		}
@@ -210,7 +209,7 @@ namespace NHibernate.Test.Criteria
 			{
 				IList<Student> list = await (session.CreateCriteria(typeof(Student))
 					.Add(Expression.Gt(Projections.Id(), 2L))
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				Assert.AreEqual(27L, list[0].StudentNumber);
 			}
 		}
@@ -222,7 +221,7 @@ namespace NHibernate.Test.Criteria
 			{
 				IList<Student> list = await (session.CreateCriteria(typeof(Student))
 					.Add(Expression.Lt(Projections.Id(), 200L))
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				Assert.AreEqual(27L, list[0].StudentNumber);
 			}
 		}
@@ -234,7 +233,7 @@ namespace NHibernate.Test.Criteria
 			{
 				IList<Student> list = await (session.CreateCriteria(typeof(Student))
 					.Add(Expression.Le(Projections.Id(), 27L))
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				Assert.AreEqual(27L, list[0].StudentNumber);
 			}
 		}
@@ -246,7 +245,7 @@ namespace NHibernate.Test.Criteria
 			{
 				IList<Student> list = await (session.CreateCriteria(typeof(Student))
 					.Add(Expression.Ge(Projections.Id(), 27L))
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				Assert.AreEqual(27L, list[0].StudentNumber);
 			}
 		}
@@ -258,7 +257,7 @@ namespace NHibernate.Test.Criteria
 			{
 				IList<Student> list = await (session.CreateCriteria(typeof(Student))
 					.Add(Expression.Between(Projections.Id(), 10L, 28L))
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				Assert.AreEqual(27L, list[0].StudentNumber);
 			}
 		}
@@ -270,7 +269,7 @@ namespace NHibernate.Test.Criteria
 			{
 				IList<Student> list = await (session.CreateCriteria(typeof(Student))
 					.Add(Expression.IsNull(Projections.Id()))
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				Assert.AreEqual(0, list.Count);
 			}
 		}
@@ -282,7 +281,7 @@ namespace NHibernate.Test.Criteria
 			{
 				IList<Student> list = await (session.CreateCriteria(typeof(Student))
 					.Add(Expression.IsNotNull(Projections.Id()))
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				Assert.AreEqual(1, list.Count);
 			}
 		}
@@ -294,7 +293,7 @@ namespace NHibernate.Test.Criteria
 			{
 				IList<Student> list = await (session.CreateCriteria(typeof(Student))
 					.Add(Expression.EqProperty(Projections.Id(), Projections.Id()))
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				Assert.AreEqual(1, list.Count);
 			}
 		}
@@ -306,7 +305,7 @@ namespace NHibernate.Test.Criteria
 			{
 				IList<Student> list = await (session.CreateCriteria(typeof(Student))
 					.Add(Expression.GeProperty(Projections.Id(), Projections.Id()))
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				Assert.AreEqual(1, list.Count);
 			}
 		}
@@ -318,7 +317,7 @@ namespace NHibernate.Test.Criteria
 			{
 				IList<Student> list = await (session.CreateCriteria(typeof(Student))
 					.Add(Expression.GtProperty(Projections.Id(), Projections.Id()))
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				Assert.AreEqual(0, list.Count);
 			}
 		}
@@ -330,7 +329,7 @@ namespace NHibernate.Test.Criteria
 			{
 				IList<Student> list = await (session.CreateCriteria(typeof(Student))
 					.Add(Expression.LtProperty(Projections.Id(), Projections.Id()))
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				Assert.AreEqual(0, list.Count);
 			}
 		}
@@ -342,7 +341,7 @@ namespace NHibernate.Test.Criteria
 			{
 				IList<Student> list = await (session.CreateCriteria(typeof(Student))
 					.Add(Expression.LeProperty(Projections.Id(), Projections.Id()))
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				Assert.AreEqual(1, list.Count);
 			}
 		}
@@ -354,7 +353,7 @@ namespace NHibernate.Test.Criteria
 			{
 				IList<Student> list = await (session.CreateCriteria(typeof(Student))
 					.Add(Expression.NotEqProperty("id", Projections.Id()))
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				Assert.AreEqual(0, list.Count);
 			}
 		}

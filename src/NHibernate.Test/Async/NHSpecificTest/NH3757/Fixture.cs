@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3757
 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture]
     public class FixtureAsync : BugTestCase
     {
@@ -38,10 +37,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3757
             {
                 var e1 = new Dictionary<string, object>();
                 e1["Money"] = new Money { Amount = 100m, Currency = "USD" };
-                await (session.SaveAsync("EntityName", e1, CancellationToken.None));
+                await (session.SaveAsync("EntityName", e1));
 
-                await (session.FlushAsync(CancellationToken.None));
-                await (transaction.CommitAsync(CancellationToken.None));
+                await (session.FlushAsync());
+                await (transaction.CommitAsync());
             }
         }
     }

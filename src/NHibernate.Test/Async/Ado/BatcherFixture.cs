@@ -47,10 +47,10 @@ namespace NHibernate.Test.Ado
 		public async Task OneRoundTripInsertsAsync()
 		{
 			sessions.Statistics.Clear();
-			await (FillDbAsync(CancellationToken.None));
+			await (FillDbAsync());
 
 			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
-			await (CleanupAsync(CancellationToken.None));
+			await (CleanupAsync());
 		}
 
 		private async Task CleanupAsync(CancellationToken cancellationToken = default(CancellationToken))
@@ -79,23 +79,23 @@ namespace NHibernate.Test.Ado
 		[Description("The batcher should run all UPDATE queries in only one roundtrip.")]
 		public async Task OneRoundTripUpdateAsync()
 		{
-			await (FillDbAsync(CancellationToken.None));
+			await (FillDbAsync());
 
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				var vs1 = await (s.GetAsync<VerySimple>(1, CancellationToken.None));
-				var vs2 = await (s.GetAsync<VerySimple>(2, CancellationToken.None));
+				var vs1 = await (s.GetAsync<VerySimple>(1));
+				var vs2 = await (s.GetAsync<VerySimple>(2));
 				vs1.Weight -= 10;
 				vs2.Weight -= 1;
 				sessions.Statistics.Clear();
-				await (s.UpdateAsync(vs1, CancellationToken.None));
-				await (s.UpdateAsync(vs2, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.UpdateAsync(vs1));
+				await (s.UpdateAsync(vs2));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
-			await (CleanupAsync(CancellationToken.None));
+			await (CleanupAsync());
 		}
 
 		[Test, Ignore("Not fixed yet.")]
@@ -105,7 +105,7 @@ namespace NHibernate.Test.Ado
 			if (sessions.Settings.BatcherFactory is SqlClientBatchingBatcherFactory == false)
 				Assert.Ignore("This test is for SqlClientBatchingBatcher only");
 
-			await (FillDbAsync(CancellationToken.None));
+			await (FillDbAsync());
 
 			using(var sqlLog = new SqlLogSpy())
 			using (ISession s = sessions.OpenSession())
@@ -115,15 +115,15 @@ namespace NHibernate.Test.Ado
 				{
 					Name = "test441",
 					Weight = 894
-				}, CancellationToken.None));
+				}));
 
 				await (s.SaveAsync(new AlmostSimple
 				{
 					Name = "test441",
 					Weight = 894
-				}, CancellationToken.None));
+				}));
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 
 				var log = sqlLog.GetWholeLog();
 				//log should only contain NHibernate.SQL once, because that means 
@@ -133,7 +133,7 @@ namespace NHibernate.Test.Ado
 				Assert.AreEqual(-1, log.IndexOf("NHibernate.SQL", "NHibernate.SQL".Length), "NHibernate.SQL should only appear once in the log");
 			}
 
-			await (CleanupAsync(CancellationToken.None));
+			await (CleanupAsync());
 		}
 
 		[Test]
@@ -145,12 +145,12 @@ namespace NHibernate.Test.Ado
 
 			using (var sqlLog = new SqlLogSpy())
 			{
-				await (FillDbAsync(CancellationToken.None));
+				await (FillDbAsync());
 				var log = sqlLog.GetWholeLog();
 				Assert.IsTrue(log.Contains("INSERT \n    INTO"));
 			}
 
-			await (CleanupAsync(CancellationToken.None));
+			await (CleanupAsync());
 		}
 
 
@@ -158,21 +158,21 @@ namespace NHibernate.Test.Ado
 		[Description("The batcher should run all DELETE queries in only one roundtrip.")]
 		public async Task OneRoundTripDeleteAsync()
 		{
-			await (FillDbAsync(CancellationToken.None));
+			await (FillDbAsync());
 
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				var vs1 = await (s.GetAsync<VerySimple>(1, CancellationToken.None));
-				var vs2 = await (s.GetAsync<VerySimple>(2, CancellationToken.None));
+				var vs1 = await (s.GetAsync<VerySimple>(1));
+				var vs2 = await (s.GetAsync<VerySimple>(2));
 				sessions.Statistics.Clear();
-				await (s.DeleteAsync(vs1, CancellationToken.None));
-				await (s.DeleteAsync(vs2, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(vs1));
+				await (s.DeleteAsync(vs2));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
-			await (CleanupAsync(CancellationToken.None));
+			await (CleanupAsync());
 		}
 
 		[Test]
@@ -187,7 +187,7 @@ namespace NHibernate.Test.Ado
 				using (var sl = new SqlLogSpy())
 				{
 					sessions.Statistics.Clear();
-					await (FillDbAsync(CancellationToken.None));
+					await (FillDbAsync());
 					string logs = sl.GetWholeLog();
 					Assert.That(logs, Does.Not.Contain("Adding to batch").IgnoreCase);
 					Assert.That(logs, Does.Contain("Batch command").IgnoreCase);
@@ -196,7 +196,7 @@ namespace NHibernate.Test.Ado
 			}
 
 			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
-			await (CleanupAsync(CancellationToken.None));
+			await (CleanupAsync());
 		}
 
 		[Test]
@@ -211,7 +211,7 @@ namespace NHibernate.Test.Ado
 				using (var sl = new SqlLogSpy())
 				{
 					sessions.Statistics.Clear();
-					await (FillDbAsync(CancellationToken.None));
+					await (FillDbAsync());
 					string logs = sl.GetWholeLog();
 					Assert.That(logs, Does.Contain("batch").IgnoreCase);
 					foreach (var loggingEvent in sl.Appender.GetEvents())
@@ -226,7 +226,7 @@ namespace NHibernate.Test.Ado
 			}
 
 			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
-			await (CleanupAsync(CancellationToken.None));
+			await (CleanupAsync());
 		}
 
 		[Test]
@@ -237,14 +237,14 @@ namespace NHibernate.Test.Ado
 				using (var sl = new SqlLogSpy())
 				{
 					sessions.Statistics.Clear();
-					await (FillDbAsync(CancellationToken.None));
+					await (FillDbAsync());
 					string logs = sl.GetWholeLog();
 					Assert.That(logs, Does.Contain("Batch commands:").IgnoreCase);
 				}
 			}
 
 			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
-			await (CleanupAsync(CancellationToken.None));
+			await (CleanupAsync());
 		}
 
 		[Test]
@@ -257,7 +257,7 @@ namespace NHibernate.Test.Ado
 				using (var sl = new SqlLogSpy())
 				{
 					sessions.Statistics.Clear();
-					await (FillDbAsync(CancellationToken.None));
+					await (FillDbAsync());
 					foreach (var loggingEvent in sl.Appender.GetEvents())
 					{
 						string message = loggingEvent.RenderedMessage;
@@ -279,7 +279,7 @@ namespace NHibernate.Test.Ado
 			}
 
 			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
-			await (CleanupAsync(CancellationToken.None));
+			await (CleanupAsync());
 		}
 	}
 }

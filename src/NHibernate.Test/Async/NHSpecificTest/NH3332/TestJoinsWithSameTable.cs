@@ -69,7 +69,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3332
 								  && std.Culture.LanguageCode == "en"
 							select new { me.Id, me.Name, DataTypeName = me.DataType.Name, StateName = me.State.Name };
 
-				var list = await (query.ToListAsync(CancellationToken.None));
+				var list = await (query.ToListAsync());
 
 				Assert.That(list, Has.Count.EqualTo(1));
 			}

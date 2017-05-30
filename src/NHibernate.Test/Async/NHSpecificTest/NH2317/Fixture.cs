@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2317
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -44,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2317
 
 				// When the query has no where-clauses the the HQL can be reduced to: "select a.id from Artist a take 3)"
 
-				var expected = await (session.CreateQuery("select a.id from Artist a take 3").ListAsync<int>(CancellationToken.None));
+				var expected = await (session.CreateQuery("select a.id from Artist a take 3").ListAsync<int>());
 				var actual = session.Query<Artist>().Take(3).Select(a => a.Id).ToArray();
 				Assert.That(actual, Is.EquivalentTo(expected));
 			}

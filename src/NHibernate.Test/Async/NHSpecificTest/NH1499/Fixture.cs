@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1499
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -67,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1499
 							Property.ForName("Title").Eq("Spec"),
 							Property.ForName("Person").Eq(detached)
 							));
-				Assert.ThrowsAsync<QueryException>(() => criteria.ListAsync<Document>(CancellationToken.None));
+				Assert.ThrowsAsync<QueryException>(() => criteria.ListAsync<Document>());
 			}
 		}
 

@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1747
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class JoinTraversalTestAsync : BugTestCase
 	{
@@ -48,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1747
 		{
 			using (ISession session = OpenSession())
 			{
-				var paymentBatch = await (session.GetAsync<PaymentBatch>(3, CancellationToken.None));
+				var paymentBatch = await (session.GetAsync<PaymentBatch>(3));
 				Assert.AreEqual(1, paymentBatch.Payments.Count);
 			}
 		}

@@ -20,7 +20,6 @@ namespace NHibernate.Test.NHSpecificTest.ListsWithHoles
 {
     using System.Collections;
     using System.Threading.Tasks;
-    using System.Threading;
 
     [TestFixture]
     public class FixtureAsync : TestCase
@@ -46,8 +45,8 @@ namespace NHibernate.Test.NHSpecificTest.ListsWithHoles
                 Employee e = new Employee();
                 e.Children.Add(new Employee());
                 e.Children.Add(new Employee());
-                await (sess.SaveAsync(e, CancellationToken.None));
-                await (tx.CommitAsync(CancellationToken.None));
+                await (sess.SaveAsync(e));
+                await (tx.CommitAsync());
                 parentId = e.Id;
                 firstChildId = e.Children[0].Id;
             }
@@ -55,17 +54,17 @@ namespace NHibernate.Test.NHSpecificTest.ListsWithHoles
             using (ISession sess = OpenSession())
             using (ITransaction tx = sess.BeginTransaction())
             {
-                await (sess.DeleteAsync(await (sess.GetAsync<Employee>(firstChildId, CancellationToken.None)), CancellationToken.None));
-                await (tx.CommitAsync(CancellationToken.None));
+                await (sess.DeleteAsync(await (sess.GetAsync<Employee>(firstChildId))));
+                await (tx.CommitAsync());
             }
 
 
             using (ISession sess = OpenSession())
             using (ITransaction tx = sess.BeginTransaction())
             {
-                Employee employee = await (sess.GetAsync<Employee>(parentId, CancellationToken.None));
+                Employee employee = await (sess.GetAsync<Employee>(parentId));
                 employee.Children.Add(new Employee());
-                await (tx.CommitAsync(CancellationToken.None));
+                await (tx.CommitAsync());
             }
 
 
@@ -73,8 +72,8 @@ namespace NHibernate.Test.NHSpecificTest.ListsWithHoles
             using (ISession sess = OpenSession())
             using (ITransaction tx = sess.BeginTransaction())
             {
-                await (sess.DeleteAsync("from Employee", CancellationToken.None));
-                await (tx.CommitAsync(CancellationToken.None));
+                await (sess.DeleteAsync("from Employee"));
+                await (tx.CommitAsync());
             }
         }
     }

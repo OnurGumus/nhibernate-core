@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3392
 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture]
     public class FixtureAsync : BugTestCase
 	{
@@ -41,22 +40,22 @@ namespace NHibernate.Test.NHSpecificTest.NH3392
             {
 
 	            var jenny = new Mum {Name = "Jenny"};
-	            await (s.SaveAsync(jenny, CancellationToken.None));
+	            await (s.SaveAsync(jenny));
 	            var benny = new Dad {Name = "Benny"};
-	            await (s.SaveAsync(benny, CancellationToken.None));
+	            await (s.SaveAsync(benny));
 	            var lenny = new Dad {Name = "Lenny"};
-	            await (s.SaveAsync(lenny, CancellationToken.None));
+	            await (s.SaveAsync(lenny));
 	            var jimmy = new Kid {Name = "Jimmy", MumId = jenny.Id, DadId = benny.Id};
-	            await (s.SaveAsync(jimmy, CancellationToken.None));
+	            await (s.SaveAsync(jimmy));
 	            var timmy = new Kid {Name = "Timmy", MumId = jenny.Id, DadId = lenny.Id};
-	            await (s.SaveAsync(timmy, CancellationToken.None));
+	            await (s.SaveAsync(timmy));
 
-	            await (tx.CommitAsync(CancellationToken.None));
+	            await (tx.CommitAsync());
             }
 
 	        using (var s = OpenSession())
             {
-                var result=await (s.Query<Mum>().Select(x => new { x, x.Kids }).ToListAsync(CancellationToken.None));
+                var result=await (s.Query<Mum>().Select(x => new { x, x.Kids }).ToListAsync());
                 Assert.That(result.Count, Is.EqualTo(1));
                 Assert.That(result[0].x.Kids, Is.EquivalentTo(result[0].Kids));
             }
@@ -70,22 +69,22 @@ namespace NHibernate.Test.NHSpecificTest.NH3392
             {
 
                 var jenny = new Mum { Name = "Jenny" };
-                await (s.SaveAsync(jenny, CancellationToken.None));
+                await (s.SaveAsync(jenny));
                 var benny = new Dad { Name = "Benny" };
-                await (s.SaveAsync(benny, CancellationToken.None));
+                await (s.SaveAsync(benny));
                 var lenny = new Dad { Name = "Lenny" };
-                await (s.SaveAsync(lenny, CancellationToken.None));
+                await (s.SaveAsync(lenny));
                 var jimmy = new FriendOfTheFamily { Name = "Jimmy", Id = new MumAndDadId { MumId = jenny.Id, DadId = benny.Id } };
-                await (s.SaveAsync(jimmy, CancellationToken.None));
+                await (s.SaveAsync(jimmy));
                 var timmy = new FriendOfTheFamily { Name = "Timmy", Id = new MumAndDadId { MumId = jenny.Id, DadId = lenny.Id } };
-                await (s.SaveAsync(timmy, CancellationToken.None));
+                await (s.SaveAsync(timmy));
 
-                await (tx.CommitAsync(CancellationToken.None));
+                await (tx.CommitAsync());
             }
 
             using (var s = OpenSession())
             {
-                var result=await (s.Query<Mum>().Select(x => new { x, x.Friends }).ToListAsync(CancellationToken.None));
+                var result=await (s.Query<Mum>().Select(x => new { x, x.Friends }).ToListAsync());
                 Assert.That(result.Count, Is.EqualTo(1));
                 Assert.That(result[0].x.Friends, Is.EquivalentTo(result[0].Friends));
             }

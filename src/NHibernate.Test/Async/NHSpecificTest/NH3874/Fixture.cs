@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3874
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -46,9 +45,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3874
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var one = await (session.GetAsync<One>(_id, CancellationToken.None));
+				var one = await (session.GetAsync<One>(_id));
 
-				await (session.EvictAsync(one, CancellationToken.None));
+				await (session.EvictAsync(one));
 			}
 		}
 

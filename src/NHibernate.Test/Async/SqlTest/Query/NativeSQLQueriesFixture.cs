@@ -17,7 +17,6 @@ using NHibernate.Criterion;
 namespace NHibernate.Test.SqlTest.Query
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class GeneralTestAsync : TestCase
 	{
@@ -75,7 +74,7 @@ namespace NHibernate.Test.SqlTest.Query
 			{
 				string sql = "select {org.*} " +
 				             "from organization org";
-				await (s.CreateSQLQuery(sql).ListAsync(CancellationToken.None));
+				await (s.CreateSQLQuery(sql).ListAsync());
 				Assert.Fail("Should throw an exception since no AddEntity nor AddScalar has been performed.");
 			}
 			catch (HibernateException)
@@ -98,26 +97,26 @@ namespace NHibernate.Test.SqlTest.Query
 			Person gavin = new Person("Gavin");
 			Employment emp = new Employment(gavin, jboss, "AU");
 
-			await (s.SaveAsync(ifa, CancellationToken.None));
-			await (s.SaveAsync(jboss, CancellationToken.None));
-			await (s.SaveAsync(gavin, CancellationToken.None));
-			await (s.SaveAsync(emp, CancellationToken.None));
+			await (s.SaveAsync(ifa));
+			await (s.SaveAsync(jboss));
+			await (s.SaveAsync(gavin));
+			await (s.SaveAsync(emp));
 
 			IList l = await (s.CreateSQLQuery(OrgEmpRegionSQL)
 				.AddEntity("org", typeof(Organization))
 				.AddJoin("emp", "org.employments")
 				.AddScalar("regionCode", NHibernateUtil.String)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 			Assert.AreEqual(2, l.Count);
 
 			l = await (s.CreateSQLQuery(OrgEmpPersonSQL)
 				.AddEntity("org", typeof(Organization))
 				.AddJoin("emp", "org.employments")
 				.AddJoin("pers", "emp.employee")
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 			Assert.AreEqual(l.Count, 1);
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
@@ -129,21 +128,21 @@ namespace NHibernate.Test.SqlTest.Query
 				.AddEntity("org", typeof(Organization))
 				.AddJoin("emp", "org.employments")
 				.SetResultTransformer(new DistinctRootEntityResultTransformer())
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 			Assert.AreEqual(l.Count, 2);
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			await (s.DeleteAsync(emp, CancellationToken.None));
-			await (s.DeleteAsync(gavin, CancellationToken.None));
-			await (s.DeleteAsync(ifa, CancellationToken.None));
-			await (s.DeleteAsync(jboss, CancellationToken.None));
+			await (s.DeleteAsync(emp));
+			await (s.DeleteAsync(gavin));
+			await (s.DeleteAsync(ifa));
+			await (s.DeleteAsync(jboss));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -157,27 +156,27 @@ namespace NHibernate.Test.SqlTest.Query
 			Person gavin = new Person("Gavin");
 			Employment emp = new Employment(gavin, jboss, "AU");
 
-			await (s.SaveAsync(ifa, CancellationToken.None));
-			await (s.SaveAsync(jboss, CancellationToken.None));
-			await (s.SaveAsync(gavin, CancellationToken.None));
-			await (s.SaveAsync(emp, CancellationToken.None));
+			await (s.SaveAsync(ifa));
+			await (s.SaveAsync(jboss));
+			await (s.SaveAsync(gavin));
+			await (s.SaveAsync(emp));
 
 			IList l = await (s.CreateSQLQuery(OrgEmpRegionSQL)
 				.SetResultSetMapping("org-emp-regionCode")
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 			Assert.AreEqual(l.Count, 2);
 
 			l = await (s.CreateSQLQuery(OrgEmpPersonSQL)
 				.SetResultSetMapping("org-emp-person")
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 			Assert.AreEqual(l.Count, 1);
 
-			await (s.DeleteAsync(emp, CancellationToken.None));
-			await (s.DeleteAsync(gavin, CancellationToken.None));
-			await (s.DeleteAsync(ifa, CancellationToken.None));
-			await (s.DeleteAsync(jboss, CancellationToken.None));
+			await (s.DeleteAsync(emp));
+			await (s.DeleteAsync(gavin));
+			await (s.DeleteAsync(ifa));
+			await (s.DeleteAsync(jboss));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -190,28 +189,28 @@ namespace NHibernate.Test.SqlTest.Query
 			Organization ifa = new Organization("IFA");
 			Organization jboss = new Organization("JBoss");
 
-			object idIfa = await (s.SaveAsync(ifa, CancellationToken.None));
-			object idJBoss = await (s.SaveAsync(jboss, CancellationToken.None));
+			object idIfa = await (s.SaveAsync(ifa));
+			object idJBoss = await (s.SaveAsync(jboss));
 
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 
-			IList result = await (s.GetNamedQuery("orgNamesOnly").ListAsync(CancellationToken.None));
+			IList result = await (s.GetNamedQuery("orgNamesOnly").ListAsync());
 			Assert.IsTrue(result.Contains("IFA"));
 			Assert.IsTrue(result.Contains("JBoss"));
 
-			result = await (s.GetNamedQuery("orgNamesOnly").SetResultTransformer(CriteriaSpecification.AliasToEntityMap).ListAsync(CancellationToken.None));
+			result = await (s.GetNamedQuery("orgNamesOnly").SetResultTransformer(CriteriaSpecification.AliasToEntityMap).ListAsync());
 			IDictionary m = (IDictionary) result[0];
 			Assert.AreEqual(2, result.Count);
 			Assert.AreEqual(1, m.Count);
 			Assert.IsTrue(m.Contains("NAME"));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			IEnumerator iter = (await (s.GetNamedQuery("orgNamesAndOrgs").ListAsync(CancellationToken.None))).GetEnumerator();
+			IEnumerator iter = (await (s.GetNamedQuery("orgNamesAndOrgs").ListAsync())).GetEnumerator();
 			iter.MoveNext();
 			object[] o = (object[]) iter.Current;
 			Assert.AreEqual(o[0], "IFA");
@@ -221,14 +220,14 @@ namespace NHibernate.Test.SqlTest.Query
 			Assert.AreEqual(o[0], "JBoss");
 			Assert.AreEqual(((Organization) o[1]).Name, "JBoss");
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 
 			// test that the ordering of the results is truly based on the order in which they were defined
-			iter = (await (s.GetNamedQuery("orgsAndOrgNames").ListAsync(CancellationToken.None))).GetEnumerator();
+			iter = (await (s.GetNamedQuery("orgsAndOrgNames").ListAsync())).GetEnumerator();
 			iter.MoveNext();
 			object[] row = (object[]) iter.Current;
 			Assert.AreEqual(typeof(Organization), row[0].GetType(), "expecting non-scalar result first");
@@ -243,13 +242,13 @@ namespace NHibernate.Test.SqlTest.Query
 			Assert.AreEqual(row[1], "JBoss");
 			Assert.IsFalse(iter.MoveNext());
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			iter = (await (s.GetNamedQuery("orgIdsAndOrgNames").ListAsync(CancellationToken.None))).GetEnumerator();
+			iter = (await (s.GetNamedQuery("orgIdsAndOrgNames").ListAsync())).GetEnumerator();
 			iter.MoveNext();
 			o = (object[]) iter.Current;
 			Assert.AreEqual(o[1], "IFA");
@@ -259,9 +258,9 @@ namespace NHibernate.Test.SqlTest.Query
 			Assert.AreEqual(o[1], "JBoss");
 			Assert.AreEqual(o[0], idJBoss);
 
-			await (s.DeleteAsync(ifa, CancellationToken.None));
-			await (s.DeleteAsync(jboss, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(ifa));
+			await (s.DeleteAsync(jboss));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -274,43 +273,43 @@ namespace NHibernate.Test.SqlTest.Query
 			Organization jboss = new Organization("JBoss");
 			Person gavin = new Person("Gavin");
 			Employment emp = new Employment(gavin, jboss, "AU");
-			await (s.SaveAsync(jboss, CancellationToken.None));
-			await (s.SaveAsync(ifa, CancellationToken.None));
-			await (s.SaveAsync(gavin, CancellationToken.None));
-			await (s.SaveAsync(emp, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(jboss));
+			await (s.SaveAsync(ifa));
+			await (s.SaveAsync(gavin));
+			await (s.SaveAsync(emp));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 			IQuery namedQuery = s.GetNamedQuery("AllEmploymentAsMapped");
-			IList list = await (namedQuery.ListAsync(CancellationToken.None));
+			IList list = await (namedQuery.ListAsync());
 			Assert.AreEqual(1, list.Count);
 			Employment emp2 = (Employment) list[0];
 			Assert.AreEqual(emp2.EmploymentId, emp.EmploymentId);
 			Assert.AreEqual(emp2.StartDate.Date, emp.StartDate.Date);
 			Assert.AreEqual(emp2.EndDate, emp.EndDate);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 			IQuery sqlQuery = s.GetNamedQuery("EmploymentAndPerson");
 			sqlQuery.SetResultTransformer(CriteriaSpecification.AliasToEntityMap);
-			list = await (sqlQuery.ListAsync(CancellationToken.None));
+			list = await (sqlQuery.ListAsync());
 			Assert.AreEqual(1, list.Count);
 			object res = list[0];
 			AssertClassAssignability(res.GetType(), typeof(IDictionary));
 			IDictionary m = (IDictionary) res;
 			Assert.AreEqual(2, m.Count);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 			sqlQuery = s.GetNamedQuery("organizationreturnproperty");
 			sqlQuery.SetResultTransformer(CriteriaSpecification.AliasToEntityMap);
-			list = await (sqlQuery.ListAsync(CancellationToken.None));
+			list = await (sqlQuery.ListAsync());
 			Assert.AreEqual(2, list.Count);
 			m = (IDictionary) list[0];
 			Assert.IsTrue(m.Contains("org"));
@@ -318,23 +317,23 @@ namespace NHibernate.Test.SqlTest.Query
 			Assert.IsTrue(m.Contains("emp"));
 			AssertClassAssignability(m["emp"].GetType(), typeof(Employment));
 			Assert.AreEqual(2, m.Count);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 			namedQuery = s.GetNamedQuery("EmploymentAndPerson");
-			list = await (namedQuery.ListAsync(CancellationToken.None));
+			list = await (namedQuery.ListAsync());
 			Assert.AreEqual(1, list.Count);
 			object[] objs = (object[]) list[0];
 			Assert.AreEqual(2, objs.Length);
 			emp2 = (Employment) objs[0];
 			gavin = (Person) objs[1];
-			await (s.DeleteAsync(emp2, CancellationToken.None));
-			await (s.DeleteAsync(jboss, CancellationToken.None));
-			await (s.DeleteAsync(gavin, CancellationToken.None));
-			await (s.DeleteAsync(ifa, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(emp2));
+			await (s.DeleteAsync(jboss));
+			await (s.DeleteAsync(gavin));
+			await (s.DeleteAsync(ifa));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -363,18 +362,18 @@ namespace NHibernate.Test.SqlTest.Query
 			order.Product = product;
 			order.Person = person;
 
-			await (s.SaveAsync(product, CancellationToken.None));
-			await (s.SaveAsync(order, CancellationToken.None));
-			await (s.SaveAsync(person, CancellationToken.None));
+			await (s.SaveAsync(product));
+			await (s.SaveAsync(order));
+			await (s.SaveAsync(person));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			Product p = (Product) (await (s.CreateQuery("from Product p join fetch p.orders").ListAsync(CancellationToken.None)))[0];
+			Product p = (Product) (await (s.CreateQuery("from Product p join fetch p.orders").ListAsync()))[0];
 			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Orders));
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
@@ -400,14 +399,14 @@ namespace NHibernate.Test.SqlTest.Query
 			                                         "            and product.productnumber={prod_orders}.PROD_NO")
 			                        	.AddEntity("product", typeof(Product))
 			                        	.AddJoin("prod_orders", "product.orders")
-			                        	.ListAsync(CancellationToken.None)))[0];
+			                        	.ListAsync()))[0];
 
 			p = (Product) o[0];
 			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Orders));
 			IEnumerator en = p.Orders.GetEnumerator();
 			Assert.IsTrue(en.MoveNext());
 			Assert.IsNotNull(en.Current);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -420,18 +419,18 @@ namespace NHibernate.Test.SqlTest.Query
 			Organization jboss = new Organization("JBoss");
 			Person gavin = new Person("Gavin");
 			Employment emp = new Employment(gavin, jboss, "AU");
-			await (s.SaveAsync(jboss, CancellationToken.None));
-			await (s.SaveAsync(ifa, CancellationToken.None));
-			await (s.SaveAsync(gavin, CancellationToken.None));
-			await (s.SaveAsync(emp, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(jboss));
+			await (s.SaveAsync(ifa));
+			await (s.SaveAsync(gavin));
+			await (s.SaveAsync(emp));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 			IList list = await (s.CreateSQLQuery(EmploymentSQL)
 				.AddEntity(typeof(Employment).FullName)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 			Assert.AreEqual(1, list.Count);
 
 			Employment emp2 = (Employment) list[0];
@@ -444,18 +443,18 @@ namespace NHibernate.Test.SqlTest.Query
 			list = await (s.CreateSQLQuery(EmploymentSQL)
 				.AddEntity(typeof(Employment).FullName)
 				.SetResultTransformer(CriteriaSpecification.AliasToEntityMap)
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 			Assert.AreEqual(1, list.Count);
 			IDictionary m = (IDictionary) list[0];
 			Assert.IsTrue(m.Contains("Employment"));
 			Assert.AreEqual(1, m.Count);
 
-			list = await (s.CreateSQLQuery(EmploymentSQL).ListAsync(CancellationToken.None));
+			list = await (s.CreateSQLQuery(EmploymentSQL).ListAsync());
 			Assert.AreEqual(1, list.Count);
 			object[] o = (object[]) list[0];
 			Assert.AreEqual(8, o.Length);
 
-			list = await (s.CreateSQLQuery(EmploymentSQL).SetResultTransformer(CriteriaSpecification.AliasToEntityMap).ListAsync(CancellationToken.None));
+			list = await (s.CreateSQLQuery(EmploymentSQL).SetResultTransformer(CriteriaSpecification.AliasToEntityMap).ListAsync());
 			Assert.AreEqual(1, list.Count);
 			m = (IDictionary) list[0];
 			Assert.IsTrue(m.Contains("EMPID") || m.Contains("empid"));
@@ -467,7 +466,7 @@ namespace NHibernate.Test.SqlTest.Query
 			// but NHibernate currently can't do it.
 			list =
 				await (s.CreateSQLQuery(EmploymentSQLMixedScalarEntity).AddScalar("employerid", NHibernateUtil.Int64).AddEntity(
-					typeof(Employment)).ListAsync(CancellationToken.None));
+					typeof(Employment)).ListAsync());
 			Assert.AreEqual(1, list.Count);
 			o = (object[]) list[0];
 			Assert.AreEqual(2, o.Length);
@@ -477,7 +476,7 @@ namespace NHibernate.Test.SqlTest.Query
 
 			IQuery queryWithCollection = s.GetNamedQuery("organizationEmploymentsExplicitAliases");
 			queryWithCollection.SetInt64("id", jboss.Id);
-			list = await (queryWithCollection.ListAsync(CancellationToken.None));
+			list = await (queryWithCollection.ListAsync());
 			Assert.AreEqual(list.Count, 1);
 
 			s.Clear();
@@ -485,7 +484,7 @@ namespace NHibernate.Test.SqlTest.Query
 			list = await (s.CreateSQLQuery(OrganizationJoinEmploymentSQL)
 				.AddEntity("org", typeof(Organization))
 				.AddJoin("emp", "org.employments")
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 			Assert.AreEqual(2, list.Count);
 
 			s.Clear();
@@ -493,42 +492,42 @@ namespace NHibernate.Test.SqlTest.Query
 			list = await (s.CreateSQLQuery(OrganizationFetchJoinEmploymentSQL)
 				.AddEntity("org", typeof(Organization))
 				.AddJoin("emp", "org.employments")
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 			Assert.AreEqual(2, list.Count);
 
 			s.Clear();
 
 			// TODO : why twice?
-			await (s.GetNamedQuery("organizationreturnproperty").ListAsync(CancellationToken.None));
-			list = await (s.GetNamedQuery("organizationreturnproperty").ListAsync(CancellationToken.None));
+			await (s.GetNamedQuery("organizationreturnproperty").ListAsync());
+			list = await (s.GetNamedQuery("organizationreturnproperty").ListAsync());
 			Assert.AreEqual(2, list.Count);
 
 			s.Clear();
 
-			list = await (s.GetNamedQuery("organizationautodetect").ListAsync(CancellationToken.None));
+			list = await (s.GetNamedQuery("organizationautodetect").ListAsync());
 			Assert.AreEqual(2, list.Count);
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.DeleteAsync(emp2, CancellationToken.None));
+			await (s.DeleteAsync(emp2));
 
-			await (s.DeleteAsync(jboss, CancellationToken.None));
-			await (s.DeleteAsync(gavin, CancellationToken.None));
-			await (s.DeleteAsync(ifa, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(jboss));
+			await (s.DeleteAsync(gavin));
+			await (s.DeleteAsync(ifa));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 			Dimension dim = new Dimension(3, int.MaxValue);
-			await (s.SaveAsync(dim, CancellationToken.None));
+			await (s.SaveAsync(dim));
 			//		s.Flush();
-			await (s.CreateSQLQuery("select d_len * d_width as surface, d_len * d_width * 10 as volume from Dimension").ListAsync(CancellationToken.None));
-			await (s.DeleteAsync(dim, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.CreateSQLQuery("select d_len * d_width as surface, d_len * d_width * 10 as volume from Dimension").ListAsync());
+			await (s.DeleteAsync(dim));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
@@ -539,15 +538,15 @@ namespace NHibernate.Test.SqlTest.Query
 			enterprise.Speed = 50d;
 			Dimension d = new Dimension(45, 10);
 			enterprise.Dimensions = d;
-			await (s.SaveAsync(enterprise, CancellationToken.None));
+			await (s.SaveAsync(enterprise));
 			//		s.Flush();
-			object[] result = (object[]) await (s.GetNamedQuery("spaceship").UniqueResultAsync(CancellationToken.None));
+			object[] result = (object[]) await (s.GetNamedQuery("spaceship").UniqueResultAsync());
 			enterprise = (SpaceShip) result[0];
 			Assert.IsTrue(50d == enterprise.Speed);
 			Assert.IsTrue(450d == ExtractDoubleValue(result[1]));
 			Assert.IsTrue(4500d == ExtractDoubleValue(result[2]));
-			await (s.DeleteAsync(enterprise, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(enterprise));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -559,13 +558,13 @@ namespace NHibernate.Test.SqlTest.Query
 			Speech speech = new Speech();
 			speech.Length = 23d;
 			speech.Name = "Mine";
-			await (s.SaveAsync(speech, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(speech));
+			await (s.FlushAsync());
 			s.Clear();
 
 			IList l = await (s.CreateSQLQuery("select name, id, flength, name as scalarName from Speech")
 				.SetResultSetMapping("speech")
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 			Assert.AreEqual(l.Count, 1);
 
 			t.Rollback();
@@ -580,7 +579,7 @@ namespace NHibernate.Test.SqlTest.Query
 				IList l = await (s.CreateSQLQuery("select id from Speech where id in (:idList)")
 					.AddScalar("id", NHibernateUtil.Int32)
 					.SetParameterList("idList", new int[] {0, 1, 2, 3}, NHibernateUtil.Int32)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 			}
 		}
 
@@ -633,8 +632,8 @@ namespace NHibernate.Test.SqlTest.Query
 			using (var s = this.OpenSession())
 			using (s.BeginTransaction())
 			{
-				await (s.SaveAsync(new Person("Ricardo"), CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(new Person("Ricardo")));
+				await (s.FlushAsync());
 
 				var transformer = new TestResultSetTransformer();
 				var l = s
@@ -656,8 +655,8 @@ namespace NHibernate.Test.SqlTest.Query
 			using (var s = this.OpenSession())
 			using (s.BeginTransaction())
 			{
-				await (s.SaveAsync(new Person("Ricardo"), CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(new Person("Ricardo")));
+				await (s.FlushAsync());
 
 				var transformer = new TestResultSetTransformer();
 				var l = s
@@ -680,8 +679,8 @@ namespace NHibernate.Test.SqlTest.Query
 			using (var s = this.OpenSession())
 			using (s.BeginTransaction())
 			{
-				await (s.SaveAsync(new Person("Ricardo"), CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(new Person("Ricardo")));
+				await (s.FlushAsync());
 
 				var l = s
 					.CreateSQLQuery("select Name from Person")
@@ -699,8 +698,8 @@ namespace NHibernate.Test.SqlTest.Query
 			using (var s = this.OpenSession())
 			using (s.BeginTransaction())
 			{
-				await (s.SaveAsync(new Person("Ricardo"), CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(new Person("Ricardo")));
+				await (s.FlushAsync());
 
 				var l = s
 					.CreateSQLQuery("select Name from Person")

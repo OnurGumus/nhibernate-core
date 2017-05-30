@@ -21,7 +21,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Hql.Ast
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class HqlFixtureAsync : BaseFixture
 	{
@@ -67,7 +66,7 @@ namespace NHibernate.Test.Hql.Ast
 			// NH-2035 
 			using (ISession s = OpenSession())
 			{
-				await (s.CreateQuery("select distinct z from Animal a join a.zoo as z order by z.name").ListAsync(CancellationToken.None));
+				await (s.CreateQuery("select distinct z from Animal a join a.zoo as z order by z.name").ListAsync());
 			}
 		} 
 
@@ -78,18 +77,18 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				await (s.SaveAsync(new Animal {BodyWeight = 12, Description = "Polliwog"}, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new Animal {BodyWeight = 12, Description = "Polliwog"}));
+				await (s.Transaction.CommitAsync());
 			}
 		
 			using (ISession s = OpenSession())
 			{
-				var l = await (s.CreateQuery("select a.id, case when a.description = 'Polliwog' then 2 else 0 end from Animal a").ListAsync(CancellationToken.None));
+				var l = await (s.CreateQuery("select a.id, case when a.description = 'Polliwog' then 2 else 0 end from Animal a").ListAsync());
 				var element = (IList)l[0];
 				Assert.That(element[1], Is.EqualTo(2));
 
 				// work with alias
-				l = await (s.CreateQuery("select a.id, case when a.description = 'Polliwog' then 2 else 0 end as value from Animal a").ListAsync(CancellationToken.None));
+				l = await (s.CreateQuery("select a.id, case when a.description = 'Polliwog' then 2 else 0 end as value from Animal a").ListAsync());
 				element = (IList)l[0];
 				Assert.That(element[1], Is.EqualTo(2));
 			}
@@ -97,8 +96,8 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync(CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
+				await (s.Transaction.CommitAsync());
 			}
 		}
 
@@ -108,8 +107,8 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				await (s.SaveAsync(new Animal { BodyWeight = 12, Description = "Polliwog" }, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new Animal { BodyWeight = 12, Description = "Polliwog" }));
+				await (s.Transaction.CommitAsync());
 			}
 
 			try
@@ -120,7 +119,7 @@ namespace NHibernate.Test.Hql.Ast
 						.SetParameter(0, "a")
 						.SetParameter(1, "b")
 						.SetMaxResults(1)
-						.UniqueResultAsync(CancellationToken.None));
+						.UniqueResultAsync());
 					Assert.AreEqual(1, result);
 				}
 			}
@@ -129,8 +128,8 @@ namespace NHibernate.Test.Hql.Ast
 				using (ISession s = OpenSession())
 				using (s.BeginTransaction())
 				{
-					await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync(CancellationToken.None));
-					await (s.Transaction.CommitAsync(CancellationToken.None));
+					await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
+					await (s.Transaction.CommitAsync());
 				}
 			}
 		}
@@ -141,8 +140,8 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				await (s.SaveAsync(new Animal { BodyWeight = 12, Description = "Polliwog" }, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new Animal { BodyWeight = 12, Description = "Polliwog" }));
+				await (s.Transaction.CommitAsync());
 			}
 
 			try
@@ -151,7 +150,7 @@ namespace NHibernate.Test.Hql.Ast
 				{
 					var result = await (s.CreateQuery("select case when 2=2 then ? else 0 end from Animal a")
 						.SetParameter(0, 1)
-						.UniqueResultAsync(CancellationToken.None));
+						.UniqueResultAsync());
 					Assert.AreEqual(1, result);
 				}
 			}
@@ -160,8 +159,8 @@ namespace NHibernate.Test.Hql.Ast
 				using (ISession s = OpenSession())
 				using (s.BeginTransaction())
 				{
-					await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync(CancellationToken.None));
-					await (s.Transaction.CommitAsync(CancellationToken.None));
+					await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
+					await (s.Transaction.CommitAsync());
 				}
 			}
 		}
@@ -172,8 +171,8 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				await (s.SaveAsync(new Animal { BodyWeight = 12, Description = "Polliwog" }, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new Animal { BodyWeight = 12, Description = "Polliwog" }));
+				await (s.Transaction.CommitAsync());
 			}
 
 			try
@@ -183,7 +182,7 @@ namespace NHibernate.Test.Hql.Ast
 					var result = await (s.CreateQuery("select case when 2=2 then cast(? as integer) else ? end from Animal a")
 						.SetParameter(0, 1)
 						.SetParameter(1, 0)
-						.UniqueResultAsync(CancellationToken.None));
+						.UniqueResultAsync());
 					Assert.AreEqual(1, result);
 				}
 			}
@@ -192,8 +191,8 @@ namespace NHibernate.Test.Hql.Ast
 				using (ISession s = OpenSession())
 				using (s.BeginTransaction())
 				{
-					await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync(CancellationToken.None));
-					await (s.Transaction.CommitAsync(CancellationToken.None));
+					await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
+					await (s.Transaction.CommitAsync());
 				}
 			}
 		}
@@ -204,8 +203,8 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				await (s.SaveAsync(new Animal { BodyWeight = 12, Description = "Polliwog" }, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new Animal { BodyWeight = 12, Description = "Polliwog" }));
+				await (s.Transaction.CommitAsync());
 			}
 
 			try
@@ -213,7 +212,7 @@ namespace NHibernate.Test.Hql.Ast
 				using (ISession s = OpenSession())
 				{
 					var result = await (s.CreateQuery("select count(a) from Animal a where (select count(a2) from Animal a2) + 1 > 1")
-						.UniqueResultAsync(CancellationToken.None));
+						.UniqueResultAsync());
 					Assert.AreEqual(1, result);
 				}
 			}
@@ -222,8 +221,8 @@ namespace NHibernate.Test.Hql.Ast
 				using (ISession s = OpenSession())
 				using (s.BeginTransaction())
 				{
-					await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync(CancellationToken.None));
-					await (s.Transaction.CommitAsync(CancellationToken.None));
+					await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
+					await (s.Transaction.CommitAsync());
 				}
 			}
 		}
@@ -235,21 +234,21 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				await (s.SaveAsync(new Human{ IntValue = 11, BodyWeight = 12.5f, Description = "Polliwog" }, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new Human{ IntValue = 11, BodyWeight = 12.5f, Description = "Polliwog" }));
+				await (s.Transaction.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				var l = await (s.CreateQuery("select sum(a.intValue * a.bodyWeight) from Animal a group by a.id").ListAsync(CancellationToken.None));
+				var l = await (s.CreateQuery("select sum(a.intValue * a.bodyWeight) from Animal a group by a.id").ListAsync());
 				Assert.That(l[0], Is.InstanceOf<Double>());
 			}
 
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync(CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
+				await (s.Transaction.CommitAsync());
 			}
 		}
 
@@ -259,11 +258,11 @@ namespace NHibernate.Test.Hql.Ast
 			// NH-1833
 			using (ISession s = OpenSession())
 			{
-				await (s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = {0}", long.MaxValue)).ListAsync(CancellationToken.None));
-				await (s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = {0}L", long.MaxValue)).ListAsync(CancellationToken.None));
-				await (s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = 123L")).ListAsync(CancellationToken.None));
-				await (s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = 123")).ListAsync(CancellationToken.None));
-				await (s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = {0}", int.MaxValue + 1L)).ListAsync(CancellationToken.None));
+				await (s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = {0}", long.MaxValue)).ListAsync());
+				await (s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = {0}L", long.MaxValue)).ListAsync());
+				await (s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = 123L")).ListAsync());
+				await (s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = 123")).ListAsync());
+				await (s.CreateQuery(string.Format("from SimpleClass sc where sc.LongValue = {0}", int.MaxValue + 1L)).ListAsync());
 			}
 		}
 
@@ -276,7 +275,7 @@ namespace NHibernate.Test.Hql.Ast
 				Assert.ThrowsAsync<InvalidPathException>(
 					() =>
 					{
-						return s.CreateQuery("from Zoo z inner join fetch z.classification").ListAsync(CancellationToken.None);
+						return s.CreateQuery("from Zoo z inner join fetch z.classification").ListAsync();
 					},
 					"Incorrect path not caught during parsing");
 			}
@@ -290,20 +289,20 @@ namespace NHibernate.Test.Hql.Ast
 				using (s.BeginTransaction())
 				{
 					// arrange
-					await (s.SaveAsync(new Animal() {Description = "cat1", BodyWeight = 2.1f}, CancellationToken.None));
-					await (s.SaveAsync(new Animal() {Description = "cat2", BodyWeight = 2.5f}, CancellationToken.None));
-					await (s.SaveAsync(new Animal() {Description = "cat3", BodyWeight = 2.7f}, CancellationToken.None));
+					await (s.SaveAsync(new Animal() {Description = "cat1", BodyWeight = 2.1f}));
+					await (s.SaveAsync(new Animal() {Description = "cat2", BodyWeight = 2.5f}));
+					await (s.SaveAsync(new Animal() {Description = "cat3", BodyWeight = 2.7f}));
 
 					// act
 					await (s.CreateQuery("insert into Animal (description, bodyWeight) select a.description, :weight from Animal a where a.bodyWeight < :weight")
-						.SetParameter<float>("weight", 5.7f).ExecuteUpdateAsync(CancellationToken.None));
+						.SetParameter<float>("weight", 5.7f).ExecuteUpdateAsync());
 
 					// assert
 					Assert.AreEqual(3, await (s.CreateCriteria<Animal>().SetProjection(Projections.RowCount())
-					                    .Add(Restrictions.Gt("bodyWeight", 5.5f)).UniqueResultAsync<int>(CancellationToken.None)));
+					                    .Add(Restrictions.Gt("bodyWeight", 5.5f)).UniqueResultAsync<int>()));
 
-					await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync(CancellationToken.None));
-					await (s.Transaction.CommitAsync(CancellationToken.None));
+					await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
+					await (s.Transaction.CommitAsync());
 				}
 			}
 		}
@@ -315,16 +314,16 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 			using (ITransaction txn = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new Animal {Description = "cat1", BodyWeight = 1}, CancellationToken.None));
+				await (s.SaveAsync(new Animal {Description = "cat1", BodyWeight = 1}));
 
 				// NH-2290: Unary minus before parentheses wasn't handled correctly (this query returned 0).
 				int actual = (await (s.CreateQuery("select -(1+1) from Animal as h")
-					.ListAsync<int>(CancellationToken.None))).Single();
+					.ListAsync<int>())).Single();
 				Assert.That(actual, Is.EqualTo(-2));
 
 				// This was the workaround, which of course should still work.
 				int actualWorkaround = (await (s.CreateQuery("select -1*(1+1) from Animal as h")
-					.ListAsync<int>(CancellationToken.None))).Single();
+					.ListAsync<int>())).Single();
 				Assert.That(actualWorkaround, Is.EqualTo(-2));
 			}
 		}

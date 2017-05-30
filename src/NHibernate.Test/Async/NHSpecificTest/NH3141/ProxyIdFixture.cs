@@ -44,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3141
 		[Test, Explicit("No logical test - just to compare before/after fix")]
 		public async Task ShouldUseIdDirectlyFromProxyAsync()
 		{
-			var proxyEntity = await (CreateInitializedProxyAsync(CancellationToken.None));
+			var proxyEntity = await (CreateInitializedProxyAsync());
 
 			const int loop = 1000000;
 			var watch = new Stopwatch();
@@ -67,9 +67,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3141
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				var entity = await (s.LoadAsync<Entity>(id, CancellationToken.None));
+				var entity = await (s.LoadAsync<Entity>(id));
 				entity.Id ++;
-				Assert.ThrowsAsync<HibernateException>(() => tx.CommitAsync(CancellationToken.None));
+				Assert.ThrowsAsync<HibernateException>(() => tx.CommitAsync());
 			}
 		}
 
@@ -79,10 +79,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3141
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				var entity = await (s.LoadAsync<Entity>(id, CancellationToken.None));
-				await (NHibernateUtil.InitializeAsync(entity, CancellationToken.None));
+				var entity = await (s.LoadAsync<Entity>(id));
+				await (NHibernateUtil.InitializeAsync(entity));
 				entity.Id++;
-				Assert.ThrowsAsync<HibernateException>(() => tx.CommitAsync(CancellationToken.None));
+				Assert.ThrowsAsync<HibernateException>(() => tx.CommitAsync());
 			}
 		}
 

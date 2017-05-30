@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Subclass.EnumDiscriminator
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class EnumDiscriminatorFixtureAsync : TestCase
 	{
@@ -37,13 +36,13 @@ namespace NHibernate.Test.Subclass.EnumDiscriminator
 
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(foo, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(foo));
+				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				Baz baz = await (s.LoadAsync<Baz>(1L, CancellationToken.None));
+				Baz baz = await (s.LoadAsync<Baz>(1L));
 				Assert.AreEqual(Colors.Green, baz.Color);
 			}
 		}
@@ -56,21 +55,21 @@ namespace NHibernate.Test.Subclass.EnumDiscriminator
 
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(foo, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(foo));
+				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				Baz baz = await (s.LoadAsync<Baz>(1L, CancellationToken.None));
+				Baz baz = await (s.LoadAsync<Baz>(1L));
 				baz.Color = Colors.Blue;
-				await (s.SaveAsync(baz, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(baz));
+				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				Bar bar = await (s.LoadAsync<Bar>(1L, CancellationToken.None));
+				Bar bar = await (s.LoadAsync<Bar>(1L));
 			}
 		}
 

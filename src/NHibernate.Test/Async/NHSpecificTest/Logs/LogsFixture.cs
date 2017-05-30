@@ -25,7 +25,6 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 	using log4net.Layout;
 	using log4net.Repository.Hierarchy;
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	[TestFixture]
 	public class LogsFixtureAsync : TestCase
@@ -50,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 			{
 				var sessionId = ((SessionImpl)s).SessionId;
 
-				await (s.GetAsync<Person>(1, CancellationToken.None));//will execute some sql
+				await (s.GetAsync<Person>(1));//will execute some sql
 
 				var loggingEvent = spy.Events[0];
 				Assert.That(loggingEvent.Contains(sessionId.ToString()), Is.True);

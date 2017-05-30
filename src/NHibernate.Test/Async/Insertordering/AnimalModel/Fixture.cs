@@ -14,7 +14,6 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Insertordering.AnimalModel
 {
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{
@@ -86,21 +85,21 @@ namespace NHibernate.Test.Insertordering.AnimalModel
 				var sivasKangalForSivasKangals = new SivasKangal { Name = "Karabas4", Country = "Turkey", HouseAddress = "Atakoy", Owner = personWithSivasKangals };
 				personWithSivasKangals.AnimalsGeneric.Add(sivasKangalForSivasKangals);
 
-				await (session.SaveAsync(animalForCats, CancellationToken.None));
-				await (session.SaveAsync(dogForCats, CancellationToken.None));
+				await (session.SaveAsync(animalForCats));
+				await (session.SaveAsync(dogForCats));
 
-				await (session.SaveAsync(catForDogs, CancellationToken.None));
+				await (session.SaveAsync(catForDogs));
 
-				await (session.SaveAsync(animalForSivasKangals, CancellationToken.None));
-				await (session.SaveAsync(dogForSivasKangals, CancellationToken.None));
-				await (session.SaveAsync(catForSivasKangals, CancellationToken.None));
+				await (session.SaveAsync(animalForSivasKangals));
+				await (session.SaveAsync(dogForSivasKangals));
+				await (session.SaveAsync(catForSivasKangals));
 
-				await (session.SaveAsync(personWithAnimals, CancellationToken.None));
-				await (session.SaveAsync(personWithCats, CancellationToken.None));
-				await (session.SaveAsync(personWithDogs, CancellationToken.None));
-				await (session.SaveAsync(personWithSivasKangals, CancellationToken.None));
+				await (session.SaveAsync(personWithAnimals));
+				await (session.SaveAsync(personWithCats));
+				await (session.SaveAsync(personWithDogs));
+				await (session.SaveAsync(personWithSivasKangals));
 
-				Assert.DoesNotThrowAsync(() => { return tran.CommitAsync(CancellationToken.None); });
+				Assert.DoesNotThrowAsync(() => { return tran.CommitAsync(); });
 			}
 		}
 	}

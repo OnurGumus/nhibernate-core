@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3372
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -29,8 +28,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3372
 			using (session.BeginTransaction())
 			{
 				var entity = new Entity { Content = "Some text" };
-				await (session.SaveAsync(entity, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.SaveAsync(entity));
+				await (session.FlushAsync());
 
 				Assert.That(entity.ShardId, Is.Not.Null & Has.Length.GreaterThan(0));
 			}
@@ -43,13 +42,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3372
 			using (session.BeginTransaction())
 			{
 				var entity = new Entity { Content = "Some text" };
-				await (session.SaveAsync(entity, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.SaveAsync(entity));
+				await (session.FlushAsync());
 
 				entity.ShardId = null;
 				entity.Content = "Some other text";
-				await (session.UpdateAsync(entity, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.UpdateAsync(entity));
+				await (session.FlushAsync());
 				
 				Assert.That(entity.ShardId, Is.Not.Null & Has.Length.GreaterThan(0));
 			}

@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3139
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{
@@ -86,7 +85,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3139
 			{
 				Product product = await (session.CreateCriteria(typeof (Product))
 					.Add(Restrictions.Eq("Name", "First"))
-					.UniqueResultAsync<Product>(CancellationToken.None));
+					.UniqueResultAsync<Product>());
 
 				Assert.IsNotNull(product);
 				Assert.IsNull(product.Inventory);
@@ -102,7 +101,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3139
 			{
 				Product product = await (session.CreateCriteria(typeof(Product))
 					.Add(Restrictions.Eq("Name", "First"))
-					.UniqueResultAsync<Product>(CancellationToken.None));
+					.UniqueResultAsync<Product>());
 
 				Assert.IsNotNull(product);
 				Assert.That(product.Brand is INHibernateProxy);

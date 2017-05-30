@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1508
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -65,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1508
 				var q = session
 					.CreateMultiQuery()
 					.Add(sqlQuery);
-				await (q.ListAsync(CancellationToken.None));
+				await (q.ListAsync());
 			}
 		}
 	}

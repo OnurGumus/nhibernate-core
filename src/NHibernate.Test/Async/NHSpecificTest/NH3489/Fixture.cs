@@ -22,7 +22,6 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Test.NHSpecificTest.NH3489
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	[Ignore("Only run to test performance.")]
 	public class FixtureAsync : TestCaseMappingByCode
@@ -124,7 +123,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3489
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				IList<Order> orders = await (session.QueryOver<Order>().ListAsync(CancellationToken.None));
+				IList<Order> orders = await (session.QueryOver<Order>().ListAsync());
 				foreach (Order order in orders)
 					order.Departments.ToList();
 			}

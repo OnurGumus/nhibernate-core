@@ -69,7 +69,7 @@ assembly='NHibernate.Test'>
 				Assert.That(script, Does.Contain("unique (B, C)"));
 				Assert.That(script, Does.Not.Contain("unique (C)"));
 
-				return new SchemaExport(cfg).DropAsync(false, true, CancellationToken.None);
+				return new SchemaExport(cfg).DropAsync(false, true);
 			}
 			catch (Exception ex)
 			{
@@ -109,7 +109,7 @@ assembly='NHibernate.Test'>
 				Assert.That(script, Does.Contain("create index AC on Entity (A, C)"));
 				Assert.That(script, Does.Contain("create index BC on Entity (B, C)"));
 
-				return new SchemaExport(cfg).DropAsync(false, true, CancellationToken.None);
+				return new SchemaExport(cfg).DropAsync(false, true);
 			}
 			catch (Exception ex)
 			{
@@ -155,7 +155,7 @@ assembly='NHibernate.Test'>
 				Assert.That(script, Does.Contain("create index AC on Entity (A, C)"));
 				Assert.That(script, Does.Contain("create index BC on Entity (B, C)"));
 
-				return new SchemaExport(cfg).DropAsync(false, true, CancellationToken.None);
+				return new SchemaExport(cfg).DropAsync(false, true);
 			}
 			catch (Exception ex)
 			{
@@ -195,7 +195,7 @@ assembly='NHibernate.Test'>
 				Assert.That(script, Does.Contain("create index IdxId1 on Entity (Id)"));
 				Assert.That(script, Does.Contain("create index IdxId2 on Entity (Id)"));
 
-				return new SchemaExport(cfg).DropAsync(false, true, CancellationToken.None);
+				return new SchemaExport(cfg).DropAsync(false, true);
 			}
 			catch (Exception ex)
 			{
@@ -241,7 +241,7 @@ assembly='NHibernate.Test'>
 				}
 				Assert.That(count, Is.EqualTo(2));
 
-				return new SchemaExport(cfg).DropAsync(false, true, CancellationToken.None);
+				return new SchemaExport(cfg).DropAsync(false, true);
 			}
 			catch (Exception ex)
 			{

@@ -19,7 +19,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3316
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class ByCodeFixtureAsync : TestCaseMappingByCode
 	{
@@ -70,22 +69,22 @@ namespace NHibernate.Test.NHSpecificTest.NH3316
 				e.AddChild(1);
 				e.AddChild(2);
 
-				await (session.SaveAsync(e, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (session.SaveAsync(e));
+				await (session.FlushAsync());
+				await (transaction.CommitAsync());
 				id = e.Id;
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				Entity e = await (session.GetAsync<Entity>(id, CancellationToken.None));
+				Entity e = await (session.GetAsync<Entity>(id));
 				Assert.AreEqual(2, e.Children.Count());
 				foreach (ChildComponent c in e.Children)
 					Assert.AreEqual(e, c.Parent);
 
-				await (session.FlushAsync(CancellationToken.None));
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (session.FlushAsync());
+				await (transaction.CommitAsync());
 			}
 		}
 	}

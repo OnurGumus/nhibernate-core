@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1899
 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture]
     public class SampleTestAsync : BugTestCase
     {
@@ -53,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1899
 
             using (ISession session = OpenSession())
             {
-                entity = await (session.GetAsync<Parent>(1, CancellationToken.None));
+                entity = await (session.GetAsync<Parent>(1));
                 session.Close();
                 session.Dispose();
             }

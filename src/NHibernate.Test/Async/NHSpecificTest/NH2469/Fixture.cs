@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2469
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -28,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2469
 					.CreateAlias("e2.Entity1", "e1")
 					.Add(Restrictions.Eq("e1.Foo", 0));
 
-				Assert.AreEqual(0, (await (criteria.ListAsync<Entity2>(CancellationToken.None))).Count);
+				Assert.AreEqual(0, (await (criteria.ListAsync<Entity2>())).Count);
 			}
 		}
 	}

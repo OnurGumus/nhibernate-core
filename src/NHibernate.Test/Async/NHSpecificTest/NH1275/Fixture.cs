@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1275
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// http://nhibernate.jira.com/browse/NH-1275
 	/// </summary>
@@ -38,8 +37,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1275
 			using(ITransaction t = s.BeginTransaction())
 			{
 				A a  = new A("hunabKu");
-				savedId = await (s.SaveAsync(a, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				savedId = await (s.SaveAsync(a));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -47,25 +46,25 @@ namespace NHibernate.Test.NHSpecificTest.NH1275
 			{
 				using (SqlLogSpy sqlLogSpy = new SqlLogSpy())
 				{
-					await (s.GetAsync<A>(savedId, LockMode.Upgrade, CancellationToken.None));
+					await (s.GetAsync<A>(savedId, LockMode.Upgrade));
 					string sql = sqlLogSpy.Appender.GetEvents()[0].RenderedMessage;
 					Assert.Less(0, sql.IndexOf(Dialect.ForUpdateString));
 				}
 				using (SqlLogSpy sqlLogSpy = new SqlLogSpy())
 				{
 					await (s.CreateQuery("from A a where a.Id= :pid").SetLockMode("a", LockMode.Upgrade).SetParameter("pid", savedId).
-							UniqueResultAsync<A>(CancellationToken.None));
+							UniqueResultAsync<A>());
 					string sql = sqlLogSpy.Appender.GetEvents()[0].RenderedMessage;
 					Assert.Less(0, sql.IndexOf(Dialect.ForUpdateString));
 				}
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from A", CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from A"));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -77,28 +76,28 @@ namespace NHibernate.Test.NHSpecificTest.NH1275
 			using (ITransaction t = s.BeginTransaction())
 			{
 				A a = new A("hunabKu");
-				savedId = await (s.SaveAsync(a, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				savedId = await (s.SaveAsync(a));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				A a = await (s.GetAsync<A>(savedId, CancellationToken.None));
+				A a = await (s.GetAsync<A>(savedId));
 				using (SqlLogSpy sqlLogSpy = new SqlLogSpy())
 				{
-					await (s.LockAsync(a, LockMode.Upgrade, CancellationToken.None));
+					await (s.LockAsync(a, LockMode.Upgrade));
 					string sql = sqlLogSpy.Appender.GetEvents()[0].RenderedMessage;
 					Assert.Less(0, sql.IndexOf(Dialect.ForUpdateString));
 				}
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from A", CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from A"));
+				await (t.CommitAsync());
 			}
 		}
 	}

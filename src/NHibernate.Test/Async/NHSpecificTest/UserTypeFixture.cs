@@ -44,8 +44,8 @@ namespace NHibernate.Test.NHSpecificTest
 				userTypeClass.FirstInt32 = 4;
 				userTypeClass.SecondInt32 = 0; // with the user type should set value to null
 
-				await (s.SaveAsync(userTypeClass, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(userTypeClass));
+				await (s.FlushAsync());
 			}
 
 			// manually read from the db
@@ -69,8 +69,8 @@ namespace NHibernate.Test.NHSpecificTest
 
 			using (ISession s = OpenSession())
 			{
-				await (s.DeleteAsync("from ClassWithNullColumns", CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync("from ClassWithNullColumns"));
+				await (s.FlushAsync());
 			}
 		}
 	}

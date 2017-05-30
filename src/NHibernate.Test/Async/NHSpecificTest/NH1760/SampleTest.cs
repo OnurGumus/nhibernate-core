@@ -46,14 +46,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1760
 		[Test]
 		public async Task CanUseCriteriaAsync()
 		{
-			await (FillDbAsync(CancellationToken.None));
+			await (FillDbAsync());
 			int hqlCount;
 			int criteriaCount;
 			using (ISession session = OpenSession())
 			{
 				IList<TestClass> retvalue =
 					await (session.CreateQuery("Select tc from TestClass tc join tc.Id.Customer cu where cu.Name = :name").SetString("name", "Alkampfer")
-						.ListAsync<TestClass>(CancellationToken.None));
+						.ListAsync<TestClass>());
 				hqlCount = retvalue.Count;
 			}
 
@@ -62,19 +62,19 @@ namespace NHibernate.Test.NHSpecificTest.NH1760
 				ICriteria c =
 					session.CreateCriteria(typeof (TestClass)).CreateAlias("Id.Customer", "IdCust").Add(Restrictions.Eq("IdCust.Name",
 					                                                                                                    "Alkampfer"));
-				IList<TestClass> retvalue = await (c.ListAsync<TestClass>(CancellationToken.None));
+				IList<TestClass> retvalue = await (c.ListAsync<TestClass>());
 				criteriaCount = retvalue.Count;
 			}
 			Assert.That(criteriaCount, Is.EqualTo(1));
 			Assert.That(criteriaCount, Is.EqualTo(hqlCount));
 
-			await (CleanupAsync(CancellationToken.None));
+			await (CleanupAsync());
 		}
 
 		[Test]
 		public async Task TheJoinShouldBeOptionalAsync()
 		{
-			await (FillDbAsync(CancellationToken.None));
+			await (FillDbAsync());
 			int criteriaCount;
 
 			using (ISession session = OpenSession())
@@ -82,14 +82,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1760
 				using (var ls = new SqlLogSpy())
 				{
 					ICriteria c = session.CreateCriteria(typeof(TestClass));
-					IList<TestClass> retvalue = await (c.ListAsync<TestClass>(CancellationToken.None));
+					IList<TestClass> retvalue = await (c.ListAsync<TestClass>());
 					Assert.That(ls.GetWholeLog(), Does.Not.Contain("join"));
 					criteriaCount = retvalue.Count;
 				}
 			}
 			Assert.That(criteriaCount, Is.EqualTo(1));
 
-			await (CleanupAsync(CancellationToken.None));
+			await (CleanupAsync());
 		}
 	}
 }

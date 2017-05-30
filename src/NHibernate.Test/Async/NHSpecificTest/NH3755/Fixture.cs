@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3755
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -62,11 +61,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3755
 			{
 				var result1 = await ((from e in session.Query<ShapeContainer>()
 				               where e.Name == "Circle"
-				               select e).ToListAsync(CancellationToken.None));
+				               select e).ToListAsync());
 
 				var result2 = await ((from e in session.Query<ShapeContainer>()
 				               where e.Name == "Square"
-				               select e).ToListAsync(CancellationToken.None));
+				               select e).ToListAsync());
 
 				var circle = (ICircle) result1[0].Shape;
 				var square = (ISquare) result2[0].Shape;

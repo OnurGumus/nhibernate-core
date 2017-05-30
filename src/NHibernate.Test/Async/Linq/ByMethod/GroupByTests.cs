@@ -22,14 +22,13 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq.ByMethod
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class GroupByTestsAsync : LinqTestCase
 	{
 		[Test]
 		public async Task SingleKeyGroupAndCountAsync()
 		{
-			var orderCounts = await (db.Orders.GroupBy(o => o.Customer).Select(g => g.Count()).ToListAsync(CancellationToken.None));
+			var orderCounts = await (db.Orders.GroupBy(o => o.Customer).Select(g => g.Count()).ToListAsync());
 			Assert.AreEqual(89, orderCounts.Count);
 			Assert.AreEqual(830, orderCounts.Sum());
 		}
@@ -37,7 +36,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public async Task MultipleKeyGroupAndCountAsync()
 		{
-			var orderCounts = await (db.Orders.GroupBy(o => new { o.Customer, o.Employee }).Select(g => g.Count()).ToListAsync(CancellationToken.None));
+			var orderCounts = await (db.Orders.GroupBy(o => new { o.Customer, o.Employee }).Select(g => g.Count()).ToListAsync());
 			Assert.AreEqual(464, orderCounts.Count);
 			Assert.AreEqual(830, orderCounts.Sum());
 		}
@@ -45,7 +44,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public async Task SingleKeyGroupingAsync()
 		{
-			var orders = await (db.Orders.GroupBy(o => o.Customer).ToListAsync(CancellationToken.None));
+			var orders = await (db.Orders.GroupBy(o => o.Customer).ToListAsync());
 			Assert.That(orders.Count, Is.EqualTo(89));
 			Assert.That(orders.Sum(o => o.Count()), Is.EqualTo(830));
 			CheckGrouping(orders, o => o.Customer);
@@ -54,7 +53,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public async Task MultipleKeyGroupingAsync()
 		{
-			var orders = await (db.Orders.GroupBy(o => new { o.Customer, o.Employee }).ToListAsync(CancellationToken.None));
+			var orders = await (db.Orders.GroupBy(o => new { o.Customer, o.Employee }).ToListAsync());
 			Assert.That(orders.Count, Is.EqualTo(464));
 			Assert.That(orders.Sum(o => o.Count()), Is.EqualTo(830));
 
@@ -72,7 +71,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				var orders = await ((from o in db.Orders
 							  group o by o.OrderDate
 								  into g
-								  select g.Key).ToListAsync(CancellationToken.None));
+								  select g.Key).ToListAsync());
 
 				Assert.That(orders.Count, Is.EqualTo(481));
 				Assert.That(Regex.Replace(spy.GetWholeLog(), @"\s+", " "), Does.Contain("group by order0_.OrderDate"));
@@ -91,7 +90,7 @@ namespace NHibernate.Test.Linq.ByMethod
 									 UnitPrice = g.Max(i => i.UnitPrice),
 									 TotalUnitsInStock = g.Sum(i => i.UnitsInStock)
 								 })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(62));
 			AssertOrderedBy.Ascending(result, x => x.UnitPrice);
@@ -109,7 +108,7 @@ namespace NHibernate.Test.Linq.ByMethod
 									 TotalUnitsInStock = g.Sum(i => i.UnitsInStock)
 								 })
 				.OrderBy(x => x.UnitPrice)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(62));
 			AssertOrderedBy.Ascending(result, x => x.UnitPrice);
@@ -129,7 +128,7 @@ namespace NHibernate.Test.Linq.ByMethod
 					OrderCount = g.Count()
 				})
 				.OrderByDescending(t => t.OrderCount)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			AssertOrderedBy.Descending(orderCounts, oc => oc.OrderCount);
 		}
@@ -152,7 +151,7 @@ namespace NHibernate.Test.Linq.ByMethod
 					CustomerId = g.Key,
 					OrderCount = g.Count()
 				})
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			AssertOrderedBy.Descending(orderCounts, oc => oc.OrderCount);
 		}
@@ -173,7 +172,7 @@ namespace NHibernate.Test.Linq.ByMethod
 					.GroupBy(o => o.Customer)
 					.OrderByDescending(g => g.Count()) // it seems like there we should do order on client-side
 					.Select(g => g.Key)
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.That(result.Count, Is.EqualTo(89));
 			}
@@ -207,7 +206,7 @@ namespace NHibernate.Test.Linq.ByMethod
 					.GroupBy(o => o.Customer)
 					.Select(g => new {Customer = g.Key, OrderCount = g.Count()})
 					.OrderByDescending(t => t.OrderCount)
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				AssertOrderedBy.Descending(orderCounts, oc => oc.OrderCount);
 			}
@@ -237,7 +236,7 @@ namespace NHibernate.Test.Linq.ByMethod
 									 TotalUnitsInStock = g.Sum(i => i.UnitsInStock)
 								 })
 				.OrderBy(x => x.TotalUnitsInStock)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(62));
 			AssertOrderedBy.Ascending(result, x => x.TotalUnitsInStock);
@@ -255,7 +254,7 @@ namespace NHibernate.Test.Linq.ByMethod
 									 TotalUnitsInStock = g.Sum(i => i.UnitsInStock)
 								 })
 				.OrderBy(x => x.UnitPrice)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(62));
 			AssertOrderedBy.Ascending(result, x => x.UnitPrice);
@@ -265,13 +264,13 @@ namespace NHibernate.Test.Linq.ByMethod
 		public async Task GroupByWithAndAlsoContainsInWhereClauseAsync()
 		{
 			//NH-3032
-			var collection = await (db.Products.Select(x => x.Supplier).ToListAsync(CancellationToken.None));
+			var collection = await (db.Products.Select(x => x.Supplier).ToListAsync());
 
 			var result = await (db.Products
 				.Where(x => x.Discontinued == true && collection.Contains(x.Supplier))
 				.GroupBy(x => x.UnitPrice)
 				.Select(x => new { x.Key, Count = x.Count() })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(8));
 		}
@@ -280,13 +279,13 @@ namespace NHibernate.Test.Linq.ByMethod
 		public async Task GroupByWithContainsInWhereClauseAsync()
 		{
 			//NH-3032
-			var collection = await (db.Products.Select(x => x.Supplier).ToListAsync(CancellationToken.None));
+			var collection = await (db.Products.Select(x => x.Supplier).ToListAsync());
 
 			var result = await (db.Products
 				.Where(x => collection.Contains(x.Supplier))
 				.GroupBy(x => x.UnitPrice)
 				.Select(x => new { x.Key, Count = x.Count() })
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(62));
 		}
@@ -310,7 +309,7 @@ namespace NHibernate.Test.Linq.ByMethod
 									{
 										g.Key,
 										Count = g.SelectMany(x => x.OrderLines).Count()
-									}).ToListAsync(CancellationToken.None));
+									}).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(481));
 			Assert.That(query, Is.EquivalentTo(list));
@@ -328,7 +327,7 @@ namespace NHibernate.Test.Linq.ByMethod
 										OrderId = (int?) temp.Key.OrderId,
 										SuperiorId = temp.Key.SuperiorId,
 										Count = temp.Count(),
-									}).ToListAsync(CancellationToken.None));
+									}).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(830));
 		}
@@ -337,7 +336,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		public async Task GroupByAndTakeAsync()
 		{
 			//NH-2566
-			var names = await (db.Users.GroupBy(p => p.Name).Select(g => g.Key).Take(3).ToListAsync(CancellationToken.None));
+			var names = await (db.Users.GroupBy(p => p.Name).Select(g => g.Key).Take(3).ToListAsync());
 			Assert.That(names.Count, Is.EqualTo(3));
 		}
 
@@ -352,7 +351,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.OrderBy(customerId => customerId)
 				.Skip(10)
 				.Take(10)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 			
 			Assert.That(results.Count, Is.EqualTo(10));
 		}
@@ -361,7 +360,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		public async Task GroupByAndAnyAsync()
 		{
 			//NH-2566
-			var namesAreNotEmpty = !await (db.Users.GroupBy(p => p.Name).Select(g => g.Key).AnyAsync(name => name.Length == 0, CancellationToken.None));
+			var namesAreNotEmpty = !await (db.Users.GroupBy(p => p.Name).Select(g => g.Key).AnyAsync(name => name.Length == 0));
 			Assert.That(namesAreNotEmpty, Is.True);
 		}
 
@@ -373,7 +372,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.GroupBy(x => x.UnitPrice)
 				.Select(x => new {x.Key, Count = x.Count()})
 				.OrderByDescending(x => x.Key)
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			Assert.That(result.Key, Is.EqualTo(263.5M));
 			Assert.That(result.Count, Is.EqualTo(1));
@@ -387,7 +386,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.GroupBy(x => x.UnitPrice)
 				.Select(x => new {x.Key, Count = x.Count()})
 				.OrderByDescending(x => x.Key)
-				.FirstOrDefaultAsync(CancellationToken.None));
+				.FirstOrDefaultAsync());
 
 			Assert.That(result.Key, Is.EqualTo(263.5M));
 			Assert.That(result.Count, Is.EqualTo(1));
@@ -402,7 +401,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.Select(x => new {x.Key, Count = x.Count()})
 				.Where(x => x.Key == 263.5M)
 				.OrderByDescending(x => x.Key)
-				.SingleAsync(CancellationToken.None));
+				.SingleAsync());
 
 			Assert.That(result.Key, Is.EqualTo(263.5M));
 			Assert.That(result.Count, Is.EqualTo(1));
@@ -417,7 +416,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.Select(x => new {x.Key, Count = x.Count()})
 				.Where(x => x.Key == 263.5M)
 				.OrderByDescending(x => x.Key)
-				.SingleOrDefaultAsync(CancellationToken.None));
+				.SingleOrDefaultAsync());
 
 			Assert.That(result.Key, Is.EqualTo(263.5M));
 			Assert.That(result.Count, Is.EqualTo(1));
@@ -430,7 +429,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.GroupBy(x => x.Supplier.CompanyName)
 				.Select(x => new { x.Key, Count = x.Count(y => y.UnitPrice == 9.50M) })
 				.OrderByDescending(x => x.Key)
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			Assert.That(result.Key, Is.EqualTo("Zaanse Snoepfabriek"));
 			Assert.That(result.Count, Is.EqualTo(1));
@@ -443,7 +442,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.GroupBy(x => x.Supplier.CompanyName)
 				.Where(x => x.Count(y => y.UnitPrice == 12.75M) == 1)
 				.Select(x => new { x.Key, Count = x.Count() })
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			Assert.That(result.Key, Is.EqualTo("Zaanse Snoepfabriek"));
 			Assert.That(result.Count, Is.EqualTo(2));
@@ -457,7 +456,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.GroupBy(x => x.Supplier.CompanyName)
 				.Where(x => db.Products.Count(y => y.Supplier.CompanyName==x.Key && y.UnitPrice == 12.75M) == 1)
 				.Select(x => new { x.Key, Count = x.Count() })
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			Assert.That(result.Key, Is.EqualTo("Zaanse Snoepfabriek"));
 			Assert.That(result.Count, Is.EqualTo(2));
@@ -470,7 +469,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				.GroupBy(x => x.Supplier.CompanyName)
 				.Where(x => x.Sum(y => y.UnitPrice == 12.75M ? y.UnitPrice : 0M) == 12.75M)
 				.Select(x => new { x.Key, Sum = x.Sum(y => y.UnitPrice) })
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			Assert.That(result.Key, Is.EqualTo("Zaanse Snoepfabriek"));
 			Assert.That(result.Sum, Is.EqualTo(12.75M + 9.50M));
@@ -489,7 +488,7 @@ namespace NHibernate.Test.Linq.ByMethod
 					Max = x.Max(y => y.UnitPrice == 12.75M ? y.UnitPrice : 0M),
 					Min = x.Min(y => y.UnitPrice == 12.75M ? y.UnitPrice : 0M)
 				})
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			Assert.That(result.Key, Is.EqualTo("Zaanse Snoepfabriek"));
 			Assert.That(result.Sum, Is.EqualTo(12.75M));
@@ -505,7 +504,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			var result=await (db.Products.GroupBy(x => x.Supplier.Address.Country)
 			 .OrderBy(x=>x.Key)
 			 .Select(x => new { x.Key, MaxFreight = db.Orders.Where(y => y.ShippingAddress.Country == x.Key).Max(y => y.Freight), FirstOrder = db.Orders.Where(o => o.Employee.FirstName.StartsWith("A")).OrderBy(o => o.OrderId).Select(y => y.OrderId).First() })
-			 .ToListAsync(CancellationToken.None));
+			 .ToListAsync());
 
 			Assert.That(result.Count,Is.EqualTo(16));
 			Assert.That(result[15].MaxFreight, Is.EqualTo(830.75M));
@@ -528,7 +527,7 @@ namespace NHibernate.Test.Linq.ByMethod
 								  Min = grp.Min(x => x.UnitPrice),
 								  Max = grp.Max(x => x.UnitPrice),
 							  }
-				).ToListAsync(CancellationToken.None));
+				).ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(77));
 		}
@@ -543,7 +542,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 
-			var orderGroups = await (db.Orders.GroupBy(o => o.Customer.CustomerId == null ? 0 : 1).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync(CancellationToken.None));
+			var orderGroups = await (db.Orders.GroupBy(o => o.Customer.CustomerId == null ? 0 : 1).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync());
 			Assert.AreEqual(830, orderGroups.Sum(g => g.Count));
 		}
 
@@ -557,7 +556,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 
-			var orderGroups = await (db.Orders.GroupBy(o => new { Key = o.Customer.CustomerId == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync(CancellationToken.None));
+			var orderGroups = await (db.Orders.GroupBy(o => new { Key = o.Customer.CustomerId == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync());
 			Assert.AreEqual(830, orderGroups.Sum(g => g.Count));
 		}
 
@@ -571,14 +570,14 @@ namespace NHibernate.Test.Linq.ByMethod
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 
-			var orderGroups = await (db.Orders.GroupBy(o => new[] { o.Customer.CustomerId == null ? 0 : 1, }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync(CancellationToken.None));
+			var orderGroups = await (db.Orders.GroupBy(o => new[] { o.Customer.CustomerId == null ? 0 : 1, }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync());
 			Assert.AreEqual(830, orderGroups.Sum(g => g.Count));
 		}
 
 		[Test(Description = "NH-3474")]
 		public async Task GroupByConstantAsync()
 		{
-			var totals = await (db.Orders.GroupBy(o => 1).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) }).ToListAsync(CancellationToken.None));
+			var totals = await (db.Orders.GroupBy(o => 1).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) }).ToListAsync());
 			Assert.That(totals.Count, Is.EqualTo(1));
 			Assert.That(totals, Has.All.With.Property("Key").EqualTo(1));
 		}
@@ -586,7 +585,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test(Description = "NH-3474")]
 		public async Task GroupByConstantAnonymousTypeAsync()
 		{
-			var totals = await (db.Orders.GroupBy(o => new { A = 1 }).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) }).ToListAsync(CancellationToken.None));
+			var totals = await (db.Orders.GroupBy(o => new { A = 1 }).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) }).ToListAsync());
 			Assert.That(totals.Count, Is.EqualTo(1));
 			Assert.That(totals, Has.All.With.Property("Key").With.Property("A").EqualTo(1));
 		}
@@ -594,7 +593,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test(Description = "NH-3474")]
 		public async Task GroupByConstantArrayAsync()
 		{
-			var totals = await (db.Orders.GroupBy(o => new object[] { 1 }).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) }).ToListAsync(CancellationToken.None));
+			var totals = await (db.Orders.GroupBy(o => new object[] { 1 }).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) }).ToListAsync());
 			Assert.That(totals.Count, Is.EqualTo(1));
 			Assert.That(totals, Has.All.With.Property("Key").EqualTo(new object[] { 1 }));
 		}
@@ -602,7 +601,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test(Description = "NH-3474")]
 		public async Task GroupByKeyWithConstantInAnonymousTypeAsync()
 		{
-			var totals = await (db.Orders.GroupBy(o => new { A = 1, B = o.Shipper.ShipperId }).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) }).ToListAsync(CancellationToken.None));
+			var totals = await (db.Orders.GroupBy(o => new { A = 1, B = o.Shipper.ShipperId }).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) }).ToListAsync());
 			Assert.That(totals.Count, Is.EqualTo(3));
 			Assert.That(totals, Has.All.With.Property("Key").With.Property("A").EqualTo(1));
 		}
@@ -610,7 +609,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test(Description = "NH-3474")]
 		public async Task GroupByKeyWithConstantInArrayAsync()
 		{
-			var totals = await (db.Orders.GroupBy(o => new[] { 1, o.Shipper.ShipperId }).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) }).ToListAsync(CancellationToken.None));
+			var totals = await (db.Orders.GroupBy(o => new[] { 1, o.Shipper.ShipperId }).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) }).ToListAsync());
 			Assert.That(totals.Count, Is.EqualTo(3));
 			Assert.That(totals, Has.All.With.Property("Key").Contains(1));
 		}
@@ -629,65 +628,65 @@ namespace NHibernate.Test.Linq.ByMethod
 			var q5 = db.Orders.GroupBy(o => new[] {constKey, o.Shipper.ShipperId}).Select(g => new {Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight)});
 			var q5a = db.Orders.GroupBy(o => (IEnumerable<int>) new[] {constKey, o.Shipper.ShipperId}).Select(g => new {Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight)});
 
-			var r1_1 = await (q1.ToListAsync(CancellationToken.None));
+			var r1_1 = await (q1.ToListAsync());
 			Assert.That(r1_1.Count, Is.EqualTo(1));
 			Assert.That(r1_1, Has.All.With.Property("Key").EqualTo(1));
 
-			var r1a_1 = await (q1a.ToListAsync(CancellationToken.None));
+			var r1a_1 = await (q1a.ToListAsync());
 			Assert.That(r1a_1.Count, Is.EqualTo(1));
 			Assert.That(r1a_1, Has.All.With.Property("Key").EqualTo(""));
 
-			var r2_1 = await (q2.ToListAsync(CancellationToken.None));
+			var r2_1 = await (q2.ToListAsync());
 			Assert.That(r2_1.Count, Is.EqualTo(1));
 			Assert.That(r2_1, Has.All.With.Property("Key").With.Property("A").EqualTo(1));
 
-			var r3_1 = await (q3.ToListAsync(CancellationToken.None));
+			var r3_1 = await (q3.ToListAsync());
 			Assert.That(r3_1.Count, Is.EqualTo(1));
 			Assert.That(r3_1, Has.All.With.Property("Key").EquivalentTo(new object[] { 1 }));
 
-			var r3a_1 = await (q3a.ToListAsync(CancellationToken.None));
+			var r3a_1 = await (q3a.ToListAsync());
 			Assert.That(r3a_1.Count, Is.EqualTo(1));
 			Assert.That(r3a_1, Has.All.With.Property("Key").EquivalentTo(new object[] { 1 }));
 
-			var r4_1 = await (q4.ToListAsync(CancellationToken.None));
+			var r4_1 = await (q4.ToListAsync());
 			Assert.That(r4_1.Count, Is.EqualTo(3));
 			Assert.That(r4_1, Has.All.With.Property("Key").With.Property("A").EqualTo(1));
 
-			var r5_1 = await (q5.ToListAsync(CancellationToken.None));
+			var r5_1 = await (q5.ToListAsync());
 			Assert.That(r5_1.Count, Is.EqualTo(3));
 			Assert.That(r5_1, Has.All.With.Property("Key").Contains(1));
 
-			var r6_1 = await (q5a.ToListAsync(CancellationToken.None));
+			var r6_1 = await (q5a.ToListAsync());
 			Assert.That(r6_1.Count, Is.EqualTo(3));
 			Assert.That(r6_1, Has.All.With.Property("Key").Contains(1));
 
 			constKey = 2;
 
-			var r1_2 = await (q1.ToListAsync(CancellationToken.None));
+			var r1_2 = await (q1.ToListAsync());
 			Assert.That(r1_2.Count, Is.EqualTo(1));
 			Assert.That(r1_2, Has.All.With.Property("Key").EqualTo(2));
 
-			var r2_2 = await (q2.ToListAsync(CancellationToken.None));
+			var r2_2 = await (q2.ToListAsync());
 			Assert.That(r2_2.Count, Is.EqualTo(1));
 			Assert.That(r2_2, Has.All.With.Property("Key").With.Property("A").EqualTo(2));
 
-			var r3_2 = await (q3.ToListAsync(CancellationToken.None));
+			var r3_2 = await (q3.ToListAsync());
 			Assert.That(r3_2.Count, Is.EqualTo(1));
 			Assert.That(r3_2, Has.All.With.Property("Key").EquivalentTo(new object[] { 2 }));
 
-			var r3a_2 = await (q3a.ToListAsync(CancellationToken.None));
+			var r3a_2 = await (q3a.ToListAsync());
 			Assert.That(r3a_2.Count, Is.EqualTo(1));
 			Assert.That(r3a_2, Has.All.With.Property("Key").EquivalentTo(new object[] { 2 }));
 
-			var r4_2 = await (q4.ToListAsync(CancellationToken.None));
+			var r4_2 = await (q4.ToListAsync());
 			Assert.That(r4_2.Count, Is.EqualTo(3));
 			Assert.That(r4_2, Has.All.With.Property("Key").With.Property("A").EqualTo(2));
 
-			var r5_2 = await (q5.ToListAsync(CancellationToken.None));
+			var r5_2 = await (q5.ToListAsync());
 			Assert.That(r5_2.Count, Is.EqualTo(3));
 			Assert.That(r5_2, Has.All.With.Property("Key").Contains(2));
 
-			var r6_2 = await (q5.ToListAsync(CancellationToken.None));
+			var r6_2 = await (q5.ToListAsync());
 			Assert.That(r6_2.Count, Is.EqualTo(3));
 			Assert.That(r6_2, Has.All.With.Property("Key").Contains(2));
 		}
@@ -702,7 +701,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 
-			var orderGroups = await (db.OrderLines.GroupBy(o => o.Order.Customer == null ? 0 : 1).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync(CancellationToken.None));
+			var orderGroups = await (db.OrderLines.GroupBy(o => o.Order.Customer == null ? 0 : 1).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync());
 			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
 		}
 
@@ -716,7 +715,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 
-			var orderGroups = await (db.OrderLines.GroupBy(o => o.Order.Customer.CustomerId == null ? 0 : 1).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync(CancellationToken.None));
+			var orderGroups = await (db.OrderLines.GroupBy(o => o.Order.Customer.CustomerId == null ? 0 : 1).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync());
 			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
 		}
 
@@ -730,7 +729,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 
-			var orderGroups = await (db.OrderLines.GroupBy(o => new { Key = o.Order.Customer == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync(CancellationToken.None));
+			var orderGroups = await (db.OrderLines.GroupBy(o => new { Key = o.Order.Customer == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync());
 			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
 		}
 
@@ -744,7 +743,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 
-			var orderGroups = await (db.OrderLines.GroupBy(o => new { Key = o.Order.Customer.CustomerId == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync(CancellationToken.None));
+			var orderGroups = await (db.OrderLines.GroupBy(o => new { Key = o.Order.Customer.CustomerId == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync());
 			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
 		}
 
@@ -758,7 +757,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 
-			var orderGroups = await (db.OrderLines.GroupBy(o => new[] { o.Order.Customer == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync(CancellationToken.None));
+			var orderGroups = await (db.OrderLines.GroupBy(o => new[] { o.Order.Customer == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync());
 			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
 		}
 
@@ -772,7 +771,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 
-			var orderGroups = await (db.OrderLines.GroupBy(o => new[] { o.Order.Customer.CustomerId == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync(CancellationToken.None));
+			var orderGroups = await (db.OrderLines.GroupBy(o => new[] { o.Order.Customer.CustomerId == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync());
 			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
 		}
 
@@ -786,7 +785,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 
-			var orderGroups = await (db.OrderLines.GroupBy(o => new[] { o.Order.Customer.CustomerId == null ? "unknown" : o.Order.Customer.CompanyName }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync(CancellationToken.None));
+			var orderGroups = await (db.OrderLines.GroupBy(o => new[] { o.Order.Customer.CustomerId == null ? "unknown" : o.Order.Customer.CompanyName }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync());
 			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
 		}
 
@@ -800,7 +799,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 
-			var orderGroups = await (db.OrderLines.Select(o => new object[] { o }).GroupBy(x => new object[] { ((OrderLine)x[0]).Order.Customer == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync(CancellationToken.None));
+			var orderGroups = await (db.OrderLines.Select(o => new object[] { o }).GroupBy(x => new object[] { ((OrderLine)x[0]).Order.Customer == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync());
 			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
 		}
 
@@ -814,7 +813,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			if (Dialect is MsSqlCeDialect)
 				Assert.Ignore("SQL Server CE does not support complex group by expressions.");
 
-			var orderGroups = await (db.OrderLines.Select(o => new { OrderLine = (object)o }).GroupBy(x => new object[] { ((OrderLine)x.OrderLine).Order.Customer == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync(CancellationToken.None));
+			var orderGroups = await (db.OrderLines.Select(o => new { OrderLine = (object)o }).GroupBy(x => new object[] { ((OrderLine)x.OrderLine).Order.Customer == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync());
 			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
 		}
 
@@ -911,7 +910,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				return db.Products.GroupBy(x => x.Supplier.CompanyName)
 				.OrderBy(x => x.Key)
 				.Select(x => new GroupInfo {Key = x.Key, ItemCount = x.Count(), HasSubgroups = false, Items = x})
-				.ToListAsync(CancellationToken.None);
+				.ToListAsync();
 			}
 			catch (Exception ex)
 			{

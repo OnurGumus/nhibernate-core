@@ -17,7 +17,6 @@ using System.Collections.Generic;
 namespace NHibernate.Test.NHSpecificTest.NH2278
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -40,15 +39,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2278
 			a.Items.Add( "second string" );
 
 			ISession s = OpenSession();
-			await (s.SaveOrUpdateAsync(a, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveOrUpdateAsync(a));
+			await (s.FlushAsync());
 			s.Close();
 
 			Assert.That(a.Id, Is.Not.Null);
 			Assert.That(a.Items[0], Is.EqualTo("first string"));
 
 			s = OpenSession();
-			a = await (s.LoadAsync<CustomA>(a.Id, CancellationToken.None));
+			a = await (s.LoadAsync<CustomA>(a.Id));
 
 			Assert.That(a.Items, Is.InstanceOf<CustomPersistentIdentifierBag<string>>());
 
@@ -60,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2278
 			Assert.That(a.Items.Count, Is.EqualTo(3), "3 items in the list now");
 
 			a.Items[1] = "new second string";
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 			s.Close();
 		}
 	}

@@ -18,7 +18,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.NHSpecificTest.NH3614
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -33,9 +32,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3614
 				{
 					SomeStrings = new List<string> { "Hello", "World" }
 				};
-				await (s.SaveAsync(testEntity, CancellationToken.None));
+				await (s.SaveAsync(testEntity));
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 
 				id = testEntity.Id;
 			}
@@ -45,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3614
 				var result = await (s.Query<Entity>()
 					.Where(x => x.Id == id)
 					.Select(x => x.SomeStrings)
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.AreEqual(1, result.Count);
 
@@ -55,8 +54,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3614
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from Entity", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Entity"));
+				await (tx.CommitAsync());
 			}
 		}
 	}

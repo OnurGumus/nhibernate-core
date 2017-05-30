@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture]
     public class QueryCacheableTestsAsync : LinqTestCase
     {
@@ -34,10 +33,10 @@ namespace NHibernate.Test.Linq
             Sfi.QueryCache.Clear();
 
             var x = await ((from c in db.Customers
-                     select c).Cacheable().ToListAsync(CancellationToken.None));
+                     select c).Cacheable().ToListAsync());
 
             var x2 = await ((from c in db.Customers
-                     select c).Cacheable().ToListAsync(CancellationToken.None));
+                     select c).Cacheable().ToListAsync());
 
             Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(1));
             Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1));
@@ -51,10 +50,10 @@ namespace NHibernate.Test.Linq
             Sfi.QueryCache.Clear();
 
             var x = await ((from c in db.Customers
-                     select c).Cacheable().ToListAsync(CancellationToken.None));
+                     select c).Cacheable().ToListAsync());
 
             var x2 = await ((from c in db.Customers
-                      select c).ToListAsync(CancellationToken.None));
+                      select c).ToListAsync());
 
             Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2));
             Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1));
@@ -68,10 +67,10 @@ namespace NHibernate.Test.Linq
             Sfi.QueryCache.Clear();
 
             var x = await ((from c in db.Customers.Cacheable()
-                     select c).ToListAsync(CancellationToken.None));
+                     select c).ToListAsync());
 
             var x2 = await ((from c in db.Customers
-                      select c).ToListAsync(CancellationToken.None));
+                      select c).ToListAsync());
 
             Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2));
             Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1));
@@ -85,13 +84,13 @@ namespace NHibernate.Test.Linq
             Sfi.QueryCache.Clear();
 
             var x = await ((from c in db.Customers
-                     select c).Cacheable().CacheRegion("test").ToListAsync(CancellationToken.None));
+                     select c).Cacheable().CacheRegion("test").ToListAsync());
 
             var x2 = await ((from c in db.Customers
-                      select c).Cacheable().CacheRegion("test").ToListAsync(CancellationToken.None));
+                      select c).Cacheable().CacheRegion("test").ToListAsync());
 
             var x3 = await ((from c in db.Customers
-                      select c).Cacheable().CacheRegion("other").ToListAsync(CancellationToken.None));
+                      select c).Cacheable().CacheRegion("other").ToListAsync());
 
             Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2));
             Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(2));
@@ -104,8 +103,8 @@ namespace NHibernate.Test.Linq
             Sfi.Statistics.Clear();
             Sfi.QueryCache.Clear();
 
-            await (db.Customers.Cacheable().Where(c => c.ContactName != c.CompanyName).Take(1).ToListAsync(CancellationToken.None));
-            await (db.Customers.Where(c => c.ContactName != c.CompanyName).Take(1).ToListAsync(CancellationToken.None));
+            await (db.Customers.Cacheable().Where(c => c.ContactName != c.CompanyName).Take(1).ToListAsync());
+            await (db.Customers.Where(c => c.ContactName != c.CompanyName).Take(1).ToListAsync());
 
             Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2));
             Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1));
@@ -118,9 +117,9 @@ namespace NHibernate.Test.Linq
             Sfi.Statistics.Clear();
             Sfi.QueryCache.Clear();
 
-            await (db.Customers.Cacheable().CacheRegion("test").Where(c => c.ContactName != c.CompanyName).Take(1).ToListAsync(CancellationToken.None));
-            await (db.Customers.Cacheable().CacheRegion("test").Where(c => c.ContactName != c.CompanyName).Take(1).ToListAsync(CancellationToken.None));
-            await (db.Customers.Cacheable().CacheRegion("other").Where(c => c.ContactName != c.CompanyName).Take(1).ToListAsync(CancellationToken.None));
+            await (db.Customers.Cacheable().CacheRegion("test").Where(c => c.ContactName != c.CompanyName).Take(1).ToListAsync());
+            await (db.Customers.Cacheable().CacheRegion("test").Where(c => c.ContactName != c.CompanyName).Take(1).ToListAsync());
+            await (db.Customers.Cacheable().CacheRegion("other").Where(c => c.ContactName != c.CompanyName).Take(1).ToListAsync());
 
             Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2));
             Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(2));
@@ -138,20 +137,20 @@ namespace NHibernate.Test.Linq
 				.GroupBy(x => x.Address.Country)
 				.Select(x=>x.Key)
 				.Cacheable()
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			c = await (db
 				.Customers
 				.GroupBy(x => x.Address.Country)
 				.Select(x => x.Key)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			c = await (db
 				.Customers
 				.GroupBy(x => x.Address.Country)
 				.Select(x => x.Key)
 				.Cacheable()
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2));
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1));
@@ -168,19 +167,19 @@ namespace NHibernate.Test.Linq
 				.Customers.Cacheable()
 				.GroupBy(x => x.Address.Country)
 				.Select(x => x.Key)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			c = await (db
 				.Customers
 				.GroupBy(x => x.Address.Country)
 				.Select(x => x.Key)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			c = await (db
 				.Customers.Cacheable()
 				.GroupBy(x => x.Address.Country)
 				.Select(x => x.Key)
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(2));
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(1));

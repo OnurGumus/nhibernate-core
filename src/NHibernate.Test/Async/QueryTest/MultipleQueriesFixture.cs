@@ -60,7 +60,7 @@ namespace NHibernate.Test.QueryTest
 					.Add("from Item i where i.Id in (:ids2)")
 				.SetParameterList("ids", new[] { 50 })
 				.SetParameterList("ids2", new[] { 50 });
-				await (multiQuery.ListAsync(CancellationToken.None));
+				await (multiQuery.ListAsync());
 			}
 		}
 
@@ -72,7 +72,7 @@ namespace NHibernate.Test.QueryTest
 				var multiQuery = s.CreateMultiQuery()
 					.Add("from Item i where i.Id in (:ids)")
 					.Add("from Item i where i.Id in (:ids2)");
-				var e = Assert.ThrowsAsync<QueryException>(() => multiQuery.ListAsync(CancellationToken.None));
+				var e = Assert.ThrowsAsync<QueryException>(() => multiQuery.ListAsync());
 				Assert.That(e.Message, Is.EqualTo("Not all named parameters have been set: ['ids'] [from Item i where i.Id in (:ids)]"));
 			}
 		}
@@ -80,9 +80,9 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task CanGetMultiQueryFromSecondLevelCacheAsync()
 		{
-			await (CreateItemsAsync(CancellationToken.None));
+			await (CreateItemsAsync());
 			//set the query in the cache
-			await (DoMutiQueryAndAssertAsync(CancellationToken.None));
+			await (DoMutiQueryAndAssertAsync());
 
 			var cacheHashtable = GetHashTableUsedAsQueryCache(sessions);
 			var cachedListEntry = (IList)new ArrayList(cacheHashtable.Values)[0];
@@ -105,7 +105,7 @@ namespace NHibernate.Test.QueryTest
 					.Add(s.CreateQuery("select count(*) from Item i where i.Id > ?")
 							 .SetInt32(0, 50));
 				multiQuery.SetCacheable(true);
-				var results = await (multiQuery.ListAsync(CancellationToken.None));
+				var results = await (multiQuery.ListAsync());
 				var items = (IList)results[0];
 				Assert.AreEqual(2, items.Count);
 				var count = (long)((IList)results[1])[0];
@@ -122,7 +122,7 @@ namespace NHibernate.Test.QueryTest
 					.Add("from Item")
 					.Add("from Item i where i.Id = :id")
 					.SetParameter("id", 5)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 			}
 		}
 
@@ -137,14 +137,14 @@ namespace NHibernate.Test.QueryTest
 					.Add("from Item i where i.Id = :id2")
 					.SetParameter("id", 5)
 					.SetInt32("id2", 5)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 			}
 		}
 
 		[Test]
 		public async Task TwoMultiQueriesWithDifferentPagingGetDifferentResultsWhenUsingCachedQueriesAsync()
 		{
-			await (CreateItemsAsync(CancellationToken.None));
+			await (CreateItemsAsync());
 			using (var s = OpenSession())
 			{
 				var multiQuery = s.CreateMultiQuery()
@@ -154,7 +154,7 @@ namespace NHibernate.Test.QueryTest
 					.Add(s.CreateQuery("select count(*) from Item i where i.Id > ?")
 							 .SetInt32(0, 50));
 				multiQuery.SetCacheable(true);
-				var results = await (multiQuery.ListAsync(CancellationToken.None));
+				var results = await (multiQuery.ListAsync());
 				var items = (IList)results[0];
 				Assert.AreEqual(89, items.Count);
 				var count = (long)((IList)results[1])[0];
@@ -170,7 +170,7 @@ namespace NHibernate.Test.QueryTest
 					.Add(s.CreateQuery("select count(*) from Item i where i.Id > ?")
 							 .SetInt32(0, 50));
 				multiQuery.SetCacheable(true);
-				var results = await (multiQuery.ListAsync(CancellationToken.None));
+				var results = await (multiQuery.ListAsync());
 				var items = (IList)results[0];
 				Assert.AreEqual(79, items.Count,
 								"Should have gotten different result here, because the paging is different");
@@ -185,9 +185,9 @@ namespace NHibernate.Test.QueryTest
 			var cacheHashtable = GetHashTableUsedAsQueryCache(sessions);
 			cacheHashtable.Clear();
 
-			await (CreateItemsAsync(CancellationToken.None));
+			await (CreateItemsAsync());
 
-			await (DoMutiQueryAndAssertAsync(CancellationToken.None));
+			await (DoMutiQueryAndAssertAsync());
 
 			Assert.AreEqual(1, cacheHashtable.Count);
 		}
@@ -243,7 +243,7 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task CanUseWithParameterizedQueriesAndLimitAsync()
 		{
-			await (CreateItemsAsync(CancellationToken.None));
+			await (CreateItemsAsync());
 
 			using (var s = OpenSession())
 			{
@@ -255,7 +255,7 @@ namespace NHibernate.Test.QueryTest
 					.Add(getItems)
 					.Add(countItems)
 					.SetInt32("id", 50)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				var items = (IList)results[0];
 				Assert.AreEqual(89, items.Count);
 				var count = (long)((IList)results[1])[0];
@@ -270,8 +270,8 @@ namespace NHibernate.Test.QueryTest
 			{
 				var item = new Item();
 				item.Id = 1;
-				await (s.SaveAsync(item, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(item));
+				await (s.FlushAsync());
 			}
 
 			using (var s = OpenSession())
@@ -280,7 +280,7 @@ namespace NHibernate.Test.QueryTest
 					.Add("from Item i where i.id in (:items)")
 					.Add("select count(*) from Item i where i.id in (:items)")
 					.SetParameterList("items", new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 })
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				var items = (IList)results[0];
 				var fromDb = (Item)items[0];
@@ -299,8 +299,8 @@ namespace NHibernate.Test.QueryTest
 			{
 				var item = new Item();
 				item.Id = 1;
-				await (s.SaveAsync(item, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(item));
+				await (s.FlushAsync());
 			}
 
 			using (var s = OpenSession())
@@ -311,7 +311,7 @@ namespace NHibernate.Test.QueryTest
 				var results = await (s.CreateMultiQuery()
 					.Add(getItems)
 					.Add(countItems)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				var items = (IList)results[0];
 				var fromDb = (Item)items[0];
 				Assert.AreEqual(1, fromDb.Id);
@@ -325,7 +325,7 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task CanAddIQueryWithKeyAndRetrieveResultsWithKeyAsync()
 		{
-			await (CreateItemsAsync(CancellationToken.None));
+			await (CreateItemsAsync());
 
 			using (var session = OpenSession())
 			{
@@ -338,8 +338,8 @@ namespace NHibernate.Test.QueryTest
 
 				multiQuery.Add("first", firstQuery).Add("second", secondQuery);
 
-				var secondResult = (IList)await (multiQuery.GetResultAsync("second", CancellationToken.None));
-				var firstResult = (IList)await (multiQuery.GetResultAsync("first", CancellationToken.None));
+				var secondResult = (IList)await (multiQuery.GetResultAsync("second"));
+				var firstResult = (IList)await (multiQuery.GetResultAsync("first"));
 
 				Assert.Greater(secondResult.Count, firstResult.Count);
 			}
@@ -356,7 +356,7 @@ namespace NHibernate.Test.QueryTest
 
 				try
 				{
-					var firstResult = (IList)await (multiQuery.GetResultAsync("unknownKey", CancellationToken.None));
+					var firstResult = (IList)await (multiQuery.GetResultAsync("unknownKey"));
 					Assert.Fail("This should've thrown an InvalidOperationException");
 				}
 				catch (InvalidOperationException)
@@ -372,7 +372,7 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task ExecutingCriteriaThroughMultiQueryTransformsResultsAsync()
 		{
-			await (CreateItemsAsync(CancellationToken.None));
+			await (CreateItemsAsync());
 
 			using (var session = OpenSession())
 			{
@@ -381,7 +381,7 @@ namespace NHibernate.Test.QueryTest
 					.SetResultTransformer(transformer);
 				await (session.CreateMultiQuery()
 					.Add(criteria)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.IsTrue(transformer.WasTransformTupleCalled, "Transform Tuple was not called");
 				Assert.IsTrue(transformer.WasTransformListCalled, "Transform List was not called");
@@ -391,7 +391,7 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task ExecutingCriteriaThroughMultiQueryTransformsResults_When_setting_on_multi_query_directlyAsync()
 		{
-			await (CreateItemsAsync(CancellationToken.None));
+			await (CreateItemsAsync());
 
 			using (var session = OpenSession())
 			{
@@ -400,7 +400,7 @@ namespace NHibernate.Test.QueryTest
 				await (session.CreateMultiQuery()
 					.Add(query)
 					.SetResultTransformer(transformer)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.IsTrue(transformer.WasTransformTupleCalled, "Transform Tuple was not called");
 				Assert.IsTrue(transformer.WasTransformListCalled, "Transform List was not called");
@@ -410,7 +410,7 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task ExecutingCriteriaThroughMultiCriteriaTransformsResultsAsync()
 		{
-			await (CreateItemsAsync(CancellationToken.None));
+			await (CreateItemsAsync());
 
 			using (var session = OpenSession())
 			{
@@ -419,7 +419,7 @@ namespace NHibernate.Test.QueryTest
 					.SetResultTransformer(transformer);
 				var multiCriteria = session.CreateMultiCriteria()
 					.Add(criteria);
-				await (multiCriteria.ListAsync(CancellationToken.None));
+				await (multiCriteria.ListAsync());
 
 				Assert.IsTrue(transformer.WasTransformTupleCalled, "Transform Tuple was not called");
 				Assert.IsTrue(transformer.WasTransformListCalled,"Transform List was not called");
@@ -437,7 +437,7 @@ namespace NHibernate.Test.QueryTest
 				var results = await (s.CreateMultiQuery()
 					.Add(getItems)
 					.Add<long>(countItems)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.That(results[0], Is.InstanceOf<List<object>>());
 				Assert.That(results[1], Is.InstanceOf<List<long>>());
@@ -452,10 +452,10 @@ namespace NHibernate.Test.QueryTest
 			{
 				var item1 = new Item { Id = 1,  Name = "test item"};
 				var item2 = new Item { Id = 2,  Name = "test child", Parent = item1 };
-				await (s.SaveAsync(item1, CancellationToken.None));
-				await (s.SaveAsync(item2, CancellationToken.None));
+				await (s.SaveAsync(item1));
+				await (s.SaveAsync(item2));
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 				s.Clear();
 			}
 
@@ -467,7 +467,7 @@ namespace NHibernate.Test.QueryTest
 				var results = await (s.CreateMultiQuery()
 					.Add(getItems)
 					.Add<Item>(parents)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.That(results[0], Is.InstanceOf<List<object>>());
 				Assert.That(results[1], Is.InstanceOf<List<Item>>());

@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Legacy
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Summary description for ABCTest.
 	/// </summary>
@@ -41,15 +40,15 @@ namespace NHibernate.Test.Legacy
 				map["a"] = "a";
 				map["b"] = "b";
 				b.Map = map;
-				await (s.SaveAsync(b, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(b));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				B b = (B) await (s.CreateQuery("from B").UniqueResultAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				B b = (B) await (s.CreateQuery("from B").UniqueResultAsync());
+				await (t.CommitAsync());
 			}
 
 			if (Dialect is FirebirdDialect)
@@ -63,8 +62,8 @@ namespace NHibernate.Test.Legacy
 				using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					await (s.DeleteAsync("from B", CancellationToken.None));
-					await (t.CommitAsync(CancellationToken.None));
+					await (s.DeleteAsync("from B"));
+					await (t.CommitAsync());
 				}
 			}
 		}
@@ -83,55 +82,55 @@ namespace NHibernate.Test.Legacy
 			c1.Count = 23432;
 			c1.Name = "c1";
 			c1.D = d;
-			await (s.SaveAsync(c1, CancellationToken.None));
+			await (s.SaveAsync(c1));
 			d.Id = c1.Id;
-			await (s.SaveAsync(d, CancellationToken.None));
+			await (s.SaveAsync(d));
 
-			Assert.IsTrue((await (s.CreateQuery("from c in class C2 where 1=1 or 1=1").ListAsync(CancellationToken.None))).Count == 0);
+			Assert.IsTrue((await (s.CreateQuery("from c in class C2 where 1=1 or 1=1").ListAsync())).Count == 0);
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c1 = (C1) await (s.LoadAsync(typeof(A), c1.Id, CancellationToken.None));
+			c1 = (C1) await (s.LoadAsync(typeof(A), c1.Id));
 			Assert.IsTrue(
 				c1.Address.Equals("foo bar") &&
 				(c1.Count == 23432) &&
 				c1.Name.Equals("c1") &&
 				c1.D.Amount > 213.3f
 				);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c1 = (C1) await (s.LoadAsync(typeof(B), c1.Id, CancellationToken.None));
+			c1 = (C1) await (s.LoadAsync(typeof(B), c1.Id));
 			Assert.IsTrue(
 				c1.Address.Equals("foo bar") &&
 				(c1.Count == 23432) &&
 				c1.Name.Equals("c1") &&
 				c1.D.Amount > 213.3f
 				);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c1 = (C1) await (s.LoadAsync(typeof(C1), c1.Id, CancellationToken.None));
+			c1 = (C1) await (s.LoadAsync(typeof(C1), c1.Id));
 			Assert.IsTrue(
 				c1.Address.Equals("foo bar") &&
 				(c1.Count == 23432) &&
 				c1.Name.Equals("c1") &&
 				c1.D.Amount > 213.3f
 				);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.CreateQuery("from b in class B").ListAsync(CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.CreateQuery("from b in class B").ListAsync());
+			await (t.CommitAsync());
 			s.Close();
 
 			// need to clean up the objects created by this test or Subselect() will fail
@@ -140,20 +139,20 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			IList aList = await (s.CreateQuery("from A").ListAsync(CancellationToken.None));
-			IList dList = await (s.CreateQuery("from D").ListAsync(CancellationToken.None));
+			IList aList = await (s.CreateQuery("from A").ListAsync());
+			IList dList = await (s.CreateQuery("from D").ListAsync());
 
 			foreach (A aToDelete in aList)
 			{
-				await (s.DeleteAsync(aToDelete, CancellationToken.None));
+				await (s.DeleteAsync(aToDelete));
 			}
 
 			foreach (D dToDelete in dList)
 			{
-				await (s.DeleteAsync(dToDelete, CancellationToken.None));
+				await (s.DeleteAsync(dToDelete));
 			}
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 		}
 

@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3202
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -85,7 +84,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 				await (session.QueryOver<SequencedItem>()
 					.OrderBy(i => i.I).Asc
 					.Take(1).Skip(2)
-					.SingleOrDefaultAsync<SequencedItem>(CancellationToken.None));
+					.SingleOrDefaultAsync<SequencedItem>());
 
 				Assert.That(CustomDriver.OffsetParameterValueFromCommand, Is.EqualTo(2));
 			}
@@ -102,7 +101,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 				await (session.QueryOver<SequencedItem>()
 					.OrderBy(i => i.I).Asc
 					.Take(1).Skip(2)
-					.SingleOrDefaultAsync<SequencedItem>(CancellationToken.None));
+					.SingleOrDefaultAsync<SequencedItem>());
 
 				Assert.That(CustomDriver.OffsetParameterValueFromCommand, Is.EqualTo(3));
 			}

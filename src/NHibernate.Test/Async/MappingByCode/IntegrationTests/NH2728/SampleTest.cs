@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH2728
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SampleTestAsync : TestCaseMappingByCode
 	{
@@ -113,7 +112,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH2728
 		{
 			using (ISession session = this.OpenSession())
 			{
-				var toy1 = await (session.GetAsync<Toy>(1, CancellationToken.None));
+				var toy1 = await (session.GetAsync<Toy>(1));
 
 				Assert.AreEqual(1, toy1.Id);
 				Assert.AreEqual(3, toy1.Animals.Count);

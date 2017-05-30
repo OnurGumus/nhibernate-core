@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1714
 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture]
     public class SimpleReproductionFixtureAsync : BugTestCase
     {
@@ -32,23 +31,23 @@ namespace NHibernate.Test.NHSpecificTest.NH1714
                 using (var tx = session.BeginTransaction())
                 {
                     var entity = new DomainClass();
-                    await (session.SaveAsync(entity, CancellationToken.None));
+                    await (session.SaveAsync(entity));
 
                     using (var otherSession = session.GetChildSession())
                     {
-                        await (otherSession.SaveAsync(new DomainClass(), CancellationToken.None));
-                        await (otherSession.FlushAsync(CancellationToken.None));
+                        await (otherSession.SaveAsync(new DomainClass()));
+                        await (otherSession.FlushAsync());
                     }
 
-                    await (tx.CommitAsync(CancellationToken.None));
+                    await (tx.CommitAsync());
                 }
             }
 
 			using(var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				await (session.DeleteAsync("from DomainClass", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync("from DomainClass"));
+				await (tx.CommitAsync());
 			}
         }
     }

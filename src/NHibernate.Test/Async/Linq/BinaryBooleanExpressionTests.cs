@@ -18,7 +18,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq
 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture]
     public class BinaryBooleanExpressionTestsAsync : LinqTestCase
     {
@@ -27,7 +26,7 @@ namespace NHibernate.Test.Linq
         {
             var query = await ((from timesheet in db.Timesheets
                          where timesheet.Entries.Any()
-                         select timesheet).ToListAsync(CancellationToken.None));
+                         select timesheet).ToListAsync());
 
             Assert.AreEqual(2, query.Count);
         }
@@ -37,7 +36,7 @@ namespace NHibernate.Test.Linq
         {
             var query = await ((from timesheet in db.Timesheets
                          where !timesheet.Entries.Any()
-                         select timesheet).ToListAsync(CancellationToken.None));
+                         select timesheet).ToListAsync());
 
             Assert.AreEqual(1, query.Count);
         }
@@ -47,7 +46,7 @@ namespace NHibernate.Test.Linq
         {
             var query = await ((from timesheet in db.Timesheets
                          where timesheet.Entries.Any() == false
-                         select timesheet).ToListAsync(CancellationToken.None));
+                         select timesheet).ToListAsync());
 
             Assert.AreEqual(1, query.Count);
         }
@@ -57,7 +56,7 @@ namespace NHibernate.Test.Linq
         {
             var query = await ((from timesheet in db.Timesheets
                          where !timesheet.Entries.Any() == false
-                         select timesheet).ToListAsync(CancellationToken.None));
+                         select timesheet).ToListAsync());
 
             Assert.AreEqual(2, query.Count);
         }
@@ -67,7 +66,7 @@ namespace NHibernate.Test.Linq
         {
             var query = await ((from timesheet in db.Timesheets
                          where timesheet.Entries.Any() != true
-                         select timesheet).ToListAsync(CancellationToken.None));
+                         select timesheet).ToListAsync());
 
             Assert.AreEqual(1, query.Count);
         }
@@ -77,7 +76,7 @@ namespace NHibernate.Test.Linq
         {
             var query = await ((from timesheet in db.Timesheets
                          where !timesheet.Entries.Any() != true
-                         select timesheet).ToListAsync(CancellationToken.None));
+                         select timesheet).ToListAsync());
 
             Assert.AreEqual(2, query.Count);
         }
@@ -87,7 +86,7 @@ namespace NHibernate.Test.Linq
         {
             var query = await ((from timesheet in db.Timesheets
                          where timesheet.Entries.Any() != false
-                         select timesheet).ToListAsync(CancellationToken.None));
+                         select timesheet).ToListAsync());
 
             Assert.AreEqual(2, query.Count);
         }
@@ -97,7 +96,7 @@ namespace NHibernate.Test.Linq
         {
             var query = await ((from timesheet in db.Timesheets
                          where !timesheet.Entries.Any() != false
-                         select timesheet).ToListAsync(CancellationToken.None));
+                         select timesheet).ToListAsync());
 
             Assert.AreEqual(1, query.Count);
         }
@@ -106,14 +105,14 @@ namespace NHibernate.Test.Linq
         public async Task BooleanPropertyComparisonAsync()
         {
             var query = db.Timesheets.Where(t => t.Submitted == true);
-            Assert.AreEqual(2, (await (query.ToListAsync(CancellationToken.None))).Count);
+            Assert.AreEqual(2, (await (query.ToListAsync())).Count);
         }
 
         [Test]
         public async Task BooleanPropertyAloneAsync()
         {
             var query = db.Timesheets.Where(t => t.Submitted);
-            Assert.AreEqual(2, (await (query.ToListAsync(CancellationToken.None))).Count);
+            Assert.AreEqual(2, (await (query.ToListAsync())).Count);
         }
     }
 }

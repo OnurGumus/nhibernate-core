@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2477
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	[TestFixture, Ignore("Not fixed yet.")]
 	public class FixtureAsync: TestCaseMappingByCode
@@ -69,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2477
 				{
 					// This is another case where we have to work with subqueries and we have to write a specific query rewriter for Skip/Take instead flat the query in QueryReferenceExpressionFlattener
 					//var actual = session.CreateQuery("select count(s) from Something s where s in (from Something take 3)").UniqueResult<long>();
-					var actual = await (session.Query<Something>().Take(3).CountAsync(CancellationToken.None));
+					var actual = await (session.Query<Something>().Take(3).CountAsync());
 					Assert.That(actual, Is.EqualTo(3));
 				}
 			}

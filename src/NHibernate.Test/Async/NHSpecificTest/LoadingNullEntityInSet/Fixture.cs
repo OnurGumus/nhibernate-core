@@ -17,7 +17,6 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
 	using Type;
 	using TestCase=NHibernate.Test.TestCase;
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	[TestFixture]
     public class FixtureAsync : TestCase
@@ -59,18 +58,18 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
             {
                 Employee e = new Employee();
                 PrimaryProfession ppc = new PrimaryProfession();
-				await (sess.SaveAsync(e, CancellationToken.None));
-            	await (sess.SaveAsync(ppc, CancellationToken.None));
-            	await (sess.FlushAsync(CancellationToken.None));
+				await (sess.SaveAsync(e));
+            	await (sess.SaveAsync(ppc));
+            	await (sess.FlushAsync());
 
 				WantedProfession wanted = new WantedProfession();
             	wanted.Id = 15;
 				wanted.Employee = e;
 				wanted.PrimaryProfession = ppc;
 
-            	await (sess.SaveAsync(wanted, CancellationToken.None));
+            	await (sess.SaveAsync(wanted));
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
             }
 
             using (ISession sess = OpenSession())
@@ -78,18 +77,18 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
             	ICriteria criteria = sess.CreateCriteria(typeof(Employee));
             	criteria.CreateCriteria("Primaries", JoinType.LeftOuterJoin);
 				criteria.CreateCriteria("Secondaries", JoinType.LeftOuterJoin);
-            	await (criteria.ListAsync(CancellationToken.None));
+            	await (criteria.ListAsync());
             }
 
 
         	using (ISession sess = OpenSession())
             {
-				await (sess.DeleteAsync("from WantedProfession", CancellationToken.None));
-				await (sess.FlushAsync(CancellationToken.None));
-				await (sess.DeleteAsync("from PrimaryProfession", CancellationToken.None));
-                await (sess.FlushAsync(CancellationToken.None));
-				await (sess.DeleteAsync("from Employee", CancellationToken.None));
-                await (sess.FlushAsync(CancellationToken.None));
+				await (sess.DeleteAsync("from WantedProfession"));
+				await (sess.FlushAsync());
+				await (sess.DeleteAsync("from PrimaryProfession"));
+                await (sess.FlushAsync());
+				await (sess.DeleteAsync("from Employee"));
+                await (sess.FlushAsync());
             }
         }
     }

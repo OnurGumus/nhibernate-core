@@ -15,7 +15,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.NHSpecificTest.NH2955
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Linq query using SQL IN statement (Contains) with System.Linq.IGrouping&lt;TKey, TElement&gt;
 	/// </summary>
@@ -63,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2955
 			{
 				var firstNames = await (session.CreateQuery("select e.FirstName from Employee e where e.Id in (:x)")
 					.SetParameterList("x", array)
-					.ListAsync<string>(CancellationToken.None));
+					.ListAsync<string>());
 
 				Assert.AreEqual(3, firstNames.Count);
 				Assert.AreEqual("Nancy", firstNames[0]);
@@ -82,7 +81,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2955
 			{
 				var firstNames = await (session.CreateQuery("select e.FirstName from Employee e where e.Id in (:x)")
 					.SetParameterList("x", array)
-					.ListAsync<string>(CancellationToken.None));
+					.ListAsync<string>());
 
 				Assert.AreEqual(3, firstNames.Count);
 				Assert.AreEqual("Nancy", firstNames[0]);

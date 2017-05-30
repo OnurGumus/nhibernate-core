@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1252
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// http://nhibernate.jira.com/browse/NH-1252
 	/// </summary>
@@ -45,24 +44,24 @@ namespace NHibernate.Test.NHSpecificTest.NH1252
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				savedId = await (s.SaveAsync(sc1, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				savedId = await (s.SaveAsync(sc1));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				Assert.IsNull(await (s.GetAsync<SubClass2>(savedId, CancellationToken.None)));
-				await (tx.CommitAsync(CancellationToken.None));
+				Assert.IsNull(await (s.GetAsync<SubClass2>(savedId)));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.LoadAsync<SomeClass>(savedId, CancellationToken.None)); // Load a proxy by the parent class
+				await (s.LoadAsync<SomeClass>(savedId)); // Load a proxy by the parent class
 
-				Assert.IsNull(await (s.GetAsync<SubClass2>(savedId, CancellationToken.None)));
-				await (tx.CommitAsync(CancellationToken.None));
+				Assert.IsNull(await (s.GetAsync<SubClass2>(savedId)));
+				await (tx.CommitAsync());
 			}
 
 		}

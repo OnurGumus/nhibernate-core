@@ -57,11 +57,11 @@ namespace NHibernate.Test.Immutable
 	
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
+			await (s.PersistAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -70,7 +70,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
@@ -101,10 +101,10 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -124,11 +124,11 @@ namespace NHibernate.Test.Immutable
 	
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
+			await (s.PersistAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -137,7 +137,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
@@ -168,10 +168,10 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -191,11 +191,11 @@ namespace NHibernate.Test.Immutable
 	
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
+			await (s.PersistAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -204,7 +204,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
@@ -217,10 +217,10 @@ namespace NHibernate.Test.Immutable
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -240,12 +240,12 @@ namespace NHibernate.Test.Immutable
 	
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
+			await (s.PersistAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			c.CustomerName = "gail";
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -254,7 +254,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
@@ -267,10 +267,10 @@ namespace NHibernate.Test.Immutable
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -289,11 +289,11 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.SaveAsync(c, CancellationToken.None));
+			await (s.SaveAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -302,7 +302,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
@@ -315,10 +315,10 @@ namespace NHibernate.Test.Immutable
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -337,11 +337,11 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.SaveOrUpdateAsync(c, CancellationToken.None));
+			await (s.SaveOrUpdateAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -350,7 +350,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
@@ -363,10 +363,10 @@ namespace NHibernate.Test.Immutable
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -386,11 +386,11 @@ namespace NHibernate.Test.Immutable
 	
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.SaveOrUpdateAsync(c, CancellationToken.None));
+			await (s.SaveOrUpdateAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -400,7 +400,7 @@ namespace NHibernate.Test.Immutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 			// refresh detached
-			await (s.RefreshAsync(c, CancellationToken.None));
+			await (s.RefreshAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
@@ -413,7 +413,7 @@ namespace NHibernate.Test.Immutable
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(0);
@@ -425,7 +425,7 @@ namespace NHibernate.Test.Immutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 			// refresh updated detached
-			await (s.RefreshAsync(c, CancellationToken.None));
+			await (s.RefreshAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
@@ -438,7 +438,7 @@ namespace NHibernate.Test.Immutable
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(0);
@@ -447,10 +447,10 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -469,11 +469,11 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
+			await (s.PersistAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -482,7 +482,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(s.IsReadOnly(c), Is.True);
 			c.CustomerName = "foo bar";
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -491,7 +491,7 @@ namespace NHibernate.Test.Immutable
 			cv1.Text = "blah blah";
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.Contains(cv2), Is.False);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.Contains(cv2), Is.False);
@@ -503,7 +503,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
@@ -516,10 +516,10 @@ namespace NHibernate.Test.Immutable
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -538,12 +538,12 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
+			await (s.PersistAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			c.CustomerName = "Sherman";
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -552,7 +552,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(s.IsReadOnly(c), Is.True);
 			c.CustomerName = "foo bar";
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -561,7 +561,7 @@ namespace NHibernate.Test.Immutable
 			cv1.Text = "blah blah";
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.Contains(cv2), Is.False);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.Contains(cv2), Is.False);
@@ -573,7 +573,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
@@ -586,10 +586,10 @@ namespace NHibernate.Test.Immutable
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -608,8 +608,8 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -618,7 +618,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
@@ -632,10 +632,10 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			c.CustomerName = "Sherman";
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -654,8 +654,8 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -664,7 +664,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.GetAsync<Contract>(c.Id, CancellationToken.None));
+			c = await (s.GetAsync<Contract>(c.Id));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
@@ -678,10 +678,10 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			c.CustomerName = "Sherman";
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -700,8 +700,8 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -710,10 +710,10 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.DeleteAsync(c, CancellationToken.None));
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(c, Is.Null);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -732,8 +732,8 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -743,8 +743,8 @@ namespace NHibernate.Test.Immutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c.CustomerName = "Sherman";
-			await (s.DeleteAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -763,8 +763,8 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -774,13 +774,13 @@ namespace NHibernate.Test.Immutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c.CustomerName = "foo bar";
-			await (s.UpdateAsync(c, CancellationToken.None));
+			await (s.UpdateAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			foreach(ContractVariation variation in c.Variations)
 			{
 				Assert.That(s.Contains(variation), Is.True);
 			}
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			Assert.That(s.IsReadOnly(c), Is.True);
 			foreach(ContractVariation variation in c.Variations)
 			{
@@ -793,7 +793,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -803,10 +803,10 @@ namespace NHibernate.Test.Immutable
 			it.MoveNext();
 			cv2 = it.Current;
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -825,8 +825,8 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -837,11 +837,11 @@ namespace NHibernate.Test.Immutable
 			t = s.BeginTransaction();
 			cv1 = c.Variations.First();
 			cv1.Text = "blah blah";
-			await (s.UpdateAsync(c, CancellationToken.None));
+			await (s.UpdateAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(s.Contains(cv1), Is.True);
 			Assert.That(s.Contains(cv2), Is.True);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
@@ -851,7 +851,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -861,10 +861,10 @@ namespace NHibernate.Test.Immutable
 			it.MoveNext();
 			cv2 = it.Current;
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -883,8 +883,8 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -893,10 +893,10 @@ namespace NHibernate.Test.Immutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c.Variations.Add(new ContractVariation(3, c));
-			await (s.UpdateAsync(c, CancellationToken.None));
+			await (s.UpdateAsync(c));
 			try
 			{
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 				Assert.Fail( "should have failed because reassociated object has a dirty collection");
 			}
 			catch (HibernateException)
@@ -913,7 +913,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -923,10 +923,10 @@ namespace NHibernate.Test.Immutable
 			it.MoveNext();
 			cv2 = it.Current;
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -945,8 +945,8 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -965,14 +965,14 @@ namespace NHibernate.Test.Immutable
 			cv2 = it.Current;
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
 			it = c.Variations.GetEnumerator();
@@ -982,10 +982,10 @@ namespace NHibernate.Test.Immutable
 			it.MoveNext();
 			cv2 = it.Current;
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -1004,8 +1004,8 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -1025,14 +1025,14 @@ namespace NHibernate.Test.Immutable
 			cv2 = it.Current;
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(s.IsReadOnly(c), Is.True);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
 			it = c.Variations.GetEnumerator();
@@ -1042,10 +1042,10 @@ namespace NHibernate.Test.Immutable
 			it.MoveNext();
 			cv2 = it.Current;
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -1065,8 +1065,8 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -1087,14 +1087,14 @@ namespace NHibernate.Test.Immutable
 			cv2 = it.Current;
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(s.IsReadOnly(c), Is.True);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
 			it = c.Variations.GetEnumerator();
@@ -1104,10 +1104,10 @@ namespace NHibernate.Test.Immutable
 			it.MoveNext();
 			cv2 = it.Current;
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -1126,8 +1126,8 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -1141,7 +1141,7 @@ namespace NHibernate.Test.Immutable
 			s.Merge(c);
 			try
 			{
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 				Assert.Fail("should have failed because an immutable collection was changed");
 			}
 			catch ( HibernateException )
@@ -1156,7 +1156,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -1166,10 +1166,10 @@ namespace NHibernate.Test.Immutable
 			it.MoveNext();
 			cv2 = it.Current;
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -1188,8 +1188,8 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -1199,8 +1199,8 @@ namespace NHibernate.Test.Immutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 			cv1.Infos.Add(new Info("cv1 info"));
-			await (s.SaveOrUpdateAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveOrUpdateAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(1);
@@ -1208,7 +1208,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -1220,10 +1220,10 @@ namespace NHibernate.Test.Immutable
 			it.MoveNext();
 			cv2 = it.Current;
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -1242,8 +1242,8 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(3);
@@ -1254,7 +1254,7 @@ namespace NHibernate.Test.Immutable
 			t = s.BeginTransaction();
 			cv1.Infos.Add(new Info("cv1 info"));
 			s.Merge(c);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(1);
@@ -1262,7 +1262,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -1274,10 +1274,10 @@ namespace NHibernate.Test.Immutable
 			it.MoveNext();
 			cv2 = it.Current;
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -1298,8 +1298,8 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(4);
@@ -1309,8 +1309,8 @@ namespace NHibernate.Test.Immutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 			cv1Info.Text = "new cv1 info";
-			await (s.SaveOrUpdateAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveOrUpdateAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(0);
@@ -1319,7 +1319,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -1331,10 +1331,10 @@ namespace NHibernate.Test.Immutable
 			it.MoveNext();
 			cv2 = it.Current;
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -1355,8 +1355,8 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(4);
@@ -1367,7 +1367,7 @@ namespace NHibernate.Test.Immutable
 			t = s.BeginTransaction();
 			cv1Info.Text = "new cv1 info";
 			s.Merge(c);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(0);
@@ -1376,7 +1376,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -1388,10 +1388,10 @@ namespace NHibernate.Test.Immutable
 			it.MoveNext();
 			cv2 = it.Current;
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -1410,10 +1410,10 @@ namespace NHibernate.Test.Immutable
 			cv2.Text = "more expensive";
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
+			await (s.PersistAsync(c));
 			Party party = new Party("a party");
-			await (s.PersistAsync(party, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(party));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(4);
@@ -1423,8 +1423,8 @@ namespace NHibernate.Test.Immutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c.AddParty(new Party("a new party"));
-			await (s.UpdateAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.UpdateAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(1);
@@ -1434,13 +1434,13 @@ namespace NHibernate.Test.Immutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c.AddParty(party);
-			await (s.UpdateAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.UpdateAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -1451,11 +1451,11 @@ namespace NHibernate.Test.Immutable
 			cv2 = it.Current;
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
 			// Assert.That(c.Parties.Count, Is.EqualTo(2));
-			await (s.DeleteAsync(c, CancellationToken.None));
-			await (s.DeleteAsync(party, CancellationToken.None)); // NH-specific
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			await (s.DeleteAsync(party)); // NH-specific
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -1476,8 +1476,8 @@ namespace NHibernate.Test.Immutable
 			c.AddParty(party);
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(4);
@@ -1489,8 +1489,8 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.UpdateAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.UpdateAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -1498,7 +1498,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -1509,10 +1509,10 @@ namespace NHibernate.Test.Immutable
 			cv2 = it.Current;
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
 			//Assert.That(c.Parties.Count, Is.EqualTo(0));
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -1533,8 +1533,8 @@ namespace NHibernate.Test.Immutable
 			c.AddParty(party);
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(4);
@@ -1545,8 +1545,8 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.DeleteAsync(party, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(party));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -1555,7 +1555,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -1566,10 +1566,10 @@ namespace NHibernate.Test.Immutable
 			cv2 = it.Current;
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
 			Assert.That(c.Parties.Count, Is.EqualTo(0));
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -1590,8 +1590,8 @@ namespace NHibernate.Test.Immutable
 			c.AddParty(party);
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(c));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(4);
@@ -1603,15 +1603,15 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.UpdateAsync(party, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.UpdateAsync(party));
+			await (t.CommitAsync());
 			s.Close();
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			party = await (s.GetAsync<Party>(party.Id, CancellationToken.None));
+			party = await (s.GetAsync<Party>(party.Id));
 			Assert.That(party.Contract, Is.Not.Null);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
@@ -1619,7 +1619,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>(CancellationToken.None));
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			Assert.That(c.CustomerName, Is.EqualTo("gavin"));
 			Assert.That(c.Variations.Count, Is.EqualTo(2));
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -1633,10 +1633,10 @@ namespace NHibernate.Test.Immutable
 		    party = c.Parties.First();
 			Assert.That(party.Name, Is.EqualTo("party1"));
 			Assert.That(party.Contract, Is.SameAs(c));
-			await (s.DeleteAsync(c, CancellationToken.None));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)), Is.EqualTo(0));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);

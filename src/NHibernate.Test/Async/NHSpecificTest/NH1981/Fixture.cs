@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1981
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -61,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1981
 
 				var quotients = await (s.CreateQuery(queryString)
 					.SetDouble("divisor", 30)
-					.ListAsync<double>(CancellationToken.None));
+					.ListAsync<double>());
 
 				Assert.That(quotients.Count, Is.EqualTo(2));
 				Assert.That(quotients[0], Is.EqualTo(3));

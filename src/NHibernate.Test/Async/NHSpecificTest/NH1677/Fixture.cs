@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1677
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class EntityModeMapCriteriaAsync : BugTestCase
 	{
@@ -72,14 +71,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1677
 				using (ISession s = sf.OpenSession())
 				{
 					IQuery query = s.CreateQuery(string.Format("from {0}", Entity1Name));
-					IList entity1List = await (query.ListAsync(CancellationToken.None));
+					IList entity1List = await (query.ListAsync());
 					Assert.AreEqual(NumberOfRecordPerEntity, entity1List.Count); // OK, Count == 10
 				}
 
 				using (ISession s = sf.OpenSession())
 				{
 					ICriteria entity1Criteria = s.CreateCriteria(Entity1Name);
-					IList entity1List = await (entity1Criteria.ListAsync(CancellationToken.None));
+					IList entity1List = await (entity1Criteria.ListAsync());
 					Assert.AreEqual(NumberOfRecordPerEntity, entity1List.Count); // KO !!! Count == 20 !!!
 				}
 			}

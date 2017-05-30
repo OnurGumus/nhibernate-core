@@ -18,7 +18,6 @@ using NHibernate.Cfg;
 namespace NHibernate.Test.NHSpecificTest.NH1939
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -42,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1939
 			schemaBuilder = new StringBuilder();
 
 			SchemaExport schemaExport = new SchemaExport(cfg);
-			await (schemaExport.ExecuteAsync(AddString, false, false, CancellationToken.None));
+			await (schemaExport.ExecuteAsync(AddString, false, false));
 
 			string schema = schemaBuilder.ToString();
 

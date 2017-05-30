@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1693
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -53,12 +52,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1693
 					"from Invoice i where i.Mode='a' and i.Category=:cat and not exists (from Invoice i2 where i2.Mode='a' and i2.Category=:cat and i2.Num=i.Num+1)";
 				var list = await (session.CreateQuery(q1)
 					.SetParameter("cat", 10)
-					.ListAsync<Invoice>(CancellationToken.None));
+					.ListAsync<Invoice>());
 				Assert.That(list.Count, Is.EqualTo(2));
 				Assert.That(list[0].Num == 2 && list[0].Mode == "a");
 				Assert.That(list[1].Num == 4 && list[1].Mode == "a");
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -74,12 +73,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1693
 					"from Invoice i where i.Category=:cat and not exists (from Invoice i2 where i2.Category=:cat and i2.Num=i.Num+1)";
 				var list = await (session.CreateQuery(q1)
 					.SetParameter("cat", 10)
-					.ListAsync<Invoice>(CancellationToken.None));
+					.ListAsync<Invoice>());
 				Assert.That(list.Count, Is.EqualTo(2));
 				Assert.That(list[0].Num == 2 && list[0].Mode == "a");
 				Assert.That(list[1].Num == 4 && list[1].Mode == "a");
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 

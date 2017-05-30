@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.BulkManipulation
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class HqlBulkOperationsAsync: BaseFixture
 	{
@@ -23,25 +22,25 @@ namespace NHibernate.Test.BulkManipulation
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new SimpleClass {Description = "simple1"}, CancellationToken.None));
-				await (s.SaveAsync(new SimpleClass {Description = "simple2"}, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new SimpleClass {Description = "simple1"}));
+				await (s.SaveAsync(new SimpleClass {Description = "simple2"}));
+				await (tx.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				Assert.That(await (s.CreateQuery("delete from SimpleClass where Description = 'simple2'").ExecuteUpdateAsync(CancellationToken.None)),
+				Assert.That(await (s.CreateQuery("delete from SimpleClass where Description = 'simple2'").ExecuteUpdateAsync()),
 					Is.EqualTo(1));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				Assert.That(await (s.CreateQuery("delete from SimpleClass").ExecuteUpdateAsync(CancellationToken.None)),
+				Assert.That(await (s.CreateQuery("delete from SimpleClass").ExecuteUpdateAsync()),
 					Is.EqualTo(1));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 	}

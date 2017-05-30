@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3221
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class WeirdBehaviourAsync : BugTestCase
 	{
@@ -28,14 +27,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3221
 			{
 				var person = new Person("myName");
 				person.AddTodo(new Todo(person) { Name = "I need to get it" });
-				await (session.SaveAsync(person, CancellationToken.None));
+				await (session.SaveAsync(person));
 				nicePersonId = person.Id;
 				Assert.AreEqual(1, person.Todos.Count());
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 			}
 			using (ISession session = OpenSession())
 			{
-				var person = await (session.GetAsync<Person>(nicePersonId, CancellationToken.None));
+				var person = await (session.GetAsync<Person>(nicePersonId));
 				Assert.AreEqual(1, person.Todos.Count());
 				Assert.AreEqual(person.Todos.ToList()[0].Person.Id, person.Id);
 			}
@@ -49,24 +48,24 @@ namespace NHibernate.Test.NHSpecificTest.NH3221
 			{
 				var person = new Person("myName2");                
 				myTodo = person.AddTodo(new Todo(person) { Name = "I need to get it" });
-				await (session.SaveAsync(person, CancellationToken.None));
+				await (session.SaveAsync(person));
 				nicePersonId = person.Id;
 				Assert.AreEqual(1, person.Todos.Count());
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 			}
 
 			using (ISession session = OpenSession())
 			{
-				var person = await (session.GetAsync<Person>(nicePersonId, CancellationToken.None));
+				var person = await (session.GetAsync<Person>(nicePersonId));
 				Assert.AreEqual(1, person.Todos.Count());
 				person.RemoveTodo(myTodo);
 				Assert.AreEqual(0, person.Todos.Count());
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 			}
 
 			using (ISession session = OpenSession())
 			{
-				var person = await (session.GetAsync<Person>(nicePersonId, CancellationToken.None));
+				var person = await (session.GetAsync<Person>(nicePersonId));
 				Assert.AreEqual(0, person.Todos.Count());
 			}
 		}
@@ -78,15 +77,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3221
 			{
 				var person = new Person("myName3");
 				person.AddStuff(new Stuff(person) { Name = "this pen is mine" });
-				await (session.SaveAsync(person, CancellationToken.None));
+				await (session.SaveAsync(person));
 				nicePersonId = person.Id;
 				Assert.AreEqual(1, person.MyStuff.Count());
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 			}
 
 			using (ISession session = OpenSession())
 			{
-				var person = await (session.GetAsync<Person>(nicePersonId, CancellationToken.None));
+				var person = await (session.GetAsync<Person>(nicePersonId));
 				Assert.AreEqual(1, person.MyStuff.Count());
 				Assert.AreEqual(person.MyStuff.ToList()[0].Person.Id, person.Id);
 			}
@@ -100,24 +99,24 @@ namespace NHibernate.Test.NHSpecificTest.NH3221
 			{
 				var person = new Person("MyName4");
 				myStuff = person.AddStuff(new Stuff(person) { Name = "BallPen" });
-				await (session.SaveAsync(person, CancellationToken.None));
+				await (session.SaveAsync(person));
 				nicePersonId = person.Id;
 				Assert.AreEqual(1, person.MyStuff.Count());
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 			}
 
 			using (ISession session = OpenSession())
 			{
-				var person = await (session.GetAsync<Person>(nicePersonId, CancellationToken.None));
+				var person = await (session.GetAsync<Person>(nicePersonId));
 				Assert.AreEqual(1, person.MyStuff.Count());
 				person.RemoveStuff(myStuff);
 				Assert.AreEqual(0, person.MyStuff.Count());
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 			}
 
 			using (ISession session = OpenSession())
 			{
-				var person = await (session.GetAsync<Person>(nicePersonId, CancellationToken.None));
+				var person = await (session.GetAsync<Person>(nicePersonId));
 				Assert.AreEqual(0, person.MyStuff.Count());
 			}
 		}

@@ -18,7 +18,6 @@ using System;
 namespace NHibernate.Test.NHSpecificTest.NH3237
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class ByCodeFixtureAsync : TestCaseMappingByCode
 	{
@@ -112,10 +111,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3237
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var min = await (session.Query<Entity>().MinAsync(e => e.DateTimeOffsetValue, CancellationToken.None));
+				var min = await (session.Query<Entity>().MinAsync(e => e.DateTimeOffsetValue));
 				Assert.AreEqual(new DateTimeOffset(2012, 08, 06, 11, 0, 0, TimeSpan.FromHours(10)), min);
 
-				var max = await (session.Query<Entity>().MaxAsync(e => e.DateTimeOffsetValue, CancellationToken.None));
+				var max = await (session.Query<Entity>().MaxAsync(e => e.DateTimeOffsetValue));
 				Assert.AreEqual(new DateTimeOffset(2012, 08, 06, 13, 0, 0, TimeSpan.FromHours(10)), max);
 			}
 		}
@@ -126,10 +125,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3237
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var min = await (session.Query<Entity>().MinAsync(e => e.EnumValue, CancellationToken.None));
+				var min = await (session.Query<Entity>().MinAsync(e => e.EnumValue));
 				Assert.AreEqual(TestEnum.Zero, min);
 
-				var max = await (session.Query<Entity>().MaxAsync(e => e.EnumValue, CancellationToken.None));
+				var max = await (session.Query<Entity>().MaxAsync(e => e.EnumValue));
 				Assert.AreEqual(TestEnum.Two, max);
 			}
 		}
@@ -140,10 +139,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3237
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var min = await (session.Query<Entity>().MinAsync(e => e.IntValue, CancellationToken.None));
+				var min = await (session.Query<Entity>().MinAsync(e => e.IntValue));
 				Assert.AreEqual(1, min);
 
-				var max = await (session.Query<Entity>().MaxAsync(e => e.IntValue, CancellationToken.None));
+				var max = await (session.Query<Entity>().MaxAsync(e => e.IntValue));
 				Assert.AreEqual(3, max);
 			}
 		}
@@ -154,10 +153,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3237
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var min = await (session.Query<Entity>().MinAsync(e => e.LongValue, CancellationToken.None));
+				var min = await (session.Query<Entity>().MinAsync(e => e.LongValue));
 				Assert.AreEqual(1L, min);
 
-				var max = await (session.Query<Entity>().MaxAsync(e => e.LongValue, CancellationToken.None));
+				var max = await (session.Query<Entity>().MaxAsync(e => e.LongValue));
 				Assert.AreEqual(3L, max);
 			}
 		}
@@ -168,10 +167,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3237
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var min = await (session.Query<Entity>().MinAsync(e => e.DecimalValue, CancellationToken.None));
+				var min = await (session.Query<Entity>().MinAsync(e => e.DecimalValue));
 				Assert.AreEqual(1.2m, min);
 
-				var max = await (session.Query<Entity>().MaxAsync(e => e.DecimalValue, CancellationToken.None));
+				var max = await (session.Query<Entity>().MaxAsync(e => e.DecimalValue));
 				Assert.AreEqual(3.2m, max);
 			}
 		}
@@ -182,10 +181,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3237
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var min = await (session.Query<Entity>().MinAsync(e => e.DoubleValue, CancellationToken.None));
+				var min = await (session.Query<Entity>().MinAsync(e => e.DoubleValue));
 				Assert.AreEqual(1.2d, min);
 
-				var max = await (session.Query<Entity>().MaxAsync(e => e.DoubleValue, CancellationToken.None));
+				var max = await (session.Query<Entity>().MaxAsync(e => e.DoubleValue));
 				Assert.AreEqual(3.2d, max);
 			}
 		}
@@ -196,10 +195,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3237
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var min = await (session.Query<Entity>().MinAsync(e => e.FloatValue, CancellationToken.None));
+				var min = await (session.Query<Entity>().MinAsync(e => e.FloatValue));
 				Assert.AreEqual(1.2f, min);
 
-				var max = await (session.Query<Entity>().MaxAsync(e => e.FloatValue, CancellationToken.None));
+				var max = await (session.Query<Entity>().MaxAsync(e => e.FloatValue));
 				Assert.AreEqual(3.2f, max);
 			}
 		}
@@ -210,10 +209,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3237
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var min = await (session.Query<Entity>().MinAsync(e => e.DateTimeValue, CancellationToken.None));
+				var min = await (session.Query<Entity>().MinAsync(e => e.DateTimeValue));
 				Assert.AreEqual(new DateTime(2012, 08, 06, 11, 0, 0), min);
 
-				var max = await (session.Query<Entity>().MaxAsync(e => e.DateTimeValue, CancellationToken.None));
+				var max = await (session.Query<Entity>().MaxAsync(e => e.DateTimeValue));
 				Assert.AreEqual(new DateTime(2012, 08, 06, 13, 0, 0), max);
 			}
 		}
@@ -224,10 +223,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3237
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var min = await (session.Query<Entity>().MinAsync(e => e.StringValue, CancellationToken.None));
+				var min = await (session.Query<Entity>().MinAsync(e => e.StringValue));
 				Assert.AreEqual("a", min);
 
-				var max = await (session.Query<Entity>().MaxAsync(e => e.StringValue, CancellationToken.None));
+				var max = await (session.Query<Entity>().MaxAsync(e => e.StringValue));
 				Assert.AreEqual("c", max);
 			}
 		}

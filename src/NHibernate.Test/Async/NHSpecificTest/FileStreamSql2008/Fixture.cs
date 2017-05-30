@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.FileStreamSql2008
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Workaround to use FileStream feature
 	/// http://blogs.msdn.com/manisblog/archive/2007/10/21/filestream-data-type-sql-server-2008.aspx
@@ -88,15 +87,15 @@ namespace NHibernate.Test.NHSpecificTest.FileStreamSql2008
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.SaveAsync(entity, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(entity));
+				await (tx.CommitAsync());
 			}
 
 			VendorCatalog entityReturned = null;
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				entityReturned = await (s.CreateQuery("from VendorCatalog").UniqueResultAsync<VendorCatalog>(CancellationToken.None));
+				entityReturned = await (s.CreateQuery("from VendorCatalog").UniqueResultAsync<VendorCatalog>());
 
 				Assert.AreEqual("Dario", entityReturned.Name);
 				Assert.AreEqual(rowId.ToString(), entityReturned.CatalogID.ToString());
@@ -106,8 +105,8 @@ namespace NHibernate.Test.NHSpecificTest.FileStreamSql2008
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.DeleteAsync(entityReturned, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(entityReturned));
+				await (tx.CommitAsync());
 			}
 		}
 	}

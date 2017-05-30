@@ -22,7 +22,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Component.Basic
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class ComponentTestAsync : TestCase 
 	{			
@@ -83,10 +82,10 @@ namespace NHibernate.Test.Component.Basic
 			using (ITransaction t = s.BeginTransaction())
 			{
 				u = new User("gavin", "secret", new Person("Gavin King", new DateTime(1999, 12, 31), "Karbarook Ave"));
-				await (s.PersistAsync(u, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.PersistAsync(u));
+				await (s.FlushAsync());
 				u.Person.Name = "XXXXYYYYY";
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 				s.Close();
 			}
 			
@@ -96,10 +95,10 @@ namespace NHibernate.Test.Component.Basic
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				u = (User)await (s.GetAsync(typeof(User), "gavin", CancellationToken.None));
+				u = (User)await (s.GetAsync(typeof(User), "gavin"));
 				Assert.That(u.Person.Name, Is.EqualTo("Gavin King"));
-				await (s.DeleteAsync(u, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(u));
+				await (t.CommitAsync());
 				s.Close();
 			}
 			
@@ -115,32 +114,32 @@ namespace NHibernate.Test.Component.Basic
 			using (ITransaction t = s.BeginTransaction())
 			{
 				u = new User("gavin", "secret", new Person("Gavin King", new DateTime(1999, 12, 31), "Karbarook Ave"));
-				await (s.PersistAsync(u, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.PersistAsync(u));
+				await (s.FlushAsync());
 				u.Person.ChangeAddress("Phipps Place");
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 			
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{			
-				u = (User)await (s.GetAsync(typeof(User), "gavin", CancellationToken.None));
+				u = (User)await (s.GetAsync(typeof(User), "gavin"));
 				Assert.That(u.Person.Address, Is.EqualTo("Phipps Place"));
 				Assert.That(u.Person.PreviousAddress, Is.EqualTo("Karbarook Ave"));
 				Assert.That(u.Person.Yob, Is.EqualTo(u.Person.Dob.Year));
 				u.Password = "$ecret";
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 			
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				u = (User)await (s.GetAsync(typeof(User), "gavin", CancellationToken.None));
+				u = (User)await (s.GetAsync(typeof(User), "gavin"));
 				Assert.That(u.Person.Address, Is.EqualTo("Phipps Place"));
 				Assert.That(u.Person.PreviousAddress, Is.EqualTo("Karbarook Ave"));
 				Assert.That(u.Password, Is.EqualTo("$ecret"));
-				await (s.DeleteAsync(u, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(u));
+				await (t.CommitAsync());
 			}
 		}
 		
@@ -152,18 +151,18 @@ namespace NHibernate.Test.Component.Basic
 			using (ITransaction t = s.BeginTransaction())
 			{
 				User u = new User("steve", "hibernater", new Person( "Steve Ebersole", new DateTime(1999, 12, 31), "Main St"));
-				await (s.PersistAsync(u, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.PersistAsync(u));
+				await (s.FlushAsync());
 				long intialUpdateCount = sessions.Statistics.EntityUpdateCount;
 				u.Person.Address = "Austin";
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 				Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(intialUpdateCount + 1));
 				intialUpdateCount = sessions.Statistics.EntityUpdateCount;
 				u.Person.Address = "Cedar Park";
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 				Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(intialUpdateCount + 1));
-				await (s.DeleteAsync(u, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(u));
+				await (t.CommitAsync());
 				s.Close();
 			}
 		}
@@ -180,38 +179,38 @@ namespace NHibernate.Test.Component.Basic
 			{
 				User u = new User("steve", "hibernater", new Person( "Steve Ebersole", new DateTime(1999, 12, 31), "Main St"));
 				u.Person.HeightInches = HEIGHT_INCHES;
-				await (s.PersistAsync(u, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.PersistAsync(u));
+				await (s.FlushAsync());
 			
 				// Test value conversion during insert
-				double heightViaSql = (double)await (s.CreateSQLQuery("select height_centimeters from t_user where t_user.username='steve'").UniqueResultAsync(CancellationToken.None));
+				double heightViaSql = (double)await (s.CreateSQLQuery("select height_centimeters from t_user where t_user.username='steve'").UniqueResultAsync());
 				Assert.That(heightViaSql, Is.EqualTo(HEIGHT_CENTIMETERS).Within(0.01d));
 		
 				// Test projection
-				double heightViaHql = (double)await (s.CreateQuery("select u.Person.HeightInches from User u where u.Id = 'steve'").UniqueResultAsync(CancellationToken.None));
+				double heightViaHql = (double)await (s.CreateQuery("select u.Person.HeightInches from User u where u.Id = 'steve'").UniqueResultAsync());
 				Assert.That(heightViaHql, Is.EqualTo(HEIGHT_INCHES).Within(0.01d));
 				
 				// Test restriction and entity load via criteria
 				u = (User)await (s.CreateCriteria(typeof(User))
 					.Add(Restrictions.Between("Person.HeightInches", HEIGHT_INCHES - 0.01d, HEIGHT_INCHES + 0.01d))
-					.UniqueResultAsync(CancellationToken.None));
+					.UniqueResultAsync());
 				Assert.That(u.Person.HeightInches, Is.EqualTo(HEIGHT_INCHES).Within(0.01d));
 
 					// Test predicate and entity load via HQL
 				u = (User)await (s.CreateQuery("from User u where u.Person.HeightInches between ? and ?")
 					.SetDouble(0, HEIGHT_INCHES - 0.01d)
 					.SetDouble(1, HEIGHT_INCHES + 0.01d)
-					.UniqueResultAsync(CancellationToken.None));
+					.UniqueResultAsync());
 				
 				Assert.That(u.Person.HeightInches, Is.EqualTo(HEIGHT_INCHES).Within(0.01d));
 				
 				// Test update
 				u.Person.HeightInches = 1;
-				await (s.FlushAsync(CancellationToken.None));
-				heightViaSql = (double)await (s.CreateSQLQuery("select height_centimeters from t_user where t_user.username='steve'").UniqueResultAsync(CancellationToken.None));
+				await (s.FlushAsync());
+				heightViaSql = (double)await (s.CreateSQLQuery("select height_centimeters from t_user where t_user.username='steve'").UniqueResultAsync());
 				Assert.That(heightViaSql, Is.EqualTo(2.54d).Within(0.01d));
-				await (s.DeleteAsync(u, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(u));
+				await (t.CommitAsync());
 				s.Close();
 			}
 		}
@@ -228,14 +227,14 @@ namespace NHibernate.Test.Component.Basic
 				emp.Person = new Person();
 				emp.Person.Name = "steve";
 				emp.Person.Dob = new DateTime(1999, 12, 31);
-				await (s.SaveAsync(emp, CancellationToken.None));
+				await (s.SaveAsync(emp));
 		
-				await (s.CreateQuery("from Employee e where e.Person = :p and 1=1 and 2=2").SetParameter("p", emp.Person).ListAsync(CancellationToken.None));
-				await (s.CreateQuery("from Employee e where :p = e.Person").SetParameter("p", emp.Person).ListAsync(CancellationToken.None));
-				await (s.CreateQuery("from Employee e where e.Person = ('steve', current_timestamp)").ListAsync(CancellationToken.None));
+				await (s.CreateQuery("from Employee e where e.Person = :p and 1=1 and 2=2").SetParameter("p", emp.Person).ListAsync());
+				await (s.CreateQuery("from Employee e where :p = e.Person").SetParameter("p", emp.Person).ListAsync());
+				await (s.CreateQuery("from Employee e where e.Person = ('steve', current_timestamp)").ListAsync());
 		
-				await (s.DeleteAsync( emp , CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync( emp ));
+				await (t.CommitAsync());
 				s.Close();
 			}
 		}
@@ -246,19 +245,19 @@ namespace NHibernate.Test.Component.Basic
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{			
-				await (s.CreateQuery("from User u where u.Person.Yob = 1999").ListAsync(CancellationToken.None));
+				await (s.CreateQuery("from User u where u.Person.Yob = 1999").ListAsync());
 				await (s.CreateCriteria(typeof(User))
 					.Add(Property.ForName("Person.Yob").Between(1999, 2002))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				
 				if (Dialect.SupportsRowValueConstructorSyntax) 
 				{
 					await (s.CreateQuery("from User u where u.Person = ('gavin', :dob, 'Peachtree Rd', 'Karbarook Ave', 1974, 'Peachtree Rd')")
-						.SetDateTime("dob", new DateTime(1974, 3, 25)).ListAsync(CancellationToken.None));
+						.SetDateTime("dob", new DateTime(1974, 3, 25)).ListAsync());
 					await (s.CreateQuery("from User where Person = ('gavin', :dob, 'Peachtree Rd', 'Karbarook Ave', 1974, 'Peachtree Rd')")
-						.SetDateTime("dob", new DateTime(1974, 3, 25)).ListAsync(CancellationToken.None));
+						.SetDateTime("dob", new DateTime(1974, 3, 25)).ListAsync());
 				}
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 				s.Close();
 			}
 		}
@@ -271,8 +270,8 @@ namespace NHibernate.Test.Component.Basic
 			{
 				await (s.GetNamedQuery("userNameIn")
 					.SetParameterList( "nameList", new object[] {"1ovthafew", "turin", "xam"} )
-					.ListAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+					.ListAsync());
+				await (t.CommitAsync());
 				s.Close();
 			}
 		}
@@ -291,16 +290,16 @@ namespace NHibernate.Test.Component.Basic
 				emp.Person = new Person();
 				emp.Person.Name = "steve";
 				emp.Person.Dob = new DateTime(1999, 12, 31);
-				await (s.PersistAsync(emp, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(emp));
+				await (t.CommitAsync());
 				s.Close();
 			}
 			
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)await (s.GetAsync(typeof(Employee), emp.Id, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				emp = (Employee)await (s.GetAsync(typeof(Employee), emp.Id));
+				await (t.CommitAsync());
 				s.Close();
 			}
 			
@@ -314,15 +313,15 @@ namespace NHibernate.Test.Component.Basic
 			using (ITransaction t = s.BeginTransaction())
 			{
 				emp = (Employee)s.Merge(emp);
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 				s.Close();
 			}
 			
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)await (s.GetAsync(typeof(Employee), emp.Id, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				emp = (Employee)await (s.GetAsync(typeof(Employee), emp.Id));
+				await (t.CommitAsync());
 				s.Close();
 			}
 			
@@ -336,16 +335,16 @@ namespace NHibernate.Test.Component.Basic
 			using (ITransaction t = s.BeginTransaction())
 			{
 				emp = (Employee)s.Merge(emp);
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 				s.Close();
 			}
 			
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)await (s.GetAsync(typeof(Employee), emp.Id, CancellationToken.None));
-				await (NHibernateUtil.InitializeAsync(emp.DirectReports, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				emp = (Employee)await (s.GetAsync(typeof(Employee), emp.Id));
+				await (NHibernateUtil.InitializeAsync(emp.DirectReports));
+				await (t.CommitAsync());
 				s.Close();
 			}
 			
@@ -362,16 +361,16 @@ namespace NHibernate.Test.Component.Basic
 			using (ITransaction t = s.BeginTransaction())
 			{
 				emp = (Employee)s.Merge(emp);
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 				s.Close();
 			}
 			
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)await (s.GetAsync(typeof(Employee), emp.Id, CancellationToken.None));
-				await (NHibernateUtil.InitializeAsync(emp.DirectReports, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				emp = (Employee)await (s.GetAsync(typeof(Employee), emp.Id));
+				await (NHibernateUtil.InitializeAsync(emp.DirectReports));
+				await (t.CommitAsync());
 				s.Close();
 			}
 			
@@ -390,16 +389,16 @@ namespace NHibernate.Test.Component.Basic
 			using (ITransaction t = s.BeginTransaction())
 			{
 				emp = (Employee)s.Merge(emp);
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 				s.Close();
 			}
 			
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)await (s.GetAsync(typeof(Employee), emp.Id, CancellationToken.None));
-				await (NHibernateUtil.InitializeAsync(emp.DirectReports, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				emp = (Employee)await (s.GetAsync(typeof(Employee), emp.Id));
+				await (NHibernateUtil.InitializeAsync(emp.DirectReports));
+				await (t.CommitAsync());
 				s.Close();
 			}
 			
@@ -418,16 +417,16 @@ namespace NHibernate.Test.Component.Basic
 			using (ITransaction t = s.BeginTransaction())
 			{
 				emp = (Employee)s.Merge(emp);
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 				s.Close();
 			}
 			
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)await (s.GetAsync(typeof(Employee), emp.Id, CancellationToken.None));
-				await (NHibernateUtil.InitializeAsync(emp.DirectReports, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				emp = (Employee)await (s.GetAsync(typeof(Employee), emp.Id));
+				await (NHibernateUtil.InitializeAsync(emp.DirectReports));
+				await (t.CommitAsync());
 				s.Close();
 			}
 	
@@ -441,8 +440,8 @@ namespace NHibernate.Test.Component.Basic
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.DeleteAsync( emp , CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync( emp ));
+				await (t.CommitAsync());
 				s.Close();
 			}
 		}

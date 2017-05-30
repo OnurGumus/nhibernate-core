@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1349
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -58,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1349
 			{
 				using(var tran=session.BeginTransaction())
 				{
-					IList ret = await (session.CreateCriteria(typeof(Services)).SetMaxResults(5).ListAsync(CancellationToken.None)); //this breaks
+					IList ret = await (session.CreateCriteria(typeof(Services)).SetMaxResults(5).ListAsync()); //this breaks
 					Assert.That(ret.Count,Is.EqualTo(1));
 				}
 			}

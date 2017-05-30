@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1077
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -32,28 +31,28 @@ namespace NHibernate.Test.NHSpecificTest.NH1077
 			using (ITransaction t = s.BeginTransaction())
 			{
 				A a = new A("hunabKu");
-				savedId = await (s.SaveAsync(a, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				savedId = await (s.SaveAsync(a));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				A a = await (s.GetAsync<A>(savedId, CancellationToken.None));
+				A a = await (s.GetAsync<A>(savedId));
 				using (SqlLogSpy sqlLogSpy = new SqlLogSpy())
 				{
-					await (s.LockAsync(a, LockMode.Upgrade, CancellationToken.None));
+					await (s.LockAsync(a, LockMode.Upgrade));
 					string sql = sqlLogSpy.Appender.GetEvents()[0].RenderedMessage;
 					Assert.Less(0, sql.IndexOf("with (updlock"));
 				}
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from A", CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from A"));
+				await (t.CommitAsync());
 			}
 		}
 	}

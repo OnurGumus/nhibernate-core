@@ -42,8 +42,8 @@ namespace NHibernate.Test.Cascade
 			s.BeginTransaction();
 			A a = new A();
 			a.Data = "Anna";
-			await (s.SaveAsync(a, CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(a));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
 			// modify detached entity
@@ -52,10 +52,10 @@ namespace NHibernate.Test.Cascade
 			s = base.OpenSession();
 			s.BeginTransaction();
 			a = (A)s.Merge(a);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
-			await (this.VerifyModificationsAsync(a.Id, CancellationToken.None));
+			await (this.VerifyModificationsAsync(a.Id));
 		}
 		
 		[Test]
@@ -67,8 +67,8 @@ namespace NHibernate.Test.Cascade
 			s.BeginTransaction();
 			A a = new A();
 			a.Data = "Anna";
-			await (s.SaveAsync(a, CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(a));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
 			// modify detached entity
@@ -76,13 +76,13 @@ namespace NHibernate.Test.Cascade
 	
 			s = base.OpenSession();
 			s.BeginTransaction();
-			A aLoaded = await (s.LoadAsync<A>(a.Id, CancellationToken.None));
+			A aLoaded = await (s.LoadAsync<A>(a.Id));
 			Assert.That(aLoaded, Is.InstanceOf<INHibernateProxy>());
 			Assert.That(s.Merge(a), Is.SameAs(aLoaded));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
-			await (this.VerifyModificationsAsync(a.Id, CancellationToken.None));
+			await (this.VerifyModificationsAsync(a.Id));
 		}
 		
 		[Test]
@@ -94,8 +94,8 @@ namespace NHibernate.Test.Cascade
 			s.BeginTransaction();
 			A a = new A();
 			a.Data = "Anna";
-			await (s.SaveAsync(a, CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(a));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
 			// modify detached entity
@@ -103,11 +103,11 @@ namespace NHibernate.Test.Cascade
 			
 			s = base.OpenSession();
 			s.BeginTransaction();
-			await (s.UpdateAsync(a, CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.UpdateAsync(a));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
-			await (this.VerifyModificationsAsync(a.Id, CancellationToken.None));
+			await (this.VerifyModificationsAsync(a.Id));
 		}
 	
 		[Test]
@@ -119,19 +119,19 @@ namespace NHibernate.Test.Cascade
 			s.BeginTransaction();
 			A a = new A();
 			a.Data = "Anna";
-			await (s.SaveAsync(a, CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(a));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
 			s = base.OpenSession();
 			s.BeginTransaction();
 			// retrieve the previously saved instance from the database, and update it
-			a = await (s.GetAsync<A>(a.Id, CancellationToken.None));
+			a = await (s.GetAsync<A>(a.Id));
 			this.ModifyEntity(a);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 
-			await (this.VerifyModificationsAsync(a.Id, CancellationToken.None));
+			await (this.VerifyModificationsAsync(a.Id));
 		}
 	
 		[Test]
@@ -143,8 +143,8 @@ namespace NHibernate.Test.Cascade
 			s.BeginTransaction();
 			A a = new A();
 			a.Data = "Anna";
-			await (s.SaveAsync(a, CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(a));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
 			// modify detached entity
@@ -153,10 +153,10 @@ namespace NHibernate.Test.Cascade
 			s = base.OpenSession();
 			s.BeginTransaction();
 			a = (A)s.Merge(a);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
-			await (this.VerifyModificationsAsync(a.Id, CancellationToken.None));
+			await (this.VerifyModificationsAsync(a.Id));
 	
 			// add a new (transient) G to collection in h
 			// there is no cascade from H to the collection, so this should fail when merged
@@ -195,8 +195,8 @@ namespace NHibernate.Test.Cascade
 			s.BeginTransaction();
 			A a = new A();
 			a.Data = "Anna";
-			await (s.SaveAsync(a, CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(a));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
 			// modify detached entity
@@ -205,10 +205,10 @@ namespace NHibernate.Test.Cascade
 			s = base.OpenSession();
 			s.BeginTransaction();
 			a = (A)s.Merge(a);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
-			await (this.VerifyModificationsAsync(a.Id, CancellationToken.None));
+			await (this.VerifyModificationsAsync(a.Id));
 	
 			// change the one-to-one association from g to be a new (transient) A
 			// there is no cascade from G to A, so this should fail when merged
@@ -247,8 +247,8 @@ namespace NHibernate.Test.Cascade
 			s.BeginTransaction();
 			A a = new A();
 			a.Data = "Anna";
-			await (s.SaveAsync(a, CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(a));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
 			// modify detached entity
@@ -257,10 +257,10 @@ namespace NHibernate.Test.Cascade
 			s = base.OpenSession();
 			s.BeginTransaction();
 			a = (A)s.Merge(a);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
-			await (this.VerifyModificationsAsync(a.Id, CancellationToken.None));
+			await (this.VerifyModificationsAsync(a.Id));
 	
 			// change the many-to-one association from h to be a new (transient) A
 			// there is no cascade from H to A, so this should fail when merged

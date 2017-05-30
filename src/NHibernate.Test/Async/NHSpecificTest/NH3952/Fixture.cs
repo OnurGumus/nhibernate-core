@@ -21,7 +21,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3952
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -65,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3952
 				var result = await (session.Query<Entity>()
 					.Select(e => new { e.Name, children = e.Children.Select(c => c.Name).ToArray() })
 					.OrderBy(e => e.Name)
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.AreEqual(3, result.Count);
 				Assert.AreEqual(2, result[0].children.Length);
@@ -85,7 +84,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3952
 				var result = await (session.Query<Entity>()
 					.Select(e => new { e.Name, e.Hobbies })
 					.OrderBy(e => e.Name)
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.AreEqual(3, result.Count);
 				Assert.AreEqual(2, result[2].Hobbies.Length);

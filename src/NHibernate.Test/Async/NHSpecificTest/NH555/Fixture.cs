@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH555
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -25,13 +24,13 @@ namespace NHibernate.Test.NHSpecificTest.NH555
 			{
 				Customer c = new Customer();
 				c.Name = "TestCustomer";
-				await (s.SaveAsync(c, CancellationToken.None));
+				await (s.SaveAsync(c));
 
 				Article art = new Article();
 				art.Name = "TheArticle1";
 				art.Price = 10.5M;
 
-				await (s.SaveAsync(art, CancellationToken.None));
+				await (s.SaveAsync(art));
 
 				Order o = c.CreateNewOrder();
 
@@ -41,8 +40,8 @@ namespace NHibernate.Test.NHSpecificTest.NH555
 
 				o.AddOrderLine(ol);
 
-				await (s.SaveAsync(o, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(o));
+				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -55,19 +54,19 @@ namespace NHibernate.Test.NHSpecificTest.NH555
 				q.SetInt32("custId", 1);
 				q.SetDateTime("orderDate", DateTime.Now.AddMonths(-3));
 
-				Assert.AreEqual(52.5m, (decimal) await (q.UniqueResultAsync(CancellationToken.None)));
+				Assert.AreEqual(52.5m, (decimal) await (q.UniqueResultAsync()));
 			}
 
 			using (ISession s = OpenSession())
 			{
-				Order o = (Order) await (s.CreateQuery("from Order").UniqueResultAsync(CancellationToken.None));
+				Order o = (Order) await (s.CreateQuery("from Order").UniqueResultAsync());
 				OrderLine ol = (OrderLine) o.OrderLines[0];
-				await (s.DeleteAsync(ol, CancellationToken.None));
+				await (s.DeleteAsync(ol));
 				o.OrderLines.RemoveAt(0);
-				await (s.DeleteAsync(o, CancellationToken.None));
-				await (s.DeleteAsync(o.OwningCustomer, CancellationToken.None));
-				await (s.DeleteAsync("from Article", CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync(o));
+				await (s.DeleteAsync(o.OwningCustomer));
+				await (s.DeleteAsync("from Article"));
+				await (s.FlushAsync());
 			}
 		}
 	}

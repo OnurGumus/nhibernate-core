@@ -17,7 +17,6 @@ using System.Collections.Generic;
 namespace NHibernate.Test.Ondelete
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class JoinedSubclassFixtureAsync : TestCase
 	{
@@ -43,9 +42,9 @@ namespace NHibernate.Test.Ondelete
 			F f1 = new F("thing2", "blue");
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.SaveAsync(g1, CancellationToken.None));
-			await (s.SaveAsync(f1, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(g1));
+			await (s.SaveAsync(f1));
+			await (t.CommitAsync());
 			s.Close();
 
 			IStatistics statistics = sessions.Statistics;
@@ -53,12 +52,12 @@ namespace NHibernate.Test.Ondelete
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IList<E> l = await (s.CreateQuery("from E").ListAsync<E>(CancellationToken.None));
+			IList<E> l = await (s.CreateQuery("from E").ListAsync<E>());
 			statistics.Clear();
 
-			await (s.DeleteAsync(l[0], CancellationToken.None));
-			await (s.DeleteAsync(l[1], CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(l[0]));
+			await (s.DeleteAsync(l[1]));
+			await (t.CommitAsync());
 			s.Close();
 
 			Assert.AreEqual(2, statistics.EntityDeleteCount);

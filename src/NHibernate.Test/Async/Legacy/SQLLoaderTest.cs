@@ -57,13 +57,13 @@ namespace NHibernate.Test.Legacy
 
 			Simple sim = new Simple();
 			sim.Date = DateTime.Today; // NB We don't use Now() due to the millisecond alignment problem with SQL Server
-			await (session.SaveAsync(sim, 1L, CancellationToken.None));
+			await (session.SaveAsync(sim, 1L));
 			IQuery q = session.CreateSQLQuery("select {sim.*} from Simple {sim} where {sim}.date_ = ?")
 				.AddEntity("sim", typeof(Simple));
 			q.SetTimestamp(0, sim.Date);
-			Assert.AreEqual(1, (await (q.ListAsync(CancellationToken.None))).Count, "q.List.Count");
-			await (session.DeleteAsync(sim, CancellationToken.None));
-			await (txn.CommitAsync(CancellationToken.None));
+			Assert.AreEqual(1, (await (q.ListAsync())).Count, "q.List.Count");
+			await (session.DeleteAsync(sim));
+			await (txn.CommitAsync());
 			session.Close();
 		}
 
@@ -80,14 +80,14 @@ namespace NHibernate.Test.Legacy
 
 			Simple sim = new Simple();
 			sim.Date = DateTime.Today; // NB We don't use Now() due to the millisecond alignment problem with SQL Server
-			await (session.SaveAsync(sim, 1L, CancellationToken.None));
+			await (session.SaveAsync(sim, 1L));
 			IQuery q =
 				session.CreateSQLQuery("select {sim.*} from Simple {sim} where {sim}.date_ = :fred")
 				.AddEntity("sim", typeof(Simple));
 			q.SetTimestamp("fred", sim.Date);
-			Assert.AreEqual(1, (await (q.ListAsync(CancellationToken.None))).Count, "q.List.Count");
-			await (session.DeleteAsync(sim, CancellationToken.None));
-			await (txn.CommitAsync(CancellationToken.None));
+			Assert.AreEqual(1, (await (q.ListAsync())).Count, "q.List.Count");
+			await (session.DeleteAsync(sim));
+			await (txn.CommitAsync());
 			session.Close();
 		}
 
@@ -99,30 +99,30 @@ namespace NHibernate.Test.Legacy
 			Category s = new Category();
 			s.Name = nextLong.ToString();
 			nextLong++;
-			await (session.SaveAsync(s, CancellationToken.None));
+			await (session.SaveAsync(s));
 
 			Simple simple = new Simple();
 			simple.Init();
-			await (session.SaveAsync(simple, nextLong++, CancellationToken.None));
+			await (session.SaveAsync(simple, nextLong++));
 
 			A a = new A();
-			await (session.SaveAsync(a, CancellationToken.None));
+			await (session.SaveAsync(a));
 
 			//B b = new B();
 			//session.Save( b );
 
 			await (session.CreateSQLQuery("select {category.*} from Category {category}")
-				.AddEntity("category", typeof(Category)).ListAsync(CancellationToken.None));
+				.AddEntity("category", typeof(Category)).ListAsync());
 			await (session.CreateSQLQuery("select {simple.*} from Simple {simple}")
-				.AddEntity("simple", typeof(Simple)).ListAsync(CancellationToken.None));
+				.AddEntity("simple", typeof(Simple)).ListAsync());
 			await (session.CreateSQLQuery("select {a.*} from A {a}")
-				.AddEntity("a", typeof(A)).ListAsync(CancellationToken.None));
+				.AddEntity("a", typeof(A)).ListAsync());
 
-			await (session.DeleteAsync(s, CancellationToken.None));
-			await (session.DeleteAsync(simple, CancellationToken.None));
-			await (session.DeleteAsync(a, CancellationToken.None));
+			await (session.DeleteAsync(s));
+			await (session.DeleteAsync(simple));
+			await (session.DeleteAsync(a));
 			//session.Delete( b );
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.FlushAsync());
 			session.Close();
 		}
 
@@ -134,21 +134,21 @@ namespace NHibernate.Test.Legacy
 			Category s = new Category();
 			s.Name = nextLong.ToString();
 			nextLong++;
-			await (session.SaveAsync(s, CancellationToken.None));
+			await (session.SaveAsync(s));
 
 			s = new Category();
 			s.Name = "WannaBeFound";
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.FlushAsync());
 
 			IQuery query =
 				session.CreateSQLQuery("select {category.*} from Category {category} where {category}.Name = :Name")
 				.AddEntity("category",typeof(Category));
 			query.SetProperties(s);
 
-			await (query.ListAsync(CancellationToken.None));
+			await (query.ListAsync());
 
-			await (session.DeleteAsync("from Category", CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.DeleteAsync("from Category"));
+			await (session.FlushAsync());
 			session.Close();
 		}
 
@@ -163,18 +163,18 @@ namespace NHibernate.Test.Legacy
 			assn.Id = "i.d.";
 			assn.Categories = new List<Category> {c};
 			c.Assignable = assn;
-			await (s.SaveAsync(assn, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(assn));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
 			IList list = await (s.CreateSQLQuery("select {category.*} from Category {category}")
-				.AddEntity("category", typeof(Category)).ListAsync(CancellationToken.None));
+				.AddEntity("category", typeof(Category)).ListAsync());
 			Assert.AreEqual(1, list.Count, "Count differs");
 
-			await (s.DeleteAsync("from Assignable", CancellationToken.None));
-			await (s.DeleteAsync("from Category", CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync("from Assignable"));
+			await (s.DeleteAsync("from Category"));
+			await (s.FlushAsync());
 			s.Close();
 		}
 
@@ -189,8 +189,8 @@ namespace NHibernate.Test.Legacy
 			assn.Id = "i.d.";
 			assn.Categories = new List<Category> {c};
 			c.Assignable = assn;
-			await (s.SaveAsync(assn, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(assn));
+			await (s.FlushAsync());
 
 			c = new Category();
 			c.Name = "NAME2";
@@ -198,13 +198,13 @@ namespace NHibernate.Test.Legacy
 			assn.Id = "i.d.2";
 			assn.Categories = new List<Category> { c };
 			c.Assignable = assn;
-			await (s.SaveAsync(assn, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(assn));
+			await (s.FlushAsync());
 
 			assn = new Assignable();
 			assn.Id = "i.d.3";
-			await (s.SaveAsync(assn, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(assn));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
@@ -215,14 +215,14 @@ namespace NHibernate.Test.Legacy
 					await (s.CreateSQLQuery("select {category.*}, {assignable.*} from Category {category}, \"assign able\" {assignable}")
 					.AddEntity("category",   typeof(Category))
 					.AddEntity("assignable", typeof(Assignable))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				Assert.AreEqual(6, list.Count, "Count differs"); // cross-product of 2 categories x 3 assignables;
 				Assert.IsTrue(list[0] is object[]);
 			}
 
-			await (s.DeleteAsync("from Assignable", CancellationToken.None));
-			await (s.DeleteAsync("from Category", CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync("from Assignable"));
+			await (s.DeleteAsync("from Category"));
+			await (s.FlushAsync());
 			s.Close();
 		}
 
@@ -236,36 +236,36 @@ namespace NHibernate.Test.Legacy
 			assn.Id = "i.d.";
 			assn.Categories = new List<Category> { c };
 			c.Assignable = assn;
-			await (s.SaveAsync(assn, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(assn));
+			await (s.FlushAsync());
 			c = new Category();
 			c.Name = "Best";
 			assn = new Assignable();
 			assn.Id = "i.d.2";
 			assn.Categories = new List<Category> {c};
 			c.Assignable = assn;
-			await (s.SaveAsync(assn, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(assn));
+			await (s.FlushAsync());
 			c = new Category();
 			c.Name = "Better";
 			assn = new Assignable();
 			assn.Id = "i.d.7";
 			assn.Categories = new List<Category> {c};
 			c.Assignable = assn;
-			await (s.SaveAsync(assn, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(assn));
+			await (s.FlushAsync());
 
 			assn = new Assignable();
 			assn.Id = "i.d.3";
-			await (s.SaveAsync(assn, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(assn));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
 			IQuery basicParam =
 				s.CreateSQLQuery("select {category.*} from Category {category} where {category}.Name = 'Best'")
 				.AddEntity("category", typeof(Category));
-			IList list = await (basicParam.ListAsync(CancellationToken.None));
+			IList list = await (basicParam.ListAsync());
 			Assert.AreEqual(1, list.Count);
 
 			IQuery unnamedParam =
@@ -273,7 +273,7 @@ namespace NHibernate.Test.Legacy
 				.AddEntity("category", typeof(Category));
 			unnamedParam.SetString(0, "Good");
 			unnamedParam.SetString(1, "Best");
-			list = await (unnamedParam.ListAsync(CancellationToken.None));
+			list = await (unnamedParam.ListAsync());
 			Assert.AreEqual(2, list.Count);
 
 			IQuery namedParam =
@@ -282,12 +282,12 @@ namespace NHibernate.Test.Legacy
 					.AddEntity("category", typeof(Category));
 			namedParam.SetString("firstCat", "Better");
 			namedParam.SetString("secondCat", "Best");
-			list = await (namedParam.ListAsync(CancellationToken.None));
+			list = await (namedParam.ListAsync());
 			Assert.AreEqual(2, list.Count);
 
-			await (s.DeleteAsync("from Assignable", CancellationToken.None));
-			await (s.DeleteAsync("from Category", CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync("from Assignable"));
+			await (s.DeleteAsync("from Category"));
+			await (s.FlushAsync());
 			s.Close();
 		}
 
@@ -301,11 +301,11 @@ namespace NHibernate.Test.Legacy
 
 			A savedA = new A();
 			savedA.Name = "Max";
-			await (session.SaveAsync(savedA, CancellationToken.None));
+			await (session.SaveAsync(savedA));
 
 			B savedB = new B();
-			await (session.SaveAsync(savedB, CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.SaveAsync(savedB));
+			await (session.FlushAsync());
 
 			session.Close();
 
@@ -332,13 +332,13 @@ namespace NHibernate.Test.Legacy
 			}
 			*/
 
-			IList list = await (query.ListAsync(CancellationToken.None));
+			IList list = await (query.ListAsync());
 
 			Assert.IsNotNull(list);
 			Assert.AreEqual(1, list.Count);
 
-			await (session.DeleteAsync("from A", CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.DeleteAsync("from A"));
+			await (session.FlushAsync());
 			session.Close();
 		}
 
@@ -352,13 +352,13 @@ namespace NHibernate.Test.Legacy
 
 			A savedA = new A();
 			savedA.Name = "Max";
-			await (session.SaveAsync(savedA, CancellationToken.None));
+			await (session.SaveAsync(savedA));
 
 			B savedB = new B();
-			await (session.SaveAsync(savedB, CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.SaveAsync(savedB));
+			await (session.FlushAsync());
 
-			int count = (await (session.CreateQuery("from A").ListAsync(CancellationToken.None))).Count;
+			int count = (await (session.CreateQuery("from A").ListAsync())).Count;
 			session.Close();
 
 			session = OpenSession();
@@ -371,15 +371,15 @@ namespace NHibernate.Test.Legacy
 					" where a.identifier_column = b.identifier_column")
 					.AddEntity("a1", typeof(A))
 					.AddEntity("a2",typeof(A));
-			IList list = await (query.ListAsync(CancellationToken.None));
+			IList list = await (query.ListAsync());
 
 			Assert.IsNotNull(list);
 
 			Assert.AreEqual(2, list.Count);
 			// On Firebird the list has 4 elements, I don't understand why.
 
-			await (session.DeleteAsync("from A", CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.DeleteAsync("from A"));
+			await (session.FlushAsync());
 			session.Close();
 		}
 
@@ -391,14 +391,14 @@ namespace NHibernate.Test.Legacy
 			Single s = new Single();
 			s.Id = "my id";
 			s.String = "string 1";
-			await (session.SaveAsync(s, CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.SaveAsync(s));
+			await (session.FlushAsync());
 			session.Clear();
 
 			IQuery query = session.CreateSQLQuery("select {sing.*} from Single {sing}")
 				.AddEntity("sing", typeof(Single));
 
-			IList list = await (query.ListAsync(CancellationToken.None));
+			IList list = await (query.ListAsync());
 
 			Assert.IsTrue(list.Count == 1);
 
@@ -407,7 +407,7 @@ namespace NHibernate.Test.Legacy
 			query = session.CreateSQLQuery("select {sing.*} from Single {sing} where sing.Id = ?")
 				.AddEntity("sing", typeof(Single));
 			query.SetString(0, "my id");
-			list = await (query.ListAsync(CancellationToken.None));
+			list = await (query.ListAsync());
 
 			Assert.IsTrue(list.Count == 1);
 
@@ -418,7 +418,7 @@ namespace NHibernate.Test.Legacy
 					"select s.id as {sing.Id}, s.string_ as {sing.String}, s.prop as {sing.Prop} from Single s where s.Id = ?")
 					.AddEntity("sing", typeof(Single));
 			query.SetString(0, "my id");
-			list = await (query.ListAsync(CancellationToken.None));
+			list = await (query.ListAsync());
 
 			Assert.IsTrue(list.Count == 1);
 
@@ -430,26 +430,26 @@ namespace NHibernate.Test.Legacy
 					"select s.id as {sing.Id}, s.string_ as {sing.String}, s.prop as {sing.Prop} from Single s where s.Id = ?")
 					.AddEntity("sing", typeof(Single));
 			query.SetString(0, "my id");
-			list = await (query.ListAsync(CancellationToken.None));
+			list = await (query.ListAsync());
 
 			Assert.IsTrue(list.Count == 1);
 
-			await (session.DeleteAsync(list[0], CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.DeleteAsync(list[0]));
+			await (session.FlushAsync());
 			session.Close();
 		}
 
 		[Test]
 		public Task ComponentStarAsync()
 		{
-			return ComponentTestAsync("select {comp.*} from Componentizable comp", CancellationToken.None);
+			return ComponentTestAsync("select {comp.*} from Componentizable comp");
 		}
 
 		[Test]
 		public Task ComponentNoStarAsync()
 		{
 			return ComponentTestAsync(
-				"select comp.Id as {comp.id}, comp.nickName as {comp.NickName}, comp.Name as {comp.Component.Name}, comp.SubName as {comp.Component.SubComponent.SubName}, comp.SubName1 as {comp.Component.SubComponent.SubName1} from Componentizable comp", CancellationToken.None);
+				"select comp.Id as {comp.id}, comp.nickName as {comp.NickName}, comp.Name as {comp.Component.Name}, comp.SubName as {comp.Component.SubComponent.SubName}, comp.SubName1 as {comp.Component.SubComponent.SubName1} from Componentizable comp");
 		}
 
 		private async Task ComponentTestAsync(string sql, CancellationToken cancellationToken = default(CancellationToken))
@@ -497,20 +497,20 @@ namespace NHibernate.Test.Legacy
 
 			nextLong++;
 			s.Name = nextLong.ToString();
-			await (session.SaveAsync(s, CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.SaveAsync(s));
+			await (session.FlushAsync());
 
 			IQuery query =
 				session.CreateSQLQuery(
 					"select s.category_key_col as {category.id}, s.Name as {category.Name}, s.\"assign able id\" as {category.Assignable} from {category} s")
 					.AddEntity("category", typeof(Category));
-			IList list = await (query.ListAsync(CancellationToken.None));
+			IList list = await (query.ListAsync());
 
 			Assert.IsNotNull(list);
 			Assert.IsTrue(list.Count > 0);
 			Assert.IsTrue(list[0] is Category);
-			await (session.DeleteAsync(list[0], CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.DeleteAsync(list[0]));
+			await (session.FlushAsync());
 			session.Close();
 			// How do we handle objects with composite id's ? (such as Single)
 		}
@@ -524,8 +524,8 @@ namespace NHibernate.Test.Legacy
 			Category s = new Category();
 			nextLong++;
 			s.Name = nextLong.ToString();
-			await (session.SaveAsync(s, CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.SaveAsync(s));
+			await (session.FlushAsync());
 			session.Close();
 
 			session = OpenSession();
@@ -534,7 +534,7 @@ namespace NHibernate.Test.Legacy
 				session.CreateSQLQuery(
 					"select s.category_key_col as {category.id}, s.Name as {category.Name}, s.\"assign able id\" as {category.Assignable} from {category} s")
 					.AddEntity("category", typeof(Category));
-			IList list = await (query.ListAsync(CancellationToken.None));
+			IList list = await (query.ListAsync());
 
 			Assert.IsNotNull(list);
 			Assert.IsTrue(list.Count > 0);
@@ -542,8 +542,8 @@ namespace NHibernate.Test.Legacy
 
 			// How do we handle objects that does not have id property (such as Simple ?)
 			// How do we handle objects with composite id's ? (such as Single)
-			await (session.DeleteAsync(list[0], CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.DeleteAsync(list[0]));
+			await (session.FlushAsync());
 			session.Close();
 		}
 
@@ -554,17 +554,17 @@ namespace NHibernate.Test.Legacy
 
 			ISession session = OpenSession();
 			A savedA = new A();
-			await (session.SaveAsync(savedA, CancellationToken.None));
+			await (session.SaveAsync(savedA));
 
 			B savedB = new B();
-			await (session.SaveAsync(savedB, CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.SaveAsync(savedB));
+			await (session.FlushAsync());
 
 			IQuery query =
 				session.CreateSQLQuery(
 					"select identifier_column as {a.id}, clazz_discriminata as {a.class}, name as {a.Name}, count_ as {a.Count} from {a} s")
 					.AddEntity("a", typeof(A));
-			IList list = await (query.ListAsync(CancellationToken.None));
+			IList list = await (query.ListAsync());
 
 			Assert.IsNotNull(list);
 			Assert.AreEqual(2, list.Count);
@@ -586,8 +586,8 @@ namespace NHibernate.Test.Legacy
 				Assert.AreSame(a1, savedA);
 			}
 
-			await (session.DeleteAsync("from A", CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.DeleteAsync("from A"));
+			await (session.FlushAsync());
 			session.Close();
 		}
 
@@ -598,13 +598,13 @@ namespace NHibernate.Test.Legacy
 
 			ISession session = OpenSession();
 			A savedA = new A();
-			await (session.SaveAsync(savedA, CancellationToken.None));
+			await (session.SaveAsync(savedA));
 
 			B savedB = new B();
-			await (session.SaveAsync(savedB, CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.SaveAsync(savedB));
+			await (session.FlushAsync());
 
-			int count = (await (session.CreateQuery("from A").ListAsync(CancellationToken.None))).Count;
+			int count = (await (session.CreateQuery("from A").ListAsync())).Count;
 			session.Close();
 
 			session = OpenSession();
@@ -612,13 +612,13 @@ namespace NHibernate.Test.Legacy
 			IQuery query = session.CreateSQLQuery(
 				"select identifier_column as {a.id}, clazz_discriminata as {a.class}, count_ as {a.Count}, name as {a.Name}, anothername as {a.AnotherName} from A")
 				.AddEntity("a", typeof(A));
-			IList list = await (query.ListAsync(CancellationToken.None));
+			IList list = await (query.ListAsync());
 
 			Assert.IsNotNull(list);
 			Assert.AreEqual(count, list.Count);
 
-			await (session.DeleteAsync("from A", CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.DeleteAsync("from A"));
+			await (session.FlushAsync());
 			session.Close();
 		}
 
@@ -638,14 +638,14 @@ namespace NHibernate.Test.Legacy
 			assn.Id = "i.d.";
 			assn.Categories = new List<Category> {c};
 			c.Assignable = assn;
-			await (s.SaveAsync(assn, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(assn));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
 			IQuery q = s.GetNamedQuery("namedsql");
 			Assert.IsNotNull(q, "should have found 'namedsql'");
-			IList list = await (q.ListAsync(CancellationToken.None));
+			IList list = await (q.ListAsync());
 			Assert.IsNotNull(list, "executing query returns list");
 
 			object[] values = list[0] as object[];
@@ -654,9 +654,9 @@ namespace NHibernate.Test.Legacy
 
 			Assert.AreEqual(typeof(Category), values[0].GetType(), "should be a Category");
 			Assert.AreEqual(typeof(Assignable), values[1].GetType(), "should be Assignable");
-			await (s.DeleteAsync("from Category", CancellationToken.None));
-			await (s.DeleteAsync("from Assignable", CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync("from Category"));
+			await (s.DeleteAsync("from Assignable"));
+			await (s.FlushAsync());
 			s.Close();
 		}
 	}

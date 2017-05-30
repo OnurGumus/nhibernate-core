@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2772
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : TestCaseMappingByCode
 	{
@@ -96,7 +95,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2772
 			using (var s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				var trip = await (s.GetAsync<Trip>(1, CancellationToken.None));
+				var trip = await (s.GetAsync<Trip>(1));
 				Assert.That(trip.Trackpoints.Count(), Is.EqualTo(3));
 			}
 		}

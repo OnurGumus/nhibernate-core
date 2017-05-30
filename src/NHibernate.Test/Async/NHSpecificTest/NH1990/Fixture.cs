@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1990
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -72,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1990
 					filter.SetParameter("Status", 1);
 
 					ICriteria criteria = s.CreateCriteria(typeof (NewsFeed), "NewsFeed");
-					IList<NewsFeed> feeds = await (criteria.ListAsync<NewsFeed>(CancellationToken.None));
+					IList<NewsFeed> feeds = await (criteria.ListAsync<NewsFeed>());
 
 					Assert.That(feeds.Count, Is.EqualTo(5));
 					foreach (NewsFeed feed in feeds)
@@ -80,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1990
 						Assert.That(feed.Items.Count, Is.EqualTo(4));
 					}
 
-					await (tx.CommitAsync(CancellationToken.None));
+					await (tx.CommitAsync());
 				}
 			}
 		}
@@ -98,7 +97,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1990
 					ICriteria criteria = s.CreateCriteria(typeof (NewsFeed), "NewsFeed");
 					criteria.Add(Restrictions.In("Url", new[] {"Feed2Uri", "Feed4Uri", "Feed8Uri"}));
 
-					IList<NewsFeed> feeds = await (criteria.ListAsync<NewsFeed>(CancellationToken.None));
+					IList<NewsFeed> feeds = await (criteria.ListAsync<NewsFeed>());
 
 					Assert.That(feeds.Count, Is.EqualTo(3));
 					foreach (NewsFeed feed in feeds)
@@ -106,7 +105,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1990
 						Assert.That(feed.Items.Count, Is.EqualTo(4));
 					}
 
-					await (tx.CommitAsync(CancellationToken.None));
+					await (tx.CommitAsync());
 				}
 			}
 		}
@@ -130,7 +129,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1990
 					query.SetString(1, "Feed8Uri");
 					query.SetParameterList("TitleList", new[] {"Feed2", "Feed4", "Feed8"});
 
-					IList<NewsFeed> feeds = await (query.ListAsync<NewsFeed>(CancellationToken.None));
+					IList<NewsFeed> feeds = await (query.ListAsync<NewsFeed>());
 
 					Assert.That(feeds.Count, Is.EqualTo(2));
 					foreach (NewsFeed feed in feeds)
@@ -138,7 +137,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1990
 						Assert.That(feed.Items.Count, Is.EqualTo(4));
 					}
 
-					await (tx.CommitAsync(CancellationToken.None));
+					await (tx.CommitAsync());
 				}
 			}
 		}

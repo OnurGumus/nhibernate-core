@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.ListIndex
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SimpleOneToManyTestAsync : TestCase
 	{
@@ -36,15 +35,15 @@ namespace NHibernate.Test.ListIndex
 			{
 				var galery = new Galery();
 				galery.Images.Add(new Image {Path = "image01.jpg"});
-				await (s.PersistAsync(galery, CancellationToken.None));
-				Assert.DoesNotThrowAsync(() => tx.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(galery));
+				Assert.DoesNotThrowAsync(() => tx.CommitAsync());
 			}
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				await (s.CreateQuery("delete from Image").ExecuteUpdateAsync(CancellationToken.None));
-				await (s.CreateQuery("delete from Galery").ExecuteUpdateAsync(CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.CreateQuery("delete from Image").ExecuteUpdateAsync());
+				await (s.CreateQuery("delete from Galery").ExecuteUpdateAsync());
+				await (tx.CommitAsync());
 			}
 		}
 	}

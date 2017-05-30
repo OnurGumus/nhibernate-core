@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2378
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -69,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2378
 							: string.Empty
 					})
 					.Where(o => o.PersonId == 2)
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 
 				Assert.That(m.Count, Is.EqualTo(1));

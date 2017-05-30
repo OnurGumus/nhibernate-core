@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Ondelete
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class ParentChildFixtureAsync : TestCase
 	{
@@ -47,9 +46,9 @@ namespace NHibernate.Test.Ondelete
 			Parent q = new Parent("bar");
 			q.Children.Add(new Child(q, "bar1"));
 			q.Children.Add(new Child(q, "bar2"));
-			await (s.SaveAsync(p, CancellationToken.None));
-			await (s.SaveAsync(q, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(p));
+			await (s.SaveAsync(q));
+			await (t.CommitAsync());
 			s.Close();
 
 			IStatistics statistics = sessions.Statistics;
@@ -57,23 +56,23 @@ namespace NHibernate.Test.Ondelete
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IList<Parent> l = await (s.CreateQuery("from Parent").ListAsync<Parent>(CancellationToken.None));
+			IList<Parent> l = await (s.CreateQuery("from Parent").ListAsync<Parent>());
 			p = l[0];
 			q = l[1];
 			statistics.Clear();
 
-			await (s.DeleteAsync(p, CancellationToken.None));
-			await (s.DeleteAsync(q, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(p));
+			await (s.DeleteAsync(q));
+			await (t.CommitAsync());
 
 			Assert.AreEqual(2, statistics.PrepareStatementCount);
 			Assert.AreEqual(6, statistics.EntityDeleteCount);
 
 			t = s.BeginTransaction();
-			IList names = await (s.CreateQuery("from Parent p").ListAsync(CancellationToken.None));
+			IList names = await (s.CreateQuery("from Parent p").ListAsync());
 			Assert.AreEqual(0, names.Count);
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 		}
 	}

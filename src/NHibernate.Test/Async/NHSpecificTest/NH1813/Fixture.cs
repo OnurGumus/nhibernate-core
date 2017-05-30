@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1813
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync: BugTestCase
 	{
@@ -30,22 +29,22 @@ namespace NHibernate.Test.NHSpecificTest.NH1813
 			using (ISession s = OpenSession())
 			using(ITransaction t = s .BeginTransaction())
 			{
-				await (s.SaveAsync(new EntityWithUnique {Id = 1, Description = "algo"}, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new EntityWithUnique {Id = 1, Description = "algo"}));
+				await (t.CommitAsync());
 			}
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new EntityWithUnique { Id = 2, Description = "algo" }, CancellationToken.None));
-				var exception = Assert.ThrowsAsync<GenericADOException>(() => t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new EntityWithUnique { Id = 2, Description = "algo" }));
+				var exception = Assert.ThrowsAsync<GenericADOException>(() => t.CommitAsync());
 				Assert.That(exception.Message, Does.Contain("INSERT"), "should contain SQL");
 				Assert.That(exception.Message, Does.Contain("#2"), "should contain id");
 			}
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.CreateQuery("delete from EntityWithUnique").ExecuteUpdateAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.CreateQuery("delete from EntityWithUnique").ExecuteUpdateAsync());
+				await (t.CommitAsync());
 			}
 		}
 
@@ -55,23 +54,23 @@ namespace NHibernate.Test.NHSpecificTest.NH1813
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new EntityWithUnique { Id = 1, Description = "algo" }, CancellationToken.None));
-				await (s.SaveAsync(new EntityWithUnique { Id = 2, Description = "mas" }, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new EntityWithUnique { Id = 1, Description = "algo" }));
+				await (s.SaveAsync(new EntityWithUnique { Id = 2, Description = "mas" }));
+				await (t.CommitAsync());
 			}
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				var e = await (s.GetAsync<EntityWithUnique>(2, CancellationToken.None));
+				var e = await (s.GetAsync<EntityWithUnique>(2));
 				e.Description = "algo";
-				var exception = Assert.ThrowsAsync<GenericADOException>(() => t.CommitAsync(CancellationToken.None));
+				var exception = Assert.ThrowsAsync<GenericADOException>(() => t.CommitAsync());
 				Assert.That(exception.Message, Does.Contain("UPDATE"), "should contain SQL");
 			}
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.CreateQuery("delete from EntityWithUnique").ExecuteUpdateAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.CreateQuery("delete from EntityWithUnique").ExecuteUpdateAsync());
+				await (t.CommitAsync());
 			}
 		}
 	}

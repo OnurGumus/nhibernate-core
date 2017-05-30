@@ -16,7 +16,6 @@ using NHibernate.Test.ExceptionsTest;
 namespace NHibernate.Test.NHSpecificTest.NH2020
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -53,12 +52,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2020
 			using(var tx = s.BeginTransaction())
 			{
 				var one = new One();
-				await (s.SaveAsync(one, CancellationToken.None));
+				await (s.SaveAsync(one));
 
 				var many = new Many { One = one };
-				await (s.SaveAsync(many, CancellationToken.None));
+				await (s.SaveAsync(many));
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 
 				oneId = one.Id;
 			}
@@ -66,8 +65,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2020
 			using(ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				var one = await (s.LoadAsync<One>(oneId, CancellationToken.None));
-				await (s.DeleteAsync(one, CancellationToken.None));
+				var one = await (s.LoadAsync<One>(oneId));
+				await (s.DeleteAsync(one));
 				Assert.That(() => tx.Commit(), Throws.TypeOf<ConstraintViolationException>());
 			}
 		}

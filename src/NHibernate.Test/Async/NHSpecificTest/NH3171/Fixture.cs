@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3171
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -60,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3171
 				await (s.CreateCriteria<Artist>("a")
 					.CreateAlias("a.Song", "s")
 					.Add(Restrictions.Eq("s.Name", "Miss Kiss Kiss Bang"))
-					.ListAsync<Artist>(CancellationToken.None));
+					.ListAsync<Artist>());
 			}
 		}
 	}

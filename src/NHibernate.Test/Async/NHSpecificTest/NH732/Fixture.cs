@@ -19,7 +19,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH732
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -36,33 +35,33 @@ namespace NHibernate.Test.NHSpecificTest.NH732
 			{
 				User user = new User();
 				user.UserName = @"Domain\User";
-				await (session.SaveAsync(user, CancellationToken.None));
+				await (session.SaveAsync(user));
 				Role role = new Role();
 				role.RoleName = "ADMINS";
-				await (session.SaveAsync(role, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.SaveAsync(role));
+				await (session.FlushAsync());
 			}
 			using (ISession session = OpenSession())
 			{
-				User user = (User) await (session.LoadAsync(typeof(User), "DOMAIN\\USER", CancellationToken.None));
-				Role role = (Role) await (session.LoadAsync(typeof(Role), "Admins", CancellationToken.None));
+				User user = (User) await (session.LoadAsync(typeof(User), "DOMAIN\\USER"));
+				Role role = (Role) await (session.LoadAsync(typeof(Role), "Admins"));
 				UserToRole userToRole = new UserToRole();
 				userToRole.User = user;
 				userToRole.Role = role;
-				await (session.SaveAsync(userToRole, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.SaveAsync(userToRole));
+				await (session.FlushAsync());
 			}
 
 			using (ISession session = OpenSession())
 			{
-				User user = await (session.GetAsync<User>("domain\\user", CancellationToken.None));
+				User user = await (session.GetAsync<User>("domain\\user"));
 				Assert.AreEqual(1, user.UserToRoles.Count);
 			}
 			
 			using (ISession session = OpenSession())
 			{
-				await (session.DeleteAsync("from System.Object o", CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.DeleteAsync("from System.Object o"));
+				await (session.FlushAsync());
 			}
 		}
 	}

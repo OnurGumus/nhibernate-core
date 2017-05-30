@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1182
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync: BugTestCase
 	{
@@ -29,8 +28,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1182
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new ObjectA { Bs = new List<ObjectB> { new ObjectB(), new ObjectB() } }, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new ObjectA { Bs = new List<ObjectB> { new ObjectB(), new ObjectB() } }));
+				await (t.CommitAsync());
 			}
 
 			using (var ls = new SqlLogSpy())
@@ -38,9 +37,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1182
 				using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
-					var a = await (s.CreateCriteria<ObjectA>().UniqueResultAsync<ObjectA>(CancellationToken.None));
-					await (s.DeleteAsync(a, CancellationToken.None));
-					await (t.CommitAsync(CancellationToken.None));
+					var a = await (s.CreateCriteria<ObjectA>().UniqueResultAsync<ObjectA>());
+					await (s.DeleteAsync(a));
+					await (t.CommitAsync());
 				}
 				string wholeLog = ls.GetWholeLog();
 				Assert.That(wholeLog, Does.Not.Contain("UPDATE ObjectA"));
@@ -50,9 +49,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1182
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.CreateQuery("delete from ObjectB").ExecuteUpdateAsync(CancellationToken.None));
-				await (s.CreateQuery("delete from ObjectA").ExecuteUpdateAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.CreateQuery("delete from ObjectB").ExecuteUpdateAsync());
+				await (s.CreateQuery("delete from ObjectA").ExecuteUpdateAsync());
+				await (t.CommitAsync());
 			}
 		}
 	}

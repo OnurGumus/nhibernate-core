@@ -14,7 +14,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3428
 {
 	using NHibernate.Criterion;
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
@@ -67,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3428
 				criteria.SetFirstResult(1).SetMaxResults(1);
 				criteria.AddOrder(Order.Asc("Name"));
 
-				var result = await (criteria.ListAsync(CancellationToken.None));
+				var result = await (criteria.ListAsync());
 
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual("Sally", result[0]);

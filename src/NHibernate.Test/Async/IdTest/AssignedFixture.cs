@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.IdTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	[TestFixture]
 	public class AssignedFixtureAsync : IdFixtureBase
@@ -67,10 +66,10 @@ namespace NHibernate.Test.IdTest
 						Children = new List<Child>(),
 					};
 
-				await (s.SaveOrUpdateAsync(parent, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveOrUpdateAsync(parent));
+				await (t.CommitAsync());
 
-				long actual = await (s.CreateQuery("select count(p) from Parent p").UniqueResultAsync<long>(CancellationToken.None));
+				long actual = await (s.CreateQuery("select count(p) from Parent p").UniqueResultAsync<long>());
 				Assert.That(actual, Is.EqualTo(1));
 
 				string[] warnings = GetAssignedIdentifierWarnings(ls);
@@ -94,10 +93,10 @@ namespace NHibernate.Test.IdTest
 						Children = new List<Child>(),
 					};
 
-				await (s.SaveAsync(parent, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(parent));
+				await (t.CommitAsync());
 
-				long actual = await (s.CreateQuery("select count(p) from Parent p").UniqueResultAsync<long>(CancellationToken.None));
+				long actual = await (s.CreateQuery("select count(p) from Parent p").UniqueResultAsync<long>());
 				Assert.That(actual, Is.EqualTo(1));
 
 				string[] warnings = GetAssignedIdentifierWarnings(ls);
@@ -112,8 +111,8 @@ namespace NHibernate.Test.IdTest
 			{
 				ITransaction t = s.BeginTransaction();
 
-				await (s.SaveAsync(new Parent() { Id = "parent", Name = "before" }, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new Parent() { Id = "parent", Name = "before" }));
+				await (t.CommitAsync());
 			}
 
 			using (LogSpy ls = new LogSpy(LogManager.GetLogger("NHibernate"), Level.Warn))
@@ -128,8 +127,8 @@ namespace NHibernate.Test.IdTest
 						Name = "after",
 					};
 
-				await (s.SaveOrUpdateAsync(parent, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveOrUpdateAsync(parent));
+				await (t.CommitAsync());
 
 				string[] warnings = GetAssignedIdentifierWarnings(ls);
 				Assert.That(warnings.Length, Is.EqualTo(1));
@@ -138,7 +137,7 @@ namespace NHibernate.Test.IdTest
 
 			using (ISession s = OpenSession())
 			{
-				Parent parent = await (s.CreateQuery("from Parent").UniqueResultAsync<Parent>(CancellationToken.None));
+				Parent parent = await (s.CreateQuery("from Parent").UniqueResultAsync<Parent>());
 				Assert.That(parent.Name, Is.EqualTo("after"));
 			}
 		}
@@ -150,8 +149,8 @@ namespace NHibernate.Test.IdTest
 			{
 				ITransaction t = s.BeginTransaction();
 
-				await (s.SaveAsync(new Parent() { Id = "parent", Name = "before" }, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new Parent() { Id = "parent", Name = "before" }));
+				await (t.CommitAsync());
 			}
 
 			using (LogSpy ls = new LogSpy(LogManager.GetLogger("NHibernate"), Level.Warn))
@@ -166,8 +165,8 @@ namespace NHibernate.Test.IdTest
 						Name = "after",
 					};
 
-				await (s.UpdateAsync(parent, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.UpdateAsync(parent));
+				await (t.CommitAsync());
 
 				string[] warnings = GetAssignedIdentifierWarnings(ls);
 				Assert.That(warnings.Length, Is.EqualTo(0));
@@ -175,7 +174,7 @@ namespace NHibernate.Test.IdTest
 
 			using (ISession s = OpenSession())
 			{
-				Parent parent = await (s.CreateQuery("from Parent").UniqueResultAsync<Parent>(CancellationToken.None));
+				Parent parent = await (s.CreateQuery("from Parent").UniqueResultAsync<Parent>());
 				Assert.That(parent.Name, Is.EqualTo("after"));
 			}
 		}
@@ -187,8 +186,8 @@ namespace NHibernate.Test.IdTest
 			{
 				ITransaction t = s.BeginTransaction();
 
-				await (s.SaveAsync(new Child() { Id = "detachedChild" }, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new Child() { Id = "detachedChild" }));
+				await (t.CommitAsync());
 			}
 
 			using (LogSpy ls = new LogSpy(LogManager.GetLogger("NHibernate"), Level.Warn))
@@ -206,10 +205,10 @@ namespace NHibernate.Test.IdTest
 				parent.Children.Add(new Child() { Id = "detachedChild", Parent = parent });
 				parent.Children.Add(new Child() { Id = "transientChild", Parent = parent });
 
-				await (s.SaveAsync(parent, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(parent));
+				await (t.CommitAsync());
 
-				long actual = await (s.CreateQuery("select count(c) from Child c").UniqueResultAsync<long>(CancellationToken.None));
+				long actual = await (s.CreateQuery("select count(c) from Child c").UniqueResultAsync<long>());
 				Assert.That(actual, Is.EqualTo(2));
 
 				string[] warnings = GetAssignedIdentifierWarnings(ls);
@@ -226,8 +225,8 @@ namespace NHibernate.Test.IdTest
 			{
 				ITransaction t = s.BeginTransaction();
 
-				await (s.SaveAsync(new Child() { Id = "persistedChild" }, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new Child() { Id = "persistedChild" }));
+				await (t.CommitAsync());
 			}
 
 			using (LogSpy ls = new LogSpy(LogManager.GetLogger("NHibernate"), Level.Warn))
@@ -242,19 +241,19 @@ namespace NHibernate.Test.IdTest
 						Children = new List<Child>(),
 					};
 
-				await (s.SaveAsync(parent, CancellationToken.None));
+				await (s.SaveAsync(parent));
 
-				Child child1 = await (s.LoadAsync<Child>("persistedChild", CancellationToken.None));
+				Child child1 = await (s.LoadAsync<Child>("persistedChild"));
 				child1.Parent = parent;
 				parent.Children.Add(child1);
 
 				Child child2 = new Child() { Id = "transientChild", Parent = parent };
-				await (s.SaveAsync(child2, CancellationToken.None));
+				await (s.SaveAsync(child2));
 				parent.Children.Add(child2);
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 
-				long actual = await (s.CreateQuery("select count(c) from Child c").UniqueResultAsync<long>(CancellationToken.None));
+				long actual = await (s.CreateQuery("select count(c) from Child c").UniqueResultAsync<long>());
 				Assert.That(actual, Is.EqualTo(2));
 
 				string[] warnings = GetAssignedIdentifierWarnings(ls);

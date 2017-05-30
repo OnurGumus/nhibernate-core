@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH309
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Summary description for Fixture.
 	/// </summary>
@@ -64,17 +63,17 @@ namespace NHibernate.Test.NHSpecificTest.NH309
 			menu.Nodes.Add(childNode2);
 
 			ISession s = OpenSession();
-			await (s.SaveAsync(rootNode, CancellationToken.None));
-			await (s.SaveAsync(childNode1, CancellationToken.None));
-			await (s.SaveAsync(childNode2, CancellationToken.None));
-			await (s.SaveAsync(menu, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(rootNode));
+			await (s.SaveAsync(childNode1));
+			await (s.SaveAsync(childNode2));
+			await (s.SaveAsync(menu));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			rootNode = (Node) await (s.LoadAsync(typeof(Node), 1, CancellationToken.None));
-			Node nodeToBeRemoved = (Node) await (s.LoadAsync(typeof(Node), 3, CancellationToken.None)); // childNode 2 with Id 3
-			Menu menu2 = (Menu) await (s.LoadAsync(typeof(Menu), 1, CancellationToken.None));
+			rootNode = (Node) await (s.LoadAsync(typeof(Node), 1));
+			Node nodeToBeRemoved = (Node) await (s.LoadAsync(typeof(Node), 3)); // childNode 2 with Id 3
+			Menu menu2 = (Menu) await (s.LoadAsync(typeof(Menu), 1));
 
 			int nodePostion = menu2.Nodes.IndexOf(nodeToBeRemoved);
 			Assert.AreEqual(2, nodePostion, "Test IndexOf");
@@ -83,9 +82,9 @@ namespace NHibernate.Test.NHSpecificTest.NH309
 			Assert.AreEqual(rootNode, menu2.Nodes[0], "Test identity first node in menu");
 
 
-			await (s.DeleteAsync("from Node", CancellationToken.None));
-			await (s.DeleteAsync("from Menu", CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync("from Node"));
+			await (s.DeleteAsync("from Menu"));
+			await (s.FlushAsync());
 			s.Close();
 		}
 	}

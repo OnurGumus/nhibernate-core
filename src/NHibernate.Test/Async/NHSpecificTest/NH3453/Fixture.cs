@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3453
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -32,12 +31,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3453
             {
 
                 var direction1 = new Direction { Id1 = 1, Id2 = 1, GUID = Guid.NewGuid() };
-                await (session.SaveAsync(direction1, CancellationToken.None));
+                await (session.SaveAsync(direction1));
                 
                 var direction2 = new Direction { Id1 = 2, Id2 = 2, GUID = Guid.NewGuid() };
-                await (session.SaveAsync(direction2, CancellationToken.None));
+                await (session.SaveAsync(direction2));
                 
-                await (session.FlushAsync(CancellationToken.None));
+                await (session.FlushAsync());
 
                 var directionReferrer = new DirectionReferrer
                                              {
@@ -45,13 +44,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3453
                                                  Direction = direction1, 
                                              };
 
-                await (session.SaveAsync(directionReferrer, CancellationToken.None));
+                await (session.SaveAsync(directionReferrer));
 
                 directionReferrer.Direction = direction2;
 
-                await (session.UpdateAsync(directionReferrer, CancellationToken.None));
+                await (session.UpdateAsync(directionReferrer));
 
-                await (session.FlushAsync(CancellationToken.None));
+                await (session.FlushAsync());
 
                 Console.WriteLine(spy.ToString());
                 Assert.That(true);

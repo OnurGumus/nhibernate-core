@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2033
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -75,7 +74,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2033
 					.JoinAlias(x => x.Customer, () => customerAlias)
 					.Where(() => customerAlias.Name == "John");
 
-				var results = await (query.ListAsync(CancellationToken.None));
+				var results = await (query.ListAsync());
 
 				Assert.That(results, Has.Count.EqualTo(1));
 				Assert.That(results[0].Address, Is.EqualTo("123 E West Ave."));
@@ -94,7 +93,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2033
 					.JoinAlias(x => x.OtherCustomer, () => customerAlias)
 					.Where(() => customerAlias.Name == "Other");
 
-				var results = await (query.ListAsync(CancellationToken.None));
+				var results = await (query.ListAsync());
 
 				Assert.That(results, Has.Count.EqualTo(1));
 				Assert.That(results[0].Address, Is.EqualTo("123 E West Ave."));
@@ -112,7 +111,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2033
 					.Where(x => x.City == "New York")
 					.Where(x => x.Customer.Name == "John");
 
-				var results = await (query.ToListAsync(CancellationToken.None));
+				var results = await (query.ToListAsync());
 
 				Assert.That(results, Has.Count.EqualTo(1));
 				Assert.That(results[0].Address, Is.EqualTo("123 E West Ave."));
@@ -130,7 +129,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2033
 					.CreateCriteria("Customer")
 					.Add(Restrictions.Eq("Name", "John"));
 
-				var results = await (query.ListAsync<CustomerAddress>(CancellationToken.None));
+				var results = await (query.ListAsync<CustomerAddress>());
 
 				Assert.That(results, Has.Count.EqualTo(1));
 				Assert.That(results[0].Address, Is.EqualTo("123 E West Ave."));
@@ -154,7 +153,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2033
 					.SetString("city", "New York")
 					.SetString("name", "John");
 
-				var results = await (query.ListAsync<CustomerAddress>(CancellationToken.None));
+				var results = await (query.ListAsync<CustomerAddress>());
 
 				Assert.That(results, Has.Count.EqualTo(1));
 				Assert.That(results[0].Address, Is.EqualTo("123 E West Ave."));

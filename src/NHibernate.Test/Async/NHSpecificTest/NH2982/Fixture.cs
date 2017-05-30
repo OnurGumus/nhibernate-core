@@ -15,7 +15,6 @@ using NHibernate.Criterion;
 namespace NHibernate.Test.NHSpecificTest.NH2982
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -51,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2982
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var a = await (session.LoadAsync<Entity>(1, CancellationToken.None));
+				var a = await (session.LoadAsync<Entity>(1));
 				var restriction = Restrictions.Eq("A", a);
 				Assert.AreEqual("A = Entity#1", restriction.ToString());
 			}

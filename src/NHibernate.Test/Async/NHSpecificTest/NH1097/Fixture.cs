@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1097
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync:BugTestCase
 	{
@@ -53,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1097
 				                              	{
 													var query = session.CreateQuery("from Person p where p.namecolumn=:nameOfPerson");
 													query.SetString("nameOfPerson", "Dario");
-				                              		return query.ListAsync(CancellationToken.None);
+				                              		return query.ListAsync();
 				                              	});
 			}
 		}

@@ -20,7 +20,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2459
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class TestAsync : BugTestCase
 	{
@@ -44,11 +43,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2459
 			{
 				//first query is OK
 				IQueryable<TrainingComponent> query = session.Query<TrainingComponent>().Where(c => c is SkillSet);
-				Assert.That(!(await (query.ToListAsync(CancellationToken.None))).Any(c => !(c is SkillSet)));
+				Assert.That(!(await (query.ToListAsync())).Any(c => !(c is SkillSet)));
 
 				//Second time round the a cached version of the SQL for the query is used BUT the type parameter is not updated... 
 				query = session.Query<TrainingComponent>().Where(c => c is Qualification);
-				Assert.That(!(await (query.ToListAsync(CancellationToken.None))).Any(c => !(c is Qualification)));
+				Assert.That(!(await (query.ToListAsync())).Any(c => !(c is Qualification)));
 			}
 		}
 

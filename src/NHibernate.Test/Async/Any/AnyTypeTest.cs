@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Any
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class AnyTypeTestAsync : TestCase
 	{
@@ -42,23 +41,23 @@ namespace NHibernate.Test.Any
 			Person person = new Person();
 			Address address = new Address();
 			person.Data = address;
-			await (session.SaveOrUpdateAsync(person, CancellationToken.None));
-			await (session.SaveOrUpdateAsync(address, CancellationToken.None));
-			await (session.Transaction.CommitAsync(CancellationToken.None));
+			await (session.SaveOrUpdateAsync(person));
+			await (session.SaveOrUpdateAsync(address));
+			await (session.Transaction.CommitAsync());
 			session.Close();
 
 			session = OpenSession();
 			session.BeginTransaction();
-			person = (Person) await (session.LoadAsync(typeof (Person), person.Id, CancellationToken.None));
+			person = (Person) await (session.LoadAsync(typeof (Person), person.Id));
 			person.Name = "makingpersondirty";
-			await (session.Transaction.CommitAsync(CancellationToken.None));
+			await (session.Transaction.CommitAsync());
 			session.Close();
 
 			session = OpenSession();
 			session.BeginTransaction();
-			await (session.DeleteAsync(person, CancellationToken.None));
-			await (session.DeleteAsync(address, CancellationToken.None));
-			await (session.Transaction.CommitAsync(CancellationToken.None));
+			await (session.DeleteAsync(person));
+			await (session.DeleteAsync(address));
+			await (session.Transaction.CommitAsync());
 			session.Close();
 		}
 	}

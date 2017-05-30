@@ -57,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2318
         [Test]
         public async Task CriteriaTrimFunctionsWithParametersAsync()
         {
-            await (AddObjectsAsync(CancellationToken.None));
+            await (AddObjectsAsync());
 
             ISession s = OpenSession();
             try
@@ -71,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2318
                             Projections.SqlProjection("from", null, null), // Silly hack to get "from" as a second argument.
                             Projections.Property("Name")),
                         "irst"));
-                IList<A> items = await (criteria.ListAsync<A>(CancellationToken.None));
+                IList<A> items = await (criteria.ListAsync<A>());
                 Assert.AreEqual(1, items.Count);
                 Assert.AreEqual("first", items[0].Name);
 			}
@@ -84,17 +84,17 @@ namespace NHibernate.Test.NHSpecificTest.NH2318
         [Test]
         public async Task LinqTrimFunctionsWithParametersAsync()
         {
-            await (AddObjectsAsync(CancellationToken.None));
+            await (AddObjectsAsync());
 
             ISession s = OpenSession();
             try
             {
-                IList<A> items = await (s.Query<A>().Where(a => a.Name.TrimLeading("f").TrimTrailing("t") == "irs").ToListAsync(CancellationToken.None));
+                IList<A> items = await (s.Query<A>().Where(a => a.Name.TrimLeading("f").TrimTrailing("t") == "irs").ToListAsync());
                 Assert.AreEqual(1, items.Count);
                 Assert.AreEqual("first", items[0].Name);
 
                 string trimString = "a";
-                items = await (s.Query<A>().Where(a => a.Name.TrimLeading(trimString).TrimTrailing(trimString) == "b").ToListAsync(CancellationToken.None));
+                items = await (s.Query<A>().Where(a => a.Name.TrimLeading(trimString).TrimTrailing(trimString) == "b").ToListAsync());
                 Assert.AreEqual(1, items.Count);
                 Assert.AreEqual("aba", items[0].Name);
             }
@@ -107,48 +107,48 @@ namespace NHibernate.Test.NHSpecificTest.NH2318
         [Test]
         public async Task HqlTrimFunctionsWithParametersAsync()
         {
-            await (AddObjectsAsync(CancellationToken.None));
+            await (AddObjectsAsync());
 
             ISession s = OpenSession();
             try
             {
-                IList<A> items = await (s.CreateQuery("from A a where a.Name = :p0 or a.Name <> :p0 order by a.Name").SetParameter("p0", "first").ListAsync<A>(CancellationToken.None));
+                IList<A> items = await (s.CreateQuery("from A a where a.Name = :p0 or a.Name <> :p0 order by a.Name").SetParameter("p0", "first").ListAsync<A>());
                 Assert.AreEqual(3, items.Count);
                 Assert.AreEqual("aba", items[0].Name);
                 Assert.AreEqual("first", items[1].Name);
                 Assert.AreEqual("second", items[2].Name);
 
-                items = await (s.CreateQuery("from A a where a.Name = ? or a.Name <> ? order by a.Name").SetParameter(0, "first").SetParameter(1, "first").ListAsync<A>(CancellationToken.None));
+                items = await (s.CreateQuery("from A a where a.Name = ? or a.Name <> ? order by a.Name").SetParameter(0, "first").SetParameter(1, "first").ListAsync<A>());
                 Assert.AreEqual(3, items.Count);
                 Assert.AreEqual("aba", items[0].Name);
                 Assert.AreEqual("first", items[1].Name);
                 Assert.AreEqual("second", items[2].Name);
 
-                items = await (s.CreateQuery("from A a where TRIM(LEADING :p0 FROM a.Name) = 'irst'").SetParameter("p0", "f").ListAsync<A>(CancellationToken.None));
+                items = await (s.CreateQuery("from A a where TRIM(LEADING :p0 FROM a.Name) = 'irst'").SetParameter("p0", "f").ListAsync<A>());
                 Assert.AreEqual(1, items.Count);
                 Assert.AreEqual("first", items[0].Name);
 
-                items = await (s.CreateQuery("from A a where TRIM(TRAILING :p0 FROM TRIM(LEADING :p1 FROM a.Name)) = 'irs'").SetParameter("p0", "t").SetParameter("p1", "f").ListAsync<A>(CancellationToken.None));
+                items = await (s.CreateQuery("from A a where TRIM(TRAILING :p0 FROM TRIM(LEADING :p1 FROM a.Name)) = 'irs'").SetParameter("p0", "t").SetParameter("p1", "f").ListAsync<A>());
                 Assert.AreEqual(1, items.Count);
                 Assert.AreEqual("first", items[0].Name);
 
-                items = await (s.CreateQuery("from A a where TRIM(TRAILING :p0 FROM TRIM(LEADING :p0 FROM a.Name)) = 'b'").SetParameter("p0", "a").ListAsync<A>(CancellationToken.None));
+                items = await (s.CreateQuery("from A a where TRIM(TRAILING :p0 FROM TRIM(LEADING :p0 FROM a.Name)) = 'b'").SetParameter("p0", "a").ListAsync<A>());
                 Assert.AreEqual(1, items.Count);
                 Assert.AreEqual("aba", items[0].Name);
 
-                items = await (s.CreateQuery("from A a where TRIM(TRAILING :p0 FROM a.Name) = 'firs'").SetParameter("p0", "t").ListAsync<A>(CancellationToken.None));
+                items = await (s.CreateQuery("from A a where TRIM(TRAILING :p0 FROM a.Name) = 'firs'").SetParameter("p0", "t").ListAsync<A>());
                 Assert.AreEqual(1, items.Count);
                 Assert.AreEqual("first", items[0].Name);
 
-                items = await (s.CreateQuery("from A a where TRIM(LEADING ? FROM a.Name) = 'irst'").SetParameter(0, "f").ListAsync<A>(CancellationToken.None));
+                items = await (s.CreateQuery("from A a where TRIM(LEADING ? FROM a.Name) = 'irst'").SetParameter(0, "f").ListAsync<A>());
                 Assert.AreEqual(1, items.Count);
                 Assert.AreEqual("first", items[0].Name);
 
-                items = await (s.CreateQuery("from A a where TRIM(TRAILING ? FROM a.Name) = 'firs'").SetParameter(0, "t").ListAsync<A>(CancellationToken.None));
+                items = await (s.CreateQuery("from A a where TRIM(TRAILING ? FROM a.Name) = 'firs'").SetParameter(0, "t").ListAsync<A>());
                 Assert.AreEqual(1, items.Count);
                 Assert.AreEqual("first", items[0].Name);
 
-                items = await (s.CreateQuery("from A a where TRIM(TRAILING ? FROM TRIM(LEADING ? FROM a.Name)) = 'irs'").SetParameter(0, "t").SetParameter(1, "f").ListAsync<A>(CancellationToken.None));
+                items = await (s.CreateQuery("from A a where TRIM(TRAILING ? FROM TRIM(LEADING ? FROM a.Name)) = 'irs'").SetParameter(0, "t").SetParameter(1, "f").ListAsync<A>());
                 Assert.AreEqual(1, items.Count);
                 Assert.AreEqual("first", items[0].Name);
             }

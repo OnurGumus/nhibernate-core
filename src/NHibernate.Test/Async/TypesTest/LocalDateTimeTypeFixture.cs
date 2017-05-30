@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// The Unit Tests for the UtcDateTimeType.
 	/// </summary>
@@ -37,18 +36,18 @@ namespace NHibernate.Test.TypesTest
 			basic.LocalDateTimeValue = val;
 
 			ISession s = OpenSession();
-			await (s.SaveAsync(basic, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(basic));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			basic = (DateTimeClass) await (s.LoadAsync(typeof (DateTimeClass), 1, CancellationToken.None));
+			basic = (DateTimeClass) await (s.LoadAsync(typeof (DateTimeClass), 1));
 
 			Assert.AreEqual(DateTimeKind.Local, basic.LocalDateTimeValue.Value.Kind);
 			Assert.AreEqual(expected, basic.LocalDateTimeValue.Value);
 
-			await (s.DeleteAsync(basic, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(basic));
+			await (s.FlushAsync());
 			s.Close();
 		}
 	}

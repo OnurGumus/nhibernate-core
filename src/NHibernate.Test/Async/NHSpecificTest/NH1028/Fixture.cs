@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1028
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -40,9 +39,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1028
 			item.Ships.Add(ship);
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(ship, CancellationToken.None));
-				await (s.SaveAsync(item, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(ship));
+				await (s.SaveAsync(item));
+				await (s.FlushAsync());
 			}
 			using (ISession s = OpenSession())
 			{
@@ -52,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1028
 				criteria.CreateCriteria("Containers", "c", JoinType.LeftOuterJoin)
 					.Add(Expression.IsNull("c.Id"));
 
-				IList<Item> results = await (criteria.ListAsync<Item>(CancellationToken.None));
+				IList<Item> results = await (criteria.ListAsync<Item>());
 				Assert.AreEqual (1, results.Count);
 
 				Item loadedItem = results[0];
@@ -67,9 +66,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1028
 			}
 			using (ISession s = OpenSession())
 			{
-				await (s.DeleteAsync(ship, CancellationToken.None));
-				await (s.DeleteAsync(item, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync(ship));
+				await (s.DeleteAsync(item));
+				await (s.FlushAsync());
 			}
 		}
 	}

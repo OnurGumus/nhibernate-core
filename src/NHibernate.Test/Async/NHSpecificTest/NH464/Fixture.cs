@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH464
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// This is a test class for composite-element with reflection optimizer
 	/// </summary>
@@ -69,20 +68,20 @@ namespace NHibernate.Test.NHSpecificTest.NH464
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				id = (int) await (session.SaveAsync(promo, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				id = (int) await (session.SaveAsync(promo));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				promo = (Promotion) await (session.LoadAsync(typeof(Promotion), id, CancellationToken.None));
+				promo = (Promotion) await (session.LoadAsync(typeof(Promotion), id));
 
 				Assert.AreEqual(1, promo.Window.Dates.Count);
 				Assert.AreEqual(DateTime.Today, ((DateRange) promo.Window.Dates[0]).Start);
 				Assert.AreEqual(DateTime.Today.AddDays(20), ((DateRange) promo.Window.Dates[0]).End);
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 	}

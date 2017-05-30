@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.QueryTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Summary description for PositionalParametersFixture.
 	/// </summary>
@@ -40,7 +39,7 @@ namespace NHibernate.Test.QueryTest
 				q.SetParameter(0, "Fred");
 
 				// Try to execute it
-				Assert.ThrowsAsync<QueryException>(() => q.ListAsync(CancellationToken.None));
+				Assert.ThrowsAsync<QueryException>(() => q.ListAsync());
 			}
 			finally
 			{
@@ -62,7 +61,7 @@ namespace NHibernate.Test.QueryTest
 				q.SetParameter(1, "Fred");
 
 				// Try to execute it
-				Assert.ThrowsAsync<QueryException>(() => q.ListAsync(CancellationToken.None));
+				Assert.ThrowsAsync<QueryException>(() => q.ListAsync());
 			}
 			finally
 			{

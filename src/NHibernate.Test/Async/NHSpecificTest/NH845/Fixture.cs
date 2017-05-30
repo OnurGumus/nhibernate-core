@@ -19,7 +19,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH845
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync
 	{
@@ -44,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH845
 			}
 			finally
 			{
-				await (sf.CloseAsync(CancellationToken.None));
+				await (sf.CloseAsync());
 			}
 		}
 	}

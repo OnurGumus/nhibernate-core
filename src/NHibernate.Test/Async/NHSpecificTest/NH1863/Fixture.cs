@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1863
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -63,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1863
 
 				ICriteria hasCategoryCriteria = session.CreateCriteria(typeof (Customer));
 				hasCategoryCriteria.Add(Restrictions.Eq("Name", "HasCategory"));
-				IList<Customer> hasCategoryResult = await (hasCategoryCriteria.ListAsync<Customer>(CancellationToken.None));
+				IList<Customer> hasCategoryResult = await (hasCategoryCriteria.ListAsync<Customer>());
 
 				Assert.That(hasCategoryResult.Count, Is.EqualTo(1));
 			}
@@ -79,7 +78,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1863
 
 				ICriteria hasCategoryCriteria = session.CreateCriteria(typeof (Customer));
 				hasCategoryCriteria.Add(Restrictions.Eq("Name", "HasCategory"));
-				IList<Customer> hasCategoryResult = await (hasCategoryCriteria.ListAsync<Customer>(CancellationToken.None));
+				IList<Customer> hasCategoryResult = await (hasCategoryCriteria.ListAsync<Customer>());
 
 				Assert.That(hasCategoryResult.Count, Is.EqualTo(1));
 			}
@@ -95,7 +94,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1863
 
 				ICriteria hasNoCategoryCriteria = session.CreateCriteria(typeof (Customer));
 				hasNoCategoryCriteria.Add(Restrictions.Eq("Name", "HasNoCategory"));
-				IList<Customer> hasNoCategoryResult = await (hasNoCategoryCriteria.ListAsync<Customer>(CancellationToken.None));
+				IList<Customer> hasNoCategoryResult = await (hasNoCategoryCriteria.ListAsync<Customer>());
 
 				Assert.That(hasNoCategoryResult.Count, Is.EqualTo(1));
 			}
@@ -111,7 +110,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1863
 
 				ICriteria hasNoCategoryCriteria = session.CreateCriteria(typeof (Customer));
 				hasNoCategoryCriteria.Add(Restrictions.Eq("Name", "HasNoCategory"));
-				IList<Customer> hasNoCategoryResult = await (hasNoCategoryCriteria.ListAsync<Customer>(CancellationToken.None));
+				IList<Customer> hasNoCategoryResult = await (hasNoCategoryCriteria.ListAsync<Customer>());
 
 				Assert.That(hasNoCategoryResult.Count, Is.EqualTo(1));
 			}

@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// The Unit Tests for the GuidType.
 	/// </summary>
@@ -40,17 +39,17 @@ namespace NHibernate.Test.TypesTest
 			basic.GuidValue = val;
 
 			ISession s = OpenSession();
-			await (s.SaveAsync(basic, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(basic));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			basic = (GuidClass)await (s.LoadAsync(typeof(GuidClass), 1, CancellationToken.None));
+			basic = (GuidClass)await (s.LoadAsync(typeof(GuidClass), 1));
 
 			Assert.AreEqual(val, basic.GuidValue);
 
-			await (s.DeleteAsync(basic, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(basic));
+			await (s.FlushAsync());
 			s.Close();
 		}
 
@@ -65,22 +64,22 @@ namespace NHibernate.Test.TypesTest
 				basic.Id = 1;
 				basic.GuidValue = val;
 
-				await (s.SaveAsync(basic, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(basic));
+				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
 				basic = (GuidClass)await (s.CreateCriteria(typeof(GuidClass))
 														.Add(Expression.Eq("GuidValue", val))
-														.UniqueResultAsync(CancellationToken.None));
+														.UniqueResultAsync());
 
 				Assert.IsNotNull(basic);
 				Assert.AreEqual(1, basic.Id);
 				Assert.AreEqual(val, basic.GuidValue);
 
-				await (s.DeleteAsync(basic, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync(basic));
+				await (s.FlushAsync());
 			}
 		}
 	}

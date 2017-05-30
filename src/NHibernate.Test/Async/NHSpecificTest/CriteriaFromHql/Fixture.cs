@@ -35,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaFromHql
 		[Test]
 		public async Task UsingCriteriaAndHqlAsync()
 		{
-			await (CreateDataAsync(CancellationToken.None));
+			await (CreateDataAsync());
 
 			using (SqlLogSpy spy = new SqlLogSpy())
 			using (ISession session = sessions.OpenSession())
@@ -46,7 +46,7 @@ select p from Person p
 join fetch p.Children c 
 join fetch c.Children gc
 where p.Parent is null")
-					.UniqueResultAsync<Person>(CancellationToken.None));
+					.UniqueResultAsync<Person>());
 
 				string hqlQuery = spy.Appender.GetEvents()[0].MessageObject.ToString();
 				Debug.WriteLine("HQL: " + hqlQuery);
@@ -61,13 +61,13 @@ where p.Parent is null")
 					.Add(Restrictions.IsNull("Parent"))
 					.SetFetchMode("Children", FetchMode.Join)
 					.SetFetchMode("Children.Children", FetchMode.Join)
-					.UniqueResultAsync<Person>(CancellationToken.None));
+					.UniqueResultAsync<Person>());
 				string criteriaQuery = spy.Appender.GetEvents()[0].MessageObject.ToString();
 				Debug.WriteLine("Criteria: " + criteriaQuery);
 				Assertions(result);
 			}
 
-			await (DeleteDataAsync(CancellationToken.None));
+			await (DeleteDataAsync());
 		}
 
 		private async Task DeleteDataAsync(CancellationToken cancellationToken = default(CancellationToken))

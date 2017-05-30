@@ -25,7 +25,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.ReadOnly
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class ReadOnlyVersionedNodesAsync : AbstractReadOnlyTest
 	{
@@ -46,8 +45,8 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				await (s.PersistAsync(node, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(node));
+				await (s.Transaction.CommitAsync());
 			}
 
 			ClearCounts();
@@ -55,10 +54,10 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				node = await (s.GetAsync<VersionedNode>(node.Id, CancellationToken.None));
+				node = await (s.GetAsync<VersionedNode>(node.Id));
 				s.SetReadOnly(node, true);
 				node.Name = "node-name";
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 
 				AssertUpdateCount(0);
 				AssertInsertCount(0);
@@ -67,15 +66,15 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(node.Name, Is.EqualTo("node-name"));
 
 				s.BeginTransaction();
-				node = await (s.GetAsync<VersionedNode>(node.Id, CancellationToken.None));
+				node = await (s.GetAsync<VersionedNode>(node.Id));
 				// the changed name is still in the session
 				Assert.That(node.Name, Is.EqualTo("node-name"));
-				await (s.RefreshAsync(node, CancellationToken.None));
+				await (s.RefreshAsync(node));
 				// after refresh, the name reverts to the original value
 				Assert.That(node.Name, Is.EqualTo("node"));
-				node = await (s.GetAsync<VersionedNode>(node.Id, CancellationToken.None));
+				node = await (s.GetAsync<VersionedNode>(node.Id));
 				Assert.That(node.Name, Is.EqualTo("node"));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -84,17 +83,17 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				node = await (s.GetAsync<VersionedNode>(node.Id, CancellationToken.None));
+				node = await (s.GetAsync<VersionedNode>(node.Id));
 				Assert.That(node.Name, Is.EqualTo("node"));
 				s.SetReadOnly(node, true);
 				node.Name = "diff-node-name";
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 				Assert.That(node.Name, Is.EqualTo("diff-node-name"));
-				await (s.RefreshAsync(node, CancellationToken.None));
+				await (s.RefreshAsync(node));
 				Assert.That(node.Name, Is.EqualTo("node"));
 				s.SetReadOnly(node, false);
 				node.Name = "diff-node-name";
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(1);
@@ -104,12 +103,12 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				node = await (s.GetAsync<VersionedNode>(node.Id, CancellationToken.None));
+				node = await (s.GetAsync<VersionedNode>(node.Id));
 				Assert.That(node.Name, Is.EqualTo("diff-node-name"));
 				Assert.That(node.Version, Is.EqualTo(2));
 				s.SetReadOnly(node, true);
-				await (s.DeleteAsync(node, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(node));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -123,8 +122,8 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				await (s.PersistAsync(node, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(node));
+				await (s.Transaction.CommitAsync());
 			}
 
 			ClearCounts();
@@ -132,11 +131,11 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				node = await (s.GetAsync<VersionedNode>(node.Id, CancellationToken.None));
+				node = await (s.GetAsync<VersionedNode>(node.Id));
 				node.Name = "node-name";
 				s.SetReadOnly(node, true);
 				s.SetReadOnly(node, true);
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -145,12 +144,12 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				node = await (s.GetAsync<VersionedNode>(node.Id, CancellationToken.None));
+				node = await (s.GetAsync<VersionedNode>(node.Id));
 				Assert.That(node.Name, Is.EqualTo("node"));
 				Assert.That(node.Version, Is.EqualTo(1));
 				s.SetReadOnly(node, true);
-				await (s.DeleteAsync(node, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(node));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -164,8 +163,8 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				await (s.PersistAsync(node, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(node));
+				await (s.Transaction.CommitAsync());
 			}
 
 			ClearCounts();
@@ -173,10 +172,10 @@ namespace NHibernate.Test.ReadOnly
 			using (var s = OpenSession())
 			{
 				s.BeginTransaction();
-				node = await (s.GetAsync<VersionedNode>(node.Id, CancellationToken.None));
+				node = await (s.GetAsync<VersionedNode>(node.Id));
 				node.Name = "node-name";
 				s.SetReadOnly(node, false);
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(1);
@@ -186,12 +185,12 @@ namespace NHibernate.Test.ReadOnly
 			using (var s = OpenSession())
 			{
 				s.BeginTransaction();
-				node = await (s.GetAsync<VersionedNode>(node.Id, CancellationToken.None));
+				node = await (s.GetAsync<VersionedNode>(node.Id));
 				Assert.That(node.Name, Is.EqualTo("node-name"));
 				Assert.That(node.Version, Is.EqualTo(2));
 				//s.SetReadOnly(node, true);
-				await (s.DeleteAsync(node, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(node));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -206,8 +205,8 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				await (s.PersistAsync(node, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(node));
+				await (s.Transaction.CommitAsync());
 			}
 
 			ClearCounts();
@@ -215,11 +214,11 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				node = await (s.GetAsync<VersionedNode>(node.Id, CancellationToken.None));
+				node = await (s.GetAsync<VersionedNode>(node.Id));
 				node.Name = "node-name";
 				s.SetReadOnly(node, true);
 				s.SetReadOnly(node, false);
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(1);
@@ -228,11 +227,11 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				node = await (s.GetAsync<VersionedNode>(node.Id, CancellationToken.None));
+				node = await (s.GetAsync<VersionedNode>(node.Id));
 				Assert.That(node.Name, Is.EqualTo("node-name"));
 				Assert.That(node.Version, Is.EqualTo(2));
-				await (s.DeleteAsync(node, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(node));
+				await (s.Transaction.CommitAsync());
 			}
 		}
 	
@@ -243,8 +242,8 @@ namespace NHibernate.Test.ReadOnly
 			ISession s = OpenSession();
 			s.BeginTransaction();
 			VersionedNode node = new VersionedNode("node", "node");
-			await (s.PersistAsync(node, CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(node));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
 			ClearCounts();
@@ -252,11 +251,11 @@ namespace NHibernate.Test.ReadOnly
 			s = OpenSession();
 	
 			s.BeginTransaction();
-			node = await (s.GetAsync<VersionedNode>(node.Id, CancellationToken.None));
+			node = await (s.GetAsync<VersionedNode>(node.Id));
 			s.SetReadOnly(node, true);
 			node.Name = "node-name";
 			s.SetReadOnly(node, false);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(1);
@@ -264,11 +263,11 @@ namespace NHibernate.Test.ReadOnly
 	
 			s = OpenSession();
 			s.BeginTransaction();
-			node = await (s.GetAsync<VersionedNode>(node.Id, CancellationToken.None));
+			node = await (s.GetAsync<VersionedNode>(node.Id));
 			Assert.That(node.Name, Is.EqualTo("node-name"));
 			Assert.That(node.Version, Is.EqualTo(2));
-			await (s.DeleteAsync(node, CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(node));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 		}
 	
@@ -280,8 +279,8 @@ namespace NHibernate.Test.ReadOnly
 			{
 				s.CacheMode = CacheMode.Ignore;
 				s.BeginTransaction();
-				await (s.PersistAsync(parent, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(parent));
+				await (s.Transaction.CommitAsync());
 			}
 
 			ClearCounts();
@@ -291,12 +290,12 @@ namespace NHibernate.Test.ReadOnly
 			{
 				s.CacheMode = CacheMode.Ignore;
 				s.BeginTransaction();
-				VersionedNode parentManaged = await (s.GetAsync<VersionedNode>(parent.Id, CancellationToken.None));
+				VersionedNode parentManaged = await (s.GetAsync<VersionedNode>(parent.Id));
 				s.SetReadOnly(parentManaged, true);
 				parentManaged.Name = "new parent name";
 				parentManaged.AddChild(child);
-				await (s.SaveAsync(parentManaged, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(parentManaged));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(1);
@@ -306,14 +305,14 @@ namespace NHibernate.Test.ReadOnly
 			{
 				s.CacheMode = CacheMode.Ignore;
 				s.BeginTransaction();
-				parent = await (s.GetAsync<VersionedNode>(parent.Id, CancellationToken.None));
+				parent = await (s.GetAsync<VersionedNode>(parent.Id));
 				Assert.That(parent.Name, Is.EqualTo("parent"));
 				Assert.That(parent.Children.Count, Is.EqualTo(1));
 				Assert.That(parent.Version, Is.EqualTo(2));
-				child = await (s.GetAsync<VersionedNode>(child.Id, CancellationToken.None));
+				child = await (s.GetAsync<VersionedNode>(child.Id));
 				Assert.That(child, Is.Not.Null);
-				await (s.DeleteAsync(parent, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(parent));
+				await (s.Transaction.CommitAsync());
 			}
 		}
 	
@@ -324,8 +323,8 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				await (s.PersistAsync(parent, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(parent));
+				await (s.Transaction.CommitAsync());
 			}
 
 			ClearCounts();
@@ -337,9 +336,9 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				await (s.UpdateAsync(parent, CancellationToken.None));
+				await (s.UpdateAsync(parent));
 				s.SetReadOnly(parent, true);
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(1);
@@ -349,8 +348,8 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				parent = await (s.GetAsync<VersionedNode>(parent.Id, CancellationToken.None));
-				child = await (s.GetAsync<VersionedNode>(child.Id, CancellationToken.None));
+				parent = await (s.GetAsync<VersionedNode>(parent.Id));
+				child = await (s.GetAsync<VersionedNode>(child.Id));
 				Assert.That(parent.Name, Is.EqualTo("parent"));
 				Assert.That(parent.Children.Count, Is.EqualTo(1));
 				Assert.That(parent.Version, Is.EqualTo(2));
@@ -359,9 +358,9 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(child.Version, Is.EqualTo(1));
 				s.SetReadOnly(parent, true);
 				s.SetReadOnly(child, true);
-				await (s.DeleteAsync(parent, CancellationToken.None));
-				await (s.DeleteAsync(child, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(parent));
+				await (s.DeleteAsync(child));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -375,8 +374,8 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				await (s.PersistAsync(parent, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(parent));
+				await (s.Transaction.CommitAsync());
 			}
 
 			ClearCounts();
@@ -390,7 +389,7 @@ namespace NHibernate.Test.ReadOnly
 				s.BeginTransaction();
 				parent = (VersionedNode) s.Merge(parent);
 				s.SetReadOnly(parent, true);
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(1);
@@ -400,8 +399,8 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				parent = await (s.GetAsync<VersionedNode>(parent.Id, CancellationToken.None));
-				child = await (s.GetAsync<VersionedNode>(child.Id, CancellationToken.None));
+				parent = await (s.GetAsync<VersionedNode>(parent.Id));
+				child = await (s.GetAsync<VersionedNode>(child.Id));
 				Assert.That(parent.Name, Is.EqualTo("parent"));
 				Assert.That(parent.Children.Count, Is.EqualTo(1));
 				Assert.That(parent.Version, Is.EqualTo(2));
@@ -410,9 +409,9 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(child.Version, Is.EqualTo(1));
 				s.SetReadOnly(parent, true);
 				s.SetReadOnly(child, true);
-				await (s.DeleteAsync(parent, CancellationToken.None));
-				await (s.DeleteAsync(child, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(parent));
+				await (s.DeleteAsync(child));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -426,8 +425,8 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				await (s.PersistAsync(parent, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(parent));
+				await (s.Transaction.CommitAsync());
 			}
 
 			ClearCounts();
@@ -439,11 +438,11 @@ namespace NHibernate.Test.ReadOnly
 			using (var s = OpenSession())
 			{
 				s.BeginTransaction();
-				VersionedNode parentManaged = await (s.GetAsync<VersionedNode>(parent.Id, CancellationToken.None));
+				VersionedNode parentManaged = await (s.GetAsync<VersionedNode>(parent.Id));
 				s.SetReadOnly(parentManaged, true);
 				VersionedNode parentMerged = (VersionedNode) s.Merge(parent);
 				Assert.That(parentManaged, Is.SameAs(parentMerged));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(1);
@@ -453,17 +452,17 @@ namespace NHibernate.Test.ReadOnly
 			using (var s = OpenSession())
 			{
 				s.BeginTransaction();
-				parent = await (s.GetAsync<VersionedNode>(parent.Id, CancellationToken.None));
-				child = await (s.GetAsync<VersionedNode>(child.Id, CancellationToken.None));
+				parent = await (s.GetAsync<VersionedNode>(parent.Id));
+				child = await (s.GetAsync<VersionedNode>(child.Id));
 				Assert.That(parent.Name, Is.EqualTo("parent"));
 				Assert.That(parent.Children.Count, Is.EqualTo(1));
 				Assert.That(parent.Version, Is.EqualTo(2));
 				Assert.That(child.Parent, Is.SameAs(parent));
 				Assert.That(parent.Children.First(), Is.SameAs(child));
 				Assert.That(child.Version, Is.EqualTo(1));
-				await (s.DeleteAsync(parent, CancellationToken.None));
-				await (s.DeleteAsync(child, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(parent));
+				await (s.DeleteAsync(child));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -480,8 +479,8 @@ namespace NHibernate.Test.ReadOnly
 			{
 				s.BeginTransaction();
 				parent.AddChild(child);
-				await (s.PersistAsync(parent, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(parent));
+				await (s.Transaction.CommitAsync());
 			}
 
 			ClearCounts();
@@ -490,7 +489,7 @@ namespace NHibernate.Test.ReadOnly
 			{
 				s.BeginTransaction();
 				parent = (VersionedNode) s.Merge(parent);
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -500,9 +499,9 @@ namespace NHibernate.Test.ReadOnly
 			using (var s = OpenSession())
 			{
 				s.BeginTransaction();
-				VersionedNode parentGet = await (s.GetAsync<VersionedNode>(parent.Id, CancellationToken.None));
+				VersionedNode parentGet = await (s.GetAsync<VersionedNode>(parent.Id));
 				s.Merge(parent);
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -512,9 +511,9 @@ namespace NHibernate.Test.ReadOnly
 			using (var s = OpenSession())
 			{
 				s.BeginTransaction();
-				VersionedNode parentLoad = await (s.LoadAsync<VersionedNode>(parent.Id, CancellationToken.None));
+				VersionedNode parentLoad = await (s.LoadAsync<VersionedNode>(parent.Id));
 				s.Merge(parent);
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -524,17 +523,17 @@ namespace NHibernate.Test.ReadOnly
 			using (var s = OpenSession())
 			{
 				s.BeginTransaction();
-				parent = await (s.GetAsync<VersionedNode>(parent.Id, CancellationToken.None));
-				child = await (s.GetAsync<VersionedNode>(child.Id, CancellationToken.None));
+				parent = await (s.GetAsync<VersionedNode>(parent.Id));
+				child = await (s.GetAsync<VersionedNode>(child.Id));
 				Assert.That(parent.Name, Is.EqualTo("parent"));
 				Assert.That(parent.Children.Count, Is.EqualTo(1));
 				Assert.That(parent.Version, Is.EqualTo(1));
 				Assert.That(child.Parent, Is.SameAs(parent));
 				Assert.That(parent.Children.First(), Is.SameAs(child));
 				Assert.That(child.Version, Is.EqualTo(1));
-				await (s.DeleteAsync(parent, CancellationToken.None));
-				await (s.DeleteAsync(child, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(parent));
+				await (s.DeleteAsync(child));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -548,8 +547,8 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				await (s.PersistAsync(child, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(child));
+				await (s.Transaction.CommitAsync());
 			}
 
 			ClearCounts();
@@ -558,11 +557,11 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				VersionedNode childManaged = await (s.GetAsync<VersionedNode>(child.Id, CancellationToken.None));
+				VersionedNode childManaged = await (s.GetAsync<VersionedNode>(child.Id));
 				s.SetReadOnly(childManaged, true);
 				childManaged.Name = "new child name";
 				parent.AddChild(childManaged);
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -571,15 +570,15 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				child = await (s.GetAsync<VersionedNode>(child.Id, CancellationToken.None));
+				child = await (s.GetAsync<VersionedNode>(child.Id));
 				Assert.That(child.Name, Is.EqualTo("child"));
 				Assert.That(child.Parent, Is.Null);
 				Assert.That(child.Version, Is.EqualTo(1));
-				parent = await (s.GetAsync<VersionedNode>(parent.Id, CancellationToken.None));
+				parent = await (s.GetAsync<VersionedNode>(parent.Id));
 				Assert.That(parent, Is.Not.Null);
 				s.SetReadOnly(child, true);
-				await (s.DeleteAsync(child, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(child));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -593,8 +592,8 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				await (s.PersistAsync(child, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(child));
+				await (s.Transaction.CommitAsync());
 			}
 
 			ClearCounts();
@@ -606,9 +605,9 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				await (s.UpdateAsync(child, CancellationToken.None));
+				await (s.UpdateAsync(child));
 				s.SetReadOnly(child, true);
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -618,8 +617,8 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				parent = await (s.GetAsync<VersionedNode>(parent.Id, CancellationToken.None));
-				child = await (s.GetAsync<VersionedNode>(child.Id, CancellationToken.None));
+				parent = await (s.GetAsync<VersionedNode>(parent.Id));
+				child = await (s.GetAsync<VersionedNode>(child.Id));
 				Assert.That(child.Name, Is.EqualTo("child"));
 				Assert.That(child.Parent, Is.Null);
 				Assert.That(child.Version, Is.EqualTo(1));
@@ -628,9 +627,9 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(parent.Version, Is.EqualTo(1));
 				s.SetReadOnly(parent, true);
 				s.SetReadOnly(child, true);
-				await (s.DeleteAsync(parent, CancellationToken.None));
-				await (s.DeleteAsync(child, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(parent));
+				await (s.DeleteAsync(child));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -644,8 +643,8 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				await (s.PersistAsync(child, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(child));
+				await (s.Transaction.CommitAsync());
 			}
 
 			ClearCounts();
@@ -659,7 +658,7 @@ namespace NHibernate.Test.ReadOnly
 				s.BeginTransaction();
 				child = (VersionedNode) s.Merge(child);
 				s.SetReadOnly(child, true);
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0); // NH-specific: Hibernate issues a separate UPDATE for the version number
@@ -669,8 +668,8 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				parent = await (s.GetAsync<VersionedNode>(parent.Id, CancellationToken.None));
-				child = await (s.GetAsync<VersionedNode>(child.Id, CancellationToken.None));
+				parent = await (s.GetAsync<VersionedNode>(parent.Id));
+				child = await (s.GetAsync<VersionedNode>(child.Id));
 				Assert.That(child.Name, Is.EqualTo("child"));
 				Assert.That(child.Parent, Is.Null);
 				Assert.That(child.Version, Is.EqualTo(1));
@@ -679,9 +678,9 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(parent.Version, Is.EqualTo(1));
 				s.SetReadOnly(parent, true);
 				s.SetReadOnly(child, true);
-				await (s.DeleteAsync(parent, CancellationToken.None));
-				await (s.DeleteAsync(child, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(parent));
+				await (s.DeleteAsync(child));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -695,8 +694,8 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				await (s.PersistAsync(child, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(child));
+				await (s.Transaction.CommitAsync());
 			}
 
 			ClearCounts();
@@ -708,11 +707,11 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				VersionedNode childManaged = await (s.GetAsync<VersionedNode>(child.Id, CancellationToken.None));
+				VersionedNode childManaged = await (s.GetAsync<VersionedNode>(child.Id));
 				s.SetReadOnly(childManaged, true);
 				VersionedNode childMerged = (VersionedNode) s.Merge(child);
 				Assert.That(childManaged, Is.SameAs(childMerged));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0); // NH-specific: Hibernate issues a separate UPDATE for the version number
@@ -722,8 +721,8 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				parent = await (s.GetAsync<VersionedNode>(parent.Id, CancellationToken.None));
-				child = await (s.GetAsync<VersionedNode>(child.Id, CancellationToken.None));
+				parent = await (s.GetAsync<VersionedNode>(parent.Id));
+				child = await (s.GetAsync<VersionedNode>(child.Id));
 				Assert.That(child.Name, Is.EqualTo("child"));
 				Assert.That(child.Parent, Is.Null);
 				Assert.That(child.Version, Is.EqualTo(1));
@@ -733,9 +732,9 @@ namespace NHibernate.Test.ReadOnly
 					// NH-specific: Hibernate incorrectly increments version number, NH does not
 				s.SetReadOnly(parent, true);
 				s.SetReadOnly(child, true);
-				await (s.DeleteAsync(parent, CancellationToken.None));
-				await (s.DeleteAsync(child, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(parent));
+				await (s.DeleteAsync(child));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);

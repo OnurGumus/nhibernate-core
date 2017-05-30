@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH593
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -27,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH593
 				user.UserId = 10;
 				Assert.ThrowsAsync<QueryException>(() => session.CreateCriteria(typeof(Blog))
 					.Add(Expression.In("Users", new User[] {user}))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 			}
 		}
 	}

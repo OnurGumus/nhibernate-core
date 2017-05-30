@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Cascade.Circle
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/**
 	* The test case uses the following model:
 	*
@@ -59,14 +58,14 @@ namespace NHibernate.Test.Cascade.Circle
 			{
 				Route route = new Route();
 				route.Name = "routeA";
-				routeId = await (session.SaveAsync(route, CancellationToken.None));
-				await (transaction.CommitAsync(CancellationToken.None));
+				routeId = await (session.SaveAsync(route));
+				await (transaction.CommitAsync());
 			}
 	
 			using (ISession session = base.OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				Route route = await (session.GetAsync<Route>(routeId, CancellationToken.None));
+				Route route = await (session.GetAsync<Route>(routeId));
 				route.TransientField = "sfnaouisrbn";
 		
 				Tour tour = new Tour();
@@ -94,7 +93,7 @@ namespace NHibernate.Test.Cascade.Circle
 		
 				Route mergedRoute = (Route)session.Merge(route);
 	
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (transaction.CommitAsync());
 			}
 		}
 	
@@ -112,14 +111,14 @@ namespace NHibernate.Test.Cascade.Circle
 			{
 				route = new Route();
 				route.Name = "routeA";
-				await (session.SaveAsync(route, CancellationToken.None));
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (session.SaveAsync(route));
+				await (transaction.CommitAsync());
 			}
 	
 			using (ISession session = base.OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				route = await (session.GetAsync<Route>(route.RouteId, CancellationToken.None));
+				route = await (session.GetAsync<Route>(route.RouteId));
 				route.TransientField = "sfnaouisrbn";
 		
 				Tour tour = new Tour();
@@ -165,7 +164,7 @@ namespace NHibernate.Test.Cascade.Circle
 		
 				Route mergedRoute = (Route)session.Merge(route);
 		
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (transaction.CommitAsync());
 			}
 		}
 	
@@ -179,14 +178,14 @@ namespace NHibernate.Test.Cascade.Circle
 			{
 				route = new Route();
 				route.Name = "routeA";
-				await (session.SaveAsync(route, CancellationToken.None));
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (session.SaveAsync(route));
+				await (transaction.CommitAsync());
 			}
 	
 			using (ISession session = base.OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				route = await (session.GetAsync<Route>(route.RouteId, CancellationToken.None));
+				route = await (session.GetAsync<Route>(route.RouteId));
 				route.TransientField = "sfnaouisrbn";
 		
 				Tour tour = new Tour();
@@ -252,7 +251,7 @@ namespace NHibernate.Test.Cascade.Circle
 		
 				Route mergedRoute = (Route)session.Merge(route);
 	
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (transaction.CommitAsync());
 			}
 		}
 		

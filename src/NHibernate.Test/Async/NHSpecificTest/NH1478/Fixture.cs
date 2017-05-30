@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1478
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -57,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1478
 
 
 				IList lst = await (session.CreateSQLQuery("select Biography from Person where Biography='Born in Istanbul :Turkey'")
-					.AddScalar("Biography", NHibernateUtil.String).ListAsync(CancellationToken.None));
+					.AddScalar("Biography", NHibernateUtil.String).ListAsync());
 				Assert.AreEqual(1,lst.Count);
 			}
 
@@ -71,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1478
 
 
 				IList lst = await (session.CreateSQLQuery("select p.Biography from Person p where p.Biography='Born in Istanbul :Turkey'")
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				Assert.AreEqual(1, lst.Count);
 			}
 

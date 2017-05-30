@@ -18,7 +18,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SelectionTestsAsync : LinqTestCase
 	{
@@ -28,7 +27,7 @@ namespace NHibernate.Test.Linq
 			var query = from user in db.Users
 						select new { user.Name, RoleName = user.Role.Name };
 
-			int totalCount = await (query.CountAsync(CancellationToken.None));
+			int totalCount = await (query.CountAsync());
 
 			Assert.AreEqual(3, totalCount);
 		}
@@ -39,7 +38,7 @@ namespace NHibernate.Test.Linq
 			var query = from user in db.Users
 						select new { user.Name, RoleName = user.Role.Name };
 
-			var firstUser = await (query.FirstAsync(CancellationToken.None));
+			var firstUser = await (query.FirstAsync());
 
 			Assert.IsNotNull(firstUser);
 		}
@@ -50,7 +49,7 @@ namespace NHibernate.Test.Linq
 			var query = from user in db.Users
 						select new UserDto(user.Id, user.Name) { InvalidLoginAttempts = user.InvalidLoginAttempts };
 
-			var list = await (query.ToListAsync(CancellationToken.None));
+			var list = await (query.ToListAsync());
 			Assert.AreEqual(3, list.Count);
 		}
 
@@ -69,7 +68,7 @@ namespace NHibernate.Test.Linq
 							RoleName = user.Role.Name
 						};
 
-			var list = await (query.ToListAsync(CancellationToken.None));
+			var list = await (query.ToListAsync());
 			Assert.AreEqual(3, list.Count);
 
 			//assert role names -- to ensure that the correct values were used to invoke constructor
@@ -92,7 +91,7 @@ namespace NHibernate.Test.Linq
 							RoleIsActive = (bool?) user.Role.IsActive
 						};
 
-			var list = await (query.ToListAsync(CancellationToken.None));
+			var list = await (query.ToListAsync());
 			Assert.AreEqual(3, list.Count);
 
 			//assert role names -- to ensure that the correct values were used to invoke constructor
@@ -115,7 +114,7 @@ namespace NHibernate.Test.Linq
 							ComponentProperty = user.Component.Property1
 						};
 
-			var list = await (query.ToListAsync(CancellationToken.None));
+			var list = await (query.ToListAsync());
 			Assert.AreEqual(3, list.Count);
 
 			//assert role names -- to ensure that the correct values were used to invoke constructor
@@ -137,7 +136,7 @@ namespace NHibernate.Test.Linq
 							RoleName = user.Role.Name
 						};
 
-			var list = await (query.ToListAsync(CancellationToken.None));
+			var list = await (query.ToListAsync());
 			Assert.AreEqual(3, list.Count);
 
 			//assert role names -- to ensure that the correct values were used to invoke constructor
@@ -160,7 +159,7 @@ namespace NHibernate.Test.Linq
 							RoleName = user.Role.Name
 						};
 
-			var list = await (query.ToListAsync(CancellationToken.None));
+			var list = await (query.ToListAsync());
 			Assert.AreEqual(3, list.Count);
 
 			//assert role names -- to ensure that the correct values were used to invoke constructor
@@ -174,7 +173,7 @@ namespace NHibernate.Test.Linq
 						where user.Name == "ayende"
 						select user.RegisteredAt;
 
-			DateTime date = await (query.SingleAsync(CancellationToken.None));
+			DateTime date = await (query.SingleAsync());
 			Assert.AreEqual(new DateTime(2010, 06, 17), date);
 		}
 
@@ -188,7 +187,7 @@ namespace NHibernate.Test.Linq
 							IsSmall = (user.Enum1 == EnumStoredAsString.Small)
 						};
 
-			var list = await (query.ToListAsync(CancellationToken.None));
+			var list = await (query.ToListAsync());
 
 			foreach (var user in list)
 			{
@@ -214,7 +213,7 @@ namespace NHibernate.Test.Linq
 								&& user.Enum2 == EnumStoredAsInt32.High)
 						};
 
-			var list = await (query.ToListAsync(CancellationToken.None));
+			var list = await (query.ToListAsync());
 
 			foreach (var user in list)
 			{
@@ -240,7 +239,7 @@ namespace NHibernate.Test.Linq
 								|| user.Name == "rahien")
 						};
 
-			var list = await (query.ToListAsync(CancellationToken.None));
+			var list = await (query.ToListAsync());
 
 			foreach (var user in list)
 			{
@@ -265,7 +264,7 @@ namespace NHibernate.Test.Linq
 							HasEntries = timesheet.Entries.Any()
 						};
 
-			var list = await (query.ToListAsync(CancellationToken.None));
+			var list = await (query.ToListAsync());
 
 			Assert.AreEqual(2, list.Count(t => t.HasEntries));
 			Assert.AreEqual(1, list.Count(t => !t.HasEntries));
@@ -278,7 +277,7 @@ namespace NHibernate.Test.Linq
 			{
 				var orders = await (db.Customers
 					.Select(customer => customer.Orders.OrderByDescending(x => x.OrderDate).First())
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.That(orders, Has.Count.GreaterThan(0));
 
@@ -294,19 +293,19 @@ namespace NHibernate.Test.Linq
 			// NH-2463
 			// ReSharper disable RedundantCast
 
-			var names1 = await (db.Users.Select(p => new { p1 = p.Name }).ToListAsync(CancellationToken.None));
+			var names1 = await (db.Users.Select(p => new { p1 = p.Name }).ToListAsync());
 			Assert.AreEqual(3, names1.Count);
 
-			var names2 = await (db.Users.Select(p => new { p1 = ((User) p).Name }).ToListAsync(CancellationToken.None));
+			var names2 = await (db.Users.Select(p => new { p1 = ((User) p).Name }).ToListAsync());
 			Assert.AreEqual(3, names2.Count);
 
-			var names3 = await (db.Users.Select(p => new { p1 = (p as User).Name }).ToListAsync(CancellationToken.None));
+			var names3 = await (db.Users.Select(p => new { p1 = (p as User).Name }).ToListAsync());
 			Assert.AreEqual(3, names3.Count);
 
-			var names4 = await (db.Users.Select(p => new { p1 = ((IUser) p).Name }).ToListAsync(CancellationToken.None));
+			var names4 = await (db.Users.Select(p => new { p1 = ((IUser) p).Name }).ToListAsync());
 			Assert.AreEqual(3, names4.Count);
 
-			var names5 = await (db.Users.Select(p => new { p1 = (p as IUser).Name }).ToListAsync(CancellationToken.None));
+			var names5 = await (db.Users.Select(p => new { p1 = (p as IUser).Name }).ToListAsync());
 			Assert.AreEqual(3, names5.Count);
 			// ReSharper restore RedundantCast
 		}
@@ -315,7 +314,7 @@ namespace NHibernate.Test.Linq
 		public async Task CanSelectAfterOrderByAndTakeAsync()
 		{
 			// NH-3320
-			var names = await (db.Users.OrderBy(p => p.Name).Take(3).Select(p => p.Name).ToListAsync(CancellationToken.None));
+			var names = await (db.Users.OrderBy(p => p.Name).Take(3).Select(p => p.Name).ToListAsync());
 			Assert.AreEqual(3, names.Count);
 		}
 
@@ -324,23 +323,23 @@ namespace NHibernate.Test.Linq
 		{
 			// NH-2688
 			// ReSharper disable RedundantCast
-			var orders1 = await (db.Customers.Where(c => c.CustomerId == "VINET").SelectMany(o => o.Orders).ToListAsync(CancellationToken.None));
+			var orders1 = await (db.Customers.Where(c => c.CustomerId == "VINET").SelectMany(o => o.Orders).ToListAsync());
 			Assert.AreEqual(5, orders1.Count);
 
 			//$exception	{"c.Orders is not mapped [.SelectMany[NHibernate.DomainModel.Northwind.Entities.Customer,NHibernate.DomainModel.Northwind.Entities.Order](.Where[NHibernate.DomainModel.Northwind.Entities.Customer](NHibernate.Linq.NhQueryable`1[NHibernate.DomainModel.Northwind.Entities.Customer], Quote((c, ) => (String.op_Equality(c.CustomerId, p1))), ), Quote((o, ) => (Convert(o.Orders))), )]"}	System.Exception {NHibernate.Hql.Ast.ANTLR.QuerySyntaxException} 
 			// Block OData navigation to detail request requests like 
 			// http://localhost:2711/TestWcfDataService.svc/TestEntities(guid&#39;0dd52f6c-1943-4013-a88e-3b63a1fbe11b&#39;)/Details1 
-			var orders2 = await (db.Customers.Where(c => c.CustomerId == "VINET").SelectMany(o => (ISet<Order>) o.Orders).ToListAsync(CancellationToken.None));
+			var orders2 = await (db.Customers.Where(c => c.CustomerId == "VINET").SelectMany(o => (ISet<Order>) o.Orders).ToListAsync());
 			Assert.AreEqual(5, orders2.Count);
 
 			//$exception	{"([100001].Orders As ISet`1)"}	System.Exception {System.NotSupportedException} 
-			var orders3 = await (db.Customers.Where(c => c.CustomerId == "VINET").SelectMany(o => (o.Orders as ISet<Order>)).ToListAsync(CancellationToken.None));
+			var orders3 = await (db.Customers.Where(c => c.CustomerId == "VINET").SelectMany(o => (o.Orders as ISet<Order>)).ToListAsync());
 			Assert.AreEqual(5, orders3.Count);
 
-			var orders4 = await (db.Customers.Where(c => c.CustomerId == "VINET").SelectMany(o => (IEnumerable<Order>) o.Orders).ToListAsync(CancellationToken.None));
+			var orders4 = await (db.Customers.Where(c => c.CustomerId == "VINET").SelectMany(o => (IEnumerable<Order>) o.Orders).ToListAsync());
 			Assert.AreEqual(5, orders4.Count);
 
-			var orders5 = await (db.Customers.Where(c => c.CustomerId == "VINET").SelectMany(o => (o.Orders as IEnumerable<Order>)).ToListAsync(CancellationToken.None));
+			var orders5 = await (db.Customers.Where(c => c.CustomerId == "VINET").SelectMany(o => (o.Orders as IEnumerable<Order>)).ToListAsync());
 			Assert.AreEqual(5, orders5.Count);
 			// ReSharper restore RedundantCast
 		}
@@ -348,92 +347,92 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task CanSelectCollectionAsync()
 		{
-			var orders = await (db.Customers.Where(c => c.CustomerId == "VINET").Select(o => o.Orders).ToListAsync(CancellationToken.None));
+			var orders = await (db.Customers.Where(c => c.CustomerId == "VINET").Select(o => o.Orders).ToListAsync());
 			Assert.AreEqual(5, orders[0].Count);
 		}
 
 		[Test]
 		public async Task CanSelectConditionalKnownTypesAsync()
 		{
-     		var moreThanTwoOrderLinesBool = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? true : false }).ToListAsync(CancellationToken.None));
+     		var moreThanTwoOrderLinesBool = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? true : false }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesBool.Count(x => x.HasMoreThanTwo == true), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesNBool = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? true : (bool?)null }).ToListAsync(CancellationToken.None));
+			var moreThanTwoOrderLinesNBool = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? true : (bool?)null }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesNBool.Count(x => x.HasMoreThanTwo == true), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesShort = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? (short)1 : (short)0 }).ToListAsync(CancellationToken.None));
+			var moreThanTwoOrderLinesShort = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? (short)1 : (short)0 }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesShort.Count(x => x.HasMoreThanTwo == 1), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesNShort = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? (short?)1 : (short?)null }).ToListAsync(CancellationToken.None));
+			var moreThanTwoOrderLinesNShort = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? (short?)1 : (short?)null }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesNShort.Count(x => x.HasMoreThanTwo == 1), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesInt = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1 : 0 }).ToListAsync(CancellationToken.None));
+			var moreThanTwoOrderLinesInt = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1 : 0 }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesInt.Count(x => x.HasMoreThanTwo == 1), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesNInt = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1 : (int?)null }).ToListAsync(CancellationToken.None));
+			var moreThanTwoOrderLinesNInt = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1 : (int?)null }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesNInt.Count(x => x.HasMoreThanTwo == 1), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesDecimal = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1m : 0m }).ToListAsync(CancellationToken.None));
+			var moreThanTwoOrderLinesDecimal = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1m : 0m }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesDecimal.Count(x => x.HasMoreThanTwo == 1m), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesNDecimal = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1m : (decimal?)null }).ToListAsync(CancellationToken.None));
+			var moreThanTwoOrderLinesNDecimal = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1m : (decimal?)null }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesNDecimal.Count(x => x.HasMoreThanTwo == 1m), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesSingle = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1f : 0f }).ToListAsync(CancellationToken.None));
+			var moreThanTwoOrderLinesSingle = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1f : 0f }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesSingle.Count(x => x.HasMoreThanTwo == 1f), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesNSingle = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1f : (float?)null }).ToListAsync(CancellationToken.None));
+			var moreThanTwoOrderLinesNSingle = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1f : (float?)null }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesNSingle.Count(x => x.HasMoreThanTwo == 1f), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesDouble = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1d : 0d }).ToListAsync(CancellationToken.None));
+			var moreThanTwoOrderLinesDouble = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1d : 0d }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesDouble.Count(x => x.HasMoreThanTwo == 1d), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesNDouble = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1d : (double?)null }).ToListAsync(CancellationToken.None));
+			var moreThanTwoOrderLinesNDouble = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1d : (double?)null }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesNDouble.Count(x => x.HasMoreThanTwo == 1d), Is.EqualTo(410));
 			
-			var moreThanTwoOrderLinesString = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? "yes" : "no" }).ToListAsync(CancellationToken.None));
+			var moreThanTwoOrderLinesString = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? "yes" : "no" }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesString.Count(x => x.HasMoreThanTwo == "yes"), Is.EqualTo(410));
 
 			var now = DateTime.Now.Date;
-			var moreThanTwoOrderLinesDateTime = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? o.OrderDate.Value : now }).ToListAsync(CancellationToken.None));
+			var moreThanTwoOrderLinesDateTime = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? o.OrderDate.Value : now }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesDateTime.Count(x => x.HasMoreThanTwo != now), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesNDateTime = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? o.OrderDate : null }).ToListAsync(CancellationToken.None));
+			var moreThanTwoOrderLinesNDateTime = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? o.OrderDate : null }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesNDateTime.Count(x => x.HasMoreThanTwo != null), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesGuid = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? o.Shipper.Reference : Guid.Empty }).ToListAsync(CancellationToken.None));
+			var moreThanTwoOrderLinesGuid = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? o.Shipper.Reference : Guid.Empty }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesGuid.Count(x => x.HasMoreThanTwo != Guid.Empty), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesNGuid = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? o.Shipper.Reference : (Guid?)null }).ToListAsync(CancellationToken.None));
+			var moreThanTwoOrderLinesNGuid = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? o.Shipper.Reference : (Guid?)null }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesNGuid.Count(x => x.HasMoreThanTwo != null), Is.EqualTo(410));
 		}
 
 		[Test]
 		public async Task CanSelectConditionalEntityAsync()
 		{
-			var fatherInsteadOfChild = await (db.Animals.Select(a => a.Father.SerialNumber == "5678" ? a.Father : a).ToListAsync(CancellationToken.None));
+			var fatherInsteadOfChild = await (db.Animals.Select(a => a.Father.SerialNumber == "5678" ? a.Father : a).ToListAsync());
 			Assert.That(fatherInsteadOfChild, Has.Exactly(2).With.Property("SerialNumber").EqualTo("5678"));
 		}
 
 		[Test]
 		public async Task CanSelectConditionalEntityWithCastAsync()
 		{
-			var fatherInsteadOfChild = await (db.Mammals.Select(a => a.Father.SerialNumber == "5678" ? (object)a.Father : (object)a).ToListAsync(CancellationToken.None));
+			var fatherInsteadOfChild = await (db.Mammals.Select(a => a.Father.SerialNumber == "5678" ? (object)a.Father : (object)a).ToListAsync());
 			Assert.That(fatherInsteadOfChild, Has.Exactly(2).With.Property("SerialNumber").EqualTo("5678"));
 		}
 
 		[Test]
 		public async Task CanSelectConditionalEntityValueAsync()
 		{
-			var fatherInsteadOfChild = await (db.Animals.Select(a => a.Father.SerialNumber == "5678" ? a.Father.SerialNumber : a.SerialNumber).ToListAsync(CancellationToken.None));
+			var fatherInsteadOfChild = await (db.Animals.Select(a => a.Father.SerialNumber == "5678" ? a.Father.SerialNumber : a.SerialNumber).ToListAsync());
 			Assert.That(fatherInsteadOfChild, Has.Exactly(2).EqualTo("5678"));
 		}
 
 		[Test]
 		public async Task CanSelectConditionalEntityValueWithEntityComparisonAsync()
 		{
-			var father = await (db.Animals.SingleAsync(a => a.SerialNumber == "5678", CancellationToken.None));
-			var fatherInsteadOfChild = await (db.Animals.Select(a => a.Father == father ? a.Father.SerialNumber : a.SerialNumber).ToListAsync(CancellationToken.None));
+			var father = await (db.Animals.SingleAsync(a => a.SerialNumber == "5678"));
+			var fatherInsteadOfChild = await (db.Animals.Select(a => a.Father == father ? a.Father.SerialNumber : a.SerialNumber).ToListAsync());
 			Assert.That(fatherInsteadOfChild, Has.Exactly(2).EqualTo("5678"));
 		}
 
@@ -447,7 +446,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task CanSelectConditionalObjectAsync()
 		{
-			var fatherIsKnown = await (db.Animals.Select(a => new { a.SerialNumber, Superior = a.Father.SerialNumber, FatherIsKnown = a.Father.SerialNumber == "5678" ? (object)true : (object)false }).ToListAsync(CancellationToken.None));
+			var fatherIsKnown = await (db.Animals.Select(a => new { a.SerialNumber, Superior = a.Father.SerialNumber, FatherIsKnown = a.Father.SerialNumber == "5678" ? (object)true : (object)false }).ToListAsync());
 			Assert.That(fatherIsKnown, Has.Exactly(1).With.Property("FatherIsKnown").True);
 		}
 

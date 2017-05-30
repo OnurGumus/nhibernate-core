@@ -37,8 +37,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3620 {
                     var tb = new TwoBlobs {
                         Blob1 = blob, Blob2 = blob, Id = 1, TheDate = DateTime.Now
                     };
-                    await (s.SaveAsync(tb, CancellationToken.None));
-                    await (tx.CommitAsync(CancellationToken.None));
+                    await (s.SaveAsync(tb));
+                    await (tx.CommitAsync());
                 }
             }
         }

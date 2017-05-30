@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3951
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -54,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3951
 			using (session.BeginTransaction())
 			{
 				var result = !await (session.Query<Entity>()
-					.AnyAsync(e => e.Name != "Bob", CancellationToken.None));
+					.AnyAsync(e => e.Name != "Bob"));
 
 				Assert.AreEqual(false, result);
 			}
@@ -67,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3951
 			using (session.BeginTransaction())
 			{
 				var result = !await (session.Query<Entity>()
-					.AnyAsync(e => e.Name.Length < 3, CancellationToken.None));
+					.AnyAsync(e => e.Name.Length < 3));
 
 				Assert.AreEqual(true, result);
 			}
@@ -81,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3951
 			{
 				var result = await (session.Query<Entity>()
 					.Select(e => new { e.Id, hasRelated = e.Related.Any(), allBobRelated = e.Related.All(r => r.Name == "Bob") })
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.AreEqual(false, result[0].hasRelated);
 				Assert.AreEqual(true, result[0].allBobRelated);

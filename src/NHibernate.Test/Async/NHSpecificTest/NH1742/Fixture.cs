@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1742
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -71,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1742
 
 			query.SetParameterList("dev", devices).SetDateTime("from", date).SetDateTime("to", date.AddMonths(1));
 
-			Assert.AreEqual(1, (await (query.ListAsync<Event>(CancellationToken.None))).Count);
+			Assert.AreEqual(1, (await (query.ListAsync<Event>())).Count);
 		}
 
 		[Test]
@@ -85,7 +84,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1742
 
 			query.SetParameterList("dev", devices).SetDateTime("from", date).SetDateTime("to", date.AddMonths(1));
 
-			Assert.AreEqual(1, (await (query.ListAsync<Event>(CancellationToken.None))).Count);
+			Assert.AreEqual(1, (await (query.ListAsync<Event>())).Count);
 		}
 
 		[Test]
@@ -103,7 +102,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1742
 			query.SetDateTime("from", date);
 			query.SetDateTime("to", date.AddMonths(1));
 
-			Assert.AreEqual(1, (await (query.ListAsync<Event>(CancellationToken.None))).Count);
+			Assert.AreEqual(1, (await (query.ListAsync<Event>())).Count);
 		}
 	}
 }

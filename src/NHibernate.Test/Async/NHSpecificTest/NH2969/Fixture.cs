@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2969
 { 
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture, Ignore("Not fixed yet.")]
 	public class FixtureAsync : BugTestCase
 	{
@@ -57,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2969
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var domesticCat = await (session.GetAsync<DomesticCat>(2, CancellationToken.None));
+				var domesticCat = await (session.GetAsync<DomesticCat>(2));
 
 				Assert.IsNotNull(domesticCat);
 				Assert.AreEqual("Garfield", domesticCat.Name);
@@ -72,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2969
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var cat = await (session.GetAsync<Cat>(2, CancellationToken.None));
+				var cat = await (session.GetAsync<Cat>(2));
 				Assert.IsNotNull(cat);
 				Assert.AreEqual("Garfield", cat.Name);
 
@@ -89,7 +88,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2969
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var goldfish = await (session.GetAsync<Goldfish>(4, CancellationToken.None));
+				var goldfish = await (session.GetAsync<Goldfish>(4));
 
 				Assert.IsNotNull(goldfish);
 				Assert.AreEqual("Bubbles", goldfish.Name);
@@ -104,7 +103,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2969
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var fish = await (session.GetAsync<Fish>(4, CancellationToken.None));
+				var fish = await (session.GetAsync<Fish>(4));
 				Assert.IsNotNull(fish);
 				Assert.AreEqual("Bubbles", fish.Name);
 
@@ -122,7 +121,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2969
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var parrot = await (session.GetAsync<Parrot>(6, CancellationToken.None));
+				var parrot = await (session.GetAsync<Parrot>(6));
 
 				Assert.IsNotNull(parrot, "Parrot");
 				Assert.AreEqual("Parrot", parrot.Name, "Parrot Name");
@@ -137,7 +136,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2969
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var bird = await (session.GetAsync<Bird>(6, CancellationToken.None));
+				var bird = await (session.GetAsync<Bird>(6));
 				Assert.IsNotNull(bird, "Bird");
 				Assert.AreEqual("Parrot", bird.Name, "Bird Name");
 

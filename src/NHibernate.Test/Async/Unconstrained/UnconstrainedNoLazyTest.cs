@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Unconstrained
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class UnconstrainedNoLazyTestAsync : TestCase
 	{
@@ -39,29 +38,29 @@ namespace NHibernate.Test.Unconstrained
 			ITransaction tx = session.BeginTransaction();
 			Person p = new Person("gavin");
 			p.EmployeeId = "123456";
-			await (session.SaveAsync(p, CancellationToken.None));
-			await (tx.CommitAsync(CancellationToken.None));
+			await (session.SaveAsync(p));
+			await (tx.CommitAsync());
 			session.Close();
 
 			sessions.Evict(typeof(Person));
 
 			session = OpenSession();
 			tx = session.BeginTransaction();
-			p = (Person) await (session.GetAsync(typeof(Person), "gavin", CancellationToken.None));
+			p = (Person) await (session.GetAsync(typeof(Person), "gavin"));
 			Assert.IsNull(p.Employee);
 			p.Employee = new Employee("123456");
-			await (tx.CommitAsync(CancellationToken.None));
+			await (tx.CommitAsync());
 			session.Close();
 
 			sessions.Evict(typeof(Person));
 
 			session = OpenSession();
 			tx = session.BeginTransaction();
-			p = (Person) await (session.GetAsync(typeof(Person), "gavin", CancellationToken.None));
+			p = (Person) await (session.GetAsync(typeof(Person), "gavin"));
 			Assert.IsNotNull(p.Employee);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Employee));
-			await (session.DeleteAsync(p, CancellationToken.None));
-			await (tx.CommitAsync(CancellationToken.None));
+			await (session.DeleteAsync(p));
+			await (tx.CommitAsync());
 			session.Close();
 		}
 
@@ -72,8 +71,8 @@ namespace NHibernate.Test.Unconstrained
 			ITransaction tx = session.BeginTransaction();
 			Person p = new Person("gavin");
 			p.EmployeeId = "123456";
-			await (session.SaveAsync(p, CancellationToken.None));
-			await (tx.CommitAsync(CancellationToken.None));
+			await (session.SaveAsync(p));
+			await (tx.CommitAsync());
 			session.Close();
 
 			sessions.Evict(typeof(Person));
@@ -83,10 +82,10 @@ namespace NHibernate.Test.Unconstrained
 			p = (Person) await (session.CreateCriteria(typeof(Person))
 			             	.SetFetchMode("Employee", FetchMode.Join)
 			             	.Add(Expression.Eq("Name", "gavin"))
-			             	.UniqueResultAsync(CancellationToken.None));
+			             	.UniqueResultAsync());
 			Assert.IsNull(p.Employee);
 			p.Employee = new Employee("123456");
-			await (tx.CommitAsync(CancellationToken.None));
+			await (tx.CommitAsync());
 			session.Close();
 
 			sessions.Evict(typeof(Person));
@@ -96,11 +95,11 @@ namespace NHibernate.Test.Unconstrained
 			p = (Person) await (session.CreateCriteria(typeof(Person))
 			             	.SetFetchMode("Employee", FetchMode.Join)
 			             	.Add(Expression.Eq("Name", "gavin"))
-			             	.UniqueResultAsync(CancellationToken.None));
+			             	.UniqueResultAsync());
 			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Employee));
 			Assert.IsNotNull(p.Employee);
-			await (session.DeleteAsync(p, CancellationToken.None));
-			await (tx.CommitAsync(CancellationToken.None));
+			await (session.DeleteAsync(p));
+			await (tx.CommitAsync());
 			session.Close();
 		}
 
@@ -117,30 +116,30 @@ namespace NHibernate.Test.Unconstrained
 			ITransaction tx = session.BeginTransaction();
 			Person p = new Person("gavin");
 			p.EmployeeId = "123456";
-			await (session.SaveAsync(p, CancellationToken.None));
-			await (tx.CommitAsync(CancellationToken.None));
+			await (session.SaveAsync(p));
+			await (tx.CommitAsync());
 			session.Close();
 
 			log.Info("Loading Person#gavin and associating it with a new Employee#123456");
 
 			session = OpenSession();
 			tx = session.BeginTransaction();
-			p = (Person) await (session.GetAsync(typeof(Person), "gavin", CancellationToken.None));
+			p = (Person) await (session.GetAsync(typeof(Person), "gavin"));
 			Assert.IsNull(p.Employee);
 			p.Employee = new Employee("123456");
-			await (tx.CommitAsync(CancellationToken.None));
+			await (tx.CommitAsync());
 			session.Close();
 
 			log.Info("Reloading Person#gavin and checking that its Employee is not null");
 
 			session = OpenSession();
 			tx = session.BeginTransaction();
-			p = (Person) await (session.GetAsync(typeof(Person), "gavin", CancellationToken.None));
+			p = (Person) await (session.GetAsync(typeof(Person), "gavin"));
 			Assert.IsNotNull(p.Employee);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Employee));
 			Assert.IsNotNull(p.Employee.Id);
-			await (session.DeleteAsync(p, CancellationToken.None));
-			await (tx.CommitAsync(CancellationToken.None));
+			await (session.DeleteAsync(p));
+			await (tx.CommitAsync());
 			session.Close();
 		}
 
@@ -152,24 +151,24 @@ namespace NHibernate.Test.Unconstrained
 			Person p = new Person("gavin");
 			p.EmployeeId = "123456";
 			p.Unrelated = 10;
-			await (session.SaveAsync(p, CancellationToken.None));
-			await (tx.CommitAsync(CancellationToken.None));
+			await (session.SaveAsync(p));
+			await (tx.CommitAsync());
 
 			session.BeginTransaction();
 			p.Employee = new Employee("456123");
 			p.Unrelated = 235; // Force update of the object
-			await (session.SaveAsync(p.Employee, CancellationToken.None));
-			await (session.Transaction.CommitAsync(CancellationToken.None));
+			await (session.SaveAsync(p.Employee));
+			await (session.Transaction.CommitAsync());
 			session.Close();
 
 			session = OpenSession();
 			session.BeginTransaction();
-			p = (Person) await (session.LoadAsync(typeof (Person), "gavin", CancellationToken.None));
+			p = (Person) await (session.LoadAsync(typeof (Person), "gavin"));
 			// Should be null, not Employee#456123
 			Assert.IsNull(p.Employee);
-			await (session.DeleteAsync(p, CancellationToken.None));
-			await (session.DeleteAsync("from Employee", CancellationToken.None));
-			await (session.Transaction.CommitAsync(CancellationToken.None));
+			await (session.DeleteAsync(p));
+			await (session.DeleteAsync("from Employee"));
+			await (session.Transaction.CommitAsync());
 			session.Close();
 		}
 	}

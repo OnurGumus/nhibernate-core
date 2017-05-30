@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Ondelete
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class OnDeleteFixtureAsync : TestCase
 	{
@@ -65,8 +64,8 @@ namespace NHibernate.Test.Ondelete
 			joe.Salesperson = mark;
 			mark.Customers.Add(joe);
 
-			await (s.SaveAsync(mark, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(mark));
+			await (t.CommitAsync());
 
 			Assert.AreEqual(2, statistics.EntityInsertCount);
 			Assert.IsTrue(5 >= statistics.PrepareStatementCount);
@@ -74,16 +73,16 @@ namespace NHibernate.Test.Ondelete
 			statistics.Clear();
 
 			t = s.BeginTransaction();
-			await (s.DeleteAsync(mark, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(mark));
+			await (t.CommitAsync());
 
 			Assert.AreEqual(2, statistics.EntityDeleteCount);
 			Assert.AreEqual(1, statistics.PrepareStatementCount);
 
 			t = s.BeginTransaction();
-			IList names = await (s.CreateQuery("select p.name from Person p").ListAsync(CancellationToken.None));
+			IList names = await (s.CreateQuery("select p.name from Person p").ListAsync());
 			Assert.AreEqual(0, names.Count);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 
 			s.Close();
 		}

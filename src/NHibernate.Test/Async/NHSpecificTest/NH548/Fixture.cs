@@ -15,7 +15,6 @@ using Environment=NHibernate.Cfg.Environment;
 namespace NHibernate.Test.NHSpecificTest.NH548
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -40,8 +39,8 @@ namespace NHibernate.Test.NHSpecificTest.NH548
 			// save it to the DB
 			using (ISession session = OpenSession())
 			{
-				await (session.SaveAsync(main, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.SaveAsync(main));
+				await (session.FlushAsync());
 			}
 
 			// check parent
@@ -51,18 +50,18 @@ namespace NHibernate.Test.NHSpecificTest.NH548
 
 			using (ISession session = OpenSession())
 			{
-				getMain = (MainObject) await (session.GetAsync(main.GetType(), main.ID, CancellationToken.None));
+				getMain = (MainObject) await (session.GetAsync(main.GetType(), main.ID));
 				session.Clear();
 				Assert.IsNotNull(getMain.Component.Parent, "component parent null (cache miss)");
 			}
 
 			using (ISession session = OpenSession())
 			{
-				getMain = (MainObject) await (session.GetAsync(main.GetType(), main.ID, CancellationToken.None));
+				getMain = (MainObject) await (session.GetAsync(main.GetType(), main.ID));
 				Assert.IsNotNull(getMain.Component.Parent, "component parent null (cache hit)");
 
-				await (session.DeleteAsync(getMain, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.DeleteAsync(getMain));
+				await (session.FlushAsync());
 			}
 		}
 	}

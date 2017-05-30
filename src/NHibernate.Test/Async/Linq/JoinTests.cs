@@ -16,7 +16,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class JoinTestsAsync : LinqTestCase
 	{
@@ -28,7 +27,7 @@ namespace NHibernate.Test.Linq
 			{
 				var lines = await ((from l in db.OrderLines
 							 where l.Order.Customer.CompanyName == "Vins et alcools Chevalier"
-							 select l).ToListAsync(CancellationToken.None));
+							 select l).ToListAsync());
 
 				Assert.AreEqual(10, lines.Count);
 				var countJoins = CountJoins(spy);
@@ -45,7 +44,7 @@ namespace NHibernate.Test.Linq
 				var lines = await ((from l in db.OrderLines
 							 where l.Order.Customer.CustomerId == "VINET"
 							 where l.Order.Customer.CompanyName == "Vins et alcools Chevalier"
-							 select l).ToListAsync(CancellationToken.None));
+							 select l).ToListAsync());
 
 				Assert.AreEqual(10, lines.Count);
 				var countJoins = CountJoins(spy);
@@ -62,7 +61,7 @@ namespace NHibernate.Test.Linq
 			{
 				var lines = await ((from l in db.OrderLines
 							 where l.Order.Customer.CustomerId == "VINET"
-							 select l).ToListAsync(CancellationToken.None));
+							 select l).ToListAsync());
 
 				Assert.AreEqual(10, lines.Count);
 				var countJoins = CountJoins(spy);
@@ -79,7 +78,7 @@ namespace NHibernate.Test.Linq
 			{
 				var lines = await ((from l in db.OrderLines
 							 where l.Order.Customer.CustomerId == "VINET"
-							 select l.Order.Customer.CustomerId).ToListAsync(CancellationToken.None));
+							 select l.Order.Customer.CustomerId).ToListAsync());
 
 				Assert.AreEqual(10, lines.Count);
 				var countJoins = CountJoins(spy);
@@ -96,7 +95,7 @@ namespace NHibernate.Test.Linq
 			{
 				var lines = await ((from l in db.OrderLines
 							 where l.Order.Customer.CustomerId == "VINET"
-							 select l.Order.Customer).ToListAsync(CancellationToken.None));
+							 select l.Order.Customer).ToListAsync());
 
 				Assert.AreEqual(10, lines.Count);
 				var countJoins = CountJoins(spy);
@@ -113,7 +112,7 @@ namespace NHibernate.Test.Linq
 			{
 				var lines = await ((from l in db.OrderLines
 							 where l.Order.Customer.CompanyName == "Vins et alcools Chevalier"
-							 select l.Order.Customer.CustomerId).ToListAsync(CancellationToken.None));
+							 select l.Order.Customer.CustomerId).ToListAsync());
 
 				Assert.AreEqual(10, lines.Count);
 				var countJoins = CountJoins(spy);
@@ -130,7 +129,7 @@ namespace NHibernate.Test.Linq
 			{
 				var lines = await ((from l in db.OrderLines
 							 where l.Order.OrderDate < DateTime.Now
-							 select l.Order.OrderId).ToListAsync(CancellationToken.None));
+							 select l.Order.OrderId).ToListAsync());
 
 				Assert.AreEqual(2155, lines.Count);
 				var countJoins = CountJoins(spy);
@@ -146,7 +145,7 @@ namespace NHibernate.Test.Linq
 			{
 				var lines = await ((from l in db.OrderLines
 							 where l.Order.OrderId == 100
-							 select l.Order.OrderDate).ToListAsync(CancellationToken.None));
+							 select l.Order.OrderDate).ToListAsync());
 
 				var countJoins = CountJoins(spy);
 				Assert.That(countJoins, Is.EqualTo(1));
@@ -162,7 +161,7 @@ namespace NHibernate.Test.Linq
 			{
 				var lines = await ((from l in db.OrderLines
 							 where l.Order.OrderId == 100
-							 select l.Order).ToListAsync(CancellationToken.None));
+							 select l.Order).ToListAsync());
 
 				var countJoins = CountJoins(spy);
 				Assert.That(countJoins, Is.EqualTo(1));
@@ -178,7 +177,7 @@ namespace NHibernate.Test.Linq
 			{
 				await ((from l in db.OrderLines
 				 where l.Order.OrderId == 1000
-				 select l).ToListAsync(CancellationToken.None));
+				 select l).ToListAsync());
 
 				var countJoins = CountJoins(spy);
 				Assert.That(countJoins, Is.EqualTo(0));
@@ -193,7 +192,7 @@ namespace NHibernate.Test.Linq
 			{
 				await ((from l in db.OrderLines
 				 where l.Order.OrderId == 1000 && l.Order.OrderDate < DateTime.Now
-				 select l).ToListAsync(CancellationToken.None));
+				 select l).ToListAsync());
 
 				var countJoins = CountJoins(spy);
 				Assert.That(countJoins, Is.EqualTo(1));
@@ -208,7 +207,7 @@ namespace NHibernate.Test.Linq
 			{
 				await ((from l in db.OrderLines
 				 orderby l.Order.OrderId
-				 select l).ToListAsync(CancellationToken.None));
+				 select l).ToListAsync());
 
 				var countJoins = CountJoins(spy);
 				Assert.That(countJoins, Is.EqualTo(0));
@@ -223,7 +222,7 @@ namespace NHibernate.Test.Linq
 			{
 				await ((from l in db.OrderLines
 				 orderby l.Order
-				 select l).ToListAsync(CancellationToken.None));
+				 select l).ToListAsync());
 
 				var countJoins = CountJoins(spy);
 				Assert.That(countJoins, Is.EqualTo(0));
@@ -238,7 +237,7 @@ namespace NHibernate.Test.Linq
 			{
 				await ((from l in db.OrderLines
 				 orderby l.Order.OrderId, l.Order.OrderDate
-				 select l).ToListAsync(CancellationToken.None));
+				 select l).ToListAsync());
 
 				var countJoins = CountJoins(spy);
 				Assert.That(countJoins, Is.EqualTo(1));
@@ -252,7 +251,7 @@ namespace NHibernate.Test.Linq
 			using (var spy = new SqlLogSpy())
 			{
 				await ((from l in db.OrderLines
-				 select l.Order.OrderId).ToListAsync(CancellationToken.None));
+				 select l.Order.OrderId).ToListAsync());
 
 				var countJoins = CountJoins(spy);
 				Assert.That(countJoins, Is.EqualTo(0));
@@ -266,7 +265,7 @@ namespace NHibernate.Test.Linq
 			using (var spy = new SqlLogSpy())
 			{
 				await ((from l in db.OrderLines
-				 select new {l.Order.OrderId, l.Order.OrderDate}).ToListAsync(CancellationToken.None));
+				 select new {l.Order.OrderId, l.Order.OrderDate}).ToListAsync());
 
 				var countJoins = CountJoins(spy);
 				Assert.That(countJoins, Is.EqualTo(1));
@@ -279,7 +278,7 @@ namespace NHibernate.Test.Linq
 			using (var spy = new SqlLogSpy())
 			{
 				await ((from l in db.OrderLines
-				 select new { CustomerKnown = l.Order.Customer.CustomerId == null ? 0 : 1, l.Order.OrderDate }).ToListAsync(CancellationToken.None));
+				 select new { CustomerKnown = l.Order.Customer.CustomerId == null ? 0 : 1, l.Order.OrderDate }).ToListAsync());
 
 				var countJoins = CountJoins(spy);
 				Assert.That(countJoins, Is.EqualTo(1));
@@ -294,7 +293,7 @@ namespace NHibernate.Test.Linq
 				// Without nominating the conditional to the select clause (and placing it in SQL)
 				// [l.Order.Customer] will be selected in its entirety, creating a second join 
 				await ((from l in db.OrderLines
-				 select new { CustomerKnown = l.Order.Customer == null ? 0 : 1, l.Order.OrderDate }).ToListAsync(CancellationToken.None));
+				 select new { CustomerKnown = l.Order.Customer == null ? 0 : 1, l.Order.OrderDate }).ToListAsync());
 
 				var countJoins = CountJoins(spy);
 				Assert.That(countJoins, Is.EqualTo(1));
@@ -307,7 +306,7 @@ namespace NHibernate.Test.Linq
 			using (var spy = new SqlLogSpy())
 			{
 				await ((from l in db.OrderLines
-				 select new { CustomerKnown = l.Order.Customer.CustomerId == null ? "unknown" : l.Order.Customer.CompanyName, l.Order.OrderDate }).ToListAsync(CancellationToken.None));
+				 select new { CustomerKnown = l.Order.Customer.CustomerId == null ? "unknown" : l.Order.Customer.CompanyName, l.Order.OrderDate }).ToListAsync());
 
 				var countJoins = CountJoins(spy);
 				Assert.That(countJoins, Is.EqualTo(2));
@@ -322,7 +321,7 @@ namespace NHibernate.Test.Linq
 				// Without nominating the conditional to the select clause (and placing it in SQL)
 				// [l.Order.Customer] will be selected in its entirety, creating a second join 
 				await ((from l in db.OrderLines
-				 select new { CustomerKnown = l.Order.Customer == null ? "unknown" : l.Order.Customer.CompanyName, l.Order.OrderDate }).ToListAsync(CancellationToken.None));
+				 select new { CustomerKnown = l.Order.Customer == null ? "unknown" : l.Order.Customer.CompanyName, l.Order.OrderDate }).ToListAsync());
 
 				var countJoins = CountJoins(spy);
 				Assert.That(countJoins, Is.EqualTo(2));

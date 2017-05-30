@@ -14,7 +14,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1689
 	using Dialect;
 	using NUnit.Framework;
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	[TestFixture]
 	public class SampleTestAsync : BugTestCase
@@ -48,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1689
 		{
 			using (ISession session = this.OpenSession())
 			{
-				DomainClass entity = await (session.LoadAsync<DomainClass>(1, CancellationToken.None));
+				DomainClass entity = await (session.LoadAsync<DomainClass>(1));
 
 				IList<string> inputStrings = entity.GetListOfTargetType<string>("arg");
 				Assert.That(inputStrings.Count == 0);

@@ -68,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1694
 		[Test]
 		public async Task CanOrderByExpressionContainingACommaInAPagedQueryAsync()
 		{
-			await (FillDbAsync(CancellationToken.None));
+			await (FillDbAsync());
 			using (ISession session = OpenSession())
 			{
 				using (ITransaction tran = session.BeginTransaction())
@@ -78,16 +78,16 @@ namespace NHibernate.Test.NHSpecificTest.NH1694
 					crit.AddOrder(Order.Asc("Id"));
 					crit.SetMaxResults(10);
 
-					IList<User> list = await (crit.ListAsync<User>(CancellationToken.None));
+					IList<User> list = await (crit.ListAsync<User>());
 
 					Assert.That(list.Count, Is.EqualTo(2));
 					Assert.That(list[0].OrderStatus, Is.EqualTo(2));
 					Assert.That(list[1].OrderStatus, Is.EqualTo(1));
 
-					await (tran.CommitAsync(CancellationToken.None));
+					await (tran.CommitAsync());
 				}
 			}
-			await (CleanupAsync(CancellationToken.None));
+			await (CleanupAsync());
 		}
 	}
 }

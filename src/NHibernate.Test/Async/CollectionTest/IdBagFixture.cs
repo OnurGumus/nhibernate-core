@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.CollectionTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class IdBagFixtureAsync : TestCase
 	{
@@ -49,16 +48,16 @@ namespace NHibernate.Test.CollectionTest
 			a.Items.Add( "second string" );
 
 			ISession s = OpenSession();
-			await (s.SaveOrUpdateAsync( a , CancellationToken.None));
+			await (s.SaveOrUpdateAsync( a ));
 			// this flush should test how NH wraps a generic collection with its
 			// own persistent collection
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 			s.Close();
 			Assert.IsNotNull( a.Id );
 			Assert.AreEqual( "first string", ( string ) a.Items[ 0 ] );
 
 			s = OpenSession();
-			a = ( A ) await (s.LoadAsync( typeof( A ), a.Id , CancellationToken.None));
+			a = ( A ) await (s.LoadAsync( typeof( A ), a.Id ));
 			Assert.AreEqual( "first string", ( string ) a.Items[ 0 ], "first item should be 'first string'" );
 			Assert.AreEqual( "second string", ( string ) a.Items[ 1 ], "second item should be 'second string'" );
 			// ensuring the correct generic type was constructed
@@ -66,7 +65,7 @@ namespace NHibernate.Test.CollectionTest
 			Assert.AreEqual( 3, a.Items.Count, "3 items in the list now" );
 
 			a.Items[ 1 ] = "new second string";
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 			s.Close();
 		}
 	}

@@ -19,7 +19,6 @@ using NHibernate.Criterion;
 namespace NHibernate.Test.NHSpecificTest.NH2077
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -42,7 +41,7 @@ DELETE FROM Person WHERE Id = :userId;
 ")
  .SetParameter("userId",1)
  .SetParameter("deletedUserId", 1)
-            		.ExecuteUpdateAsync(CancellationToken.None));
+            		.ExecuteUpdateAsync());
             }
 		} 
 

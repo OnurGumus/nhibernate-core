@@ -54,23 +54,23 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.SaveAsync(dates, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(dates));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				var datesRecovered = await (s.CreateQuery("from AllDates").UniqueResultAsync<AllDates>(CancellationToken.None));
+				var datesRecovered = await (s.CreateQuery("from AllDates").UniqueResultAsync<AllDates>());
 				Assert.That(datesRecovered.Sql_datetimeoffset, Is.EqualTo(NowOS));
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				var datesRecovered = await (s.CreateQuery("from AllDates").UniqueResultAsync<AllDates>(CancellationToken.None));
-				await (s.DeleteAsync(datesRecovered, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				var datesRecovered = await (s.CreateQuery("from AllDates").UniqueResultAsync<AllDates>());
+				await (s.DeleteAsync(datesRecovered));
+				await (tx.CommitAsync());
 			}
 		}
 

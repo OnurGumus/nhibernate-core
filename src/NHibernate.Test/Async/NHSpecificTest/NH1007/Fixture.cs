@@ -19,7 +19,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1007
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -33,11 +32,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1007
 
 				Assert.That(employer.Id, Is.EqualTo(Guid.Empty));
 
-				await (session.SaveAsync(employer, CancellationToken.None));
+				await (session.SaveAsync(employer));
 
 				Assert.That(employer.Id, Is.Not.EqualTo(Guid.Empty));
 
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (transaction.CommitAsync());
 			}
 		}
 
@@ -51,11 +50,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1007
 
 				Assert.That(employer.Id, Is.EqualTo(Guid.Empty));
 
-				await (session.SaveAsync(employer, CancellationToken.None));
+				await (session.SaveAsync(employer));
 
 				Assert.That(employer.Id, Is.Not.EqualTo(Guid.Empty));
 
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (transaction.CommitAsync());
 			}
 		}
 

@@ -63,17 +63,17 @@ namespace NHibernate.Test.NHSpecificTest.NH1635
 		[Test]
 		public async Task TestAsync()
 		{
-			await (CreateTestContextAsync(CancellationToken.None));
+			await (CreateTestContextAsync());
 			using (ISession session = OpenSession())
 			{
-				var thread = await (session.GetAsync<ForumThread>(1, CancellationToken.None));
+				var thread = await (session.GetAsync<ForumThread>(1));
 
 				Assert.IsNotNull(thread.LatestMessage);
 				Assert.IsTrue(thread.LatestMessage.Id == 2);
 
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 			}
-			await (CleanUpAsync(CancellationToken.None));
+			await (CleanUpAsync());
 		}
 	}
 }

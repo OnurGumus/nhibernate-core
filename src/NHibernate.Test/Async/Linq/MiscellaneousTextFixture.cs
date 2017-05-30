@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class MiscellaneousTextFixtureAsync : LinqTestCase
 	{
@@ -29,7 +28,7 @@ namespace NHibernate.Test.Linq
         {
             var q = from o in db.Orders where o.OrderDate <= DateTime.Today.AddDays(-1) select o;
 
-            var count = await (q.CountAsync(CancellationToken.None));
+            var count = await (q.CountAsync());
 
             Console.WriteLine(count);
         }
@@ -41,7 +40,7 @@ namespace NHibernate.Test.Linq
             Expression<Func<Customer, bool>> filter = c => c.ContactName.ToLower().StartsWith("a");
             IQueryable<Customer> value = db.Customers;
 
-            var results = await (value.Where(filter).ToListAsync(CancellationToken.None));
+            var results = await (value.Where(filter).ToListAsync());
 
             Assert.IsFalse(results.Where(c => !c.ContactName.ToLower().StartsWith("a")).Any());
         }
@@ -55,7 +54,7 @@ namespace NHibernate.Test.Linq
                                       {
                                           c.ContactName,
                                           Count = c.Orders.Count(o => o.Employee.EmployeeId == 4)
-                                      }).ToListAsync(CancellationToken.None));
+                                      }).ToListAsync());
 
             Assert.AreEqual(91, results.Count());
             Assert.AreEqual(2, results.Where(c => c.ContactName == "Maria Anders").Single().Count);
@@ -72,7 +71,7 @@ namespace NHibernate.Test.Linq
                   c.Orders.Any(o => o.ShippedTo == c.CompanyName)
                   select c;
 
-            Assert.AreEqual(85, await (results.CountAsync(CancellationToken.None)));
+            Assert.AreEqual(85, await (results.CountAsync()));
         }
 
         [Category("Paging")]
@@ -91,9 +90,9 @@ namespace NHibernate.Test.Linq
             IQueryable<Product> page3 = q.Skip(10).Take(5);
             IQueryable<Product> page4 = q.Skip(15).Take(5);
 
-			var firstResultOnPage2 = await (page2.FirstAsync(CancellationToken.None));
-			var firstResultOnPage3 = await (page3.FirstAsync(CancellationToken.None));
-			var firstResultOnPage4 = await (page4.FirstAsync(CancellationToken.None));
+			var firstResultOnPage2 = await (page2.FirstAsync());
+			var firstResultOnPage3 = await (page3.FirstAsync());
+			var firstResultOnPage4 = await (page4.FirstAsync());
 
 			Assert.AreNotEqual(firstResultOnPage2.ProductId, firstResultOnPage3.ProductId);
 			Assert.AreNotEqual(firstResultOnPage3.ProductId, firstResultOnPage4.ProductId);
@@ -105,11 +104,11 @@ namespace NHibernate.Test.Linq
         {
             using (var s = OpenSession())
             {
-                var hql = await (s.CreateQuery("from System.Object o").ListAsync(CancellationToken.None));
+                var hql = await (s.CreateQuery("from System.Object o").ListAsync());
 
                 var r = from o in s.Query<object>() select o;
 
-                var l = await (r.ToListAsync(CancellationToken.None));
+                var l = await (r.ToListAsync());
 
                 Assert.AreEqual(hql.Count, l.Count);
             } 

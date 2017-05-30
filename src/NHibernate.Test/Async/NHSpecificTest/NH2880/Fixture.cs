@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2880
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -52,8 +51,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2880
 			{
 				using (ITransaction t = s.BeginTransaction())
 				{
-					Entity1 e = await (s.GetAsync<Entity1>(_id, CancellationToken.None));
-					await (t.CommitAsync(CancellationToken.None));
+					Entity1 e = await (s.GetAsync<Entity1>(_id));
+					await (t.CommitAsync());
 				}
 
 				sessionMemoryStream = new MemoryStream();
@@ -65,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2880
 			BinaryFormatter reader = new BinaryFormatter();
 			ISession restoredSession = (ISession)reader.Deserialize(sessionMemoryStream);
 
-			Entity1 e1 = await (restoredSession.GetAsync<Entity1>(_id, CancellationToken.None));
+			Entity1 e1 = await (restoredSession.GetAsync<Entity1>(_id));
 			Entity2 e2 = e1.Entity2;
 			Assert.IsNotNull(e2);
 			Assert.AreEqual("Text", e2.Text);

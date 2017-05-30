@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH980
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class NH980FixtureAsync : BugTestCase
 	{
@@ -28,10 +27,10 @@ namespace NHibernate.Test.NHSpecificTest.NH980
 			using (ITransaction t = s.BeginTransaction())
 			{
 				IdOnly obj = new IdOnly();
-				await (s.SaveAsync(obj, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
-				await (s.DeleteAsync(obj, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(obj));
+				await (s.FlushAsync());
+				await (s.DeleteAsync(obj));
+				await (t.CommitAsync());
 			}
 		}
 	}

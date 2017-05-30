@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1959
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -37,23 +36,23 @@ namespace NHibernate.Test.NHSpecificTest.NH1959
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.SaveAsync(a, CancellationToken.None));
-				await (s.SaveAsync(b, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(a));
+				await (s.SaveAsync(b));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				ClassA loadedA = await (s.GetAsync<ClassA>(a.Id, CancellationToken.None));
-				ClassB loadedB = await (s.GetAsync<ClassB>(b.Id, CancellationToken.None));
+				ClassA loadedA = await (s.GetAsync<ClassA>(a.Id));
+				ClassB loadedB = await (s.GetAsync<ClassB>(b.Id));
 				loadedA.TheBag.Add(loadedB);
 				loadedA.TheBag.Remove(loadedB);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
-				Assert.AreEqual(0, (await (s.GetAsync<ClassA>(a.Id, CancellationToken.None))).TheBag.Count);
+				Assert.AreEqual(0, (await (s.GetAsync<ClassA>(a.Id))).TheBag.Count);
 		}
 
 		[Test]
@@ -64,23 +63,23 @@ namespace NHibernate.Test.NHSpecificTest.NH1959
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.SaveAsync(a, CancellationToken.None));
-				await (s.SaveAsync(b, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(a));
+				await (s.SaveAsync(b));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				ClassA loadedA = await (s.GetAsync<ClassA>(a.Id, CancellationToken.None));
-				ClassB loadedB = await (s.GetAsync<ClassB>(b.Id, CancellationToken.None));
+				ClassA loadedA = await (s.GetAsync<ClassA>(a.Id));
+				ClassB loadedB = await (s.GetAsync<ClassB>(b.Id));
 				loadedA.TheBag.Add(loadedB);
 				loadedA.TheBag.RemoveAt(0);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
-				Assert.AreEqual(0, (await (s.GetAsync<ClassA>(a.Id, CancellationToken.None))).TheBag.Count);
+				Assert.AreEqual(0, (await (s.GetAsync<ClassA>(a.Id))).TheBag.Count);
 		}
 	}
 }

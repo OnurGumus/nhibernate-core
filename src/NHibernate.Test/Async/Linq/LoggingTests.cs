@@ -17,7 +17,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class LoggingTestsAsync : LinqTestCase
 	{
@@ -30,7 +29,7 @@ namespace NHibernate.Test.Linq
 
 				var list = await (db.Products.Where(p => subquery.Contains(p))
 				             .Skip(5).Take(10)
-				             .ToListAsync(CancellationToken.None));
+				             .ToListAsync());
 
 				var logtext = spy.GetWholeLog();
 
@@ -44,18 +43,18 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task CanLogLinqExpressionWithoutInitializingContainedProxyAsync()
 		{
-			var productId = await (db.Products.Select(p => p.ProductId).FirstAsync(CancellationToken.None));
+			var productId = await (db.Products.Select(p => p.ProductId).FirstAsync());
 
 			using (var logspy = new LogSpy("NHibernate.Linq"))
 			{
-				var productProxy = await (session.LoadAsync<Product>(productId, CancellationToken.None));
+				var productProxy = await (session.LoadAsync<Product>(productId));
 				Assert.That(NHibernateUtil.IsInitialized(productProxy), Is.False);
 
 				var result = from product in db.Products
 				             where product == productProxy
 				             select product;
 
-				Assert.That(await (result.CountAsync(CancellationToken.None)), Is.EqualTo(1));
+				Assert.That(await (result.CountAsync()), Is.EqualTo(1));
 
 				// Verify that the expected logging did happen.
 				var actualLog = logspy.GetWholeLog();

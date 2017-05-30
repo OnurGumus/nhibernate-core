@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1284
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture, Ignore("Not supported yet.")]
 	public class FixtureAsync : BugTestCase
 	{
@@ -25,23 +24,23 @@ namespace NHibernate.Test.NHSpecificTest.NH1284
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				Person p = new Person("Jimmy Hendrix");
-				await (s.SaveAsync(p, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(p));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				jimmy = (Person)await (s.GetAsync(typeof(Person), "Jimmy Hendrix", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				jimmy = (Person)await (s.GetAsync(typeof(Person), "Jimmy Hendrix"));
+				await (tx.CommitAsync());
 			}
 			Assert.IsFalse(jimmy.Address.HasValue);
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from Person", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Person"));
+				await (tx.CommitAsync());
 			}
 		}
 	}

@@ -15,7 +15,6 @@ using System.Collections;
 namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class HiLoForcedTableSequenceTestAsync : TestCase
 	{
@@ -51,7 +50,7 @@ namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 					for (int i = 0; i < increment; i++)
 					{
 						entities[i] = new Entity("" + (i + 1));
-						await (session.SaveAsync(entities[i], CancellationToken.None));
+						await (session.SaveAsync(entities[i]));
 						long expectedId = i + 1;
 						Assert.That(entities[i].Id, Is.EqualTo(expectedId));
 						Assert.That(generator.DatabaseStructure.TimesAccessed, Is.EqualTo(1)); // initialization
@@ -62,14 +61,14 @@ namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 
 					// now force a "clock over"
 					entities[increment] = new Entity("" + increment);
-					await (session.SaveAsync(entities[increment], CancellationToken.None));
+					await (session.SaveAsync(entities[increment]));
 					Assert.That(entities[optimizer.IncrementSize].Id, Is.EqualTo(optimizer.IncrementSize + 1));
 					Assert.That(generator.DatabaseStructure.TimesAccessed, Is.EqualTo(2)); // initialization + clock-over
 					Assert.That(optimizer.LastSourceValue, Is.EqualTo(2)); // initialization + clock-over
 					Assert.That(optimizer.LastValue, Is.EqualTo(increment + 1));
 					Assert.That(optimizer.HiValue, Is.EqualTo(increment * 2 + 1));
 
-					await (transaction.CommitAsync(CancellationToken.None));
+					await (transaction.CommitAsync());
 				}
 
 				using (ITransaction transaction = session.BeginTransaction())
@@ -77,9 +76,9 @@ namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 					for (int i = 0; i < entities.Length; i++)
 					{
 						Assert.That(entities[i].Id, Is.EqualTo(i + 1));
-						await (session.DeleteAsync(entities[i], CancellationToken.None));
+						await (session.DeleteAsync(entities[i]));
 					}
-					await (transaction.CommitAsync(CancellationToken.None));
+					await (transaction.CommitAsync());
 				}
 
 				session.Close();

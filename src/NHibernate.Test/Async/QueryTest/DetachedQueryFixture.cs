@@ -20,7 +20,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.QueryTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class DetachedQueryFixtureAsync : TestCase
 	{
@@ -69,7 +68,7 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				IQuery q = dq.GetExecutableQuery(s);
-				IList l = await (q.ListAsync(CancellationToken.None));
+				IList l = await (q.ListAsync());
 				Assert.AreEqual(totalFoo, l.Count);
 			}
 
@@ -79,7 +78,7 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				IQuery q = dq.GetExecutableQuery(s);
-				IList<Foo> l = await (q.ListAsync<Foo>(CancellationToken.None));
+				IList<Foo> l = await (q.ListAsync<Foo>());
 				Assert.AreEqual(1, l.Count);
 				Assert.AreEqual("N2", l[0].Name);
 				Assert.AreEqual("D2", l[0].Description);
@@ -91,7 +90,7 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				IQuery q = dq.GetExecutableQuery(s);
-				IList<Foo> l = await (q.ListAsync<Foo>(CancellationToken.None));
+				IList<Foo> l = await (q.ListAsync<Foo>());
 				Assert.AreEqual(1, l.Count);
 				Assert.AreEqual("N2", l[0].Name);
 				Assert.AreEqual("D2", l[0].Description);
@@ -103,7 +102,7 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				IQuery q = dq.GetExecutableQuery(s);
-				IList<Foo> l = await (q.ListAsync<Foo>(CancellationToken.None));
+				IList<Foo> l = await (q.ListAsync<Foo>());
 				Assert.That(l.Count, Is.EqualTo(2));
 
 				Assert.That(l.Contains(new Foo("N2", "D2")), Is.True);
@@ -116,7 +115,7 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				IQuery q = dq.GetExecutableQuery(s);
-				IList<Foo> l = await (q.ListAsync<Foo>(CancellationToken.None));
+				IList<Foo> l = await (q.ListAsync<Foo>());
 				Assert.AreEqual(2, l.Count);
 				Assert.AreEqual("N0", l[0].Name);
 				Assert.AreEqual("N1", l[1].Name);
@@ -125,7 +124,7 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				IQuery q = dq.GetExecutableQuery(s);
-				IList<Foo> l = await (q.ListAsync<Foo>(CancellationToken.None));
+				IList<Foo> l = await (q.ListAsync<Foo>());
 				Assert.AreEqual(1, l.Count);
 				Assert.AreEqual("N2", l[0].Name);
 			}
@@ -139,7 +138,7 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				IQuery q = dq.GetExecutableQuery(s);
-				IList<Foo> l = await (q.ListAsync<Foo>(CancellationToken.None));
+				IList<Foo> l = await (q.ListAsync<Foo>());
 				Assert.AreEqual(1, l.Count);
 				Assert.AreEqual("N2", l[0].Name);
 				Assert.AreEqual("D2", l[0].Description);
@@ -149,7 +148,7 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				IQuery q = dq.GetExecutableQuery(s);
-				IList l = await (q.ListAsync(CancellationToken.None));
+				IList l = await (q.ListAsync());
 				Assert.AreEqual(totalFoo, l.Count);
 			}
 		}
@@ -163,7 +162,7 @@ namespace NHibernate.Test.QueryTest
 			using (ISession s = OpenSession())
 			{
 				IQuery q = dq.GetExecutableQuery(s);
-				IList<NoFoo> l = await (q.ListAsync<NoFoo>(CancellationToken.None));
+				IList<NoFoo> l = await (q.ListAsync<NoFoo>());
 				Assert.AreEqual(5, l.Count);
 			}
 		}
@@ -179,7 +178,7 @@ namespace NHibernate.Test.QueryTest
 
 			using (ISession s = OpenSession())
 			{
-				await (dqs.GetExecutableQuery(s).ListAsync(CancellationToken.None));
+				await (dqs.GetExecutableQuery(s).ListAsync());
 			}
 		}
 

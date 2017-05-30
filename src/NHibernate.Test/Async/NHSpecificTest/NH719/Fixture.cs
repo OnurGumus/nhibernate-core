@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH719
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -35,22 +34,22 @@ namespace NHibernate.Test.NHSpecificTest.NH719
 			{
 				using (ISession session = sessions.OpenSession())
 				{
-					await (session.SaveAsync(a, CancellationToken.None));
-					await (session.SaveAsync(b, CancellationToken.None));
-					await (session.SaveAsync(notCached, CancellationToken.None));
-					await (session.SaveAsync(cached, CancellationToken.None));
+					await (session.SaveAsync(a));
+					await (session.SaveAsync(b));
+					await (session.SaveAsync(notCached));
+					await (session.SaveAsync(cached));
 
-					await (session.FlushAsync(CancellationToken.None));
+					await (session.FlushAsync());
 				}
 
 				using (ISession session = sessions.OpenSession())
 				{
 					// runs OK, since it's not cached
-					NotCached nc = (NotCached) await (session.LoadAsync(typeof(NotCached), 1, CancellationToken.None));
+					NotCached nc = (NotCached) await (session.LoadAsync(typeof(NotCached), 1));
 					Assert.AreEqual("bbb", ((B) nc.Owner).Foo);
 
 					// 1st run OK, not yet in cache
-					Cached ca = (Cached) await (session.LoadAsync(typeof(Cached), 1, CancellationToken.None));
+					Cached ca = (Cached) await (session.LoadAsync(typeof(Cached), 1));
 					Assert.AreEqual("aaa", ((A) ca.Owner).Foo);
 				}
 
@@ -58,11 +57,11 @@ namespace NHibernate.Test.NHSpecificTest.NH719
 				using (ISession session = sessions.OpenSession())
 				{
 					// runs OK, since it's not cached
-					NotCached nc = (NotCached) await (session.LoadAsync(typeof(NotCached), 1, CancellationToken.None));
+					NotCached nc = (NotCached) await (session.LoadAsync(typeof(NotCached), 1));
 					Assert.AreEqual("bbb", ((B) nc.Owner).Foo);
 
 					// 2nd run fails, when loaded from in cache
-					Cached ca = (Cached) await (session.LoadAsync(typeof(Cached), 1, CancellationToken.None));
+					Cached ca = (Cached) await (session.LoadAsync(typeof(Cached), 1));
 					Assert.AreEqual("aaa", ((A) ca.Owner).Foo);
 				}
 			}
@@ -70,11 +69,11 @@ namespace NHibernate.Test.NHSpecificTest.NH719
 			{
 				using (ISession session = OpenSession())
 				{
-					await (session.DeleteAsync(notCached, CancellationToken.None));
-					await (session.DeleteAsync(cached, CancellationToken.None));
-					await (session.DeleteAsync(a, CancellationToken.None));
-					await (session.DeleteAsync(b, CancellationToken.None));
-					await (session.FlushAsync(CancellationToken.None));
+					await (session.DeleteAsync(notCached));
+					await (session.DeleteAsync(cached));
+					await (session.DeleteAsync(a));
+					await (session.DeleteAsync(b));
+					await (session.FlushAsync());
 				}
 			}
 		}

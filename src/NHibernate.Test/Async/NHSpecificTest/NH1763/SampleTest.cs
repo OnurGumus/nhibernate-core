@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1763
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SampleTestAsync : BugTestCase
 	{
@@ -28,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1763
 					.SetProjection(Projections.Conditional(Restrictions.IdEq(1),
 					                                       Projections.Property("Name"),
 					                                       Projections.Property("Name2")))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 			}
 		}
 	}

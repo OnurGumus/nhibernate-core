@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2234
 {
   using System.Threading.Tasks;
-  using System.Threading;
 
 	[TestFixture]
 	public class FixtureAsync: BugTestCase
@@ -27,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2234
 		{
 		var qry = from item in s.Query<SomethingLinq>() where item.Relation == MyUserTypes.Value1 select item;
 
-			await (qry.ToListAsync(CancellationToken.None));
+			await (qry.ToListAsync());
 			Assert.That(() => qry.ToList(), Throws.Nothing);
 		}
 	  }

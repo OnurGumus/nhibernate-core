@@ -16,7 +16,6 @@ using NHibernate.Hql.Ast.ANTLR;
 namespace NHibernate.Test.QueryTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Tests functionality for named parameter queries.
 	/// </summary>
@@ -41,7 +40,7 @@ namespace NHibernate.Test.QueryTest
 				q.SetAnsiString("Name", "Fred");
 
 				// Try to execute it
-				Assert.ThrowsAsync<QueryException>(() =>q.ListAsync(CancellationToken.None));
+				Assert.ThrowsAsync<QueryException>(() =>q.ListAsync());
 			}
 			finally
 			{

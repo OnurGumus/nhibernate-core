@@ -19,7 +19,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2412
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -40,18 +39,18 @@ namespace NHibernate.Test.NHSpecificTest.NH2412
 			try
 			{
 				Customer c1 = new Customer {Name = "Allen"};
-				await (s.SaveAsync(c1, CancellationToken.None));
+				await (s.SaveAsync(c1));
 				Customer c2 = new Customer {Name = "Bob"};
-				await (s.SaveAsync(c2, CancellationToken.None));
+				await (s.SaveAsync(c2));
 				Customer c3 = new Customer {Name = "Charlie"};
-				await (s.SaveAsync(c3, CancellationToken.None));
+				await (s.SaveAsync(c3));
 
-				await (s.SaveAsync(new Order {Customer = c1}, CancellationToken.None));
-				await (s.SaveAsync(new Order {Customer = c3}, CancellationToken.None));
-				await (s.SaveAsync(new Order {Customer = c2}, CancellationToken.None));
-				await (s.SaveAsync(new Order(), CancellationToken.None));
+				await (s.SaveAsync(new Order {Customer = c1}));
+				await (s.SaveAsync(new Order {Customer = c3}));
+				await (s.SaveAsync(new Order {Customer = c2}));
+				await (s.SaveAsync(new Order()));
 
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 			}
 			finally
 			{
@@ -61,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2412
 			s = OpenSession();
 			try
 			{
-				var orders = await (s.Query<Order>().OrderBy(o => o.Customer.Name).ToListAsync(CancellationToken.None));
+				var orders = await (s.Query<Order>().OrderBy(o => o.Customer.Name).ToListAsync());
 				Assert.AreEqual(4, orders.Count);
 				if (orders[0].Customer == null)
 				{

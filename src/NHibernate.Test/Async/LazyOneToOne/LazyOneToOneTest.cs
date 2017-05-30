@@ -17,7 +17,6 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Test.LazyOneToOne
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class LazyOneToOneTestAsync : TestCase
 	{
@@ -57,40 +56,40 @@ namespace NHibernate.Test.LazyOneToOne
 			var e = new Employee(p);
 			new Employment(e, "JBoss");
 			var old = new Employment(e, "IFA") {EndDate = DateTime.Today};
-			await (s.PersistAsync(p, CancellationToken.None));
-			await (s.PersistAsync(p2, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(p));
+			await (s.PersistAsync(p2));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			p = await (s.CreateQuery("from Person where name='Gavin'").UniqueResultAsync<Person>(CancellationToken.None));
+			p = await (s.CreateQuery("from Person where name='Gavin'").UniqueResultAsync<Person>());
 			Assert.That(!NHibernateUtil.IsPropertyInitialized(p, "Employee"));
 
 			Assert.That(p.Employee.Person, Is.SameAs(p));
 			Assert.That(NHibernateUtil.IsInitialized(p.Employee.Employments));
 			Assert.That(p.Employee.Employments.Count, Is.EqualTo(1));
 
-			p2 = await (s.CreateQuery("from Person where name='Emmanuel'").UniqueResultAsync<Person>(CancellationToken.None));
+			p2 = await (s.CreateQuery("from Person where name='Emmanuel'").UniqueResultAsync<Person>());
 			Assert.That(p2.Employee, Is.Null);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			p = await (s.GetAsync<Person>("Gavin", CancellationToken.None));
+			p = await (s.GetAsync<Person>("Gavin"));
 			Assert.That(!NHibernateUtil.IsPropertyInitialized(p, "Employee"));
 
 			Assert.That(p.Employee.Person, Is.SameAs(p));
 			Assert.That(NHibernateUtil.IsInitialized(p.Employee.Employments));
 			Assert.That(p.Employee.Employments.Count, Is.EqualTo(1));
 
-			p2 = await (s.GetAsync<Person>("Emmanuel", CancellationToken.None));
+			p2 = await (s.GetAsync<Person>("Emmanuel"));
 			Assert.That(p2.Employee, Is.Null);
-			await (s.DeleteAsync(p2, CancellationToken.None));
-			await (s.DeleteAsync(old, CancellationToken.None));
-			await (s.DeleteAsync(p, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(p2));
+			await (s.DeleteAsync(old));
+			await (s.DeleteAsync(p));
+			await (t.CommitAsync());
 			s.Close();
 		}
 	}

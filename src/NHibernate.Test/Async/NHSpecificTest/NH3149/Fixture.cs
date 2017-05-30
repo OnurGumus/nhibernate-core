@@ -83,7 +83,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3149
 							.SetLockMode(LockMode.UpgradeNoWait)
 							.AddOrder(Order.Desc("Id"))
 							.SetMaxResults(1)
-							.UniqueResultAsync(CancellationToken.None));
+							.UniqueResultAsync());
 					}
 				}
 				catch

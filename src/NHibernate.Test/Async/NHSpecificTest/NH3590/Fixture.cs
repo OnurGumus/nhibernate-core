@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3590
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -41,8 +40,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3590
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					await (s.UpdateAsync(_entity, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (s.UpdateAsync(_entity));
+					await (tx.CommitAsync());
 				}
 			}
 
@@ -50,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3590
 			{
 				using (s.BeginTransaction())
 				{
-					Assert.That((await (s.GetAsync<Entity>(_entity.Id, CancellationToken.None))).Dates.Count, Is.EqualTo(1));
+					Assert.That((await (s.GetAsync<Entity>(_entity.Id))).Dates.Count, Is.EqualTo(1));
 				}
 			}
 		}
@@ -64,7 +63,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3590
 				using (var tx = s.BeginTransaction())
 				{
 					s.Merge(_entity);
-					await (tx.CommitAsync(CancellationToken.None));
+					await (tx.CommitAsync());
 				}
 			}
 
@@ -72,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3590
 			{
 				using (s.BeginTransaction())
 				{
-					Assert.That((await (s.GetAsync<Entity>(_entity.Id, CancellationToken.None))).Dates.Count, Is.EqualTo(1));
+					Assert.That((await (s.GetAsync<Entity>(_entity.Id))).Dates.Count, Is.EqualTo(1));
 				}
 			}
 		}

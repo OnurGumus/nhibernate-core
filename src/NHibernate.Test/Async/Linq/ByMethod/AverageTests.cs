@@ -16,7 +16,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq.ByMethod
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class AverageTestsAsync : LinqTestCase
 	{
@@ -46,7 +45,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			}
 
 			//NH-2429
-			var average = await (db.Products.AverageAsync(x => x.UnitsOnOrder, CancellationToken.None));
+			var average = await (db.Products.AverageAsync(x => x.UnitsOnOrder));
 
 			Assert.AreEqual(average, 10.129870d, 0.000001d);
 		}

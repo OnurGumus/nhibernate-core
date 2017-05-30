@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH318
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{
@@ -35,11 +34,11 @@ namespace NHibernate.Test.NHSpecificTest.NH318
 			ISession session = OpenSession();
 			NotNullPropertyHolder a = new NotNullPropertyHolder();
 			a.NotNullProperty = "Value";
-			await (session.SaveAsync(a, CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.SaveAsync(a));
+			await (session.FlushAsync());
 			a.NotNullProperty = null;
-			await (session.DeleteAsync(a, CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.DeleteAsync(a));
+			await (session.FlushAsync());
 			session.Close();
 		}
 	}

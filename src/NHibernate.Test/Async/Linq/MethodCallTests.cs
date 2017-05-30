@@ -18,21 +18,20 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class MethodCallTestsAsync : LinqTestCase
 	{
 		[Test]
 		public async Task CanExecuteAnyAsync()
 		{
-			var result = await (db.Users.AnyAsync(CancellationToken.None));
+			var result = await (db.Users.AnyAsync());
 			Assert.IsTrue(result);
 		}
 
 		[Test]
 		public async Task CanExecuteAnyWithArgumentsAsync()
 		{
-			var result = await (db.Users.AnyAsync(u => u.Name == "user-does-not-exist", CancellationToken.None));
+			var result = await (db.Users.AnyAsync(u => u.Name == "user-does-not-exist"));
 			Assert.IsFalse(result);
 		}
 
@@ -40,7 +39,7 @@ namespace NHibernate.Test.Linq
 		public async Task CanExecuteCountWithOrderByArgumentsAsync()
 		{
 			var query = db.Users.OrderBy(u => u.Name);
-			var count = await (query.CountAsync(CancellationToken.None));
+			var count = await (query.CountAsync());
 			Assert.AreEqual(3, count);
 		}
 
@@ -49,7 +48,7 @@ namespace NHibernate.Test.Linq
 		{
 			var result = await (db.Users
 				.Select(u => new object[] {u.Id, u.Name, u.InvalidLoginAttempts})
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			Assert.That(result.Length, Is.EqualTo(3));
 			Assert.That(result[1], Is.EqualTo("ayende"));
@@ -61,7 +60,7 @@ namespace NHibernate.Test.Linq
 		{
 			var result = await (db.Users
 				.Select(u => new object[] {u.Component, u.Component.OtherComponent})
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			Assert.That(result.Length, Is.EqualTo(2));
 			Assert.That(result[0], Is.TypeOf<UserComponent>());
@@ -80,7 +79,7 @@ namespace NHibernate.Test.Linq
 			var result = await (db.Users
 				.Where(u => u.Name == "nhibernate")
 				.Select(u => new object[] {u.Enum1, u.Enum2, u.Features})
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			Assert.That(result.Length, Is.EqualTo(3));
 			Assert.That(result[0], Is.EqualTo(EnumStoredAsString.Medium));
@@ -96,7 +95,7 @@ namespace NHibernate.Test.Linq
 
 			var result = await (db.Users
 				.Select(u => new object[] {u.Id, pi, name, DateTime.MinValue})
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			Assert.That(result.Length, Is.EqualTo(4));
 			Assert.That(result[1], Is.EqualTo(pi));
@@ -109,7 +108,7 @@ namespace NHibernate.Test.Linq
 		{
 			var result = await (db.Users
 				.Select(u => new object[] {u.Id, u.Role.Name, u.Role.Entity.Output})
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			Assert.That(result.Length, Is.EqualTo(3));
 			Assert.That(result[1], Is.EqualTo("Admin"));
@@ -121,7 +120,7 @@ namespace NHibernate.Test.Linq
 		{
 			var result = await (db.Users
 				.Select(u => new { Cells = new object[] { u.Id, u.Name, new object[u.Id] } })
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			var cells = result.Cells;
 			Assert.That(cells.Length, Is.EqualTo(3));
@@ -134,7 +133,7 @@ namespace NHibernate.Test.Linq
 		{
 			var result = await (db.Users
 				.Select(u => new { Cells = new List<object> { u.Id, u.Name, new object[u.Id] } })
-				.FirstAsync(CancellationToken.None));
+				.FirstAsync());
 
 			var cells = result.Cells;
 			Assert.That(cells.Count, Is.EqualTo(3));
@@ -146,7 +145,7 @@ namespace NHibernate.Test.Linq
 		public async Task CanSelectPropertiesIntoNestedObjectArraysAsync()
 		{
 			var query = db.Users.Select(u => new object[] {"Root", new object[] {"Sub1", u.Name, new object[] {"Sub2", u.Name}}});
-			var result = await (query.FirstAsync(CancellationToken.None));
+			var result = await (query.FirstAsync());
 
 			Assert.That(result.Length, Is.EqualTo(2));
 			Assert.That(result[0], Is.EqualTo("Root"));

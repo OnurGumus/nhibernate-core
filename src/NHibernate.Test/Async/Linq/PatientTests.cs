@@ -16,7 +16,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq
 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture]
     public class PatientTestsAsync : LinqTestCase
     {
@@ -25,7 +24,7 @@ namespace NHibernate.Test.Linq
         {
             var query = await ((from pr in db.PatientRecords
                          where pr.Name.LastName == "Doe"
-                         select pr).ToListAsync(CancellationToken.None));
+                         select pr).ToListAsync());
 
             Assert.AreEqual(2, query.Count);
         }
@@ -33,11 +32,11 @@ namespace NHibernate.Test.Linq
         [Test]
         public async Task CanQueryOnManyToOneOfComponentAsync()
         {
-            var florida = await (db.States.FirstOrDefaultAsync(x => x.Abbreviation == "FL", CancellationToken.None));
+            var florida = await (db.States.FirstOrDefaultAsync(x => x.Abbreviation == "FL"));
 
             var query = await ((from pr in db.PatientRecords
                          where pr.Address.State == florida
-                         select pr).ToListAsync(CancellationToken.None));
+                         select pr).ToListAsync());
 
             Assert.AreEqual(2, query.Count);
         }
@@ -47,7 +46,7 @@ namespace NHibernate.Test.Linq
         {
             var query = await ((from pr in db.PatientRecords
                          where pr.Address.State.Abbreviation == "FL"
-                         select pr).ToListAsync(CancellationToken.None));
+                         select pr).ToListAsync());
 
             Assert.AreEqual(2, query.Count);
         }
@@ -57,7 +56,7 @@ namespace NHibernate.Test.Linq
         {
             var query = await ((from p in db.Patients
                          where p.PatientRecords.Any(x => x.Gender == Gender.Unknown)
-                         select p).ToListAsync(CancellationToken.None));
+                         select p).ToListAsync());
 
             Assert.AreEqual(1, query.Count);
         }
@@ -67,7 +66,7 @@ namespace NHibernate.Test.Linq
         {
             var query = await ((from pr in db.PatientRecords
                          where pr.Patient.Active == true
-                         select pr).ToListAsync(CancellationToken.None));
+                         select pr).ToListAsync());
 
             Assert.AreEqual(2, query.Count);
         }
@@ -75,11 +74,11 @@ namespace NHibernate.Test.Linq
         [Test]
         public async Task CanQueryOnManyToOneOfManyToOneAsync()
         {
-            var drWatson = await (db.Physicians.FirstOrDefaultAsync(x => x.Name == "Dr Watson", CancellationToken.None));
+            var drWatson = await (db.Physicians.FirstOrDefaultAsync(x => x.Name == "Dr Watson"));
 
             var query = await ((from pr in db.PatientRecords
                          where pr.Patient.Physician == drWatson
-                         select pr).ToListAsync(CancellationToken.None));
+                         select pr).ToListAsync());
 
             Assert.AreEqual(2, query.Count);
         }
@@ -89,7 +88,7 @@ namespace NHibernate.Test.Linq
         {
             var query = await ((from pr in db.PatientRecords
                          where pr.Patient.Physician.Name == "Dr Watson"
-                         select pr).ToListAsync(CancellationToken.None));
+                         select pr).ToListAsync());
 
             Assert.AreEqual(2, query.Count);
         }

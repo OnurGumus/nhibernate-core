@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1388
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
@@ -41,50 +40,50 @@ namespace NHibernate.Test.NHSpecificTest.NH1388
 				student.Majors[subject1] = major1;
 				student.Majors[subject2] = major2;
 
-				await (session.SaveAsync(subject1, CancellationToken.None));
-				await (session.SaveAsync(subject2, CancellationToken.None));
-				await (session.SaveAsync(student, CancellationToken.None));
+				await (session.SaveAsync(subject1));
+				await (session.SaveAsync(subject2));
+				await (session.SaveAsync(student));
 
-				await (session.FlushAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (session.FlushAsync());
+				await (t.CommitAsync());
 			}
 			// Remove major for subject 2.
 			using (ISession session = OpenSession())
 			{
 				ITransaction t = session.BeginTransaction();
-				var student = await (session.GetAsync<Student>(studentId, CancellationToken.None));
-				var subject2 = await (session.GetAsync<Subject>(2, CancellationToken.None));
+				var student = await (session.GetAsync<Student>(studentId));
+				var subject2 = await (session.GetAsync<Subject>(2));
 
 				// Remove major.
 				student.Majors.Remove(subject2);
 
-				await (session.FlushAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (session.FlushAsync());
+				await (t.CommitAsync());
 			}
 
 			// Get major for subject 2.
 			using (ISession session = OpenSession())
 			{
 				ITransaction t = session.BeginTransaction();
-				var student = await (session.GetAsync<Student>(studentId, CancellationToken.None));
-				var subject2 = await (session.GetAsync<Subject>(2, CancellationToken.None));
+				var student = await (session.GetAsync<Student>(studentId));
+				var subject2 = await (session.GetAsync<Subject>(2));
 
 				Assert.IsNotNull(subject2);
 
 				// Major for subject 2 should have been removed.
 				Assert.IsFalse(student.Majors.ContainsKey(subject2));
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			// Remove all - NHibernate will now succeed in removing all.
 			using (ISession session = OpenSession())
 			{
 				ITransaction t = session.BeginTransaction();
-				var student = await (session.GetAsync<Student>(studentId, CancellationToken.None));
+				var student = await (session.GetAsync<Student>(studentId));
 				student.Majors.Clear();
-				await (session.FlushAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (session.FlushAsync());
+				await (t.CommitAsync());
 			}
 		}
 

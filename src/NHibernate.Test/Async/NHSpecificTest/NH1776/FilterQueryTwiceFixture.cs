@@ -26,11 +26,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1776
 		public async Task BugAsync()
 		{
 			var c = new Category { Code = "2600", Deleted = false };
-			await (SaveCategoryAsync(c, CancellationToken.None));
+			await (SaveCategoryAsync(c));
 
 			// exec queries, twice, different session
-			await (ExecQueryAsync(CancellationToken.None));
-			await (ExecQueryAsync(CancellationToken.None));
+			await (ExecQueryAsync());
+			await (ExecQueryAsync());
 
 			// cleanup using filter
 			using (ISession s = OpenSession())
@@ -38,8 +38,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1776
 				using (ITransaction tx = s.BeginTransaction())
 				{
 					s.EnableFilter("state").SetParameter("deleted", false);
-					await (s.DeleteAsync("from Category", CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (s.DeleteAsync("from Category"));
+					await (tx.CommitAsync());
 				}
 			}
 		}
@@ -74,14 +74,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1776
 		public async Task FilterOnOffOnAsync()
 		{
 			var c = new Category { Code = "2600", Deleted = true };
-			await (SaveCategoryAsync(c, CancellationToken.None));
+			await (SaveCategoryAsync(c));
 
 			using (ISession s = OpenSession())
 			{
 				s.EnableFilter("state").SetParameter("deleted", false);
 
 				IList<Category> result =
-					await (s.CreateQuery("from Category where Code = :code").SetParameter("code", "2600").ListAsync<Category>(CancellationToken.None));
+					await (s.CreateQuery("from Category where Code = :code").SetParameter("code", "2600").ListAsync<Category>());
 
 				Assert.That(result.Count == 0);
 			}
@@ -89,7 +89,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1776
 			using (ISession s = OpenSession())
 			{
 				IList<Category> result =
-					await (s.CreateQuery("from Category where Code = :code").SetParameter("code", "2600").ListAsync<Category>(CancellationToken.None));
+					await (s.CreateQuery("from Category where Code = :code").SetParameter("code", "2600").ListAsync<Category>());
 
 				Assert.That(result.Count > 0);
 			}
@@ -99,12 +99,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1776
 				s.EnableFilter("state").SetParameter("deleted", true);
 
 				IList<Category> result =
-					await (s.CreateQuery("from Category where Code = :code").SetParameter("code", "2600").ListAsync<Category>(CancellationToken.None));
+					await (s.CreateQuery("from Category where Code = :code").SetParameter("code", "2600").ListAsync<Category>());
 
 				Assert.That(result.Count > 0);
 			}
 
-			await (CleanupAsync(CancellationToken.None));
+			await (CleanupAsync());
 		}
 
 		private async Task CleanupAsync(CancellationToken cancellationToken = default(CancellationToken))
@@ -122,14 +122,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1776
 		public async Task MultiFilterOnOffOnAsync()
 		{
 			var c = new Category { Code = "2600", Deleted = true };
-			await (SaveCategoryAsync(c, CancellationToken.None));
+			await (SaveCategoryAsync(c));
 
 			using (ISession s = OpenSession())
 			{
 				s.EnableFilter("state").SetParameter("deleted", false);
 
 				IList<Category> result =
-					await (s.CreateQuery("from Category where Code = :code").SetParameter("code", "2600").ListAsync<Category>(CancellationToken.None));
+					await (s.CreateQuery("from Category where Code = :code").SetParameter("code", "2600").ListAsync<Category>());
 
 				Assert.That(result.Count == 0);
 			}
@@ -140,7 +140,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1776
 				s.EnableFilter("CodeLike").SetParameter("codepattern", "2%");
 
 				IList<Category> result =
-					await (s.CreateQuery("from Category where Code = :code").SetParameter("code", "NotExists").ListAsync<Category>(CancellationToken.None));
+					await (s.CreateQuery("from Category where Code = :code").SetParameter("code", "NotExists").ListAsync<Category>());
 
 				Assert.That(result.Count == 0);
 			}
@@ -150,11 +150,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1776
 				s.EnableFilter("CodeLike").SetParameter("codepattern", "2%");
 
 				IList<Category> result =
-					await (s.CreateQuery("from Category where Code = :code").SetParameter("code", "2600").ListAsync<Category>(CancellationToken.None));
+					await (s.CreateQuery("from Category where Code = :code").SetParameter("code", "2600").ListAsync<Category>());
 
 				Assert.That(result.Count > 0);
 			}
-			await (CleanupAsync(CancellationToken.None));
+			await (CleanupAsync());
 		}
 	}
 }

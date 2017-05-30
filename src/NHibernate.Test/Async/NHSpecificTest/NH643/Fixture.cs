@@ -28,17 +28,17 @@ namespace NHibernate.Test.NHSpecificTest.NH643
 		[Test]
 		public async Task CacheAndLazyCollectionsAsync()
 		{
-			await (PrepareDataAsync(CancellationToken.None));
+			await (PrepareDataAsync());
 			try
 			{
-				await (AddChildAsync(CancellationToken.None));
-				await (CheckChildrenCountAsync(1, CancellationToken.None));
-				await (AddChildAsync(CancellationToken.None));
-				await (CheckChildrenCountAsync(2, CancellationToken.None));
+				await (AddChildAsync());
+				await (CheckChildrenCountAsync(1));
+				await (AddChildAsync());
+				await (CheckChildrenCountAsync(2));
 			}
 			finally
 			{
-				await (CleanUpAsync(CancellationToken.None));
+				await (CleanUpAsync());
 			}
 		}
 

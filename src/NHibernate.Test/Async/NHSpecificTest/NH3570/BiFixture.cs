@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3570
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class BiFixtureAsync : BugTestCase
 	{
@@ -30,18 +29,18 @@ namespace NHibernate.Test.NHSpecificTest.NH3570
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					id = (Guid)await (s.SaveAsync(parent, CancellationToken.None));
+					id = (Guid)await (s.SaveAsync(parent));
 					parent.Children.Clear();
 					parent.AddChild(new BiChild());
-					await (tx.CommitAsync(CancellationToken.None));
+					await (tx.CommitAsync());
 				}
 			}
 			using (var s = OpenSession())
 			{
 				using (s.BeginTransaction())
 				{
-					Assert.That((await (s.GetAsync<BiParent>(id, CancellationToken.None))).Children.Count, Is.EqualTo(1));
-					Assert.That((await (s.CreateCriteria<BiChild>().ListAsync(CancellationToken.None))).Count, Is.EqualTo(1));
+					Assert.That((await (s.GetAsync<BiParent>(id))).Children.Count, Is.EqualTo(1));
+					Assert.That((await (s.CreateCriteria<BiChild>().ListAsync())).Count, Is.EqualTo(1));
 				}
 			}
 		}

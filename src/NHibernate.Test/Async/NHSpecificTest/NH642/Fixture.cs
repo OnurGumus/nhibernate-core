@@ -45,13 +45,13 @@ namespace NHibernate.Test.NHSpecificTest.NH642
 		[Test]
 		public Task MissingGetterAsync()
 		{
-			return DoTestAsync("MissingGetter", CancellationToken.None);
+			return DoTestAsync("MissingGetter");
 		}
 
 		[Test]
 		public Task MissingSetterAsync()
 		{
-			return DoTestAsync("MissingSetter", CancellationToken.None);
+			return DoTestAsync("MissingSetter");
 		}
 	}
 }

@@ -19,7 +19,6 @@ using Environment=NHibernate.Cfg.Environment;
 namespace NHibernate.Test.Pagination
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class PaginationFixtureAsync : TestCase
 	{
@@ -53,9 +52,9 @@ namespace NHibernate.Test.Pagination
 				{
 					var dp = new DataPoint {X = (i * 0.1d)};
 					dp.Y = Math.Cos(dp.X);
-					await (s.PersistAsync(dp, CancellationToken.None));
+					await (s.PersistAsync(dp));
 				}
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using(ISession s = OpenSession())
@@ -63,26 +62,26 @@ namespace NHibernate.Test.Pagination
 			{
 				int size =
 (					await (s.CreateSQLQuery("select Id, xval, yval, Description from DataPoint order by xval, yval").AddEntity(
-						typeof (DataPoint)).SetMaxResults(5).ListAsync(CancellationToken.None))).Count;
+						typeof (DataPoint)).SetMaxResults(5).ListAsync())).Count;
 				Assert.That(size, Is.EqualTo(5));
-				size = (await (s.CreateQuery("from DataPoint dp order by dp.X, dp.Y").SetFirstResult(5).SetMaxResults(2).ListAsync(CancellationToken.None))).Count;
+				size = (await (s.CreateQuery("from DataPoint dp order by dp.X, dp.Y").SetFirstResult(5).SetMaxResults(2).ListAsync())).Count;
 				Assert.That(size, Is.EqualTo(2));
 				size =
-(					await (s.CreateCriteria(typeof (DataPoint)).AddOrder(Order.Asc("X")).AddOrder(Order.Asc("Y")).SetFirstResult(8).ListAsync(CancellationToken.None))).
+(					await (s.CreateCriteria(typeof (DataPoint)).AddOrder(Order.Asc("X")).AddOrder(Order.Asc("Y")).SetFirstResult(8).ListAsync())).
 						Count;
 				Assert.That(size, Is.EqualTo(2));
 				size =
-(					await (s.CreateCriteria(typeof(DataPoint)).AddOrder(Order.Asc("X")).AddOrder(Order.Asc("Y")).SetMaxResults(10).SetFirstResult(8).ListAsync(CancellationToken.None))).
+(					await (s.CreateCriteria(typeof(DataPoint)).AddOrder(Order.Asc("X")).AddOrder(Order.Asc("Y")).SetMaxResults(10).SetFirstResult(8).ListAsync())).
 						Count;
 				Assert.That(size, Is.EqualTo(2));
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using(ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from DataPoint", CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from DataPoint"));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -96,12 +95,12 @@ See: https://docs.oracle.com/database/121/SQLRF/statements_10002.htm#BABHFGAA");
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new DataPoint() { X = 4 }, CancellationToken.None));
-				await (s.SaveAsync(new DataPoint() { X = 5 }, CancellationToken.None));
-				await (s.SaveAsync(new DataPoint() { X = 6 }, CancellationToken.None));
-				await (s.SaveAsync(new DataPoint() { X = 7 }, CancellationToken.None));
-				await (s.SaveAsync(new DataPoint() { X = 8 }, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new DataPoint() { X = 4 }));
+				await (s.SaveAsync(new DataPoint() { X = 5 }));
+				await (s.SaveAsync(new DataPoint() { X = 6 }));
+				await (s.SaveAsync(new DataPoint() { X = 7 }));
+				await (s.SaveAsync(new DataPoint() { X = 8 }));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -113,7 +112,7 @@ See: https://docs.oracle.com/database/121/SQLRF/statements_10002.htm#BABHFGAA");
 						.SetLockMode(LockMode.Upgrade)
 						.SetFirstResult(1)
 						.SetMaxResults(2)
-						.ListAsync<DataPoint>(CancellationToken.None));
+						.ListAsync<DataPoint>());
 
 				Assert.That(points.Count, Is.EqualTo(2));
 				Assert.That(points[0].X, Is.EqualTo(6d));
@@ -123,8 +122,8 @@ See: https://docs.oracle.com/database/121/SQLRF/statements_10002.htm#BABHFGAA");
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
+				await (t.CommitAsync());
 			}
 		}
 	}

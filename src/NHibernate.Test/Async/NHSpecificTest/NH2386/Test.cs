@@ -17,7 +17,6 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2386 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture]
     public class TestAsync : BugTestCase {
         private MemoryAppender memoryAppender;
@@ -41,21 +40,21 @@ namespace NHibernate.Test.NHSpecificTest.NH2386 {
         public async Task TheTestAsync() {
             using (ISession session = OpenSession()) {
                 var organisation = new Organisation();
-                await (session.SaveOrUpdateAsync(organisation, CancellationToken.None));
-                await (session.FlushAsync(CancellationToken.None));
+                await (session.SaveOrUpdateAsync(organisation));
+                await (session.FlushAsync());
 
                 organisation.TradingNames.Add(new TradingName(organisation)
                                               {Name = "Trading Name", StartDate = DateTime.Today});
                 
-                await (session.SaveOrUpdateAsync(organisation, CancellationToken.None));
+                await (session.SaveOrUpdateAsync(organisation));
 
                 //this line below fails 
                 //AbstractBatcher:0 - Could not execute command: UPDATE tblTrnOrganisation SET  WHERE OrganisationId = @p0 AND RVersion = @p1
                 //System.Data.SqlClient.SqlException: Incorrect syntax near the keyword 'WHERE'.
-                await (session.FlushAsync(CancellationToken.None));
+                await (session.FlushAsync());
 
-                await (session.DeleteAsync(organisation, CancellationToken.None));
-                await (session.FlushAsync(CancellationToken.None));
+                await (session.DeleteAsync(organisation));
+                await (session.FlushAsync());
             }
         }
     }

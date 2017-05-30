@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1069
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class ImproveLazyExceptionFixtureAsync: BugTestCase
 	{
@@ -25,14 +24,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1069
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new LazyE(), 1, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new LazyE(), 1));
+				await (t.CommitAsync());
 			}
 
 			LazyE le;
 			using (ISession s = OpenSession())
 			{
-				le = await (s.LoadAsync<LazyE>(savedId, CancellationToken.None));
+				le = await (s.LoadAsync<LazyE>(savedId));
 			}
 			string n;
 			var ex = Assert.Throws<LazyInitializationException>(() => n= le.Name);
@@ -45,8 +44,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1069
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.CreateQuery("delete from LazyE").ExecuteUpdateAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.CreateQuery("delete from LazyE").ExecuteUpdateAsync());
+				await (t.CommitAsync());
 			}
 		}
 
@@ -57,14 +56,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1069
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new LazyE(), savedId, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new LazyE(), savedId));
+				await (t.CommitAsync());
 			}
 
 			LazyE le;
 			using (ISession s = OpenSession())
 			{
-				le = await (s.GetAsync<LazyE>(savedId, CancellationToken.None));
+				le = await (s.GetAsync<LazyE>(savedId));
 			}
 			var ex = Assert.Throws<LazyInitializationException>(() => le.LazyC.GetEnumerator());
 			Assert.That(ex.EntityName, Is.EqualTo(typeof(LazyE).FullName));
@@ -76,8 +75,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1069
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.CreateQuery("delete from LazyE").ExecuteUpdateAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.CreateQuery("delete from LazyE").ExecuteUpdateAsync());
+				await (t.CommitAsync());
 			}
 		}
 	}

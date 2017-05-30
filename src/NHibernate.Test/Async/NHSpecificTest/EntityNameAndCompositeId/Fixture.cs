@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.EntityNameAndCompositeId
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -43,15 +42,15 @@ namespace NHibernate.Test.NHSpecificTest.EntityNameAndCompositeId
 					                      	{
 					                      		{"OuterId", new Dictionary<string, int> {{"InnerId", 1}}},
 					                      		{"Data", "hello"}
-					                      	}, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					                      	}));
+					await (tx.CommitAsync());
 				}
 			}
 			using (ISession s = OpenSession())
 			{
 				using (s.BeginTransaction())
 				{
-					var p = (IDictionary) await (s.GetAsync("Person", id, CancellationToken.None));
+					var p = (IDictionary) await (s.GetAsync("Person", id));
 					Assert.AreEqual("hello", p["Data"]);
 				}
 			}

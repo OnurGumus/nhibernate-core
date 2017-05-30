@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Summary description for MapTest.
 	/// </summary>
@@ -71,16 +70,16 @@ namespace NHibernate.Test.NHSpecificTest
 				ICriteria chiefsCriteria = s.CreateCriteria(typeof(Team));
 				chiefsCriteria.Add(Expression.Eq("Name", "Chiefs"));
 
-				Team chiefs = (Team) (await (chiefsCriteria.ListAsync(CancellationToken.None)))[0];
+				Team chiefs = (Team) (await (chiefsCriteria.ListAsync()))[0];
 				IList<Child> players = chiefs.Players;
 
-				Parent parentDad = (Parent) await (s.LoadAsync(typeof(Parent), 1, CancellationToken.None));
-				Child amyJones = (Child) await (s.LoadAsync(typeof(Child), 2, CancellationToken.None));
+				Parent parentDad = (Parent) await (s.LoadAsync(typeof(Parent), 1));
+				Child amyJones = (Child) await (s.LoadAsync(typeof(Child), 2));
 				Child[] friends = amyJones.Friends;
 
 				Child childOneRef = amyJones.FirstSibling;
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -92,7 +91,7 @@ namespace NHibernate.Test.NHSpecificTest
 			using(ISession s = OpenSession())
 			using(ITransaction t = s.BeginTransaction())
 			{
-				Parent bobJones = (Parent) await (s.LoadAsync(typeof(Parent), 1, CancellationToken.None));
+				Parent bobJones = (Parent) await (s.LoadAsync(typeof(Parent), 1));
 				ISet<Parent> friends = bobJones.AdultFriends;
 
 				int currentId = 0;
@@ -106,7 +105,7 @@ namespace NHibernate.Test.NHSpecificTest
 					Assert.IsTrue(currentId > previousId, "Current should have a higher Id than previous");
 				}
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -125,8 +124,8 @@ namespace NHibernate.Test.NHSpecificTest
 				//female.Id = 2;
 				female.TypeName = "Female";
 
-				await (s.SaveAsync(male, CancellationToken.None));
-				await (s.SaveAsync(female, CancellationToken.None));
+				await (s.SaveAsync(male));
+				await (s.SaveAsync(female));
 
 				Parent bobJones = new Parent();
 				bobJones.Id = 1;
@@ -149,10 +148,10 @@ namespace NHibernate.Test.NHSpecificTest
 				bobJones.AddFriend(maryJones);
 				maryJones.AddFriend(cindySmith);
 
-				await (s.SaveAsync(bobJones, bobJones.Id, CancellationToken.None));
-				await (s.SaveAsync(maryJones, maryJones.Id, CancellationToken.None));
-				await (s.SaveAsync(charlieSmith, charlieSmith.Id, CancellationToken.None));
-				await (s.SaveAsync(cindySmith, cindySmith.Id, CancellationToken.None));
+				await (s.SaveAsync(bobJones, bobJones.Id));
+				await (s.SaveAsync(maryJones, maryJones.Id));
+				await (s.SaveAsync(charlieSmith, charlieSmith.Id));
+				await (s.SaveAsync(cindySmith, cindySmith.Id));
 
 				Child johnnyJones = new Child();
 				Child amyJones = new Child();
@@ -203,15 +202,15 @@ namespace NHibernate.Test.NHSpecificTest
 				chiefs.Players.Add(johnnyJones);
 				chiefs.Players.Add(sarahSmith);
 
-				await (s.SaveAsync(johnnyJones, johnnyJones.Id, CancellationToken.None));
-				await (s.SaveAsync(amyJones, amyJones.Id, CancellationToken.None));
-				await (s.SaveAsync(brianSmith, brianSmith.Id, CancellationToken.None));
-				await (s.SaveAsync(sarahSmith, sarahSmith.Id, CancellationToken.None));
+				await (s.SaveAsync(johnnyJones, johnnyJones.Id));
+				await (s.SaveAsync(amyJones, amyJones.Id));
+				await (s.SaveAsync(brianSmith, brianSmith.Id));
+				await (s.SaveAsync(sarahSmith, sarahSmith.Id));
 
-				await (s.SaveAsync(royals, CancellationToken.None));
-				await (s.SaveAsync(chiefs, CancellationToken.None));
+				await (s.SaveAsync(royals));
+				await (s.SaveAsync(chiefs));
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 		}
 	}

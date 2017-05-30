@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// TestFixture for <c>type="Serializable"</c> in use by classes.  It test a Property
 	/// that is mapped specifically by <c>type="Serializable"</c> and another Property
@@ -40,20 +39,20 @@ namespace NHibernate.Test.NHSpecificTest
 			ISession s = OpenSession();
 			BasicSerializable ser = new BasicSerializable();
 			SerializableClass serClass = ser.SerializableProperty;
-			await (s.SaveAsync(ser, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(ser));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			ser = (BasicSerializable) await (s.LoadAsync(typeof(BasicSerializable), ser.Id, CancellationToken.None));
+			ser = (BasicSerializable) await (s.LoadAsync(typeof(BasicSerializable), ser.Id));
 			Assert.IsNull(ser.Serial, "should have saved as null");
 
 			ser.Serial = ser.SerializableProperty;
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			ser = (BasicSerializable) await (s.LoadAsync(typeof(BasicSerializable), ser.Id, CancellationToken.None));
+			ser = (BasicSerializable) await (s.LoadAsync(typeof(BasicSerializable), ser.Id));
 			Assert.IsTrue(ser.Serial is SerializableClass, "should have been a SerializableClass");
 			Assert.AreEqual(ser.SerializableProperty, ser.Serial,
 			                "SerializablePorperty and Serial should both be 5 and 'serialize me'");
@@ -62,14 +61,14 @@ namespace NHibernate.Test.NHSpecificTest
 			props["foo"] = "bar";
 			props["bar"] = "foo";
 			ser.Serial = props;
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 
 			props["x"] = "y";
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			ser = (BasicSerializable) await (s.LoadAsync(typeof(BasicSerializable), ser.Id, CancellationToken.None));
+			ser = (BasicSerializable) await (s.LoadAsync(typeof(BasicSerializable), ser.Id));
 
 			props = (IDictionary) ser.Serial;
 			Assert.AreEqual("bar", props["foo"]);
@@ -77,17 +76,17 @@ namespace NHibernate.Test.NHSpecificTest
 			Assert.AreEqual(serClass, ser.SerializableProperty);
 
 			ser.SerializableProperty._classString = "modify me";
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			ser = (BasicSerializable) await (s.LoadAsync(typeof(BasicSerializable), ser.Id, CancellationToken.None));
+			ser = (BasicSerializable) await (s.LoadAsync(typeof(BasicSerializable), ser.Id));
 			Assert.AreEqual("modify me", ser.SerializableProperty._classString);
 			Assert.AreEqual("bar", props["foo"]);
 			Assert.AreEqual("y", props["x"]);
 
-			await (s.DeleteAsync(ser, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(ser));
+			await (s.FlushAsync());
 			s.Close();
 		}
 	}

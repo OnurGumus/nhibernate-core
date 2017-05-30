@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1291AnonExample
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class NH1291AnonExampleFixtureAsync : BugTestCase
 	{
@@ -85,11 +84,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1291AnonExample
 				using(ITransaction tx = s.BeginTransaction())
 				{
 					IList list = await (s.CreateCriteria(typeof(Person))
-						.Add(Example.Create(new PersonIQAnon(40))).ListAsync(CancellationToken.None));
+						.Add(Example.Create(new PersonIQAnon(40))).ListAsync());
 					//c# 3.5: Example.Create( new { IQ = 40 } )
 					Assert.AreEqual(1, list.Count);
 					Assert.AreEqual("Fred", ((Person)list[0]).Name);
-					await (tx.CommitAsync(CancellationToken.None));
+					await (tx.CommitAsync());
 				}
 			}
 		}
@@ -118,11 +117,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1291AnonExample
 				using(ITransaction tx = s.BeginTransaction())
 				{
 					IList list = await (s.CreateCriteria(typeof(Person))
-						.Add(Example.Create(new PersonNameAnon("%all%")).EnableLike()).ListAsync(CancellationToken.None));
+						.Add(Example.Create(new PersonNameAnon("%all%")).EnableLike()).ListAsync());
 					//c# 3.5: Example.Create( new { Name = "%all%" } )
 					Assert.AreEqual(1, list.Count);
 					Assert.AreEqual("Sally", ((Person)list[0]).Name);
-					await (tx.CommitAsync(CancellationToken.None));
+					await (tx.CommitAsync());
 				}
 			}
 		}
@@ -134,20 +133,20 @@ namespace NHibernate.Test.NHSpecificTest.NH1291AnonExample
 			{
 				using(ITransaction tx = s.BeginTransaction())
 				{
-					IList<Person> people = await (s.CreateCriteria(typeof(Person)).ListAsync<Person>(CancellationToken.None));
+					IList<Person> people = await (s.CreateCriteria(typeof(Person)).ListAsync<Person>());
 					Home h1 = new Home("Eugene", 97402);
 					Home h2 = new Home("Klamath Falls", 97603);
 					people[0].Home = h1;
 					people[1].Home = h2;
-					await (s.SaveAsync(h1, CancellationToken.None));
-					await (s.SaveAsync(h2, CancellationToken.None));
+					await (s.SaveAsync(h1));
+					await (s.SaveAsync(h2));
 
 					IList list = await (s.CreateCriteria(typeof(Person)).CreateCriteria("Home")
-						.Add(Example.Create(h1)).ListAsync(CancellationToken.None));
+						.Add(Example.Create(h1)).ListAsync());
 
 					Assert.AreEqual(1, list.Count);
 					Assert.AreEqual("Joe", ((Person)list[0]).Name);
-					await (tx.CommitAsync(CancellationToken.None));
+					await (tx.CommitAsync());
 				}
 			}
 		}
@@ -175,21 +174,21 @@ namespace NHibernate.Test.NHSpecificTest.NH1291AnonExample
 			{
 				using(ITransaction tx = s.BeginTransaction())
 				{
-					IList<Person> people = await (s.CreateCriteria(typeof(Person)).ListAsync<Person>(CancellationToken.None));
+					IList<Person> people = await (s.CreateCriteria(typeof(Person)).ListAsync<Person>());
 					Home h1 = new Home("Eugene", 97402);
 					Home h2 = new Home("Klamath Falls", 97603);
 					people[0].Home = h1;
 					people[1].Home = h2;
-					await (s.SaveAsync(h1, CancellationToken.None));
-					await (s.SaveAsync(h2, CancellationToken.None));
+					await (s.SaveAsync(h1));
+					await (s.SaveAsync(h2));
 
 					IList list = await (s.CreateCriteria(typeof(Person))
-					    .CreateCriteria("Home").Add(Example.Create(new HomeAnon(97402))).ListAsync(CancellationToken.None));
+					    .CreateCriteria("Home").Add(Example.Create(new HomeAnon(97402))).ListAsync());
 					//c# 3.5: Example.Create( new { Zip = 97402 } )
 
 					Assert.AreEqual(1, list.Count);
 					Assert.AreEqual("Joe", ((Person)list[0]).Name);
-					await (tx.CommitAsync(CancellationToken.None));
+					await (tx.CommitAsync());
 				}
 			}
 		}

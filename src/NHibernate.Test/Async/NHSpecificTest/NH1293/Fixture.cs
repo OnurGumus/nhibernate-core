@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1293
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -41,11 +40,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1293
 				{
 					Customer c = new Customer("Somebody");
 					c.Category = new Category("User");
-					await (s.SaveAsync(c.Category, CancellationToken.None));
+					await (s.SaveAsync(c.Category));
 					c.IsActive = true;
 					c.Category.IsActive = false; // this cause diff in query results
-					await (s.SaveAsync(c, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (s.SaveAsync(c));
+					await (tx.CommitAsync());
 				}
 			}
 
@@ -62,13 +61,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1293
 				// with HQL, Category.IsActive=true filter applied, result count=2
 				IQuery hqlQuery = s.CreateQuery("from Customer c join c.Category cat where cat.Name = ?");
 				hqlQuery.SetParameter(0, "User"); // note using positional parameters because of NH-1490
-				IList<Customer> hqlResult = await (hqlQuery.ListAsync<Customer>(CancellationToken.None));
+				IList<Customer> hqlResult = await (hqlQuery.ListAsync<Customer>());
 				Console.WriteLine(hqlResult.Count);
 
 				// with ICriteria, no Category.IsActive filter applied, result count=1
 				ICriteria criteria = s.CreateCriteria(typeof (Customer), "cust").CreateCriteria("Category", "cat");
 				criteria.Add(Restrictions.Eq("cat.Name", "User"));
-				IList<Customer> criteriaResult = await (criteria.ListAsync<Customer>(CancellationToken.None));
+				IList<Customer> criteriaResult = await (criteria.ListAsync<Customer>());
 
 				Console.WriteLine(criteriaResult.Count);
 
@@ -79,9 +78,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1293
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					await (s.DeleteAsync("from Customer", CancellationToken.None));
-					await (s.DeleteAsync("from Category", CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (s.DeleteAsync("from Customer"));
+					await (s.DeleteAsync("from Category"));
+					await (tx.CommitAsync());
 				}
 			}
 		}

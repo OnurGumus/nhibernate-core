@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1621
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -30,24 +29,24 @@ namespace NHibernate.Test.NHSpecificTest.NH1621
 			using (session = OpenSession())
 			{
 				Nums nums1 = new Nums {ID = 1, NumA = 1, NumB = 2};
-				await (session.SaveAsync(nums1, CancellationToken.None));
+				await (session.SaveAsync(nums1));
 
 				Nums nums2 = new Nums {ID = 2, NumA = 2, NumB = 2 };
-				await (session.SaveAsync(nums2, CancellationToken.None));
+				await (session.SaveAsync(nums2));
 
 				Nums nums3 = new Nums {ID = 3, NumA = 5, NumB = 2 };
-				await (session.SaveAsync(nums3, CancellationToken.None));
+				await (session.SaveAsync(nums3));
 
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 				session.Clear();
 
-				var nums = await (session.CreateQuery("from Nums b where b.Sum > 4").ListAsync<Nums>(CancellationToken.None));
+				var nums = await (session.CreateQuery("from Nums b where b.Sum > 4").ListAsync<Nums>());
 
 				Assert.That(nums.Count, Is.EqualTo(1));
 				Assert.That(nums[0].Sum, Is.EqualTo(7));
 
-				await (session.DeleteAsync("from Nums", CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.DeleteAsync("from Nums"));
+				await (session.FlushAsync());
 				session.Close();
 			}
 		}

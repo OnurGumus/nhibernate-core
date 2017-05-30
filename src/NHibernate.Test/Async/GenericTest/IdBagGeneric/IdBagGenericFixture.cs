@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.GenericTest.IdBagGeneric
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class IdBagGenericFixtureAsync : TestCase
 	{
@@ -50,16 +49,16 @@ namespace NHibernate.Test.GenericTest.IdBagGeneric
 			a.Items.Add( "second string" );
 
 			ISession s = OpenSession();
-			await (s.SaveOrUpdateAsync( a , CancellationToken.None));
+			await (s.SaveOrUpdateAsync( a ));
 			// this flush should test how NH wraps a generic collection with its
 			// own persistent collection
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 			s.Close();
 			Assert.IsNotNull( a.Id );
 			Assert.AreEqual( "first string", a.Items[ 0 ] );
 
 			s = OpenSession();
-			a = await (s.LoadAsync<A>( a.Id , CancellationToken.None));
+			a = await (s.LoadAsync<A>( a.Id ));
 			Assert.AreEqual( "first string", a.Items[ 0 ], "first item should be 'first string'" );
 			Assert.AreEqual( "second string", a.Items[ 1 ], "second item should be 'second string'" );
 			// ensuring the correct generic type was constructed
@@ -67,7 +66,7 @@ namespace NHibernate.Test.GenericTest.IdBagGeneric
 			Assert.AreEqual( 3, a.Items.Count, "3 items in the list now" );
 
 			a.Items[ 1 ] = "new second string";
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 			s.Close();
 		}
 
@@ -86,16 +85,16 @@ namespace NHibernate.Test.GenericTest.IdBagGeneric
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				copiedA = s.Merge(a);
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
-				A loadedA = await (s.GetAsync<A>(copiedA.Id, CancellationToken.None));
+				A loadedA = await (s.GetAsync<A>(copiedA.Id));
 				Assert.IsNotNull( loadedA );
-				await (s.DeleteAsync( loadedA , CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync( loadedA ));
+				await (t.CommitAsync());
 			}
 		}
 	}

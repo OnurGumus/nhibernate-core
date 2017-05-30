@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2374
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class NH2374FixtureAsync : BugTestCase
 	{
@@ -37,10 +36,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2374
 
 						parent["Child"] = child;
 
-						id = (int) await (s.SaveAsync("Parent", parent, CancellationToken.None));
-						await (s.FlushAsync(CancellationToken.None));
+						id = (int) await (s.SaveAsync("Parent", parent));
+						await (s.FlushAsync());
 
-						await (t.CommitAsync(CancellationToken.None));
+						await (t.CommitAsync());
 					}
 				}
 			}
@@ -49,13 +48,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2374
 			{
 				using (ITransaction t = s.BeginTransaction())
 				{
-					var p = await (s.GetAsync("Parent", id, CancellationToken.None)) as IDictionary;
+					var p = await (s.GetAsync("Parent", id)) as IDictionary;
 
 					Assert.That(p["Child"], Is.Not.Null);
 
-					await (s.DeleteAsync("Parent", p, CancellationToken.None));
+					await (s.DeleteAsync("Parent", p));
 
-					await (t.CommitAsync(CancellationToken.None));
+					await (t.CommitAsync());
 				}
 			}
 		}
@@ -77,10 +76,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2374
 
 					parent["Child"] = child;
 
-					id = (int) await (s.SaveAsync("Parent", parent, CancellationToken.None));
-					await (s.FlushAsync(CancellationToken.None));
+					id = (int) await (s.SaveAsync("Parent", parent));
+					await (s.FlushAsync());
 
-					await (t.CommitAsync(CancellationToken.None));
+					await (t.CommitAsync());
 				}
 			}
 
@@ -88,13 +87,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2374
 			{
 				using (ITransaction t = s.BeginTransaction())
 				{
-					var p = await (s.GetAsync("Parent", id, CancellationToken.None)) as IDictionary;
+					var p = await (s.GetAsync("Parent", id)) as IDictionary;
 
 					Assert.That(p["Child"], Is.Not.Null);
 
-					await (s.DeleteAsync("Parent", p, CancellationToken.None));
+					await (s.DeleteAsync("Parent", p));
 
-					await (t.CommitAsync(CancellationToken.None));
+					await (t.CommitAsync());
 				}
 			}
 		}

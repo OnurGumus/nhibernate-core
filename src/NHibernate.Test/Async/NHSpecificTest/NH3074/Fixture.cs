@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3074
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : TestCaseMappingByCode
 	{
@@ -57,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3074
 				var cats = await (s.CreateQuery("select c from Animal c where c.Id=:id")
 							.SetInt32("id", Id)
 							.SetLockMode("c", LockMode.Upgrade)
-							.ListAsync<Cat>(CancellationToken.None));
+							.ListAsync<Cat>());
 
 				Assert.That(cats, Is.Not.Empty);
 			}
@@ -72,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3074
 				var cats = await (s.CreateCriteria<Animal>("c")
 							.Add(Restrictions.IdEq(Id))
 							.SetLockMode("c", LockMode.Upgrade)
-							.ListAsync<Cat>(CancellationToken.None));
+							.ListAsync<Cat>());
 
 				Assert.That(cats, Is.Not.Empty);
 			}

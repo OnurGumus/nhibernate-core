@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1904
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -29,13 +28,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1904
 				Invoice invoice = new Invoice();
 				invoice.Issued = DateTime.Now;
 
-				await (session.SaveAsync(invoice, CancellationToken.None));
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (session.SaveAsync(invoice));
+				await (transaction.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
 			{
-				IList<Invoice> invoices = await (session.CreateCriteria<Invoice>().ListAsync<Invoice>(CancellationToken.None));
+				IList<Invoice> invoices = await (session.CreateCriteria<Invoice>().ListAsync<Invoice>());
 			}
 		}
 

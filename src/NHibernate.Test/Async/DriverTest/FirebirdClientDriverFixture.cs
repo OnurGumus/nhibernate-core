@@ -34,19 +34,19 @@ namespace NHibernate.Test.DriverTest
 
 			//open first connection
 			await (connection1.OpenAsync(CancellationToken.None));
-			await (VerifyCountOfEstablishedConnectionsIsAsync(1, CancellationToken.None));
+			await (VerifyCountOfEstablishedConnectionsIsAsync(1));
 
 			//return it to the pool
 			connection1.Close();
-			await (VerifyCountOfEstablishedConnectionsIsAsync(1, CancellationToken.None));
+			await (VerifyCountOfEstablishedConnectionsIsAsync(1));
 
 			//open the second connection
 			await (connection2.OpenAsync(CancellationToken.None));
-			await (VerifyCountOfEstablishedConnectionsIsAsync(1, CancellationToken.None));
+			await (VerifyCountOfEstablishedConnectionsIsAsync(1));
 
 			//return it to the pool
 			connection2.Close();
-			await (VerifyCountOfEstablishedConnectionsIsAsync(1, CancellationToken.None));
+			await (VerifyCountOfEstablishedConnectionsIsAsync(1));
 		}
 
 		[Test]
@@ -58,19 +58,19 @@ namespace NHibernate.Test.DriverTest
 
 			//open first connection
 			await (connection1.OpenAsync(CancellationToken.None));
-			await (VerifyCountOfEstablishedConnectionsIsAsync(1, CancellationToken.None));
+			await (VerifyCountOfEstablishedConnectionsIsAsync(1));
 
 			//open second one
 			await (connection2.OpenAsync(CancellationToken.None));
-			await (VerifyCountOfEstablishedConnectionsIsAsync(2, CancellationToken.None));
+			await (VerifyCountOfEstablishedConnectionsIsAsync(2));
 
 			//return connection1 to the pool
 			connection1.Close();
-			await (VerifyCountOfEstablishedConnectionsIsAsync(2, CancellationToken.None));
+			await (VerifyCountOfEstablishedConnectionsIsAsync(2));
 
 			//return connection2 to the pool
 			connection2.Close();
-			await (VerifyCountOfEstablishedConnectionsIsAsync(2, CancellationToken.None));
+			await (VerifyCountOfEstablishedConnectionsIsAsync(2));
 		}
 
 		private void MakeDriver()

@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH706
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -60,24 +59,24 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 			parent.DifferentChildren.Add(dc2);
 			using (ISession session = OpenSession())
 			{
-				await (session.SaveAsync(obj1, CancellationToken.None));
-				await (session.SaveAsync(obj2, CancellationToken.None));
+				await (session.SaveAsync(obj1));
+				await (session.SaveAsync(obj2));
 
-				await (session.SaveAsync(parent, CancellationToken.None));
+				await (session.SaveAsync(parent));
 
-				await (session.SaveAsync(child1, CancellationToken.None));
-				await (session.SaveAsync(child2, CancellationToken.None));
+				await (session.SaveAsync(child1));
+				await (session.SaveAsync(child2));
 
-				await (session.SaveAsync(dc1, CancellationToken.None));
-				await (session.SaveAsync(dc2, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.SaveAsync(dc1));
+				await (session.SaveAsync(dc2));
+				await (session.FlushAsync());
 			}
 
 			int dcId = 0;
 			using (ISession session = OpenSession())
 			{
-				Parent loadedParent = (Parent) await (session.GetAsync(typeof(Parent), parent.ID, CancellationToken.None));
-				await (NHibernateUtil.InitializeAsync(loadedParent.DifferentChildren, CancellationToken.None));
+				Parent loadedParent = (Parent) await (session.GetAsync(typeof(Parent), parent.ID));
+				await (NHibernateUtil.InitializeAsync(loadedParent.DifferentChildren));
 				foreach (DifferentChild dc in loadedParent.DifferentChildren)
 				{
 					dcId = dc.ID;
@@ -87,19 +86,19 @@ namespace NHibernate.Test.NHSpecificTest.NH706
 
 			using (ISession session = OpenSession())
 			{
-				DifferentChild dc = (DifferentChild) await (session.GetAsync(typeof(DifferentChild), dcId, CancellationToken.None));
+				DifferentChild dc = (DifferentChild) await (session.GetAsync(typeof(DifferentChild), dcId));
 			}
 
 			using (ISession session = OpenSession())
 			{
-				await (session.DeleteAsync(dc1, CancellationToken.None));
-				await (session.DeleteAsync(dc2, CancellationToken.None));
-				await (session.DeleteAsync(child1, CancellationToken.None));
-				await (session.DeleteAsync(child2, CancellationToken.None));
-				await (session.DeleteAsync(parent, CancellationToken.None));
-				await (session.DeleteAsync(obj1, CancellationToken.None));
-				await (session.DeleteAsync(obj2, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.DeleteAsync(dc1));
+				await (session.DeleteAsync(dc2));
+				await (session.DeleteAsync(child1));
+				await (session.DeleteAsync(child2));
+				await (session.DeleteAsync(parent));
+				await (session.DeleteAsync(obj1));
+				await (session.DeleteAsync(obj2));
+				await (session.FlushAsync());
 			}
 		}
 	}

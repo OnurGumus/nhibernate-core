@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH350
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -35,23 +34,23 @@ namespace NHibernate.Test.NHSpecificTest.NH350
 				parent.Name = "Name";
 				parent.ChildDomains.Add(new SecurityDomain());
 
-				parentId = await (session.SaveAsync(parent, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				parentId = await (session.SaveAsync(parent));
+				await (session.FlushAsync());
 			}
 
 			try
 			{
 				using (ISession session = OpenSession())
 				{
-					Assert.ThrowsAsync<TypeMismatchException>(() => session.LoadAsync(typeof(SecurityDomain), 1, CancellationToken.None));
+					Assert.ThrowsAsync<TypeMismatchException>(() => session.LoadAsync(typeof(SecurityDomain), 1));
 				}
 			}
 			finally
 			{
 				using (ISession session = OpenSession())
 				{
-					await (session.DeleteAsync("from SecurityDomain", CancellationToken.None));
-					await (session.FlushAsync(CancellationToken.None));
+					await (session.DeleteAsync("from SecurityDomain"));
+					await (session.FlushAsync());
 				}
 			}
 		}

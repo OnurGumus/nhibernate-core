@@ -34,13 +34,13 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 				link1.Name = "Link 1";
 				link1.Categories.Add(cat1);
 
-				await (s.SaveAsync(cat1, CancellationToken.None));
-				await (s.SaveAsync(link1, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(cat1));
+				await (s.SaveAsync(link1));
+				await (s.FlushAsync());
 
-				await (s.DeleteAsync("from Link", CancellationToken.None));
-				await (s.DeleteAsync("from Category", CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Link"));
+				await (s.DeleteAsync("from Category"));
+				await (s.FlushAsync());
 			}
 		}
 
@@ -85,61 +85,61 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 		[Test]
 		public async Task IdBagWithCompositeElementThatContainsAManyToOne_InsertAsync()
 		{
-			await (IdBagWithCompositeElementThatContainsAManyToOne_SetupAsync(CancellationToken.None));
+			await (IdBagWithCompositeElementThatContainsAManyToOne_SetupAsync());
 			using (ISession s = OpenSession())
 			{
-				Invoice invLoaded = await (s.GetAsync<Invoice>(inv.Id, CancellationToken.None));
+				Invoice invLoaded = await (s.GetAsync<Invoice>(inv.Id));
 				Assert.AreEqual(2, invLoaded.Items.Count, "Expected 2 things in the invoice");
 				s.Clear();
 			}
-			await (IdBagWithCompositeElementThatContainsAManyToOne_CleanUpAsync(CancellationToken.None));
+			await (IdBagWithCompositeElementThatContainsAManyToOne_CleanUpAsync());
 		}
 
 		[Test]
 		public async Task IdBagWithCompositeElementThatContainsAManyToOne_UpdateAsync()
 		{
 			InvoiceItem itemToUpdate = null;
-			await (IdBagWithCompositeElementThatContainsAManyToOne_SetupAsync(CancellationToken.None));
+			await (IdBagWithCompositeElementThatContainsAManyToOne_SetupAsync());
 			using (ISession s = OpenSession())
 			{
-				Invoice invToUpdate = await (s.GetAsync<Invoice>(inv.Id, CancellationToken.None));
+				Invoice invToUpdate = await (s.GetAsync<Invoice>(inv.Id));
 				
 				itemToUpdate = ((InvoiceItem)invToUpdate.Items[0]); // update information of an element
 				itemToUpdate.Quantity = 10m; 
 					
 				invToUpdate.Items.Add(new InvoiceItem(product3, 1)); // update the idbag collection
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 				s.Clear();
 			}
 			using (ISession s = OpenSession())
 			{
-				Invoice invLoaded = await (s.GetAsync<Invoice>(inv.Id, CancellationToken.None));
+				Invoice invLoaded = await (s.GetAsync<Invoice>(inv.Id));
 				Assert.AreEqual(3, invLoaded.Items.Count, "The collection should have a new item");
 				Assert.IsTrue(invLoaded.Items.Contains(itemToUpdate));
 
 				s.Clear();
 			}
-			await (IdBagWithCompositeElementThatContainsAManyToOne_CleanUpAsync(CancellationToken.None));
+			await (IdBagWithCompositeElementThatContainsAManyToOne_CleanUpAsync());
 		}
 
 		[Test]
 		public async Task IdBagWithCompositeElementThatContainsAManyToOne_DeleteAsync()
 		{
-			await (IdBagWithCompositeElementThatContainsAManyToOne_SetupAsync(CancellationToken.None));
+			await (IdBagWithCompositeElementThatContainsAManyToOne_SetupAsync());
 			using (ISession s = OpenSession())
 			{
-				Invoice invToUpdate = await (s.GetAsync<Invoice>(inv.Id, CancellationToken.None));
+				Invoice invToUpdate = await (s.GetAsync<Invoice>(inv.Id));
 				invToUpdate.Items.RemoveAt(0);
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 				s.Clear();
 			}
 			using (ISession s = OpenSession())
 			{
-				Invoice invLoaded = await (s.GetAsync<Invoice>(inv.Id, CancellationToken.None));
+				Invoice invLoaded = await (s.GetAsync<Invoice>(inv.Id));
 				Assert.AreEqual(1, invLoaded.Items.Count, "The collection should only have one item");
 				s.Clear();
 			}
-			await (IdBagWithCompositeElementThatContainsAManyToOne_CleanUpAsync(CancellationToken.None));
+			await (IdBagWithCompositeElementThatContainsAManyToOne_CleanUpAsync());
 		}
 	}
 }

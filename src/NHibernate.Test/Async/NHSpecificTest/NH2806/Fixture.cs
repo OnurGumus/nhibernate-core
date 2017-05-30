@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2806
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture, Ignore("Not fixed yet.")]
 	public  class FixtureAsync : BugTestCase
 	{
@@ -73,7 +72,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2806
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var list = await (session.CreateQuery("select a.Pregnant from Animal a where a.class in ('MAMMAL')").ListAsync<bool>(CancellationToken.None));
+				var list = await (session.CreateQuery("select a.Pregnant from Animal a where a.class in ('MAMMAL')").ListAsync<bool>());
 
 				var count = list.Count();
 				Assert.AreEqual(0, count);
@@ -88,7 +87,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2806
 			{
 				using (var spy = new SqlLogSpy())
 				{
-					var list = await (session.CreateQuery("from Animal").ListAsync<Animal>(CancellationToken.None));
+					var list = await (session.CreateQuery("from Animal").ListAsync<Animal>());
 					var count = list.Count();
 					Assert.AreEqual(3, count);
 					Assert.Greater(1, spy.GetWholeLog().Split(new[] {"inner join"}, StringSplitOptions.None).Count());

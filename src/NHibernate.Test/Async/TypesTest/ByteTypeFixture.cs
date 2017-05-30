@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// The Unit Tests for the ByteType.
 	/// </summary>
@@ -35,17 +34,17 @@ namespace NHibernate.Test.TypesTest
 			basic.ByteValue = (byte) 43;
 
 			ISession s = OpenSession();
-			await (s.SaveAsync(basic, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(basic));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			basic = (ByteClass) await (s.LoadAsync(typeof(ByteClass), 1, CancellationToken.None));
+			basic = (ByteClass) await (s.LoadAsync(typeof(ByteClass), 1));
 
 			Assert.AreEqual((byte) 43, basic.ByteValue);
 
-			await (s.DeleteAsync(basic, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(basic));
+			await (s.FlushAsync());
 			s.Close();
 		}
 	}

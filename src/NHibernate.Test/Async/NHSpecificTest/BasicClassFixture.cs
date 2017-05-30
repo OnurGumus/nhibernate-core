@@ -48,17 +48,17 @@ namespace NHibernate.Test.NHSpecificTest
 					bc.CharacterProperty = 'a';
 				bc.Id = 1;
 				bc.ValueOfPrivateField = 5;
-				await (s.SaveAsync(bc, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(bc));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				BasicClass bc = (BasicClass) await (s.LoadAsync(typeof(BasicClass), 1, CancellationToken.None));
+				BasicClass bc = (BasicClass) await (s.LoadAsync(typeof(BasicClass), 1));
 				Assert.AreEqual(5, bc.ValueOfPrivateField, "private field accessor");
-				await (s.DeleteAsync(bc, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(bc));
+				await (tx.CommitAsync());
 			}
 		}
 		
@@ -72,16 +72,16 @@ namespace NHibernate.Test.NHSpecificTest
 				if (!TestDialect.SupportsNullCharactersInUtfStrings)
 					bc.CharacterProperty = 'a';
 				bc.Id = 1;
-				await (s.SaveAsync(bc, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(bc));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				BasicClass bc = (BasicClass) await (s.LoadAsync(typeof(BasicClass), 1, CancellationToken.None));
-				await (s.DeleteAsync(bc, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				BasicClass bc = (BasicClass) await (s.LoadAsync(typeof(BasicClass), 1));
+				await (s.DeleteAsync(bc));
+				await (tx.CommitAsync());
 			}
 
 			{
@@ -93,23 +93,23 @@ namespace NHibernate.Test.NHSpecificTest
 				int index = 0;
 				int id = 1;
 
-				bc[index] = await (InsertBasicClassAsync(id, CancellationToken.None));
+				bc[index] = await (InsertBasicClassAsync(id));
 				index++;
 
 				// make sure the previous insert went through
 				s[index] = OpenSession();
 				t[index] = s[index].BeginTransaction();
 
-				bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+				bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 
 				Assert.IsNotNull(bc[index]);
 				AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 				// VERIFY DELETE
-				await (s[index].DeleteAsync(bc[index], CancellationToken.None));
-				await (t[index].CommitAsync(CancellationToken.None));
+				await (s[index].DeleteAsync(bc[index]));
+				await (t[index].CommitAsync());
 				s[index].Close();
-				await (AssertDeleteAsync(id, CancellationToken.None));
+				await (AssertDeleteAsync(id));
 			}
 		}
 
@@ -124,14 +124,14 @@ namespace NHibernate.Test.NHSpecificTest
 			int index = 0;
 			int id = 1;
 
-			bc[index] = await (InsertBasicClassAsync(id, CancellationToken.None));
+			bc[index] = await (InsertBasicClassAsync(id));
 			index++;
 
 			// make sure the previous insert went through
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 
 			Assert.IsNotNull(bc[index]);
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
@@ -142,9 +142,9 @@ namespace NHibernate.Test.NHSpecificTest
 			bc[index].StringList[0] = "Replaced Spot 0";
 			bc[index].StringMap["keyZero"] = "Replaced Key 0";
 
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -153,13 +153,13 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			bc[index].CharacterProperty = 'b';
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -169,13 +169,13 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			bc[index].ClassProperty = typeof(String);
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -184,14 +184,14 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			// 12 = french
 			bc[index].CultureInfoProperty = new CultureInfo(12);
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -200,13 +200,13 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			bc[index].DateTimeProperty = DateTime.Parse("2004-02-15 08:00:00 PM");
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -215,13 +215,13 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			bc[index].Int16Property = Int16.MinValue;
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -230,13 +230,13 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			bc[index].Int32Property = Int32.MinValue;
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -245,13 +245,13 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			bc[index].Int64Property = Int64.MinValue;
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -260,13 +260,13 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			bc[index].SingleProperty = bc[index].SingleProperty * -1;
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -275,13 +275,13 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			bc[index].StringProperty = "new string property";
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -290,13 +290,13 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			bc[index].TicksProperty = DateTime.Now;
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -305,13 +305,13 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			bc[index].TrueFalseProperty = false;
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -320,13 +320,13 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			bc[index].YesNoProperty = false;
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -335,19 +335,19 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			// test the delete method
-			await (s[index].DeleteAsync(bc[index], CancellationToken.None));
+			await (s[index].DeleteAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
 
 			// VERIFY DELETE
-			await (AssertDeleteAsync(id, CancellationToken.None));
+			await (AssertDeleteAsync(id));
 		}
 
 		[Test]
@@ -361,7 +361,7 @@ namespace NHibernate.Test.NHSpecificTest
 			int index = 0;
 			int id = 1;
 
-			bc[index] = await (InsertBasicClassAsync(id, CancellationToken.None));
+			bc[index] = await (InsertBasicClassAsync(id));
 
 			index++;
 
@@ -369,13 +369,13 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			bc[index].StringArray[0] = "modified string 0";
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -384,13 +384,13 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			bc[index].StringArray = new string[] {"string one", "string two"};
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -400,19 +400,19 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			// test the delete method
-			await (s[index].DeleteAsync(bc[index], CancellationToken.None));
+			await (s[index].DeleteAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
 
 			// verify the delete went through
-			await (AssertDeleteAsync(id, CancellationToken.None));
+			await (AssertDeleteAsync(id));
 		}
 
 		[Test]
@@ -426,7 +426,7 @@ namespace NHibernate.Test.NHSpecificTest
 			int index = 0;
 			int id = 1;
 
-			bc[index] = await (InsertBasicClassAsync(id, CancellationToken.None));
+			bc[index] = await (InsertBasicClassAsync(id));
 
 			index++;
 
@@ -434,7 +434,7 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			for (int i = 0; i < bc[index].Int32Array.Length; i++)
@@ -442,9 +442,9 @@ namespace NHibernate.Test.NHSpecificTest
 				bc[index].Int32Array[i] = i + 1;
 			}
 
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -454,13 +454,13 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			bc[index].Int32Array = new int[] {1, 2, 3, 4, 5, 6};
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -470,19 +470,19 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			// test the delete method
-			await (s[index].DeleteAsync(bc[index], CancellationToken.None));
+			await (s[index].DeleteAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
 
 			// verify the delete went through
-			await (AssertDeleteAsync(id, CancellationToken.None));
+			await (AssertDeleteAsync(id));
 		}
 
 		[Test]
@@ -496,7 +496,7 @@ namespace NHibernate.Test.NHSpecificTest
 			int index = 0;
 			int id = 1;
 
-			bc[index] = await (InsertBasicClassAsync(id, CancellationToken.None));
+			bc[index] = await (InsertBasicClassAsync(id));
 
 			index++;
 
@@ -504,16 +504,16 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			// remove the last one and update another
 			bc[index].StringMap.Remove("keyOne");
 			bc[index].StringMap["keyTwo"] = "modified string two";
 			bc[index].StringMap["keyThree"] = "added key three";
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -522,15 +522,15 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			bc[index].StringMap = new Dictionary<string, string>();
 			bc[index].StringMap.Add("keyZero", "new list zero");
 			bc[index].StringMap.Add("keyOne", "new list one");
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -540,19 +540,19 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			// test the delete method
-			await (s[index].DeleteAsync(bc[index], CancellationToken.None));
+			await (s[index].DeleteAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
 
 			// verify the delete went through
-			await (AssertDeleteAsync(id, CancellationToken.None));
+			await (AssertDeleteAsync(id));
 		}
 
 		[Test]
@@ -566,7 +566,7 @@ namespace NHibernate.Test.NHSpecificTest
 			int index = 0;
 			int id = 1;
 
-			bc[index] = await (InsertBasicClassAsync(id, CancellationToken.None));
+			bc[index] = await (InsertBasicClassAsync(id));
 
 			index++;
 
@@ -574,15 +574,15 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			// remove the last one and add another
 			bc[index].StringSet.Remove("zero");
 			bc[index].StringSet.Add("two");
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -591,13 +591,13 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			bc[index].StringSet = new HashSet<string> { "zero", "one" };
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -607,19 +607,19 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			// test the delete method
-			await (s[index].DeleteAsync(bc[index], CancellationToken.None));
+			await (s[index].DeleteAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
 
 			// verify the delete went through
-			await (AssertDeleteAsync(id, CancellationToken.None));
+			await (AssertDeleteAsync(id));
 		}
 
 		[Test]
@@ -633,7 +633,7 @@ namespace NHibernate.Test.NHSpecificTest
 			int index = 0;
 			int id = 1;
 
-			bc[index] = await (InsertBasicClassAsync(id, CancellationToken.None));
+			bc[index] = await (InsertBasicClassAsync(id));
 
 			index++;
 
@@ -641,15 +641,15 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			// remove the last one and update another
 			bc[index].StringBag.RemoveAt(bc[index].StringBag.Count - 1);
 			bc[index].StringBag[1] = "modified string 1";
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -658,14 +658,14 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			// remove the last one and update another
 			bc[index].StringBag.Add("inserted into the bag");
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -674,15 +674,15 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			bc[index].StringBag = new List<string>();
 			bc[index].StringBag.Add("new bag zero");
 			bc[index].StringBag.Add("new bag one");
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -692,19 +692,19 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			// test the delete method
-			await (s[index].DeleteAsync(bc[index], CancellationToken.None));
+			await (s[index].DeleteAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
 
 			// verify the delete went through
-			await (AssertDeleteAsync(id, CancellationToken.None));
+			await (AssertDeleteAsync(id));
 		}
 
 		[Test]
@@ -713,7 +713,7 @@ namespace NHibernate.Test.NHSpecificTest
 			int id = 1;
 			int originalCount;
 
-			BasicClass basicClass = await (InsertBasicClassAsync(id, CancellationToken.None));
+			BasicClass basicClass = await (InsertBasicClassAsync(id));
 			originalCount = basicClass.StringBag.Count;
 
 			ISession s = OpenSession();
@@ -725,18 +725,18 @@ namespace NHibernate.Test.NHSpecificTest
 			ISession s2 = OpenSession();
 			ITransaction t2 = s2.BeginTransaction();
 
-			BasicClass bc = (BasicClass) await (s.LoadAsync(typeof(BasicClass), id, CancellationToken.None));
-			BasicClass bc2 = (BasicClass) await (s2.LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			BasicClass bc = (BasicClass) await (s.LoadAsync(typeof(BasicClass), id));
+			BasicClass bc2 = (BasicClass) await (s2.LoadAsync(typeof(BasicClass), id));
 
 			bc2.StringBag.Add("refresh value");
-			await (t2.CommitAsync(CancellationToken.None));
+			await (t2.CommitAsync());
 			s2.Close();
 
-			await (s.RefreshAsync(bc, CancellationToken.None));
+			await (s.RefreshAsync(bc));
 			Assert.AreEqual(originalCount + 1, bc.StringBag.Count, "was refreshed correctly");
 
-			await (s.DeleteAsync(bc, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(bc));
+			await (s.FlushAsync());
 			s.Close();
 		}
 
@@ -751,7 +751,7 @@ namespace NHibernate.Test.NHSpecificTest
 			int index = 0;
 			int id = 1;
 
-			bc[index] = await (InsertBasicClassAsync(id, CancellationToken.None));
+			bc[index] = await (InsertBasicClassAsync(id));
 
 			index++;
 
@@ -759,15 +759,15 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			// remove the last one and update another
 			bc[index].StringList.RemoveAt(bc[index].StringList.Count - 1);
 			bc[index].StringList[2] = "modified string 2";
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -776,14 +776,14 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			// remove the last one and update another
 			bc[index].StringList.Add("inserted into the list");
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -792,15 +792,15 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			bc[index].StringList = new List<string>();
 			bc[index].StringList.Add("new list zero");
 			bc[index].StringList.Add("new list one");
-			await (s[index].UpdateAsync(bc[index], CancellationToken.None));
+			await (s[index].UpdateAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
@@ -810,19 +810,19 @@ namespace NHibernate.Test.NHSpecificTest
 			s[index] = OpenSession();
 			t[index] = s[index].BeginTransaction();
 
-			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
 			// test the delete method
-			await (s[index].DeleteAsync(bc[index], CancellationToken.None));
+			await (s[index].DeleteAsync(bc[index]));
 
-			await (t[index].CommitAsync(CancellationToken.None));
+			await (t[index].CommitAsync());
 			s[index].Close();
 
 			index++;
 
 			// verify the delete went through
-			await (AssertDeleteAsync(id, CancellationToken.None));
+			await (AssertDeleteAsync(id));
 		}
 
 		[Test]
@@ -838,20 +838,20 @@ namespace NHibernate.Test.NHSpecificTest
 
 			bc.StringList = new string[] {"one", "two"};
 
-			await (s.SaveAsync(bc, id, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(bc, id));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			bc = (BasicClass) await (s.LoadAsync(typeof(BasicClass), id, CancellationToken.None));
+			bc = (BasicClass) await (s.LoadAsync(typeof(BasicClass), id));
 
 			Assert.AreEqual(2, bc.StringList.Count, "should have saved to StringList from an array");
 			Assert.IsTrue(bc.StringList.Contains("one"), "'one' should be in there");
 			Assert.IsTrue(bc.StringList.Contains("two"), "'two' should be in there");
 
-			await (s.DeleteAsync(bc, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(bc));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -860,7 +860,7 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 			// TODO: Move to Linq test namespace
 			
-			await (InsertBasicClassAsync(1, CancellationToken.None));
+			await (InsertBasicClassAsync(1));
 			
 			using (var session = OpenSession())
 			using (var trans = session.BeginTransaction())
@@ -872,8 +872,8 @@ namespace NHibernate.Test.NHSpecificTest
 				bcs = session.Query<BasicClass>()
 					.Where(bc => (string)bc.StringMap["keyZero"] == "string zero");
 
-				Assert.That(await (bcs.CountAsync(CancellationToken.None)), Is.EqualTo(1));
-				bcsList = await (bcs.ToListAsync<BasicClass>(CancellationToken.None));
+				Assert.That(await (bcs.CountAsync()), Is.EqualTo(1));
+				bcsList = await (bcs.ToListAsync<BasicClass>());
 				Assert.That(bcsList.All(f => f.StringMap != null), Is.True);
 				Assert.That(bcsList.All(f => f.StringMap.Count == 3), Is.True);
 				Assert.That(bcsList.All(f => ((f.StringMap.ContainsKey("keyZero")) && ((string)f.StringMap["keyZero"] == "string zero"))), Is.True);
@@ -882,8 +882,8 @@ namespace NHibernate.Test.NHSpecificTest
 				bcs = session.Query<BasicClass>()
 					.Where(bc => bc.StringMapGeneric["keyOne"] == "string one");
 				
-				Assert.That(await (bcs.CountAsync(CancellationToken.None)), Is.EqualTo(1));
-				bcsList = await (bcs.ToListAsync<BasicClass>(CancellationToken.None));
+				Assert.That(await (bcs.CountAsync()), Is.EqualTo(1));
+				bcsList = await (bcs.ToListAsync<BasicClass>());
 				Assert.That(bcsList.All(f => f.StringMapGeneric != null), Is.True);
 				Assert.That(bcsList.All(f => f.StringMapGeneric.Count == 3), Is.True);
 				Assert.That(bcsList.All(f => ((f.StringMapGeneric.ContainsKey("keyOne")) && (f.StringMapGeneric["keyOne"] == "string one"))), Is.True);
@@ -892,8 +892,8 @@ namespace NHibernate.Test.NHSpecificTest
 				bcs = session.Query<BasicClass>()
 					.Where(bc => bc.StringMap.ContainsKey("keyZero"));
 				
-				Assert.That(await (bcs.CountAsync(CancellationToken.None)), Is.EqualTo(1));
-				bcsList = await (bcs.ToListAsync<BasicClass>(CancellationToken.None));
+				Assert.That(await (bcs.CountAsync()), Is.EqualTo(1));
+				bcsList = await (bcs.ToListAsync<BasicClass>());
 				Assert.That(bcsList.All(f => f.StringMap != null), Is.True);
 				Assert.That(bcsList.All(f => f.StringMap.Count == 3), Is.True);
 				Assert.That(bcsList.All(f => ((f.StringMap.ContainsKey("keyZero")) && ((string)f.StringMap["keyZero"] == "string zero"))), Is.True);
@@ -902,14 +902,14 @@ namespace NHibernate.Test.NHSpecificTest
 				bcs = session.Query<BasicClass>()
 					.Where(bc => bc.StringMapGeneric.ContainsKey("keyZero"));
 				
-				Assert.That(await (bcs.CountAsync(CancellationToken.None)), Is.EqualTo(1));
-				bcsList = await (bcs.ToListAsync<BasicClass>(CancellationToken.None));
+				Assert.That(await (bcs.CountAsync()), Is.EqualTo(1));
+				bcsList = await (bcs.ToListAsync<BasicClass>());
 				Assert.That(bcsList.All(f => f.StringMapGeneric != null), Is.True);
 				Assert.That(bcsList.All(f => f.StringMapGeneric.Count == 3), Is.True);
 				Assert.That(bcsList.All(f => ((f.StringMapGeneric.ContainsKey("keyOne")) && (f.StringMapGeneric["keyOne"] == "string one"))), Is.True);
 				
-				await (session.DeleteAsync("from BasicClass", CancellationToken.None));
-				await (trans.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync("from BasicClass"));
+				await (trans.CommitAsync());
 			}
 		}
 
@@ -919,7 +919,7 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public async Task TestHqlParameterizedDictionaryLookupProducesCorrectSqlParameterOrderAsync()
 		{
-			var bc = await (InsertBasicClassAsync(1, CancellationToken.None));
+			var bc = await (InsertBasicClassAsync(1));
 			
 			using (var session = OpenSession())
 			using (var trans = session.BeginTransaction())
@@ -929,10 +929,10 @@ namespace NHibernate.Test.NHSpecificTest
 					.SetParameter("prop", "string property")
 					.SetParameter("key", "keyZero")
 					.SetParameter("value", "string zero")
-					.UniqueResultAsync<BasicClass>(CancellationToken.None));
+					.UniqueResultAsync<BasicClass>());
 				Assert.NotNull(bc);
-				await (session.DeleteAsync(bc, CancellationToken.None));
-				await (trans.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync(bc));
+				await (trans.CommitAsync());
 			}
 		}
 		

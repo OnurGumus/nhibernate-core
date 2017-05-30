@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.FilterTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FilterBinaryParameterTestAsync : TestCase
 	{
@@ -37,7 +36,7 @@ namespace NHibernate.Test.FilterTest
 				byte[] binValue = {0xFF, 0xFF, 0xFF};
 				session.EnableFilter("BinaryFilter").SetParameter("BinaryValue", binValue);
 				IQuery query = session.CreateQuery("from BinaryFiltered");
-				await (query.ListAsync(CancellationToken.None));
+				await (query.ListAsync());
 			}
 		}
 	}

@@ -19,7 +19,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class NullComparisonTestsAsync : LinqTestCase
 	{
@@ -36,7 +35,7 @@ namespace NHibernate.Test.Linq
 			string nullVariable2 = null;
 			string notNullVariable = "input";
 
-			Assert.AreEqual(5, (await (session.CreateCriteria<AnotherEntity>().ListAsync<AnotherEntity>(CancellationToken.None))).Count);
+			Assert.AreEqual(5, (await (session.CreateCriteria<AnotherEntity>().ListAsync<AnotherEntity>())).Count);
 
 			IQueryable<AnotherEntity> q;
 

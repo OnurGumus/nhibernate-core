@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1552
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -68,7 +67,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1552
 					IList<MyClass> list = await (session.CreateSQLQuery(sql)
 						.AddEntity(typeof(MyClass))
 						.SetFirstResult(1)
-						.ListAsync<MyClass>(CancellationToken.None));
+						.ListAsync<MyClass>());
 					Assert.That(list.Count, Is.EqualTo(2));
 				    Assert.That(list[0].Name, Is.EqualTo("sidar"));
                     Assert.That(list[1].Name, Is.EqualTo("tuna"));
@@ -87,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1552
                     IList<MyClass> list = await (session.CreateSQLQuery(sql)
                         .AddEntity(typeof(MyClass))
                         .SetMaxResults(2)
-                        .ListAsync<MyClass>(CancellationToken.None));
+                        .ListAsync<MyClass>());
                     Assert.That(list.Count, Is.EqualTo(2));
                     Assert.That(list[0].Name, Is.EqualTo("berker"));
                     Assert.That(list[1].Name, Is.EqualTo("sidar"));
@@ -108,7 +107,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1552
                         .AddEntity(typeof(MyClass))
                         .SetFirstResult(1)
                         .SetMaxResults(1)
-                        .ListAsync<MyClass>(CancellationToken.None));
+                        .ListAsync<MyClass>());
                     Assert.That(list.Count, Is.EqualTo(1));
                     Assert.That(list[0].Name, Is.EqualTo("sidar"));
                 }

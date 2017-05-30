@@ -117,7 +117,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 
 				await ((from person in session.Query<Person>()
 				 where personIds.Contains(person.Id)
-				 select person).ToListAsync(CancellationToken.None));
+				 select person).ToListAsync());
 
 				// the planCache now contains one item with a key of type HQLQueryPlanKey, 
 				// so we are going to retrieve the generated key so that we can use it afterwards to interact with the cache.

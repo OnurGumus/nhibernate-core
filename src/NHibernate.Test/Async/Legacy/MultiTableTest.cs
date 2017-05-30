@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Legacy
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Summary description for MultiTableTest.
 	/// </summary>
@@ -34,8 +33,8 @@ namespace NHibernate.Test.Legacy
 		public async Task FetchManyToOneAsync()
 		{
 			ISession s = OpenSession();
-			await (s.CreateCriteria(typeof(Po)).SetFetchMode("Set", FetchMode.Eager).ListAsync(CancellationToken.None));
-			await (s.CreateCriteria(typeof(Po)).SetFetchMode("List", FetchMode.Eager).ListAsync(CancellationToken.None));
+			await (s.CreateCriteria(typeof(Po)).SetFetchMode("Set", FetchMode.Eager).ListAsync());
+			await (s.CreateCriteria(typeof(Po)).SetFetchMode("List", FetchMode.Eager).ListAsync());
 			s.Close();
 		}
 
@@ -44,20 +43,20 @@ namespace NHibernate.Test.Legacy
 		public async Task JoinsAsync()
 		{
 			ISession s = OpenSession();
-			await (s.CreateQuery("from Lower l join l.YetAnother l2 where lower(l2.Name) > 'a'").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from SubMulti sm join sm.Children smc where smc.Name > 'a'").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("select s, ya from Lower s join s.YetAnother ya").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from Lower s1 join s1.Bag s2").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from Lower s1 left join s1.Bag s2").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("select s, a from Lower s join s.Another a").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("select s, a from Lower s left join s.Another a").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from Top s, Lower ls").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from Lower ls join ls.Set s where s.Name > 'a'").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from Po po join po.List sm where sm.Name > 'a'").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from Lower ls inner join ls.Another s where s.Name is not null").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from Lower ls where ls.Other.Another.Name is not null").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from Multi m where m.Derived like 'F%'").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from SubMulti m where m.Derived like 'F%'").ListAsync(CancellationToken.None));
+			await (s.CreateQuery("from Lower l join l.YetAnother l2 where lower(l2.Name) > 'a'").ListAsync());
+			await (s.CreateQuery("from SubMulti sm join sm.Children smc where smc.Name > 'a'").ListAsync());
+			await (s.CreateQuery("select s, ya from Lower s join s.YetAnother ya").ListAsync());
+			await (s.CreateQuery("from Lower s1 join s1.Bag s2").ListAsync());
+			await (s.CreateQuery("from Lower s1 left join s1.Bag s2").ListAsync());
+			await (s.CreateQuery("select s, a from Lower s join s.Another a").ListAsync());
+			await (s.CreateQuery("select s, a from Lower s left join s.Another a").ListAsync());
+			await (s.CreateQuery("from Top s, Lower ls").ListAsync());
+			await (s.CreateQuery("from Lower ls join ls.Set s where s.Name > 'a'").ListAsync());
+			await (s.CreateQuery("from Po po join po.List sm where sm.Name > 'a'").ListAsync());
+			await (s.CreateQuery("from Lower ls inner join ls.Another s where s.Name is not null").ListAsync());
+			await (s.CreateQuery("from Lower ls where ls.Other.Another.Name is not null").ListAsync());
+			await (s.CreateQuery("from Multi m where m.Derived like 'F%'").ListAsync());
+			await (s.CreateQuery("from SubMulti m where m.Derived like 'F%'").ListAsync());
 			s.Close();
 		}
 
@@ -73,10 +72,10 @@ namespace NHibernate.Test.Legacy
 			sm.ExtraProp = "foo";
 			sm1.Parent = sm;
 			sm2.Parent = sm;
-			object id = await (s.SaveAsync(sm, CancellationToken.None));
-			await (s.SaveAsync(sm1, CancellationToken.None));
-			await (s.SaveAsync(sm2, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			object id = await (s.SaveAsync(sm));
+			await (s.SaveAsync(sm1));
+			await (s.SaveAsync(sm2));
+			await (s.FlushAsync());
 			s.Close();
 
 			sessions.Evict(typeof(SubMulti));
@@ -86,18 +85,18 @@ namespace NHibernate.Test.Legacy
 
 			Assert.AreEqual(2,
 (							await (s.CreateQuery(
-								"select s from SubMulti as sm join sm.Children as s where s.Amount>-1 and s.Name is null").ListAsync(CancellationToken.None))).
+								"select s from SubMulti as sm join sm.Children as s where s.Amount>-1 and s.Name is null").ListAsync())).
 								Count);
-			Assert.AreEqual(2, (await (s.CreateQuery("select elements(sm.Children) from SubMulti as sm").ListAsync(CancellationToken.None))).Count);
+			Assert.AreEqual(2, (await (s.CreateQuery("select elements(sm.Children) from SubMulti as sm").ListAsync())).Count);
 			Assert.AreEqual(1,
 (							await (s.CreateQuery(
 								"select distinct sm from SubMulti as sm join sm.Children as s where s.Amount>-1 and s.Name is null")
-								.ListAsync(CancellationToken.None))).Count);
-			sm = (SubMulti) await (s.LoadAsync(typeof(SubMulti), id, CancellationToken.None));
+								.ListAsync())).Count);
+			sm = (SubMulti) await (s.LoadAsync(typeof(SubMulti), id));
 			Assert.AreEqual(2, sm.Children.Count);
 
 			ICollection filterColl =
-				await ((await (s.CreateFilterAsync(sm.MoreChildren, "select count(*) where this.Amount>-1 and this.Name is null", CancellationToken.None))).ListAsync(CancellationToken.None));
+				await ((await (s.CreateFilterAsync(sm.MoreChildren, "select count(*) where this.Amount>-1 and this.Name is null"))).ListAsync());
 			foreach (object obj in filterColl)
 			{
 				Assert.AreEqual(2, obj);
@@ -107,18 +106,18 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual("FOO", sm.Derived, "should have uppercased the column in a formula");
 
 			IEnumerator enumer =
-(				await (s.CreateQuery("select distinct s from s in class SubMulti where s.MoreChildren[1].Amount < 1.0").EnumerableAsync(CancellationToken.None))).
+(				await (s.CreateQuery("select distinct s from s in class SubMulti where s.MoreChildren[1].Amount < 1.0").EnumerableAsync())).
 					GetEnumerator();
 			Assert.IsTrue(enumer.MoveNext());
 			Assert.AreSame(sm, enumer.Current);
 			Assert.AreEqual(2, sm.MoreChildren.Count);
-			await (s.DeleteAsync(sm, CancellationToken.None));
+			await (s.DeleteAsync(sm));
 
 			foreach (object obj in sm.Children)
 			{
-				await (s.DeleteAsync(obj, CancellationToken.None));
+				await (s.DeleteAsync(obj));
 			}
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 			s.Close();
 		}
 
@@ -128,18 +127,18 @@ namespace NHibernate.Test.Legacy
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			NotMono m = new NotMono();
-			long id = (long) await (s.SaveAsync(m, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			long id = (long) await (s.SaveAsync(m));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.UpdateAsync(m, id, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.UpdateAsync(m, id));
+			await (s.FlushAsync());
 			m.Address = "foo bar";
-			await (s.FlushAsync(CancellationToken.None));
-			await (s.DeleteAsync(m, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.FlushAsync());
+			await (s.DeleteAsync(m));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -151,30 +150,30 @@ namespace NHibernate.Test.Legacy
 
 			if (Dialect is MsSql2000Dialect)
 			{
-				id = (long) await (s.SaveAsync(new TrivialClass(), CancellationToken.None));
+				id = (long) await (s.SaveAsync(new TrivialClass()));
 			}
 			else
 			{
-				await (s.SaveAsync(new TrivialClass(), id, CancellationToken.None));
+				await (s.SaveAsync(new TrivialClass(), id));
 			}
 
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			TrivialClass tc = (TrivialClass) await (s.LoadAsync(typeof(TrivialClass), id, CancellationToken.None));
-			await (s.CreateQuery("from s in class TrivialClass where s.id = 2").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("select s.Count from s in class Top").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from s in class Lower where s.Another.Name='name'").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from s in class Lower where s.YetAnother.Name='name'").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from s in class Lower where s.YetAnother.Name='name' and s.YetAnother.Foo is null").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from s in class Top where s.Count=1").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("select s.Count from s in class Top, ls in class Lower where ls.Another=s").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("select elements(ls.Bag), elements(ls.Set) from ls in class Lower").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from s in class Lower").EnumerableAsync(CancellationToken.None));
-			await (s.CreateQuery("from s in class Top").EnumerableAsync(CancellationToken.None));
-			await (s.DeleteAsync(tc, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			TrivialClass tc = (TrivialClass) await (s.LoadAsync(typeof(TrivialClass), id));
+			await (s.CreateQuery("from s in class TrivialClass where s.id = 2").ListAsync());
+			await (s.CreateQuery("select s.Count from s in class Top").ListAsync());
+			await (s.CreateQuery("from s in class Lower where s.Another.Name='name'").ListAsync());
+			await (s.CreateQuery("from s in class Lower where s.YetAnother.Name='name'").ListAsync());
+			await (s.CreateQuery("from s in class Lower where s.YetAnother.Name='name' and s.YetAnother.Foo is null").ListAsync());
+			await (s.CreateQuery("from s in class Top where s.Count=1").ListAsync());
+			await (s.CreateQuery("select s.Count from s in class Top, ls in class Lower where ls.Another=s").ListAsync());
+			await (s.CreateQuery("select elements(ls.Bag), elements(ls.Set) from ls in class Lower").ListAsync());
+			await (s.CreateQuery("from s in class Lower").EnumerableAsync());
+			await (s.CreateQuery("from s in class Top").EnumerableAsync());
+			await (s.DeleteAsync(tc));
+			await (s.FlushAsync());
 			s.Close();
 		}
 
@@ -187,19 +186,19 @@ namespace NHibernate.Test.Legacy
 			sm.Amount = 66.5f;
 			if (Dialect is MsSql2000Dialect)
 			{
-				await (s.SaveAsync(sm, CancellationToken.None));
+				await (s.SaveAsync(sm));
 			}
 			else
 			{
-				await (s.SaveAsync(sm, (long) 2, CancellationToken.None));
+				await (s.SaveAsync(sm, (long) 2));
 			}
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
-			await (s.DeleteAsync("from sm in class SubMulti", CancellationToken.None));
+			await (s.DeleteAsync("from sm in class SubMulti"));
 			t = s.BeginTransaction();
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -218,69 +217,69 @@ namespace NHibernate.Test.Legacy
 			object sid;
 			if (Dialect is MsSql2000Dialect)
 			{
-				mid = await (s.SaveAsync(multi, CancellationToken.None));
-				sid = await (s.SaveAsync(simp, CancellationToken.None));
+				mid = await (s.SaveAsync(multi));
+				sid = await (s.SaveAsync(simp));
 			}
 			else
 			{
 				mid = 123L;
 				sid = 1234L;
-				await (s.SaveAsync(multi, mid, CancellationToken.None));
-				await (s.SaveAsync(simp, sid, CancellationToken.None));
+				await (s.SaveAsync(multi, mid));
+				await (s.SaveAsync(simp, sid));
 			}
 			SubMulti sm = new SubMulti();
 			sm.Amount = 66.5f;
 			object smid;
 			if (Dialect is MsSql2000Dialect)
 			{
-				smid = await (s.SaveAsync(sm, CancellationToken.None));
+				smid = await (s.SaveAsync(sm));
 			}
 			else
 			{
 				smid = 2L;
-				await (s.SaveAsync(sm, smid, CancellationToken.None));
+				await (s.SaveAsync(sm, smid));
 			}
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 			multi.ExtraProp = multi.ExtraProp + "2";
 			multi.Name = "new name";
-			await (s.UpdateAsync(multi, mid, CancellationToken.None));
+			await (s.UpdateAsync(multi, mid));
 			simp.Name = "new name";
-			await (s.UpdateAsync(simp, sid, CancellationToken.None));
+			await (s.UpdateAsync(simp, sid));
 			sm.Amount = 456.7f;
-			await (s.UpdateAsync(sm, smid, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.UpdateAsync(sm, smid));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			multi = (Multi) await (s.LoadAsync(typeof(Multi), mid, CancellationToken.None));
+			multi = (Multi) await (s.LoadAsync(typeof(Multi), mid));
 			Assert.AreEqual("extra2", multi.ExtraProp);
 			multi.ExtraProp = multi.ExtraProp + "3";
 			Assert.AreEqual("new name", multi.Name);
 			multi.Name = "newer name";
-			sm = (SubMulti) await (s.LoadAsync(typeof(SubMulti), smid, CancellationToken.None));
+			sm = (SubMulti) await (s.LoadAsync(typeof(SubMulti), smid));
 			Assert.AreEqual(456.7f, sm.Amount);
 			sm.Amount = 23423f;
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			multi = (Multi) await (s.LoadAsync(typeof(Top), mid, CancellationToken.None));
-			simp = (Top) await (s.LoadAsync(typeof(Top), sid, CancellationToken.None));
+			multi = (Multi) await (s.LoadAsync(typeof(Top), mid));
+			simp = (Top) await (s.LoadAsync(typeof(Top), sid));
 			Assert.IsFalse(simp is Multi);
 			Assert.AreEqual("extra23", multi.ExtraProp);
 			Assert.AreEqual("newer name", multi.Name);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IEnumerator enumer = (await (s.CreateQuery("select\n\ns from s in class Top where s.Count>0").EnumerableAsync(CancellationToken.None))).GetEnumerator();
+			IEnumerator enumer = (await (s.CreateQuery("select\n\ns from s in class Top where s.Count>0").EnumerableAsync())).GetEnumerator();
 			bool foundSimp = false;
 			bool foundMulti = false;
 			bool foundSubMulti = false;
@@ -295,46 +294,46 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(foundMulti);
 			Assert.IsTrue(foundSubMulti);
 
-			await (s.CreateQuery("from m in class Multi where m.Count>0 and m.ExtraProp is not null").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from m in class Top where m.Count>0 and m.Name is not null").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from m in class Lower where m.Other is not null").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from m in class Multi where m.Other.id = 1").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from m in class SubMulti where m.Amount > 0.0").ListAsync(CancellationToken.None));
+			await (s.CreateQuery("from m in class Multi where m.Count>0 and m.ExtraProp is not null").ListAsync());
+			await (s.CreateQuery("from m in class Top where m.Count>0 and m.Name is not null").ListAsync());
+			await (s.CreateQuery("from m in class Lower where m.Other is not null").ListAsync());
+			await (s.CreateQuery("from m in class Multi where m.Other.id = 1").ListAsync());
+			await (s.CreateQuery("from m in class SubMulti where m.Amount > 0.0").ListAsync());
 
-			Assert.AreEqual(2, (await (s.CreateQuery("from m in class Multi").ListAsync(CancellationToken.None))).Count);
+			Assert.AreEqual(2, (await (s.CreateQuery("from m in class Multi").ListAsync())).Count);
 
 			//if( !(dialect is Dialect.HSQLDialect) ) 
 			//{
-			Assert.AreEqual(1, (await (s.CreateQuery("from m in class Multi where m.class = SubMulti").ListAsync(CancellationToken.None))).Count);
-			Assert.AreEqual(1, (await (s.CreateQuery("from m in class Top where m.class = Multi").ListAsync(CancellationToken.None))).Count);
+			Assert.AreEqual(1, (await (s.CreateQuery("from m in class Multi where m.class = SubMulti").ListAsync())).Count);
+			Assert.AreEqual(1, (await (s.CreateQuery("from m in class Top where m.class = Multi").ListAsync())).Count);
 			//}
 
-			Assert.AreEqual(3, (await (s.CreateQuery("from s in class Top").ListAsync(CancellationToken.None))).Count);
-			Assert.AreEqual(0, (await (s.CreateQuery("from ls in class Lower").ListAsync(CancellationToken.None))).Count);
-			Assert.AreEqual(1, (await (s.CreateQuery("from sm in class SubMulti").ListAsync(CancellationToken.None))).Count);
+			Assert.AreEqual(3, (await (s.CreateQuery("from s in class Top").ListAsync())).Count);
+			Assert.AreEqual(0, (await (s.CreateQuery("from ls in class Lower").ListAsync())).Count);
+			Assert.AreEqual(1, (await (s.CreateQuery("from sm in class SubMulti").ListAsync())).Count);
 
-			await (s.CreateQuery("from ls in class Lower, s in elements(ls.Bag) where s.id is not null").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from ls in class Lower, s in elements(ls.Set) where s.id is not null").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from sm in class SubMulti where exists elements(sm.Children)").ListAsync(CancellationToken.None));
+			await (s.CreateQuery("from ls in class Lower, s in elements(ls.Bag) where s.id is not null").ListAsync());
+			await (s.CreateQuery("from ls in class Lower, s in elements(ls.Set) where s.id is not null").ListAsync());
+			await (s.CreateQuery("from sm in class SubMulti where exists elements(sm.Children)").ListAsync());
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 			if (TestDialect.SupportsSelectForUpdateOnOuterJoin)
-				multi = (Multi)await (s.LoadAsync(typeof(Top), mid, LockMode.Upgrade, CancellationToken.None));
-			simp = (Top) await (s.LoadAsync(typeof(Top), sid, CancellationToken.None));
-			await (s.LockAsync(simp, LockMode.UpgradeNoWait, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+				multi = (Multi)await (s.LoadAsync(typeof(Top), mid, LockMode.Upgrade));
+			simp = (Top) await (s.LoadAsync(typeof(Top), sid));
+			await (s.LockAsync(simp, LockMode.UpgradeNoWait));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.UpdateAsync(multi, mid, CancellationToken.None));
-			await (s.DeleteAsync(multi, CancellationToken.None));
-			Assert.AreEqual(2, await (s.DeleteAsync("from s in class Top", CancellationToken.None)));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.UpdateAsync(multi, mid));
+			await (s.DeleteAsync(multi));
+			Assert.AreEqual(2, await (s.DeleteAsync("from s in class Top")));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -349,54 +348,54 @@ namespace NHibernate.Test.Legacy
 			Top simp = new Top();
 			simp.Date = DateTime.Now;
 			simp.Name = "simp";
-			object multiId = await (s.SaveAsync(multi, CancellationToken.None));
-			object simpId = await (s.SaveAsync(simp, CancellationToken.None));
+			object multiId = await (s.SaveAsync(multi));
+			object simpId = await (s.SaveAsync(simp));
 			SubMulti sm = new SubMulti();
 			sm.Amount = 66.5f;
-			object smId = await (s.SaveAsync(sm, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			object smId = await (s.SaveAsync(sm));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 			multi.ExtraProp += "2";
 			multi.Name = "new name";
-			await (s.UpdateAsync(multi, multiId, CancellationToken.None));
+			await (s.UpdateAsync(multi, multiId));
 			simp.Name = "new name";
-			await (s.UpdateAsync(simp, simpId, CancellationToken.None));
+			await (s.UpdateAsync(simp, simpId));
 			sm.Amount = 456.7f;
-			await (s.UpdateAsync(sm, smId, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.UpdateAsync(sm, smId));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			multi = (Multi) await (s.LoadAsync(typeof(Multi), multiId, CancellationToken.None));
+			multi = (Multi) await (s.LoadAsync(typeof(Multi), multiId));
 			Assert.AreEqual("extra2", multi.ExtraProp);
 			multi.ExtraProp += "3";
 			Assert.AreEqual("new name", multi.Name);
 			multi.Name = "newer name";
-			sm = (SubMulti) await (s.LoadAsync(typeof(SubMulti), smId, CancellationToken.None));
+			sm = (SubMulti) await (s.LoadAsync(typeof(SubMulti), smId));
 			Assert.AreEqual(456.7f, sm.Amount);
 			sm.Amount = 23423f;
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			multi = (Multi) await (s.LoadAsync(typeof(Top), multiId, CancellationToken.None));
-			simp = (Top) await (s.LoadAsync(typeof(Top), simpId, CancellationToken.None));
+			multi = (Multi) await (s.LoadAsync(typeof(Top), multiId));
+			simp = (Top) await (s.LoadAsync(typeof(Top), simpId));
 			Assert.IsFalse(simp is Multi);
 			// Can't see the point of this test since the variable is declared as Multi!
 			//Assert.IsTrue( multi is Multi );
 			Assert.AreEqual("extra23", multi.ExtraProp);
 			Assert.AreEqual("newer name", multi.Name);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			IEnumerable enumer = await (s.CreateQuery("select\n\ns from s in class Top where s.Count>0").EnumerableAsync(CancellationToken.None));
+			IEnumerable enumer = await (s.CreateQuery("select\n\ns from s in class Top where s.Count>0").EnumerableAsync());
 			bool foundSimp = false;
 			bool foundMulti = false;
 			bool foundSubMulti = false;
@@ -411,38 +410,38 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(foundMulti);
 			Assert.IsTrue(foundSubMulti);
 
-			await (s.CreateQuery("from m in class Multi where m.Count>0 and m.ExtraProp is not null").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from m in class Top where m.Count>0 and m.Name is not null").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from m in class Lower where m.Other is not null").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from m in class Multi where m.Other.id = 1").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from m in class SubMulti where m.Amount > 0.0").ListAsync(CancellationToken.None));
+			await (s.CreateQuery("from m in class Multi where m.Count>0 and m.ExtraProp is not null").ListAsync());
+			await (s.CreateQuery("from m in class Top where m.Count>0 and m.Name is not null").ListAsync());
+			await (s.CreateQuery("from m in class Lower where m.Other is not null").ListAsync());
+			await (s.CreateQuery("from m in class Multi where m.Other.id = 1").ListAsync());
+			await (s.CreateQuery("from m in class SubMulti where m.Amount > 0.0").ListAsync());
 
-			Assert.AreEqual(2, (await (s.CreateQuery("from m in class Multi").ListAsync(CancellationToken.None))).Count);
-			Assert.AreEqual(3, (await (s.CreateQuery("from s in class Top").ListAsync(CancellationToken.None))).Count);
-			Assert.AreEqual(0, (await (s.CreateQuery("from s in class Lower").ListAsync(CancellationToken.None))).Count);
-			Assert.AreEqual(1, (await (s.CreateQuery("from sm in class SubMulti").ListAsync(CancellationToken.None))).Count);
+			Assert.AreEqual(2, (await (s.CreateQuery("from m in class Multi").ListAsync())).Count);
+			Assert.AreEqual(3, (await (s.CreateQuery("from s in class Top").ListAsync())).Count);
+			Assert.AreEqual(0, (await (s.CreateQuery("from s in class Lower").ListAsync())).Count);
+			Assert.AreEqual(1, (await (s.CreateQuery("from sm in class SubMulti").ListAsync())).Count);
 
-			await (s.CreateQuery("from ls in class Lower, s in elements(ls.Bag) where s.id is not null").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from sm in class SubMulti where exists elements(sm.Children)").ListAsync(CancellationToken.None));
+			await (s.CreateQuery("from ls in class Lower, s in elements(ls.Bag) where s.id is not null").ListAsync());
+			await (s.CreateQuery("from sm in class SubMulti where exists elements(sm.Children)").ListAsync());
 			
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 			if (TestDialect.SupportsSelectForUpdateOnOuterJoin)
-				multi = (Multi) await (s.LoadAsync(typeof(Top), multiId, LockMode.Upgrade, CancellationToken.None));
-			simp = (Top) await (s.LoadAsync(typeof(Top), simpId, CancellationToken.None));
-			await (s.LockAsync(simp, LockMode.UpgradeNoWait, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+				multi = (Multi) await (s.LoadAsync(typeof(Top), multiId, LockMode.Upgrade));
+			simp = (Top) await (s.LoadAsync(typeof(Top), simpId));
+			await (s.LockAsync(simp, LockMode.UpgradeNoWait));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.UpdateAsync(multi, multiId, CancellationToken.None));
-			await (s.DeleteAsync(multi, CancellationToken.None));
-			Assert.AreEqual(2, await (s.DeleteAsync("from s in class Top", CancellationToken.None)));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.UpdateAsync(multi, multiId));
+			await (s.DeleteAsync(multi));
+			Assert.AreEqual(2, await (s.DeleteAsync("from s in class Top")));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -456,7 +455,7 @@ namespace NHibernate.Test.Legacy
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			Assert.AreEqual(0, (await (s.CreateQuery("from s in class Top").ListAsync(CancellationToken.None))).Count);
+			Assert.AreEqual(0, (await (s.CreateQuery("from s in class Top").ListAsync())).Count);
 			Multi multi = new Multi();
 			multi.ExtraProp = "extra";
 			multi.Name = "name";
@@ -467,15 +466,15 @@ namespace NHibernate.Test.Legacy
 			object sid;
 			if (Dialect is MsSql2000Dialect)
 			{
-				mid = await (s.SaveAsync(multi, CancellationToken.None));
-				sid = await (s.SaveAsync(simp, CancellationToken.None));
+				mid = await (s.SaveAsync(multi));
+				sid = await (s.SaveAsync(simp));
 			}
 			else
 			{
 				mid = 123L;
 				sid = 1234L;
-				await (s.SaveAsync(multi, mid, CancellationToken.None));
-				await (s.SaveAsync(simp, sid, CancellationToken.None));
+				await (s.SaveAsync(multi, mid));
+				await (s.SaveAsync(simp, sid));
 			}
 			Lower ls = new Lower();
 			ls.Other = ls;
@@ -487,14 +486,14 @@ namespace NHibernate.Test.Legacy
 			object id;
 			if (Dialect is MsSql2000Dialect)
 			{
-				id = await (s.SaveAsync(ls, CancellationToken.None));
+				id = await (s.SaveAsync(ls));
 			}
 			else
 			{
 				id = 2L;
-				await (s.SaveAsync(ls, id, CancellationToken.None));
+				await (s.SaveAsync(ls, id));
 			}
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 			Assert.AreSame(ls, ls.Other);
 			Assert.AreSame(ls, ls.Another);
@@ -502,7 +501,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			ls = (Lower) await (s.LoadAsync(typeof(Lower), id, CancellationToken.None));
+			ls = (Lower) await (s.LoadAsync(typeof(Lower), id));
 			Assert.AreSame(ls, ls.Other);
 			Assert.AreSame(ls, ls.Another);
 			Assert.AreSame(ls, ls.YetAnother);
@@ -518,8 +517,8 @@ namespace NHibernate.Test.Legacy
 			}
 			Assert.AreEqual(2, foundSimple);
 			Assert.AreEqual(1, foundMulti);
-			Assert.AreEqual(3, await (s.DeleteAsync("from s in class Top", CancellationToken.None)));
-			await (t.CommitAsync(CancellationToken.None));
+			Assert.AreEqual(3, await (s.DeleteAsync("from s in class Top")));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -533,7 +532,7 @@ namespace NHibernate.Test.Legacy
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			Assert.AreEqual(0, (await (s.CreateQuery("from s in class Top").ListAsync(CancellationToken.None))).Count);
+			Assert.AreEqual(0, (await (s.CreateQuery("from s in class Top").ListAsync())).Count);
 			Multi multi = new Multi();
 			multi.ExtraProp = "extra";
 			multi.Name = "name";
@@ -544,12 +543,12 @@ namespace NHibernate.Test.Legacy
 
 			if (Dialect is MsSql2000Dialect)
 			{
-				mid = await (s.SaveAsync(multi, CancellationToken.None));
+				mid = await (s.SaveAsync(multi));
 			}
 			else
 			{
 				mid = 123L;
-				await (s.SaveAsync(multi, mid, CancellationToken.None));
+				await (s.SaveAsync(multi, mid));
 			}
 			Lower ls = new Lower();
 			ls.Other = ls;
@@ -559,14 +558,14 @@ namespace NHibernate.Test.Legacy
 			object id;
 			if (Dialect is MsSql2000Dialect)
 			{
-				id = await (s.SaveAsync(ls, CancellationToken.None));
+				id = await (s.SaveAsync(ls));
 			}
 			else
 			{
 				id = 2L;
-				await (s.SaveAsync(ls, id, CancellationToken.None));
+				await (s.SaveAsync(ls, id));
 			}
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			Assert.AreSame(ls, ls.Other);
@@ -575,14 +574,14 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			ls = (Lower) await (s.LoadAsync(typeof(Lower), id, CancellationToken.None));
+			ls = (Lower) await (s.LoadAsync(typeof(Lower), id));
 			Assert.AreSame(ls, ls.Other);
 			Assert.AreSame(ls, ls.YetAnother);
 			Assert.AreEqual("name", ls.Another.Name);
 			Assert.IsTrue(ls.Another is Multi);
-			await (s.DeleteAsync(ls, CancellationToken.None));
-			await (s.DeleteAsync(ls.Another, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(ls));
+			await (s.DeleteAsync(ls.Another));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -593,10 +592,10 @@ namespace NHibernate.Test.Legacy
 			ITransaction t = s.BeginTransaction();
 			Multi multi = new Multi();
 			multi.ExtraProp = "extra";
-			object id = await (s.SaveAsync(multi, CancellationToken.None));
+			object id = await (s.SaveAsync(multi));
 			Assert.IsNotNull(id);
-			await (s.DeleteAsync(multi, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(multi));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -614,19 +613,19 @@ namespace NHibernate.Test.Legacy
 			multi2.Po = po;
 			po.Set = new HashSet<Multi> {multi1, multi2};
 			po.List = new List<SubMulti> {new SubMulti()};
-			object id = await (s.SaveAsync(po, CancellationToken.None));
+			object id = await (s.SaveAsync(po));
 			Assert.IsNotNull(id);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			po = (Po) await (s.LoadAsync(typeof(Po), id, CancellationToken.None));
+			po = (Po) await (s.LoadAsync(typeof(Po), id));
 			Assert.AreEqual(2, po.Set.Count);
 			Assert.AreEqual(1, po.List.Count);
-			await (s.DeleteAsync(po, CancellationToken.None));
-			Assert.AreEqual(0, (await (s.CreateQuery("from s in class Top").ListAsync(CancellationToken.None))).Count);
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(po));
+			Assert.AreEqual(0, (await (s.CreateQuery("from s in class Top").ListAsync())).Count);
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -635,17 +634,17 @@ namespace NHibernate.Test.Legacy
 		{
 			ISession s = OpenSession();
 			Lower ls = new Lower();
-			object id = await (s.SaveAsync(ls, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			object id = await (s.SaveAsync(ls));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			await (s.LoadAsync(typeof(Lower), id, CancellationToken.None));
+			await (s.LoadAsync(typeof(Lower), id));
 			s.Close();
 
 			s = OpenSession();
-			await (s.DeleteAsync(await (s.LoadAsync(typeof(Lower), id, CancellationToken.None)), CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(await (s.LoadAsync(typeof(Lower), id))));
+			await (s.FlushAsync());
 			s.Close();
 		}
 
@@ -657,18 +656,18 @@ namespace NHibernate.Test.Legacy
 			IList<Top> list = new List<Top>();
 			ls.Bag = list;
 			Top simple = new Top();
-			object id = await (s.SaveAsync(ls, CancellationToken.None));
-			await (s.SaveAsync(simple, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			object id = await (s.SaveAsync(ls));
+			await (s.SaveAsync(simple));
+			await (s.FlushAsync());
 			list.Add(simple);
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			ls = (Lower) await (s.LoadAsync(typeof(Lower), id, CancellationToken.None));
+			ls = (Lower) await (s.LoadAsync(typeof(Lower), id));
 			Assert.AreEqual(1, ls.Bag.Count);
-			await (s.DeleteAsync("from o in class System.Object", CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync("from o in class System.Object"));
+			await (s.FlushAsync());
 			s.Close();
 		}
 
@@ -682,23 +681,23 @@ namespace NHibernate.Test.Legacy
 
 			using (ISession s = OpenSession())
 			{
-				id = await (s.SaveAsync(simple, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				id = await (s.SaveAsync(simple));
+				await (s.FlushAsync());
 
 				simple.Name = "updated";
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				simple = (Top) await (s.LoadAsync(typeof(Top), id, CancellationToken.None));
+				simple = (Top) await (s.LoadAsync(typeof(Top), id));
 				Assert.AreEqual("updated", simple.Name, "name should have been updated");
 			}
 
 			using (ISession s = OpenSession())
 			{
-				await (s.DeleteAsync("from Top", CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Top"));
+				await (s.FlushAsync());
 			}
 		}
 	}

@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH552
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -31,23 +30,23 @@ namespace NHibernate.Test.NHSpecificTest.NH552
 			{
 				Question q = new Question();
 				q.Id = 1;
-				await (session.SaveAsync(q, CancellationToken.None));
-				await (session.DeleteAsync(q, CancellationToken.None));
-				await (session.SaveAsync(q, CancellationToken.None));
+				await (session.SaveAsync(q));
+				await (session.DeleteAsync(q));
+				await (session.SaveAsync(q));
 
 				Answer a = new Answer();
 				a.Id = 1;
 				a.Question = q;
-				await (session.SaveAsync(a, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (session.SaveAsync(a));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				await (session.DeleteAsync("from Answer", CancellationToken.None));
-				await (session.DeleteAsync("from Question", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync("from Answer"));
+				await (session.DeleteAsync("from Question"));
+				await (tx.CommitAsync());
 			}
 		}
 	}

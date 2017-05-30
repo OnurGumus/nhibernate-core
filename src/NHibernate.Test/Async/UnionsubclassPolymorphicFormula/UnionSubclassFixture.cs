@@ -14,7 +14,6 @@ using System.Collections;
 namespace NHibernate.Test.UnionsubclassPolymorphicFormula
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture, Explicit]
 	public class UnionSubclassFixtureAsync : TestCase
 	{
@@ -41,13 +40,13 @@ namespace NHibernate.Test.UnionsubclassPolymorphicFormula
 						LastName = "Mannson"
 					};
 
-					await (s.SaveAsync(person, CancellationToken.None));
+					await (s.SaveAsync(person));
 
-					var result = await (s.QueryOver<Party>().Where(p => p.Name == "Mark Mannson").SingleOrDefaultAsync(CancellationToken.None));
+					var result = await (s.QueryOver<Party>().Where(p => p.Name == "Mark Mannson").SingleOrDefaultAsync());
 					
 					Assert.NotNull(result);
-					await (s.DeleteAsync(result, CancellationToken.None));
-					await (t.CommitAsync(CancellationToken.None));
+					await (s.DeleteAsync(result));
+					await (t.CommitAsync());
 				}
 				
 			}
@@ -65,9 +64,9 @@ namespace NHibernate.Test.UnionsubclassPolymorphicFormula
 						CompanyName = "Limited",
 					};
 
-					await (s.SaveAsync(company, CancellationToken.None));
+					await (s.SaveAsync(company));
 
-					var result = await (s.QueryOver<Party>().Where(p => p.Name == "Limited").SingleOrDefaultAsync(CancellationToken.None));
+					var result = await (s.QueryOver<Party>().Where(p => p.Name == "Limited").SingleOrDefaultAsync());
 					Assert.NotNull(result);
 				}
 

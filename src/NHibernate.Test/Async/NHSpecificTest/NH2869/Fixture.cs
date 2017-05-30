@@ -17,7 +17,6 @@ using NHibernate.Cfg;
 namespace NHibernate.Test.NHSpecificTest.NH2869
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -61,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2869
 		{
 			using (ISession session = this.OpenSession())
 			{
-				var projectionValue = await ((from c in session.Query<DomainClass>() where c.Name.IsOneInDbZeroInLocal("test") == 1 select c.Name.IsOneInDbZeroInLocal("test")).FirstOrDefaultAsync(CancellationToken.None));
+				var projectionValue = await ((from c in session.Query<DomainClass>() where c.Name.IsOneInDbZeroInLocal("test") == 1 select c.Name.IsOneInDbZeroInLocal("test")).FirstOrDefaultAsync());
 				//If the value is 0, the call was done in .NET, if it's 1 it has been projected correctly
 				Assert.AreEqual(1, projectionValue);
 			}

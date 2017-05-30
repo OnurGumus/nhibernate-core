@@ -61,7 +61,7 @@ namespace NHibernate.Test.Stats
 				IList list = await (s.CreateCriteria(typeof (Country))
 					.Add(Restrictions.Eq("Name", "Narnia"))
 					.SetCacheable(true)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.AreEqual(0, list.Count);
 			}
@@ -71,7 +71,7 @@ namespace NHibernate.Test.Stats
 				IList list = await (s.CreateCriteria(typeof(Country))
 					.Add(Restrictions.Eq("Name", "Narnia"))
 					.SetCacheable(true)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.AreEqual(0, list.Count);
 			}
@@ -86,8 +86,8 @@ namespace NHibernate.Test.Stats
 			stats.Clear();
 			bool isStats = stats.IsStatisticsEnabled;
 			stats.IsStatisticsEnabled = true;
-			Continent europe = await (FillDbAsync(s, CancellationToken.None));
-			await (tx.CommitAsync(CancellationToken.None));
+			Continent europe = await (FillDbAsync(s));
+			await (tx.CommitAsync());
 			s.Clear();
 			tx = s.BeginTransaction();
 			ISessionStatistics sessionStats = s.Statistics;
@@ -96,18 +96,18 @@ namespace NHibernate.Test.Stats
 			Assert.AreEqual(0, sessionStats.CollectionKeys.Count);
 			Assert.AreEqual(0, sessionStats.CollectionCount);
 
-			europe = await (s.GetAsync<Continent>(europe.Id, CancellationToken.None));
-			await (NHibernateUtil.InitializeAsync(europe.Countries, CancellationToken.None));
+			europe = await (s.GetAsync<Continent>(europe.Id));
+			await (NHibernateUtil.InitializeAsync(europe.Countries));
 			IEnumerator itr = europe.Countries.GetEnumerator();
 			itr.MoveNext();
-			await (NHibernateUtil.InitializeAsync(itr.Current, CancellationToken.None));
+			await (NHibernateUtil.InitializeAsync(itr.Current));
 			Assert.AreEqual(2, sessionStats.EntityKeys.Count);
 			Assert.AreEqual(2, sessionStats.EntityCount);
 			Assert.AreEqual(1, sessionStats.CollectionKeys.Count);
 			Assert.AreEqual(1, sessionStats.CollectionCount);
 
-			await (CleanDbAsync(s, CancellationToken.None));
-			await (tx.CommitAsync(CancellationToken.None));
+			await (CleanDbAsync(s));
+			await (tx.CommitAsync());
 			s.Close();
 
 			stats.IsStatisticsEnabled = isStats;

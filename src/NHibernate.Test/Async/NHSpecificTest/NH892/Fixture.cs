@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH892
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -33,32 +32,32 @@ namespace NHibernate.Test.NHSpecificTest.NH892
 			{
 				User user1 = new User();
 				user1.UserName = "User1";
-				await (session.SaveAsync(user1, CancellationToken.None));
+				await (session.SaveAsync(user1));
 
 				User user2 = new User();
 				user2.UserName = "User2";
-				await (session.SaveAsync(user2, CancellationToken.None));
+				await (session.SaveAsync(user2));
 
 				BlogPost post = new BlogPost();
 				post.Title = "Post 1";
 				post.Poster = user1;
-				await (session.SaveAsync(post, CancellationToken.None));
+				await (session.SaveAsync(post));
 
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 				session.Clear();
 
-				User poster = (User) await (session.GetAsync(typeof (User), user1.ID, CancellationToken.None));
+				User poster = (User) await (session.GetAsync(typeof (User), user1.ID));
 
 				string hql = "from BlogPost b where b.Poster = :poster";
-				IList list = await (session.CreateQuery(hql).SetParameter("poster", poster).ListAsync(CancellationToken.None));
+				IList list = await (session.CreateQuery(hql).SetParameter("poster", poster).ListAsync());
 				Assert.AreEqual(1, list.Count);
 				BlogPost retrievedPost = (BlogPost) list[0];
 				Assert.AreEqual(post.ID, retrievedPost.ID);
 				Assert.AreEqual(user1.ID, retrievedPost.Poster.ID);
 
-				await (session.DeleteAsync("from BlogPost", CancellationToken.None));
-				await (session.DeleteAsync("from User", CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.DeleteAsync("from BlogPost"));
+				await (session.DeleteAsync("from User"));
+				await (session.FlushAsync());
 				session.Close();
 			}
 		}

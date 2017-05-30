@@ -17,7 +17,6 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH298 {
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	[TestFixture]
 	public class IndexedBidirectionalOneToManyTestAsync : BugTestCase {
@@ -49,17 +48,17 @@ namespace NHibernate.Test.NHSpecificTest.NH298 {
 			Category root1 = null, itemToMove = null;
 
 			using ( ISession session = this.OpenSession() ) {
-				root1 = await (session.GetAsync<Category>( 1 , CancellationToken.None));
+				root1 = await (session.GetAsync<Category>( 1 ));
 				itemToMove = root1.SubCategories[1]; //get the middle item
 				root1.SubCategories.Remove( itemToMove ); //remove the middle item
 				root1.SubCategories.Add( itemToMove ); //re-add it to the end
 
-				await (session.UpdateAsync( root1 , CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.UpdateAsync( root1 ));
+				await (session.FlushAsync());
 			}
 
 			using ( ISession session = this.OpenSession() ) {
-				Category root2 = await (session.GetAsync<Category>( 1 , CancellationToken.None));
+				Category root2 = await (session.GetAsync<Category>( 1 ));
 				Assert.AreEqual( root1.SubCategories.Count, root2.SubCategories.Count );
 				Assert.AreEqual( root1.SubCategories[1].Id, root2.SubCategories[1].Id );
 				Assert.AreEqual( root1.SubCategories[2].Id, root2.SubCategories[2].Id );
@@ -72,15 +71,15 @@ namespace NHibernate.Test.NHSpecificTest.NH298 {
 			Category root1 = null;
 
 			using ( ISession session = this.OpenSession() ) {
-				root1 = await (session.GetAsync<Category>( 1 , CancellationToken.None));
+				root1 = await (session.GetAsync<Category>( 1 ));
 				root1.SubCategories.RemoveAt( 1 );
 
-				await (session.UpdateAsync( root1 , CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.UpdateAsync( root1 ));
+				await (session.FlushAsync());
 			}
 
 			using ( ISession session = this.OpenSession() ) {
-				Category root2 = await (session.GetAsync<Category>( 1 , CancellationToken.None));
+				Category root2 = await (session.GetAsync<Category>( 1 ));
 				Assert.AreEqual( root1.SubCategories.Count, root2.SubCategories.Count );
 			}
 		}

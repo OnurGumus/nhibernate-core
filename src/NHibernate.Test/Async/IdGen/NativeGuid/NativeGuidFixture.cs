@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.IdGen.NativeGuid
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class NativeGuidFixtureAsync : TestCase
 	{
@@ -36,8 +35,8 @@ namespace NHibernate.Test.IdGen.NativeGuid
 			using (var tx = s.BeginTransaction())
 			{
 				var nativeGuidPoid = new NativeGuidPoid();
-				savedId = await (s.SaveAsync(nativeGuidPoid, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				savedId = await (s.SaveAsync(nativeGuidPoid));
+				await (tx.CommitAsync());
 				Assert.That(savedId, Is.Not.Null);
 				Assert.That(savedId, Is.EqualTo(nativeGuidPoid.Id));
 			}
@@ -45,10 +44,10 @@ namespace NHibernate.Test.IdGen.NativeGuid
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				var nativeGuidPoid = await (s.GetAsync<NativeGuidPoid>(savedId, CancellationToken.None));
+				var nativeGuidPoid = await (s.GetAsync<NativeGuidPoid>(savedId));
 				Assert.That(nativeGuidPoid, Is.Not.Null);
-				await (s.DeleteAsync(nativeGuidPoid, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(nativeGuidPoid));
+				await (tx.CommitAsync());
 			}
 		}
 	}

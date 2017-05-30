@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1941
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -40,9 +39,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1941
 				using (var t = s.BeginTransaction())
 				{
 					var person = new Person { Sex = Sex.Male };
-					await (s.SaveAsync(person, CancellationToken.None));
+					await (s.SaveAsync(person));
 
-					await (t.CommitAsync(CancellationToken.None));
+					await (t.CommitAsync());
 				}
 				
 				var log = ls.GetWholeLog();
@@ -61,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1941
 				{
 					var person = await (s.CreateQuery("from Person p where p.Sex = :personSex")
 						.SetParameter("personSex", Sex.Female)
-						.UniqueResultAsync<Person>(CancellationToken.None));
+						.UniqueResultAsync<Person>());
 
 					Assert.That(person, Is.Null);
 				}

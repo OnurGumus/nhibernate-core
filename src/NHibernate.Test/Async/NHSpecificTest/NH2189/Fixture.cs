@@ -17,7 +17,6 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2189
 {
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -71,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				Policy policyProxy = await (s.LoadAsync<Policy>(_policy2Id, CancellationToken.None));
+				Policy policyProxy = await (s.LoadAsync<Policy>(_policy2Id));
 				Assert.That(NHibernateUtil.IsInitialized(policyProxy), Is.False);
 
 				IEnumerable<Policy> futurePolicy =
@@ -91,7 +90,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 			using (ISession s = sessions.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				Policy policyProxy = await (s.LoadAsync<Policy>(_policy2Id, CancellationToken.None));
+				Policy policyProxy = await (s.LoadAsync<Policy>(_policy2Id));
 				Assert.That(NHibernateUtil.IsInitialized(policyProxy), Is.False);
 
 				IEnumerable<Policy> futurePolicy =
@@ -115,7 +114,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 					"LEFT JOIN FETCH p.Tasks t " +
 					"WHERE p.Id = :id")
 					.SetParameter("id", _policy2Id)
-					.UniqueResultAsync<Policy>(CancellationToken.None));
+					.UniqueResultAsync<Policy>());
 
 				Assert.That(NHibernateUtil.IsInitialized(policy2.Tasks));
 				Assert.That(NHibernateUtil.IsInitialized(policy2.Tasks.ElementAt(0)));
@@ -143,7 +142,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2189
 					await (s.CreateCriteria<Policy>()
 						.Add(Restrictions.Eq("Id", _policy2Id))
 						.SetFetchMode("Tasks", FetchMode.Eager)
-						.UniqueResultAsync<Policy>(CancellationToken.None));
+						.UniqueResultAsync<Policy>());
 
 				Assert.That(NHibernateUtil.IsInitialized(policy2.Tasks));
 				Assert.That(NHibernateUtil.IsInitialized(policy2.Tasks.ElementAt(0)));

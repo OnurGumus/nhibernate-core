@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1250
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// http://nhibernate.jira.com/browse/NH-1250
 	/// http://nhibernate.jira.com/browse/NH-1340
@@ -41,8 +40,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1250
 			{
 				await (s.CreateCriteria(typeof(Party))
 					.SetMaxResults(10)
-					.ListAsync(CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+					.ListAsync());
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -54,8 +53,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1250
 			{
 				await (s.CreateQuery("from Party")
 					.SetMaxResults(10)
-					.ListAsync(CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+					.ListAsync());
+				await (tx.CommitAsync());
 			}
 		}
 	}

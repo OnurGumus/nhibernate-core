@@ -46,10 +46,10 @@ namespace NHibernate.Test.ExpressionTest
 				ICriteria crit = s.CreateCriteria(typeof(Componentizable));
 				Example ex = Example.Create(master).EnableLike();
 				crit.Add(ex);
-				IList result = await (crit.ListAsync(CancellationToken.None));
+				IList result = await (crit.ListAsync());
 				Assert.IsNotNull(result);
 				Assert.AreEqual(1, result.Count);
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -61,10 +61,10 @@ namespace NHibernate.Test.ExpressionTest
 				ICriteria crit = s.CreateCriteria(typeof(Componentizable));
 				Example ex = Example.Create(master).EnableLike(MatchMode.Start);
 				crit.Add(ex);
-				IList result = await (crit.ListAsync(CancellationToken.None));
+				IList result = await (crit.ListAsync());
 				Assert.IsNotNull(result);
 				Assert.AreEqual(1, result.Count);
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -76,10 +76,10 @@ namespace NHibernate.Test.ExpressionTest
 				ICriteria crit = s.CreateCriteria(typeof(Componentizable));
 				Example ex = Example.Create(master).EnableLike(MatchMode.End);
 				crit.Add(ex);
-				IList result = await (crit.ListAsync(CancellationToken.None));
+				IList result = await (crit.ListAsync());
 				Assert.IsNotNull(result);
 				Assert.AreEqual(1, result.Count);
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -91,10 +91,10 @@ namespace NHibernate.Test.ExpressionTest
 				ICriteria crit = s.CreateCriteria(typeof(Componentizable));
 				Example ex = Example.Create(master).EnableLike(MatchMode.Anywhere);
 				crit.Add(ex);
-				IList result = await (crit.ListAsync(CancellationToken.None));
+				IList result = await (crit.ListAsync());
 				Assert.IsNotNull(result);
 				Assert.AreEqual(3, result.Count);
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -111,12 +111,12 @@ namespace NHibernate.Test.ExpressionTest
 
 				crit.Add(Expression.Or(Expression.Not(ex), ex));
 
-				IList result = await (crit.ListAsync(CancellationToken.None));
+				IList result = await (crit.ListAsync());
 				Assert.IsNotNull(result);
 				//if ( !(dialect is HSQLDialect - h2.1 test
 
 				Assert.AreEqual(2, result.Count, "expected 2 objects");
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -131,7 +131,7 @@ namespace NHibernate.Test.ExpressionTest
 				Example ex = Example.Create(master).EnableLike()
 					.ExcludeProperty("Component.SubComponent");
 				crit.Add(ex);
-				IList result = await (crit.ListAsync(CancellationToken.None));
+				IList result = await (crit.ListAsync());
 				Assert.IsNotNull(result);
 				Assert.AreEqual(3, result.Count);
 
@@ -140,10 +140,10 @@ namespace NHibernate.Test.ExpressionTest
 				ex = Example.Create(master).EnableLike()
 					.ExcludeProperty("Component.SubComponent.SubName1");
 				crit.Add(ex);
-				result = await (crit.ListAsync(CancellationToken.None));
+				result = await (crit.ListAsync());
 				Assert.IsNotNull(result);
 				Assert.AreEqual(1, result.Count);
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 		}
 

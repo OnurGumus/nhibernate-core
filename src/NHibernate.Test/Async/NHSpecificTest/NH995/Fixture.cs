@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH995
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -48,20 +47,20 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 				// Create an A and save it
 				ClassA a = new ClassA();
 				a.Name = "a1";
-				await (s.SaveAsync(a, CancellationToken.None));
+				await (s.SaveAsync(a));
 
 				// Create a B and save it
 				ClassB b = new ClassB();
 				b.Id = new ClassBId("bbb", a);
 				b.SomeProp = "Some property";
-				await (s.SaveAsync(b, CancellationToken.None));
+				await (s.SaveAsync(b));
 
 				// Create a C and save it
 				ClassC c = new ClassC();
 				c.B = b;
-				await (s.SaveAsync(c, CancellationToken.None));
+				await (s.SaveAsync(c));
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 
 				a_id = a.Id;
 			}
@@ -75,12 +74,12 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				// Load a so we can use it to load b
-				ClassA a = await (s.GetAsync<ClassA>(a_id, CancellationToken.None));
+				ClassA a = await (s.GetAsync<ClassA>(a_id));
 
 				// Load b so b will be in cache
-				ClassB b = await (s.GetAsync<ClassB>(new ClassBId("bbb", a), CancellationToken.None));
+				ClassB b = await (s.GetAsync<ClassB>(new ClassBId("bbb", a)));
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 			
 			using(ISession s = OpenSession())
@@ -88,15 +87,15 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 			{
 				using (SqlLogSpy sqlLogSpy = new SqlLogSpy())
 				{
-					IList<ClassC> c_list = await (s.CreateCriteria(typeof (ClassC)).ListAsync<ClassC>(CancellationToken.None));
+					IList<ClassC> c_list = await (s.CreateCriteria(typeof (ClassC)).ListAsync<ClassC>());
 					// make sure we initialize B
-					await (NHibernateUtil.InitializeAsync(c_list[0].B, CancellationToken.None));
+					await (NHibernateUtil.InitializeAsync(c_list[0].B));
 
 					Assert.AreEqual(1, sqlLogSpy.Appender.GetEvents().Length,
 					                "Only one SQL should have been issued");
 				}
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 	}

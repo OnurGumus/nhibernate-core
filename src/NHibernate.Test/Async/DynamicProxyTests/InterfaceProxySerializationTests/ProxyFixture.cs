@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class ProxyFixtureAsync : TestCase
 	{
@@ -54,12 +53,12 @@ namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 		{
 			ISession s = OpenSession();
 			IMyProxy ap = new MyProxyImpl {Id = 1, Name = "first proxy"};
-			await (s.SaveAsync(ap, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(ap));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			ap = (IMyProxy) await (s.LoadAsync(typeof (MyProxyImpl), ap.Id, CancellationToken.None));
+			ap = (IMyProxy) await (s.LoadAsync(typeof (MyProxyImpl), ap.Id));
 			Assert.IsFalse(NHibernateUtil.IsInitialized(ap), "check we have a proxy");
 
 			try
@@ -77,8 +76,8 @@ namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 			}
 			finally
 			{
-				await (s.DeleteAsync(ap, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync(ap));
+				await (s.FlushAsync());
 				s.Close();
 			}
 		}
@@ -88,19 +87,19 @@ namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 		{
 			ISession s = OpenSession();
 			IMyProxy ap = new MyProxyImpl {Id = 1, Name = "first proxy"};
-			await (s.SaveAsync(ap, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(ap));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			ap = (IMyProxy) await (s.LoadAsync(typeof (MyProxyImpl), ap.Id, CancellationToken.None));
+			ap = (IMyProxy) await (s.LoadAsync(typeof (MyProxyImpl), ap.Id));
 			Assert.IsFalse(NHibernateUtil.IsInitialized(ap));
 			int id = ap.Id;
 			Assert.IsFalse(NHibernateUtil.IsInitialized(ap), "get id should not have initialized it.");
 			string name = ap.Name;
 			Assert.IsTrue(NHibernateUtil.IsInitialized(ap), "get name should have initialized it.");
-			await (s.DeleteAsync(ap, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(ap));
+			await (s.FlushAsync());
 			s.Close();
 		}
 
@@ -109,12 +108,12 @@ namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 		{
 			ISession s = OpenSession();
 			IMyProxy ap = new MyProxyImpl {Id = 1, Name = "first proxy"};
-			await (s.SaveAsync(ap, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(ap));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			ap = (IMyProxy) await (s.LoadAsync(typeof (MyProxyImpl), ap.Id, CancellationToken.None));
+			ap = (IMyProxy) await (s.LoadAsync(typeof (MyProxyImpl), ap.Id));
 			Assert.AreEqual(1, ap.Id);
 			s.Disconnect();
 
@@ -130,8 +129,8 @@ namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 			s.Close();
 
 			s = OpenSession();
-			await (s.DeleteAsync(ap, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(ap));
+			await (s.FlushAsync());
 			s.Close();
 		}
 
@@ -140,14 +139,14 @@ namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 		{
 			ISession s = OpenSession();
 			// this does not actually exists in db
-			var notThere = (IMyProxy) await (s.LoadAsync(typeof (MyProxyImpl), 5, CancellationToken.None));
+			var notThere = (IMyProxy) await (s.LoadAsync(typeof (MyProxyImpl), 5));
 			Assert.AreEqual(5, notThere.Id);
 			s.Disconnect();
 
 			// serialize and then deserialize the session.
 			SerializeAndDeserialize(ref s);
 
-			Assert.IsNotNull(await (s.LoadAsync(typeof (MyProxyImpl), 5, CancellationToken.None)), "should be proxy - even though it doesn't exists in db");
+			Assert.IsNotNull(await (s.LoadAsync(typeof (MyProxyImpl), 5)), "should be proxy - even though it doesn't exists in db");
 			s.Close();
 		}
 	}

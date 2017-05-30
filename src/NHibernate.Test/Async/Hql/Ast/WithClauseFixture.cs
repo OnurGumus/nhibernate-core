@@ -28,7 +28,7 @@ namespace NHibernate.Test.Hql.Ast
 		public async Task WithClauseFailsWithFetchAsync()
 		{
 			var data = new TestData(this);
-			await (data.PrepareAsync(CancellationToken.None));
+			await (data.PrepareAsync());
 
 			ISession s = OpenSession();
 			ITransaction txn = s.BeginTransaction();
@@ -36,12 +36,12 @@ namespace NHibernate.Test.Hql.Ast
 			Assert.ThrowsAsync<SemanticException>(
 			  () =>
 				s.CreateQuery("from Animal a inner join fetch a.offspring as o with o.bodyWeight = :someLimit").SetDouble(
-					"someLimit", 1).ListAsync(CancellationToken.None), "ad-hoc on clause allowed with fetched association");
+					"someLimit", 1).ListAsync(), "ad-hoc on clause allowed with fetched association");
 
-			await (txn.CommitAsync(CancellationToken.None));
+			await (txn.CommitAsync());
 			s.Close();
 
-			await (data.CleanupAsync(CancellationToken.None));
+			await (data.CleanupAsync());
 		}
 
 		[Test]
@@ -57,21 +57,21 @@ namespace NHibernate.Test.Hql.Ast
 			Assert.ThrowsAsync<InvalidWithClauseException>(
 				() =>
 				s.CreateQuery("from Human h inner join h.friends as f with f.bodyWeight < :someLimit").SetDouble("someLimit", 1).
-					ListAsync(CancellationToken.None));
+					ListAsync());
 
 			Assert.ThrowsAsync<InvalidWithClauseException>(
 				() =>
 				s.CreateQuery(
 					"from Animal a inner join a.offspring o inner join o.mother as m inner join m.father as f with o.bodyWeight > 1").
-					ListAsync(CancellationToken.None));
+					ListAsync());
 
 			Assert.ThrowsAsync<InvalidWithClauseException>(
 				async 				() =>
 				await (s.CreateQuery("from Human h inner join h.offspring o with o.mother.father = :cousin").SetEntity("cousin",
-				                                                                                                await (s.LoadAsync<Human>(123L, CancellationToken.None)))
-					.ListAsync(CancellationToken.None)));
+				                                                                                                await (s.LoadAsync<Human>(123L)))
+					.ListAsync()));
 
-			await (txn.CommitAsync(CancellationToken.None));
+			await (txn.CommitAsync());
 			s.Close();
 		}
 
@@ -79,7 +79,7 @@ namespace NHibernate.Test.Hql.Ast
 		public async Task WithClauseAsync()
 		{
 			var data = new TestData(this);
-			await (data.PrepareAsync(CancellationToken.None));
+			await (data.PrepareAsync());
 
 			ISession s = OpenSession();
 			ITransaction txn = s.BeginTransaction();
@@ -87,23 +87,23 @@ namespace NHibernate.Test.Hql.Ast
 			// one-to-many
 				IList list =
 				await (s.CreateQuery("from Human h inner join h.offspring as o with o.bodyWeight < :someLimit").SetDouble("someLimit", 1).
-					ListAsync(CancellationToken.None));
+					ListAsync());
 			Assert.That(list, Is.Empty, "ad-hoc on did not take effect");
 
 			// many-to-one
 			list =
 				await (s.CreateQuery("from Animal a inner join a.mother as m with m.bodyWeight < :someLimit").SetDouble("someLimit", 1).
-					ListAsync(CancellationToken.None));
+					ListAsync());
 			Assert.That(list, Is.Empty, "ad-hoc on did not take effect");
 
 			// many-to-many
-			list = await (s.CreateQuery("from Human h inner join h.friends as f with f.nickName like 'bubba'").ListAsync(CancellationToken.None));
+			list = await (s.CreateQuery("from Human h inner join h.friends as f with f.nickName like 'bubba'").ListAsync());
 			Assert.That(list, Is.Empty, "ad-hoc on did not take effect");
 
-			await (txn.CommitAsync(CancellationToken.None));
+			await (txn.CommitAsync());
 			s.Close();
 
-			await (data.CleanupAsync(CancellationToken.None));
+			await (data.CleanupAsync());
 		}
 
 		private class TestData

@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.ProxyTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Summary description for NHibernateProxyHelperFixture.
 	/// </summary>
@@ -42,8 +41,8 @@ namespace NHibernate.Test.ProxyTest
 			{
 				s = OpenSession();
 				a.Name = "a proxy";
-				await (s.SaveAsync(a, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(a));
+				await (s.FlushAsync());
 			}
 			finally
 			{
@@ -59,13 +58,13 @@ namespace NHibernate.Test.ProxyTest
 				System.Type type = NHibernateProxyHelper.GetClassWithoutInitializingProxy(a);
 				Assert.AreEqual(typeof(AProxy), type, "Should have returned 'A' for a non-proxy");
 
-				AProxy aProxied = (AProxy) await (s.LoadAsync(typeof(AProxy), a.Id, CancellationToken.None));
+				AProxy aProxied = (AProxy) await (s.LoadAsync(typeof(AProxy), a.Id));
 				Assert.IsFalse(NHibernateUtil.IsInitialized(aProxied), "should be a proxy");
 
 				type = NHibernateProxyHelper.GetClassWithoutInitializingProxy(aProxied);
 				Assert.AreEqual(typeof(AProxy), type, "even though aProxied was a Proxy it should have returned the correct type.");
-				await (s.DeleteAsync(aProxied, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync(aProxied));
+				await (s.FlushAsync());
 			}
 			finally
 			{

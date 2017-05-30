@@ -62,8 +62,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				User user = new User() { Name = "test" };
-				await (s.SaveAsync(user, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(user));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -78,7 +78,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 
 				Assert.That(user, Is.Not.Null);
 
-				await (DeleteObjectsOutsideCacheAsync(s, CancellationToken.None));
+				await (DeleteObjectsOutsideCacheAsync(s));
 			}
 
 			using (ISession s = OpenSession())
@@ -102,8 +102,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				User user = new User() { Name = "test" };
-				await (s.SaveAsync(user, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(user));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -119,7 +119,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 
 				Assert.That(user, Is.Not.Null);
 
-				await (DeleteObjectsOutsideCacheAsync(s, CancellationToken.None));
+				await (DeleteObjectsOutsideCacheAsync(s));
 			}
 
 			using (ISession s = OpenSession())
@@ -144,8 +144,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				User user = new User() { Name = "test" };
-				await (s.SaveAsync(user, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(user));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -167,7 +167,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 				Assert.That(userFuture.Value, Is.Not.Null);
 				Assert.That(count, Is.EqualTo(1));
 
-				await (DeleteObjectsOutsideCacheAsync(s, CancellationToken.None));
+				await (DeleteObjectsOutsideCacheAsync(s));
 			}
 
 			using (ISession s = OpenSession())
@@ -196,8 +196,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				User user = new User() { Name = "test" };
-				await (s.SaveAsync(user, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(user));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -222,7 +222,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 				Assert.That(userFuture.Value, Is.Not.Null);
 				Assert.That(count, Is.EqualTo(1));
 
-				await (DeleteObjectsOutsideCacheAsync(s, CancellationToken.None));
+				await (DeleteObjectsOutsideCacheAsync(s));
 			}
 
 			using (ISession s = OpenSession())
@@ -254,8 +254,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				User user = new User() { Name = "test" };
-				await (s.SaveAsync(user, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(user));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -269,7 +269,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1989
 
 				Assert.That(user, Is.Not.Null);
 
-				await (DeleteObjectsOutsideCacheAsync(s, CancellationToken.None));
+				await (DeleteObjectsOutsideCacheAsync(s));
 			}
 
 			using (ISession s = OpenSession())

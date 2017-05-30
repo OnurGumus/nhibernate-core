@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1640
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -26,15 +25,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1640
 				using (ITransaction tx = session.BeginTransaction())
 				{
 					var sub = new Entity {Id = 2, Name = "Child 2"};
-					savedId = (int) await (session.SaveAsync(new Entity {Id = 1, Name = "Parent 1", Child = sub}, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					savedId = (int) await (session.SaveAsync(new Entity {Id = 1, Name = "Parent 1", Child = sub}));
+					await (tx.CommitAsync());
 				}
 			}
 
 			using (IStatelessSession session = sessions.OpenStatelessSession())
 			{
 				var parent =
-					await (session.CreateQuery("from Entity p join fetch p.Child where p.Id=:pId").SetInt32("pId", savedId).UniqueResultAsync						<Entity>(CancellationToken.None));
+					await (session.CreateQuery("from Entity p join fetch p.Child where p.Id=:pId").SetInt32("pId", savedId).UniqueResultAsync						<Entity>());
 				Assert.That(parent.Child,Is.TypeOf(typeof (Entity)));
 			}
 
@@ -42,8 +41,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1640
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					await (session.DeleteAsync("from Entity", CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (session.DeleteAsync("from Entity"));
+					await (tx.CommitAsync());
 				}
 			}
 		}

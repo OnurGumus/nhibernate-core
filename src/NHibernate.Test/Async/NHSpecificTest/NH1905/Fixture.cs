@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1905
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -27,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1905
 			using (ISession s = OpenSession())
 			{
 				await (s.CreateQuery("select d from Det d left join d.Mas m where (SELECT count(e) FROM d.Mas.Els e WHERE e.Descr='e1')>0")
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 			}
 		}
 	}

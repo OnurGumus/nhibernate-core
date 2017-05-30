@@ -15,7 +15,6 @@ using System;
 namespace NHibernate.Test.NHSpecificTest.NH2985
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -40,14 +39,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2985
 				// Create an A and save it
 				ClassA a = new ClassA();
 				a.Name = "a1";
-				await (s.SaveAsync(a, CancellationToken.None));
+				await (s.SaveAsync(a));
 				a_id = a.Id;
 				a.Childs = new List<WebImage>();
 
 				a.Childs.Add(new WebImage() { ImageUrl = "http://blabla/bla1.jpg", ImageData = new byte[] { 11 } });
 				a.Childs.Add(new WebImage() { ImageUrl = "http://blabla/bla2.jpg", ImageData = new byte[] { 13 } });
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			// Clear the cache
@@ -58,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2985
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				// Load a so we can use it to load b
-				ClassA a = await (s.GetAsync<ClassA>(a_id, CancellationToken.None));
+				ClassA a = await (s.GetAsync<ClassA>(a_id));
 
 				Assert.That(a.Childs, Has.Count.EqualTo(2));
 				var firstElement = a.Childs[0];
@@ -69,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2985
 				//expect a list to contain the first element
 				Assert.That(a.Childs.Contains(a.Childs[0]));
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 	}

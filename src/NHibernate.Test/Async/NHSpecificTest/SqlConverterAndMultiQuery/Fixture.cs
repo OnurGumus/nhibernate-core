@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -33,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 			{
 				s.Connection.Close();
 				Assert.ThrowsAsync<UnitTestException>(() =>
-												 s.CreateQuery(hqlQuery).ListAsync(CancellationToken.None));
+												 s.CreateQuery(hqlQuery).ListAsync());
 			}
 		}
 
@@ -50,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 				var multi = s.CreateMultiQuery();
 				multi.Add(hqlQuery);
 				s.Connection.Close();
-				Assert.ThrowsAsync<UnitTestException>(() => multi.ListAsync(CancellationToken.None));
+				Assert.ThrowsAsync<UnitTestException>(() => multi.ListAsync());
 			}
 		}
 
@@ -62,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 			{
 				s.Connection.Close();
 				Assert.ThrowsAsync<UnitTestException>(() =>
-												 s.CreateCriteria(typeof (ClassA)).ListAsync(CancellationToken.None));
+												 s.CreateCriteria(typeof (ClassA)).ListAsync());
 			}
 		}
 
@@ -79,7 +78,7 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 				var multi = s.CreateMultiCriteria();
 				multi.Add(s.CreateCriteria(typeof (ClassA)));
 				s.Connection.Close();
-				Assert.ThrowsAsync<UnitTestException>(() => multi.ListAsync(CancellationToken.None));
+				Assert.ThrowsAsync<UnitTestException>(() => multi.ListAsync());
 			}
 		}
 	}

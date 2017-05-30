@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1574
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class StatelessTestAsync : BugTestCase
 	{
@@ -26,32 +25,32 @@ namespace NHibernate.Test.NHSpecificTest.NH1574
 				var principal = new SpecializedPrincipal();
 				var team = new SpecializedTeamStorage();
 				principal.Team = team;
-				await (session.SaveOrUpdateAsync(team, CancellationToken.None));
-				await (session.SaveOrUpdateAsync(principal, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.SaveOrUpdateAsync(team));
+				await (session.SaveOrUpdateAsync(principal));
+				await (session.FlushAsync());
 			}
 
 			using (IStatelessSession session = sessions.OpenStatelessSession())
 			{
 				IQuery query = session.CreateQuery("from SpecializedPrincipal p");
-				IList<Principal> principals = await (query.ListAsync<Principal>(CancellationToken.None));
+				IList<Principal> principals = await (query.ListAsync<Principal>());
 				Assert.AreEqual(1, principals.Count);
 
 				ITransaction trans = session.BeginTransaction();
 				foreach (var principal in principals)
 				{
 					principal.Name = "Buu";
-					await (session.UpdateAsync(principal, CancellationToken.None));
+					await (session.UpdateAsync(principal));
 				}
-				await (trans.CommitAsync(CancellationToken.None));
+				await (trans.CommitAsync());
 			}
 
 			// cleanup
 			using (ISession session = OpenSession())
 			{
-				await (session.DeleteAsync("from SpecializedTeamStorage", CancellationToken.None));
-				await (session.DeleteAsync("from SpecializedPrincipal", CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.DeleteAsync("from SpecializedTeamStorage"));
+				await (session.DeleteAsync("from SpecializedPrincipal"));
+				await (session.FlushAsync());
 			}
 		}
 	}

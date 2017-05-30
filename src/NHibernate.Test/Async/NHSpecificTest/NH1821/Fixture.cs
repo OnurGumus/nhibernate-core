@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1821
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -36,7 +35,7 @@ select Id
 from Entity
 where 1=1";
 				var query = s.CreateSQLQuery(sql);
-				Assert.DoesNotThrowAsync(() => query.ListAsync(CancellationToken.None));
+				Assert.DoesNotThrowAsync(() => query.ListAsync());
 
 				string renderedSql = spy.Appender.GetEvents()[0].RenderedMessage;
 

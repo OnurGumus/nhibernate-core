@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2043
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -45,18 +44,18 @@ namespace NHibernate.Test.NHSpecificTest.NH2043
 					var b = new BImpl {Id = 1, Name = "B1", A = a };
 				    a.B = b;
 
-					await (s.SaveAsync(a, CancellationToken.None));
-					await (s.SaveAsync(b, CancellationToken.None));
-					await (s.FlushAsync(CancellationToken.None));
+					await (s.SaveAsync(a));
+					await (s.SaveAsync(b));
+					await (s.FlushAsync());
 				}
 			}
 			finally
 			{
 				using (ISession s = OpenSession())
 				{
-					await (s.DeleteAsync("from B", CancellationToken.None));
-					await (s.DeleteAsync("from A", CancellationToken.None));
-					await (s.FlushAsync(CancellationToken.None));
+					await (s.DeleteAsync("from B"));
+					await (s.DeleteAsync("from A"));
+					await (s.FlushAsync());
 				}
 			}
 		}

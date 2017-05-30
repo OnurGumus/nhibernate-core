@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3138
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureByCodeAsync : TestCaseMappingByCode
 	{
@@ -43,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3138
 						.CreateQuery("select distinct e.Id, coalesce(e.EnglishName, e.GermanName) from Entity e order by coalesce(e.EnglishName, e.GermanName) asc")
 						.SetFirstResult(10)
 						.SetMaxResults(20)
-						.ListAsync<Entity>(CancellationToken.None));
+						.ListAsync<Entity>());
 			}
 		}
 
@@ -58,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3138
 						.CreateQuery("select distinct e.Id, coalesce(e.EnglishName, e.GermanName) as LocalizedName from Entity e order by LocalizedName asc")
 						.SetFirstResult(10)
 						.SetMaxResults(20)
-						.ListAsync<Entity>(CancellationToken.None));
+						.ListAsync<Entity>());
 			}
 		}
 	}

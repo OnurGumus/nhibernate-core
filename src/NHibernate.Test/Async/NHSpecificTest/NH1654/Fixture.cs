@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1654
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -39,9 +38,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1654
 				emp.Id = 1;
 				emp.FirstName = "John";
 
-				await (sess.SaveAsync(emp, CancellationToken.None));
+				await (sess.SaveAsync(emp));
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 
 				employeeId = emp.Id;
 			}
@@ -49,17 +48,17 @@ namespace NHibernate.Test.NHSpecificTest.NH1654
 			using (ISession sess = OpenSession())
 			using (ITransaction tx = sess.BeginTransaction())
 			{
-				var load = await (sess.LoadAsync<Employee>(employeeId, CancellationToken.None));
+				var load = await (sess.LoadAsync<Employee>(employeeId));
 				Assert.AreEqual("John", load.FirstNameFormula);
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession sess = OpenSession())
 			using (ITransaction tx = sess.BeginTransaction())
 			{
-				await (sess.DeleteAsync("from Employee", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (sess.DeleteAsync("from Employee"));
+				await (tx.CommitAsync());
 			}
 		}
 	}

@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1978
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class AliasTestAsync : BugTestCase
 	{
@@ -25,11 +24,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1978
 			using (var trans = s.BeginTransaction())
 			{
 				var plan = new _401k {PlanName = "test"};
-				await (s.SaveAsync(plan, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
-				await (s.RefreshAsync(plan, CancellationToken.None));
+				await (s.SaveAsync(plan));
+				await (s.FlushAsync());
+				await (s.RefreshAsync(plan));
 				var emp = new Employee {EmpName = "name", PlanParent = plan};
-				await (s.SaveAsync(emp, CancellationToken.None));
+				await (s.SaveAsync(emp));
 
 				trans.Rollback();
 			}

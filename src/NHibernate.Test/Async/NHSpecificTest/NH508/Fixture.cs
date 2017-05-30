@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH508
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -42,27 +41,27 @@ namespace NHibernate.Test.NHSpecificTest.NH508
 			using (ISession session = sessions.OpenSession())
 			using (ITransaction tran = session.BeginTransaction())
 			{
-				await (session.SaveAsync(friend1, CancellationToken.None));
-				await (session.SaveAsync(friend2, CancellationToken.None));
-				await (session.SaveAsync(friend3, CancellationToken.None));
-				userId = await (session.SaveAsync(user, CancellationToken.None));
-				await (tran.CommitAsync(CancellationToken.None));
+				await (session.SaveAsync(friend1));
+				await (session.SaveAsync(friend2));
+				await (session.SaveAsync(friend3));
+				userId = await (session.SaveAsync(user));
+				await (tran.CommitAsync());
 			}
 
 			// reload the user and remove one of the 3 friends
 			using (ISession session = sessions.OpenSession())
 			using (ITransaction tran = session.BeginTransaction())
 			{
-				User reloadedFriend = (User) await (session.LoadAsync(typeof(User), friend1.UserId, CancellationToken.None));
-				User reloadedUser = (User) await (session.LoadAsync(typeof(User), userId, CancellationToken.None));
+				User reloadedFriend = (User) await (session.LoadAsync(typeof(User), friend1.UserId));
+				User reloadedUser = (User) await (session.LoadAsync(typeof(User), userId));
 				reloadedUser.FriendList.Remove(reloadedFriend);
-				await (tran.CommitAsync(CancellationToken.None));
+				await (tran.CommitAsync());
 			}
 
 			using (ISession session = sessions.OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				User admin = (User) await (session.GetAsync(typeof(User), userId, CancellationToken.None));
+				User admin = (User) await (session.GetAsync(typeof(User), userId));
 				Assert.IsFalse(admin.FriendList.Contains(friend1));
 				Assert.IsTrue(admin.FriendList.Contains(friend2));
 				Assert.IsTrue(admin.FriendList.Contains(friend3));
@@ -71,8 +70,8 @@ namespace NHibernate.Test.NHSpecificTest.NH508
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from User", CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from User"));
+				await (t.CommitAsync());
 			}
 		}
 	}

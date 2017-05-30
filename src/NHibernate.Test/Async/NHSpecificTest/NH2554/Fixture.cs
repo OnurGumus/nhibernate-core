@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2554
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync: BugTestCase
 	{
@@ -59,7 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2554
 			using (ISession session = Sfi.OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				var students = await (session.CreateQuery("from Student").ListAsync<Student>(CancellationToken.None));
+				var students = await (session.CreateQuery("from Student").ListAsync<Student>());
 				Assert.That(students.Count, Is.EqualTo(1));
 				Assert.That(students[0].FullName, Is.EqualTo("Julian Maughan"));
 				Assert.That(students[0].FullNameAsVarBinary.Length, Is.EqualTo(28));
@@ -69,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2554
 				Assert.That(students[0].FullNameAsVarChar.Length, Is.EqualTo(14));
 				Assert.That(students[0].FullNameAsVarChar125.Length, Is.EqualTo(14));
 				
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (transaction.CommitAsync());
 			}
 		}
 		
@@ -81,23 +80,23 @@ namespace NHibernate.Test.NHSpecificTest.NH2554
 			{
 				var students = await (session
 					.CreateQuery("from Student where length(convert(varbinary, FullName)) = 28")
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				
 				Assert.That(students.Count, Is.EqualTo(1));
 				
 				students = await (session
 					.CreateQuery("from Student where length(convert(varbinary(256), FullName)) = 28")
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				
 				Assert.That(students.Count, Is.EqualTo(1));
 				
 				students = await (session
 					.CreateQuery("from Student where convert(int, 1) = 1")
-					.ListAsync<Student>(CancellationToken.None));
+					.ListAsync<Student>());
 				
 				Assert.That(students.Count, Is.EqualTo(1));
 				
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (transaction.CommitAsync());
 			}
 		}
 	}

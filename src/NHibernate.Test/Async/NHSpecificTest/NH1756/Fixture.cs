@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1756
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -32,17 +31,17 @@ namespace NHibernate.Test.NHSpecificTest.NH1756
 				using (ITransaction transaction = session.BeginTransaction())
 				{
 					var book = new BookNotGenerated {Name = "test book", Pages = new List<Page>(),};
-					await (session.SaveAsync(book, CancellationToken.None));
+					await (session.SaveAsync(book));
 					book.Name = "modified test book";
-					await (transaction.CommitAsync(CancellationToken.None));
+					await (transaction.CommitAsync());
 				}
 			}
 			using (ISession session = OpenSession())
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					await (session.CreateQuery("delete from BookNotGenerated").ExecuteUpdateAsync(CancellationToken.None));
-					await (transaction.CommitAsync(CancellationToken.None));
+					await (session.CreateQuery("delete from BookNotGenerated").ExecuteUpdateAsync());
+					await (transaction.CommitAsync());
 				}
 			}
 		}
@@ -56,17 +55,17 @@ namespace NHibernate.Test.NHSpecificTest.NH1756
 				using (ITransaction transaction = session.BeginTransaction())
 				{
 					var book = new Book { Name = "test book", Pages = new List<Page>(), };
-					await (session.SaveAsync(book, CancellationToken.None));
+					await (session.SaveAsync(book));
 					book.Name = "modified test book";
-					await (transaction.CommitAsync(CancellationToken.None));
+					await (transaction.CommitAsync());
 				}
 			}
 			using (ISession session = OpenSession())
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					await (session.CreateQuery("delete from Book").ExecuteUpdateAsync(CancellationToken.None));
-					await (transaction.CommitAsync(CancellationToken.None));
+					await (session.CreateQuery("delete from Book").ExecuteUpdateAsync());
+					await (transaction.CommitAsync());
 				}
 			}
 		}
@@ -79,18 +78,18 @@ namespace NHibernate.Test.NHSpecificTest.NH1756
 				using (ITransaction transaction = session.BeginTransaction())
 				{
 					var book = new Book {Name = "test book", Pages = new List<Page>(),};
-					await (session.SaveAsync(book, CancellationToken.None));
+					await (session.SaveAsync(book));
 					book.Name = "modified test book";
-					await (session.FlushAsync(CancellationToken.None));
-					await (transaction.CommitAsync(CancellationToken.None));
+					await (session.FlushAsync());
+					await (transaction.CommitAsync());
 				}
 			}
 			using (ISession session = OpenSession())
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					await (session.CreateQuery("delete from Book").ExecuteUpdateAsync(CancellationToken.None));
-					await (transaction.CommitAsync(CancellationToken.None));
+					await (session.CreateQuery("delete from Book").ExecuteUpdateAsync());
+					await (transaction.CommitAsync());
 				}
 			}
 		}

@@ -45,11 +45,11 @@ namespace NHibernate.Test.Stateless.Fetching
 				User you = new User("you");
 				Resource yourClock = new Resource("clock", you);
 				Task task = new Task(me, "clean", yourClock, now); // :)
-				await (s.SaveAsync(me, CancellationToken.None));
-				await (s.SaveAsync(you, CancellationToken.None));
-				await (s.SaveAsync(yourClock, CancellationToken.None));
-				await (s.SaveAsync(task, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(me));
+				await (s.SaveAsync(you));
+				await (s.SaveAsync(yourClock));
+				await (s.SaveAsync(task));
+				await (tx.CommitAsync());
 			}
 
 			using (IStatelessSession ss = sessions.OpenStatelessSession())
@@ -57,16 +57,16 @@ namespace NHibernate.Test.Stateless.Fetching
 			{
 				ss.BeginTransaction();
 				Task taskRef =
-					(Task)await (ss.CreateQuery("from Task t join fetch t.Resource join fetch t.User").UniqueResultAsync(CancellationToken.None));
+					(Task)await (ss.CreateQuery("from Task t join fetch t.Resource join fetch t.User").UniqueResultAsync());
 				Assert.That(taskRef, Is.Not.Null);
 				Assert.That(NHibernateUtil.IsInitialized(taskRef), Is.True);
 				Assert.That(NHibernateUtil.IsInitialized(taskRef.User), Is.True);
 				Assert.That(NHibernateUtil.IsInitialized(taskRef.Resource), Is.True);
 				Assert.That(NHibernateUtil.IsInitialized(taskRef.Resource.Owner), Is.False);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
-			await (cleanupAsync(CancellationToken.None));
+			await (cleanupAsync());
 		}
 
 		private async System.Threading.Tasks.Task cleanupAsync(CancellationToken cancellationToken = default(CancellationToken))

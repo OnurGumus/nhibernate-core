@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Legacy
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SimpleTestAsync : TestCase
 	{
@@ -53,18 +52,18 @@ namespace NHibernate.Test.Legacy
 
 				simple1.Other = otherSimple1;
 
-				await (s1.SaveAsync(otherSimple1, otherKey, CancellationToken.None));
-				await (s1.SaveAsync(simple1, key, CancellationToken.None));
+				await (s1.SaveAsync(otherSimple1, otherKey));
+				await (s1.SaveAsync(simple1, key));
 
-				await (t1.CommitAsync(CancellationToken.None));
+				await (t1.CommitAsync());
 			}
 
 			// try to Load the object to make sure the save worked
 			ISession s2 = OpenSession();
 			ITransaction t2 = s2.BeginTransaction();
 
-			Simple simple2 = (Simple) await (s2.LoadAsync(typeof(Simple), key, CancellationToken.None));
-			Simple otherSimple2 = (Simple) await (s2.LoadAsync(typeof(Simple), otherKey, CancellationToken.None));
+			Simple simple2 = (Simple) await (s2.LoadAsync(typeof(Simple), key));
+			Simple otherSimple2 = (Simple) await (s2.LoadAsync(typeof(Simple), otherKey));
 
 			// verify each property was saved as expected
 			Assert.IsNotNull(simple2, "Unable to load object");
@@ -77,9 +76,9 @@ namespace NHibernate.Test.Legacy
 			simple2.Address = "Street 123";
 			simple2.Date = updateDateTime;
 
-			await (s2.UpdateAsync(simple2, key, CancellationToken.None));
+			await (s2.UpdateAsync(simple2, key));
 
-			await (t2.CommitAsync(CancellationToken.None));
+			await (t2.CommitAsync());
 			s2.Close();
 
 			// lets verify that the update worked 
@@ -87,7 +86,7 @@ namespace NHibernate.Test.Legacy
 			ITransaction t3 = s3.BeginTransaction();
 
 //			Simple simple3 = (Simple)s3.Load(typeof(Simple), key);
-			Simple simple3 = (Simple) (await (s3.CreateQuery("from Simple as s where s.id = ? and '?'='?'").SetInt64(0, key).ListAsync(CancellationToken.None)))[0];
+			Simple simple3 = (Simple) (await (s3.CreateQuery("from Simple as s where s.id = ? and '?'='?'").SetInt64(0, key).ListAsync()))[0];
 			Simple otherSimple3;
 
 			Assert.AreEqual(simple2.Count, simple3.Count);
@@ -100,15 +99,15 @@ namespace NHibernate.Test.Legacy
 			otherSimple3 = simple3.Other;
 
 			// the update worked - lets clear out the table
-			await (s3.DeleteAsync(simple3, CancellationToken.None));
-			await (s3.DeleteAsync(otherSimple3, CancellationToken.None));
+			await (s3.DeleteAsync(simple3));
+			await (s3.DeleteAsync(otherSimple3));
 
-			await (t3.CommitAsync(CancellationToken.None));
+			await (t3.CommitAsync());
 			s3.Close();
 
 			// verify there is no other Simple objects in the db
 			ISession s4 = OpenSession();
-			Assert.AreEqual(0, (await (s4.CreateCriteria(typeof(Simple)).ListAsync(CancellationToken.None))).Count);
+			Assert.AreEqual(0, (await (s4.CreateCriteria(typeof(Simple)).ListAsync())).Count);
 			s4.Close();
 		}
 
@@ -129,24 +128,24 @@ namespace NHibernate.Test.Legacy
 			simple.Date = now;
 			simple.Count = 99;
 
-			await (s.SaveAsync(simple, key, CancellationToken.None));
+			await (s.SaveAsync(simple, key));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 
 			t = s.BeginTransaction();
 
 			IQuery q = s.CreateQuery("from s in class Simple where s.Name=:Name and s.Count=:Count");
 			q.SetProperties(simple);
 
-			Simple loadedSimple = (Simple) (await (q.ListAsync(CancellationToken.None)))[0];
+			Simple loadedSimple = (Simple) (await (q.ListAsync()))[0];
 			Assert.AreEqual(99, loadedSimple.Count);
 			Assert.AreEqual("Simple 1", loadedSimple.Name);
 			Assert.AreEqual("Street 12", loadedSimple.Address);
 			Assert.AreEqual(now.ToString(), loadedSimple.Date.ToString());
 
-			await (s.DeleteAsync(simple, CancellationToken.None));
+			await (s.DeleteAsync(simple));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 		}
 	}

@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1948
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -39,8 +38,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1948
 							},
 					};
 
-				await (s.SaveAsync(person, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(person));
+				await (s.FlushAsync());
 				tx.Rollback();
 			}
 		}

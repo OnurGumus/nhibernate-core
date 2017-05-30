@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2860
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SampleTestAsync : BugTestCase
 	{
@@ -57,20 +56,20 @@ namespace NHibernate.Test.NHSpecificTest.NH2860
 				classA.Blob_Field = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 				using (var trans = session.BeginTransaction())
 				{
-					await (session.SaveAsync(classA, CancellationToken.None));
-					await (trans.CommitAsync(CancellationToken.None));
+					await (session.SaveAsync(classA));
+					await (trans.CommitAsync());
 				}
 
-				await (session.RefreshAsync(classA, CancellationToken.None));
+				await (session.RefreshAsync(classA));
 
 				classA.Text = "updated entity";
 				using (var trans = session.BeginTransaction())
 				{
-					await (session.SaveOrUpdateAsync(classA, CancellationToken.None));
-					await (trans.CommitAsync(CancellationToken.None));
+					await (session.SaveOrUpdateAsync(classA));
+					await (trans.CommitAsync());
 				}
 
-				await (session.RefreshAsync(classA, CancellationToken.None));
+				await (session.RefreshAsync(classA));
 			}
 		}
 
@@ -80,19 +79,19 @@ namespace NHibernate.Test.NHSpecificTest.NH2860
 			//here none exception beeing thrown
 			using (var session = OpenSession())
 			{
-				var classA = await (session.GetAsync<ClassA>(objId, CancellationToken.None));
+				var classA = await (session.GetAsync<ClassA>(objId));
 				Assert.IsNotNull(classA);
 
-				await (session.RefreshAsync(classA, CancellationToken.None));
+				await (session.RefreshAsync(classA));
 
 				classA.Text = "updated entity";
 				using (var trans = session.BeginTransaction())
 				{
-					await (session.SaveOrUpdateAsync(classA, CancellationToken.None));
-					await (trans.CommitAsync(CancellationToken.None));
+					await (session.SaveOrUpdateAsync(classA));
+					await (trans.CommitAsync());
 				}
 
-				await (session.RefreshAsync(classA, CancellationToken.None));
+				await (session.RefreshAsync(classA));
 			}
 		}
 	}

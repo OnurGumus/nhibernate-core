@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1044
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync: BugTestCase
 	{
@@ -27,25 +26,25 @@ namespace NHibernate.Test.NHSpecificTest.NH1044
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(p, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(p));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				var pp = await (s.GetAsync<Person>(p.Id, CancellationToken.None));
+				var pp = await (s.GetAsync<Person>(p.Id));
 				pp.Delivery.Adresses.RemoveAt(0);
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				var pp = await (s.GetAsync<Person>(p.Id, CancellationToken.None));
+				var pp = await (s.GetAsync<Person>(p.Id));
 				Assert.That(pp.Delivery.Adresses.Count, Is.EqualTo(1));
-				await (s.DeleteAsync(pp, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(pp));
+				await (t.CommitAsync());
 			}
 		}
 	}

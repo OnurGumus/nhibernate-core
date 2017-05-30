@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2118
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
@@ -41,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2118
 			using(var s = sessions.OpenSession())
 			using (s.BeginTransaction())
 			{
-				var groups = await (s.Query<Person>().GroupBy(p => p.LastName).ToListAsync(CancellationToken.None));
+				var groups = await (s.Query<Person>().GroupBy(p => p.LastName).ToListAsync());
                 
 				Assert.AreEqual(3, groups.Count);
 			}

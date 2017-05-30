@@ -16,7 +16,6 @@ using Environment=NHibernate.Cfg.Environment;
 namespace NHibernate.Test.NHSpecificTest.NH873
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync
 	{
@@ -29,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH873
 				cfg.SetProperty(Environment.UseSecondLevelCache, "false");
 				cfg.SetProperty(Environment.UseQueryCache, "false");
 				cfg.SetProperty(Environment.CacheProvider, null);
-				return cfg.BuildSessionFactory().CloseAsync(CancellationToken.None);
+				return cfg.BuildSessionFactory().CloseAsync();
 			}
 			catch (Exception ex)
 			{

@@ -57,13 +57,13 @@ namespace NHibernate.Test.Join
 			{
 				s.EnableFilter("NameFilter").SetParameter("name", "Nadal");
 
-				await (CreatePlayersAsync(s, CancellationToken.None));
+				await (CreatePlayersAsync(s));
 
-				IList<TennisPlayer> people = await (s.CreateCriteria<TennisPlayer>().ListAsync<TennisPlayer>(CancellationToken.None));
+				IList<TennisPlayer> people = await (s.CreateCriteria<TennisPlayer>().ListAsync<TennisPlayer>());
 				Assert.AreEqual(1, people.Count);
 				Assert.AreEqual("Nadal", people[0].Name);
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -75,13 +75,13 @@ namespace NHibernate.Test.Join
 			{
 				s.EnableFilter("MakeFilter").SetParameter("make", "Babolat");
 
-				await (CreatePlayersAsync(s, CancellationToken.None));
+				await (CreatePlayersAsync(s));
 
-				IList<TennisPlayer> people = await (s.CreateCriteria<TennisPlayer>().ListAsync<TennisPlayer>(CancellationToken.None));
+				IList<TennisPlayer> people = await (s.CreateCriteria<TennisPlayer>().ListAsync<TennisPlayer>());
 				Assert.AreEqual(1, people.Count);
 				Assert.AreEqual("Babolat", people[0].RacquetMake);
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -93,13 +93,13 @@ namespace NHibernate.Test.Join
 			{
 				s.EnableFilter("ModelFilter").SetParameter("model", "AeroPro Drive");
 
-				await (CreatePlayersAsync(s, CancellationToken.None));
+				await (CreatePlayersAsync(s));
 
-				IList<TennisPlayer> people = await (s.CreateCriteria<TennisPlayer>().ListAsync<TennisPlayer>(CancellationToken.None));
+				IList<TennisPlayer> people = await (s.CreateCriteria<TennisPlayer>().ListAsync<TennisPlayer>());
 				Assert.AreEqual(1, people.Count);
 				Assert.AreEqual("AeroPro Drive", people[0].RacquetModel);
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 

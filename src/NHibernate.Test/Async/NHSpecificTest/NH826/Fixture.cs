@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH826
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -25,13 +24,13 @@ namespace NHibernate.Test.NHSpecificTest.NH826
 			ITransaction transaction = session.BeginTransaction();
 
 			Activity activity = new Activity();
-			await (session.SaveAsync(activity, CancellationToken.None));
+			await (session.SaveAsync(activity));
 
 			ActivitySet activitySet = new ActivitySet();
 			activitySet.Activities.Add(activity);
-			await (session.SaveAsync(activitySet, CancellationToken.None));
+			await (session.SaveAsync(activitySet));
 
-			await (transaction.CommitAsync(CancellationToken.None));
+			await (transaction.CommitAsync());
 			session.Close();
 
 			session = OpenSession();
@@ -46,17 +45,17 @@ namespace NHibernate.Test.NHSpecificTest.NH826
 			ActivitySet loadedActivitySet = (ActivitySet) await (session
 			                                              	.CreateCriteria(typeof(ActivitySet))
 			                                              	.Add(Expression.Eq("Id", activitySet.Id))
-			                                              	.UniqueResultAsync(CancellationToken.None));
+			                                              	.UniqueResultAsync());
 
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.FlushAsync());
 
 			foreach (object o in loadedActivitySet.Activities)
 			{
-				await (session.DeleteAsync(o, CancellationToken.None));				
+				await (session.DeleteAsync(o));				
 			}
-			await (session.DeleteAsync(loadedActivitySet, CancellationToken.None));
+			await (session.DeleteAsync(loadedActivitySet));
 
-			await (transaction.CommitAsync(CancellationToken.None));
+			await (transaction.CommitAsync());
 			session.Close();
 		}
 	}

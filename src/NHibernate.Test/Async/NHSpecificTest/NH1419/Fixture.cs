@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1419
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class TestsAsync : BugTestCase
 	{
@@ -33,15 +32,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1419
 
 				blog.AddEntry(entry);
 
-				await (session.SaveOrUpdateAsync(blog, CancellationToken.None));
+				await (session.SaveOrUpdateAsync(blog));
 
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (transaction.CommitAsync());
 			}
 			using (ISession session = OpenSession())
 			{
 				ITransaction transaction = session.BeginTransaction();
-				await (session.DeleteAsync("from Blog", CancellationToken.None));
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync("from Blog"));
+				await (transaction.CommitAsync());
 			}
 		}
 
@@ -55,15 +54,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1419
 				Blog blog = new Blog();
 				blog.Name = "Test Blog 1";
 
-				await (session.SaveOrUpdateAsync(blog, CancellationToken.None));
+				await (session.SaveOrUpdateAsync(blog));
 
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (transaction.CommitAsync());
 			}
 			using (ISession session = OpenSession())
 			{
 				ITransaction transaction = session.BeginTransaction();
-				await (session.DeleteAsync("from Blog", CancellationToken.None));
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync("from Blog"));
+				await (transaction.CommitAsync());
 			}
 		}
 	}

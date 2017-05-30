@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.ProjectionFixtures
 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture]
     public class FixtureAsync : TestCase
     {
@@ -108,9 +107,9 @@ namespace NHibernate.Test.ProjectionFixtures
 			    using (var tx = s.BeginTransaction())
 			    {
 				    var criteria = projection.GetExecutableCriteria(s);
-				    await (criteria.ListAsync(CancellationToken.None));
+				    await (criteria.ListAsync());
 
-				    await (tx.CommitAsync(CancellationToken.None));
+				    await (tx.CommitAsync());
 			    }
 		    });
 
@@ -138,13 +137,13 @@ namespace NHibernate.Test.ProjectionFixtures
             using(var tx = s.BeginTransaction())
             {
                 var criteria = projection.GetExecutableCriteria(s);
-                var list = await (criteria.ListAsync(CancellationToken.None));
+                var list = await (criteria.ListAsync());
                 Assert.AreEqual(1, list.Count);
                 var tuple = (object[]) list[0];
                 Assert.AreEqual(11, tuple[0]);
                 Assert.AreEqual(2, tuple[1]);
                 Assert.AreEqual(1, tuple[2]);
-                await (tx.CommitAsync(CancellationToken.None));
+                await (tx.CommitAsync());
             }
         }
 
@@ -165,7 +164,7 @@ namespace NHibernate.Test.ProjectionFixtures
                 criteria.AddOrder(Order.Asc(Projections.SubQuery(currentAssessment)))
                     .SetMaxResults(1000);
 
-                await (criteria.ListAsync(CancellationToken.None));
+                await (criteria.ListAsync());
             }
         }
 
@@ -185,7 +184,7 @@ namespace NHibernate.Test.ProjectionFixtures
                 criteria.AddOrder(Order.Asc(Projections.SubQuery(currentAssessment)))
                     .SetMaxResults(1000);
 
-                await (criteria.ListAsync(CancellationToken.None));
+                await (criteria.ListAsync());
             }
         }
     }

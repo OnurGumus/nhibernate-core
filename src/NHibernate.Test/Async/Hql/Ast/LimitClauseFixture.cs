@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Hql.Ast
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class LimitClauseFixtureAsync : BaseFixture
 	{
@@ -62,11 +61,11 @@ namespace NHibernate.Test.Hql.Ast
 			ISession s = OpenSession();
 			ITransaction txn = s.BeginTransaction();
 
-			float[] actual = (await (s.CreateQuery("from Human h order by h.bodyWeight").ListAsync<Human>(CancellationToken.None))).Select(h => h.BodyWeight).ToArray();
+			float[] actual = (await (s.CreateQuery("from Human h order by h.bodyWeight").ListAsync<Human>())).Select(h => h.BodyWeight).ToArray();
 			var expected = new[] {5, 6, 10, 15, 20};
 			CollectionAssert.AreEqual(expected, actual);
 
-			await (txn.CommitAsync(CancellationToken.None));
+			await (txn.CommitAsync());
 			s.Close();
 		}
 
@@ -76,11 +75,11 @@ namespace NHibernate.Test.Hql.Ast
 			ISession s = OpenSession();
 			ITransaction txn = s.BeginTransaction();
 
-			float[] actual = (await (s.CreateQuery("from Human h where h.bodyWeight > :minW order by h.bodyWeight skip 2").SetDouble("minW", 0d).ListAsync<Human>(CancellationToken.None))).Select(h => h.BodyWeight).ToArray();
+			float[] actual = (await (s.CreateQuery("from Human h where h.bodyWeight > :minW order by h.bodyWeight skip 2").SetDouble("minW", 0d).ListAsync<Human>())).Select(h => h.BodyWeight).ToArray();
 			var expected = new[] {10, 15, 20};
 			CollectionAssert.AreEqual(expected, actual);
 
-			await (txn.CommitAsync(CancellationToken.None));
+			await (txn.CommitAsync());
 			s.Close();
 		}
 
@@ -90,11 +89,11 @@ namespace NHibernate.Test.Hql.Ast
 			ISession s = OpenSession();
 			ITransaction txn = s.BeginTransaction();
 
-			float[] actual = (await (s.CreateQuery("from Human h order by h.bodyWeight skip 1 take 3").ListAsync<Human>(CancellationToken.None))).Select(h => h.BodyWeight).ToArray();
+			float[] actual = (await (s.CreateQuery("from Human h order by h.bodyWeight skip 1 take 3").ListAsync<Human>())).Select(h => h.BodyWeight).ToArray();
 			var expected = new[] {6, 10, 15};
 			CollectionAssert.AreEqual(expected, actual);
 
-			await (txn.CommitAsync(CancellationToken.None));
+			await (txn.CommitAsync());
 			s.Close();
 		}
 
@@ -106,11 +105,11 @@ namespace NHibernate.Test.Hql.Ast
 
 			float[] actual = (await (s.CreateQuery("from Human h order by h.bodyWeight skip :pSkip take :pTake")
 				.SetInt32("pSkip", 1)
-				.SetInt32("pTake", 3).ListAsync<Human>(CancellationToken.None))).Select(h => h.BodyWeight).ToArray();
+				.SetInt32("pTake", 3).ListAsync<Human>())).Select(h => h.BodyWeight).ToArray();
 			var expected = new[] {6f, 10f, 15f};
 			Assert.That(actual, Is.EquivalentTo(expected));
 
-			await (txn.CommitAsync(CancellationToken.None));
+			await (txn.CommitAsync());
 			s.Close();
 		}
 
@@ -123,11 +122,11 @@ namespace NHibernate.Test.Hql.Ast
 			float[] actual = (await (s.CreateQuery("from Human h where h.bodyWeight in (:list) order by h.bodyWeight skip :pSkip take :pTake")
 				.SetParameterList("list", new[] {10f, 15f, 5f})
 				.SetInt32("pSkip", 1)
-				.SetInt32("pTake", 4).ListAsync<Human>(CancellationToken.None))).Select(h => h.BodyWeight).ToArray();
+				.SetInt32("pTake", 4).ListAsync<Human>())).Select(h => h.BodyWeight).ToArray();
 			var expected = new[] {10f, 15f};
 			Assert.That(actual, Is.EquivalentTo(expected));
 
-			await (txn.CommitAsync(CancellationToken.None));
+			await (txn.CommitAsync());
 			s.Close();
 		}
 
@@ -137,11 +136,11 @@ namespace NHibernate.Test.Hql.Ast
 			ISession s = OpenSession();
 			ITransaction txn = s.BeginTransaction();
 
-			float[] actual = (await (s.CreateQuery("from Human h order by h.bodyWeight skip :jump").SetInt32("jump", 2).ListAsync<Human>(CancellationToken.None))).Select(h => h.BodyWeight).ToArray();
+			float[] actual = (await (s.CreateQuery("from Human h order by h.bodyWeight skip :jump").SetInt32("jump", 2).ListAsync<Human>())).Select(h => h.BodyWeight).ToArray();
 			var expected = new[] {10f, 15f, 20f};
 			Assert.That(actual, Is.EquivalentTo(expected));
 
-			await (txn.CommitAsync(CancellationToken.None));
+			await (txn.CommitAsync());
 			s.Close();
 		}
 
@@ -151,11 +150,11 @@ namespace NHibernate.Test.Hql.Ast
 			ISession s = OpenSession();
 			ITransaction txn = s.BeginTransaction();
 
-			float[] actual = (await (s.CreateQuery("from Human h order by h.bodyWeight take 2").ListAsync<Human>(CancellationToken.None))).Select(h => h.BodyWeight).ToArray();
+			float[] actual = (await (s.CreateQuery("from Human h order by h.bodyWeight take 2").ListAsync<Human>())).Select(h => h.BodyWeight).ToArray();
 			var expected = new[] {5, 6};
 			CollectionAssert.AreEqual(expected, actual);
 
-			await (txn.CommitAsync(CancellationToken.None));
+			await (txn.CommitAsync());
 			s.Close();
 		}
 
@@ -165,9 +164,9 @@ namespace NHibernate.Test.Hql.Ast
 			ISession s = OpenSession();
 			ITransaction txn = s.BeginTransaction();
 
-			Assert.ThrowsAsync<QuerySyntaxException>(() => s.CreateQuery("from Human h order by h.bodyWeight take 1 skip 2").ListAsync<Human>(CancellationToken.None), "take should not be allowed before skip");
+			Assert.ThrowsAsync<QuerySyntaxException>(() => s.CreateQuery("from Human h order by h.bodyWeight take 1 skip 2").ListAsync<Human>(), "take should not be allowed before skip");
 
-			await (txn.CommitAsync(CancellationToken.None));
+			await (txn.CommitAsync());
 			s.Close();
 		}
 
@@ -179,11 +178,11 @@ namespace NHibernate.Test.Hql.Ast
 
 			float[] actual = (await (s.CreateQuery("from Human h where h.bodyWeight > :minW order by h.bodyWeight take :jump")
 				.SetDouble("minW", 1d)
-				.SetInt32("jump", 2).ListAsync<Human>(CancellationToken.None))).Select(h => h.BodyWeight).ToArray();
+				.SetInt32("jump", 2).ListAsync<Human>())).Select(h => h.BodyWeight).ToArray();
 			var expected = new[] {5, 6};
 			CollectionAssert.AreEqual(expected, actual);
 
-			await (txn.CommitAsync(CancellationToken.None));
+			await (txn.CommitAsync());
 			s.Close();
 		}
 	}

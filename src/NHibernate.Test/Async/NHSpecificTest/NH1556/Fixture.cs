@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1556
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -83,7 +82,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1556
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					var loadedPatient = await (session.GetAsync<Patient>(patient.Id, CancellationToken.None));
+					var loadedPatient = await (session.GetAsync<Patient>(patient.Id));
 
 					IList list =
 						await (session.CreateQuery(
@@ -93,7 +92,7 @@ join c.ProductIdentifier.Product as p
 where c.Patient = :patient
 group by p.Id, p.ProductName
 order by max(c.LastFilled) asc, p.ProductName")
-							.SetParameter("patient", loadedPatient).SetFirstResult(0).SetMaxResults(2).ListAsync(CancellationToken.None));
+							.SetParameter("patient", loadedPatient).SetFirstResult(0).SetMaxResults(2).ListAsync());
 
 					Assert.AreEqual(2, list.Count);
 					Assert.AreEqual(new DateTime(2000, 4, 1), ((object[]) list[0])[2]);

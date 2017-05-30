@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1159
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync:BugTestCase
 	{
@@ -53,9 +52,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 			{
 				session.FlushMode = FlushMode.Commit;
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(0));
-				Contact contact = await (session.GetAsync<Contact>((Int64)1, CancellationToken.None));
+				Contact contact = await (session.GetAsync<Contact>((Int64)1));
 				contact.PreferredName = "Updated preferred name";
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
 
 				contact.Forename = "Updated forename";
@@ -64,12 +63,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 
 				ICriteria query = session.CreateCriteria(typeof(ContactTitle));
 				query.Add(Expression.Eq("Id", (Int64)1));
-				await (query.UniqueResultAsync<ContactTitle>(CancellationToken.None));
+				await (query.UniqueResultAsync<ContactTitle>());
 
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
 
 				contact.Surname = "Updated surname";
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(2));
 
 				session.Merge(contact);
@@ -83,9 +82,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 			{
 				session.FlushMode = FlushMode.Never;
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(0));
-				Contact contact = await (session.GetAsync<Contact>((Int64)1, CancellationToken.None));
+				Contact contact = await (session.GetAsync<Contact>((Int64)1));
 				contact.PreferredName = "Updated preferred name";
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
 
 				contact.Forename = "Updated forename";
@@ -94,12 +93,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 
 				ICriteria query = session.CreateCriteria(typeof(ContactTitle));
 				query.Add(Expression.Eq("Id", (Int64)1));
-				await (query.UniqueResultAsync<ContactTitle>(CancellationToken.None));
+				await (query.UniqueResultAsync<ContactTitle>());
 
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
 
 				contact.Surname = "Updated surname";
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(2));
 
 				session.Merge(contact);
@@ -114,9 +113,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 				session.FlushMode = FlushMode.Auto;
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(0));
 
-				Contact contact = await (session.GetAsync<Contact>((Int64)1, CancellationToken.None));
+				Contact contact = await (session.GetAsync<Contact>((Int64)1));
 				contact.PreferredName = "Updated preferred name";
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
 
 				contact.Forename = "Updated forename";
@@ -125,12 +124,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 
 				ICriteria query = session.CreateCriteria(typeof(ContactTitle));
 				query.Add(Expression.Eq("Id", (Int64)1));
-				await (query.UniqueResultAsync<ContactTitle>(CancellationToken.None));
+				await (query.UniqueResultAsync<ContactTitle>());
 
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(2));
 
 				contact.Surname = "Updated surname";
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(3));
 
 				session.Merge(contact);

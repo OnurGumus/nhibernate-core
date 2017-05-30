@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Classic
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class LifecycleFixtureAsync : TestCase
 	{
@@ -40,17 +39,17 @@ namespace NHibernate.Test.Classic
 			sessions.Statistics.Clear();
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(new EntityWithLifecycle(), CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(new EntityWithLifecycle()));
+				await (s.FlushAsync());
 			}
 			Assert.That(sessions.Statistics.EntityInsertCount, Is.EqualTo(0));
 
 			var v = new EntityWithLifecycle("Shinobi", 10, 10);
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(v, CancellationToken.None));
-				await (s.DeleteAsync(v, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(v));
+				await (s.DeleteAsync(v));
+				await (s.FlushAsync());
 			}
 		}
 
@@ -60,8 +59,8 @@ namespace NHibernate.Test.Classic
 			var v = new EntityWithLifecycle("Shinobi", 10, 10);
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(v, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(v));
+				await (s.FlushAsync());
 			}
 
 			// update detached
@@ -69,8 +68,8 @@ namespace NHibernate.Test.Classic
 			v.Heigth = 0;
 			using (ISession s = OpenSession())
 			{
-				await (s.UpdateAsync(v, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.UpdateAsync(v));
+				await (s.FlushAsync());
 			}
 			Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(0));
 
@@ -78,8 +77,8 @@ namespace NHibernate.Test.Classic
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.CreateQuery("delete from EntityWithLifecycle").ExecuteUpdateAsync(CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.CreateQuery("delete from EntityWithLifecycle").ExecuteUpdateAsync());
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -89,15 +88,15 @@ namespace NHibernate.Test.Classic
 			var v = new EntityWithLifecycle("Shinobi", 10, 10);
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(v, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(v));
+				await (s.FlushAsync());
 			}
 			v.Heigth = 0;
 			sessions.Statistics.Clear();
 			using (ISession s = OpenSession())
 			{
 				s.Merge(v);
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 			}
 			Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(0));
 
@@ -105,7 +104,7 @@ namespace NHibernate.Test.Classic
 			using (ISession s = OpenSession())
 			{
 				s.Merge(v1);
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 			}
 			Assert.That(sessions.Statistics.EntityInsertCount, Is.EqualTo(0));
 			Assert.That(sessions.Statistics.EntityUpdateCount, Is.EqualTo(0));
@@ -115,8 +114,8 @@ namespace NHibernate.Test.Classic
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.CreateQuery("delete from EntityWithLifecycle").ExecuteUpdateAsync(CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.CreateQuery("delete from EntityWithLifecycle").ExecuteUpdateAsync());
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -126,20 +125,20 @@ namespace NHibernate.Test.Classic
 			var v = new EntityWithLifecycle("Shinobi", 10, 10);
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(v, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(v));
+				await (s.FlushAsync());
 				sessions.Statistics.Clear();
 				v.Heigth = 0;
-				await (s.DeleteAsync(v, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync(v));
+				await (s.FlushAsync());
 				Assert.That(sessions.Statistics.EntityDeleteCount, Is.EqualTo(0));
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.CreateQuery("delete from EntityWithLifecycle").ExecuteUpdateAsync(CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.CreateQuery("delete from EntityWithLifecycle").ExecuteUpdateAsync());
+				await (tx.CommitAsync());
 			}
 		}
 	}

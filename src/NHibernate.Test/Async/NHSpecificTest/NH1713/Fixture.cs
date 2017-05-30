@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1713
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture, Ignore("Should be fixed in some way.")]
 	public class FixtureAsync : BugTestCase
 	{
@@ -46,8 +45,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1713
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					await (s.SaveAsync(item, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (s.SaveAsync(item));
+					await (tx.CommitAsync());
 				}
 			}
 
@@ -58,8 +57,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1713
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					await (s.DeleteAsync("from A", CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (s.DeleteAsync("from A"));
+					await (tx.CommitAsync());
 				}
 			}
 		}
@@ -75,8 +74,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1713
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					savedId= await (s.SaveAsync(item, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					savedId= await (s.SaveAsync(item));
+					await (tx.CommitAsync());
 				}
 			}
 
@@ -86,10 +85,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1713
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					var item2 = await (s.LoadAsync<A>(savedId, CancellationToken.None));
+					var item2 = await (s.LoadAsync<A>(savedId));
 					item2.Amount = item2.Amount - 1.5m;
-					await (s.SaveOrUpdateAsync(item2, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (s.SaveOrUpdateAsync(item2));
+					await (tx.CommitAsync());
 				}
 			}
 
@@ -98,8 +97,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1713
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					await (s.DeleteAsync("from A", CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (s.DeleteAsync("from A"));
+					await (tx.CommitAsync());
 				}
 			}
 		}

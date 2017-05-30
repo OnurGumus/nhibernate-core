@@ -19,7 +19,6 @@ using NHibernate.Criterion;
 namespace NHibernate.Test.NHSpecificTest.NH2113
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -31,15 +30,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2113
             using(var tx = s.BeginTransaction())
             {
                 var grp = new Group();
-                await (s.SaveAsync(grp, CancellationToken.None));
+                await (s.SaveAsync(grp));
 
                 var broker = new Broker{Key = new Key{BankId = 1, Id = -1}};
-                await (s.SaveAsync(broker, CancellationToken.None));
+                await (s.SaveAsync(broker));
 
                 var load = new Loan {Broker = broker, Group = grp, Name = "money!!!"};
-                await (s.SaveAsync(load, CancellationToken.None));
+                await (s.SaveAsync(load));
 
-                await (tx.CommitAsync(CancellationToken.None));
+                await (tx.CommitAsync());
             }
 
             bool isInitialized;
@@ -47,20 +46,20 @@ namespace NHibernate.Test.NHSpecificTest.NH2113
             using (var tx = s.BeginTransaction())
             {
                 var loan = await (s.CreateCriteria<Loan>()
-                    .UniqueResultAsync<Loan>(CancellationToken.None));
+                    .UniqueResultAsync<Loan>());
 
                 isInitialized = NHibernateUtil.IsInitialized(loan.Broker);
 
-                await (tx.CommitAsync(CancellationToken.None));
+                await (tx.CommitAsync());
             }
 
 
             using (var s = OpenSession())
             using (var tx = s.BeginTransaction())
             {
-                await (s.DeleteAsync("from System.Object", CancellationToken.None));
+                await (s.DeleteAsync("from System.Object"));
 
-                await (tx.CommitAsync(CancellationToken.None));
+                await (tx.CommitAsync());
             }
 
             Assert.False(isInitialized);

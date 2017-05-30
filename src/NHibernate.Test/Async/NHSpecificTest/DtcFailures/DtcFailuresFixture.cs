@@ -77,7 +77,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 			using (ISession s = sessions.OpenSession())
 			{
-				await (s.SaveAsync(new Person {NotNullData = null}, CancellationToken.None));  // Cause a SQL not null constraint violation.
+				await (s.SaveAsync(new Person {NotNullData = null}));  // Cause a SQL not null constraint violation.
 			}
 
 			new ForceEscalationToDistributedTx();
@@ -105,7 +105,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			using (ISession s = sessions.OpenSession())
 			{
 				new ForceEscalationToDistributedTx(true); //will rollback tx
-				await (s.SaveAsync(new Person { CreatedAt = DateTime.Today }, CancellationToken.None));
+				await (s.SaveAsync(new Person { CreatedAt = DateTime.Today }));
 
 				tx.Complete();
 			}
@@ -134,7 +134,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 					using (ISession s = sessions.OpenSession())
 					{
 						var person = new Person { CreatedAt = DateTime.Now };
-						await (s.SaveAsync(person, CancellationToken.None));
+						await (s.SaveAsync(person));
 					}
 					new ForceEscalationToDistributedTx(true); //will rollback tx
 
@@ -164,10 +164,10 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 					using (ISession s = sessions.OpenSession())
 					{
 						var person = new Person {CreatedAt = DateTime.Now};
-						await (s.SaveAsync(person, CancellationToken.None));
+						await (s.SaveAsync(person));
 						new ForceEscalationToDistributedTx(true); //will rollback tx
 						person.CreatedAt = DateTime.Now;
-						await (s.UpdateAsync(person, CancellationToken.None));
+						await (s.UpdateAsync(person));
 					}
 					txscope.Complete();
 				}
@@ -192,7 +192,7 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 				using (ISession s = sessions.OpenSession())
 				{
 					var person = new Person {CreatedAt = DateTime.Now};
-					savedId = await (s.SaveAsync(person, CancellationToken.None));
+					savedId = await (s.SaveAsync(person));
 				}
 				txscope.Complete();
 			}
@@ -202,9 +202,9 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 				{
 					using (ISession s = sessions.OpenSession())
 					{
-						var person = await (s.GetAsync<Person>(savedId, CancellationToken.None));
+						var person = await (s.GetAsync<Person>(savedId));
 						person.CreatedAt = DateTime.Now;
-						await (s.UpdateAsync(person, CancellationToken.None));
+						await (s.UpdateAsync(person));
 					}
 					new ForceEscalationToDistributedTx(true);
 
@@ -224,8 +224,8 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 				{
 					using (ISession s = sessions.OpenSession())
 					{
-						var person = await (s.GetAsync<Person>(savedId, CancellationToken.None));
-						await (s.DeleteAsync(person, CancellationToken.None));
+						var person = await (s.GetAsync<Person>(savedId));
+						await (s.DeleteAsync(person));
 					}
 					txscope.Complete();
 				}
@@ -242,7 +242,7 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 			{
 				using (ISession s = sessions.OpenSession())
 				{
-					id = await (s.SaveAsync(new Person {CreatedAt = DateTime.Today}, CancellationToken.None));
+					id = await (s.SaveAsync(new Person {CreatedAt = DateTime.Today}));
 
 					new ForceEscalationToDistributedTx();
 
@@ -256,7 +256,7 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 				{
 					new ForceEscalationToDistributedTx();
 
-					await (s.DeleteAsync(await (s.GetAsync<Person>(id, CancellationToken.None)), CancellationToken.None));
+					await (s.DeleteAsync(await (s.GetAsync<Person>(id))));
 
 					tx.Complete();
 				}
@@ -271,12 +271,12 @@ and with a rollback in the second dtc and a ForceRollback outside nh-session-sco
 			{
 				using (ISession s = sessions.OpenSession())
 				{
-					await (s.FlushAsync(CancellationToken.None));
+					await (s.FlushAsync());
 				}
 
 				using (ISession s = sessions.OpenSession())
 				{
-					await (s.FlushAsync(CancellationToken.None));
+					await (s.FlushAsync());
 				}
 
 				//and I always leave the transaction disposed without calling tx.Complete(), I let the database server to rollback all actions in this test. 

@@ -91,7 +91,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3800
 			{
 				var baseQuery = session.Query<TimeRecord>();
 
-				Assert.That(await (baseQuery.SumAsync(x => x.TimeInHours, CancellationToken.None)), Is.EqualTo(55));
+				Assert.That(await (baseQuery.SumAsync(x => x.TimeInHours)), Is.EqualTo(55));
 
 				var query = session.CreateQuery(@"
                     select c.Id, count(t), sum(cast(t.TimeInHours as big_decimal)) 
@@ -99,7 +99,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3800
                     left join t.Components as c 
                     group by c.Id");
 
-				var results = await (query.ListAsync<object[]>(CancellationToken.None));
+				var results = await (query.ListAsync<object[]>());
 				Assert.That(results.Select(x => x[1]), Is.EquivalentTo(new[] { 4, 2, 2, 2, 2 }));
 				Assert.That(results.Select(x => x[2]), Is.EquivalentTo(new[] { 13, 10, 11, 18, 19 }));
 
@@ -123,7 +123,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3800
 								into g
 								select new[] { g.Key, g.Select(x => x[1]).Count(), g.Select(x => x[1]).Sum(x => (decimal?)((TimeRecord)x).TimeInHours) };
 
-				var results = await (query.ToListAsync(CancellationToken.None));
+				var results = await (query.ToListAsync());
 				Assert.That(results.Select(x => x[1]), Is.EquivalentTo(new[] { 4, 2, 2, 2, 2 }));
 				Assert.That(results.Select(x => x[2]), Is.EquivalentTo(new[] { 13, 10, 11, 18, 19 }));
 
@@ -145,7 +145,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3800
 						.GroupBy(g => g[0], g => (TimeRecord)g[1])
 						.Select(g => new[] { g.Key, g.Count(), g.Sum(x => (decimal?)x.TimeInHours) });
 
-				var results = await (query.ToListAsync(CancellationToken.None));
+				var results = await (query.ToListAsync());
 				Assert.That(results.Select(x => x[1]), Is.EquivalentTo(new[] { 4, 2, 2, 2, 2 }));
 				Assert.That(results.Select(x => x[2]), Is.EquivalentTo(new[] { 13, 10, 11, 18, 19 }));
 
@@ -163,7 +163,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3800
 			{
 				var baseQuery = session.Query<TimeRecord>();
 
-				Assert.That(await (baseQuery.SumAsync(x => x.TimeInHours, CancellationToken.None)), Is.EqualTo(55));
+				Assert.That(await (baseQuery.SumAsync(x => x.TimeInHours)), Is.EqualTo(55));
 
 				var query = baseQuery.Select(t => new object[] { t })
 					.SelectMany(t => ((TimeRecord)t[0]).Components.Select(c => (object)c.Id).DefaultIfEmpty().Select(c => new[] { t[0], c }))
@@ -171,7 +171,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3800
 					.GroupBy(j => new[] { ((TimeRecord)j[0]).Project.Id, j[1], j[2] }, j => (TimeRecord)j[0])
 					.Select(g => new object[] { g.Key, g.Count(), g.Sum(t => (decimal?)t.TimeInHours) });
 
-				var results = await (query.ToListAsync(CancellationToken.None));
+				var results = await (query.ToListAsync());
 				Assert.That(results.Select(x => x[1]), Is.EquivalentTo(new[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }));
 				Assert.That(results.Select(x => x[2]), Is.EquivalentTo(new[] { 1, 2, 3, 3, 4, 5, 6, 6, 7, 7, 8, 9, 10, 10 }));
 
@@ -193,7 +193,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3800
 						.GroupBy(g => g[0], g => (TimeRecord)g[1])
 						.Select(g => new[] { g.Key, g.Count(), session.Query<Component>().Count(c => c.Name == (string)g.Key) });
 
-				var results = await (query.ToListAsync(CancellationToken.None));
+				var results = await (query.ToListAsync());
 				Assert.That(results.Select(x => x[1]), Is.EquivalentTo(new[] { 4, 2, 2, 2, 2 }));
 				Assert.That(results.Select(x => x[2]), Is.EquivalentTo(new[] { 0, 1, 1, 1, 1 }));
 

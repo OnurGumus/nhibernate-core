@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH295
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SubclassFixtureAsync : TestCase
 	{
@@ -36,25 +35,25 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 
 			ISession s = OpenSession();
 			s.BeginTransaction();
-			object uid1 = await (s.SaveAsync(ui1, CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			object uid1 = await (s.SaveAsync(ui1));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			s.BeginTransaction();
 
-			Assert.IsNotNull(await (s.GetAsync(typeof(User), uid1, CancellationToken.None)));
+			Assert.IsNotNull(await (s.GetAsync(typeof(User), uid1)));
 
-			UserGroup ug = (UserGroup) await (s.GetAsync(typeof(UserGroup), uid1, CancellationToken.None));
+			UserGroup ug = (UserGroup) await (s.GetAsync(typeof(UserGroup), uid1));
 			Assert.IsNull(ug);
 
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			s.BeginTransaction();
-			await (s.DeleteAsync("from Party", CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync("from Party"));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 		}
 
@@ -67,9 +66,9 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 
 			ISession s = OpenSession();
 			s.BeginTransaction();
-			object gid1 = await (s.SaveAsync(ug1, CancellationToken.None));
-			object uid1 = await (s.SaveAsync(ui1, CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			object gid1 = await (s.SaveAsync(ug1));
+			object uid1 = await (s.SaveAsync(ui1));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
@@ -77,8 +76,8 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 			//Load user with USER NAME: 
 			ICriteria criteria1 = s.CreateCriteria(typeof(User));
 			criteria1.Add(Expression.Eq("Name", "User1"));
-			Assert.AreEqual(1, (await (criteria1.ListAsync(CancellationToken.None))).Count);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			Assert.AreEqual(1, (await (criteria1.ListAsync())).Count);
+			await (s.Transaction.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
@@ -86,8 +85,8 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 			//Load group with USER NAME: 
 			ICriteria criteria2 = s.CreateCriteria(typeof(UserGroup));
 			criteria2.Add(Expression.Eq("Name", "User1"));
-			Assert.AreEqual(0, (await (criteria2.ListAsync(CancellationToken.None))).Count);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			Assert.AreEqual(0, (await (criteria2.ListAsync())).Count);
+			await (s.Transaction.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
@@ -95,8 +94,8 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 			//Load group with GROUP NAME
 			ICriteria criteria3 = s.CreateCriteria(typeof(UserGroup));
 			criteria3.Add(Expression.Eq("Name", "Group1"));
-			Assert.AreEqual(1, (await (criteria3.ListAsync(CancellationToken.None))).Count);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			Assert.AreEqual(1, (await (criteria3.ListAsync())).Count);
+			await (s.Transaction.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
@@ -104,38 +103,38 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 			//Load user with GROUP NAME
 			ICriteria criteria4 = s.CreateCriteria(typeof(User));
 			criteria4.Add(Expression.Eq("Name", "Group1"));
-			Assert.AreEqual(0, (await (criteria4.ListAsync(CancellationToken.None))).Count);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			Assert.AreEqual(0, (await (criteria4.ListAsync())).Count);
+			await (s.Transaction.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			s.BeginTransaction();
 			//Load group with USER IDENTITY
-			ug1 = (UserGroup) await (s.GetAsync(typeof(UserGroup), uid1, CancellationToken.None));
+			ug1 = (UserGroup) await (s.GetAsync(typeof(UserGroup), uid1));
 			Assert.IsNull(ug1);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			s.BeginTransaction();
-			ui1 = (User) await (s.GetAsync(typeof(User), gid1, CancellationToken.None));
+			ui1 = (User) await (s.GetAsync(typeof(User), gid1));
 			Assert.IsNull(ui1);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			s.BeginTransaction();
-			Party p = (Party) await (s.GetAsync(typeof(Party), uid1, CancellationToken.None));
+			Party p = (Party) await (s.GetAsync(typeof(Party), uid1));
 			Assert.IsTrue(p is User);
-			p = (Party) await (s.GetAsync(typeof(Party), gid1, CancellationToken.None));
+			p = (Party) await (s.GetAsync(typeof(Party), gid1));
 			Assert.IsTrue(p is UserGroup);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			s.BeginTransaction();
-			await (s.DeleteAsync("from Party", CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync("from Party"));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 		}
 
@@ -152,13 +151,13 @@ namespace NHibernate.Test.NHSpecificTest.NH295
 
 				group.Users.Add(user);
 
-				await (s.SaveAsync(group, CancellationToken.None));
-				await (s.SaveAsync(user, CancellationToken.None));
+				await (s.SaveAsync(group));
+				await (s.SaveAsync(user));
 
-				await (s.CreateCriteria(typeof(Party)).ListAsync(CancellationToken.None));
+				await (s.CreateCriteria(typeof(Party)).ListAsync());
 
-				await (s.DeleteAsync("from Party", CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Party"));
+				await (t.CommitAsync());
 			}
 		}
 	}

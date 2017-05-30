@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1908
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -40,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1908
 				")
 					.SetDateTime("now", DateTime.Now)
 					.SetInt32("invId", -999)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 			}
 		}
 
@@ -66,7 +65,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1908
                     .SetDateTime("now", DateTime.Now)
                     .SetInt32("invId", -999)
                     .SetInt32("myInt", -888)
-                    .ListAsync(CancellationToken.None));
+                    .ListAsync());
             }
         }
 	}

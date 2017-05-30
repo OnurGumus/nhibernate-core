@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2507
 {
     using System.Threading.Tasks;
-    using System.Threading;
     /// <summary>
     /// Used for testing LINQ queries in NHibernate that compare enumeration values.
     /// </summary>
@@ -119,7 +118,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2507
             {
                 checked
                 {
-                    var query = await (session.Query<Animal>().Where(item => item.Sex == Sex.Undefined).ToListAsync(CancellationToken.None));
+                    var query = await (session.Query<Animal>().Where(item => item.Sex == Sex.Undefined).ToListAsync());
                     Assert.AreEqual(1, query.Count);
                 }
             }
@@ -136,7 +135,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2507
             {
                 unchecked
                 {
-                    var query = await (session.Query<Animal>().Where(item => item.Sex == Sex.Undefined).ToListAsync(CancellationToken.None));
+                    var query = await (session.Query<Animal>().Where(item => item.Sex == Sex.Undefined).ToListAsync());
                     Assert.AreEqual(1, query.Count);
                 }
             }

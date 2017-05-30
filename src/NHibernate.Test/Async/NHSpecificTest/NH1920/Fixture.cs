@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1920
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -26,8 +25,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1920
 			using (ISession sess = OpenSession()) 
 			using (ITransaction tx = sess.BeginTransaction()) 
 			{ 
-				await (sess.SaveOrUpdateAsync(new Customer() { IsDeleted = false }, CancellationToken.None)); 
-				await (tx.CommitAsync(CancellationToken.None)); 
+				await (sess.SaveOrUpdateAsync(new Customer() { IsDeleted = false })); 
+				await (tx.CommitAsync()); 
 			} 
 			using (ISession sess = OpenSession()) 
 			using (ITransaction tx = sess.BeginTransaction()) 
@@ -36,15 +35,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1920
 				var result = await (sess 
 					.CreateQuery("from Customer c join c.Orders o where c.id > :cid") 
 					.SetParameter("cid", 0) 
-					.ListAsync(CancellationToken.None)); 
+					.ListAsync()); 
 				Assert.That(result.Count == 0); 
-				await (tx.CommitAsync(CancellationToken.None)); 
+				await (tx.CommitAsync()); 
 			} 
 			using (ISession sess = OpenSession()) 
 			using (ITransaction tx = sess.BeginTransaction()) 
 			{ 
-				await (sess.DeleteAsync("from System.Object", CancellationToken.None)); 
-				await (tx.CommitAsync(CancellationToken.None)); 
+				await (sess.DeleteAsync("from System.Object")); 
+				await (tx.CommitAsync()); 
 			} 
 		} 
 
@@ -54,8 +53,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1920
 			using (ISession sess = OpenSession()) 
 			using (ITransaction tx = sess.BeginTransaction()) 
 			{ 
-				await (sess.SaveOrUpdateAsync(new Customer() { IsDeleted = false }, CancellationToken.None)); 
-				await (tx.CommitAsync(CancellationToken.None)); 
+				await (sess.SaveOrUpdateAsync(new Customer() { IsDeleted = false })); 
+				await (tx.CommitAsync()); 
 			} 
 			using (ISession sess = OpenSession()) 
 			using (ITransaction tx = sess.BeginTransaction()) 
@@ -64,15 +63,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1920
 				var result = await (sess 
 					.CreateQuery("from Customer c join c.Orders o where c.id > :cid and c.Orders.size > 0") 
 					.SetParameter("cid", 0) 
-					.ListAsync(CancellationToken.None)); 
+					.ListAsync()); 
 				Assert.That(result.Count == 0); 
-				await (tx.CommitAsync(CancellationToken.None)); 
+				await (tx.CommitAsync()); 
 			} 
 			using (ISession sess = OpenSession()) 
 			using (ITransaction tx = sess.BeginTransaction()) 
 			{ 
-				await (sess.DeleteAsync("from System.Object", CancellationToken.None)); 
-				await (tx.CommitAsync(CancellationToken.None)); 
+				await (sess.DeleteAsync("from System.Object")); 
+				await (tx.CommitAsync()); 
 			} 
 		} 
 

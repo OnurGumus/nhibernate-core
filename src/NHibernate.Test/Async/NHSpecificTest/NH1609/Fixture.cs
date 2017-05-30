@@ -31,10 +31,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1609
 			using (var session = sessions.OpenSession())
 			using (session.BeginTransaction())
 			{
-				EntityA a1 = await (CreateEntityAAsync(session, CancellationToken.None));
-				EntityA a2 = await (CreateEntityAAsync(session, CancellationToken.None));
-				EntityC c = await (CreateEntityCAsync(session, CancellationToken.None));
-				EntityB b = await (CreateEntityBAsync(session, a1, c, CancellationToken.None));
+				EntityA a1 = await (CreateEntityAAsync(session));
+				EntityA a2 = await (CreateEntityAAsync(session));
+				EntityC c = await (CreateEntityCAsync(session));
+				EntityB b = await (CreateEntityBAsync(session, a1, c));
 
 				// make sure the created entities are no longer in the session
 				session.Clear();
@@ -51,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1609
 					session.CreateCriteria(typeof (EntityB)).Add(Restrictions.Eq("A.Id", a1.Id)).Add(Restrictions.Eq("C.Id", c.Id)).
 						SetFirstResult(0).SetMaxResults(1));
 
-				IList results = await (multi.ListAsync(CancellationToken.None));
+				IList results = await (multi.ListAsync());
 
 				Assert.AreEqual(1, ((IList) results[0]).Count);
 				Assert.AreEqual(1, ((IList) results[1]).Count);

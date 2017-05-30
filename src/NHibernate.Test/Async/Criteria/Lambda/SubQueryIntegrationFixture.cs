@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Criteria.Lambda
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SubQueryIntegrationFixtureAsync : TestCase
 	{
@@ -69,7 +68,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				var persons = await (s.QueryOver<Person>()
 					.JoinQueryOver(p => p.Children)
 					.Where(c => c.Nickname == "Name 2.1")
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.That(persons.Count, Is.EqualTo(1));
 				Assert.That(persons[0].Name, Is.EqualTo("Name 2"));
@@ -86,7 +85,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					.JoinQueryOver(c => c.Parent)
 					.Where(p => p.Name == "Name 1" && p.Age == 1)
 					.Select(c => c.Nickname, c => c.Age)
-					.ListAsync<object[]>(CancellationToken.None))
+					.ListAsync<object[]>())
 )					.Select(props => new
 					{
 						Name = (string) props[0],
@@ -113,7 +112,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					.SelectList(list => list
 						.Select(c => childAlias.Nickname)
 						.Select(c => c.Age))
-					.ListAsync<object[]>(CancellationToken.None))
+					.ListAsync<object[]>())
 )					.Select(props => new
 					{
 						Name = (string) props[0],
@@ -147,7 +146,7 @@ namespace NHibernate.Test.Criteria.Lambda
 						.Select(p => p.Name)
 						.SelectSubQuery(childCountQuery).WithAlias(() => childCountAlias))
 					.OrderByAlias(() => childCountAlias).Desc
-					.ListAsync<object[]>(CancellationToken.None))
+					.ListAsync<object[]>())
 )					.Select(props => new
 					{
 						Name = (string) props[0],

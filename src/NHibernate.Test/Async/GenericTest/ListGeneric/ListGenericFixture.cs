@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.GenericTest.ListGeneric
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class ListGenericFixtureAsync : TestCase
 	{
@@ -56,10 +55,10 @@ namespace NHibernate.Test.GenericTest.ListGeneric
 			a.Items.Add(secondB);
 
 			ISession s = OpenSession();
-			await (s.SaveOrUpdateAsync(a, CancellationToken.None));
+			await (s.SaveOrUpdateAsync(a));
 			// this flush should test how NH wraps a generic collection with its
 			// own persistent collection
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 			s.Close();
 			Assert.IsNotNull(a.Id);
 			// should have cascaded down to B
@@ -67,7 +66,7 @@ namespace NHibernate.Test.GenericTest.ListGeneric
 			Assert.IsNotNull(secondB.Id);
 
 			s = OpenSession();
-			a = await (s.LoadAsync<A>(a.Id, CancellationToken.None));
+			a = await (s.LoadAsync<A>(a.Id));
 			Assert.AreEqual("first b", a.Items[0].Name, "first item should be 'first b'");
 			Assert.AreEqual("second b", a.Items[1].Name, "second item should be 'second b'");
 			B thirdB = new B();
@@ -75,7 +74,7 @@ namespace NHibernate.Test.GenericTest.ListGeneric
 			// ensuring the correct generic type was constructed
 			a.Items.Add(thirdB);
 			Assert.AreEqual(3, a.Items.Count, "3 items in the list now");
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 			s.Close();
 		}
 
@@ -99,16 +98,16 @@ namespace NHibernate.Test.GenericTest.ListGeneric
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				copiedA = s.Merge(a);
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
-				A loadedA = await (s.GetAsync<A>( copiedA.Id , CancellationToken.None));
+				A loadedA = await (s.GetAsync<A>( copiedA.Id ));
 				Assert.IsNotNull( loadedA );
-				await (s.DeleteAsync( loadedA , CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync( loadedA ));
+				await (t.CommitAsync());
 			}
 		}
 	}

@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1179
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -43,9 +42,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1179
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				foreach (MainClass mainClass in mc)
-					await (s.SaveAsync(mainClass, CancellationToken.None));
+					await (s.SaveAsync(mainClass));
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -54,13 +53,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1179
 				IQuery q =
 					s.CreateQuery("select mc.Description, count(mc.Id) from MainClass mc join mc.Related r group by mc.Description order by mc.Description");
 
-				IList l = await (q.ListAsync(CancellationToken.None));
+				IList l = await (q.ListAsync());
 				Assert.AreEqual(2, l.Count);
 				Assert.AreEqual(1, (l[0] as IList)[1]);
 				Assert.AreEqual(2, (l[1] as IList)[1]);
 
 				s.DisableFilter("RelatedClass_Valued");
-				l = await (q.ListAsync(CancellationToken.None));
+				l = await (q.ListAsync());
 				Assert.AreEqual(2, l.Count);
 				Assert.AreEqual(2, (l[0] as IList)[1]);
 				Assert.AreEqual(3, (l[1] as IList)[1]);
@@ -69,9 +68,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1179
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from MainClass", CancellationToken.None));
-				await (s.DeleteAsync("from RelatedClass", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from MainClass"));
+				await (s.DeleteAsync("from RelatedClass"));
+				await (tx.CommitAsync());
 			}
 
 		}

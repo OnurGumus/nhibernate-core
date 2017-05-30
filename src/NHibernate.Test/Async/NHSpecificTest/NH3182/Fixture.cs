@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3182
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture, Ignore("Not fixed yet.")]
 	public class FixtureAsync : BugTestCase
 	{
@@ -77,7 +76,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3182
 					.SelectMany(o => o.Children)
 					.Where(o => o is Mammal)
 					.Select(o => ((Mammal) o).Pregnant))
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				var count = list.Count();
 				Assert.AreEqual(0, count);
@@ -94,7 +93,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3182
 					.SelectMany(o => o.Children)
 					.Where(o => o is Mammal)
 					.Select(o => ((Mammal) o).Pregnant))
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				var count = list.Count();
 				Assert.AreEqual(0, count);
@@ -111,7 +110,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3182
 					.SelectMany(o => o.Children, (animal, animal1) => animal1)
 					.OfType<Mammal>()
 					.Select(o => o.Pregnant)
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				var count = list.Count();
 				Assert.AreEqual(0, count);
@@ -128,7 +127,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3182
 					.SelectMany(o => o.Children, (animal, animal1) => animal1)
 					.OfType<Mammal>()
 					.Select(o => o.Pregnant)
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				var count = list.Count();
 				Assert.AreEqual(0, count);
@@ -144,7 +143,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3182
 				var list = await ((session.Query<Animal>()
 					.Where(o => o is Mammal)
 					.Select(o => ((Mammal)o).Pregnant))
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				var count = list.Count();
 				Assert.AreEqual(0, count);
@@ -160,7 +159,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3182
 				var list = await (session.Query<Animal>()
 					.OfType<Mammal>()
 					.Select(o => o.Pregnant)
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				var count = list.Count();
 				Assert.AreEqual(0, count);
@@ -175,7 +174,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3182
 			{
 				var list = await (session.Query<Mammal>()
 					.Select(o => o.Pregnant)
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				var count = list.Count();
 				Assert.AreEqual(0, count);

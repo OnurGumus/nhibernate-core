@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3961
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class DateParametersComparedToAsync : BugTestCase
 	{
@@ -75,7 +74,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3961
 			{
 				var result = await (session.Query<Entity>()
 					.Where(e => e.NonNullableDateTime == _testDate.MappedAs(NHibernateUtil.Date))
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual("Bob", result[0].Name);
@@ -90,7 +89,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3961
 			{
 				var result = await (session.Query<Entity>()
 					.Where(e => e.NonNullableDateTime == _testDate.AddMinutes(10).MappedAs(NHibernateUtil.Date))
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual("Bob", result[0].Name);
@@ -106,7 +105,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3961
 			{
 				var result = await (session.Query<Entity>()
 					.Where(e => e.NonNullableDateTime == _testDate.MappedAs(NHibernateUtil.DateTime))
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual("Bob", result[0].Name);
@@ -122,7 +121,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3961
 			{
 				var result = await (session.Query<Entity>()
 					.Where(e => e.NonNullableDateTime == _testDate.MappedAs(NHibernateUtil.Timestamp))
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual("Bob", result[0].Name);
@@ -142,7 +141,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3961
 				{
 					var result = await (session.Query<Entity>()
 						.Where(e => e.NonNullableDateTime == _testDate.MappedAs(NHibernateUtil.DateTime))
-						.ToListAsync(CancellationToken.None));
+						.ToListAsync());
 
 					Assert.AreEqual(1, result.Count);
 					Assert.AreEqual("Bob", result[0].Name);
@@ -150,7 +149,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3961
 					var testDate = _testDate.AddMinutes(10);
 					result = await (session.Query<Entity>()
 						.Where(e => e.NonNullableDateTime == testDate.MappedAs(NHibernateUtil.DateTime))
-						.ToListAsync(CancellationToken.None));
+						.ToListAsync());
 
 					CollectionAssert.IsEmpty(result);
 				}
@@ -171,7 +170,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3961
 			{
 				var result = await (session.Query<Entity>()
 					.Where(e => e.NonNullableDateTime == _testDate)
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual("Bob", result[0].Name);
@@ -187,7 +186,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3961
 			{
 				var result = await (session.Query<Entity>()
 					.Where(e => e.NullableDateTime == _testDate.MappedAs(NHibernateUtil.Date))
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual("Bob", result[0].Name);
@@ -203,7 +202,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3961
 			{
 				var result = await (session.Query<Entity>()
 					.Where(e => e.NullableDateTime == testDate.MappedAs(NHibernateUtil.Date))
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual("Bob", result[0].Name);
@@ -219,7 +218,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3961
 			{
 				var result = await (session.Query<Entity>()
 					.Where(e => e.NullableDateTime == _testDate.MappedAs(NHibernateUtil.DateTime))
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual("Bob", result[0].Name);
@@ -235,7 +234,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3961
 			{
 				var result = await (session.Query<Entity>()
 					.Where(e => e.NullableDateTime == _testDate.MappedAs(NHibernateUtil.Timestamp))
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual("Bob", result[0].Name);
@@ -255,7 +254,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3961
 				{
 					var result = await (session.Query<Entity>()
 						.Where(e => e.NullableDateTime == _testDate.MappedAs(NHibernateUtil.DateTime))
-						.ToListAsync(CancellationToken.None));
+						.ToListAsync());
 
 					Assert.AreEqual(1, result.Count);
 					Assert.AreEqual("Bob", result[0].Name);
@@ -263,7 +262,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3961
 					var testDate = _testDate.AddMinutes(10);
 					result = await (session.Query<Entity>()
 						.Where(e => e.NullableDateTime == testDate.MappedAs(NHibernateUtil.DateTime))
-						.ToListAsync(CancellationToken.None));
+						.ToListAsync());
 
 					CollectionAssert.IsEmpty(result);
 				}
@@ -284,7 +283,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3961
 			{
 				var result = await (session.Query<Entity>()
 					.Where(e => e.NullableDateTime == _testDate)
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual("Bob", result[0].Name);

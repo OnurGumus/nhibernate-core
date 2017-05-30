@@ -72,8 +72,8 @@ namespace NHibernate.Test.QueryTest
 				var item = new Item();
 				item.Id = 1;
 				item.Name = "foo";
-				await (s.SaveAsync(item, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(item));
+				await (s.FlushAsync());
 			}
 
 			using (var s = OpenSession())
@@ -86,7 +86,7 @@ namespace NHibernate.Test.QueryTest
 				var multiCriteria = s.CreateMultiCriteria()
 					.Add(getItems)
 					.Add(countItems);
-				var results = await (multiCriteria.ListAsync(CancellationToken.None));
+				var results = await (multiCriteria.ListAsync());
 				var items = (IList)results[0];
 				var fromDb = (Item)items[0];
 				Assert.AreEqual(1, fromDb.Id);
@@ -96,7 +96,7 @@ namespace NHibernate.Test.QueryTest
 				var count = (int)counts[0];
 				Assert.AreEqual(1, count);
 
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (transaction.CommitAsync());
 			}
 		}
 
@@ -107,8 +107,8 @@ namespace NHibernate.Test.QueryTest
 			{
 				var item = new Item();
 				item.Id = 1;
-				await (s.SaveAsync(item, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(item));
+				await (s.FlushAsync());
 			}
 
 			using (var s = OpenSession())
@@ -120,7 +120,7 @@ namespace NHibernate.Test.QueryTest
 				var multiCriteria = s.CreateMultiCriteria()
 					.Add(getItems)
 					.Add(countItems);
-				var results = await (multiCriteria.ListAsync(CancellationToken.None));
+				var results = await (multiCriteria.ListAsync());
 				var items = (IList)results[0];
 				var fromDb = (Item)items[0];
 				Assert.AreEqual(1, fromDb.Id);
@@ -137,9 +137,9 @@ namespace NHibernate.Test.QueryTest
 			var cacheHashtable = MultipleQueriesFixtureAsync.GetHashTableUsedAsQueryCache(sessions);
 			cacheHashtable.Clear();
 
-			await (CreateItemsAsync(CancellationToken.None));
+			await (CreateItemsAsync());
 
-			await (DoMutiQueryAndAssertAsync(CancellationToken.None));
+			await (DoMutiQueryAndAssertAsync());
 
 			Assert.AreEqual(1, cacheHashtable.Count);
 		}
@@ -147,9 +147,9 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task CanGetMultiQueryFromSecondLevelCacheAsync()
 		{
-			await (CreateItemsAsync(CancellationToken.None));
+			await (CreateItemsAsync());
 			//set the query in the cache
-			await (DoMutiQueryAndAssertAsync(CancellationToken.None));
+			await (DoMutiQueryAndAssertAsync());
 
 			var cacheHashtable = MultipleQueriesFixtureAsync.GetHashTableUsedAsQueryCache(sessions);
 			var cachedListEntry = (IList)new ArrayList(cacheHashtable.Values)[0];
@@ -171,7 +171,7 @@ namespace NHibernate.Test.QueryTest
 					.Add(CriteriaTransformer.Clone(criteria).SetFirstResult(10))
 					.Add(CriteriaTransformer.Clone(criteria).SetProjection(Projections.RowCount()));
 				multiCriteria.SetCacheable(true);
-				var results = await (multiCriteria.ListAsync(CancellationToken.None));
+				var results = await (multiCriteria.ListAsync());
 				var items = (IList)results[0];
 				Assert.AreEqual(2, items.Count);
 				var count = (int)((IList)results[1])[0];
@@ -182,14 +182,14 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task CanUpdateStatisticsWhenGetMultiQueryFromSecondLevelCacheAsync()
 		{
-			await (CreateItemsAsync(CancellationToken.None));
+			await (CreateItemsAsync());
 
-			await (DoMutiQueryAndAssertAsync(CancellationToken.None));
+			await (DoMutiQueryAndAssertAsync());
 			Assert.AreEqual(0, sessions.Statistics.QueryCacheHitCount);
 			Assert.AreEqual(1, sessions.Statistics.QueryCacheMissCount);
 			Assert.AreEqual(1, sessions.Statistics.QueryCachePutCount);
 
-			await (DoMutiQueryAndAssertAsync(CancellationToken.None));
+			await (DoMutiQueryAndAssertAsync());
 			Assert.AreEqual(1, sessions.Statistics.QueryCacheHitCount);
 			Assert.AreEqual(1, sessions.Statistics.QueryCacheMissCount);
 			Assert.AreEqual(1, sessions.Statistics.QueryCachePutCount);
@@ -198,7 +198,7 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task TwoMultiQueriesWithDifferentPagingGetDifferentResultsWhenUsingCachedQueriesAsync()
 		{
-			await (CreateItemsAsync(CancellationToken.None));
+			await (CreateItemsAsync());
 			using (var s = OpenSession())
 			{
 				var criteria = s.CreateCriteria(typeof(Item))
@@ -207,7 +207,7 @@ namespace NHibernate.Test.QueryTest
 					.Add(CriteriaTransformer.Clone(criteria).SetFirstResult(10))
 					.Add(CriteriaTransformer.Clone(criteria).SetProjection(Projections.RowCount()));
 				multiCriteria.SetCacheable(true);
-				var results = await (multiCriteria.ListAsync(CancellationToken.None));
+				var results = await (multiCriteria.ListAsync());
 				var items = (IList)results[0];
 				Assert.AreEqual(89, items.Count);
 				var count = (int)((IList)results[1])[0];
@@ -222,7 +222,7 @@ namespace NHibernate.Test.QueryTest
 					.Add(CriteriaTransformer.Clone(criteria).SetFirstResult(20))
 					.Add(CriteriaTransformer.Clone(criteria).SetProjection(Projections.RowCount()));
 				multiCriteria.SetCacheable(true);
-				var results = await (multiCriteria.ListAsync(CancellationToken.None));
+				var results = await (multiCriteria.ListAsync());
 				var items = (IList)results[0];
 				Assert.AreEqual(79, items.Count, "Should have gotten different result here, because the paging is different");
 				var count = (int)((IList)results[1])[0];
@@ -233,7 +233,7 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task CanUseWithParameterizedQueriesAndLimitAsync()
 		{
-			await (CreateItemsAsync(CancellationToken.None));
+			await (CreateItemsAsync());
 
 			using (var s = OpenSession())
 			{
@@ -245,7 +245,7 @@ namespace NHibernate.Test.QueryTest
 						.SetFirstResult(10))
 					.Add(CriteriaTransformer.Clone(criteria)
 						.SetProjection(Projections.RowCount()))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				var items = (IList)results[0];
 				Assert.AreEqual(89, items.Count);
 				var count = (int)((IList)results[1])[0];
@@ -260,8 +260,8 @@ namespace NHibernate.Test.QueryTest
 			{
 				var item = new Item();
 				item.Id = 1;
-				await (s.SaveAsync(item, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(item));
+				await (s.FlushAsync());
 			}
 
 			using (var s = OpenSession())
@@ -272,7 +272,7 @@ namespace NHibernate.Test.QueryTest
 					.Add(CriteriaTransformer.Clone(criteria))
 					.Add(CriteriaTransformer.Clone(criteria)
 						.SetProjection(Projections.RowCount()))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				var items = (IList)results[0];
 				var fromDb = (Item)items[0];
@@ -287,7 +287,7 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task CanAddCriteriaWithKeyAndRetrieveResultsWithKeyAsync()
 		{
-			await (CreateItemsAsync(CancellationToken.None));
+			await (CreateItemsAsync());
 
 			using (var session = OpenSession())
 			{
@@ -301,8 +301,8 @@ namespace NHibernate.Test.QueryTest
 				multiCriteria.Add("firstCriteria", firstCriteria);
 				multiCriteria.Add("secondCriteria", secondCriteria);
 
-				var secondResult = (IList)await (multiCriteria.GetResultAsync("secondCriteria", CancellationToken.None));
-				var firstResult = (IList)await (multiCriteria.GetResultAsync("firstCriteria", CancellationToken.None));
+				var secondResult = (IList)await (multiCriteria.GetResultAsync("secondCriteria"));
+				var firstResult = (IList)await (multiCriteria.GetResultAsync("firstCriteria"));
 
 				Assert.Greater(secondResult.Count, firstResult.Count);
 			}
@@ -311,7 +311,7 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task CanAddDetachedCriteriaWithKeyAndRetrieveResultsWithKeyAsync()
 		{
-			await (CreateItemsAsync(CancellationToken.None));
+			await (CreateItemsAsync());
 
 			using (var session = OpenSession())
 			{
@@ -325,8 +325,8 @@ namespace NHibernate.Test.QueryTest
 				multiCriteria.Add("firstCriteria", firstCriteria);
 				multiCriteria.Add("secondCriteria", secondCriteria);
 
-				var secondResult = (IList)await (multiCriteria.GetResultAsync("secondCriteria", CancellationToken.None));
-				var firstResult = (IList)await (multiCriteria.GetResultAsync("firstCriteria", CancellationToken.None));
+				var secondResult = (IList)await (multiCriteria.GetResultAsync("secondCriteria"));
+				var firstResult = (IList)await (multiCriteria.GetResultAsync("firstCriteria"));
 
 				Assert.Greater(secondResult.Count, firstResult.Count);
 			}
@@ -335,7 +335,7 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task CanNotRetrieveCriteriaResultWithUnknownKeyAsync()
 		{
-			await (CreateItemsAsync(CancellationToken.None));
+			await (CreateItemsAsync());
 
 			using (var session = OpenSession())
 			{
@@ -348,7 +348,7 @@ namespace NHibernate.Test.QueryTest
 
 				try
 				{
-					await (multiCriteria.GetResultAsync("unknownKey", CancellationToken.None));
+					await (multiCriteria.GetResultAsync("unknownKey"));
 					Assert.Fail("This should've thrown an InvalidOperationException");
 				}
 				catch (InvalidOperationException)
@@ -364,7 +364,7 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task CanNotRetrieveDetachedCriteriaResultWithUnknownKeyAsync()
 		{
-			await (CreateItemsAsync(CancellationToken.None));
+			await (CreateItemsAsync());
 
 			using (var session = OpenSession())
 			{
@@ -377,7 +377,7 @@ namespace NHibernate.Test.QueryTest
 
 				try
 				{
-					await (multiCriteria.GetResultAsync("unknownKey", CancellationToken.None));
+					await (multiCriteria.GetResultAsync("unknownKey"));
 					Assert.Fail("This should've thrown an InvalidOperationException");
 				}
 				catch (InvalidOperationException)
@@ -435,7 +435,7 @@ namespace NHibernate.Test.QueryTest
 				var multiCriteria = s.CreateMultiCriteria()
 					.Add(getItems) // we expect a non-generic result from this (ArrayList)
 					.Add<int>(countItems); // we expect a generic result from this (List<int>)
-				var results = await (multiCriteria.ListAsync(CancellationToken.None));
+				var results = await (multiCriteria.ListAsync());
 
 				Assert.That(results[0], Is.InstanceOf<List<object>>());
 				Assert.That(results[1], Is.InstanceOf<List<int>>());

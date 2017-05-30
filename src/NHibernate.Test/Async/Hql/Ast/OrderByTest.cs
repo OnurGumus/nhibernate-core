@@ -45,35 +45,35 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 			using (ITransaction txn = s.BeginTransaction())
 			{
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select name, address from Zoo order by name, address").ListAsync(CancellationToken.None)),
-										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select name, address from Zoo order by name, address").ListAsync()),
+										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null));
 
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address from Zoo z order by z.name, z.address").ListAsync(CancellationToken.None)),
-										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address from Zoo z order by z.name, z.address").ListAsync()),
+										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null));
 
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z2.name, z2.address from Zoo z2 where z2.name in ( select name from Zoo ) order by z2.name, z2.address").ListAsync(CancellationToken.None)),
-										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z2.name, z2.address from Zoo z2 where z2.name in ( select name from Zoo ) order by z2.name, z2.address").ListAsync()),
+										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null));
 
 				// using ASC
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select name, address from Zoo order by name ASC, address ASC").ListAsync(CancellationToken.None)),
-										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select name, address from Zoo order by name ASC, address ASC").ListAsync()),
+										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null));
 
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address from Zoo z order by z.name ASC, z.address ASC").ListAsync(CancellationToken.None)),
-										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address from Zoo z order by z.name ASC, z.address ASC").ListAsync()),
+										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null));
 
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z2.name, z2.address from Zoo z2 where z2.name in ( select name from Zoo ) order by z2.name ASC, z2.address ASC").ListAsync(CancellationToken.None)),
-										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z2.name, z2.address from Zoo z2 where z2.name in ( select name from Zoo ) order by z2.name ASC, z2.address ASC").ListAsync()),
+										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null));
 
 				// ordered by address, name:
 				//   zoo3  Zoo         1312 Mockingbird Lane, Anywhere, IL USA
 				//   zoo4  Duh Zoo     1312 Mockingbird Lane, Nowhere, IL USA
 				//   zoo2  A Zoo       1313 Mockingbird Lane, Anywhere, IL USA
 				//   zoo1  Zoo         1313 Mockingbird Lane, Anywhere, IL USA
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address from Zoo z order by z.address, z.name").ListAsync(CancellationToken.None)),
-										data.Zoo3, data.Zoo4, data.Zoo2, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address from Zoo z order by z.address, z.name").ListAsync()),
+										data.Zoo3, data.Zoo4, data.Zoo2, data.Zoo1, null));
 
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select name, address from Zoo order by address, name").ListAsync(CancellationToken.None)),
-										data.Zoo3, data.Zoo4, data.Zoo2, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select name, address from Zoo order by address, name").ListAsync()),
+										data.Zoo3, data.Zoo4, data.Zoo2, data.Zoo1, null));
 
 				// ordered by address:
 				//   zoo3  Zoo         1312 Mockingbird Lane, Anywhere, IL USA
@@ -81,11 +81,11 @@ namespace NHibernate.Test.Hql.Ast
 				// unordered:
 				//   zoo2  A Zoo       1313 Mockingbird Lane, Anywhere, IL USA
 				//   zoo1  Zoo         1313 Mockingbird Lane, Anywhere, IL USA
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address from Zoo z order by z.address").ListAsync(CancellationToken.None)),
-										data.Zoo3, data.Zoo4, null, null, data.ZoosWithSameAddress, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address from Zoo z order by z.address").ListAsync()),
+										data.Zoo3, data.Zoo4, null, null, data.ZoosWithSameAddress));
 
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select name, address from Zoo order by address").ListAsync(CancellationToken.None)),
-										data.Zoo3, data.Zoo4, null, null, data.ZoosWithSameAddress, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select name, address from Zoo order by address").ListAsync()),
+										data.Zoo3, data.Zoo4, null, null, data.ZoosWithSameAddress));
 
 				// ordered by name:
 				//   zoo2  A Zoo       1313 Mockingbird Lane, Anywhere, IL USA
@@ -93,13 +93,13 @@ namespace NHibernate.Test.Hql.Ast
 				// unordered:
 				//   zoo1  Zoo         1313 Mockingbird Lane, Anywhere, IL USA
 				//   zoo3  Zoo         1312 Mockingbird Lane, Anywhere, IL USA
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address from Zoo z order by z.name").ListAsync(CancellationToken.None)),
-										data.Zoo2, data.Zoo4, null, null, data.ZoosWithSameName, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address from Zoo z order by z.name").ListAsync()),
+										data.Zoo2, data.Zoo4, null, null, data.ZoosWithSameName));
 
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select name, address from Zoo order by name").ListAsync(CancellationToken.None)),
-										data.Zoo2, data.Zoo4, null, null, data.ZoosWithSameName, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select name, address from Zoo order by name").ListAsync()),
+										data.Zoo2, data.Zoo4, null, null, data.ZoosWithSameName));
 
-                await (txn.CommitAsync(CancellationToken.None));
+                await (txn.CommitAsync());
 			}
 		}
 
@@ -109,13 +109,13 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 			using (ITransaction txn = s.BeginTransaction())
 			{
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address from Zoo z order by z.address DESC, z.name DESC").ListAsync(CancellationToken.None)),
-										data.Zoo1, data.Zoo2, data.Zoo4, data.Zoo3, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address from Zoo z order by z.address DESC, z.name DESC").ListAsync()),
+										data.Zoo1, data.Zoo2, data.Zoo4, data.Zoo3, null));
 
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select name, address from Zoo order by address DESC, name DESC").ListAsync(CancellationToken.None)),
-										data.Zoo1, data.Zoo2, data.Zoo4, data.Zoo3, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select name, address from Zoo order by address DESC, name DESC").ListAsync()),
+										data.Zoo1, data.Zoo2, data.Zoo4, data.Zoo3, null));
 
-				await (txn.CommitAsync(CancellationToken.None));
+				await (txn.CommitAsync());
 			}
 		}
 
@@ -125,54 +125,54 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 			using (ITransaction txn = s.BeginTransaction())
 			{
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z2.name as zname, z2.address as zooAddress from Zoo z2 where z2.name in ( select name from Zoo ) order by zname, zooAddress").ListAsync(CancellationToken.None)),
-										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z2.name as zname, z2.address as zooAddress from Zoo z2 where z2.name in ( select name from Zoo ) order by zname, zooAddress").ListAsync()),
+										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null));
 
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as name, z.address as address from Zoo z order by name, address").ListAsync(CancellationToken.None)),
-										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as name, z.address as address from Zoo z order by name, address").ListAsync()),
+										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null));
 
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as zooName, z.address as zooAddress from Zoo z order by zooName, zooAddress").ListAsync(CancellationToken.None)),
-										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as zooName, z.address as zooAddress from Zoo z order by zooName, zooAddress").ListAsync()),
+										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null));
 
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address as name from Zoo z order by z.name, name").ListAsync(CancellationToken.None)),
-										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address as name from Zoo z order by z.name, name").ListAsync()),
+										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null));
 
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address as name from Zoo z order by z.name, name").ListAsync(CancellationToken.None)),
-										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address as name from Zoo z order by z.name, name").ListAsync()),
+										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null));
 
 				// using ASC
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z2.name as zname, z2.address as zooAddress from Zoo z2 where z2.name in ( select name from Zoo ) order by zname ASC, zooAddress ASC").ListAsync(CancellationToken.None)),
-										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z2.name as zname, z2.address as zooAddress from Zoo z2 where z2.name in ( select name from Zoo ) order by zname ASC, zooAddress ASC").ListAsync()),
+										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null));
 
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as name, z.address as address from Zoo z order by name ASC, address ASC").ListAsync(CancellationToken.None)),
-										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as name, z.address as address from Zoo z order by name ASC, address ASC").ListAsync()),
+										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null));
 
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as zooName, z.address as zooAddress from Zoo z order by zooName ASC, zooAddress ASC").ListAsync(CancellationToken.None)),
-										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as zooName, z.address as zooAddress from Zoo z order by zooName ASC, zooAddress ASC").ListAsync()),
+										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null));
 
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address as name from Zoo z order by z.name ASC, name ASC").ListAsync(CancellationToken.None)),
-										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address as name from Zoo z order by z.name ASC, name ASC").ListAsync()),
+										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null));
 
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address as name from Zoo z order by z.name ASC, name ASC").ListAsync(CancellationToken.None)),
-										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address as name from Zoo z order by z.name ASC, name ASC").ListAsync()),
+										data.Zoo2, data.Zoo4, data.Zoo3, data.Zoo1, null));
 
 				// ordered by address, name:
 				//   zoo3  Zoo         1312 Mockingbird Lane, Anywhere, IL USA
 				//   zoo4  Duh Zoo     1312 Mockingbird Lane, Nowhere, IL USA
 				//   zoo2  A Zoo       1313 Mockingbird Lane, Anywhere, IL USA
 				//   zoo1  Zoo         1313 Mockingbird Lane, Anywhere, IL USA
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as address, z.address as name from Zoo z order by name, address").ListAsync(CancellationToken.None)),
-										data.Zoo3, data.Zoo4, data.Zoo2, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as address, z.address as name from Zoo z order by name, address").ListAsync()),
+										data.Zoo3, data.Zoo4, data.Zoo2, data.Zoo1, null));
 
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address as name from Zoo z order by name, z.name").ListAsync(CancellationToken.None)),
-										data.Zoo3, data.Zoo4, data.Zoo2, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address as name from Zoo z order by name, z.name").ListAsync()),
+										data.Zoo3, data.Zoo4, data.Zoo2, data.Zoo1, null));
 
 				// using ASC
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as address, z.address as name from Zoo z order by name ASC, address ASC").ListAsync(CancellationToken.None)),
-										data.Zoo3, data.Zoo4, data.Zoo2, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as address, z.address as name from Zoo z order by name ASC, address ASC").ListAsync()),
+										data.Zoo3, data.Zoo4, data.Zoo2, data.Zoo1, null));
 
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address as name from Zoo z order by name ASC, z.name ASC").ListAsync(CancellationToken.None)),
-										data.Zoo3, data.Zoo4, data.Zoo2, data.Zoo1, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name, z.address as name from Zoo z order by name ASC, z.name ASC").ListAsync()),
+										data.Zoo3, data.Zoo4, data.Zoo2, data.Zoo1, null));
 
 				// ordered by address:
 				//   zoo3  Zoo         1312 Mockingbird Lane, Anywhere, IL USA
@@ -180,11 +180,11 @@ namespace NHibernate.Test.Hql.Ast
 				// unordered:
 				//   zoo2  A Zoo       1313 Mockingbird Lane, Anywhere, IL USA
 				//   zoo1  Zoo         1313 Mockingbird Lane, Anywhere, IL USA
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as zooName, z.address as zooAddress from Zoo z order by zooAddress").ListAsync(CancellationToken.None)),
-										data.Zoo3, data.Zoo4, null, null, data.ZoosWithSameAddress, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as zooName, z.address as zooAddress from Zoo z order by zooAddress").ListAsync()),
+										data.Zoo3, data.Zoo4, null, null, data.ZoosWithSameAddress));
 
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as zooName, z.address as name from Zoo z order by name").ListAsync(CancellationToken.None)),
-										data.Zoo3, data.Zoo4, null, null, data.ZoosWithSameAddress, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as zooName, z.address as name from Zoo z order by name").ListAsync()),
+										data.Zoo3, data.Zoo4, null, null, data.ZoosWithSameAddress));
 
 				// ordered by name:
 				//   zoo2  A Zoo       1313 Mockingbird Lane, Anywhere, IL USA
@@ -192,13 +192,13 @@ namespace NHibernate.Test.Hql.Ast
 				// unordered:
 				//   zoo1  Zoo         1313 Mockingbird Lane, Anywhere, IL USA
 				//   zoo3  Zoo         1312 Mockingbird Lane, Anywhere, IL USA
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as zooName, z.address as zooAddress from Zoo z order by zooName").ListAsync(CancellationToken.None)),
-										data.Zoo2, data.Zoo4, null, null, data.ZoosWithSameName, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as zooName, z.address as zooAddress from Zoo z order by zooName").ListAsync()),
+										data.Zoo2, data.Zoo4, null, null, data.ZoosWithSameName));
 
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as address, z.address as name from Zoo z order by address").ListAsync(CancellationToken.None)),
-										data.Zoo2, data.Zoo4, null, null, data.ZoosWithSameName, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as address, z.address as name from Zoo z order by address").ListAsync()),
+										data.Zoo2, data.Zoo4, null, null, data.ZoosWithSameName));
 
-				await (txn.CommitAsync(CancellationToken.None));
+				await (txn.CommitAsync());
 			}
 		}
 
@@ -208,10 +208,10 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 			using (ITransaction txn = s.BeginTransaction())
 			{
-				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as zooName, z.address as zooAddress from Zoo z order by zooAddress DESC, zooName DESC").ListAsync(CancellationToken.None)),
-										data.Zoo1, data.Zoo2, data.Zoo4, data.Zoo3, null, CancellationToken.None));
+				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select z.name as zooName, z.address as zooAddress from Zoo z order by zooAddress DESC, zooName DESC").ListAsync()),
+										data.Zoo1, data.Zoo2, data.Zoo4, data.Zoo3, null));
 
-				await (txn.CommitAsync(CancellationToken.None));
+				await (txn.CommitAsync());
 			}
 		}
 
@@ -227,9 +227,9 @@ namespace NHibernate.Test.Hql.Ast
 				//   zoo2  A Zoo       1313 Mockingbird Lane, Anywhere, IL USA
 				//   zoo1  Zoo         1313 Mockingbird Lane, Anywhere, IL USA
 				// using DESC
-				var list = await (s.CreateQuery("from Zoo z join fetch z.mammals").ListAsync(CancellationToken.None));
+				var list = await (s.CreateQuery("from Zoo z join fetch z.mammals").ListAsync());
 
-				await (txn.CommitAsync(CancellationToken.None));
+				await (txn.CommitAsync());
 			}
 		}
 
@@ -244,7 +244,7 @@ namespace NHibernate.Test.Hql.Ast
 				//   zoo4  Duh Zoo     1312 Mockingbird Lane, Nowhere, IL USA
 				//   zoo3  Zoo         1312 Mockingbird Lane, Anywhere, IL USA
 				//   zoo1  Zoo         1313 Mockingbird Lane, Anywhere, IL USA
-				var list = await (s.CreateQuery("select new Zoo(z.name as zname, z.address as zaddress) from Zoo z order by zname, zaddress").ListAsync(CancellationToken.None));
+				var list = await (s.CreateQuery("select new Zoo(z.name as zname, z.address as zaddress) from Zoo z order by zname, zaddress").ListAsync());
 				Assert.AreEqual(4, list.Count);
 				Assert.AreEqual(data.Zoo2, list[0]);
 				Assert.AreEqual(data.Zoo4, list[1]);
@@ -259,14 +259,14 @@ namespace NHibernate.Test.Hql.Ast
 				list =
 					await (s.CreateQuery(
 						"select new Zoo( z.name as zname, z.address as zaddress) from Zoo z order by zaddress, zname"
-						).ListAsync(CancellationToken.None));
+						).ListAsync());
 				Assert.AreEqual(4, list.Count);
 				Assert.AreEqual(data.Zoo3, list[0]);
 				Assert.AreEqual(data.Zoo4, list[1]);
 				Assert.AreEqual(data.Zoo2, list[2]);
 				Assert.AreEqual(data.Zoo1, list[3]);
 
-				await (txn.CommitAsync(CancellationToken.None));
+				await (txn.CommitAsync());
 			}
 		}
 
@@ -281,7 +281,7 @@ namespace NHibernate.Test.Hql.Ast
 				//   zoo4  Duh Zoo     1312 Mockingbird Lane, Nowhere, IL USA
 				//   zoo3  Zoo         1312 Mockingbird Lane, Anywhere, IL USA
 				//   zoo1  Zoo         1313 Mockingbird Lane, Anywhere, IL USA
-				var list = await (s.CreateQuery("select new map( z.name as zname, z.address as zaddress ) from Zoo z left join z.mammals m order by zname, zaddress").ListAsync(CancellationToken.None));
+				var list = await (s.CreateQuery("select new map( z.name as zname, z.address as zaddress ) from Zoo z left join z.mammals m order by zname, zaddress").ListAsync());
 
 				// NHibernate different behaviour hashtable does not maintain identity 
 				Assert.AreEqual(5, list.Count);
@@ -302,7 +302,7 @@ namespace NHibernate.Test.Hql.Ast
 				list =
 					await (s.CreateQuery(
 						"select new map( z.name as zname, z.address as zaddress ) from Zoo z left join z.mammals m order by zaddress, zname"
-						).ListAsync(CancellationToken.None));
+						).ListAsync());
 				Assert.AreEqual(5, list.Count);
 				Assert.AreEqual(data.Zoo3.Name, ((Hashtable)list[0])["zname"]);
 				Assert.AreEqual(data.Zoo3.Address, ((Hashtable)list[0])["zaddress"]);
@@ -313,7 +313,7 @@ namespace NHibernate.Test.Hql.Ast
 				Assert.AreEqual(data.Zoo1.Name, ((Hashtable)list[3])["zname"]);
 				Assert.AreEqual(data.Zoo1.Address, ((Hashtable)list[3])["zaddress"]);
 
-				await (txn.CommitAsync(CancellationToken.None));
+				await (txn.CommitAsync());
 			}
 		}
 
@@ -331,7 +331,7 @@ namespace NHibernate.Test.Hql.Ast
 				var list =
 					await (s.CreateQuery(
 						"select z.name as zname, count(*) as cnt from Zoo z group by z.name order by cnt desc, zname"
-						).ListAsync(CancellationToken.None));
+						).ListAsync());
 				Assert.AreEqual(3, list.Count);
 				Assert.AreEqual(data.Zoo3.Name, ((Object[])list[0])[0]);
 				Assert.AreEqual(2L, ((Object[])list[0])[1]);
@@ -340,7 +340,7 @@ namespace NHibernate.Test.Hql.Ast
 				Assert.AreEqual(data.Zoo4.Name, ((Object[])list[2])[0]);
 				Assert.AreEqual(1L, ((Object[])list[2])[1]);
 
-				await (txn.CommitAsync(CancellationToken.None));
+				await (txn.CommitAsync());
 			}
 		}
 

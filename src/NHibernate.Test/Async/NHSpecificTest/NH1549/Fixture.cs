@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1549
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -32,9 +31,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1549
 			{
 				using (ITransaction trans = session.BeginTransaction())
 				{
-					await (session.SaveAsync(category, CancellationToken.None));
-					await (session.SaveAsync(product, CancellationToken.None));
-					await (trans.CommitAsync(CancellationToken.None));
+					await (session.SaveAsync(category));
+					await (session.SaveAsync(product));
+					await (trans.CommitAsync());
 				}
 			}
 
@@ -44,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1549
 			//the association is a proxy
 			using (ISession session = OpenSession())
 			{
-				restoredProductWithInheritedId = await (session.GetAsync<ProductWithInheritedId>(product.Id, CancellationToken.None));
+				restoredProductWithInheritedId = await (session.GetAsync<ProductWithInheritedId>(product.Id));
 			}
 			
 			//verify that the category is a proxy
@@ -65,9 +64,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1549
 			{
 				using (ITransaction trans = session.BeginTransaction())
 				{
-					await (session.SaveAsync(category, CancellationToken.None));
-					await (session.SaveAsync(product, CancellationToken.None));
-					await (trans.CommitAsync(CancellationToken.None));
+					await (session.SaveAsync(category));
+					await (session.SaveAsync(product));
+					await (trans.CommitAsync());
 				}
 			}
 
@@ -77,7 +76,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1549
 			//the association is a proxy
 			using (ISession session = OpenSession())
 			{
-				restoredProductWithInheritedId = await (session.GetAsync<ProductWithId>(product.Id, CancellationToken.None));
+				restoredProductWithInheritedId = await (session.GetAsync<ProductWithId>(product.Id));
 			}
 
 			//verify that the category is a proxy

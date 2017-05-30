@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1789
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class ProxyEqualityProblemTestAsync : BugTestCase
 	{
@@ -55,12 +54,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1789
 			using (ISession session = OpenSession())
 			{
 				//We load a proxy version of Maurice
-				var mauriceProxy = await (session.LoadAsync<ICat>((long) 2, CancellationToken.None));
+				var mauriceProxy = await (session.LoadAsync<ICat>((long) 2));
 
 				Assert.IsTrue(mauriceProxy is INHibernateProxy, "The proxy should be of type INHibernateProxy");
 
 				//From it's proxy, we get a non-proxied (concrete?) version
-				var mauriceNonProxy = await (DomainObject.UnProxyAsync<ICat>(mauriceProxy, CancellationToken.None));
+				var mauriceNonProxy = await (DomainObject.UnProxyAsync<ICat>(mauriceProxy));
 
 				Assert.IsTrue(!(mauriceNonProxy is INHibernateProxy), "The non-proxy shouldn't be of type INHibernateProxy");
 
@@ -87,12 +86,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1789
 			using (ISession session = OpenSession())
 			{
 				//We load a proxy version of Maurice
-				var mauriceProxy = await (session.LoadAsync<Cat>((long) 2, CancellationToken.None));
+				var mauriceProxy = await (session.LoadAsync<Cat>((long) 2));
 
 				Assert.IsTrue(mauriceProxy is INHibernateProxy, "The proxy should be of type INHibernateProxy");
 
 				//From it's proxy, we get a non-proxied (concrete?) version
-				var mauriceNonProxy = await (DomainObject.UnProxyAsync<Cat>(mauriceProxy, CancellationToken.None));
+				var mauriceNonProxy = await (DomainObject.UnProxyAsync<Cat>(mauriceProxy));
 
 				Assert.IsTrue(!(mauriceNonProxy is INHibernateProxy), "The non-proxy shouldn't be of type INHibernateProxy");
 
@@ -115,9 +114,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1789
 			using (ISession session = OpenSession())
 			{
 				//As before, we load a proxy, a non-proxy of the same entity, and checks everything is correct:
-				var mauriceProxy = await (session.LoadAsync<ICat>((long) 2, CancellationToken.None));
+				var mauriceProxy = await (session.LoadAsync<ICat>((long) 2));
 				Assert.IsTrue(mauriceProxy is INHibernateProxy, "The proxy should be of type INHibernateProxy");
-				var mauriceNonProxy = await (DomainObject.UnProxyAsync<ICat>(mauriceProxy, CancellationToken.None));
+				var mauriceNonProxy = await (DomainObject.UnProxyAsync<ICat>(mauriceProxy));
 				Assert.IsTrue(!(mauriceNonProxy is INHibernateProxy), "The non-proxy shouldn't be of type INHibernateProxy");
 				Assert.AreEqual(mauriceProxy.Name, mauriceNonProxy.Name, "The two objects should have the same name");
 				Assert.AreEqual(mauriceProxy.ID, mauriceNonProxy.ID, "The two objects should have the same ID");

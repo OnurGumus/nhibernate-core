@@ -17,7 +17,6 @@ using System.Collections;
 namespace NHibernate.Test.NHSpecificTest.NH1033
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -63,9 +62,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1033
 					.Add(Property
 					     	.ForName("a.class")
 							.Eq(typeof(Animal)));
-				var results = await (crit.ListAsync<Animal>(CancellationToken.None));
+				var results = await (crit.ListAsync<Animal>());
 				Assert.AreEqual(1,results.Count);
-				Assert.AreEqual(typeof(Animal), await (NHibernateUtil.GetClassAsync(results[0], CancellationToken.None)));
+				Assert.AreEqual(typeof(Animal), await (NHibernateUtil.GetClassAsync(results[0])));
 			}
 		}
 	}

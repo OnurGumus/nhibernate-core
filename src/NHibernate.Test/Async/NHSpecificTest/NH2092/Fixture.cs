@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2092
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -27,15 +26,15 @@ namespace NHibernate.Test.NHSpecificTest.NH2092
 					var person = new Person { Id = 1, Name = "Person1" };
 					var employee = new Employee { Id = 1, Name = "Emp1", Person = person };
 					
-					await (s.SaveAsync(person, CancellationToken.None));
-					await (s.SaveAsync(employee, CancellationToken.None));
+					await (s.SaveAsync(person));
+					await (s.SaveAsync(employee));
 
-					await (s.FlushAsync(CancellationToken.None));
+					await (s.FlushAsync());
 				}
 
 				using (var s = OpenSession())
 				{
-					var employee = await (s.GetAsync<Employee>(1, CancellationToken.None));
+					var employee = await (s.GetAsync<Employee>(1));
 
 					Assert.That(NHibernateUtil.IsInitialized(employee.Person), Is.False);
 
@@ -48,10 +47,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2092
 			{
 				using (var s = OpenSession())
 				{
-					await (s.DeleteAsync("from Employee", CancellationToken.None));
-					await (s.DeleteAsync("from Person", CancellationToken.None));
+					await (s.DeleteAsync("from Employee"));
+					await (s.DeleteAsync("from Person"));
 
-					await (s.FlushAsync(CancellationToken.None));
+					await (s.FlushAsync());
 				}
 			}
 		}

@@ -15,7 +15,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class BinaryExpressionOrdererTestsAsync : LinqTestCase
 	{
@@ -24,7 +23,7 @@ namespace NHibernate.Test.Linq
 		{
 			var query = await ((from user in db.Users
 						 where ("ayende" == user.Name)
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 			Assert.AreEqual(1, query.Count);
 		}
 
@@ -33,7 +32,7 @@ namespace NHibernate.Test.Linq
 		{
             var query = await ((from user in db.Users
 						 where (user.Name == "ayende")
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 			Assert.AreEqual(1, query.Count);
 		}
 
@@ -42,7 +41,7 @@ namespace NHibernate.Test.Linq
 		{
             var query = await ((from user in db.Users
 						 where (user.Name == user.Name)
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 			Assert.AreEqual(3, query.Count);
 		}
 
@@ -51,7 +50,7 @@ namespace NHibernate.Test.Linq
 		{
             var query = await ((from user in db.Users
 						 where ("ayende" == user.Name)
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 			Assert.AreEqual(1, query.Count);
 		}
 
@@ -60,7 +59,7 @@ namespace NHibernate.Test.Linq
 		{
             var query = await ((from user in db.Users
 						 where ("ayende" != user.Name)
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 			Assert.AreEqual(2, query.Count);
 		}
 
@@ -69,7 +68,7 @@ namespace NHibernate.Test.Linq
 		{
             var query = await ((from user in db.Users
 						 where (3 > user.Id)
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 			Assert.AreEqual(2, query.Count);
 		}
 
@@ -78,7 +77,7 @@ namespace NHibernate.Test.Linq
 		{
             var query = await ((from user in db.Users
 						 where (2 >= user.Id)
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 			Assert.AreEqual(2, query.Count);
 		}
 
@@ -87,7 +86,7 @@ namespace NHibernate.Test.Linq
 		{
             var query = await ((from user in db.Users
 						 where (1 < user.Id)
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 			Assert.AreEqual(2, query.Count);
 		}
 
@@ -96,7 +95,7 @@ namespace NHibernate.Test.Linq
 		{
             var query = await ((from user in db.Users
 						 where (2 <= user.Id)
-						 select user).ToListAsync(CancellationToken.None));
+						 select user).ToListAsync());
 			Assert.AreEqual(2, query.Count);
 		}
 
@@ -106,7 +105,7 @@ namespace NHibernate.Test.Linq
 			// check NH-2440
 			var query = await ((from user in db.Users
 									 where ("ayende".Equals(user.Name))
-									 select user).ToListAsync(CancellationToken.None));
+									 select user).ToListAsync());
 			Assert.AreEqual(1, query.Count);
 		}
 
@@ -116,7 +115,7 @@ namespace NHibernate.Test.Linq
 			// check NH-2440
 			var query = await ((from user in db.Users
 									 where (user.Name.Equals("ayende"))
-									 select user).ToListAsync(CancellationToken.None));
+									 select user).ToListAsync());
 			Assert.AreEqual(1, query.Count);
 		}
 	}

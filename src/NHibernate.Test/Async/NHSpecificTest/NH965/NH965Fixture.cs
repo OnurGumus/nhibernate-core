@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH965
 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture]
     public class NH965FixtureAsync
     {
@@ -28,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH965
             {
                 Configuration cfg = new Configuration();
                 cfg.AddResource(GetType().Namespace + ".Mappings.hbm.xml", GetType().Assembly);
-                return cfg.BuildSessionFactory().CloseAsync(CancellationToken.None);
+                return cfg.BuildSessionFactory().CloseAsync();
             }
             catch (Exception ex)
             {

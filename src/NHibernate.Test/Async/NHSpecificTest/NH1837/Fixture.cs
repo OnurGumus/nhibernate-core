@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1837
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync:BugTestCase
 	{
@@ -57,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1837
 				await (criteria.CreateCriteria("o.Customer", "c")
 					.Add(Restrictions.Eq("c.Id", 1))
 					.SetProjection(Projections.RowCount())
-					.UniqueResultAsync(CancellationToken.None));
+					.UniqueResultAsync());
 				Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(1));
 			}
 		}
@@ -71,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1837
 					.CreateCriteria("o.Customer", "c")
 					.Add(Restrictions.Eq("c.Id", 1))
 					.SetProjection(Projections.RowCount())
-					.UniqueResultAsync<int>(CancellationToken.None));
+					.UniqueResultAsync<int>());
 				Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(1));
 			}
 		}
@@ -83,7 +82,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1837
 			{
 				await (session.CreateCriteria(typeof (Order), "o")
 					.SetProjection(Projections.RowCount())
-					.UniqueResultAsync(CancellationToken.None));
+					.UniqueResultAsync());
 				Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(1));
 			}
 		}
@@ -96,7 +95,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1837
 			{
 				await (session.CreateCriteria(typeof (Order), "o")
 					.SetProjection(Projections.RowCount())
-					.UniqueResultAsync<int>(CancellationToken.None));
+					.UniqueResultAsync<int>());
 				Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(1));
 			}
 		}

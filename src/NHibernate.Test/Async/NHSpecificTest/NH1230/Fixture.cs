@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1230
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture,Ignore("TODO(Dario)This test demostrate the need of eliminate the 'bool' on pre-insert eventlisteners.")]
 	public class FixtureAsync : BugTestCase
 	{
@@ -44,8 +43,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1230
 					FooIdentity f = new FooIdentity();
 					f.Description = "f1";
 					f.Id = 1;
-					await (s.SaveAsync(f, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (s.SaveAsync(f));
+					await (tx.CommitAsync());
 				}
 			}
 		}
@@ -65,8 +64,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1230
 					FooAssigned f = new FooAssigned();
 					f.Description = "f1";
 					f.Id = 1;
-					await (s.SaveAsync(f, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (s.SaveAsync(f));
+					await (tx.CommitAsync());
 				}
 
 				using (ITransaction tx = s.BeginTransaction())
@@ -74,8 +73,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1230
 					FooAssigned f = new FooAssigned();
 					f.Description = "f2";
 					f.Id = 1;
-					await (s.SaveAsync(f, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (s.SaveAsync(f));
+					await (tx.CommitAsync());
 				}
 			}
 		}

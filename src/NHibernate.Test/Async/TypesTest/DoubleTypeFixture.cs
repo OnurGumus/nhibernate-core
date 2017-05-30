@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Tests for mapping a Double Property to a database field.
 	/// </summary>
@@ -53,17 +52,17 @@ namespace NHibernate.Test.TypesTest
 			basic.DoubleValue = _values[0];
 
 			ISession s = OpenSession();
-			await (s.SaveAsync(basic, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(basic));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			basic = (DoubleClass) await (s.LoadAsync(typeof(DoubleClass), 1, CancellationToken.None));
+			basic = (DoubleClass) await (s.LoadAsync(typeof(DoubleClass), 1));
 
 			Assert.AreEqual(_values[0], basic.DoubleValue);
 
-			await (s.DeleteAsync(basic, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(basic));
+			await (s.FlushAsync());
 			s.Close();
 		}
 	}

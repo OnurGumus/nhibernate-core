@@ -20,7 +20,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2280
 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture]
     public class InvalidSqlTestAsync : BugTestCase
     {
@@ -29,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2280
         {
             using (ISession session = OpenSession())
             {
-                await (session.Query<Organisation>().Where(o => o.Codes.Any(c => c.Key.Code == "1476")).ToListAsync(CancellationToken.None));
+                await (session.Query<Organisation>().Where(o => o.Codes.Any(c => c.Key.Code == "1476")).ToListAsync());
             }
         }
     }

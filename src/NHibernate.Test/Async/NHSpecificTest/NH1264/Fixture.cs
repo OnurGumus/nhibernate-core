@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1264
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{
@@ -52,15 +51,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1264
 			mickey.Name.First = "Mickey";
 			mickey.Name.Last = "Mouse";
 			mickey.FrequentFlyerNumber = "1234";
-			await (s.SaveAsync(mickey, CancellationToken.None));
+			await (s.SaveAsync(mickey));
 
 			var reservation = new Reservation();
 			reservation.ConfirmationNumber = "11111111111111";
 			reservation.Passengers.Add(mickey);
 			mickey.Reservation = reservation;
-			await (s.SaveAsync(reservation, CancellationToken.None));
+			await (s.SaveAsync(reservation));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
@@ -69,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1264
 
 			dc.CreateCriteria("Passengers").Add(Property.ForName("FrequentFlyerNumber").Eq("1234"));
 
-			IList<Reservation> results = await (dc.GetExecutableCriteria(s).ListAsync<Reservation>(CancellationToken.None));
+			IList<Reservation> results = await (dc.GetExecutableCriteria(s).ListAsync<Reservation>());
 
 			s.Close();
 
@@ -82,9 +81,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1264
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			await (s.DeleteAsync(reservation, CancellationToken.None));
+			await (s.DeleteAsync(reservation));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 		}
 	}

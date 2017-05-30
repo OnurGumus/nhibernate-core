@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.HqlOnMapWithForumula
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -32,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.HqlOnMapWithForumula
 			using (ISession s = sessions.OpenSession())
 			{
 				await (s.CreateQuery("from A a where 1 in elements(a.MyMaps)")
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 			}
 		}
 	}

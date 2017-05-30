@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class LazyLoadBugTestAsync : TestCase
 	{
@@ -38,10 +37,10 @@ namespace NHibernate.Test.NHSpecificTest
 				LLChild child = new LLChild();
 				child.Parent = parent;
 
-				await (s1.SaveAsync(parent, CancellationToken.None));
+				await (s1.SaveAsync(parent));
 				parentId = (int) s1.GetIdentifier(parent);
 
-				await (t1.CommitAsync(CancellationToken.None));
+				await (t1.CommitAsync());
 			}
 
 			try
@@ -50,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest
 				using (ISession s2 = OpenSession())
 				using (ITransaction t2 = s2.BeginTransaction())
 				{
-					LLParent parent2 = (LLParent) await (s2.LoadAsync(typeof(LLParent), parentId, CancellationToken.None));
+					LLParent parent2 = (LLParent) await (s2.LoadAsync(typeof(LLParent), parentId));
 
 					// this should throw the exception - the property setter access is not mapped correctly.
 					// Because it maintains logic to maintain the collection during the property set it should
@@ -82,24 +81,24 @@ namespace NHibernate.Test.NHSpecificTest
 				parent.ChildrenNoAdd.Add(child);
 				child.Parent = parent;
 
-				await (s1.SaveAsync(parent, CancellationToken.None));
+				await (s1.SaveAsync(parent));
 				parentId = (int) s1.GetIdentifier(parent);
 
-				await (t1.CommitAsync(CancellationToken.None));
+				await (t1.CommitAsync());
 			}
 
 			// try to Load the object to make sure the save worked
 			using (ISession s2 = OpenSession())
 			using (ITransaction t2 = s2.BeginTransaction())
 			{
-				LLParent parent2 = (LLParent) await (s2.LoadAsync(typeof(LLParent), parentId, CancellationToken.None));
+				LLParent parent2 = (LLParent) await (s2.LoadAsync(typeof(LLParent), parentId));
 				Assert.AreEqual(1, parent2.ChildrenNoAdd.Count);
 			}
 
 			using (ISession session = sessions.OpenSession())
 			{
-				await (session.DeleteAsync("from LLParent", CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.DeleteAsync("from LLParent"));
+				await (session.FlushAsync());
 			}
 		}
 	}

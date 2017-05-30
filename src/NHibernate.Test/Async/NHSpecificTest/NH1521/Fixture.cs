@@ -54,7 +54,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1521
 				cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1521.AclassWithNothing.hbm.xml", GetType().Assembly);
 				cfg.SetProperty(Environment.DefaultCatalog, "nhibernate");
 				cfg.SetProperty(Environment.DefaultSchema, "dbo");
-				return AssertThatCheckOnTableExistenceIsCorrectAsync(cfg, CancellationToken.None);
+				return AssertThatCheckOnTableExistenceIsCorrectAsync(cfg);
 			}
 			catch (System.Exception ex)
 			{
@@ -70,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1521
 				Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
 				CheckDialect(cfg);
 				cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1521.AclassWithDefault.hbm.xml", GetType().Assembly);
-				return AssertThatCheckOnTableExistenceIsCorrectAsync(cfg, CancellationToken.None);
+				return AssertThatCheckOnTableExistenceIsCorrectAsync(cfg);
 			}
 			catch (System.Exception ex)
 			{
@@ -86,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1521
 				Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
 				CheckDialect(cfg);
 				cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1521.AclassWithSpecific.hbm.xml", GetType().Assembly);
-				return AssertThatCheckOnTableExistenceIsCorrectAsync(cfg, CancellationToken.None);
+				return AssertThatCheckOnTableExistenceIsCorrectAsync(cfg);
 			}
 			catch (System.Exception ex)
 			{
@@ -104,7 +104,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1521
 				cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1521.AclassWithDefault.hbm.xml", GetType().Assembly);
 				cfg.SetProperty(Environment.DefaultCatalog, "somethingDifferent");
 				cfg.SetProperty(Environment.DefaultSchema, "somethingDifferent");
-				return AssertThatCheckOnTableExistenceIsCorrectAsync(cfg, CancellationToken.None);
+				return AssertThatCheckOnTableExistenceIsCorrectAsync(cfg);
 			}
 			catch (System.Exception ex)
 			{

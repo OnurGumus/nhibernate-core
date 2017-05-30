@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.GenericTest.OrderedSetGeneric
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class OrderedSetFixtureAsync : TestCase
 	{
@@ -56,12 +55,12 @@ namespace NHibernate.Test.GenericTest.OrderedSetGeneric
 			a.Items.Add(b2);
 
 			ISession s = OpenSession();
-			await (s.SaveAsync(a, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(a));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			var newA = await (s.GetAsync<A>(a.Id, CancellationToken.None));
+			var newA = await (s.GetAsync<A>(a.Id));
 
 			Assert.AreEqual(2, newA.Items.Count);
 			int counter = 0;

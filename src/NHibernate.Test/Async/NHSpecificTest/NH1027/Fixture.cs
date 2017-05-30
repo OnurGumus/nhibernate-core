@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1027
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -43,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1027
 				criteria.CreateCriteria("Containers", "c", JoinType.LeftOuterJoin)
 				 .Add(Expression.Eq("c.Id", 15));
 				criteria.SetMaxResults(2);
-				await (criteria.ListAsync(CancellationToken.None));
+				await (criteria.ListAsync());
 			}
 		}
 	}

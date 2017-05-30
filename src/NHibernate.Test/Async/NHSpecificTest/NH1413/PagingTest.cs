@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1413
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class PagingTestAsync : BugTestCase
 	{
@@ -25,10 +24,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1413
 			using(ISession session = OpenSession())
 			using(ITransaction t = session.BeginTransaction())
 			{
-				await (session.PersistAsync(new Foo("Foo1", DateTime.Today.AddDays(5)), CancellationToken.None));
-				await (session.PersistAsync(new Foo("Foo2", DateTime.Today.AddDays(1)), CancellationToken.None));
-				await (session.PersistAsync(new Foo("Foo3", DateTime.Today.AddDays(3)), CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (session.PersistAsync(new Foo("Foo1", DateTime.Today.AddDays(5))));
+				await (session.PersistAsync(new Foo("Foo2", DateTime.Today.AddDays(1))));
+				await (session.PersistAsync(new Foo("Foo3", DateTime.Today.AddDays(3))));
+				await (t.CommitAsync());
 			}
 
 			DetachedCriteria criteria = DetachedCriteria.For(typeof (Foo));
@@ -40,14 +39,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1413
 				ICriteria icriteria = criteria.GetExecutableCriteria(session);
 				icriteria.SetFirstResult(0);
 				icriteria.SetMaxResults(2);
-				Assert.That(2, Is.EqualTo((await (icriteria.ListAsync<Foo>(CancellationToken.None))).Count));
+				Assert.That(2, Is.EqualTo((await (icriteria.ListAsync<Foo>())).Count));
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction t = session.BeginTransaction())
 			{
-				await (session.DeleteAsync("from Foo", CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync("from Foo"));
+				await (t.CommitAsync());
 			}
 		}
 	}

@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Subclass
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Test the use of <c>&lt;class&gt;</c> and <c>&lt;subclass&gt;</c> mappings.
 	/// </summary>
@@ -52,16 +51,16 @@ namespace NHibernate.Test.Subclass
 			one1.TestLong = 6;
 			one1.OneTestLong = 1;
 
-			oneId = (int) await (s1.SaveAsync(one1, CancellationToken.None));
+			oneId = (int) await (s1.SaveAsync(one1));
 
 			SubclassBase base1 = new SubclassBase();
 			base1.TestDateTime = new DateTime(2003, 10, 17);
 			base1.TestString = "the test string";
 			base1.TestLong = 5;
 
-			baseId = (int) await (s1.SaveAsync(base1, CancellationToken.None));
+			baseId = (int) await (s1.SaveAsync(base1));
 
-			await (t1.CommitAsync(CancellationToken.None));
+			await (t1.CommitAsync());
 			s1.Close();
 
 			// lets verify the correct classes were saved
@@ -69,8 +68,8 @@ namespace NHibernate.Test.Subclass
 			ITransaction t2 = s2.BeginTransaction();
 
 			// perform a load based on the base class
-			SubclassBase base2 = (SubclassBase) await (s2.LoadAsync(typeof(SubclassBase), baseId, CancellationToken.None));
-			SubclassBase oneBase2 = (SubclassBase) await (s2.LoadAsync(typeof(SubclassBase), oneId, CancellationToken.None));
+			SubclassBase base2 = (SubclassBase) await (s2.LoadAsync(typeof(SubclassBase), baseId));
+			SubclassBase oneBase2 = (SubclassBase) await (s2.LoadAsync(typeof(SubclassBase), oneId));
 
 			// do some quick checks to make sure s2 loaded an object with the same data as s2 saved.
 			SubclassAssert.AreEqual(base1, base2);
@@ -89,10 +88,10 @@ namespace NHibernate.Test.Subclass
 
 			// save it through the base class reference and make sure that the
 			// subclass properties get updated.
-			await (s2.UpdateAsync(base2, CancellationToken.None));
-			await (s2.UpdateAsync(oneBase2, CancellationToken.None));
+			await (s2.UpdateAsync(base2));
+			await (s2.UpdateAsync(oneBase2));
 
-			await (t2.CommitAsync(CancellationToken.None));
+			await (t2.CommitAsync());
 			s2.Close();
 
 			// lets test the Criteria interface for subclassing
@@ -101,7 +100,7 @@ namespace NHibernate.Test.Subclass
 
 			IList results3 = await (s3.CreateCriteria(typeof(SubclassBase))
 				.Add(Expression.In("TestString", new string[] {"Did it get updated", "Updated SubclassOne String"}))
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(2, results3.Count);
 
@@ -120,10 +119,10 @@ namespace NHibernate.Test.Subclass
 			SubclassAssert.AreEqual(base2, base3);
 			SubclassAssert.AreEqual(one2, one3);
 
-			await (s3.DeleteAsync(base3, CancellationToken.None));
-			await (s3.DeleteAsync(one3, CancellationToken.None));
+			await (s3.DeleteAsync(base3));
+			await (s3.DeleteAsync(one3));
 
-			await (t3.CommitAsync(CancellationToken.None));
+			await (t3.CommitAsync());
 			s3.Close();
 		}
 
@@ -143,32 +142,32 @@ namespace NHibernate.Test.Subclass
 			one1.TestLong = 6;
 			one1.OneTestLong = 1;
 
-			oneId = (int) await (s.SaveAsync(one1, CancellationToken.None));
+			oneId = (int) await (s.SaveAsync(one1));
 
 			SubclassBase base1 = new SubclassBase();
 			base1.TestDateTime = new DateTime(2003, 10, 17);
 			base1.TestString = "the test string";
 			base1.TestLong = 5;
 
-			baseId = (int) await (s.SaveAsync(base1, CancellationToken.None));
+			baseId = (int) await (s.SaveAsync(base1));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
-			IList list = await (s.CreateQuery("from SubclassBase as sb where sb.class=SubclassBase").ListAsync(CancellationToken.None));
+			IList list = await (s.CreateQuery("from SubclassBase as sb where sb.class=SubclassBase").ListAsync());
 			Assert.AreEqual(1, list.Count);
 			Assert.AreEqual(typeof(SubclassBase), list[0].GetType(), "should be base");
 
-			list = await (s.CreateQuery("from SubclassBase as sb where sb.class=SubclassOne").ListAsync(CancellationToken.None));
+			list = await (s.CreateQuery("from SubclassBase as sb where sb.class=SubclassOne").ListAsync());
 			Assert.AreEqual(1, list.Count);
 			Assert.AreEqual(typeof(SubclassOne), list[0].GetType(), "should be one");
 			s.Close();
 
 			s = OpenSession();
-			await (s.DeleteAsync(one1, CancellationToken.None));
-			await (s.DeleteAsync(base1, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(one1));
+			await (s.DeleteAsync(base1));
+			await (s.FlushAsync());
 			s.Close();
 		}
 	}

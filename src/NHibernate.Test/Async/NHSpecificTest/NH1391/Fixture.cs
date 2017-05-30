@@ -12,7 +12,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1391
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync:BugTestCase
 	{
@@ -96,10 +95,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1391
 			using (var session = OpenSession())
 			using (var tran = session.BeginTransaction())
 			{
-				var personWithAnimals = await (session.GetAsync<PersonWithAnimals>(_idOfPersonWithAnimals, CancellationToken.None));
-				var personWithCats = await (session.GetAsync<PersonWithCats>(_idOfPersonWithCats, CancellationToken.None));
-				var personWithDogs = await (session.GetAsync<PersonWithDogs>(_idOfPersonWithDogs, CancellationToken.None));
-				var personWithSivasKangals = await (session.GetAsync<PersonWithSivasKangals>(_idOfPersonWithSivasKangals, CancellationToken.None));
+				var personWithAnimals = await (session.GetAsync<PersonWithAnimals>(_idOfPersonWithAnimals));
+				var personWithCats = await (session.GetAsync<PersonWithCats>(_idOfPersonWithCats));
+				var personWithDogs = await (session.GetAsync<PersonWithDogs>(_idOfPersonWithDogs));
+				var personWithSivasKangals = await (session.GetAsync<PersonWithSivasKangals>(_idOfPersonWithSivasKangals));
 
 				Assert.That(personWithAnimals.AnimalsGeneric,Has.Count.EqualTo(4));
 

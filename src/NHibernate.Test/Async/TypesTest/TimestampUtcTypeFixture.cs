@@ -74,7 +74,7 @@ namespace NHibernate.Test.TypesTest
 			using(var session = OpenSession())
 			using(var tx = session.BeginTransaction())
 			{
-				await (session.SaveAsync(entity, CancellationToken.None));
+				await (session.SaveAsync(entity));
 				Assert.That(() => session.Flush(), Throws.TypeOf<PropertyValueException>());
 				tx.Rollback();
 			}
@@ -106,8 +106,8 @@ namespace NHibernate.Test.TypesTest
 					Value = next
 				};
 
-				await (session.SaveAsync(entity, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (session.SaveAsync(entity));
+				await (tx.CommitAsync());
 				session.Close();
 			}
 
@@ -115,7 +115,7 @@ namespace NHibernate.Test.TypesTest
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				var result = await (session.GetAsync<TimestampUtcClass>(entity.Id, CancellationToken.None));
+				var result = await (session.GetAsync<TimestampUtcClass>(entity.Id));
 				Assert.IsNotNull(result, "Entity not saved or cannot be retrieved by its key.");
 
 				// Property: Value
@@ -130,7 +130,7 @@ namespace NHibernate.Test.TypesTest
 				// Take a wide margin for accounting for sometimes bad build servers performances.
 				Assert.Less(differenceInMinutes, 2, "Difference should be less than 2 minutes.");
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 				session.Close();
 			}
 
@@ -138,9 +138,9 @@ namespace NHibernate.Test.TypesTest
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				var result = await (session.GetAsync<TimestampUtcClass>(entity.Id, CancellationToken.None));
-				await (session.DeleteAsync(result, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				var result = await (session.GetAsync<TimestampUtcClass>(entity.Id));
+				await (session.DeleteAsync(result));
+				await (tx.CommitAsync());
 				session.Close();
 			}
 		}

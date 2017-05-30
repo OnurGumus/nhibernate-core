@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3126
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class InvalidCastWithGenericDictionaryOnCascadeTestAsync : BugTestCase
 	{
@@ -27,9 +26,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3126
 			{
 				using (var tx = session.BeginTransaction())
 				{
-					await (session.SaveAsync(property, CancellationToken.None));
+					await (session.SaveAsync(property));
 
-					await (tx.CommitAsync(CancellationToken.None));
+					await (tx.CommitAsync());
 				}
 
 				var item = new Item();
@@ -41,13 +40,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3126
 												  {property.Id, new PropertyValue {Value = "Value 1"}}
 											  };
 
-					await (session.SaveAsync(item, CancellationToken.None));
+					await (session.SaveAsync(item));
 
-					await (tx.CommitAsync(CancellationToken.None));
+					await (tx.CommitAsync());
 				}
 				session.Clear();
 
-				var savedItem = await (session.GetAsync<Item>(item.Id, CancellationToken.None));
+				var savedItem = await (session.GetAsync<Item>(item.Id));
 				Assert.AreEqual(1, savedItem.PropertyValues.Count);
 				Assert.AreEqual("Value 1", savedItem.PropertyValues[property.Id].Value);
 			}

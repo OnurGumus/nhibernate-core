@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Legacy
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class CriteriaTestAsync : TestCase
 	{
@@ -55,9 +54,9 @@ namespace NHibernate.Test.Legacy
 			using (ISession s1 = OpenSession())
 			using (ITransaction t1 = s1.BeginTransaction())
 			{
-				await (s1.SaveAsync(notSimple1, notSimple1Key, CancellationToken.None));
-				await (s1.SaveAsync(simple1, simple1Key, CancellationToken.None));
-				await (t1.CommitAsync(CancellationToken.None));
+				await (s1.SaveAsync(notSimple1, notSimple1Key));
+				await (s1.SaveAsync(simple1, simple1Key));
+				await (t1.CommitAsync());
 			}
 
 			using (ISession s2 = OpenSession())
@@ -65,7 +64,7 @@ namespace NHibernate.Test.Legacy
 			{
 				IList results2 = await (s2.CreateCriteria(typeof(Simple))
 					.Add(Expression.Eq("Address", "Street 12"))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.AreEqual(1, results2.Count);
 
@@ -77,9 +76,9 @@ namespace NHibernate.Test.Legacy
 				Assert.AreEqual(simple1.Address, simple2.Address, "Load failed");
 				Assert.AreEqual(simple1.Date.ToString(), simple2.Date.ToString(), "Load failed");
 
-				await (s2.DeleteAsync("from Simple", CancellationToken.None));
+				await (s2.DeleteAsync("from Simple"));
 
-				await (t2.CommitAsync(CancellationToken.None));
+				await (t2.CommitAsync());
 			}
 		}
 
@@ -98,9 +97,9 @@ namespace NHibernate.Test.Legacy
 
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(s1, 1L, CancellationToken.None));
-				await (s.SaveAsync(s2, 2L, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(s1, 1L));
+				await (s.SaveAsync(s2, 2L));
+				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -108,7 +107,7 @@ namespace NHibernate.Test.Legacy
 				IList results = await (s.CreateCriteria(typeof(Simple))
 					.Add(Expression.Gt("Date", new DateTime(2005, 01, 01)))
 					.AddOrder(Order.Asc("Date"))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.AreEqual(1, results.Count, "one gt from 2005");
 				Simple simple = (Simple) results[0];
@@ -117,14 +116,14 @@ namespace NHibernate.Test.Legacy
 				results = await (s.CreateCriteria(typeof(Simple))
 					.Add(Expression.Lt("Date", new DateTime(2005, 01, 01)))
 					.AddOrder(Order.Asc("Date"))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.AreEqual(1, results.Count, "one lt than 2005");
 				simple = (Simple) results[0];
 				Assert.IsTrue(simple.Date < new DateTime(2005, 01, 01), "should be less than 2005");
 
-				await (s.DeleteAsync("from Simple", CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Simple"));
+				await (s.FlushAsync());
 			}
 		}
 
@@ -135,7 +134,7 @@ namespace NHibernate.Test.Legacy
 			{
 				Assert.ThrowsAsync<QueryException>(() =>s.CreateCriteria(typeof(Master))
 					.Add(Expression.Like("Details", "SomeString"))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 			}
 		}
 
@@ -145,12 +144,12 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				Master master = new Master();
-				await (s.SaveAsync(master, CancellationToken.None));
+				await (s.SaveAsync(master));
 				await (s.CreateCriteria(typeof(Detail))
 					.Add(Expression.Eq("Master", master))
-					.ListAsync(CancellationToken.None));
-				await (s.DeleteAsync(master, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+					.ListAsync());
+				await (s.DeleteAsync(master));
+				await (s.FlushAsync());
 			}
 		}
 
@@ -161,7 +160,7 @@ namespace NHibernate.Test.Legacy
 			{
 				Assert.ThrowsAsync<QueryException>(() =>s.CreateCriteria(typeof(Master))
 					.Add(Expression.Eq("Details.I", 10))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 			}
 		}
 
@@ -170,14 +169,14 @@ namespace NHibernate.Test.Legacy
 		{
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(new Master(), CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(new Master()));
+				await (s.FlushAsync());
 				Assert.AreEqual(1, (await (s.CreateCriteria(typeof(Master))
 				                   	.CreateAlias("Details", "detail", JoinType.LeftOuterJoin)
 				                   	.SetFetchMode("Details", FetchMode.Join)
-				                   	.ListAsync(CancellationToken.None))).Count);
-				await (s.DeleteAsync("from Master", CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				                   	.ListAsync())).Count);
+				await (s.DeleteAsync("from Master"));
+				await (s.FlushAsync());
 			}
 		}
 

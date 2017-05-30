@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.GeneratedTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class PartiallyGeneratedComponentTestAsync : TestCase
 	{
@@ -42,8 +41,8 @@ namespace NHibernate.Test.GeneratedTest
 			ComponentOwner owner = new ComponentOwner("initial");
 			ISession s = OpenSession();
 			s.BeginTransaction();
-			await (s.SaveAsync(owner, CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(owner));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 
 			Assert.IsNotNull(owner.Component, "expecting insert value generation");
@@ -52,10 +51,10 @@ namespace NHibernate.Test.GeneratedTest
 
 			s = OpenSession();
 			s.BeginTransaction();
-			owner = (ComponentOwner) await (s.GetAsync(typeof(ComponentOwner), owner.Id, CancellationToken.None));
+			owner = (ComponentOwner) await (s.GetAsync(typeof(ComponentOwner), owner.Id));
 			Assert.AreEqual(previousValue, owner.Component.Generated, "expecting insert value generation");
 			owner.Name = "subsequent";
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 
 			Assert.IsNotNull(owner.Component);
@@ -63,10 +62,10 @@ namespace NHibernate.Test.GeneratedTest
 
 			s = OpenSession();
 			s.BeginTransaction();
-			owner = (ComponentOwner) await (s.GetAsync(typeof(ComponentOwner), owner.Id, CancellationToken.None));
+			owner = (ComponentOwner) await (s.GetAsync(typeof(ComponentOwner), owner.Id));
 			Assert.AreEqual(previousValue, owner.Component.Generated, "expecting update value generation");
-			await (s.DeleteAsync(owner, CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(owner));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 		}
 	}

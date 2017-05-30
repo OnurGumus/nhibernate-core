@@ -62,14 +62,14 @@ namespace NHibernate.Test.SecondLevelCacheTests
 		[Test]
 		public async Task ShouldHitCacheUsingNamedQueryWithProjectionAsync()
 		{
-			await (FillDbAsync(1, CancellationToken.None));
+			await (FillDbAsync(1));
 			sessions.Statistics.Clear();
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.GetNamedQuery("Stat").ListAsync(CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.GetNamedQuery("Stat").ListAsync());
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(1));
@@ -81,21 +81,21 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.GetNamedQuery("Stat").ListAsync(CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.GetNamedQuery("Stat").ListAsync());
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(0));
 			Assert.That(sessions.Statistics.QueryCacheHitCount, Is.EqualTo(1));
 
 			sessions.Statistics.LogSummary();
-			await (CleanUpAsync(CancellationToken.None));
+			await (CleanUpAsync());
 		}
 
 		[Test]
 		public async Task ShouldHitCacheUsingQueryWithProjectionAsync()
 		{
-			await (FillDbAsync(1, CancellationToken.None));
+			await (FillDbAsync(1));
 			sessions.Statistics.Clear();
 
 			int resultCount;
@@ -104,8 +104,8 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			{
 				resultCount =
 (					await (s.CreateQuery("select ai.Name, count(*) from AnotherItem ai group by ai.Name").SetCacheable(true).SetCacheRegion(
-						"Statistics").ListAsync(CancellationToken.None))).Count;
-				await (tx.CommitAsync(CancellationToken.None));
+						"Statistics").ListAsync())).Count;
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(1));
@@ -119,8 +119,8 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				secondResultCount = (await (s.CreateQuery("select ai.Name, count(*) from AnotherItem ai group by ai.Name")
-					.SetCacheable(true).SetCacheRegion("Statistics").ListAsync(CancellationToken.None))).Count;
-				await (tx.CommitAsync(CancellationToken.None));
+					.SetCacheable(true).SetCacheRegion("Statistics").ListAsync())).Count;
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(0));
@@ -128,7 +128,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			Assert.That(secondResultCount, Is.EqualTo(resultCount));
 
 			sessions.Statistics.LogSummary();
-			await (CleanUpAsync(CancellationToken.None));
+			await (CleanUpAsync());
 		}
 
 		[Test]
@@ -139,7 +139,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 
 			const string queryString = "from Item i where i.Name='widget'";
 
-			object savedId = await (CreateItemAsync(queryString, CancellationToken.None));
+			object savedId = await (CreateItemAsync(queryString));
 
 			QueryStatistics qs = sessions.Statistics.GetQueryStatistics(queryString);
 			EntityStatistics es = sessions.Statistics.GetEntityStatistics(typeof(Item).FullName);
@@ -150,9 +150,9 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				result = await (s.CreateQuery(queryString).SetCacheable(true).ListAsync(CancellationToken.None));
+				result = await (s.CreateQuery(queryString).SetCacheable(true).ListAsync());
 				Assert.That(result.Count, Is.EqualTo(1));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(qs.CacheHitCount, Is.EqualTo(0));
@@ -160,9 +160,9 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				result = await (s.CreateQuery(queryString).SetCacheable(true).ListAsync(CancellationToken.None));
+				result = await (s.CreateQuery(queryString).SetCacheable(true).ListAsync());
 				Assert.That(result.Count, Is.EqualTo(1));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(qs.CacheHitCount, Is.EqualTo(1));
@@ -171,12 +171,12 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				result = await (s.CreateQuery(queryString).SetCacheable(true).ListAsync(CancellationToken.None));
+				result = await (s.CreateQuery(queryString).SetCacheable(true).ListAsync());
 				Assert.That(result.Count, Is.EqualTo(1));
 				Assert.That(NHibernateUtil.IsInitialized(result[0]));
 				var i = (Item)result[0];
 				i.Name = "Widget";
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(qs.CacheHitCount, Is.EqualTo(2));
@@ -188,13 +188,13 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.CreateQuery(queryString).SetCacheable(true).ListAsync(CancellationToken.None));
+				await (s.CreateQuery(queryString).SetCacheable(true).ListAsync());
 
-				var i = await (s.GetAsync<Item>(savedId, CancellationToken.None));
+				var i = await (s.GetAsync<Item>(savedId));
 				Assert.That(i.Name, Is.EqualTo("Widget"));
 
-				await (s.DeleteAsync(i, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(i));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(qs.CacheHitCount, Is.EqualTo(2));
@@ -231,10 +231,10 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.CreateQuery(queryString).SetCacheable(true).ListAsync(CancellationToken.None));
+				await (s.CreateQuery(queryString).SetCacheable(true).ListAsync());
 				var i = new AnotherItem { Name = "widget" };
-				savedId = await (s.SaveAsync(i, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				savedId = await (s.SaveAsync(i));
+				await (tx.CommitAsync());
 			}
 
 			QueryStatistics qs = sessions.Statistics.GetQueryStatistics(queryString);
@@ -246,8 +246,8 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.CreateQuery(queryString).SetCacheable(true).ListAsync(CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.CreateQuery(queryString).SetCacheable(true).ListAsync());
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(qs.CacheHitCount, Is.EqualTo(0));
@@ -255,8 +255,8 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.CreateQuery(queryString).SetCacheable(true).ListAsync(CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.CreateQuery(queryString).SetCacheable(true).ListAsync());
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(qs.CacheHitCount, Is.EqualTo(1));
@@ -264,8 +264,8 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.CreateQuery(queryString).SetCacheable(true).SetResultTransformer(transformer).ListAsync(CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.CreateQuery(queryString).SetCacheable(true).SetResultTransformer(transformer).ListAsync());
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(qs.CacheHitCount, Is.EqualTo(2), "hit count should go up since the cache contains the result before the possible application of a resulttransformer");
@@ -273,19 +273,19 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.CreateQuery(queryString).SetCacheable(true).SetResultTransformer(transformer).ListAsync(CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.CreateQuery(queryString).SetCacheable(true).SetResultTransformer(transformer).ListAsync());
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(qs.CacheHitCount, Is.EqualTo(3), "hit count should go up since we are using the same resulttransformer");
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				result = await (s.CreateQuery(queryString).SetCacheable(true).ListAsync(CancellationToken.None));
+				result = await (s.CreateQuery(queryString).SetCacheable(true).ListAsync());
 				Assert.That(result.Count, Is.EqualTo(1));
-				var i = await (s.GetAsync<AnotherItem>(savedId, CancellationToken.None));
+				var i = await (s.GetAsync<AnotherItem>(savedId));
 				i.Name = "Widget";
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(qs.CacheHitCount, Is.EqualTo(4));
@@ -296,13 +296,13 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.CreateQuery(queryString).SetCacheable(true).ListAsync(CancellationToken.None));
+				await (s.CreateQuery(queryString).SetCacheable(true).ListAsync());
 
-				var i = await (s.GetAsync<AnotherItem>(savedId, CancellationToken.None));
+				var i = await (s.GetAsync<AnotherItem>(savedId));
 				Assert.That(i.Name, Is.EqualTo("Widget"));
 
-				await (s.DeleteAsync(i, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(i));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(qs.CacheHitCount, Is.EqualTo(4));

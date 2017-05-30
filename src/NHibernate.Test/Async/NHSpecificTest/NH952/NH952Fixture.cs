@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH952
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class NH952FixtureAsync
 	{
@@ -44,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH952
 				{
 					cfg.AddResource(res, MyAssembly);
 				}
-				return cfg.BuildSessionFactory().CloseAsync(CancellationToken.None);
+				return cfg.BuildSessionFactory().CloseAsync();
 			}
 			catch (System.Exception ex)
 			{

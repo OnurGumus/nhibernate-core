@@ -18,7 +18,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.NHSpecificTest.NH2760
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -71,13 +70,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2760
 					orderby ug.Users.Count()
 					select ug;
 
-				var queryResults = await (query.ToListAsync(CancellationToken.None));
+				var queryResults = await (query.ToListAsync());
 
 				Assert.AreEqual(2, queryResults.Count);
 				Assert.AreEqual(2, queryResults[0].Id);
 				Assert.AreEqual(1, queryResults[1].Id);
 
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (transaction.CommitAsync());
 			}
 		}
 
@@ -92,13 +91,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2760
 					where ug.Users.Count() > 1
 					select ug;
 
-				var queryResults = await (query.ToListAsync(CancellationToken.None));
+				var queryResults = await (query.ToListAsync());
 
 				Assert.AreEqual(1, queryResults.Count);
 				Assert.AreEqual(1, queryResults[0].Id);
 				Assert.AreEqual(2, queryResults[0].Users.Count());
 
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (transaction.CommitAsync());
 			}
 		}
 
@@ -116,7 +115,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2760
 						count = ug.Users.Count(),
 					};
 
-				var queryResults = await (query.ToListAsync(CancellationToken.None));
+				var queryResults = await (query.ToListAsync());
 
 				Assert.AreEqual(2, queryResults.Count);
 				Assert.AreEqual(1, queryResults[0].id);
@@ -124,7 +123,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2760
 				Assert.AreEqual(2, queryResults[1].id);
 				Assert.AreEqual(1, queryResults[1].count);
 
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (transaction.CommitAsync());
 			}
 		}
 
@@ -136,13 +135,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2760
 			{
 				var query = session.CreateQuery("select ug from UserGroup ug order by size(ug.Users)");
 
-				var queryResults = await (query.ListAsync<UserGroup>(CancellationToken.None));
+				var queryResults = await (query.ListAsync<UserGroup>());
 
 				Assert.AreEqual(2, queryResults.Count);
 				Assert.AreEqual(2, queryResults[0].Id);
 				Assert.AreEqual(1, queryResults[1].Id);
 
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (transaction.CommitAsync());
 			}
 		}
 	}

@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1347
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -36,10 +35,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1347
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new A("1"), CancellationToken.None));
-				await (s.SaveAsync(new A("2"), CancellationToken.None));
-				await (s.SaveAsync(new A("3"), CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new A("1")));
+				await (s.SaveAsync(new A("2")));
+				await (s.SaveAsync(new A("3")));
+				await (tx.CommitAsync());
 			}
 
 			using(SqlLogSpy spy = new SqlLogSpy())
@@ -48,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1347
 				A a = await (s.CreateCriteria(typeof (A))
 					.AddOrder(Order.Asc("Name"))
 					.SetMaxResults(1)
-					.UniqueResultAsync<A>(CancellationToken.None));
+					.UniqueResultAsync<A>());
 				Assert.AreEqual("1", a.Name);
 				Assert.IsTrue(
 					spy.Appender.GetEvents()[0].MessageObject.ToString().Contains("limit")
@@ -58,8 +57,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1347
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from A", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from A"));
+				await (tx.CommitAsync());
 			}
 		}
 	}

@@ -19,7 +19,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1359
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -79,7 +78,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1359
 					.SetProjection(Projections.SubQuery(dc))
 					.Add(Expression.Eq("Name", "Fred"));
 
-				IList list = await (c.ListAsync(CancellationToken.None));
+				IList list = await (c.ListAsync());
 				Assert.AreEqual(2, list.Count);
 				foreach(object item in list)
 				{
@@ -108,7 +107,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1359
 					.Add(Restrictions.Eq("Name", "Joe"));
 				c.SetResultTransformer(Transformers.AliasToBean(typeof(HeaviestPet)));
 
-				IList<HeaviestPet> list = await (c.ListAsync<HeaviestPet>(CancellationToken.None));
+				IList<HeaviestPet> list = await (c.ListAsync<HeaviestPet>());
 				Assert.AreEqual(1, list.Count);
 				foreach(HeaviestPet pet in list)
 				{
@@ -130,7 +129,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1359
 									.Add(Projections.SubQuery(dc), "Name"))
 									.Add(Restrictions.Eq("Name", "Joe"));
 				c.SetResultTransformer(Transformers.AliasToBean(typeof(HeaviestPet)));
-				IList<HeaviestPet> list = await (c.ListAsync<HeaviestPet>(CancellationToken.None));
+				IList<HeaviestPet> list = await (c.ListAsync<HeaviestPet>());
 				Assert.AreEqual(1, list.Count);
 				foreach(HeaviestPet pet in list)
 				{
@@ -158,7 +157,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1359
 				c.SetResultTransformer(Transformers.AliasToBean(typeof(HeaviestPet)));
 				c.SetMaxResults(1);
 				c.AddOrder(new Order("Id", true));
-				IList<HeaviestPet> list = await (c.ListAsync<HeaviestPet>(CancellationToken.None));
+				IList<HeaviestPet> list = await (c.ListAsync<HeaviestPet>());
 				Assert.AreEqual(1, list.Count);
 				foreach(HeaviestPet pet in list)
 				{
@@ -182,7 +181,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1359
 				c.AddOrder(new Order("Id", true));
 				c.SetResultTransformer(Transformers.AliasToBean(typeof(Person)));
 				c.SetMaxResults(1);
-				IList<Person> list = await (c.ListAsync<Person>(CancellationToken.None));
+				IList<Person> list = await (c.ListAsync<Person>());
 				Assert.AreEqual(1, list.Count);
 			}
 		}
@@ -200,7 +199,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1359
 									.Add(Restrictions.Eq("Name", "Joe"));
 				c.AddOrder(new Order("NameSubquery", true));
 				c.SetMaxResults(1);
-				IList list = await (c.ListAsync(CancellationToken.None));
+				IList list = await (c.ListAsync());
 				Assert.AreEqual(1, list.Count);
 			}
 		}

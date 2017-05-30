@@ -18,7 +18,6 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Test.Pagination
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class CustomDialectFixtureAsync : TestCase
 	{
@@ -95,7 +94,7 @@ namespace NHibernate.Test.Pagination
 						.AddOrder(Order.Asc("X"))
 						.SetFirstResult(1)
 						.SetMaxResults(2)
-						.ListAsync<DataPoint>(CancellationToken.None));
+						.ListAsync<DataPoint>());
 
 				Assert.That(points.Count, Is.EqualTo(2));
 				Assert.That(points[0].X, Is.EqualTo(7d));
@@ -120,7 +119,7 @@ namespace NHibernate.Test.Pagination
 								.SetFirstResult(1)
 								.SetMaxResults(2));
 
-				var points = (IList<DataPoint>)(await (criteria.ListAsync(CancellationToken.None)))[0];
+				var points = (IList<DataPoint>)(await (criteria.ListAsync()))[0];
 
 				Assert.That(points.Count, Is.EqualTo(2));
 				Assert.That(points[0].X, Is.EqualTo(7d));

@@ -46,11 +46,11 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 				using (ITransaction tx = s.BeginTransaction())
 				{
 					Assert.That(e.LastModified, Is.Null);
-					await (s.SaveAsync(e, CancellationToken.None));
-					await (s.FlushAsync(CancellationToken.None));
+					await (s.SaveAsync(e));
+					await (s.FlushAsync());
 					Assert.That(e.LastModified, Is.Not.Null);
-					await (s.DeleteAsync(e, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (s.DeleteAsync(e));
+					await (tx.CommitAsync());
 				}
 			}
 		}
@@ -58,19 +58,19 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 		[Test]
 		public async System.Threading.Tasks.Task ShouldChangeAfterUpdateAsync()
 		{
-			object savedId = await (PersistANewSomethingAsync(CancellationToken.None));
+			object savedId = await (PersistANewSomethingAsync());
 			using (ISession s = OpenSession())
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					var fetched = await (s.GetAsync<SimpleVersioned>(savedId, CancellationToken.None));
+					var fetched = await (s.GetAsync<SimpleVersioned>(savedId));
 					var freshVersion = fetched.LastModified;
 					fetched.Something = "make it dirty";
-					await (s.UpdateAsync(fetched, CancellationToken.None));
-					await (s.FlushAsync(CancellationToken.None)); // force flush to hit DB
+					await (s.UpdateAsync(fetched));
+					await (s.FlushAsync()); // force flush to hit DB
 					Assert.That(fetched.LastModified, Is.Not.SameAs(freshVersion));
-					await (s.DeleteAsync(fetched, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (s.DeleteAsync(fetched));
+					await (tx.CommitAsync());
 				}
 			}
 		}
@@ -99,14 +99,14 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 			{
 				using (var session = OpenSession())
 				{
-					await (session.SaveAsync(versioned, CancellationToken.None));
-					await (session.FlushAsync(CancellationToken.None));
+					await (session.SaveAsync(versioned));
+					await (session.FlushAsync());
 
 					using (var concurrentSession = OpenSession())
 					{
-						var sameVersioned = await (concurrentSession.GetAsync<SimpleVersioned>(versioned.Id, CancellationToken.None));
+						var sameVersioned = await (concurrentSession.GetAsync<SimpleVersioned>(versioned.Id));
 						sameVersioned.Something = "another string";
-						await (concurrentSession.FlushAsync(CancellationToken.None));
+						await (concurrentSession.FlushAsync());
 					}
 
 					versioned.Something = "new string";
@@ -122,8 +122,8 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 			{
 				using (ISession session = OpenSession())
 				{
-					await (session.DeleteAsync("from SimpleVersioned", CancellationToken.None));
-					await (session.FlushAsync(CancellationToken.None));
+					await (session.DeleteAsync("from SimpleVersioned"));
+					await (session.FlushAsync());
 				}
 			}
 		}

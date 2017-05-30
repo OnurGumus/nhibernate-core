@@ -16,7 +16,6 @@ using System;
 namespace NHibernate.Test.NHSpecificTest.NH2865
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -54,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2865
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var result = await (session.Query<OrderLine>().SumAsync(l => int.Parse(l.Quantity), CancellationToken.None));
+				var result = await (session.Query<OrderLine>().SumAsync(l => int.Parse(l.Quantity)));
 
 				Assert.AreEqual(5, result);
 			}

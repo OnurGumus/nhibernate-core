@@ -51,8 +51,8 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new Person() { Name = "test person 1", Age = 20 }, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new Person() { Name = "test person 1", Age = 20 }));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -63,7 +63,7 @@ namespace NHibernate.Test.Criteria.Lambda
 
 				IList<Person> actual =
 					await (personQuery.GetExecutableQueryOver(s)
-						.ListAsync(CancellationToken.None));
+						.ListAsync());
 
 				Assert.That(actual[0].Age, Is.EqualTo(20));
 			}
@@ -78,13 +78,13 @@ namespace NHibernate.Test.Criteria.Lambda
 				var p1 = new Person() { Detail = new PersonDetail() { MaidenName = "test", Anniversary = new DateTime(2007, 06, 05) } };
 				var p2 = new Person() { Detail = null };
 
-				await (s.SaveAsync(p1, CancellationToken.None));
-				await (s.SaveAsync(p2, CancellationToken.None));
+				await (s.SaveAsync(p1));
+				await (s.SaveAsync(p2));
 
 				var nullDetails =
 					await (s.QueryOver<Person>()
 						.Where(p => p.Detail == null)
-						.ListAsync(CancellationToken.None));
+						.ListAsync());
 
 				Assert.That(nullDetails.Count, Is.EqualTo(1));
 				Assert.That(nullDetails[0].Id, Is.EqualTo(p2.Id));
@@ -99,12 +99,12 @@ namespace NHibernate.Test.Criteria.Lambda
 			{
 				await (s.SaveAsync(new Person() { Name = "John" }
 						.AddChild(new Child() { Nickname = "John"})
-						.AddChild(new Child() { Nickname = "Judy"}), CancellationToken.None));
+						.AddChild(new Child() { Nickname = "Judy"})));
 
-				await (s.SaveAsync(new Person() { Name = "Jean" }, CancellationToken.None));
-				await (s.SaveAsync(new Child() { Nickname = "James" }, CancellationToken.None));
+				await (s.SaveAsync(new Person() { Name = "Jean" }));
+				await (s.SaveAsync(new Child() { Nickname = "James" }));
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -115,7 +115,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					await (s.QueryOver(() => childAlias)
 						.Left.JoinQueryOver(c => c.Parent, () => parentAlias, p => p.Name == childAlias.Nickname)
 							.WhereRestrictionOn(p => p.Name).IsNotNull
-							.ListAsync(CancellationToken.None));
+							.ListAsync());
 
 				Assert.That(children, Has.Count.EqualTo(1));
 			}
@@ -127,7 +127,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				var parentNames = await (s.QueryOver(() => childAlias)
 								   .Left.JoinAlias(c => c.Parent, () => parentAlias, p => p.Name == childAlias.Nickname)
 								   .Select(c => parentAlias.Name)
-								   .ListAsync<string>(CancellationToken.None));
+								   .ListAsync<string>());
 
 				Assert.That(parentNames.Count(n => !string.IsNullOrEmpty(n)), Is.EqualTo(1));
 			}
@@ -140,7 +140,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					await (s.QueryOver<Person>(() => personAlias)
 						.Left.JoinQueryOver(p => p.Children, () => childAlias, c => c.Nickname == personAlias.Name)
 						.WhereRestrictionOn(c => c.Nickname).IsNotNull
-						.ListAsync(CancellationToken.None));
+						.ListAsync());
 
 				Assert.That(people, Has.Count.EqualTo(1));
 			}
@@ -153,7 +153,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					await (s.QueryOver<Person>(() => personAlias)
 						.Left.JoinAlias(p => p.Children, () => childAlias, c => c.Nickname == personAlias.Name)
 						.Select(p => childAlias.Nickname)
-						.ListAsync<string>(CancellationToken.None));
+						.ListAsync<string>());
 
 				Assert.That(childNames.Count(n => !string.IsNullOrEmpty(n)), Is.EqualTo(1));
 			}
@@ -165,15 +165,15 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new Person() { Name = "test person 1", Age = 20 }, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(new Person() { Name = "test person 1", Age = 20 }));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
 				Person actual =
 					await (s.QueryOver<Person>()
-						.SingleOrDefaultAsync(CancellationToken.None));
+						.SingleOrDefaultAsync());
 
 				Assert.That(actual.Name, Is.EqualTo("test person 1"));
 			}
@@ -183,7 +183,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				string actual =
 					await (s.QueryOver<Person>()
 						.Select(p => p.Name)
-						.SingleOrDefaultAsync<string>(CancellationToken.None));
+						.SingleOrDefaultAsync<string>());
 
 				Assert.That(actual, Is.EqualTo("test person 1"));
 			}
@@ -201,13 +201,13 @@ namespace NHibernate.Test.Criteria.Lambda
 				var person1 = new Person() { Name = "Person 1", Father = father2 };
 				var person2 = new CustomPerson() { Name = "Person 2", Father = father1 };
 
-				await (s.SaveAsync(father1, CancellationToken.None));
-				await (s.SaveAsync(father2, CancellationToken.None));
+				await (s.SaveAsync(father1));
+				await (s.SaveAsync(father2));
 
-				await (s.SaveAsync(person1, CancellationToken.None));
-				await (s.SaveAsync(person2, CancellationToken.None));
+				await (s.SaveAsync(person1));
+				await (s.SaveAsync(person2));
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -216,7 +216,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					await (s.QueryOver<Person>()
 						.Where(p => p is CustomPerson)
 						.And(p => p.Father != null)
-						.ListAsync(CancellationToken.None));
+						.ListAsync());
 
 				Assert.That(actual.Count, Is.EqualTo(1));
 				Assert.That(actual[0].Name, Is.EqualTo("Person 2"));
@@ -228,7 +228,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					await (s.QueryOver<Person>()
 						.Where(p => p.GetType() == typeof(CustomPerson))
 						.And(p => p.Father != null)
-						.ListAsync(CancellationToken.None));
+						.ListAsync());
 
 				Assert.That(actual.Count, Is.EqualTo(1));
 				Assert.That(actual[0].Name, Is.EqualTo("Person 2"));
@@ -241,7 +241,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					await (s.QueryOver<Person>()
 						.JoinAlias(p => p.Father, () => f)
 						.Where(() => f is CustomPerson)
-						.ListAsync(CancellationToken.None));
+						.ListAsync());
 
 				Assert.That(actual.Count, Is.EqualTo(1));
 				Assert.That(actual[0].Name, Is.EqualTo("Person 1"));
@@ -254,7 +254,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					await (s.QueryOver<Person>()
 						.JoinAlias(p => p.Father, () => f)
 						.Where(() => f.GetType() == typeof(CustomPerson))
-						.ListAsync(CancellationToken.None));
+						.ListAsync());
 
 				Assert.That(actual.Count, Is.EqualTo(1));
 				Assert.That(actual[0].Name, Is.EqualTo("Person 1"));
@@ -269,16 +269,16 @@ namespace NHibernate.Test.Criteria.Lambda
 			{
 				await (s.SaveAsync(new Parent()
 						.AddChild(new JoinedChild())
-						.AddChild(new JoinedChild()), CancellationToken.None));
+						.AddChild(new JoinedChild())));
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
 				var persons =
 					await (s.QueryOver<Parent>()
-						.ListAsync(CancellationToken.None));
+						.ListAsync());
 
 				Assert.That(NHibernateUtil.IsInitialized(persons[0].Children), "Default query did not eagerly load children");
 			}
@@ -288,7 +288,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				var persons =
 					await (s.QueryOver<Parent>()
 						.Fetch(p => p.Children).Lazy
-						.ListAsync(CancellationToken.None));
+						.ListAsync());
 
 				Assert.That(persons.Count, Is.EqualTo(1));
 				Assert.That(!NHibernateUtil.IsInitialized(persons[0].Children), "Children not lazy loaded");
@@ -298,7 +298,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		[Test]
 		public async Task RowCountAsync()
 		{
-			await (SetupPagingDataAsync(CancellationToken.None));
+			await (SetupPagingDataAsync());
 
 			using (ISession s = OpenSession())
 			{
@@ -309,9 +309,9 @@ namespace NHibernate.Test.Criteria.Lambda
 						.Skip(2)
 						.Take(1);
 
-				IList<Person> results = await (query.ListAsync(CancellationToken.None));
-				int rowCount = await (query.RowCountAsync(CancellationToken.None));
-				object bigRowCount = await (query.RowCountInt64Async(CancellationToken.None));
+				IList<Person> results = await (query.ListAsync());
+				int rowCount = await (query.RowCountAsync());
+				object bigRowCount = await (query.RowCountInt64Async());
 
 				Assert.That(results.Count, Is.EqualTo(1));
 				Assert.That(results[0].Name, Is.EqualTo("Name 3"));
@@ -327,11 +327,11 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new Person() { Name = "p2", BirthDate = new DateTime(2008, 07, 06) }, CancellationToken.None));
-				await (s.SaveAsync(new Person() { Name = "p1", BirthDate = new DateTime(2009, 08, 07) }, CancellationToken.None));
-				await (s.SaveAsync(new Person() { Name = "p3", BirthDate = new DateTime(2007, 06, 05) }, CancellationToken.None));
+				await (s.SaveAsync(new Person() { Name = "p2", BirthDate = new DateTime(2008, 07, 06) }));
+				await (s.SaveAsync(new Person() { Name = "p1", BirthDate = new DateTime(2009, 08, 07) }));
+				await (s.SaveAsync(new Person() { Name = "p3", BirthDate = new DateTime(2007, 06, 05) }));
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -340,7 +340,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				var persons =
 					await (s.QueryOver<Person>()
 						.OrderBy(p => p.BirthDate.Year).Desc
-						.ListAsync(CancellationToken.None));
+						.ListAsync());
 
 				Assert.That(persons.Count, Is.EqualTo(3));
 				Assert.That(persons[0].Name, Is.EqualTo("p1"));
@@ -356,7 +356,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			if (!driver.SupportsMultipleQueries)
 				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
 
-			await (SetupPagingDataAsync(CancellationToken.None));
+			await (SetupPagingDataAsync());
 
 			using (ISession s = OpenSession())
 			{
@@ -372,8 +372,8 @@ namespace NHibernate.Test.Criteria.Lambda
 						.Add("page", query)
 						.Add<int>("count", query.ToRowCountQuery());
 
-				var pageResults = (IList<Person>) await (multiCriteria.GetResultAsync("page", CancellationToken.None));
-				var countResults = (IList<int>) await (multiCriteria.GetResultAsync("count", CancellationToken.None));
+				var pageResults = (IList<Person>) await (multiCriteria.GetResultAsync("page"));
+				var countResults = (IList<int>) await (multiCriteria.GetResultAsync("count"));
 
 				Assert.That(pageResults.Count, Is.EqualTo(1));
 				Assert.That(pageResults[0].Name, Is.EqualTo("Name 3"));
@@ -395,8 +395,8 @@ namespace NHibernate.Test.Criteria.Lambda
 						.Add("page", query)
 						.Add<int>("count", query.ToRowCountQuery());
 
-				var pageResults = (IList<Person>) await (multiCriteria.GetResultAsync("page", CancellationToken.None));
-				var countResults = (IList<int>) await (multiCriteria.GetResultAsync("count", CancellationToken.None));
+				var pageResults = (IList<Person>) await (multiCriteria.GetResultAsync("page"));
+				var countResults = (IList<int>) await (multiCriteria.GetResultAsync("count"));
 
 				Assert.That(pageResults.Count, Is.EqualTo(1));
 				Assert.That(pageResults[0].Name, Is.EqualTo("Name 3"));
@@ -434,22 +434,22 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (var t = ss.BeginTransaction())
 			{
 				var person = new Person { Name = "test1" };
-				await (ss.InsertAsync(person, CancellationToken.None));
+				await (ss.InsertAsync(person));
 				personId = person.Id;
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (var ss = sessions.OpenStatelessSession())
 			using (ss.BeginTransaction())
 			{
 				var statelessPerson1 = (await (ss.QueryOver<Person>()
-					.ListAsync(CancellationToken.None)))[0];
+					.ListAsync()))[0];
 
 				Assert.That(statelessPerson1.Id, Is.EqualTo(personId));
 
 				var statelessPerson2 = (await (QueryOver.Of<Person>()
 					.GetExecutableQueryOver(ss)
-					.ListAsync(CancellationToken.None)))[0];
+					.ListAsync()))[0];
 
 				Assert.That(statelessPerson2.Id, Is.EqualTo(personId));
 			}

@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1963
 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture]
     public class CacheableQueryOnByteArrayAsync : BugTestCase
     {
@@ -61,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1963
                 var result = await (session.CreateQuery("from DomainClass d where d.ByteData = :data")
                     .SetBinary("data", data)
                     .SetCacheable(true)
-                    .UniqueResultAsync<DomainClass>(CancellationToken.None));
+                    .UniqueResultAsync<DomainClass>());
 
                 Assert.IsNotNull(result);
             }
@@ -73,7 +72,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1963
                 var result = await (session.CreateQuery("from DomainClass d where d.ByteData = :data")
 										.SetBinary("data", data)
                     .SetCacheable(true)
-                    .UniqueResultAsync<DomainClass>(CancellationToken.None));
+                    .UniqueResultAsync<DomainClass>());
 
                 Assert.IsNotNull(result);
             }
@@ -88,7 +87,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1963
 
                 var result = await (session.CreateQuery("from DomainClass d where d.ByteData = :data")
                     .SetParameter("data", data)
-                    .UniqueResultAsync<DomainClass>(CancellationToken.None));
+                    .UniqueResultAsync<DomainClass>());
 
                 Assert.IsNotNull(result);
             }
@@ -99,7 +98,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1963
 
                 var result = await (session.CreateQuery("from DomainClass d where d.ByteData = :data")
                     .SetParameter("data", data)
-                    .UniqueResultAsync<DomainClass>(CancellationToken.None));
+                    .UniqueResultAsync<DomainClass>());
 
                 Assert.IsNotNull(result);
             }

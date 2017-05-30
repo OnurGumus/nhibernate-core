@@ -16,7 +16,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class RegresstionTestsAsync : LinqTestCase
 	{
@@ -30,13 +29,13 @@ namespace NHibernate.Test.Linq
 						   where s.ParentRole != null
 						   select s;
 
-			Assert.AreEqual(0, await (children.CountAsync(CancellationToken.None)));
+			Assert.AreEqual(0, await (children.CountAsync()));
 
 			var roots = from s in db.Role
 						where s.ParentRole == null
 						select s;
 
-			Assert.AreEqual(2, await (roots.CountAsync(CancellationToken.None)));
+			Assert.AreEqual(2, await (roots.CountAsync()));
 		}
 
 		[Test]
@@ -47,13 +46,13 @@ namespace NHibernate.Test.Linq
 						   where s.ParentRole != testRole
 						   select s;
 
-			Assert.AreEqual(0, await (children.CountAsync(CancellationToken.None)));
+			Assert.AreEqual(0, await (children.CountAsync()));
 
 			var roots = from s in db.Role
 						where s.ParentRole == testRole
 						select s;
 
-			Assert.AreEqual(2, await (roots.CountAsync(CancellationToken.None)));
+			Assert.AreEqual(2, await (roots.CountAsync()));
 		}
 
 		[Test]
@@ -64,7 +63,7 @@ namespace NHibernate.Test.Linq
 						&& s.Name == "Admin"
 						select s;
 
-			Assert.AreEqual(1, await (roots.CountAsync(CancellationToken.None)));
+			Assert.AreEqual(1, await (roots.CountAsync()));
 		}
 	}
 }

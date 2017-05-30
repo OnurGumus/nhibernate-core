@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Generatedkeys.Identity
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SimpleIdentityGeneratedFixtureAsync : TestCase
 	{
@@ -38,13 +37,13 @@ namespace NHibernate.Test.Generatedkeys.Identity
 			session.BeginTransaction();
 
 			var e = new MyEntityIdentity { Name = "entity-1" };
-			await (session.SaveAsync(e, CancellationToken.None));
+			await (session.SaveAsync(e));
 
 			// this insert should happen immediately!
 			Assert.AreEqual(1, e.Id, "id not generated through forced insertion");
 
-			await (session.DeleteAsync(e, CancellationToken.None));
-			await (session.Transaction.CommitAsync(CancellationToken.None));
+			await (session.DeleteAsync(e));
+			await (session.Transaction.CommitAsync());
 			session.Close();
 		}
 	}

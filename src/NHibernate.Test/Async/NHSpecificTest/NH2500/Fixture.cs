@@ -22,7 +22,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2500
 {
     using System.Threading.Tasks;
-    using System.Threading;
 
 
     [TestFixture]
@@ -77,7 +76,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2500
             			x.Name,
             			count,
             			User = "abc"
-            		}).FirstAsync(CancellationToken.None));
+            		}).FirstAsync());
 
             	this.count = 2;
 
@@ -88,14 +87,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2500
             			x.Name,
             			count,
             			User = "def"
-            		}).FirstAsync(CancellationToken.None));
+            		}).FirstAsync());
 
 				Assert.AreEqual(1, foos1.count);
 				Assert.AreEqual(2, foos2.count);
 				Assert.AreEqual("abc", foos1.User);
 				Assert.AreEqual("def", foos2.User);
 
-                await (transaction.CommitAsync(CancellationToken.None));
+                await (transaction.CommitAsync());
             }
         }
     }

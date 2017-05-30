@@ -88,19 +88,19 @@ namespace NHibernate.Test.Operations
 			{
 				s.BeginTransaction();
 				var jboss = new Employer();
-				await (s.PersistAsync(jboss, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(jboss));
+				await (s.Transaction.CommitAsync());
 				s.Clear();
 
 				s.BeginTransaction();
-				var otherJboss = await (s.GetAsync<Employer>(jboss.Id, CancellationToken.None));
-				await (s.DeleteAsync(otherJboss, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				var otherJboss = await (s.GetAsync<Employer>(jboss.Id));
+				await (s.DeleteAsync(otherJboss));
+				await (s.Transaction.CommitAsync());
 				s.Clear();
 				jboss.Vers = 1;
 				s.BeginTransaction();
 				s.Merge(jboss);
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 		}
 
@@ -115,9 +115,9 @@ namespace NHibernate.Test.Operations
 				{
 					p = new Person {Name = "steve"};
 					a = new Address {StreetAddress = "123 Main", City = "Austin", Country = "US", Resident = p};
-					await (s.PersistAsync(a, CancellationToken.None));
-					await (s.PersistAsync(p, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (s.PersistAsync(a));
+					await (s.PersistAsync(p));
+					await (tx.CommitAsync());
 				}
 			}
 
@@ -130,7 +130,7 @@ namespace NHibernate.Test.Operations
 				using (s.BeginTransaction())
 				{
 					p = (Person) s.Merge(p);
-					await (s.Transaction.CommitAsync(CancellationToken.None));
+					await (s.Transaction.CommitAsync());
 				}
 			}
 
@@ -142,9 +142,9 @@ namespace NHibernate.Test.Operations
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					await (s.DeleteAsync(a, CancellationToken.None));
-					await (s.DeleteAsync(p, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (s.DeleteAsync(a));
+					await (s.DeleteAsync(p));
+					await (tx.CommitAsync());
 				}
 			}
 		}
@@ -158,8 +158,8 @@ namespace NHibernate.Test.Operations
 			{
 				p = new Person {Name = "steve"};
 				new PersonalDetails {SomePersonalDetail = "I have big feet", Person = p};
-				await (s.PersistAsync(p, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(p));
+				await (tx.CommitAsync());
 			}
 
 			ClearCounts();
@@ -169,7 +169,7 @@ namespace NHibernate.Test.Operations
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				p = (Person) s.Merge(p);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			AssertInsertCount(0);
@@ -179,8 +179,8 @@ namespace NHibernate.Test.Operations
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.DeleteAsync(p, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(p));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -199,7 +199,7 @@ namespace NHibernate.Test.Operations
 				root.AddChild(child);
 				child.AddChild(grandchild);
 				s.Merge(root);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			AssertInsertCount(3);
@@ -214,7 +214,7 @@ namespace NHibernate.Test.Operations
 			using (var tx = s.BeginTransaction())
 			{
 				s.Merge(root);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			AssertInsertCount(1);
@@ -230,7 +230,7 @@ namespace NHibernate.Test.Operations
 			using (var tx = s.BeginTransaction())
 			{
 				s.Merge(root);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			AssertInsertCount(2);
@@ -240,13 +240,13 @@ namespace NHibernate.Test.Operations
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				await (s.DeleteAsync(grandchild, CancellationToken.None));
-				await (s.DeleteAsync(grandchild2, CancellationToken.None));
-				await (s.DeleteAsync(grandchild3, CancellationToken.None));
-				await (s.DeleteAsync(child, CancellationToken.None));
-				await (s.DeleteAsync(child2, CancellationToken.None));
-				await (s.DeleteAsync(root, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(grandchild));
+				await (s.DeleteAsync(grandchild2));
+				await (s.DeleteAsync(grandchild3));
+				await (s.DeleteAsync(child));
+				await (s.DeleteAsync(child2));
+				await (s.DeleteAsync(root));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -267,7 +267,7 @@ namespace NHibernate.Test.Operations
 				root.AddChild(child);
 				child.AddChild(grandchild);
 				root = (NumberedNode) s.Merge(root);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			AssertInsertCount(3);
@@ -288,7 +288,7 @@ namespace NHibernate.Test.Operations
 			{
 				ITransaction tx = s.BeginTransaction();
 				root = (NumberedNode) s.Merge(root);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			AssertInsertCount(1);
@@ -306,7 +306,7 @@ namespace NHibernate.Test.Operations
 			{
 				ITransaction tx = s.BeginTransaction();
 				root = (NumberedNode) s.Merge(root);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			AssertInsertCount(2);
@@ -316,10 +316,10 @@ namespace NHibernate.Test.Operations
 			using (ISession s = OpenSession())
 			{
 				ITransaction tx = s.BeginTransaction();
-				await (s.DeleteAsync("from NumberedNode where name like 'grand%'", CancellationToken.None));
-				await (s.DeleteAsync("from NumberedNode where name like 'child%'", CancellationToken.None));
-				await (s.DeleteAsync("from NumberedNode", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from NumberedNode where name like 'grand%'"));
+				await (s.DeleteAsync("from NumberedNode where name like 'child%'"));
+				await (s.DeleteAsync("from NumberedNode"));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -332,8 +332,8 @@ namespace NHibernate.Test.Operations
 				using (ITransaction tx = s.BeginTransaction())
 				{
 					root = new NumberedNode("root");
-					await (s.PersistAsync(root, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (s.PersistAsync(root));
+					await (tx.CommitAsync());
 				}
 				ClearCounts();
 
@@ -352,7 +352,7 @@ namespace NHibernate.Test.Operations
 					Assert.That(root.Children.Count, Is.EqualTo(1));
 					Assert.That(root.Children.Contains(mergedChild));
 					//assertNotSame( mergedChild, s.Merge(child) ); //yucky :(
-					await (tx.CommitAsync(CancellationToken.None));
+					await (tx.CommitAsync());
 				}
 
 				AssertInsertCount(1);
@@ -364,7 +364,7 @@ namespace NHibernate.Test.Operations
 				using (var tx = s.BeginTransaction())
 				{
 					Assert.That(
-						await (s.CreateCriteria(typeof(NumberedNode)).SetProjection(Projections.RowCount()).UniqueResultAsync(CancellationToken.None)),
+						await (s.CreateCriteria(typeof(NumberedNode)).SetProjection(Projections.RowCount()).UniqueResultAsync()),
 						Is.EqualTo(2));
 					tx.Rollback();
 				}
@@ -383,8 +383,8 @@ namespace NHibernate.Test.Operations
 				competition.Competitors.Add(new Competitor {Name = "Name"});
 				competition.Competitors.Add(new Competitor());
 				competition.Competitors.Add(new Competitor());
-				await (s.PersistAsync(competition, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(competition));
+				await (tx.CommitAsync());
 			}
 
 			// the competition graph is now detached:
@@ -402,7 +402,7 @@ namespace NHibernate.Test.Operations
 				competition.Competitors = newComp;
 				//   3) attempt the merge
 				competition2 = (Competition) s.Merge(competition);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			Assert.That(!(competition == competition2));
@@ -412,10 +412,10 @@ namespace NHibernate.Test.Operations
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				competition = await (s.GetAsync<Competition>(competition.Id, CancellationToken.None));
+				competition = await (s.GetAsync<Competition>(competition.Id));
 				Assert.That(competition.Competitors.Count, Is.EqualTo(2));
-				await (s.DeleteAsync(competition, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(competition));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -426,17 +426,17 @@ namespace NHibernate.Test.Operations
 			using(ISession s = OpenSession())
 			using(s.BeginTransaction())
 			{
-				await (s.PersistAsync(entity, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(entity));
+				await (s.Transaction.CommitAsync());
 			}
 
 			// make the detached 'entity' reference stale...
 			using(var s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				var entity2 = await (s.GetAsync<VersionedEntity>(entity.Id, CancellationToken.None));
+				var entity2 = await (s.GetAsync<VersionedEntity>(entity.Id));
 				entity2.Name = "entity-name";
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 
 			// now try to reattch it
@@ -447,7 +447,7 @@ namespace NHibernate.Test.Operations
 				s2.BeginTransaction();
 
 				s2.Merge(entity);
-				await (s2.Transaction.CommitAsync(CancellationToken.None));
+				await (s2.Transaction.CommitAsync());
 				Assert.Fail("was expecting staleness error");
 			}
 			catch (StaleObjectStateException)
@@ -461,7 +461,7 @@ namespace NHibernate.Test.Operations
 					s2.Transaction.Rollback();
 					s2.Close();
 				}
-				await (CleanupAsync(CancellationToken.None));
+				await (CleanupAsync());
 			}
 		}
 
@@ -476,8 +476,8 @@ namespace NHibernate.Test.Operations
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				root.AddChild(child);
-				await (s.PersistAsync(root, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(root));
+				await (tx.CommitAsync());
 			}
 
 			AssertInsertCount(2);
@@ -494,7 +494,7 @@ namespace NHibernate.Test.Operations
 			using (var tx = s.BeginTransaction())
 			{
 				s.Merge(root);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			AssertInsertCount(1);
@@ -512,8 +512,8 @@ namespace NHibernate.Test.Operations
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				root.AddChild(child);
-				await (s.PersistAsync(root, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(root));
+				await (tx.CommitAsync());
 			}
 
 			AssertInsertCount(2);
@@ -530,7 +530,7 @@ namespace NHibernate.Test.Operations
 			using (var tx = s.BeginTransaction())
 			{
 				s.Merge(root);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			AssertInsertCount(1);
@@ -544,8 +544,8 @@ namespace NHibernate.Test.Operations
 			using(ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				await (s.PersistAsync(node, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(node));
+				await (s.Transaction.CommitAsync());
 			}
 
 			ClearCounts();
@@ -556,7 +556,7 @@ namespace NHibernate.Test.Operations
 			using (s.BeginTransaction())
 			{
 				node = (Node) s.Merge(node);
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -570,7 +570,7 @@ namespace NHibernate.Test.Operations
 			using (s.BeginTransaction())
 			{
 				node = (Node) s.Merge(node);
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 			AssertUpdateCount(1);
 			AssertInsertCount(0);
@@ -584,8 +584,8 @@ namespace NHibernate.Test.Operations
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				await (s.PersistAsync(entity, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(entity));
+				await (s.Transaction.CommitAsync());
 			}
 
 			ClearCounts();
@@ -597,7 +597,7 @@ namespace NHibernate.Test.Operations
 			using (s.BeginTransaction())
 			{
 				mergedEntity = (VersionedEntity) s.Merge(entity);
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -612,7 +612,7 @@ namespace NHibernate.Test.Operations
 			using (s.BeginTransaction())
 			{
 				entity = (VersionedEntity) s.Merge(entity);
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 			AssertUpdateCount(1);
 			AssertInsertCount(0);
@@ -630,8 +630,8 @@ namespace NHibernate.Test.Operations
 			{
 				parent.Children.Add(child);
 				child.Parent = parent;
-				await (s.PersistAsync(parent, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(parent));
+				await (s.Transaction.CommitAsync());
 			}
 
 			ClearCounts();
@@ -643,7 +643,7 @@ namespace NHibernate.Test.Operations
 			using (s.BeginTransaction())
 			{
 				mergedParent = (VersionedEntity) s.Merge(parent);
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -663,7 +663,7 @@ namespace NHibernate.Test.Operations
 			using (s.BeginTransaction())
 			{
 				parent = (VersionedEntity) s.Merge(mergedParent);
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 			AssertUpdateCount(1);
 			AssertInsertCount(1);
@@ -680,8 +680,8 @@ namespace NHibernate.Test.Operations
 				var child = new Node {Name = "child"};
 				parent.Children.Add(child);
 				child.Parent = parent;
-				await (s.PersistAsync(parent, CancellationToken.None));
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.PersistAsync(parent));
+				await (s.Transaction.CommitAsync());
 			}
 
 			ClearCounts();
@@ -692,7 +692,7 @@ namespace NHibernate.Test.Operations
 			using (s.BeginTransaction())
 			{
 				parent = (Node) s.Merge(parent);
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 
 			AssertUpdateCount(0);
@@ -709,7 +709,7 @@ namespace NHibernate.Test.Operations
 			using (s.BeginTransaction())
 			{
 				parent = (Node) s.Merge(parent);
-				await (s.Transaction.CommitAsync(CancellationToken.None));
+				await (s.Transaction.CommitAsync());
 			}
 			AssertUpdateCount(1);
 			AssertInsertCount(1);
@@ -723,13 +723,13 @@ namespace NHibernate.Test.Operations
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				var entity = new TimestampedEntity {Id = "test", Name = "test"};
-				await (s.PersistAsync(entity, CancellationToken.None));
+				await (s.PersistAsync(entity));
 				s.Merge(new TimestampedEntity {Id = "test", Name = "test-2"});
 
 				try
 				{
 					// control operation...
-					await (s.SaveOrUpdateAsync(new TimestampedEntity {Id = "test", Name = "test-3"}, CancellationToken.None));
+					await (s.SaveOrUpdateAsync(new TimestampedEntity {Id = "test", Name = "test-3"}));
 					Assert.Fail("saveOrUpdate() should fail here");
 				}
 				catch (NonUniqueObjectException)
@@ -737,7 +737,7 @@ namespace NHibernate.Test.Operations
 					// expected behavior
 				}
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -748,13 +748,13 @@ namespace NHibernate.Test.Operations
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				var entity = new VersionedEntity {Id = "test", Name = "test"};
-				await (s.PersistAsync(entity, CancellationToken.None));
+				await (s.PersistAsync(entity));
 				s.Merge(new VersionedEntity {Id = "test", Name = "test-2"});
 
 				try
 				{
 					// control operation...
-					await (s.SaveOrUpdateAsync(new VersionedEntity {Id = "test", Name = "test-3"}, CancellationToken.None));
+					await (s.SaveOrUpdateAsync(new VersionedEntity {Id = "test", Name = "test-3"}));
 					Assert.Fail("saveOrUpdate() should fail here");
 				}
 				catch (NonUniqueObjectException)
@@ -762,7 +762,7 @@ namespace NHibernate.Test.Operations
 					// expected behavior
 				}
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 
@@ -777,8 +777,8 @@ namespace NHibernate.Test.Operations
 					var gavin = new Employee();
 					jboss.Employees = new List<Employee> {gavin};
 					s.Merge(jboss);
-					await (s.FlushAsync(CancellationToken.None));
-					jboss = await (s.CreateQuery("from Employer e join fetch e.Employees").UniqueResultAsync<Employer>(CancellationToken.None));
+					await (s.FlushAsync());
+					jboss = await (s.CreateQuery("from Employer e join fetch e.Employees").UniqueResultAsync<Employer>());
 					Assert.That(NHibernateUtil.IsInitialized(jboss.Employees));
 					Assert.That(jboss.Employees.Count, Is.EqualTo(1));
 					s.Clear();
@@ -786,7 +786,7 @@ namespace NHibernate.Test.Operations
 					it.MoveNext();
 
 					s.Merge(it.Current);
-					await (tx.CommitAsync(CancellationToken.None));
+					await (tx.CommitAsync());
 				}
 			}
 		}

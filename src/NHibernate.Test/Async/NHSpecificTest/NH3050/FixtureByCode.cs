@@ -19,7 +19,6 @@ using System;
 namespace NHibernate.Test.NHSpecificTest.NH3050
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Fixture using 'by code' mappings
 	/// </summary>
@@ -92,7 +91,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 				//in this case we only need one as we have limited the cache size to 1
 				await ((from e in session.Query<Entity>()
 				 where e.Name == ""
-				 select e).ToListAsync(CancellationToken.None));
+				 select e).ToListAsync());
 
 				//garbage collection runs so that the query plan for our future which is a weak reference now in the plan cache is collected.
 				GC.Collect();
@@ -103,7 +102,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 				//execute original query again which will look for a NhLinqExpression in the plan cache but because it has already been evicted
 				//and because the ExpandedQueryExpression generates the same cache key, the ExpandedQueryExpression is returned and 
 				//an exception is thrown as it tries to cast to a NhLinqExpression.
-				await (query.ToListAsync(CancellationToken.None));
+				await (query.ToListAsync());
 			}
 		}
 

@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.LazyComponentTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class LazyComponentTestFixtureAsync : TestCase
 	{
@@ -63,11 +62,11 @@ namespace NHibernate.Test.LazyComponentTest
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var p = await (s.CreateQuery("from Person p where name='Gabor'").UniqueResultAsync<Person>(CancellationToken.None));
+				var p = await (s.CreateQuery("from Person p where name='Gabor'").UniqueResultAsync<Person>());
 				// make sure component has not been initialized yet
 				Assert.That(NHibernateUtil.IsPropertyInitialized(p, "Address"), Is.False);
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -77,11 +76,11 @@ namespace NHibernate.Test.LazyComponentTest
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var p = await (s.CreateQuery("from Person p where name='Gabor'").UniqueResultAsync<Person>(CancellationToken.None));
+				var p = await (s.CreateQuery("from Person p where name='Gabor'").UniqueResultAsync<Person>());
 				// make sure component has not been initialized yet
 				Assert.That(NHibernateUtil.IsPropertyInitialized(p, "Address"), Is.False);
-				await (s.DeleteAsync(p, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(p));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -91,22 +90,22 @@ namespace NHibernate.Test.LazyComponentTest
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var p = await (s.CreateQuery("from Person p where name='Gabor'").UniqueResultAsync<Person>(CancellationToken.None));
+				var p = await (s.CreateQuery("from Person p where name='Gabor'").UniqueResultAsync<Person>());
 				// make sure component has not been initialized yet
 				Assert.That(!NHibernateUtil.IsPropertyInitialized(p, "Address"));
 
 				p.Address.City = "Baja";
-				await (s.UpdateAsync(p, CancellationToken.None));
+				await (s.UpdateAsync(p));
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var p = await (s.CreateQuery("from Person p where name='Gabor'").UniqueResultAsync<Person>(CancellationToken.None));
+				var p = await (s.CreateQuery("from Person p where name='Gabor'").UniqueResultAsync<Person>());
 				Assert.That(p.Address.City, Is.EqualTo("Baja"));
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 		}
 	}

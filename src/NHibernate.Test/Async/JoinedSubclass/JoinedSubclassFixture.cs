@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.JoinedSubclass
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Test the use of <c>&lt;class&gt;</c> and <c>&lt;joined-subclass&gt;</c> mappings.
 	/// </summary>
@@ -63,19 +62,19 @@ namespace NHibernate.Test.JoinedSubclass
 			mom.Name = "mom";
 			mom.Sex = 'F';
 
-			await (s.SaveAsync(mom, CancellationToken.None));
-			await (s.SaveAsync(mark, CancellationToken.None));
-			await (s.SaveAsync(joe, CancellationToken.None));
+			await (s.SaveAsync(mom));
+			await (s.SaveAsync(mark));
+			await (s.SaveAsync(joe));
 
-			Assert.AreEqual(3, (await (s.CreateQuery("from Person").ListAsync(CancellationToken.None))).Count);
+			Assert.AreEqual(3, (await (s.CreateQuery("from Person").ListAsync())).Count);
 			IQuery query = s.CreateQuery("from Customer");
-			IList results = await (query.ListAsync(CancellationToken.None));
+			IList results = await (query.ListAsync());
 			Assert.AreEqual(1, results.Count);
 			Assert.IsTrue(results[0] is Customer, "should be a customer");
 
 			s.Clear();
 
-			IList customers = await (s.CreateQuery("from Customer c left join fetch c.Salesperson").ListAsync(CancellationToken.None));
+			IList customers = await (s.CreateQuery("from Customer c left join fetch c.Salesperson").ListAsync());
 			foreach (Customer c in customers)
 			{
 				// when proxies is working this is important
@@ -85,7 +84,7 @@ namespace NHibernate.Test.JoinedSubclass
 			Assert.AreEqual(1, customers.Count);
 			s.Clear();
 
-			customers = await (s.CreateQuery("from Customer").ListAsync(CancellationToken.None));
+			customers = await (s.CreateQuery("from Customer").ListAsync());
 			foreach (Customer c in customers)
 			{
 				Assert.IsFalse(NHibernateUtil.IsInitialized(c.Salesperson));
@@ -94,18 +93,18 @@ namespace NHibernate.Test.JoinedSubclass
 			Assert.AreEqual(1, customers.Count);
 			s.Clear();
 
-			mark = (Employee) await (s.LoadAsync(typeof(Employee), mark.Id, CancellationToken.None));
-			joe = (Customer) await (s.LoadAsync(typeof(Customer), joe.Id, CancellationToken.None));
+			mark = (Employee) await (s.LoadAsync(typeof(Employee), mark.Id));
+			joe = (Customer) await (s.LoadAsync(typeof(Customer), joe.Id));
 
 			mark.Address.Zip = "30306";
-			Assert.AreEqual(1, (await (s.CreateQuery("from Person p where p.Address.Zip = '30306'").ListAsync(CancellationToken.None))).Count);
+			Assert.AreEqual(1, (await (s.CreateQuery("from Person p where p.Address.Zip = '30306'").ListAsync())).Count);
 
-			await (s.DeleteAsync(mom, CancellationToken.None));
-			await (s.DeleteAsync(joe, CancellationToken.None));
-			await (s.DeleteAsync(mark, CancellationToken.None));
+			await (s.DeleteAsync(mom));
+			await (s.DeleteAsync(joe));
+			await (s.DeleteAsync(mark));
 
-			Assert.AreEqual(0, (await (s.CreateQuery("from Person").ListAsync(CancellationToken.None))).Count);
-			await (t.CommitAsync(CancellationToken.None));
+			Assert.AreEqual(0, (await (s.CreateQuery("from Person").ListAsync())).Count);
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -130,32 +129,32 @@ namespace NHibernate.Test.JoinedSubclass
 
 			dilbert.Manager = pointyhair;
 
-			await (s.SaveAsync(wally, CancellationToken.None));
-			await (s.SaveAsync(dilbert, CancellationToken.None));
-			await (s.SaveAsync(pointyhair, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(wally));
+			await (s.SaveAsync(dilbert));
+			await (s.SaveAsync(pointyhair));
+			await (t.CommitAsync());
 			s.Close();
 
 			// get a proxied - initialized version of manager
 			s = OpenSession();
-			pointyhair = (Employee) await (s.LoadAsync(typeof(Employee), pointyhair.Id, CancellationToken.None));
-			await (NHibernateUtil.InitializeAsync(pointyhair, CancellationToken.None));
+			pointyhair = (Employee) await (s.LoadAsync(typeof(Employee), pointyhair.Id));
+			await (NHibernateUtil.InitializeAsync(pointyhair));
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 			IQuery q = s.CreateQuery("from Employee as e where e.Manager = :theMgr");
 			q.SetParameter("theMgr", pointyhair);
-			IList results = await (q.ListAsync(CancellationToken.None));
+			IList results = await (q.ListAsync());
 			Assert.AreEqual(1, results.Count, "should only return 1 employee.");
 			dilbert = (Employee) results[0];
 			Assert.AreEqual("dilbert", dilbert.Name, "should have been dilbert returned.");
 
-			await (s.DeleteAsync(wally, CancellationToken.None));
-			await (s.DeleteAsync(pointyhair, CancellationToken.None));
-			await (s.DeleteAsync(dilbert, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(wally));
+			await (s.DeleteAsync(pointyhair));
+			await (s.DeleteAsync(dilbert));
+			await (s.FlushAsync());
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -172,16 +171,16 @@ namespace NHibernate.Test.JoinedSubclass
 				dilbert.Name = "dilbert";
 				dilbert.Title = "office clown";
 
-				await (s.SaveAsync(wally, CancellationToken.None));
-				await (s.SaveAsync(dilbert, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(wally));
+				await (s.SaveAsync(dilbert));
+				await (s.FlushAsync());
 
-				Assert.AreSame(wally, await (s.CreateQuery("select p from Person p where p.class = Person").UniqueResultAsync(CancellationToken.None)));
-				Assert.AreSame(dilbert, await (s.CreateQuery("select p from Person p where p.class = Employee").UniqueResultAsync(CancellationToken.None)));
+				Assert.AreSame(wally, await (s.CreateQuery("select p from Person p where p.class = Person").UniqueResultAsync()));
+				Assert.AreSame(dilbert, await (s.CreateQuery("select p from Person p where p.class = Employee").UniqueResultAsync()));
 
-				await (s.DeleteAsync(wally, CancellationToken.None));
-				await (s.DeleteAsync(dilbert, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(wally));
+				await (s.DeleteAsync(dilbert));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -200,14 +199,14 @@ namespace NHibernate.Test.JoinedSubclass
 			emp.Name = "test one";
 			emp.Title = "office clown";
 
-			await (s.SaveAsync(emp, CancellationToken.None));
+			await (s.SaveAsync(emp));
 
 			Person person = new Person();
 			person.Name = "the test string";
 
-			await (s.SaveAsync(person, CancellationToken.None));
+			await (s.SaveAsync(person));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			int empId = emp.Id;
@@ -218,14 +217,14 @@ namespace NHibernate.Test.JoinedSubclass
 			t = s.BeginTransaction();
 
 			// perform a load based on the base class
-			Person empAsPerson = (Person) (await (s.CreateQuery("from Person as p where p.id = ?").SetInt32(0, empId).ListAsync(CancellationToken.None)))[0];
-			person = (Person) await (s.LoadAsync(typeof(Person), personId, CancellationToken.None));
+			Person empAsPerson = (Person) (await (s.CreateQuery("from Person as p where p.id = ?").SetInt32(0, empId).ListAsync()))[0];
+			person = (Person) await (s.LoadAsync(typeof(Person), personId));
 
 			// the object with id=2 was loaded using the base class - lets make sure it actually loaded
 			// the subclass
 			Assert.AreEqual(typeof(Employee), empAsPerson.GetType(),
 			                "even though person was queried, should have returned correct subclass.");
-			emp = (Employee) await (s.LoadAsync(typeof(Employee), empId, CancellationToken.None));
+			emp = (Employee) await (s.LoadAsync(typeof(Employee), empId));
 
 			// lets update the objects
 			person.Name = "Did it get updated";
@@ -240,10 +239,10 @@ namespace NHibernate.Test.JoinedSubclass
 
 			// save it through the base class reference and make sure that the
 			// subclass properties get updated.
-			await (s.UpdateAsync(empAsPerson, CancellationToken.None));
-			await (s.UpdateAsync(person, CancellationToken.None));
+			await (s.UpdateAsync(empAsPerson));
+			await (s.UpdateAsync(person));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			// lets test the Criteria interface for subclassing
@@ -252,7 +251,7 @@ namespace NHibernate.Test.JoinedSubclass
 
 			IList results = await (s.CreateCriteria(typeof(Person))
 				.Add(Expression.In("Name", new string[] {"Did it get updated", "Updated Employee String"}))
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 
 			Assert.AreEqual(2, results.Count);
 
@@ -271,10 +270,10 @@ namespace NHibernate.Test.JoinedSubclass
 			Assert.AreEqual('M', person.Sex);
 			Assert.AreEqual("office dunce", emp.Title);
 
-			await (s.DeleteAsync(emp, CancellationToken.None));
-			await (s.DeleteAsync(person, CancellationToken.None));
+			await (s.DeleteAsync(emp));
+			await (s.DeleteAsync(person));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 		}
 	}

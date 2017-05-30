@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class OptimisticConcurrencyFixtureAsync : TestCase
 	{
@@ -36,13 +35,13 @@ namespace NHibernate.Test.NHSpecificTest
 				Optimistic op = new Optimistic();
 				op.Bag = new List<string> {"xyz"};
 
-				await (s.SaveAsync(op, CancellationToken.None));
+				await (s.SaveAsync(op));
 			}
 
 			using (ISession s = OpenSession())
 			{
-				await (s.DeleteAsync("from Optimistic", CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Optimistic"));
+				await (s.FlushAsync());
 			}
 		}
 
@@ -56,14 +55,14 @@ namespace NHibernate.Test.NHSpecificTest
 			{
 				using (ISession session = OpenSession())
 				{
-					await (session.SaveAsync(top, CancellationToken.None));
-					await (session.FlushAsync(CancellationToken.None));
+					await (session.SaveAsync(top));
+					await (session.FlushAsync());
 
 					using (ISession concurrentSession = OpenSession())
 					{
-						Top sameTop = (Top) await (concurrentSession.GetAsync(typeof(Top), top.Id, CancellationToken.None));
+						Top sameTop = (Top) await (concurrentSession.GetAsync(typeof(Top), top.Id));
 						sameTop.Name = "another name";
-						await (concurrentSession.FlushAsync(CancellationToken.None));
+						await (concurrentSession.FlushAsync());
 					}
 
 					top.Name = "new name";
@@ -79,8 +78,8 @@ namespace NHibernate.Test.NHSpecificTest
 			{
 				using (ISession session = OpenSession())
 				{
-					await (session.DeleteAsync("from Top", CancellationToken.None));
-					await (session.FlushAsync(CancellationToken.None));
+					await (session.DeleteAsync("from Top"));
+					await (session.FlushAsync());
 				}
 			}
 		}
@@ -95,14 +94,14 @@ namespace NHibernate.Test.NHSpecificTest
 			{
 				using (ISession session = OpenSession())
 				{
-					await (session.SaveAsync(optimistic, CancellationToken.None));
-					await (session.FlushAsync(CancellationToken.None));
+					await (session.SaveAsync(optimistic));
+					await (session.FlushAsync());
 
 					using (ISession concurrentSession = OpenSession())
 					{
-						Optimistic sameOptimistic = (Optimistic) await (concurrentSession.GetAsync(typeof(Optimistic), optimistic.Id, CancellationToken.None));
+						Optimistic sameOptimistic = (Optimistic) await (concurrentSession.GetAsync(typeof(Optimistic), optimistic.Id));
 						sameOptimistic.String = "another string";
-						await (concurrentSession.FlushAsync(CancellationToken.None));
+						await (concurrentSession.FlushAsync());
 					}
 
 					optimistic.String = "new string";
@@ -118,8 +117,8 @@ namespace NHibernate.Test.NHSpecificTest
 			{
 				using (ISession session = OpenSession())
 				{
-					await (session.DeleteAsync("from Optimistic", CancellationToken.None));
-					await (session.FlushAsync(CancellationToken.None));
+					await (session.DeleteAsync("from Optimistic"));
+					await (session.FlushAsync());
 				}
 			}
 		}

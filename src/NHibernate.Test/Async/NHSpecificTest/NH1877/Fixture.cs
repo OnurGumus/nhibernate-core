@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1877
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -53,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1877
 				var crit = session.CreateCriteria(typeof (Person))
 					.SetProjection(Projections.GroupProperty("BirthDate"),
 					               Projections.Count("Id"));
-				var result = await (crit.ListAsync(CancellationToken.None));
+				var result = await (crit.ListAsync());
 				Assert.That(result,Has.Count.EqualTo(5));
 			}
 		}
@@ -67,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1877
 					.SetProjection(
 					Projections.GroupProperty(Projections.SqlFunction("month", NHibernateUtil.Int32, Projections.Property("BirthDate"))));
 
-				var result = await (crit.UniqueResultAsync(CancellationToken.None));
+				var result = await (crit.UniqueResultAsync());
 				Assert.That(result,Is.EqualTo(7));
 			}
 		}

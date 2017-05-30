@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2074
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -29,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2074
 		{
             using (var s = OpenSession())
             {
-            	await (s.CreateQuery("from Person").ListAsync(CancellationToken.None));
+            	await (s.CreateQuery("from Person").ListAsync());
             }
 		} 
 

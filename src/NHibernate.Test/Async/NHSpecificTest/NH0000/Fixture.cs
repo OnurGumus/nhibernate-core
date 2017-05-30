@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH0000
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -57,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH0000
 							 where e.Name == "Bob"
 							 select e;
 
-				Assert.AreEqual(1, (await (result.ToListAsync(CancellationToken.None))).Count);
+				Assert.AreEqual(1, (await (result.ToListAsync())).Count);
 			}
 		}
 	}

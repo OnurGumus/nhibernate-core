@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH392
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -37,8 +36,8 @@ namespace NHibernate.Test.NHSpecificTest.NH392
 				ITransaction tran = s.BeginTransaction();
 				try
 				{
-					await (s.SaveOrUpdateAsync(uvmo, CancellationToken.None));
-					await (tran.CommitAsync(CancellationToken.None));
+					await (s.SaveOrUpdateAsync(uvmo));
+					await (tran.CommitAsync());
 				}
 				catch
 				{

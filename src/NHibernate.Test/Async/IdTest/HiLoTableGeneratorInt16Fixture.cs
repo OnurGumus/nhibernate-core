@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.IdTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class HiLoTableGeneratorInt16FixtureAsync : IdFixtureBase
 	{
@@ -29,16 +28,16 @@ namespace NHibernate.Test.IdTest
 			Int16 id;
 			ISession s = OpenSession();
 			HiLoInt16Class b = new HiLoInt16Class();
-			await (s.SaveAsync(b, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(b));
+			await (s.FlushAsync());
 			id = b.Id;
 			s.Close();
 
 			s = OpenSession();
-			b = (HiLoInt16Class) await (s.LoadAsync(typeof(HiLoInt16Class), b.Id, CancellationToken.None));
+			b = (HiLoInt16Class) await (s.LoadAsync(typeof(HiLoInt16Class), b.Id));
 			Assert.AreEqual(id, b.Id);
-			await (s.DeleteAsync(b, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(b));
+			await (s.FlushAsync());
 			s.Close();
 		}
 	}

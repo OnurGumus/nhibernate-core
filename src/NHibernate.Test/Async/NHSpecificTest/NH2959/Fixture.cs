@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2959
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -57,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2959
 			{
 				var results = await (session.CreateMultiCriteria()
 					.Add(session.CreateCriteria(typeof(BaseEntity)))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.That(results, Has.Count.EqualTo(1));
 				Assert.That(results[0], Has.Count.EqualTo(2));
@@ -72,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2959
 			{
 				var results = await (session.CreateMultiQuery()
 					.Add(session.CreateQuery("from " + typeof(BaseEntity).FullName))
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 
 				Assert.That(results, Has.Count.EqualTo(1));
 				Assert.That(results[0], Has.Count.EqualTo(2));

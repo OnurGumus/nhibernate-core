@@ -92,7 +92,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1792
 			{
 				IList<Product> results =
 					await (session.CreateCriteria<Product>().Add(Subqueries.PropertyIn("Id", subQuery)).Add(Restrictions.Gt("Id", 0)).
-						SetMaxResults(3).ListAsync<Product>(CancellationToken.None));
+						SetMaxResults(3).ListAsync<Product>());
 
 				Assert.AreEqual(3, results.Count);
 			}
@@ -114,7 +114,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1792
 				IList<Product> results =
 					await (session.CreateCriteria<Product>().Add(
 						Expression.Sql("{alias}.Id in (Select " + top + " p.Id from Product p order by Name)")).Add(Restrictions.Gt("Id", 0)).
-						SetMaxResults(3).ListAsync<Product>(CancellationToken.None));
+						SetMaxResults(3).ListAsync<Product>());
 
 				Assert.AreEqual(3, results.Count);
 			}

@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3771
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -46,19 +45,19 @@ namespace NHibernate.Test.NHSpecificTest.NH3771
 				Singer vs1 = new Singer();
 				vs1.Id = 1;
 				vs1.Name = "Fabrizio De Andre";
-				await (s.SaveAsync(vs1, CancellationToken.None));
+				await (s.SaveAsync(vs1));
 
 				Singer vs2 = new Singer();
 				vs2.Id = 2;
 				vs2.Name = "Vinicio Capossela";
-				await (s.SaveAsync(vs2, CancellationToken.None));
+				await (s.SaveAsync(vs2));
 
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 
 				vs1.Name = "De Andre, Fabrizio";
 				vs2.Name = "Capossela, Vinicio";
 
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 
 				string log = sqlLog.GetWholeLog();
 

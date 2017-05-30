@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.Properties
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class CompositePropertyRefTestAsync : BugTestCase
 	{
@@ -63,11 +62,11 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 			{
 				using (s.BeginTransaction())
 				{
-					var	p = await (s.GetAsync<Person>(p_id, CancellationToken.None)); //get address reference by outer join
-					var p2 = await (s.GetAsync<Person>(p2_id, CancellationToken.None)); //get null address reference by outer join
+					var	p = await (s.GetAsync<Person>(p_id)); //get address reference by outer join
+					var p2 = await (s.GetAsync<Person>(p2_id)); //get null address reference by outer join
 					Assert.IsNull(p2.Address);
 					Assert.IsNotNull(p.Address);
-					var l = await (s.CreateQuery("from Person").ListAsync(CancellationToken.None)); //pull address references for cache
+					var l = await (s.CreateQuery("from Person").ListAsync()); //pull address references for cache
 					Assert.AreEqual(l.Count, 2);
 					Assert.IsTrue(l.Contains(p) && l.Contains(p2));
 				}
@@ -81,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 			{
 				using (s.BeginTransaction())
 				{
-					var l = await (s.CreateQuery("from Person p order by p.Name").ListAsync<Person>(CancellationToken.None)); 
+					var l = await (s.CreateQuery("from Person p order by p.Name").ListAsync<Person>()); 
 					Assert.AreEqual(l.Count, 2);
 					Assert.IsNull(l[0].Address);
 					Assert.IsNotNull(l[1].Address);
@@ -96,7 +95,7 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 			{
 				using (s.BeginTransaction())
 				{
-					var l = await (s.CreateQuery("from Person p left join fetch p.Address a order by a.Country").ListAsync<Person>(CancellationToken.None));
+					var l = await (s.CreateQuery("from Person p left join fetch p.Address a order by a.Country").ListAsync<Person>());
 					Assert.AreEqual(l.Count, 2);
 					if (l[0].Name.Equals("Max"))
 					{
@@ -119,7 +118,7 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 			{
 				using (s.BeginTransaction())
 				{
-					var l = await (s.CreateQuery("from Person p left join p.Accounts").ListAsync(CancellationToken.None));
+					var l = await (s.CreateQuery("from Person p left join p.Accounts").ListAsync());
 					for (var i = 0; i < 2; i++)
 					{
 						var row = (object[])l[i];
@@ -139,7 +138,7 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 			{
 				using (s.BeginTransaction())
 				{
-					var l = await (s.CreateQuery("from Person p left join fetch p.Accounts a order by p.Name").ListAsync<Person>(CancellationToken.None));
+					var l = await (s.CreateQuery("from Person p left join fetch p.Accounts a order by p.Name").ListAsync<Person>());
 					var p0 = l[0];
 					Assert.IsTrue(NHibernateUtil.IsInitialized(p0.Accounts));
 					Assert.AreEqual(p0.Accounts.Count, 1);

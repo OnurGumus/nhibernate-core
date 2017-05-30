@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1297
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -42,11 +41,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1297
 				Model m = new Model();
 				m.Name = "model";
 				m.Items.Add(new Item()); // New Item added here
-				await (s.SaveAsync(m, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None)); // Push changes to database; otherwise, bug does not manifest itself
+				await (s.SaveAsync(m));
+				await (s.FlushAsync()); // Push changes to database; otherwise, bug does not manifest itself
 
 				m.Items[0].Name = "new Name"; // Same new item updated here
-				await (tx.CommitAsync(CancellationToken.None)); // InvalidCastException would be thrown here before the bug fix
+				await (tx.CommitAsync()); // InvalidCastException would be thrown here before the bug fix
 			}
 		}
 	}

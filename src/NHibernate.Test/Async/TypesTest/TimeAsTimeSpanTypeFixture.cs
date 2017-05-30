@@ -63,8 +63,8 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.SaveAsync(entity, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(entity));
+				await (tx.CommitAsync());
 			}
 
 			TimeAsTimeSpanClass entityReturned;
@@ -72,7 +72,7 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				entityReturned = await (s.CreateQuery("from TimeAsTimeSpanClass").UniqueResultAsync<TimeAsTimeSpanClass>(CancellationToken.None));
+				entityReturned = await (s.CreateQuery("from TimeAsTimeSpanClass").UniqueResultAsync<TimeAsTimeSpanClass>());
 				
 				Assert.AreEqual(ticks, entityReturned.TimeSpanValue);
 				Assert.AreEqual(entityReturned.TimeSpanValue.Hours,ticks.Hours);
@@ -83,8 +83,8 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.DeleteAsync(entityReturned, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(entityReturned));
+				await (tx.CommitAsync());
 			}
 		}
 	}

@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Hql
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SqlCommentsFixtureAsync : TestCase
 	{
@@ -41,7 +40,7 @@ namespace NHibernate.Test.Hql
 			{
 				using (var sl = new SqlLogSpy())
 				{
-					await (s.CreateQuery("from Animal").SetComment("This is my query").ListAsync(CancellationToken.None));
+					await (s.CreateQuery("from Animal").SetComment("This is my query").ListAsync());
 					string sql = sl.Appender.GetEvents()[0].RenderedMessage;
 					Assert.That(sql.IndexOf("This is my query"), Is.GreaterThan(0));
 				}

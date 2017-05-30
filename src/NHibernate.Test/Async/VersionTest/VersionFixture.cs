@@ -14,7 +14,6 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.VersionTest
 {
-	using System.Threading;
 	[TestFixture]
 	public class VersionFixtureAsync : TestCase
 	{
@@ -35,27 +34,27 @@ namespace NHibernate.Test.VersionTest
 			ITransaction t = s.BeginTransaction();
 			Person gavin = new Person("Gavin");
 			new Thing("Passport", gavin);
-			await (s.SaveAsync(gavin, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(gavin));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			Thing passp = (Thing) await (s.GetAsync(typeof(Thing), "Passport", CancellationToken.None));
+			Thing passp = (Thing) await (s.GetAsync(typeof(Thing), "Passport"));
 			passp.LongDescription = "blah blah blah";
-			await (s.CreateQuery("from Person").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from Person").ListAsync(CancellationToken.None));
-			await (s.CreateQuery("from Person").ListAsync(CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.CreateQuery("from Person").ListAsync());
+			await (s.CreateQuery("from Person").ListAsync());
+			await (s.CreateQuery("from Person").ListAsync());
+			await (t.CommitAsync());
 			s.Close();
 
 			Assert.AreEqual(passp.Version, 2);
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.DeleteAsync("from Thing", CancellationToken.None));
-			await (s.DeleteAsync("from Person", CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync("from Thing"));
+			await (s.DeleteAsync("from Person"));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -66,17 +65,17 @@ namespace NHibernate.Test.VersionTest
 			ITransaction t = s.BeginTransaction();
 			Person gavin = new Person("Gavin");
 			new Thing("Passport", gavin);
-			await (s.SaveAsync(gavin, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(gavin));
+			await (t.CommitAsync());
 			s.Close();
 
 			Assert.AreEqual(1, gavin.Version);
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			gavin = (Person) await (s.CreateCriteria(typeof(Person)).UniqueResultAsync(CancellationToken.None));
+			gavin = (Person) await (s.CreateCriteria(typeof(Person)).UniqueResultAsync());
 			new Thing("Laptop", gavin);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			Assert.AreEqual(2, gavin.Version);
@@ -84,9 +83,9 @@ namespace NHibernate.Test.VersionTest
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			gavin = (Person) await (s.CreateCriteria(typeof(Person)).UniqueResultAsync(CancellationToken.None));
+			gavin = (Person) await (s.CreateCriteria(typeof(Person)).UniqueResultAsync());
 			gavin.Things.Clear();
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			Assert.AreEqual(3, gavin.Version);
@@ -94,8 +93,8 @@ namespace NHibernate.Test.VersionTest
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.DeleteAsync(gavin, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(gavin));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -106,17 +105,17 @@ namespace NHibernate.Test.VersionTest
 			ITransaction t = s.BeginTransaction();
 			Person gavin = new Person("Gavin");
 			new Task("Code", gavin);
-			await (s.SaveAsync(gavin, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(gavin));
+			await (t.CommitAsync());
 			s.Close();
 
 			Assert.AreEqual(1, gavin.Version);
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			gavin = (Person) await (s.CreateCriteria(typeof(Person)).UniqueResultAsync(CancellationToken.None));
+			gavin = (Person) await (s.CreateCriteria(typeof(Person)).UniqueResultAsync());
 			new Task("Document", gavin);
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			Assert.AreEqual(1, gavin.Version);
@@ -124,9 +123,9 @@ namespace NHibernate.Test.VersionTest
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			gavin = (Person) await (s.CreateCriteria(typeof(Person)).UniqueResultAsync(CancellationToken.None));
+			gavin = (Person) await (s.CreateCriteria(typeof(Person)).UniqueResultAsync());
 			gavin.Tasks.Clear();
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			Assert.AreEqual(1, gavin.Version);
@@ -134,8 +133,8 @@ namespace NHibernate.Test.VersionTest
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.DeleteAsync(gavin, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(gavin));
+			await (t.CommitAsync());
 			s.Close();
 		}
 	}

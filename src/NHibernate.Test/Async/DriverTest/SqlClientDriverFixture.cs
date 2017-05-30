@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.DriverTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	[TestFixture]
 	public class SqlClientDriverFixtureAsync : TestCase
@@ -55,14 +54,14 @@ namespace NHibernate.Test.DriverTest
 										Currency = 123.4m,
 										Double = 123.5d,
 										Decimal = 789.5m
-									}, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+									}));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				var m = await (s.GetAsync<MultiTypeEntity>(savedId, CancellationToken.None));
+				var m = await (s.GetAsync<MultiTypeEntity>(savedId));
 				m.StringProp = "b";
 				m.StringClob = "b";
 				m.BinaryBlob = new byte[] {4,5,6};
@@ -70,14 +69,14 @@ namespace NHibernate.Test.DriverTest
 				m.Currency = 456.78m;
 				m.Double = 987.6d;
 				m.Decimal = 1323456.45m;
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.CreateQuery("delete from MultiTypeEntity").ExecuteUpdateAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.CreateQuery("delete from MultiTypeEntity").ExecuteUpdateAsync());
+				await (t.CommitAsync());
 			}
 		}
 
@@ -91,8 +90,8 @@ namespace NHibernate.Test.DriverTest
 			using (ITransaction t = s.BeginTransaction())
 			{
 				// clear the existing plan cache
-				await (s.CreateSQLQuery("DBCC FREEPROCCACHE").ExecuteUpdateAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.CreateSQLQuery("DBCC FREEPROCCACHE").ExecuteUpdateAsync());
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
@@ -100,16 +99,16 @@ namespace NHibernate.Test.DriverTest
 			{
 				var countPlansCommand = s.CreateSQLQuery("SELECT COUNT(*) FROM sys.dm_exec_cached_plans");
 
-				var beforeCount = await (countPlansCommand.UniqueResultAsync<int>(CancellationToken.None));
+				var beforeCount = await (countPlansCommand.UniqueResultAsync<int>());
 
 				var insertCount = 10;
 				for (var i=0; i<insertCount; i++)
 				{
-					await (s.SaveAsync(new MultiTypeEntity() { StringProp = new string('x', i + 1) }, CancellationToken.None));
-					await (s.FlushAsync(CancellationToken.None));
+					await (s.SaveAsync(new MultiTypeEntity() { StringProp = new string('x', i + 1) }));
+					await (s.FlushAsync());
 				}
 
-				var afterCount = await (countPlansCommand.UniqueResultAsync<int>(CancellationToken.None));
+				var afterCount = await (countPlansCommand.UniqueResultAsync<int>());
 
 				Assert.That(afterCount - beforeCount, Is.LessThan(insertCount - 1),
 					string.Format("Excessive query plans created: before={0} after={1}", beforeCount, afterCount));

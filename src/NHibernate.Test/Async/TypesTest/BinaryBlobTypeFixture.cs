@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Summary description for BinaryBlobTypeFixture.
 	/// </summary>
@@ -33,15 +32,15 @@ namespace NHibernate.Test.TypesTest
 			ISession s = OpenSession();
 			BinaryBlobClass b = new BinaryBlobClass();
 			b.BinaryBlob = UnicodeEncoding.UTF8.GetBytes("foo/bar/baz");
-			await (s.SaveAsync(b, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(b));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			b = (BinaryBlobClass) await (s.LoadAsync(typeof(BinaryBlobClass), b.Id, CancellationToken.None));
+			b = (BinaryBlobClass) await (s.LoadAsync(typeof(BinaryBlobClass), b.Id));
 			ObjectAssert.AreEqual(UnicodeEncoding.UTF8.GetBytes("foo/bar/baz"), b.BinaryBlob);
-			await (s.DeleteAsync(b, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(b));
+			await (s.FlushAsync());
 			s.Close();
 		}
 
@@ -51,15 +50,15 @@ namespace NHibernate.Test.TypesTest
 			ISession s = OpenSession();
 			BinaryBlobClass b = new BinaryBlobClass();
 			b.BinaryBlob = UnicodeEncoding.UTF8.GetBytes(new string('T', 10000));
-			await (s.SaveAsync(b, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(b));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			b = (BinaryBlobClass) await (s.LoadAsync(typeof(BinaryBlobClass), b.Id, CancellationToken.None));
+			b = (BinaryBlobClass) await (s.LoadAsync(typeof(BinaryBlobClass), b.Id));
 			ObjectAssert.AreEqual(UnicodeEncoding.UTF8.GetBytes(new string('T', 10000)), b.BinaryBlob);
-			await (s.DeleteAsync(b, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(b));
+			await (s.FlushAsync());
 			s.Close();
 		}
 
@@ -71,16 +70,16 @@ namespace NHibernate.Test.TypesTest
 			{
 				BinaryBlobClass b = new BinaryBlobClass();
 				b.BinaryBlob = new byte[0];
-				savedId = await (s.SaveAsync(b, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				savedId = await (s.SaveAsync(b));
+				await (s.FlushAsync());
 			}
 
 			using (var s = OpenSession())
 			{
-				var b = await (s.GetAsync<BinaryBlobClass>(savedId, CancellationToken.None));
+				var b = await (s.GetAsync<BinaryBlobClass>(savedId));
 				Assert.That(b.BinaryBlob, Is.Not.Null.And.Length.EqualTo(0));
-				await (s.DeleteAsync(b, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync(b));
+				await (s.FlushAsync());
 			}
 		}
 	}

@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH386
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -29,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH386
 			using (ISession s = OpenSession())
 			{
 				await (s.CreateQuery("from _Parent _p left join _p._Children _c where _c._Id > 0")
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 			}
 		}
 	}

@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		[Test]
 		public async Task FutureValueOfCriteriaCanGetSingleEntityWhenQueryBatchingIsNotSupportedAsync()
 		{
-			int personId = await (CreatePersonAsync(CancellationToken.None));
+			int personId = await (CreatePersonAsync());
 
 			using (var session = sessions.OpenSession())
 			{
@@ -78,7 +78,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		[Test]
 		public async Task FutureValueOfCriteriaCanGetScalarValueWhenQueryBatchingIsNotSupportedAsync()
 		{
-			await (CreatePersonAsync(CancellationToken.None));
+			await (CreatePersonAsync());
 
 			using (var session = sessions.OpenSession())
 			{
@@ -92,7 +92,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		[Test]
 		public async Task FutureValueOfQueryCanGetSingleEntityWhenQueryBatchingIsNotSupportedAsync()
 		{
-			int personId = await (CreatePersonAsync(CancellationToken.None));
+			int personId = await (CreatePersonAsync());
 
 			using (var session = sessions.OpenSession())
 			{
@@ -106,7 +106,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		[Test]
 		public async Task FutureValueOfQueryCanGetScalarValueWhenQueryBatchingIsNotSupportedAsync()
 		{
-			await (CreatePersonAsync(CancellationToken.None));
+			await (CreatePersonAsync());
 
 			using (var session = sessions.OpenSession())
 			{
@@ -119,7 +119,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		[Test]
 		public async Task FutureValueOfLinqCanGetSingleEntityWhenQueryBatchingIsNotSupportedAsync()
 		{
-			var personId = await (CreatePersonAsync(CancellationToken.None));
+			var personId = await (CreatePersonAsync());
 
 			using (var session = sessions.OpenSession())
 			{

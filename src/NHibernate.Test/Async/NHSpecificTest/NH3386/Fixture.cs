@@ -17,7 +17,6 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Test.NHSpecificTest.NH3386
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -64,7 +63,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3386
 				var result = session.Query<Entity>()
 					.OrderBy(e => SqlServerFunction.NewID());
 
-				Assert.DoesNotThrowAsync(() => { return result.ToListAsync(CancellationToken.None); });
+				Assert.DoesNotThrowAsync(() => { return result.ToListAsync(); });
 				Assert.That(sqlInterceptor.Sql.ToString(), Does.Contain(nameof(SqlServerFunction.NewID)).IgnoreCase);
 			}
 		}

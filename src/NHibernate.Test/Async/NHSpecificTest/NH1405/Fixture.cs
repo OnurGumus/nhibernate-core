@@ -38,14 +38,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1405
 					tx.Enlist(cmd);
 					await (cmd.ExecuteNonQueryAsync(CancellationToken.None));
 				}
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
 				IQuery query = session.CreateQuery("from Column");
-				IList<Column> columns = await (query.ListAsync<Column>(CancellationToken.None));
+				IList<Column> columns = await (query.ListAsync<Column>());
 				Assert.AreEqual(3, columns.Count);
 				foreach (Column column in columns)
 				{
@@ -53,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1405
 					Assert.IsFalse((null != column.ControlColumn) && (null == column.ControlColumn.ColumnName),
 					               "Column's control column's ColumnName should not be null.");
 				}
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
@@ -63,7 +63,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1405
 				cmd.CommandText = "DELETE FROM PPDM_COLUMN";
 				tx.Enlist(cmd);
 				await (cmd.ExecuteNonQueryAsync(CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 	}

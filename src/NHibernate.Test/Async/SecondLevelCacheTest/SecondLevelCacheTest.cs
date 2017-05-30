@@ -84,10 +84,10 @@ namespace NHibernate.Test.SecondLevelCacheTests
 		{
 			using (ISession session = OpenSession())
 			{
-				Item one = (Item)await (session.LoadAsync(typeof(Item), 1, CancellationToken.None));
+				Item one = (Item)await (session.LoadAsync(typeof(Item), 1));
 				IList results = await (session.CreateQuery("from Item item where item.Parent = :parent")
 					.SetEntity("parent", one)
-					.SetCacheable(true).ListAsync(CancellationToken.None));
+					.SetCacheable(true).ListAsync());
 				Assert.AreEqual(4, results.Count);
 				foreach (Item item in results)
 				{
@@ -97,10 +97,10 @@ namespace NHibernate.Test.SecondLevelCacheTests
 
 			using (ISession session = OpenSession())
 			{
-				Item two = (Item)await (session.LoadAsync(typeof(Item), 2, CancellationToken.None));
+				Item two = (Item)await (session.LoadAsync(typeof(Item), 2));
 				IList results = await (session.CreateQuery("from Item item where item.Parent = :parent")
 					.SetEntity("parent", two)
-					.SetCacheable(true).ListAsync(CancellationToken.None));
+					.SetCacheable(true).ListAsync());
 				Assert.AreEqual(0, results.Count);
 			}
 		}
@@ -110,27 +110,27 @@ namespace NHibernate.Test.SecondLevelCacheTests
 		{
 			using (ISession session = OpenSession())
 			{
-				Item item = (Item)await (session.LoadAsync(typeof(Item), 1, CancellationToken.None));
+				Item item = (Item)await (session.LoadAsync(typeof(Item), 1));
 				Assert.IsTrue(item.Children.Count == 4); // just force it into the second level cache here
 			}
 			int childId = -1;
 			using (ISession session = OpenSession())
 			{
-				Item item = (Item)await (session.LoadAsync(typeof(Item), 1, CancellationToken.None));
+				Item item = (Item)await (session.LoadAsync(typeof(Item), 1));
 				Item child = (Item)item.Children[0];
 				childId = child.Id;
-				await (session.DeleteAsync(child, CancellationToken.None));
+				await (session.DeleteAsync(child));
 				item.Children.Remove(child);
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 			}
 
 			using (ISession session = OpenSession())
 			{
-				Item item = (Item)await (session.LoadAsync(typeof(Item), 1, CancellationToken.None));
+				Item item = (Item)await (session.LoadAsync(typeof(Item), 1));
 				Assert.AreEqual(3, item.Children.Count);
 				foreach (Item child in item.Children)
 				{
-					await (NHibernateUtil.InitializeAsync(child, CancellationToken.None));
+					await (NHibernateUtil.InitializeAsync(child));
 					Assert.IsFalse(child.Id == childId);
 				}
 			}
@@ -141,17 +141,17 @@ namespace NHibernate.Test.SecondLevelCacheTests
 		{
 			using (ISession session = OpenSession())
 			{
-				Item item = (Item)await (session.LoadAsync(typeof(Item), 1, CancellationToken.None));
+				Item item = (Item)await (session.LoadAsync(typeof(Item), 1));
 				Item child = new Item();
 				child.Id = 6;
 				item.Children.Add(child);
-				await (session.SaveAsync(child, CancellationToken.None));
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.SaveAsync(child));
+				await (session.FlushAsync());
 			}
 
 			using (ISession session = OpenSession())
 			{
-				Item item = (Item)await (session.LoadAsync(typeof(Item), 1, CancellationToken.None));
+				Item item = (Item)await (session.LoadAsync(typeof(Item), 1));
 				int count = item.Children.Count;
 				Assert.AreEqual(5, count);
 			}
@@ -165,7 +165,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				IList list = await (session.CreateCriteria(typeof(AnotherItem))
 					.Add(Expression.Gt("Id", 2))
 					.SetCacheable(true)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				Assert.AreEqual(3, list.Count);
 
 				using (var cmd = session.Connection.CreateCommand())
@@ -181,7 +181,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				IList list = await (session.CreateCriteria(typeof(AnotherItem))
 					.Add(Expression.Gt("Id", 2))
 					.SetCacheable(true)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				Assert.AreEqual(3, list.Count);
 			}
 		}
@@ -194,7 +194,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				IList list = await (session.CreateCriteria(typeof(Item))
 					.Add(Expression.Gt("Id", 2))
 					.SetCacheable(true)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				Assert.AreEqual(3, list.Count);
 
 				using (var cmd = session.Connection.CreateCommand())
@@ -210,7 +210,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				IList list = await (session.CreateCriteria(typeof(Item))
 					.Add(Expression.Gt("Id", 2))
 					.SetCacheable(true)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				Assert.AreEqual(3, list.Count);
 			}
 		}
@@ -222,7 +222,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			{
 				IList list = await (session.CreateQuery("from Item i where i.Id > 2")
 					.SetCacheable(true)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				Assert.AreEqual(3, list.Count);
 
 				using (var cmd = session.Connection.CreateCommand())
@@ -237,7 +237,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				//should bring from cache
 				IList list = await (session.CreateQuery("from Item i where i.Id > 2")
 					.SetCacheable(true)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				Assert.AreEqual(3, list.Count);
 			}
 		}
@@ -249,7 +249,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			{
 				IList list = await (session.CreateQuery("from AnotherItem i where i.Id > 2")
 					.SetCacheable(true)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				Assert.AreEqual(3, list.Count);
 
 				using (var cmd = session.Connection.CreateCommand())
@@ -264,7 +264,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				//should bring from cache
 				IList list = await (session.CreateQuery("from AnotherItem i where i.Id > 2")
 					.SetCacheable(true)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				Assert.AreEqual(3, list.Count);
 			}
 		}

@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3252
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -34,15 +33,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3252
 			using (var transaction = session.BeginTransaction())
 			{
 
-				await (session.SaveAsync(new Note { Text = new String('0', 9000) }, CancellationToken.None));
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (session.SaveAsync(new Note { Text = new String('0', 9000) }));
+				await (transaction.CommitAsync());
 			}
 
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
 
-				var note = await (session.Query<Note>().FirstAsync(CancellationToken.None));
+				var note = await (session.Query<Note>().FirstAsync());
 				Assert.AreEqual(9000, note.Text.Length);
 			}
 		}

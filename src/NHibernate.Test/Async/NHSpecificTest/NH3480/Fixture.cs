@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3480
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -71,9 +70,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3480
 					var result = from e in session.Query<Entity>()
 								 where e.Name == "Bob"
 								 select e;
-					var entity = await (result.SingleAsync(CancellationToken.None));
+					var entity = await (result.SingleAsync());
 
-					await (NHibernateUtil.InitializeAsync(entity.Children, CancellationToken.None));
+					await (NHibernateUtil.InitializeAsync(entity.Children));
 				}
 			}
 		}

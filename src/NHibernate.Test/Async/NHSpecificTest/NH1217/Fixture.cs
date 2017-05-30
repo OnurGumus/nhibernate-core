@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1217
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture,Ignore("Not fixed yet")]
 	public class FixtureAsync : BugTestCase
 	{
@@ -60,10 +59,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1217
 					n1.FromEdges.Add(e1);
 					n2.ToEdges.Add(e1);
 					
-					await (s.SaveAsync(r, CancellationToken.None));
+					await (s.SaveAsync(r));
 
-					await (s.FlushAsync(CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (s.FlushAsync());
+					await (tx.CommitAsync());
 				}
 			}
 		}

@@ -15,7 +15,6 @@ using NHibernate.Stat;
 namespace NHibernate.Test.NHSpecificTest.NH1001
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -42,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 				dept.Id = 11;
 				dept.Name = "Animal Testing";
 
-				await (sess.SaveAsync(dept, CancellationToken.None));
+				await (sess.SaveAsync(dept));
 
 				Employee emp = new Employee();
 				emp.Id = 1;
@@ -50,9 +49,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 				emp.LastName = "Doe";
 				emp.Department = dept;
 
-				await (sess.SaveAsync(emp, CancellationToken.None));
+				await (sess.SaveAsync(emp));
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 
 				employeeId = emp.Id;
 			}
@@ -64,18 +63,18 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 			using (ISession sess = OpenSession())
 			using (ITransaction tx = sess.BeginTransaction())
 			{
-				await (sess.GetAsync<Employee>(employeeId, CancellationToken.None));
+				await (sess.GetAsync<Employee>(employeeId));
 
 				Assert.AreEqual(1, stat.PrepareStatementCount);
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession sess = OpenSession())
 			using (ITransaction tx = sess.BeginTransaction())
 			{
-				await (sess.DeleteAsync("from Employee", CancellationToken.None));
-				await (sess.DeleteAsync("from Department", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (sess.DeleteAsync("from Employee"));
+				await (sess.DeleteAsync("from Department"));
+				await (tx.CommitAsync());
 			}
 		}
 	}

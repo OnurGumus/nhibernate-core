@@ -17,7 +17,6 @@ using NHibernate.Criterion;
 namespace NHibernate.Test.NHSpecificTest.NH1018
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class NH1018FixtureAsync : BugTestCase
 	{
@@ -43,31 +42,31 @@ namespace NHibernate.Test.NHSpecificTest.NH1018
 				emr2.AddEmployee(employees[3]);
 				emr2.AddEmployee(employees[4]);
 
-				await (session.SaveAsync(emr1, CancellationToken.None));
-				await (session.SaveAsync(emr2, CancellationToken.None));
+				await (session.SaveAsync(emr1));
+				await (session.SaveAsync(emr2));
 
 				foreach (Employee emp in employees)
 				{
-					await (session.SaveAsync(emp, CancellationToken.None));
+					await (session.SaveAsync(emp));
 				}
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 			using (ISession session = OpenSession())
 			{
 				IList employers = await (session.CreateQuery("select emr from Employer emr inner join fetch emr.Employees")
 					.SetResultTransformer(CriteriaSpecification.DistinctRootEntity)
-					.ListAsync(CancellationToken.None));
+					.ListAsync());
 				Assert.AreEqual(2, employers.Count);
 			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				await (session.DeleteAsync("from Employee", CancellationToken.None));
-				await (session.DeleteAsync("from Employer", CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync("from Employee"));
+				await (session.DeleteAsync("from Employer"));
+				await (tx.CommitAsync());
 			}
 		}
 	}

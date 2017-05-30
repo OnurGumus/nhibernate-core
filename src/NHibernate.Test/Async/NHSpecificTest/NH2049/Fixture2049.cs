@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2049
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class Fixture2049Async : BugTestCase
 	{
@@ -57,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2049
 			using (ISession session = OpenSession())
 			{
 				session.EnableFilter("DeletedCustomer").SetParameter("deleted", false);
-				IList<Person> persons = await (session.CreateCriteria(typeof (Person)).ListAsync<Person>(CancellationToken.None));
+				IList<Person> persons = await (session.CreateCriteria(typeof (Person)).ListAsync<Person>());
 
 				Assert.That(persons, Has.Count.EqualTo(1));
 				Assert.That(persons[0].Id, Is.EqualTo(1));
@@ -76,7 +75,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2049
 			{
 				session.EnableFilter("DeletedCustomer").SetParameter("deleted", false);
 				var persons = await (session.CreateQuery("from Person as person left join person.IndividualCustomer as indCustomer")
-					.ListAsync<Person>(CancellationToken.None));
+					.ListAsync<Person>());
 
 				Assert.That(persons, Has.Count.EqualTo(1));
 				Assert.That(persons[0].Id, Is.EqualTo(1));

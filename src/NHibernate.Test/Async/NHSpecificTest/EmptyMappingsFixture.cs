@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest
 			{
 				using (ISession s = OpenSession())
 				{
-					await (s.CreateQuery("from SomeInvalidClass").ListAsync(CancellationToken.None));
+					await (s.CreateQuery("from SomeInvalidClass").ListAsync());
 				}
 			}
 			catch (QueryException)

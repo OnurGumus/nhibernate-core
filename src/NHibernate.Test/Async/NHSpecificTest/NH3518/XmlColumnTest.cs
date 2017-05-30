@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3518
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class XmlColumnTestAsync : BugTestCase
 	{
@@ -58,8 +57,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3518
 			using (var s = sessions.OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(parentA, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(parentA));
+				await (t.CommitAsync());
 			}
 		}
 	}

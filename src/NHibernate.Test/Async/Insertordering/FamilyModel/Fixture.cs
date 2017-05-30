@@ -16,7 +16,6 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Insertordering.FamilyModel
 {
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{
@@ -85,24 +84,24 @@ namespace NHibernate.Test.Insertordering.FamilyModel
 				var frederic = new Man { Name = "Frédéric", Mother = monique };
 				var arnaud = new Man { Name = "Arnaud", Father = denis };
 
-				await (session.SaveAsync(alice, CancellationToken.None));
-				await (session.SaveAsync(laure, CancellationToken.None));
-				await (session.SaveAsync(valerie, CancellationToken.None));
-				await (session.SaveAsync(caroline, CancellationToken.None));
-				await (session.SaveAsync(cathy, CancellationToken.None));
-				await (session.SaveAsync(helene, CancellationToken.None));
-				await (session.SaveAsync(nicolas, CancellationToken.None));
-				await (session.SaveAsync(frederic, CancellationToken.None));
-				await (session.SaveAsync(arnaud, CancellationToken.None));
+				await (session.SaveAsync(alice));
+				await (session.SaveAsync(laure));
+				await (session.SaveAsync(valerie));
+				await (session.SaveAsync(caroline));
+				await (session.SaveAsync(cathy));
+				await (session.SaveAsync(helene));
+				await (session.SaveAsync(nicolas));
+				await (session.SaveAsync(frederic));
+				await (session.SaveAsync(arnaud));
 
-				Assert.DoesNotThrowAsync(() => { return tran.CommitAsync(CancellationToken.None); });
+				Assert.DoesNotThrowAsync(() => { return tran.CommitAsync(); });
 			}
 
 			using (var session = OpenSession())
 			using (var tran = session.BeginTransaction())
 			{
-				Assert.AreEqual(9, await (session.Query<Woman>().CountAsync(CancellationToken.None)));
-				Assert.AreEqual(6, await (session.Query<Man>().CountAsync(CancellationToken.None)));
+				Assert.AreEqual(9, await (session.Query<Woman>().CountAsync()));
+				Assert.AreEqual(6, await (session.Query<Man>().CountAsync()));
 			}
 		}
 	}

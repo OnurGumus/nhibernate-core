@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1675
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -42,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1675
 			using (var s = OpenSession())
 			{
 				var q = s.CreateQuery("select distinct p from Person p").SetFirstResult(0).SetMaxResults(10);
-				Assert.That(await (q.ListAsync(CancellationToken.None)), Has.Count.EqualTo(5));
+				Assert.That(await (q.ListAsync()), Has.Count.EqualTo(5));
 			}
 		}
 

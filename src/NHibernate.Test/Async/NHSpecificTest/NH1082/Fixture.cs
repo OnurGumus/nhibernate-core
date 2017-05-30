@@ -16,7 +16,6 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Test.NHSpecificTest.NH1082
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -38,14 +37,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 			using (ISession s = sessions.OpenSession(sessionInterceptor))
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(c, CancellationToken.None));
+				await (s.SaveAsync(c));
 
-				Assert.ThrowsAsync<BadException>(() => t.CommitAsync(CancellationToken.None));
+				Assert.ThrowsAsync<BadException>(() => t.CommitAsync());
 			}
 
 			using (ISession s = sessions.OpenSession())
 			{
-				var objectInDb = await (s.GetAsync<C>(1, CancellationToken.None));
+				var objectInDb = await (s.GetAsync<C>(1));
 				Assert.IsNull(objectInDb);
 			}
 		}
@@ -66,14 +65,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 			{
 				t.RegisterSynchronization(synchronization);
 
-				await (s.SaveAsync(c, CancellationToken.None));
+				await (s.SaveAsync(c));
 
-				Assert.ThrowsAsync<BadException>(() => t.CommitAsync(CancellationToken.None));
+				Assert.ThrowsAsync<BadException>(() => t.CommitAsync());
 			}
 
 			using (ISession s = sessions.OpenSession())
 			{
-				var objectInDb = await (s.GetAsync<C>(1, CancellationToken.None));
+				var objectInDb = await (s.GetAsync<C>(1));
 				Assert.IsNull(objectInDb);
 			}
 		}
@@ -106,19 +105,19 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 			using (ISession s = sessions.OpenSession(sessionInterceptor))
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(c, CancellationToken.None));
+				await (s.SaveAsync(c));
 
-				Assert.DoesNotThrowAsync(() => t.CommitAsync(CancellationToken.None));
+				Assert.DoesNotThrowAsync(() => t.CommitAsync());
 			}
 
 			using (ISession s = sessions.OpenSession())
 			{
-				var objectInDb = await (s.GetAsync<C>(1, CancellationToken.None));
+				var objectInDb = await (s.GetAsync<C>(1));
 
 				Assert.IsNotNull(objectInDb);
 
-				await (s.DeleteAsync(objectInDb, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync(objectInDb));
+				await (s.FlushAsync());
 			}
 		}
 
@@ -136,19 +135,19 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 			{
 				t.RegisterSynchronization(synchronization);
 
-				await (s.SaveAsync(c, CancellationToken.None));
+				await (s.SaveAsync(c));
 
-				Assert.DoesNotThrowAsync(() => t.CommitAsync(CancellationToken.None));
+				Assert.DoesNotThrowAsync(() => t.CommitAsync());
 			}
 
 			using (ISession s = sessions.OpenSession())
 			{
-				var objectInDb = await (s.GetAsync<C>(1, CancellationToken.None));
+				var objectInDb = await (s.GetAsync<C>(1));
 
 				Assert.IsNotNull(objectInDb);
 
-				await (s.DeleteAsync(objectInDb, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync(objectInDb));
+				await (s.FlushAsync());
 			}
 		}
 	}

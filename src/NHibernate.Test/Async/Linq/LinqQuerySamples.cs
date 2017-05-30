@@ -18,7 +18,6 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class LinqQuerySamplesAsync : LinqTestCase
 	{
@@ -32,7 +31,7 @@ namespace NHibernate.Test.Linq
 									   group o1 by new { o1.Customer.CustomerId, o1.OrderDate } into g
 									   select new { CustomerId = g.Key.CustomerId, LastOrderDate = g.Max(x => x.OrderDate) };
 
-			var result = await (queryWithAggregation.ToListAsync(CancellationToken.None));
+			var result = await (queryWithAggregation.ToListAsync());
 
 			Assert.IsNotNull(result);
 			Assert.IsNotEmpty(result);
@@ -48,7 +47,7 @@ namespace NHibernate.Test.Linq
 			var q =
 				from c in db.Customers
 				select new {c.ContactName, c.Address.PhoneNumber};
-			var items = await (q.ToListAsync(CancellationToken.None));
+			var items = await (q.ToListAsync());
 
 			Assert.AreEqual(91, items.Count);
 
@@ -69,7 +68,7 @@ namespace NHibernate.Test.Linq
 			var q =
 				from e in db.Employees
 				select new {Name = e.FirstName + " " + e.LastName, Phone = e.Address.PhoneNumber};
-			var items = await (q.ToListAsync(CancellationToken.None));
+			var items = await (q.ToListAsync());
 			Assert.AreEqual(9, items.Count);
 
 			items.Each(x =>
@@ -211,7 +210,7 @@ namespace NHibernate.Test.Linq
 				///////////
 				///// Batching Select
 				///////////
-				var dbOrders3 = await (s.CreateQuery("select o.OrderId from Order o").ListAsync<int>(CancellationToken.None));
+				var dbOrders3 = await (s.CreateQuery("select o.OrderId from Order o").ListAsync<int>());
 
 				//var q3 = dbOrders3.SubQueryBatcher(orderId => orderId,
 				//                                   ids => from subO in db.Orders.ToList()  // Note that ToList is just because current group by code is incorrent in our linq provider
@@ -371,7 +370,7 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "This sample uses Count to find the number of Customers in the database.")]
 		public async Task DLinq19Async()
 		{
-			int q = await (db.Customers.CountAsync(CancellationToken.None));
+			int q = await (db.Customers.CountAsync());
 			Console.WriteLine(q);
 		}
 
@@ -380,7 +379,7 @@ namespace NHibernate.Test.Linq
 							"that are not discontinued.")]
 		public async Task DLinq20Async()
 		{
-			int q = await (db.Products.CountAsync(p => !p.Discontinued, CancellationToken.None));
+			int q = await (db.Products.CountAsync(p => !p.Discontinued));
 			Console.WriteLine(q);
 		}
 
@@ -388,7 +387,7 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "This sample uses Sum to find the total freight over all Orders.")]
 		public async Task DLinq21Async()
 		{
-			decimal? q = await (db.Orders.Select(o => o.Freight).SumAsync(CancellationToken.None));
+			decimal? q = await (db.Orders.Select(o => o.Freight).SumAsync());
 			Console.WriteLine(q);
 		}
 
@@ -396,7 +395,7 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "This sample uses Sum to find the total number of units on order over all Products.")]
 		public async Task DLinq22Async()
 		{
-			int? q = await (db.Products.SumAsync(p => p.UnitsOnOrder, CancellationToken.None));
+			int? q = await (db.Products.SumAsync(p => p.UnitsOnOrder));
 			Console.WriteLine(q);
 		}
 
@@ -404,7 +403,7 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "This sample uses Min to find the lowest unit price of any Product.")]
 		public async Task DLinq23Async()
 		{
-			decimal? q = await (db.Products.Select(p => p.UnitPrice).MinAsync(CancellationToken.None));
+			decimal? q = await (db.Products.Select(p => p.UnitPrice).MinAsync());
 			Console.WriteLine(q);
 		}
 
@@ -412,7 +411,7 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "This sample uses Min to find the lowest freight of any Order.")]
 		public async Task DLinq24Async()
 		{
-			decimal? q = await (db.Orders.MinAsync(o => o.Freight, CancellationToken.None));
+			decimal? q = await (db.Orders.MinAsync(o => o.Freight));
 			Console.WriteLine(q);
 		}
 
@@ -428,7 +427,7 @@ namespace NHibernate.Test.Linq
 					.CreateQuery(
 					"select p.Category.CategoryId, p from Product p where p.UnitPrice = (select min(p2.UnitPrice) from Product p2 where p.Category.CategoryId = p2.Category.CategoryId)"
 					)
-					.ListAsync<object[]>(CancellationToken.None))
+					.ListAsync<object[]>())
 )					.GroupBy(input => input[0])
 					.Select(input => new {CategoryId = (int) input.Key, CheapestProducts = from g in input select (Product) g[1]});
 			}
@@ -478,7 +477,7 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "This sample uses Max to find the latest hire date of any Employee.")]
 		public async Task DLinq26Async()
 		{
-			DateTime? q = await (db.Employees.Select(e => e.HireDate).MaxAsync(CancellationToken.None));
+			DateTime? q = await (db.Employees.Select(e => e.HireDate).MaxAsync());
 			Console.WriteLine(q);
 		}
 
@@ -486,7 +485,7 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "This sample uses Max to find the most units in stock of any Product.")]
 		public async Task DLinq27Async()
 		{
-			int? q = await (db.Products.MaxAsync(p => p.UnitsInStock, CancellationToken.None));
+			int? q = await (db.Products.MaxAsync(p => p.UnitsInStock));
 			Console.WriteLine(q);
 		}
 
@@ -523,7 +522,7 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "This sample uses Average to find the average freight of all Orders.")]
 		public async Task DLinq29Async()
 		{
-			decimal? q = await (db.Orders.Select(o => o.Freight).AverageAsync(CancellationToken.None));
+			decimal? q = await (db.Orders.Select(o => o.Freight).AverageAsync());
 			Console.WriteLine(q);
 		}
 
@@ -531,7 +530,7 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "This sample uses Average to find the average unit price of all Products.")]
 		public async Task DLinq30Async()
 		{
-			decimal? q = await (db.Products.AverageAsync(p => p.UnitPrice, CancellationToken.None));
+			decimal? q = await (db.Products.AverageAsync(p => p.UnitPrice));
 			Console.WriteLine(q);
 		}
 
@@ -1218,7 +1217,7 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "This sample uses First to select the first Shipper in the table.")]
 		public async Task DLinq6Async()
 		{
-			Shipper shipper = await (db.Shippers.FirstAsync(CancellationToken.None));
+			Shipper shipper = await (db.Shippers.FirstAsync());
 			Assert.AreEqual(1, shipper.ShipperId);
 		}
 
@@ -1314,7 +1313,7 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "This sample uses First to select the single Customer with CustomerId 'BONAP'.")]
 		public async Task DLinq7Async()
 		{
-			Customer cust = await (db.Customers.FirstAsync(c => c.CustomerId == "BONAP", CancellationToken.None));
+			Customer cust = await (db.Customers.FirstAsync(c => c.CustomerId == "BONAP"));
 			Assert.AreEqual("BONAP", cust.CustomerId);
 		}
 
@@ -1322,7 +1321,7 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "This sample uses First to select an Order with freight greater than 10.00.")]
 		public async Task DLinq8Async()
 		{
-			Order ord = await (db.Orders.FirstAsync(o => o.Freight > 10.00M, CancellationToken.None));
+			Order ord = await (db.Orders.FirstAsync(o => o.Freight > 10.00M));
 			Assert.Greater(ord.Freight, 10.00M);
 		}
 
@@ -1333,7 +1332,7 @@ namespace NHibernate.Test.Linq
 			IQueryable<string> q =
 				from c in db.Customers
 				select c.ContactName;
-			IList<string> items = await (q.ToListAsync(CancellationToken.None));
+			IList<string> items = await (q.ToListAsync());
 			Assert.AreEqual(91, items.Count);
 			items.Each(Assert.IsNotNull);
 		}
@@ -1436,7 +1435,7 @@ namespace NHibernate.Test.Linq
 //                from o in c.Orders.Cast<Order>()
 				select o;
 
-			List<Order> list = await (q.ToListAsync(CancellationToken.None));
+			List<Order> list = await (q.ToListAsync());
 
 			await (ObjectDumper.WriteAsync(q));
 		}
@@ -1452,7 +1451,7 @@ namespace NHibernate.Test.Linq
 				from o in c.Orders
 				select o.OrderDate;
 
-			List<DateTime?> list = await (q.ToListAsync(CancellationToken.None));
+			List<DateTime?> list = await (q.ToListAsync());
 
 			await (ObjectDumper.WriteAsync(q));
 		}
@@ -1468,7 +1467,7 @@ namespace NHibernate.Test.Linq
 //                from o in c.Orders.Cast<Order>()
 				select c;
 
-			List<Customer> list = await (q.ToListAsync(CancellationToken.None));
+			List<Customer> list = await (q.ToListAsync());
 
 			await (ObjectDumper.WriteAsync(q));
 		}
@@ -1729,7 +1728,7 @@ namespace NHibernate.Test.Linq
 					on new {o.OrderId, p.ProductId} equals new {d.Order.OrderId, d.Product.ProductId}
 					into details
 				 from d in details
-				 select new {o.OrderId, p.ProductId, d.UnitPrice}).ToListAsync(CancellationToken.None));
+				 select new {o.OrderId, p.ProductId, d.UnitPrice}).ToListAsync());
 
 			Assert.AreEqual(expected.Count, actual.Count);
 		}

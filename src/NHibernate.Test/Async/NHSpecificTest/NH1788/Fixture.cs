@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1788
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -34,25 +33,25 @@ namespace NHibernate.Test.NHSpecificTest.NH1788
 				await (session.SaveAsync(new Person
 				{
 					Name = "hi"
-				}, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				}));
+				await (tx.CommitAsync());
 			}
 
 
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				var person = await (session.GetAsync<Person>(1, CancellationToken.None));
+				var person = await (session.GetAsync<Person>(1));
 				person.Name = "other";
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			} 
 
 
 			using (ISession session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				await (session.DeleteAsync(await (session.GetAsync<Person>(1, CancellationToken.None)), CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync(await (session.GetAsync<Person>(1))));
+				await (tx.CommitAsync());
 			}
 			
 		}

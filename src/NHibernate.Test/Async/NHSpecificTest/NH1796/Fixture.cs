@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1796
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync: BugTestCase
 	{
@@ -25,8 +24,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1796
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(entity, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(entity));
+				await (t.CommitAsync());
 			}
 
 			entity.DynProps = new Dictionary<string, object>();
@@ -35,14 +34,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1796
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.Merge(entity);
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.CreateQuery("delete from Entity").ExecuteUpdateAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.CreateQuery("delete from Entity").ExecuteUpdateAsync());
+				await (t.CommitAsync());
 			}
 		}
 
@@ -53,8 +52,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1796
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveOrUpdateAsync(entity, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveOrUpdateAsync(entity));
+				await (t.CommitAsync());
 			}
 
 			entity.DynProps = new Dictionary<string, object>();
@@ -62,15 +61,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1796
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveOrUpdateAsync(entity, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveOrUpdateAsync(entity));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.CreateQuery("delete from Entity").ExecuteUpdateAsync(CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.CreateQuery("delete from Entity").ExecuteUpdateAsync());
+				await (t.CommitAsync());
 			}
 		}
 	}

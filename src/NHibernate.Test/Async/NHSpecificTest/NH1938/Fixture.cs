@@ -16,7 +16,6 @@ using NHibernate.Criterion;
 namespace NHibernate.Test.NHSpecificTest.NH1938
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -33,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1938
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new Person() { Name = "John Smith" }, CancellationToken.None));
+				await (s.SaveAsync(new Person() { Name = "John Smith" }));
 
 				Person examplePerson = new Person() { Name = "oHn" };
 				IList<Person> matchingPeople;
@@ -44,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1938
 							.Create(examplePerson)
 							.EnableLike(MatchMode.Anywhere)
 							.IgnoreCase())
-						.ListAsync<Person>(CancellationToken.None));
+						.ListAsync<Person>());
 
 				Assert.That(matchingPeople.Count, Is.EqualTo(1));
 
@@ -53,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1938
 						.Add(Example
 							.Create(examplePerson)
 							.EnableLike(MatchMode.Anywhere))
-						.ListAsync<Person>(CancellationToken.None));
+						.ListAsync<Person>());
 
 				Assert.That(matchingPeople.Count, Is.EqualTo(0));
 

@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3401
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -41,13 +40,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3401
 			using (ITransaction transaction = session.BeginTransaction())
 			{
 				var e1 = new Entity {Name = "Bob"};
-				await (session.SaveAsync(e1, CancellationToken.None));
+				await (session.SaveAsync(e1));
 
 				var e2 = new Entity {Name = "Sally", YesNo = true};
-				await (session.SaveAsync(e2, CancellationToken.None));
+				await (session.SaveAsync(e2));
 
-				await (session.FlushAsync(CancellationToken.None));
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (session.FlushAsync());
+				await (transaction.CommitAsync());
 			}
 
 
@@ -58,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3401
 					where e.YesNo
 					select e;
 
-				Assert.AreEqual(1, (await (result.ToListAsync(CancellationToken.None))).Count);
+				Assert.AreEqual(1, (await (result.ToListAsync())).Count);
 			}
 		}
 	}

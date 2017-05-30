@@ -43,16 +43,16 @@ namespace NHibernate.Test.NHSpecificTest.NH1332
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				
-				await (s.SaveAsync(a, CancellationToken.None));
-				await (tx.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(a));
+				await (tx.CommitAsync());
 			}
 			using (LogSpy ls = new LogSpy(log))
 			{
 				using (ISession s = OpenSession())
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					await (s.DeleteAsync(a, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (s.DeleteAsync(a));
+					await (tx.CommitAsync());
 				}
 				Assert.AreEqual(1, ls.Appender.GetEvents().Length);
 				string logs = ls.Appender.GetEvents()[0].RenderedMessage;

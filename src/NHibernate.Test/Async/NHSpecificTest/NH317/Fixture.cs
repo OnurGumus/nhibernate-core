@@ -19,7 +19,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH317
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Summary description for Fixture.
 	/// </summary>
@@ -44,12 +43,12 @@ namespace NHibernate.Test.NHSpecificTest.NH317
 			node.Name = "Node 1";
 
 			ISession s = OpenSession();
-			await (s.SaveAsync(node, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(node));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			Node nodeProxy = (Node) await (s.LoadAsync(typeof(Node), 1, CancellationToken.None));
+			Node nodeProxy = (Node) await (s.LoadAsync(typeof(Node), 1));
 			// Test if it is really a proxy
 			Assert.IsTrue(nodeProxy is INHibernateProxy);
 			s.Close();
@@ -68,8 +67,8 @@ namespace NHibernate.Test.NHSpecificTest.NH317
 			Assert.IsTrue(deserializedNodeProxy is INHibernateProxy);
 
 			s = OpenSession();
-			await (s.DeleteAsync("from Node", CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync("from Node"));
+			await (s.FlushAsync());
 			s.Close();
 		}
 	}

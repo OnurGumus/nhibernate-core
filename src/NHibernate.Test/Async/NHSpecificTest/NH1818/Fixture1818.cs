@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1818
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class Fixture1818Async : BugTestCase
 	{
@@ -51,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1818
 		{
 			using (var session = OpenSession())
 			{
-				var obj = await (session.CreateQuery("from DomainClass dc where dc.AlwaysTrue").UniqueResultAsync<DomainClass>(CancellationToken.None));
+				var obj = await (session.CreateQuery("from DomainClass dc where dc.AlwaysTrue").UniqueResultAsync<DomainClass>());
 				Assert.IsNotNull(obj);
 			}
 		}

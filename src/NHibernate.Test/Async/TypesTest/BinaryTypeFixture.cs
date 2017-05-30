@@ -19,7 +19,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Tests for mapping a byte[] Property to a BinaryType.
 	/// </summary>
@@ -46,13 +45,13 @@ namespace NHibernate.Test.TypesTest
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.SaveAsync(bcBinary, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(bcBinary));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			BinaryClass bcBinaryLoaded = (BinaryClass) await (s.LoadAsync(typeof(BinaryClass), 1, CancellationToken.None));
+			BinaryClass bcBinaryLoaded = (BinaryClass) await (s.LoadAsync(typeof(BinaryClass), 1));
 
 			Assert.IsNotNull(bcBinaryLoaded);
 			Assert.AreEqual(null, bcBinaryLoaded.DefaultSize,
@@ -60,8 +59,8 @@ namespace NHibernate.Test.TypesTest
 			Assert.AreEqual(null, bcBinaryLoaded.WithSize,
 			                "A property mapped as type=\"Byte[](length)\" with null byte[] value was not saved & loaded as null");
 
-			await (s.DeleteAsync(bcBinaryLoaded, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(bcBinaryLoaded));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -84,13 +83,13 @@ namespace NHibernate.Test.TypesTest
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.SaveAsync(bcBinary, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(bcBinary));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			BinaryClass bcBinaryLoaded = (BinaryClass) await (s.LoadAsync(typeof(BinaryClass), 1, CancellationToken.None));
+			BinaryClass bcBinaryLoaded = (BinaryClass) await (s.LoadAsync(typeof(BinaryClass), 1));
 
 			Assert.IsNotNull(bcBinaryLoaded);
 			Assert.AreEqual(0, bcBinaryLoaded.DefaultSize.Length,
@@ -98,8 +97,8 @@ namespace NHibernate.Test.TypesTest
 			Assert.AreEqual(0, bcBinaryLoaded.WithSize.Length,
 			                "A property mapped as type=\"Byte[](length)\" with a byte[0] value was not saved & loaded as byte[0]");
 
-			await (s.DeleteAsync(bcBinaryLoaded, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(bcBinaryLoaded));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -115,22 +114,22 @@ namespace NHibernate.Test.TypesTest
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.SaveAsync(bcBinary, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.SaveAsync(bcBinary));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			bcBinary = (BinaryClass) await (s.LoadAsync(typeof(BinaryClass), 1, CancellationToken.None));
+			bcBinary = (BinaryClass) await (s.LoadAsync(typeof(BinaryClass), 1));
 
 			// make sure what was saved was expected
 			ObjectAssert.AreEqual(expected.DefaultSize, bcBinary.DefaultSize);
 			ObjectAssert.AreEqual(expected.WithSize, bcBinary.WithSize);
 
-			Assert.IsFalse(await (s.IsDirtyAsync(CancellationToken.None)), "The session is dirty: an Update will be raised on commit, See NH-1246");
+			Assert.IsFalse(await (s.IsDirtyAsync()), "The session is dirty: an Update will be raised on commit, See NH-1246");
 
-			await (s.DeleteAsync(bcBinary, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(bcBinary));
+			await (t.CommitAsync());
 			s.Close();
 		}
 

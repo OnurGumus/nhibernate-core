@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1642
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class TrafficRuleSetDAOTestAsync : BugTestCase
 	{
@@ -74,7 +73,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1642
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var fromDb = await (session.GetAsync<TrafficRuleSet>(scenario.RuleSetId, CancellationToken.None));
+				var fromDb = await (session.GetAsync<TrafficRuleSet>(scenario.RuleSetId));
 				Assert.IsNotNull(fromDb);
 				Assert.AreEqual(fromDb.name, scenario.RuleSetName);
 				Assert.AreEqual(fromDb.rules[0].name, scenario.RuleSetName + "-a");

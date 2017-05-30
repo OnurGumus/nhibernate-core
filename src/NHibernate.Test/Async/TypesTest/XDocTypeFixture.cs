@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
   using System.Threading.Tasks;
-  using System.Threading;
   [TestFixture]
 	public class XDocTypeFixtureAsync : TypeFixtureBase
 	{
@@ -38,28 +37,28 @@ namespace NHibernate.Test.TypesTest
 			{
 				var docEntity = new XDocClass {Id = 1 };
 		docEntity.Document = XDocument.Parse("<MyNode>my Text</MyNode>");
-				await (s.SaveAsync(docEntity, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(docEntity));
+				await (s.FlushAsync());
 			}
 
 			using (var s = OpenSession())
 			{
-				var docEntity = await (s.GetAsync<XDocClass>(1, CancellationToken.None));
+				var docEntity = await (s.GetAsync<XDocClass>(1));
 				var document = docEntity.Document;
 				Assert.That(document, Is.Not.Null);
 				Assert.That(document.Document.Root.ToString(SaveOptions.DisableFormatting), Does.Contain("<MyNode>my Text</MyNode>"));
 			  var xmlElement = new XElement("Pizza", new XAttribute("temp", "calda"));
 		document.Document.Root.Add(xmlElement);
-				await (s.SaveAsync(docEntity, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(docEntity));
+				await (s.FlushAsync());
 			}
 			using (var s = OpenSession())
 			{
-				var docEntity = await (s.GetAsync<XDocClass>(1, CancellationToken.None));
+				var docEntity = await (s.GetAsync<XDocClass>(1));
 		var document = docEntity.Document;
 		Assert.That(document.Document.Root.ToString(SaveOptions.DisableFormatting), Does.Contain("Pizza temp=\"calda\""));
-				await (s.DeleteAsync(docEntity, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync(docEntity));
+				await (s.FlushAsync());
 			}
 		}
 
@@ -70,16 +69,16 @@ namespace NHibernate.Test.TypesTest
 			{
 				var docEntity = new XDocClass { Id = 1 };
 				docEntity.Document = null;
-				await (s.SaveAsync(docEntity, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(docEntity));
+				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				var docEntity = await (s.GetAsync<XDocClass>(1, CancellationToken.None));
+				var docEntity = await (s.GetAsync<XDocClass>(1));
 				Assert.That(docEntity.Document, Is.Null);
-				await (s.DeleteAsync(docEntity, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync(docEntity));
+				await (s.FlushAsync());
 			}
 		}
 	}

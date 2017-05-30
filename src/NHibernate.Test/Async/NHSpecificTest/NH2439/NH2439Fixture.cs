@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2439
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class NH2439FixtureAsync : BugTestCase
 	{
@@ -78,8 +77,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2439
 				var finalQuery = query.Where(r => scopes.Any(s => s.Rto == r.Organisation));
 				var organisations = scopes.Select(s => s.Rto);
 
-				var rtoScopes = await (scopes.ToListAsync(CancellationToken.None));
-				var organisations1 = await (organisations.ToListAsync(CancellationToken.None));
+				var rtoScopes = await (scopes.ToListAsync());
+				var organisations1 = await (organisations.ToListAsync());
 
 				Assert.That(rtoScopes.Count == 0);
 				Assert.That(organisations1.Count == 0);
@@ -87,11 +86,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2439
 				//the SQL in below fails - the organisations part of the query is not included at all..
 				var organisationSearchResults = await (query
 					.Where(r => organisations.Contains(r.Organisation))
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.That(organisationSearchResults.Count == 0);
 
-				var list = await (finalQuery.ToListAsync(CancellationToken.None));
+				var list = await (finalQuery.ToListAsync());
 				Assert.That(list.Count == 0);
 			}
 		}

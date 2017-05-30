@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Test mappings of <c>type="Object"</c>
 	/// </summary>
@@ -52,14 +51,14 @@ namespace NHibernate.Test.NHSpecificTest
 			bo.Any = any;
 			bo.AnyWithProxy = anyProxy;
 
-			await (s.SaveAsync(any, CancellationToken.None));
-			await (s.SaveAsync(anyProxy, CancellationToken.None));
-			await (s.SaveAsync(bo, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(any));
+			await (s.SaveAsync(anyProxy));
+			await (s.SaveAsync(bo));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			bo = (BasicObject) await (s.LoadAsync(typeof(BasicObject), bo.Id, CancellationToken.None));
+			bo = (BasicObject) await (s.LoadAsync(typeof(BasicObject), bo.Id));
 
 
 			Assert.IsNotNull(bo.AnyWithProxy, "AnyWithProxy should not be null");
@@ -70,13 +69,13 @@ namespace NHibernate.Test.NHSpecificTest
 			Assert.IsTrue(bo.Any is BasicObjectRef, "any should have been a BasicObjectRef instance");
 			Assert.AreEqual(any.Id, ((BasicObjectRef) bo.Any).Id);
 
-			any = (BasicObjectRef) await (s.LoadAsync(typeof(BasicObjectRef), any.Id, CancellationToken.None));
+			any = (BasicObjectRef) await (s.LoadAsync(typeof(BasicObjectRef), any.Id));
 			Assert.AreSame(any, bo.Any, "any loaded and ref by BasicObject should be the same");
 
-			await (s.DeleteAsync(bo.Any, CancellationToken.None));
-			await (s.DeleteAsync(bo.AnyWithProxy, CancellationToken.None));
-			await (s.DeleteAsync(bo, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(bo.Any));
+			await (s.DeleteAsync(bo.AnyWithProxy));
+			await (s.DeleteAsync(bo));
+			await (s.FlushAsync());
 			s.Close();
 		}
 	}

@@ -18,7 +18,6 @@ using NHibernate.DomainModel;
 namespace NHibernate.Test.CollectionFilterTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class CollectionFilterQueriesTestAsync : TestCase
 	{
@@ -79,12 +78,12 @@ namespace NHibernate.Test.CollectionFilterTest
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				One one2 = (One)await (s.CreateQuery("from One").UniqueResultAsync(CancellationToken.None));
+				One one2 = (One)await (s.CreateQuery("from One").UniqueResultAsync());
 
 				Assert.ThrowsAsync<QuerySyntaxException>(async () =>
 				{
-					await ((await (s.CreateFilterAsync(one2.Manies, "update Many set X = 1", CancellationToken.None))
-)						.ExecuteUpdateAsync(CancellationToken.None));
+					await ((await (s.CreateFilterAsync(one2.Manies, "update Many set X = 1"))
+)						.ExecuteUpdateAsync());
 					// Collection filtering disallows DML queries
 				});
 
@@ -98,12 +97,12 @@ namespace NHibernate.Test.CollectionFilterTest
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				One one2 = (One)await (s.CreateQuery("from One").UniqueResultAsync(CancellationToken.None));
+				One one2 = (One)await (s.CreateQuery("from One").UniqueResultAsync());
 
 				Assert.ThrowsAsync<QuerySyntaxException>(async () =>
 				{
-					await ((await (s.CreateFilterAsync(one2.Manies, "delete from Many", CancellationToken.None))
-)						.ExecuteUpdateAsync(CancellationToken.None));
+					await ((await (s.CreateFilterAsync(one2.Manies, "delete from Many"))
+)						.ExecuteUpdateAsync());
 					// Collection filtering disallows DML queries
 				});
 
@@ -117,12 +116,12 @@ namespace NHibernate.Test.CollectionFilterTest
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				One one2 = (One)await (s.CreateQuery("from One").UniqueResultAsync(CancellationToken.None));
+				One one2 = (One)await (s.CreateQuery("from One").UniqueResultAsync());
 
 				Assert.ThrowsAsync<QuerySyntaxException>(async () =>
 				{
-					await ((await (s.CreateFilterAsync(one2.Manies, "insert into Many (X) select t0.X from Many t0", CancellationToken.None))
-)						.ExecuteUpdateAsync(CancellationToken.None));
+					await ((await (s.CreateFilterAsync(one2.Manies, "insert into Many (X) select t0.X from Many t0"))
+)						.ExecuteUpdateAsync());
 					// Collection filtering disallows DML queries
 				});
 
@@ -136,10 +135,10 @@ namespace NHibernate.Test.CollectionFilterTest
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				One one2 = (One)await (s.CreateQuery("from One").UniqueResultAsync(CancellationToken.None));
+				One one2 = (One)await (s.CreateQuery("from One").UniqueResultAsync());
 
-				await ((await (s.CreateFilterAsync(one2.Manies, "where this.X in (select t0.X from Many t0)", CancellationToken.None))
-)					.ListAsync(CancellationToken.None));
+				await ((await (s.CreateFilterAsync(one2.Manies, "where this.X in (select t0.X from Many t0)"))
+)					.ListAsync());
 				// Filter should only affect outer query, not inner
 
 				t.Rollback();
@@ -152,12 +151,12 @@ namespace NHibernate.Test.CollectionFilterTest
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				One one2 = (One)await (s.CreateQuery("from One").UniqueResultAsync(CancellationToken.None));
+				One one2 = (One)await (s.CreateQuery("from One").UniqueResultAsync());
 
 				Assert.ThrowsAsync<QuerySyntaxException>(async () =>
 				{
-					await ((await (s.CreateFilterAsync(one2.Manies, "where this.X in (select X)", CancellationToken.None))
-)						.ListAsync(CancellationToken.None));
+					await ((await (s.CreateFilterAsync(one2.Manies, "where this.X in (select X)"))
+)						.ListAsync());
 					// Inner query for filter query should have FROM clause 
 				});
 

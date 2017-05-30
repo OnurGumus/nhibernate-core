@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1447
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -54,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1447
 			{
 				ICriteria c = s.CreateCriteria(typeof (Person))
 					.Add(Restrictions.EqProperty("WantsNewsletter", Projections.Constant(false,NHibernateUtil.Boolean)));
-				IList<Person> list = await (c.ListAsync<Person>(CancellationToken.None));
+				IList<Person> list = await (c.ListAsync<Person>());
 				Assert.AreEqual(1, list.Count);
 			}
 		}

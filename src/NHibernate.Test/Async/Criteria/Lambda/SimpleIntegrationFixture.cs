@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Criteria.Lambda
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SimpleIntegrationFixtureAsync : TestCase
 	{
@@ -67,7 +66,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					await (s.QueryOver<Person>(() => personAlias)
 						.Where(() => personAlias.Name == "test person 2")
 						.And(() => personAlias.Age == 30)
-						.ListAsync(CancellationToken.None));
+						.ListAsync());
 
 				Assert.That(actual.Count, Is.EqualTo(1));
 			}
@@ -85,7 +84,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					await (s.QueryOver<Person>(() => personAlias)
 						.Where(() => personAlias.Name == "test person 2")
 						.And(() => personAlias.Age == 30)
-						.ListAsync(CancellationToken.None));
+						.ListAsync());
 
 				Assert.That(actual.Count, Is.EqualTo(1));
 			}

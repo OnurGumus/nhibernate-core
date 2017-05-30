@@ -61,16 +61,16 @@ namespace NHibernate.Test.ConnectionTest
 			Prepare();
 			ISession s = GetSessionUnderTest();
 			Silly silly = new Silly("silly");
-			await (s.SaveAsync(silly, CancellationToken.None));
+			await (s.SaveAsync(silly));
 
 			// this should cause the CM to obtain a connection, and then Release it
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 
 			// We should be able to serialize the session at this point...
 			SerializationHelper.Serialize(s);
 
-			await (s.DeleteAsync(silly, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(silly));
+			await (s.FlushAsync());
 
 			Release(s);
 			Done();
@@ -83,15 +83,15 @@ namespace NHibernate.Test.ConnectionTest
 			ISession s = GetSessionUnderTest();
 
 			Silly silly = new Silly("silly");
-			await (s.SaveAsync(silly, CancellationToken.None));
+			await (s.SaveAsync(silly));
 
 			// this should cause the CM to obtain a connection, and then Release it
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 
 			// both scroll() and iterate() cause the batcher to hold on
 			// to resources, which should make aggresive-Release not Release
 			// the connection (and thus cause serialization to fail)
-			IEnumerable en = await (s.CreateQuery("from Silly").EnumerableAsync(CancellationToken.None));
+			IEnumerable en = await (s.CreateQuery("from Silly").EnumerableAsync());
 
 			try
 			{
@@ -109,8 +109,8 @@ namespace NHibernate.Test.ConnectionTest
 			NHibernateUtil.Close(en);
 			SerializationHelper.Serialize(s);
 
-			await (s.DeleteAsync(silly, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(silly));
+			await (s.FlushAsync());
 
 			Release(s);
 			Done();
@@ -122,18 +122,18 @@ namespace NHibernate.Test.ConnectionTest
 			Prepare();
 			ISession s = GetSessionUnderTest();
 			Silly silly = new Silly("silly");
-			await (s.SaveAsync(silly, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(silly));
+			await (s.FlushAsync());
 
-			IEnumerable en = await (s.CreateQuery("from Silly").EnumerableAsync(CancellationToken.None));
+			IEnumerable en = await (s.CreateQuery("from Silly").EnumerableAsync());
 			IEnumerator itr = en.GetEnumerator();
 			Assert.IsTrue(itr.MoveNext());
 			Silly silly2 = (Silly) itr.Current;
 			Assert.AreEqual(silly, silly2);
 			NHibernateUtil.Close(itr);
 
-			itr = (await (s.CreateQuery("from Silly").EnumerableAsync(CancellationToken.None))).GetEnumerator();
-			IEnumerator itr2 = (await (s.CreateQuery("from Silly where name = 'silly'").EnumerableAsync(CancellationToken.None))).GetEnumerator();
+			itr = (await (s.CreateQuery("from Silly").EnumerableAsync())).GetEnumerator();
+			IEnumerator itr2 = (await (s.CreateQuery("from Silly where name = 'silly'").EnumerableAsync())).GetEnumerator();
 
 			Assert.IsTrue(itr.MoveNext());
 			Assert.AreEqual(silly, itr.Current);
@@ -143,8 +143,8 @@ namespace NHibernate.Test.ConnectionTest
 			NHibernateUtil.Close(itr);
 			NHibernateUtil.Close(itr2);
 
-			await (s.DeleteAsync(silly, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(silly));
+			await (s.FlushAsync());
 
 			Release(s);
 			Done();
@@ -192,16 +192,16 @@ namespace NHibernate.Test.ConnectionTest
 			ISession session = sessions.OpenSession(originalConnection);
 
 			Silly silly = new Silly("silly");
-			await (session.SaveAsync(silly, CancellationToken.None));
+			await (session.SaveAsync(silly));
 
 			// this will cause the connection manager to cycle through the aggressive Release logic;
 			// it should not Release the connection since we explicitly suplied it ourselves.
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.FlushAsync());
 
 			Assert.IsTrue(originalConnection == session.Connection, "Different connections");
 
-			await (session.DeleteAsync(silly, CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.DeleteAsync(silly));
+			await (session.FlushAsync());
 
 			Release(session);
 			originalConnection.Close();
@@ -237,9 +237,9 @@ namespace NHibernate.Test.ConnectionTest
 				Other other = new Other("other-" + i);
 				Silly silly = new Silly("silly-" + i, other);
 				entities.Add(silly);
-				await (s.SaveAsync(silly, CancellationToken.None));
+				await (s.SaveAsync(silly));
 			}
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 
 			foreach (Silly silly in entities)
 			{
@@ -247,12 +247,12 @@ namespace NHibernate.Test.ConnectionTest
 				silly.Other.Name = "new-" + silly.Other.Name;
 			}
 //			long initialCount = sessions.Statistics.getConnectCount();
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 //			Assert.AreEqual(initialCount + 1, sessions.Statistics.getConnectCount(), "connection not maintained through Flush");
 
-			await (s.DeleteAsync("from Silly", CancellationToken.None));
-			await (s.DeleteAsync("from Other", CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync("from Silly"));
+			await (s.DeleteAsync("from Other"));
+			await (s.Transaction.CommitAsync());
 			Release(s);
 			Done();
 		}

@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2441
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -61,8 +60,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2441
 				var query2 = session.Query<Person>().Where(p => p.Id != null);
 				var query3 = session.Query<Person>();
 				
-				Assert.That(await (query1.CountAsync(CancellationToken.None)), Is.EqualTo(await (query2.CountAsync(CancellationToken.None))));
-				Assert.That(await (query3.CountAsync(CancellationToken.None)), Is.EqualTo(await (query1.CountAsync(CancellationToken.None))));
+				Assert.That(await (query1.CountAsync()), Is.EqualTo(await (query2.CountAsync())));
+				Assert.That(await (query3.CountAsync()), Is.EqualTo(await (query1.CountAsync())));
 			}
 		}
 	}

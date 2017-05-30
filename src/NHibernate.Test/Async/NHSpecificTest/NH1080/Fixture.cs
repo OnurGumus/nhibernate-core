@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1080
 {
     using System.Threading.Tasks;
-    using System.Threading;
     [TestFixture]
     public class FixtureAsync : BugTestCase
     {
@@ -72,10 +71,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1080
 
                 using (ISession s = sessions.OpenSession())
                 {
-                    await (s.SaveAsync(c, CancellationToken.None));
-                    await (s.SaveAsync(b1, CancellationToken.None));
-                    await (s.SaveAsync(a, CancellationToken.None));
-                    await (s.FlushAsync(CancellationToken.None));
+                    await (s.SaveAsync(c));
+                    await (s.SaveAsync(b1));
+                    await (s.SaveAsync(a));
+                    await (s.FlushAsync());
                     s.Clear();
                     s.Close();
                 }
@@ -85,7 +84,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1080
                     /* If bug is present, throws:
                     NHibernate.Test.NHSpecificTest.NH1080.Fixture.TestBug : NHibernate.UnresolvableObjectException : No row with the given identifier exists: 1, of class: NHibernate.Test.NHSpecificTest.NH1080.B
                      */
-                    A loadedA = (A) await (s.CreateQuery("from A a join fetch a.C left join fetch a.B2").UniqueResultAsync(CancellationToken.None));
+                    A loadedA = (A) await (s.CreateQuery("from A a join fetch a.C left join fetch a.B2").UniqueResultAsync());
                 }
             }
             finally
@@ -93,10 +92,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1080
                 using (ISession s = sessions.OpenSession())
                 {
                     
-                    await (s.DeleteAsync(a, CancellationToken.None));
-                    await (s.DeleteAsync(b1, CancellationToken.None));
-                    await (s.DeleteAsync(c, CancellationToken.None));
-                    await (s.FlushAsync(CancellationToken.None));
+                    await (s.DeleteAsync(a));
+                    await (s.DeleteAsync(b1));
+                    await (s.DeleteAsync(c));
+                    await (s.FlushAsync());
                 }
             }
         }

@@ -16,7 +16,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1850
 	using AdoNet;
 	using Environment=NHibernate.Cfg.Environment;
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	[TestFixture]
 	public class FixtureAsync:BugTestCase
@@ -38,7 +37,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1850
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				await (session.CreateQuery("delete Customer").ExecuteUpdateAsync(CancellationToken.None));
+				await (session.CreateQuery("delete Customer").ExecuteUpdateAsync());
 
 				var wholeLog = spy.GetWholeLog();
 				Assert.That(wholeLog.Contains("ExecuteNonQuery took"), Is.True);
@@ -60,10 +59,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1850
 					{
 						Name = "foo"
 					};
-					await (session.SaveAsync(customer, CancellationToken.None));
-					await (session.DeleteAsync(customer, CancellationToken.None));
+					await (session.SaveAsync(customer));
+					await (session.DeleteAsync(customer));
 				}
-				await (session.FlushAsync(CancellationToken.None));
+				await (session.FlushAsync());
 
 				var wholeLog = spy.GetWholeLog();
 				var lines = wholeLog.Split(new[]{System.Environment.NewLine},StringSplitOptions.RemoveEmptyEntries);
@@ -86,7 +85,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1850
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				await (session.CreateQuery("from Customer").ListAsync(CancellationToken.None));
+				await (session.CreateQuery("from Customer").ListAsync());
 
 				var wholeLog = spy.GetWholeLog();
 				Assert.That(wholeLog.Contains("ExecuteReader took"), Is.True);

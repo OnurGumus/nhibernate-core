@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH940
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class NH940FixtureAsync : BugTestCase
 	{
@@ -30,14 +29,14 @@ namespace NHibernate.Test.NHSpecificTest.NH940
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(a, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(a));
+				await (t.CommitAsync());
 				s.Close();
 			}
 
 			using (ISession s = OpenSession())
 			{
-				IList l = await (s.CreateCriteria(typeof(A)).ListAsync(CancellationToken.None));
+				IList l = await (s.CreateCriteria(typeof(A)).ListAsync());
 				try
 				{
 					((A)l[0]).Execute();
@@ -56,8 +55,8 @@ namespace NHibernate.Test.NHSpecificTest.NH940
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.DeleteAsync(a, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(a));
+				await (t.CommitAsync());
 				s.Close();
 			}
 		}

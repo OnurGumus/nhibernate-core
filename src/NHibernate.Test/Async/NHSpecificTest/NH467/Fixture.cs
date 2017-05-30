@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH467
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -38,20 +37,20 @@ namespace NHibernate.Test.NHSpecificTest.NH467
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(inactive, CancellationToken.None));
-				await (s.SaveAsync(employee, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync(inactive));
+				await (s.SaveAsync(employee));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				Employee loaded = (Employee) await (s.GetAsync(typeof(Employee), employee.Id, CancellationToken.None));
+				Employee loaded = (Employee) await (s.GetAsync(typeof(Employee), employee.Id));
 				Assert.IsNotNull(loaded.User);
 
 				try
 				{
-					await (NHibernateUtil.InitializeAsync(loaded.User, CancellationToken.None));
+					await (NHibernateUtil.InitializeAsync(loaded.User));
 					Assert.Fail("Should not have initialized");
 				}
 				catch (ObjectNotFoundException)
@@ -59,9 +58,9 @@ namespace NHibernate.Test.NHSpecificTest.NH467
 					// Correct
 				}
 
-				await (s.DeleteAsync("from Employee", CancellationToken.None));
-				await (s.DeleteAsync("from User", CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync("from Employee"));
+				await (s.DeleteAsync("from User"));
+				await (t.CommitAsync());
 			}
 		}
 	}

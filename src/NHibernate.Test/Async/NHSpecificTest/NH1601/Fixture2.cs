@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
             try
             {
                 Project.TestAccessToList = false;
-                return SaveAndLoadProjectAsync(CancellationToken.None);
+                return SaveAndLoadProjectAsync();
             }
             catch (System.Exception ex)
             {
@@ -44,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
             try
             {
                 Project.TestAccessToList = false;
-                return SaveLoadAndRefreshProjectAsync(CancellationToken.None);
+                return SaveLoadAndRefreshProjectAsync();
             }
             catch (System.Exception ex)
             {
@@ -61,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
             try
             {
                 Project.TestAccessToList = true;
-                return SaveAndLoadProjectAsync(CancellationToken.None);
+                return SaveAndLoadProjectAsync();
             }
             catch (System.Exception ex)
             {
@@ -79,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
             try
             {
                 Project.TestAccessToList = true;
-                return SaveLoadAndRefreshProjectAsync(CancellationToken.None);
+                return SaveLoadAndRefreshProjectAsync();
             }
             catch (System.Exception ex)
             {

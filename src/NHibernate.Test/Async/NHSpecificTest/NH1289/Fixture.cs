@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1289
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture, Ignore("Not fixed yet.")]
 	public class FixtureAsync:BugTestCase
 	{
@@ -72,10 +71,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1289
 			using (var ses = OpenSession())
 			using (var tran = ses.BeginTransaction())
 			{
-				var purchaseItem = await (ses.GetAsync<PurchaseItem>(1, CancellationToken.None));
+				var purchaseItem = await (ses.GetAsync<PurchaseItem>(1));
 				Assert.That(purchaseItem, Is.AssignableFrom(typeof(Cons_PurchaseItem)));
 				Assert.That(purchaseItem.Product, Is.AssignableFrom(typeof(Cons_Product)));
-				await (tran.CommitAsync(CancellationToken.None));
+				await (tran.CommitAsync());
 			}
 		}
 	}

@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Summary description for NodeFixture.
 	/// </summary>
@@ -48,16 +47,16 @@ namespace NHibernate.Test.NHSpecificTest
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			await (s.SaveAsync(startNode, CancellationToken.None));
-			await (s.SaveAsync(levelOneNode, CancellationToken.None));
-			await (s.SaveAsync(levelTwoFirstNode, CancellationToken.None));
-			await (s.SaveAsync(levelTwoSecondNode, CancellationToken.None));
-			await (s.SaveAsync(levelThreeNode, CancellationToken.None));
-			await (s.SaveAsync(endNode, CancellationToken.None));
+			await (s.SaveAsync(startNode));
+			await (s.SaveAsync(levelOneNode));
+			await (s.SaveAsync(levelTwoFirstNode));
+			await (s.SaveAsync(levelTwoSecondNode));
+			await (s.SaveAsync(levelThreeNode));
+			await (s.SaveAsync(endNode));
 
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.FlushAsync());
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			// verify these nodes were actually saved and can be queried correctly.
@@ -66,7 +65,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 			Node startNode2 = (Node) (await (s2.CreateCriteria(typeof(Node))
 			                         	.Add(Expression.Eq("Id", "start"))
-			                         	.ListAsync(CancellationToken.None)))[0];
+			                         	.ListAsync()))[0];
 
 			Assert.AreEqual(1, startNode2.DestinationNodes.Count, "Start Node goes to 1 Node");
 			Assert.AreEqual(0, startNode2.PreviousNodes.Count, "Start Node has no previous Nodes");
@@ -92,14 +91,14 @@ namespace NHibernate.Test.NHSpecificTest
 
 			Assert.IsTrue(levelOneNode2.PreviousNodes.Contains(startNode2), "Level One can be reached through Start Node");
 
-			await (t2.CommitAsync(CancellationToken.None));
+			await (t2.CommitAsync());
 			s2.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			levelThreeNode = (Node) await (s.LoadAsync(typeof(Node), "3", CancellationToken.None));
-			endNode = (Node) await (s.LoadAsync(typeof(Node), "end", CancellationToken.None));
+			levelThreeNode = (Node) await (s.LoadAsync(typeof(Node), "3"));
+			endNode = (Node) await (s.LoadAsync(typeof(Node), "end"));
 
 			Node levelFourOneNode = new Node("4-1");
 			Node levelFourTwoNode = new Node("4-2");
@@ -111,17 +110,17 @@ namespace NHibernate.Test.NHSpecificTest
 			levelFourOneNode.AddDestinationNode(endNode);
 			levelFourTwoNode.AddDestinationNode(endNode);
 
-			await (s.SaveAsync(levelFourOneNode, CancellationToken.None));
-			await (s.SaveAsync(levelFourTwoNode, CancellationToken.None));
+			await (s.SaveAsync(levelFourOneNode));
+			await (s.SaveAsync(levelFourTwoNode));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			levelThreeNode = (Node) await (s.LoadAsync(typeof(Node), "3", CancellationToken.None));
-			endNode = (Node) await (s.LoadAsync(typeof(Node), "end", CancellationToken.None));
+			levelThreeNode = (Node) await (s.LoadAsync(typeof(Node), "3"));
+			endNode = (Node) await (s.LoadAsync(typeof(Node), "end"));
 
 			Assert.AreEqual(2, levelThreeNode.DestinationNodes.Count, "should be attached to the 2 level 4 nodes");
 			foreach (Node node in levelThreeNode.DestinationNodes)
@@ -137,13 +136,13 @@ namespace NHibernate.Test.NHSpecificTest
 				               "one of the Prev Nodes in should not be the level 3 node, only level 4 nodes");
 			}
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
 			using (ISession s3 = OpenSession())
 			{
-				await (s3.DeleteAsync("from Node", CancellationToken.None));
-				await (s3.FlushAsync(CancellationToken.None));
+				await (s3.DeleteAsync("from Node"));
+				await (s3.FlushAsync());
 			}
 		}
 	}

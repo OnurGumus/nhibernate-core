@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.SqlTest.Custom.Oracle
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class OracleCustomSQLFixtureAsync : CustomStoredProcSupportTest
 	{
@@ -46,25 +45,25 @@ namespace NHibernate.Test.SqlTest.Custom.Oracle
 			Person kevin = new Person("Kevin");
 			Employment emp = new Employment(gavin, jboss, "AU");
 			Employment emp2 = new Employment(kevin, ifa, "EU");
-			await (s.SaveAsync(ifa, CancellationToken.None));
-			await (s.SaveAsync(jboss, CancellationToken.None));
-			await (s.SaveAsync(gavin, CancellationToken.None));
-			await (s.SaveAsync(kevin, CancellationToken.None));
-			await (s.SaveAsync(emp, CancellationToken.None));
-			await (s.SaveAsync(emp2, CancellationToken.None));
+			await (s.SaveAsync(ifa));
+			await (s.SaveAsync(jboss));
+			await (s.SaveAsync(gavin));
+			await (s.SaveAsync(kevin));
+			await (s.SaveAsync(emp));
+			await (s.SaveAsync(emp2));
 
 			IQuery namedQuery = s.GetNamedQuery("selectEmploymentsForRegion");
 			namedQuery.SetString("regionCode", "EU");
-			IList list = await (namedQuery.ListAsync(CancellationToken.None));
+			IList list = await (namedQuery.ListAsync());
 			Assert.That(list.Count, Is.EqualTo(1));
-			await (s.DeleteAsync(emp2, CancellationToken.None));
-			await (s.DeleteAsync(emp, CancellationToken.None));
-			await (s.DeleteAsync(ifa, CancellationToken.None));
-			await (s.DeleteAsync(jboss, CancellationToken.None));
-			await (s.DeleteAsync(kevin, CancellationToken.None));
-			await (s.DeleteAsync(gavin, CancellationToken.None));
+			await (s.DeleteAsync(emp2));
+			await (s.DeleteAsync(emp));
+			await (s.DeleteAsync(ifa));
+			await (s.DeleteAsync(jboss));
+			await (s.DeleteAsync(kevin));
+			await (s.DeleteAsync(gavin));
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 		}
 

@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3175
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : TestCaseMappingByCode
 	{
@@ -115,7 +114,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3175
 			{
 				var result = await ((from o in session.Query<Order>()
 							  from ol in o.OrderLines.Where(x => x.Name.StartsWith("Order Line 3")).DefaultIfEmpty()
-							  select new {OrderId = o.Id, OrderLineId = (Guid?) ol.Id}).ToListAsync(CancellationToken.None));
+							  select new {OrderId = o.Id, OrderLineId = (Guid?) ol.Id}).ToListAsync());
 
 				Assert.AreEqual(5, result.Count);
 			}
@@ -142,7 +141,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3175
 			{
 				var result = await ((from o in session.Query<Order>()
 							  from ol in o.OrderLines.DefaultIfEmpty().Where(x => x.Name.StartsWith("Order Line 3"))
-							  select new {OrderId = o.Id, OrderLineId = (Guid?) ol.Id}).ToListAsync(CancellationToken.None));
+							  select new {OrderId = o.Id, OrderLineId = (Guid?) ol.Id}).ToListAsync());
 
 				Assert.AreEqual(2, result.Count);
 			}
@@ -163,7 +162,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3175
 									 .Where(x => x.Name.StartsWith("Order Line 3"))
 									 .Select(ol => ol.Id)
 						})
-					.ToListAsync(CancellationToken.None));
+					.ToListAsync());
 
 				Assert.That(orders.Count, Is.EqualTo(4));
 				Assert.That(orders[0].OrderLinesIds, Is.Empty);

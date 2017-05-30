@@ -14,7 +14,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2202
 	using Criterion;
 	using NUnit.Framework;
 	using System.Threading.Tasks;
-	using System.Threading;
 	
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
@@ -61,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2202
 				var employees = await (s.CreateCriteria<EmployeeAddress>("x3")
 					.Add(Restrictions.Eq("Type", "Postal"))
 					.SetProjection(Projections.Property("Employee"))
-					.ListAsync<Employee>(CancellationToken.None));
+					.ListAsync<Employee>());
 
 				Assert.That(employees.FirstOrDefault(), Is.InstanceOf<Employee>());
 			}

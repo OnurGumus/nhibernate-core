@@ -17,7 +17,6 @@ using System;
 namespace NHibernate.Test.NHSpecificTest.NH3963
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class MappedAsFixtureAsync : BugTestCase
 	{
@@ -30,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3963
 				var result = session.Query<Entity>()
 					.Where(e => e.Name.MappedAs(NHibernateUtil.AnsiString) == "Bob");
 
-				Assert.ThrowsAsync<HibernateException>(() => { return result.ToListAsync(CancellationToken.None); });
+				Assert.ThrowsAsync<HibernateException>(() => { return result.ToListAsync(); });
 			}
 		}
 
@@ -43,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3963
 				var result = session.Query<Entity>()
 					.Where(e => e.Name == "Bob".MappedAs(e.Id == Guid.Empty ? (IType)NHibernateUtil.AnsiString : NHibernateUtil.StringClob));
 
-				Assert.ThrowsAsync<HibernateException>(() => { return result.ToListAsync(CancellationToken.None); });
+				Assert.ThrowsAsync<HibernateException>(() => { return result.ToListAsync(); });
 			}
 		}
 	}

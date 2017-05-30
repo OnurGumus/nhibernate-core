@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3459
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : TestCaseMappingByCode
 	{
@@ -98,7 +97,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3459
 				var result = await ((from o in session.Query<Order>()
 							  from ol in o.OrderLines.DefaultIfEmpty()
 							  group ol by ol.Manufacturer into grp
-							  select new {grp.Key}).ToListAsync(CancellationToken.None));
+							  select new {grp.Key}).ToListAsync());
 
 				Assert.AreEqual(4, result.Count);
 			}
@@ -113,7 +112,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3459
 				var result = await ((from o in session.Query<Order>()
 							  from ol in o.OrderLines.Where(x => x.Manufacturer == "Manufacturer 1").DefaultIfEmpty()
 							  group o by o.Name into grp
-							  select new {grp.Key}).ToListAsync(CancellationToken.None));
+							  select new {grp.Key}).ToListAsync());
 
 				Assert.AreEqual(3, result.Count);
 			}
@@ -128,7 +127,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3459
 				var result = await ((from o in session.Query<Order>()
 							  from ol in o.OrderLines.DefaultIfEmpty().Where(x => x.Manufacturer == "Manufacturer 1")
 							  group o by o.Name into grp
-							  select new { grp.Key }).ToListAsync(CancellationToken.None));
+							  select new { grp.Key }).ToListAsync());
 
 				Assert.AreEqual(2, result.Count);
 			}
@@ -144,7 +143,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3459
 							  from ol in o.OrderLines.DefaultIfEmpty()
 							  where ol.Manufacturer == "Manufacturer 1"
 							  group o by o.Name into grp
-							  select new { grp.Key }).ToListAsync(CancellationToken.None));
+							  select new { grp.Key }).ToListAsync());
 
 				Assert.AreEqual(2, result.Count);
 			}
@@ -159,7 +158,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3459
 				var result = await ((from o in session.Query<Order>()
 							  from ol in o.OrderLines
 							  group ol by ol.Manufacturer into grp
-							  select new { grp.Key }).ToListAsync(CancellationToken.None));
+							  select new { grp.Key }).ToListAsync());
 
 				Assert.AreEqual(3, result.Count);
 			}
@@ -174,7 +173,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3459
 				var result = await ((from o in session.Query<Order>()
 							  from ol in o.OrderLines.Where(x => x.Manufacturer == "Manufacturer 1")
 							  group o by o.Name into grp
-							  select new { grp.Key }).ToListAsync(CancellationToken.None));
+							  select new { grp.Key }).ToListAsync());
 
 				Assert.AreEqual(2, result.Count);
 			}
@@ -190,7 +189,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3459
 							  from ol in o.OrderLines
 							  where ol.Manufacturer == "Manufacturer 1"
 							  group o by o.Name into grp
-							  select new { grp.Key }).ToListAsync(CancellationToken.None));
+							  select new { grp.Key }).ToListAsync());
 
 				Assert.AreEqual(2, result.Count);
 			}

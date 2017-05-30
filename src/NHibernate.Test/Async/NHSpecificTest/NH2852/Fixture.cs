@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2852
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -65,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2852
 					.Fetch(r => r.Address)
 					.ThenFetch(a => a.City);
 
-				var results = await (query.ToListAsync(CancellationToken.None));
+				var results = await (query.ToListAsync());
 
 				session.Close();
 
@@ -84,7 +83,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2852
 					.Fetch(p => p.Parent)
 					.ThenFetch(p => p.Parent);
 
-				var results = await (query.ToListAsync(CancellationToken.None));
+				var results = await (query.ToListAsync());
 
 				session.Close();
 

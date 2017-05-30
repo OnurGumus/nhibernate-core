@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH830
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class AutoFlushTestFixtureAsync : BugTestCase
 	{
@@ -27,13 +26,13 @@ namespace NHibernate.Test.NHSpecificTest.NH830
 			//Setup the test data
 			Cat mum = new Cat();
 			Cat son = new Cat();
-			await (sess.SaveAsync(mum, CancellationToken.None));
-			await (sess.SaveAsync(son, CancellationToken.None));
-			await (sess.FlushAsync(CancellationToken.None));
+			await (sess.SaveAsync(mum));
+			await (sess.SaveAsync(son));
+			await (sess.FlushAsync());
 
 			//reload the data and then setup the many-to-many association
-			mum = (Cat) await (sess.GetAsync(typeof (Cat), mum.Id, CancellationToken.None));
-			son = (Cat) await (sess.GetAsync(typeof (Cat), son.Id, CancellationToken.None));
+			mum = (Cat) await (sess.GetAsync(typeof (Cat), mum.Id));
+			son = (Cat) await (sess.GetAsync(typeof (Cat), son.Id));
 			mum.Children.Add(son);
 			son.Parents.Add(mum);
 
@@ -41,13 +40,13 @@ namespace NHibernate.Test.NHSpecificTest.NH830
 			IList result = await (sess.CreateCriteria(typeof (Cat))
 				.CreateAlias("Children", "child")
 				.Add(Expression.Eq("child.Id", son.Id))
-				.ListAsync(CancellationToken.None));
+				.ListAsync());
 			//the criteria failed to find the mum cat with the child
 			Assert.AreEqual(1, result.Count);
 
-			await (sess.DeleteAsync(mum, CancellationToken.None));
-			await (sess.DeleteAsync(son, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (sess.DeleteAsync(mum));
+			await (sess.DeleteAsync(son));
+			await (t.CommitAsync());
 			sess.Close();
 		}
 	}

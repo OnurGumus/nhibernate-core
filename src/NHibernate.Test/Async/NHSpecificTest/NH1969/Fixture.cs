@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1969
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Author : Stephane Verlet
 	/// </summary>
@@ -60,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1969
 			{
 				ICriteria criteria = s.CreateCriteria(typeof (EntityWithTypeProperty));
 				criteria.Add(Restrictions.Eq("TypeValue", typeof (DummyEntity)));
-				IList<EntityWithTypeProperty> results = await (criteria.ListAsync<EntityWithTypeProperty>(CancellationToken.None));
+				IList<EntityWithTypeProperty> results = await (criteria.ListAsync<EntityWithTypeProperty>());
 				Assert.AreEqual(1, results.Count);
 				Assert.AreEqual(2, results[0].Id);
 			}
@@ -73,7 +72,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1969
 			{
 				IQuery q = s.CreateQuery("select t from EntityWithTypeProperty as t where t.TypeValue = :type");
 				q.SetParameter("type", typeof (DummyEntity));
-				IList<EntityWithTypeProperty> results = await (q.ListAsync<EntityWithTypeProperty>(CancellationToken.None));
+				IList<EntityWithTypeProperty> results = await (q.ListAsync<EntityWithTypeProperty>());
 				Assert.AreEqual(1, results.Count);
 				Assert.AreEqual(2, results[0].Id);
 			}
@@ -86,7 +85,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1969
 			{
 				ICriteria criteria = s.CreateCriteria(typeof (EntityWithTypeProperty));
 				criteria.Add(Restrictions.Eq("TypeValue", typeof (File)));
-				IList<EntityWithTypeProperty> results = await (criteria.ListAsync<EntityWithTypeProperty>(CancellationToken.None));
+				IList<EntityWithTypeProperty> results = await (criteria.ListAsync<EntityWithTypeProperty>());
 				Assert.AreEqual(1, results.Count);
 				Assert.AreEqual(1, results[0].Id);
 			}
@@ -99,7 +98,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1969
 			{
 				IQuery q = s.CreateQuery("select t from EntityWithTypeProperty as t where t.TypeValue = :type");
 				q.SetParameter("type", typeof (File));
-				IList<EntityWithTypeProperty> results = await (q.ListAsync<EntityWithTypeProperty>(CancellationToken.None));
+				IList<EntityWithTypeProperty> results = await (q.ListAsync<EntityWithTypeProperty>());
 				Assert.AreEqual(1, results.Count);
 				Assert.AreEqual(1, results[0].Id);
 			}

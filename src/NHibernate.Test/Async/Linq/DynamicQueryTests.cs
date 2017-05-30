@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class DynamicQueryTestsAsync : LinqTestCase
 	{
@@ -26,7 +25,7 @@ namespace NHibernate.Test.Linq
 			//dynamic orderby clause
 			var list = await (db.Users
 				.OrderBy("RegisteredAt")
-				.ToListAsync(CancellationToken.None));
+				.ToListAsync());
 
 			Assert.That(list, Is.Ordered.By("RegisteredAt"));
 		}
@@ -41,11 +40,11 @@ namespace NHibernate.Test.Linq
 						  .OrderBy("RegisteredAt");
 
 			await (users
-			  .ToListAsync(CancellationToken.None));
+			  .ToListAsync());
 
 			using (var log = new SqlLogSpy())
 			{
-				await (users.ToListAsync(CancellationToken.None));
+				await (users.ToListAsync());
 				Assert.That(log.GetWholeLog(), Is.Null.Or.Empty);
 			}
 		}

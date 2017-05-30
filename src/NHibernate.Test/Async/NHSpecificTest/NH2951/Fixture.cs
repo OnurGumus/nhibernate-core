@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2951
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -40,13 +39,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2951
             {
 
                 var c = new Customer { Name = "Bob" };
-                await (session.SaveAsync(c, CancellationToken.None));
+                await (session.SaveAsync(c));
 
                 var i = new Invoice { Amount = 10 };
-                await (session.SaveAsync(i, CancellationToken.None));
+                await (session.SaveAsync(i));
 
-                await (session.FlushAsync(CancellationToken.None));
-                await (transaction.CommitAsync(CancellationToken.None));
+                await (session.FlushAsync());
+                await (transaction.CommitAsync());
             }
 
             using (ISession session = OpenSession())
@@ -55,7 +54,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2951
                 // Using (select c.Id ...) works.
                 string hql = "update Invoice i set i.Customer = (select c from Customer c where c.Name = 'Bob')";
 
-			    int result = await (session.CreateQuery(hql).ExecuteUpdateAsync(CancellationToken.None));
+			    int result = await (session.CreateQuery(hql).ExecuteUpdateAsync());
 
                 Assert.AreEqual(1, result);
 			}

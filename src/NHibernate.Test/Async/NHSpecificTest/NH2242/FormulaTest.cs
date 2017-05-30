@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2242
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FormulaTestAsync : BugTestCase
 	{
@@ -32,21 +31,21 @@ namespace NHibernate.Test.NHSpecificTest.NH2242
 				{
 					var entity = new EscapedFormulaDomainClass();
 					entity.Id = 1;
-					await (session.SaveAsync(entity, CancellationToken.None));
+					await (session.SaveAsync(entity));
 
-					await (transaction.CommitAsync(CancellationToken.None));
+					await (transaction.CommitAsync());
 				}
 
 				session.Clear();
 
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					var entity = await (session.GetAsync<EscapedFormulaDomainClass>(1, CancellationToken.None));
+					var entity = await (session.GetAsync<EscapedFormulaDomainClass>(1));
 
 					Assert.AreEqual(1, entity.Formula);
-					await (session.DeleteAsync(entity, CancellationToken.None));
+					await (session.DeleteAsync(entity));
 
-					await (transaction.CommitAsync(CancellationToken.None));
+					await (transaction.CommitAsync());
 				}
 			}
 		}
@@ -60,20 +59,20 @@ namespace NHibernate.Test.NHSpecificTest.NH2242
 				{
 					var entity = new UnescapedFormulaDomainClass();
 					entity.Id = 1;
-					await (session.SaveAsync(entity, CancellationToken.None));
+					await (session.SaveAsync(entity));
 
-					await (transaction.CommitAsync(CancellationToken.None));
+					await (transaction.CommitAsync());
 				}
 
 				session.Clear();
 
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					var entity = await (session.GetAsync<UnescapedFormulaDomainClass>(1, CancellationToken.None));
+					var entity = await (session.GetAsync<UnescapedFormulaDomainClass>(1));
 
 					Assert.AreEqual(1, entity.Formula);
-					await (session.DeleteAsync(entity, CancellationToken.None));
-					await (transaction.CommitAsync(CancellationToken.None));
+					await (session.DeleteAsync(entity));
+					await (transaction.CommitAsync());
 				}
 			}
 		}

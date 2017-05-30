@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1235
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
@@ -53,10 +52,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1235
 				{
 					obj = new SomeClass();
 					obj.Name = "someclass " + (i + 1).ToString();
-					await (s.SaveAsync(obj, CancellationToken.None));
+					await (s.SaveAsync(obj));
 				}
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 
 
@@ -66,11 +65,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1235
 				IQuery qry = s.CreateQuery("from SomeClass")
 					.SetMaxResults(5);
 
-				IList<SomeClass> list = await (qry.ListAsync<SomeClass>(CancellationToken.None));
+				IList<SomeClass> list = await (qry.ListAsync<SomeClass>());
 
 				Assert.AreEqual(5, list.Count, "Should have returned 5 entities");
 
-				await (tx.CommitAsync(CancellationToken.None));
+				await (tx.CommitAsync());
 			}
 		}
 

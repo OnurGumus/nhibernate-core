@@ -21,7 +21,6 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Test.GenericTest.MapGeneric
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class MapGenericFixtureAsync : TestCase
 	{
@@ -60,10 +59,10 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveOrUpdateAsync(a, CancellationToken.None));
+				await (s.SaveOrUpdateAsync(a));
 				// this flush should test how NH wraps a generic collection with its
 				// own persistent collection
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 			}
 
 			Assert.IsNotNull( a.Id );
@@ -73,21 +72,21 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 
 			using (ISession s = OpenSession())
 			{
-				a = await (s.LoadAsync<A>(a.Id, CancellationToken.None));
+				a = await (s.LoadAsync<A>(a.Id));
 				B thirdB = new B();
 				thirdB.Name = "third B";
 				// ensuring the correct generic type was constructed
 				a.Items.Add("third", thirdB);
 				Assert.AreEqual(3, a.Items.Count, "3 items in the map now");
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 			}
 
 			// NH-839
 			using (ISession s = OpenSession())
 			{
-				a = await (s.LoadAsync<A>( a.Id , CancellationToken.None));
+				a = await (s.LoadAsync<A>( a.Id ));
 				a.Items["second"] = a.Items["third"];
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 			}
 		}
 
@@ -110,13 +109,13 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveOrUpdateAsync(a, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveOrUpdateAsync(a));
+				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				a = await (s.LoadAsync<A>(a.Id, CancellationToken.None));
+				a = await (s.LoadAsync<A>(a.Id));
 				IDictionary<string, B> genericDict = a.Items;
 				IEnumerable<KeyValuePair<string, B>> genericEnum = a.Items;
 				IEnumerable nonGenericEnum = a.Items;
@@ -145,21 +144,21 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 
 			using( ISession s = OpenSession() )
 			{
-				await (s.SaveAsync( a , CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync( a ));
+				await (s.FlushAsync());
 			}
 
 			using( ISession s = OpenSession() )
 			{
-				a = await (s.LoadAsync<A>( a.Id , CancellationToken.None));
+				a = await (s.LoadAsync<A>( a.Id ));
 				a.SortedList.Add("abc", 10);
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 			}
 
 			using( ISession s = OpenSession() )
 			{
-				await (s.DeleteAsync("from A", CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync("from A"));
+				await (s.FlushAsync());
 			}
 		}
 
@@ -183,16 +182,16 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				copiedA = s.Merge(a);
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
-				A loadedA = await (s.GetAsync<A>( copiedA.Id , CancellationToken.None));
+				A loadedA = await (s.GetAsync<A>( copiedA.Id ));
 				Assert.IsNotNull( loadedA );
-				await (s.DeleteAsync( loadedA , CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync( loadedA ));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -209,14 +208,14 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
-				await (s.SaveAsync( a , CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.SaveAsync( a ));
+				await (t.CommitAsync());
 			}
 
 			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
-				a = await (s.LoadAsync<A>( a.Id , CancellationToken.None));
+				a = await (s.LoadAsync<A>( a.Id ));
 
 				ISessionFactoryImplementor si = (ISessionFactoryImplementor)sessions;
 				ICollectionPersister cpSortedList = si.GetCollectionPersister(typeof(A).FullName + ".SortedList");
@@ -238,7 +237,7 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 				// This is a hack, see above
 				Assert.IsTrue(sl.Entries(cpSortedList) is SortedList<string, int>);
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 		}
 	}

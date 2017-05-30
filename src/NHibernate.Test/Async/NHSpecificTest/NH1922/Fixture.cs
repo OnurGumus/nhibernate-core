@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1922
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{    protected override void OnSetUp()
@@ -57,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1922
             		.Add(Restrictions.Eq("ValidUntil", new DateTime(2000,1,1)));
 
             	var cust = await (dc.GetExecutableCriteria(stateless)
-					.UniqueResultAsync(CancellationToken.None));
+					.UniqueResultAsync());
 
 				Assert.IsNotNull(cust);
             }

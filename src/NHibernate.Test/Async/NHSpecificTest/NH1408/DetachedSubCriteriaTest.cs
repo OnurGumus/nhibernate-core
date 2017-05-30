@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1408
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class DetachedSubCriteriaTestAsync : BugTestCase
 	{
@@ -30,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1408
 				ICriteria icriteria = CriteriaTransformer.Clone(criteria).GetExecutableCriteria(session);
 				icriteria.SetFirstResult(0);
 				icriteria.SetMaxResults(1);
-				await (icriteria.ListAsync<DbResource>(CancellationToken.None));
+				await (icriteria.ListAsync<DbResource>());
 				// should not throw when parse the criteria
 			}
 		}

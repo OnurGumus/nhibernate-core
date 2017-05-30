@@ -17,7 +17,6 @@ using NHibernate.Cfg;
 namespace NHibernate.Test.NHSpecificTest.NH3046
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -55,10 +54,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3046
 
 						a.Childs.Add(c);
 
-						await (session.SaveAsync(c, CancellationToken.None));
-						await (session.SaveAsync(a, CancellationToken.None));
+						await (session.SaveAsync(c));
+						await (session.SaveAsync(a));
 					}
-					await (session.FlushAsync(CancellationToken.None));
+					await (session.FlushAsync());
 					session.Clear();
 				}
 			}

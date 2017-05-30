@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1810
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -67,10 +66,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 			using (ISession sess = OpenSession())
 			{
 				Log.Debug("Loading doctor");
-				var doctor = await (sess.GetAsync<Doctor>(doctorId, CancellationToken.None));		// creates a proxy of the medical record
+				var doctor = await (sess.GetAsync<Doctor>(doctorId));		// creates a proxy of the medical record
 				
 				Log.Debug("Loading parent");
-				var parent = await (sess.GetAsync<Parent>(parentId, CancellationToken.None));
+				var parent = await (sess.GetAsync<Parent>(parentId));
 				
 				Log.Debug("Adding new child to parent");
 				parent.Children.AddChild(new Child { Age = 10, Parent = parent });		// does NOT cause Child.GetHashCode() to be called
@@ -78,10 +77,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 				using (ITransaction tx = sess.BeginTransaction(IsolationLevel.ReadCommitted))
 				{
 					Log.Debug("Saving parent");
-					await (sess.UpdateAsync(parent, CancellationToken.None));
+					await (sess.UpdateAsync(parent));
 
 					Log.Debug("Committing transaction");
-					await (tx.CommitAsync(CancellationToken.None));								// triggers Child.GetHashCode() to be called in flush machiney, leading to CNPBF exception
+					await (tx.CommitAsync());								// triggers Child.GetHashCode() to be called in flush machiney, leading to CNPBF exception
 				}
 			}			
 

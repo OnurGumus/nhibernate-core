@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{
@@ -42,18 +41,18 @@ namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 			fred.Address = flinstoneWay;
 			wilma.Address = flinstoneWay;
 
-			await (session.SaveAsync(flinstoneWay, CancellationToken.None));
-			await (session.SaveAsync(fred, CancellationToken.None));
-			await (session.SaveAsync(wilma, CancellationToken.None));
+			await (session.SaveAsync(flinstoneWay));
+			await (session.SaveAsync(fred));
+			await (session.SaveAsync(wilma));
 
 			session.Close();
 
 			// clean up
 			session = OpenSession();
 
-			await (session.DeleteAsync("from Person", CancellationToken.None));
-			await (session.DeleteAsync("from Address", CancellationToken.None));
-			await (session.FlushAsync(CancellationToken.None));
+			await (session.DeleteAsync("from Person"));
+			await (session.DeleteAsync("from Address"));
+			await (session.FlushAsync());
 			session.Close();
 		}
 
@@ -70,7 +69,7 @@ namespace NHibernate.Test.NHSpecificTest.Docs.Associations.BiM21
 				fred.Address = flinstoneWay;
 				wilma.Address = flinstoneWay;
 
-				Assert.ThrowsAsync<PropertyValueException>(() => session.SaveAsync(fred, CancellationToken.None));
+				Assert.ThrowsAsync<PropertyValueException>(() => session.SaveAsync(fred));
 			}
 		}
 	}

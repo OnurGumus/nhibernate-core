@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH521
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -31,8 +30,8 @@ namespace NHibernate.Test.NHSpecificTest.NH521
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				id = (int) await (session.SaveAsync(new ReferringEntity(), CancellationToken.None));
-				await (transaction.CommitAsync(CancellationToken.None));
+				id = (int) await (session.SaveAsync(new ReferringEntity()));
+				await (transaction.CommitAsync());
 			}
 
 			// Then, load the ReferringEntity (its ReferenceToLazyEntity will be uninit)
@@ -40,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH521
 
 			using (ISession session = OpenSession())
 			{
-				uninitEntity = (await (session.LoadAsync(typeof(ReferringEntity), id, CancellationToken.None)) as ReferringEntity).ReferenceToLazyEntity;
+				uninitEntity = (await (session.LoadAsync(typeof(ReferringEntity), id)) as ReferringEntity).ReferenceToLazyEntity;
 			}
 
 			Assert.IsFalse(
@@ -51,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH521
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				await (session.LockAsync(uninitEntity, LockMode.None, CancellationToken.None));
+				await (session.LockAsync(uninitEntity, LockMode.None));
 
 				Assert.IsFalse(
 					NHibernateUtil.IsInitialized(uninitEntity),
@@ -64,8 +63,8 @@ namespace NHibernate.Test.NHSpecificTest.NH521
 					"session.GetCurrentLockMode() causes initialization of an unitialized entity.");
 
 
-				await (session.DeleteAsync("from System.Object", CancellationToken.None));
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync("from System.Object"));
+				await (transaction.CommitAsync());
 			}
 		}
 	}

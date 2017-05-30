@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Naturalid.Immutable
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class ImmutableNaturalIdFixtureAsync : TestCase
 	{
@@ -49,24 +48,24 @@ namespace NHibernate.Test.Naturalid.Immutable
 				user.UserName = "steve";
 				user.Email = "steve@hibernate.org";
 				user.Password = "brewhaha";
-				await (session.SaveAsync(user, CancellationToken.None));
-				await (session.Transaction.CommitAsync(CancellationToken.None));
+				await (session.SaveAsync(user));
+				await (session.Transaction.CommitAsync());
 			}
 			// 'user' is now a detached entity, so lets change a property and reattch...
 			user.Password = "homebrew";
 			using (ISession session = OpenSession())
 			{
 				session.BeginTransaction();
-				await (session.UpdateAsync(user, CancellationToken.None));
-				await (session.Transaction.CommitAsync(CancellationToken.None));
+				await (session.UpdateAsync(user));
+				await (session.Transaction.CommitAsync());
 			}
 
 			// clean up
 			using (ISession session = OpenSession())
 			{
 				session.BeginTransaction();
-				await (session.DeleteAsync(user, CancellationToken.None));
-				await (session.Transaction.CommitAsync(CancellationToken.None));
+				await (session.DeleteAsync(user));
+				await (session.Transaction.CommitAsync());
 			}
 		}
 
@@ -77,17 +76,17 @@ namespace NHibernate.Test.Naturalid.Immutable
 			ITransaction t = s.BeginTransaction();
 
 			User u = new User("steve", "superSecret");
-			await (s.PersistAsync(u, CancellationToken.None));
+			await (s.PersistAsync(u));
 			u.UserName = "Steve";
 			try
 			{
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 				Assert.Fail();
 			}
 			catch (HibernateException) {}
 			u.UserName = "steve";
-			await (s.DeleteAsync(u, CancellationToken.None));
-			await (t.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync(u));
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -97,8 +96,8 @@ namespace NHibernate.Test.Naturalid.Immutable
 			ISession s = OpenSession();
 			s.BeginTransaction();
 			User u = new User("steve", "superSecret");
-			await (s.PersistAsync(u, CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(u));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 
 			sessions.Statistics.Clear();
@@ -108,9 +107,9 @@ namespace NHibernate.Test.Naturalid.Immutable
 			u =
 				(User)
 				await (s.CreateCriteria(typeof (User)).Add(Restrictions.NaturalId().Set("UserName", "steve")).SetCacheable(true).
-					UniqueResultAsync(CancellationToken.None));
+					UniqueResultAsync());
 			Assert.That(u, Is.Not.Null);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 
 			Assert.AreEqual(1, sessions.Statistics.QueryExecutionCount);
@@ -120,8 +119,8 @@ namespace NHibernate.Test.Naturalid.Immutable
 			s = OpenSession();
 			s.BeginTransaction();
 			User v = new User("gavin", "supsup");
-			await (s.PersistAsync(v, CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.PersistAsync(v));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 
 			sessions.Statistics.Clear();
@@ -131,24 +130,24 @@ namespace NHibernate.Test.Naturalid.Immutable
 			u =
 				(User)
 				await (s.CreateCriteria(typeof(User)).Add(Restrictions.NaturalId().Set("UserName", "steve")).SetCacheable(true).
-					UniqueResultAsync(CancellationToken.None));
+					UniqueResultAsync());
 			Assert.That(u, Is.Not.Null);
 			Assert.AreEqual(0, sessions.Statistics.QueryExecutionCount);
 			Assert.AreEqual(1, sessions.Statistics.QueryCacheHitCount);
 			u =
 				(User)
 				await (s.CreateCriteria(typeof(User)).Add(Restrictions.NaturalId().Set("UserName", "steve")).SetCacheable(true).
-					UniqueResultAsync(CancellationToken.None));
+					UniqueResultAsync());
 			Assert.That(u, Is.Not.Null);
 			Assert.AreEqual(0, sessions.Statistics.QueryExecutionCount);
 			Assert.AreEqual(2, sessions.Statistics.QueryCacheHitCount);
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			s.BeginTransaction();
-			await (s.DeleteAsync("from User", CancellationToken.None));
-			await (s.Transaction.CommitAsync(CancellationToken.None));
+			await (s.DeleteAsync("from User"));
+			await (s.Transaction.CommitAsync());
 			s.Close();
 		}
 	}

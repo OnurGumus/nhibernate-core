@@ -13,7 +13,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1403
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -31,21 +30,21 @@ namespace NHibernate.Test.NHSpecificTest.NH1403
 			using (ISession s = OpenSession())
 			using(ITransaction t = s.BeginTransaction())
 			{
-				savedIdMale = await (s.SaveAsync(h, CancellationToken.None));
-				saveIdFemale = await (s.SaveAsync(h1, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				savedIdMale = await (s.SaveAsync(h));
+				saveIdFemale = await (s.SaveAsync(h1));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				h = await (s.GetAsync<Hobby>(savedIdMale, CancellationToken.None));
-				h1 = await (s.GetAsync<Hobby>(saveIdFemale, CancellationToken.None));
+				h = await (s.GetAsync<Hobby>(savedIdMale));
+				h1 = await (s.GetAsync<Hobby>(saveIdFemale));
 				Assert.IsTrue(h.Person is Male);
 				Assert.IsTrue(h1.Person is Female);
-				await (s.DeleteAsync(h, CancellationToken.None));
-				await (s.DeleteAsync(h1, CancellationToken.None));
-				await (t.CommitAsync(CancellationToken.None));
+				await (s.DeleteAsync(h));
+				await (s.DeleteAsync(h1));
+				await (t.CommitAsync());
 			}
 		}
 	}

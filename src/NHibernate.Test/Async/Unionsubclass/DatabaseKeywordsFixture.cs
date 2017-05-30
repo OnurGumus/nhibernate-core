@@ -15,7 +15,6 @@ using System.Collections;
 namespace NHibernate.Test.Unionsubclass
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class DatabaseKeywordsFixtureAsync : TestCase
 	{
@@ -42,17 +41,17 @@ namespace NHibernate.Test.Unionsubclass
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new DatabaseKeyword() { User = "user", View = "view", Table = "table", Create = "create" }, CancellationToken.None));
+				await (s.SaveAsync(new DatabaseKeyword() { User = "user", View = "view", Table = "table", Create = "create" }));
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.DeleteAsync("from DatabaseKeywordBase", CancellationToken.None));
+				await (s.DeleteAsync("from DatabaseKeywordBase"));
 
-				await (t.CommitAsync(CancellationToken.None));
+				await (t.CommitAsync());
 			}
 		}
 	}

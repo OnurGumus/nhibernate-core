@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Summary description for StringTypeFixture.
 	/// </summary>
@@ -33,17 +32,17 @@ namespace NHibernate.Test.TypesTest
 			{
 				StringClass b = new StringClass();
 				b.StringValue = null;
-				await (s.SaveAsync(b, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.SaveAsync(b));
+				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
 				StringClass b = (StringClass) await (s.CreateCriteria(
-				                              	typeof(StringClass)).UniqueResultAsync(CancellationToken.None));
+				                              	typeof(StringClass)).UniqueResultAsync());
 				Assert.IsNull(b.StringValue);
-				await (s.DeleteAsync(b, CancellationToken.None));
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.DeleteAsync(b));
+				await (s.FlushAsync());
 			}
 		}
 	}

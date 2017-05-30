@@ -40,7 +40,7 @@ namespace NHibernate.Test.Events
 			var myDisposableListener = new MyDisposableListener();
 			cfg.AppendListeners(ListenerType.PostUpdate, new[]{myDisposableListener});
 			var sf = cfg.BuildSessionFactory();
-			await (sf.CloseAsync(CancellationToken.None));
+			await (sf.CloseAsync());
 			Assert.That(myDisposableListener.DisposeCalled, Is.True);
 		}
 	}

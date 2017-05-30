@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2053
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -75,14 +74,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2053
 				using (var tran = session.BeginTransaction())
 				{
                     session.EnableFilter("talkableFilter").SetParameter("talkable", true);
-                    var snoopy = await (session.QueryOver<Dog>().Where(x => x.Name == "Snoopy").SingleOrDefaultAsync(CancellationToken.None));
+                    var snoopy = await (session.QueryOver<Dog>().Where(x => x.Name == "Snoopy").SingleOrDefaultAsync());
                     Assert.AreEqual(null, snoopy); // there are no talking dog named Snoopy.
 
-                    var jake = await (session.QueryOver<Dog>().Where(x => x.Name == "Jake the dog").SingleOrDefaultAsync(CancellationToken.None));
+                    var jake = await (session.QueryOver<Dog>().Where(x => x.Name == "Jake the dog").SingleOrDefaultAsync());
                     Assert.AreNotEqual(null, jake);
                     Assert.AreEqual("Jake the dog", jake.Name);
 
-                    var kitty = await (session.QueryOver<Cat>().Where(x => x.Name == "Kitty").SingleOrDefaultAsync(CancellationToken.None));
+                    var kitty = await (session.QueryOver<Cat>().Where(x => x.Name == "Kitty").SingleOrDefaultAsync());
                     Assert.AreNotEqual(null, kitty);
                     Assert.AreEqual("Kitty", kitty.Name);
 				}

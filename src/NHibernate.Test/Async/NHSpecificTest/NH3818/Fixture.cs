@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3818
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -43,9 +42,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3818
                     Name = "Kitty",
                     Price = 0
                 };
-                await (session.SaveAsync(cat, CancellationToken.None));
+                await (session.SaveAsync(cat));
                 
-                await (session.FlushAsync(CancellationToken.None));
+                await (session.FlushAsync());
 
                 var catInfo =
                     await (session.Query<MyLovelyCat>()
@@ -56,7 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3818
                             o.Name,
                             o.Price,
                         })
-                        .SingleAsync(CancellationToken.None));
+                        .SingleAsync());
 
                 //Console.WriteLine(spy.ToString());
                 Assert.That(catInfo.AliveDays == days);
@@ -70,7 +69,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3818
                             o.Name,
                             o.Price,
                         })
-                        .SingleAsync(CancellationToken.None));
+                        .SingleAsync());
 
                 //Console.WriteLine(spy.ToString());
                 Assert.That(catInfo2.AliveDays == 0);

@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2245
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -31,8 +30,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2245
 					var f = new Foo();
 					f.Name = "Henry";
 					f.Description = "description";
-					await (session.SaveAsync(f, CancellationToken.None));
-					await (tx.CommitAsync(CancellationToken.None));
+					await (session.SaveAsync(f));
+					await (tx.CommitAsync());
 					id = f.Id;
 				}
 			}
@@ -44,29 +43,29 @@ namespace NHibernate.Test.NHSpecificTest.NH2245
 				// Then try to delete the foo from the other session. With optimistic lock set to none, this should succeed when the 2245
 				// patch is applied to AbstractEntityPersister.cs. Without the patch, NH adds the version to the where clause of the delete
 				// statement, and the delete fails.
-				var f1 = await (session1.GetAsync<Foo>(id, CancellationToken.None));
-				var f2 = await (session2.GetAsync<Foo>(id, CancellationToken.None));
+				var f1 = await (session1.GetAsync<Foo>(id));
+				var f2 = await (session2.GetAsync<Foo>(id));
 
 				// Bump version
 				using (ITransaction trans1 = session1.BeginTransaction())
 				{
 					f1.Description = "modified description";
-					await (session1.UpdateAsync(f1, CancellationToken.None));
-					await (trans1.CommitAsync(CancellationToken.None));
+					await (session1.UpdateAsync(f1));
+					await (trans1.CommitAsync());
 				}
 
 				// Now delete from second session
 				using (ITransaction trans2 = session2.BeginTransaction())
 				{
 					Assert.That(() => session2.Delete(f2), Throws.Nothing);
-					await (trans2.CommitAsync(CancellationToken.None));
+					await (trans2.CommitAsync());
 				}
 			}
 
 			// Assert that row is really gone
 			using (ISession assertSession = OpenSession())
 			{
-				Assert.IsNull(await (assertSession.GetAsync<Foo>(id, CancellationToken.None)));
+				Assert.IsNull(await (assertSession.GetAsync<Foo>(id)));
 			}
 		}
 	}

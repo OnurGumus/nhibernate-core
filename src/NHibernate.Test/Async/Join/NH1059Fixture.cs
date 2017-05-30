@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Join
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class NH1059FixtureAsync : TestCase
 	{
@@ -51,7 +50,7 @@ namespace NHibernate.Test.Join
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				// This line would fail before the fix
-				await (s.CreateQuery("from Worker").ListAsync<Worker>(CancellationToken.None));
+				await (s.CreateQuery("from Worker").ListAsync<Worker>());
 			}
 		}
 
@@ -62,7 +61,7 @@ namespace NHibernate.Test.Join
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				// This line would fail before the fix
-				await (s.CreateCriteria(typeof(Worker)).ListAsync<Worker>(CancellationToken.None));
+				await (s.CreateCriteria(typeof(Worker)).ListAsync<Worker>());
 			}
 		}
 	}

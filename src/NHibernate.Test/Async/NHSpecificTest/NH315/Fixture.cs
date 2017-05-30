@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH315
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Summary description for Fixture.
 	/// </summary>
@@ -36,22 +35,22 @@ namespace NHibernate.Test.NHSpecificTest.NH315
 
 			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync(person, CancellationToken.None));
+				await (s.SaveAsync(person));
 
 				client.Contacts.PersonId = person.Id;
 				client.Contacts.Person = person;
 
-				await (s.SaveAsync(client, CancellationToken.None));
+				await (s.SaveAsync(client));
 
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 			}
 
 			using (ISession s = OpenSession())
 			{
-				await (s.DeleteAsync(client, CancellationToken.None));
-				await (s.DeleteAsync(person, CancellationToken.None));
+				await (s.DeleteAsync(client));
+				await (s.DeleteAsync(person));
 
-				await (s.FlushAsync(CancellationToken.None));
+				await (s.FlushAsync());
 			}
 		}
 	}

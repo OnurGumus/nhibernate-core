@@ -31,51 +31,51 @@ namespace NHibernate.Test.BulkManipulation
 		[Test]
 		public async Task SimpleNativeSQLInsertAsync()
 		{
-			await (PrepareDataAsync(CancellationToken.None));
+			await (PrepareDataAsync());
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			IList l = await (s.CreateQuery("from Vehicle").ListAsync(CancellationToken.None));
+			IList l = await (s.CreateQuery("from Vehicle").ListAsync());
 			Assert.AreEqual(4, l.Count);
 
 			string ssql =
 				string.Format("insert into VEHICLE (id, TofC, Vin, Owner) select {0}, 22, Vin, Owner from VEHICLE where TofC = 10",
 				              GetNewId());
-			await (s.CreateSQLQuery(ssql).ExecuteUpdateAsync(CancellationToken.None));
-			l = await (s.CreateQuery("from Vehicle").ListAsync(CancellationToken.None));
+			await (s.CreateSQLQuery(ssql).ExecuteUpdateAsync());
+			l = await (s.CreateQuery("from Vehicle").ListAsync());
 			Assert.AreEqual(5, l.Count);
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			t = s.BeginTransaction();
 
-			await (s.CreateSQLQuery("delete from VEHICLE where TofC = 20").ExecuteUpdateAsync(CancellationToken.None));
+			await (s.CreateSQLQuery("delete from VEHICLE where TofC = 20").ExecuteUpdateAsync());
 
-			l = await (s.CreateQuery("from Vehicle").ListAsync(CancellationToken.None));
+			l = await (s.CreateQuery("from Vehicle").ListAsync());
 			Assert.AreEqual(4, l.Count);
 
-			Car c = await (s.CreateQuery("from Car c where c.Owner = 'Kirsten'").UniqueResultAsync<Car>(CancellationToken.None));
+			Car c = await (s.CreateQuery("from Car c where c.Owner = 'Kirsten'").UniqueResultAsync<Car>());
 			c.Owner = "NotKirsten";
 			IQuery sql = s.GetNamedQuery("native-delete-car").SetString(0, "Kirsten");
-			Assert.AreEqual(0, await (sql.ExecuteUpdateAsync(CancellationToken.None)));
+			Assert.AreEqual(0, await (sql.ExecuteUpdateAsync()));
 
 			sql = s.GetNamedQuery("native-delete-car").SetString(0, "NotKirsten");
-			Assert.AreEqual(1, await (sql.ExecuteUpdateAsync(CancellationToken.None)));
+			Assert.AreEqual(1, await (sql.ExecuteUpdateAsync()));
 
 			sql = s.CreateSQLQuery("delete from VEHICLE where (TofC = 21) and (Owner = :owner)").SetString("owner", "NotThere");
-			Assert.AreEqual(0, await (sql.ExecuteUpdateAsync(CancellationToken.None)));
+			Assert.AreEqual(0, await (sql.ExecuteUpdateAsync()));
 
 			sql = s.CreateSQLQuery("delete from VEHICLE where (TofC = 21) and (Owner = :owner)").SetString("owner", "Joe");
-			Assert.AreEqual(1, await (sql.ExecuteUpdateAsync(CancellationToken.None)));
+			Assert.AreEqual(1, await (sql.ExecuteUpdateAsync()));
 
-			await (s.CreateSQLQuery("delete from VEHICLE where (TofC = 22)").ExecuteUpdateAsync(CancellationToken.None));
+			await (s.CreateSQLQuery("delete from VEHICLE where (TofC = 22)").ExecuteUpdateAsync());
 
-			l = await (s.CreateQuery("from Vehicle").ListAsync(CancellationToken.None));
+			l = await (s.CreateQuery("from Vehicle").ListAsync());
 			Assert.AreEqual(0, l.Count);
 
-			await (t.CommitAsync(CancellationToken.None));
+			await (t.CommitAsync());
 			s.Close();
 
-			await (CleanupDataAsync(CancellationToken.None));
+			await (CleanupDataAsync());
 		}
 
 		private int customId = 0;

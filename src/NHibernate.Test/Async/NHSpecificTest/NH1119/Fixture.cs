@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1119
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -28,9 +27,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1119
 		{
 			using (ISession s = OpenSession())
 			{
-				DateTime dt = await (s.CreateQuery("select max(tc.DateTimeProperty) from TestClass tc").UniqueResultAsync<DateTime>(CancellationToken.None));
+				DateTime dt = await (s.CreateQuery("select max(tc.DateTimeProperty) from TestClass tc").UniqueResultAsync<DateTime>());
 				Assert.AreEqual(default(DateTime), dt);
-				DateTime? dtn = await (s.CreateQuery("select max(tc.DateTimeProperty) from TestClass tc").UniqueResultAsync<DateTime?>(CancellationToken.None));
+				DateTime? dtn = await (s.CreateQuery("select max(tc.DateTimeProperty) from TestClass tc").UniqueResultAsync<DateTime?>());
 				Assert.IsFalse(dtn.HasValue);
 			}
 		}

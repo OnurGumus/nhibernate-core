@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// The Unit Tests for the DecimalType
 	/// </summary>
@@ -37,18 +36,18 @@ namespace NHibernate.Test.TypesTest
 			basic.DecimalValue = expected;
 
 			ISession s = OpenSession();
-			await (s.SaveAsync(basic, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.SaveAsync(basic));
+			await (s.FlushAsync());
 			s.Close();
 
 			s = OpenSession();
-			basic = (DecimalClass) await (s.LoadAsync(typeof(DecimalClass), 1, CancellationToken.None));
+			basic = (DecimalClass) await (s.LoadAsync(typeof(DecimalClass), 1));
 
 			Assert.AreEqual(expected, basic.DecimalValue);
 			Assert.AreEqual(5.643510M, basic.DecimalValue);
 
-			await (s.DeleteAsync(basic, CancellationToken.None));
-			await (s.FlushAsync(CancellationToken.None));
+			await (s.DeleteAsync(basic));
+			await (s.FlushAsync());
 			s.Close();
 		}
 	}

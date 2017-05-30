@@ -14,7 +14,6 @@ using System;
 namespace NHibernate.Test.NHSpecificTest.NH3817
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -35,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3817
 			using (ITransaction transaction = session.BeginTransaction())
 			{
 				session.Merge(itinerary);
-				await (transaction.CommitAsync(CancellationToken.None));
+				await (transaction.CommitAsync());
 			}
 		}
 
