@@ -43,7 +43,7 @@ namespace NHibernate.Persister.Entity
 			query.SetOptionalId(id);
 			query.SetOptionalEntityName(persister.EntityName);
 			query.SetOptionalObject(optionalObject);
-			query.SetFlushMode(FlushMode.Never);
+			query.SetFlushMode(FlushMode.Manual);
 			await (query.ListAsync(cancellationToken)).ConfigureAwait(false);
 
 			// now look up the object we are really interested in!

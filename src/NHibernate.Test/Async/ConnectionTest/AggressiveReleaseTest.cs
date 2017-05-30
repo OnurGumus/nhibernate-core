@@ -188,23 +188,24 @@ namespace NHibernate.Test.ConnectionTest
 		{
 			Prepare();
 
-			DbConnection originalConnection = await (sessions.ConnectionProvider.GetConnectionAsync(CancellationToken.None));
-			ISession session = sessions.OpenSession(originalConnection);
+			using (var originalConnection = await (sessions.ConnectionProvider.GetConnectionAsync(CancellationToken.None)))
+			using (var session = sessions.WithOptions().Connection(originalConnection).OpenSession())
+			{
+				var silly = new Silly("silly");
+				await (session.SaveAsync(silly));
 
-			Silly silly = new Silly("silly");
-			await (session.SaveAsync(silly));
+				// this will cause the connection manager to cycle through the aggressive Release logic;
+				// it should not Release the connection since we explicitly supplied it ourselves.
+				await (session.FlushAsync());
 
-			// this will cause the connection manager to cycle through the aggressive Release logic;
-			// it should not Release the connection since we explicitly suplied it ourselves.
-			await (session.FlushAsync());
+				Assert.IsTrue(originalConnection == session.Connection, "Different connections");
 
-			Assert.IsTrue(originalConnection == session.Connection, "Different connections");
+				await (session.DeleteAsync(silly));
+				await (session.FlushAsync());
 
-			await (session.DeleteAsync(silly));
-			await (session.FlushAsync());
-
-			Release(session);
-			originalConnection.Close();
+				Release(session);
+				originalConnection.Close();
+			}
 			Done();
 		}
 

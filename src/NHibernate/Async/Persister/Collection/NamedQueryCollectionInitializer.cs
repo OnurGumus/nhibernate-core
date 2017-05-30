@@ -46,7 +46,7 @@ namespace NHibernate.Persister.Collection
 				{
 					query.SetParameter(0, key, persister.KeyType);
 				}
-				return query.SetCollectionKey(key).SetFlushMode(FlushMode.Never).ListAsync(cancellationToken);
+				return query.SetCollectionKey(key).SetFlushMode(FlushMode.Manual).ListAsync(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{

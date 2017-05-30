@@ -30,7 +30,7 @@ namespace NHibernate.Test.SystemTransactions
 		public async Task TwoTransactionScopesInsideOneSessionAsync()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (var session = sessions.OpenSession(interceptor))
+			using (var session = sessions.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 				using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
@@ -53,7 +53,7 @@ namespace NHibernate.Test.SystemTransactions
 		public async Task OneTransactionScopesInsideOneSessionAsync()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (var session = sessions.OpenSession(interceptor))
+			using (var session = sessions.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 				using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
@@ -122,16 +122,9 @@ namespace NHibernate.Test.SystemTransactions
 
 				try
 				{
-					try
+					using (s1 = sessions.WithOptions().Connection(ownConnection1).Interceptor(interceptor).OpenSession())
 					{
-						s1 = sessions.OpenSession(ownConnection1, interceptor);
-
 						await (s1.CreateCriteria<object>().ListAsync(cancellationToken));
-					}
-					finally
-					{
-						if (s1 != null)
-							s1.Dispose();
 					}
 
 					if (doCommit)

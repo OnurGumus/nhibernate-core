@@ -80,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 			using (ISession session = OpenSession(new HibernateInterceptor()))
 			using (ITransaction tran = session.BeginTransaction())
 			{
-				session.FlushMode = FlushMode.Never;
+				session.FlushMode = FlushMode.Manual;
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(0));
 				Contact contact = await (session.GetAsync<Contact>((Int64)1));
 				contact.PreferredName = "Updated preferred name";

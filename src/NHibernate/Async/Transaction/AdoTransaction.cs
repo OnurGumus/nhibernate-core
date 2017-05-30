@@ -46,7 +46,7 @@ namespace NHibernate.Transaction
 
 				log.Debug("Start Commit");
 
-				if (session.FlushMode != FlushMode.Never)
+				if (session.FlushMode != FlushMode.Manual)
 				{
 					await (session.FlushAsync(cancellationToken)).ConfigureAwait(false);
 				}

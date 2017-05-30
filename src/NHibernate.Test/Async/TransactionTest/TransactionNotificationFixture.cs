@@ -28,7 +28,7 @@ namespace NHibernate.Test.TransactionTest
 		public async Task CommitAsync()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (ISession session = sessions.OpenSession(interceptor))
+			using (var session = sessions.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 				ITransaction tx = session.BeginTransaction();
 				await (tx.CommitAsync());
@@ -70,7 +70,7 @@ namespace NHibernate.Test.TransactionTest
 
 			using (var ownConnection = await (sessions.ConnectionProvider.GetConnectionAsync(cancellationToken)))
 			{
-				using (s = sessions.OpenSession(ownConnection, interceptor))
+				using (s = sessions.WithOptions().Connection(ownConnection).Interceptor(interceptor).OpenSession())
 				using (s.BeginTransaction())
 				{
 					await (s.CreateCriteria<object>().ListAsync(cancellationToken));

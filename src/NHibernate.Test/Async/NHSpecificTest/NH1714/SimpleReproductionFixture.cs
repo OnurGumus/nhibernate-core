@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1714
                     var entity = new DomainClass();
                     await (session.SaveAsync(entity));
 
-                    using (var otherSession = session.GetChildSession())
+                    using (var otherSession = session.SessionWithOptions().Connection().OpenSession())
                     {
                         await (otherSession.SaveAsync(new DomainClass()));
                         await (otherSession.FlushAsync());

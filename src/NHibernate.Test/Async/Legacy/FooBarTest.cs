@@ -216,7 +216,7 @@ namespace NHibernate.Test.Legacy
 
 			using (ISession s = OpenSession())
 			{
-				s.FlushMode = FlushMode.Never;
+				s.FlushMode = FlushMode.Manual;
 				using (ITransaction t = s.BeginTransaction())
 				{
 					Foo foo = (Foo) await (s.GetAsync(typeof(Foo), id));
@@ -4989,21 +4989,27 @@ namespace NHibernate.Test.Legacy
 		[Test]
 		public async Task UserProvidedConnectionAsync()
 		{
-			IConnectionProvider prov = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
-			ISession s = sessions.OpenSession(await (prov.GetConnectionAsync(CancellationToken.None)));
-			ITransaction tx = s.BeginTransaction();
-			await (s.CreateQuery("from foo in class NHibernate.DomainModel.Fo").ListAsync());
-			await (tx.CommitAsync());
+			using (var prov = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties))
+			using (var connection = await (prov.GetConnectionAsync(CancellationToken.None)))
+			using (var s = sessions.WithOptions().Connection(connection).OpenSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					await (s.CreateQuery("from foo in class NHibernate.DomainModel.Fo").ListAsync());
+					await (tx.CommitAsync());
+				}
+				var c = s.Disconnect();
+				Assert.IsNotNull(c);
 
-			var c = s.Disconnect();
-			Assert.IsNotNull(c);
-
-			s.Reconnect(c);
-			tx = s.BeginTransaction();
-			await (s.CreateQuery("from foo in class NHibernate.DomainModel.Fo").ListAsync());
-			await (tx.CommitAsync());
-			Assert.AreSame(c, s.Close());
-			c.Close();
+				s.Reconnect(c);
+				using (var tx = s.BeginTransaction())
+				{
+					await (s.CreateQuery("from foo in class NHibernate.DomainModel.Fo").ListAsync());
+					await (tx.CommitAsync());
+				}
+				Assert.AreSame(c, s.Close());
+				c.Close();
+			}
 		}
 
 		[Test]
@@ -5193,7 +5199,7 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 
 			s = OpenSession();
-			s.FlushMode = FlushMode.Never;
+			s.FlushMode = FlushMode.Manual;
 			l =
 				(Location)
 (				await (s.CreateQuery("from l in class Location where l.CountryCode = 'AU' and l.Description='foo bar'").ListAsync()))[0];

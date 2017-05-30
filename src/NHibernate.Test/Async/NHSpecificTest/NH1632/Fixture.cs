@@ -101,7 +101,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 
 			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
-				using (var s = sessions.OpenSession(connection))
+				using (var s = sessions.WithOptions().Connection(connection).OpenSession())
 				{
 					var nums = await (s.LoadAsync<Nums>(29));
 					Assert.AreEqual(1, nums.NumA);
@@ -151,7 +151,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			{
 				using (ISession s = sessions.OpenSession())
 				{
-					s.FlushMode = FlushMode.Never;
+					s.FlushMode = FlushMode.Manual;
 					id = await (s.SaveAsync(new Nums { NumA = 1, NumB = 2, ID = 5 }));
 				}
 				tx.Complete();

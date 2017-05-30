@@ -10,7 +10,6 @@
 
 using System;
 using System.Collections;
-using System.Data.Common;
 using NHibernate.Connection;
 using NHibernate.DomainModel.NHSpecific;
 using NUnit.Framework;
@@ -26,8 +25,15 @@ namespace NHibernate.Test.NHSpecificTest
 	public class UserTypeFixtureAsync : TestCase
 	{
 		protected override IList Mappings
+			=> new [] {"NHSpecific.ClassWithNullColumns.hbm.xml"};
+
+		protected override void OnTearDown()
 		{
-			get { return new string[] {"NHSpecific.ClassWithNullColumns.hbm.xml"}; }
+			using (var s = OpenSession())
+			{
+				s.Delete("from ClassWithNullColumns");
+				s.Flush();
+			}
 		}
 
 		/// <summary>
@@ -37,40 +43,50 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public async Task InsertNullAsync()
 		{
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
 			{
-				ClassWithNullColumns userTypeClass = new ClassWithNullColumns();
-				userTypeClass.Id = 5;
-				userTypeClass.FirstInt32 = 4;
-				userTypeClass.SecondInt32 = 0; // with the user type should set value to null
+				var userTypeClass = new ClassWithNullColumns
+				{
+					Id = 5,
+					FirstInt32 = 4,
+					SecondInt32 = 0
+				};
+				// with the user type should set 0 value to null
 
 				await (s.SaveAsync(userTypeClass));
 				await (s.FlushAsync());
 			}
 
 			// manually read from the db
-			IConnectionProvider provider = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties);
-			var conn = await (provider.GetConnectionAsync(CancellationToken.None));
-			var cmd = conn.CreateCommand();
-			cmd.Connection = conn;
-			cmd.CommandText = "select * from usertype";
-
-			var reader = await (cmd.ExecuteReaderAsync(CancellationToken.None));
-
-			while (await (reader.ReadAsync(CancellationToken.None)))
+			using (var provider = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties))
 			{
-				Assert.AreEqual(5, reader[0]);
-				Assert.AreEqual(4, reader[1]);
-				Assert.AreEqual(DBNull.Value, reader[2]);
-				break;
-			}
+				var conn = await (provider.GetConnectionAsync(CancellationToken.None));
+				try
+				{
+					using (var cmd = conn.CreateCommand())
+					{
+						cmd.Connection = conn;
+						cmd.CommandText = "select * from usertype";
 
-			conn.Close();
-
-			using (ISession s = OpenSession())
-			{
-				await (s.DeleteAsync("from ClassWithNullColumns"));
-				await (s.FlushAsync());
+						using (var reader = await (cmd.ExecuteReaderAsync(CancellationToken.None)))
+						{
+							var idOrdinal = reader.GetOrdinal("id");
+							var firstOrdinal = reader.GetOrdinal("f_int32");
+							var secondOrdinal = reader.GetOrdinal("s_int32");
+							while (await (reader.ReadAsync(CancellationToken.None)))
+							{
+								Assert.AreEqual(5, reader[idOrdinal]);
+								Assert.AreEqual(4, reader[firstOrdinal]);
+								Assert.AreEqual(DBNull.Value, reader[secondOrdinal]);
+								break;
+							}
+						}
+					}
+				}
+				finally
+				{
+					provider.CloseConnection(conn);
+				}
 			}
 		}
 	}

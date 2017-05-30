@@ -46,9 +46,10 @@ namespace NHibernate.Impl
 		public virtual async Task<IList> ListAsync(IQueryExpression queryExpression, QueryParameters parameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			var results = (IList) typeof (List<>).MakeGenericType(queryExpression.Type)
-												 .GetConstructor(System.Type.EmptyTypes)
-												 .Invoke(null);
+			var results = (IList)typeof(List<>)
+				.MakeGenericType(queryExpression.Type)
+				.GetConstructor(System.Type.EmptyTypes)
+				.Invoke(null);
 			await (ListAsync(queryExpression, parameters, results, cancellationToken)).ConfigureAwait(false);
 			return results;
 		}
@@ -78,7 +79,7 @@ namespace NHibernate.Impl
 		}
 
 		public abstract Task ListAsync(CriteriaImpl criteria, IList results, CancellationToken cancellationToken);
-		
+
 		public virtual async Task<IList> ListAsync(CriteriaImpl criteria, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -143,7 +144,7 @@ namespace NHibernate.Impl
 				return results;
 			}
 		}
-		
+
 		public abstract Task<IQueryTranslator[]> GetQueriesAsync(IQueryExpression query, bool scalar, CancellationToken cancellationToken);
 		public abstract Task<object> GetEntityUsingInterceptorAsync(EntityKey key, CancellationToken cancellationToken);
 		public abstract Task<int> ExecuteNativeUpdateAsync(NativeSQLQuerySpecification specification, QueryParameters queryParameters, CancellationToken cancellationToken);

@@ -28,58 +28,70 @@ namespace NHibernate.Id.Insert
 
 		#region IInsertGeneratedIdentifierDelegate Members
 
-		public async Task<object> PerformInsertAsync(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder, CancellationToken cancellationToken)
+		public async Task<object> PerformInsertAsync(SqlCommandInfo insertSql, ISessionImplementor session, IBinder binder, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			// NH-2145: Prevent connection releases between insert and select when we cannot perform
+			// them as a single statement. Retrieving id most of the time relies on using the same connection.
+			session.ConnectionManager.FlushBeginning();
 			try
 			{
-				// prepare and execute the insert
-				var insert = await (session.Batcher.PrepareCommandAsync(insertSQL.CommandType, insertSQL.Text, insertSQL.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 				try
 				{
-					binder.BindValues(insert);
-					await (session.Batcher.ExecuteNonQueryAsync(insert, cancellationToken)).ConfigureAwait(false);
-				}
-				finally
-				{
-					session.Batcher.CloseCommand(insert, null);
-				}
-			}
-			catch (DbException sqle)
-			{
-				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
-				                                 "could not insert: " + persister.GetInfoString(), insertSQL.Text);
-			}
-
-			SqlString selectSQL = SelectSQL;
-			using (new SessionIdLoggingContext(session.SessionId)) 
-			try
-			{
-				//fetch the generated id in a separate query
-				var idSelect = await (session.Batcher.PrepareCommandAsync(CommandType.Text, selectSQL, ParametersTypes, cancellationToken)).ConfigureAwait(false);
-				try
-				{
-					BindParameters(session, idSelect, binder.Entity);
-					var rs = await (session.Batcher.ExecuteReaderAsync(idSelect, cancellationToken)).ConfigureAwait(false);
+					// prepare and execute the insert
+					var insert = await (session.Batcher.PrepareCommandAsync(insertSql.CommandType, insertSql.Text, insertSql.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 					try
 					{
-						return await (GetResultAsync(session, rs, binder.Entity, cancellationToken)).ConfigureAwait(false);
+						binder.BindValues(insert);
+						await (session.Batcher.ExecuteNonQueryAsync(insert, cancellationToken)).ConfigureAwait(false);
 					}
 					finally
 					{
-						session.Batcher.CloseReader(rs);
+						session.Batcher.CloseCommand(insert, null);
 					}
 				}
-				finally
+				catch (DbException sqle)
 				{
-					session.Batcher.CloseCommand(idSelect, null);
+					throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
+					                                 "could not insert: " + persister.GetInfoString(), insertSql.Text);
+				}
+
+				var selectSql = SelectSQL;
+				using (new SessionIdLoggingContext(session.SessionId))
+				{
+					try
+					{
+						//fetch the generated id in a separate query
+						var idSelect = await (session.Batcher.PrepareCommandAsync(CommandType.Text, selectSql, ParametersTypes, cancellationToken)).ConfigureAwait(false);
+						try
+						{
+							BindParameters(session, idSelect, binder.Entity);
+							var rs = await (session.Batcher.ExecuteReaderAsync(idSelect, cancellationToken)).ConfigureAwait(false);
+							try
+							{
+								return await (GetResultAsync(session, rs, binder.Entity, cancellationToken)).ConfigureAwait(false);
+							}
+							finally
+							{
+								session.Batcher.CloseReader(rs);
+							}
+						}
+						finally
+						{
+							session.Batcher.CloseCommand(idSelect, null);
+						}
+					}
+					catch (DbException sqle)
+					{
+						throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
+						                                 "could not retrieve generated id after insert: " + persister.GetInfoString(),
+						                                 insertSql.Text);
+					}
 				}
 			}
-			catch (DbException sqle)
+			finally
 			{
-				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
-				                                 "could not retrieve generated id after insert: " + persister.GetInfoString(),
-				                                 insertSQL.Text);
+				session.ConnectionManager.FlushEnding();
 			}
 		}
 

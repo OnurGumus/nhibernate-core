@@ -661,7 +661,7 @@ namespace NHibernate.Impl
 
 				if (result == null)
 				{
-					object newObject = interceptor.GetEntity(key.EntityName, key.Identifier);
+					object newObject = Interceptor.GetEntity(key.EntityName, key.Identifier);
 					if (newObject != null)
 					{
 						await (LockAsync(newObject, LockMode.None, cancellationToken)).ConfigureAwait(false);

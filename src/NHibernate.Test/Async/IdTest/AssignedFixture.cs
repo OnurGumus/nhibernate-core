@@ -54,7 +54,7 @@ namespace NHibernate.Test.IdTest
 		[Test]
 		public async Task SaveOrUpdate_SaveAsync()
 		{
-			using (LogSpy ls = new LogSpy(LogManager.GetLogger("NHibernate"), Level.Warn))
+			using (LogSpy ls = new LogSpy(LogManager.GetLogger(typeof(AssignedFixtureAsync).Assembly, "NHibernate"), Level.Warn))
 			using (ISession s = OpenSession())
 			{
 				ITransaction t = s.BeginTransaction();
@@ -81,7 +81,7 @@ namespace NHibernate.Test.IdTest
 		[Test]
 		public async Task SaveNoWarningAsync()
 		{
-			using (LogSpy ls = new LogSpy(LogManager.GetLogger("NHibernate"), Level.Warn))
+			using (LogSpy ls = new LogSpy(LogManager.GetLogger(typeof(AssignedFixtureAsync).Assembly, "NHibernate"), Level.Warn))
 			using (ISession s = OpenSession())
 			{
 				ITransaction t = s.BeginTransaction();
@@ -115,7 +115,7 @@ namespace NHibernate.Test.IdTest
 				await (t.CommitAsync());
 			}
 
-			using (LogSpy ls = new LogSpy(LogManager.GetLogger("NHibernate"), Level.Warn))
+			using (LogSpy ls = new LogSpy(LogManager.GetLogger(typeof(AssignedFixtureAsync).Assembly, "NHibernate"), Level.Warn))
 			using (ISession s = OpenSession())
 			{
 				ITransaction t = s.BeginTransaction();
@@ -153,7 +153,7 @@ namespace NHibernate.Test.IdTest
 				await (t.CommitAsync());
 			}
 
-			using (LogSpy ls = new LogSpy(LogManager.GetLogger("NHibernate"), Level.Warn))
+			using (LogSpy ls = new LogSpy(LogManager.GetLogger(typeof(AssignedFixtureAsync).Assembly, "NHibernate"), Level.Warn))
 			using (ISession s = OpenSession())
 			{
 				ITransaction t = s.BeginTransaction();
@@ -190,7 +190,7 @@ namespace NHibernate.Test.IdTest
 				await (t.CommitAsync());
 			}
 
-			using (LogSpy ls = new LogSpy(LogManager.GetLogger("NHibernate"), Level.Warn))
+			using (LogSpy ls = new LogSpy(LogManager.GetLogger(typeof(AssignedFixtureAsync).Assembly, "NHibernate"), Level.Warn))
 			using (ISession s = OpenSession())
 			{
 				ITransaction t = s.BeginTransaction();
@@ -229,7 +229,7 @@ namespace NHibernate.Test.IdTest
 				await (t.CommitAsync());
 			}
 
-			using (LogSpy ls = new LogSpy(LogManager.GetLogger("NHibernate"), Level.Warn))
+			using (LogSpy ls = new LogSpy(LogManager.GetLogger(typeof(AssignedFixtureAsync).Assembly, "NHibernate"), Level.Warn))
 			using (ISession s = OpenSession())
 			{
 				ITransaction t = s.BeginTransaction();
