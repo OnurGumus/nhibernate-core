@@ -33,7 +33,7 @@ namespace NHibernate.Test.DriverTest
 			var connection2 = MakeConnection();
 
 			//open first connection
-			await (connection1.OpenAsync(CancellationToken.None));
+			await (connection1.OpenAsync());
 			await (VerifyCountOfEstablishedConnectionsIsAsync(1));
 
 			//return it to the pool
@@ -41,7 +41,7 @@ namespace NHibernate.Test.DriverTest
 			await (VerifyCountOfEstablishedConnectionsIsAsync(1));
 
 			//open the second connection
-			await (connection2.OpenAsync(CancellationToken.None));
+			await (connection2.OpenAsync());
 			await (VerifyCountOfEstablishedConnectionsIsAsync(1));
 
 			//return it to the pool
@@ -57,11 +57,11 @@ namespace NHibernate.Test.DriverTest
 			var connection2 = MakeConnection();
 
 			//open first connection
-			await (connection1.OpenAsync(CancellationToken.None));
+			await (connection1.OpenAsync());
 			await (VerifyCountOfEstablishedConnectionsIsAsync(1));
 
 			//open second one
-			await (connection2.OpenAsync(CancellationToken.None));
+			await (connection2.OpenAsync());
 			await (VerifyCountOfEstablishedConnectionsIsAsync(2));
 
 			//return connection1 to the pool

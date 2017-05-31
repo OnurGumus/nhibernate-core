@@ -177,7 +177,7 @@ namespace NHibernate.Test.Join
 				tx.Enlist(cmd);
 				cmd.CommandText = "select count(*) from phone where phone_id = " + p.Id.ToString();
 				cmd.CommandType = CommandType.Text;
-				Int64 count = Convert.ToInt64(await (cmd.ExecuteScalarAsync(CancellationToken.None)));
+				Int64 count = Convert.ToInt64(await (cmd.ExecuteScalarAsync()));
 
 				Assert.AreEqual(0, count);
 				await (tx.CommitAsync());
@@ -287,7 +287,7 @@ namespace NHibernate.Test.Join
 					"select count(stuff_id) from inversed_stuff where stuff_id = {0}",
 					personId);
 				cmd.CommandType = CommandType.Text;
-				Int64 count = Convert.ToInt64(await (cmd.ExecuteScalarAsync(CancellationToken.None)));
+				Int64 count = Convert.ToInt64(await (cmd.ExecuteScalarAsync()));
 				Assert.AreEqual(1, count, "Row from an inverse <join> was deleted.");
 
 				var cmd2 = s.Connection.CreateCommand();
@@ -296,7 +296,7 @@ namespace NHibernate.Test.Join
 					"select StuffName from inversed_stuff where stuff_id = {0}",
 					personId);
 				cmd2.CommandType = CommandType.Text;
-				string retrievedStuffName = (string) await (cmd2.ExecuteScalarAsync(CancellationToken.None));
+				string retrievedStuffName = (string) await (cmd2.ExecuteScalarAsync());
 				Assert.AreEqual(stuffName, retrievedStuffName, "Retrieved inverse <join> does not match");
 
 				ExecuteStatement(s, tx, "delete from inversed_stuff");

@@ -75,9 +75,9 @@ namespace NHibernate.Test.DialectTest
 			{
 				var statement = driver.GenerateCommand(CommandType.Text, new SqlString(dialect.CurrentTimestampSelectString), new SqlType[0]);
 				statement.Connection = connection;
-				using (var reader = await (statement.ExecuteReaderAsync(CancellationToken.None)))
+				using (var reader = await (statement.ExecuteReaderAsync()))
 				{
-					Assert.That(await (reader.ReadAsync(CancellationToken.None)), "should return one record");
+					Assert.That(await (reader.ReadAsync()), "should return one record");
 					Assert.That(reader[0], Is.InstanceOf<DateTime>());
 				}
 			}

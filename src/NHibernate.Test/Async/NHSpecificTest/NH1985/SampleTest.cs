@@ -62,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1985
 					using (var comm = conn.CreateCommand())
 					{
 						comm.CommandText = "SELECT Id FROM DomainClass WHERE Id=1 AND Label='TEST record'";
-						object result = await (comm.ExecuteScalarAsync(CancellationToken.None));
+						object result = await (comm.ExecuteScalarAsync());
 
 						Assert.That(result != null, "Immutable object has been deleted!");
 					}
@@ -100,7 +100,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1985
 					using (var comm = conn.CreateCommand())
 					{
 						comm.CommandText = "SELECT Id FROM DomainClass WHERE Id=1 AND Label='TEST record'";
-						object result = await (comm.ExecuteScalarAsync(CancellationToken.None));
+						object result = await (comm.ExecuteScalarAsync());
 
 						Assert.That(result == null, "Immutable object has not been deleted!");
 					}

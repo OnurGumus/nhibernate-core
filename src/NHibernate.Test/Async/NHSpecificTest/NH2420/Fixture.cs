@@ -24,7 +24,6 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Test.NHSpecificTest.NH2420
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -84,7 +83,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2420
 
 				using (connection)
 				{
-					await (connection.OpenAsync(CancellationToken.None));
+					await (connection.OpenAsync());
 					using (s = Sfi.WithOptions().Connection(connection).OpenSession())
 					{
 						await (s.SaveAsync(new MyTable { String = "hello!" }));

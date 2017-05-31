@@ -19,7 +19,6 @@ namespace NHibernate.Test.SecondLevelCacheTests
 {
 	using Criterion;
 	using System.Threading.Tasks;
-	using System.Threading;
 
 	[TestFixture]
 	public class SecondLevelCacheTestAsync : TestCase
@@ -171,7 +170,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				using (var cmd = session.Connection.CreateCommand())
 				{
 					cmd.CommandText = "DELETE FROM AnotherItem";
-					await (cmd.ExecuteNonQueryAsync(CancellationToken.None));
+					await (cmd.ExecuteNonQueryAsync());
 				}
 			}
 
@@ -200,7 +199,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				using (var cmd = session.Connection.CreateCommand())
 				{
 					cmd.CommandText = "DELETE FROM Item";
-					await (cmd.ExecuteNonQueryAsync(CancellationToken.None));
+					await (cmd.ExecuteNonQueryAsync());
 				}
 			}
 
@@ -228,7 +227,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				using (var cmd = session.Connection.CreateCommand())
 				{
 					cmd.CommandText = "DELETE FROM Item";
-					await (cmd.ExecuteNonQueryAsync(CancellationToken.None));
+					await (cmd.ExecuteNonQueryAsync());
 				}
 			}
 
@@ -255,7 +254,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				using (var cmd = session.Connection.CreateCommand())
 				{
 					cmd.CommandText = "DELETE FROM AnotherItem";
-					await (cmd.ExecuteNonQueryAsync(CancellationToken.None));
+					await (cmd.ExecuteNonQueryAsync());
 				}
 			}
 

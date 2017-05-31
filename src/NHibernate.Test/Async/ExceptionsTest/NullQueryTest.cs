@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.ExceptionsTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// NH-1997
 	/// </summary>
@@ -43,7 +42,7 @@ namespace NHibernate.Test.ExceptionsTest
 				var ps = connection.CreateCommand();
 				ps.CommandType = CommandType.Text;
 				ps.CommandText = "whatever";
-				await (ps.ExecuteNonQueryAsync(CancellationToken.None));
+				await (ps.ExecuteNonQueryAsync());
 			}
 			catch (Exception sqle)
 			{

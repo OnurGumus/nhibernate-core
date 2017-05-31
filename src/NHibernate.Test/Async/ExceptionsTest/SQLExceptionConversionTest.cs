@@ -22,7 +22,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.ExceptionsTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SQLExceptionConversionTestAsync : TestCase
 	{
@@ -110,7 +109,7 @@ namespace NHibernate.Test.ExceptionsTest
 				ps.Parameters.Add(pr);
 
 				session.Transaction.Enlist(ps);
-				await (ps.ExecuteNonQueryAsync(CancellationToken.None));
+				await (ps.ExecuteNonQueryAsync());
 
 				Assert.Fail("INSERT should have failed");
 			}
@@ -158,7 +157,7 @@ namespace NHibernate.Test.ExceptionsTest
 				ps = connection.CreateCommand();
 				ps.CommandType = CommandType.Text;
 				ps.CommandText = "SELECT user_id, user_name FROM tbl_no_there";
-				await (ps.ExecuteNonQueryAsync(CancellationToken.None));
+				await (ps.ExecuteNonQueryAsync());
 
 				Assert.Fail("SQL compilation should have failed");
 			}

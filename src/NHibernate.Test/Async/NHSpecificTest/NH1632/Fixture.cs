@@ -44,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			using (var command = session.Connection.CreateCommand())
 			{
 				command.CommandText = "select next_hi from hibernate_unique_key";
-				scalar1 = await (command.ExecuteScalarAsync(CancellationToken.None));
+				scalar1 = await (command.ExecuteScalarAsync());
 			}
 
 			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -65,7 +65,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			using (var command = session.Connection.CreateCommand())
 			{
 				command.CommandText = "select next_hi from hibernate_unique_key";
-				scalar2 = await (command.ExecuteScalarAsync(CancellationToken.None));
+				scalar2 = await (command.ExecuteScalarAsync());
 			}
 
 			Assert.AreNotEqual(scalar1, scalar2,"HiLo must run with in its own transaction");

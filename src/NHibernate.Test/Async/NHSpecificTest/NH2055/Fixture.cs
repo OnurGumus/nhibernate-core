@@ -19,7 +19,6 @@ using NHibernate.Cfg;
 namespace NHibernate.Test.NHSpecificTest.NH2055
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -45,11 +44,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2055
 
                     cmd.CommandText = "test_proc1";
 
-                    Assert.AreEqual(1, await (cmd.ExecuteScalarAsync(CancellationToken.None)));
+                    Assert.AreEqual(1, await (cmd.ExecuteScalarAsync()));
 
                     cmd.CommandText = "test_proc2";
 
-                    Assert.AreEqual(2, await (cmd.ExecuteScalarAsync(CancellationToken.None)));
+                    Assert.AreEqual(2, await (cmd.ExecuteScalarAsync()));
                 }
             }
 		} 

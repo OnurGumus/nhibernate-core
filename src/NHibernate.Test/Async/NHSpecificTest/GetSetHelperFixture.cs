@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	/// <summary>
 	/// Test the ability of BytecodeProviderImpl to generate code that can set
 	/// a value type from a null.
@@ -38,7 +37,7 @@ namespace NHibernate.Test.NHSpecificTest
 				var cmd = s1.Connection.CreateCommand();
 				cmd.CommandText =
 					"insert into GetSetHelper(ID) values(1)";
-				await (cmd.ExecuteNonQueryAsync(CancellationToken.None));
+				await (cmd.ExecuteNonQueryAsync());
 			}
 
 			try

@@ -68,12 +68,12 @@ namespace NHibernate.Test.NHSpecificTest
 						cmd.Connection = conn;
 						cmd.CommandText = "select * from usertype";
 
-						using (var reader = await (cmd.ExecuteReaderAsync(CancellationToken.None)))
+						using (var reader = await (cmd.ExecuteReaderAsync()))
 						{
 							var idOrdinal = reader.GetOrdinal("id");
 							var firstOrdinal = reader.GetOrdinal("f_int32");
 							var secondOrdinal = reader.GetOrdinal("s_int32");
-							while (await (reader.ReadAsync(CancellationToken.None)))
+							while (await (reader.ReadAsync()))
 							{
 								Assert.AreEqual(5, reader[idOrdinal]);
 								Assert.AreEqual(4, reader[firstOrdinal]);

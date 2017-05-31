@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1405
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -36,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1405
 					var cmd = session.Connection.CreateCommand();
 					cmd.CommandText = sql;
 					tx.Enlist(cmd);
-					await (cmd.ExecuteNonQueryAsync(CancellationToken.None));
+					await (cmd.ExecuteNonQueryAsync());
 				}
 				await (tx.CommitAsync());
 			}
@@ -62,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1405
 				var cmd = session.Connection.CreateCommand();
 				cmd.CommandText = "DELETE FROM PPDM_COLUMN";
 				tx.Enlist(cmd);
-				await (cmd.ExecuteNonQueryAsync(CancellationToken.None));
+				await (cmd.ExecuteNonQueryAsync());
 				await (tx.CommitAsync());
 			}
 		}

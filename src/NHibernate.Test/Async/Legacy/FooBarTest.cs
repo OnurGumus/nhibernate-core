@@ -2180,7 +2180,7 @@ namespace NHibernate.Test.Legacy
 			var deleteCmd = s.Connection.CreateCommand();
 			deleteCmd.CommandText = "delete from FooArray where id_='" + baz.Code + "' and i>=8";
 			deleteCmd.CommandType = CommandType.Text;
-			int rows = await (deleteCmd.ExecuteNonQueryAsync(CancellationToken.None));
+			int rows = await (deleteCmd.ExecuteNonQueryAsync());
 			Assert.AreEqual(1, rows);
 
 			await (s.FlushAsync());
@@ -2854,7 +2854,7 @@ namespace NHibernate.Test.Legacy
 			var cmd = s.Connection.CreateCommand();
 			s.Transaction.Enlist(cmd);
 			cmd.CommandText = "update " + Dialect.QuoteForTableName("glarchez") + " set baz_map_id=null where baz_map_index='a'";
-			int rows = await (cmd.ExecuteNonQueryAsync(CancellationToken.None));
+			int rows = await (cmd.ExecuteNonQueryAsync());
 			Assert.AreEqual(1, rows);
 			Assert.AreEqual(2, await (s.DeleteAsync("from bar in class NHibernate.DomainModel.Bar")));
 			FooProxy[] arr = baz.FooArray;
@@ -4739,7 +4739,7 @@ namespace NHibernate.Test.Legacy
 				using (var command = connection.CreateCommand())
 				{
 					command.CommandText = "delete from immut";
-					await (command.ExecuteNonQueryAsync(CancellationToken.None));
+					await (command.ExecuteNonQueryAsync());
 				}
 			}
 		}
@@ -4779,7 +4779,7 @@ namespace NHibernate.Test.Legacy
 
 			var cmd = s.Connection.CreateCommand();
 			cmd.CommandText = "update " + Dialect.QuoteForTableName("foos") + " set long_ = -3";
-			await (cmd.ExecuteNonQueryAsync(CancellationToken.None));
+			await (cmd.ExecuteNonQueryAsync());
 
 			await (s.RefreshAsync(foo));
 			Assert.AreEqual((long) -3, foo.Long);
@@ -4806,7 +4806,7 @@ namespace NHibernate.Test.Legacy
 			*/
 			var cmd = s.Connection.CreateCommand();
 			cmd.CommandText = "update " + Dialect.QuoteForTableName("foos") + " set long_ = -3";
-			await (cmd.ExecuteNonQueryAsync(CancellationToken.None));
+			await (cmd.ExecuteNonQueryAsync());
 			await (s.RefreshAsync(foo));
 			Assert.AreEqual(-3L, foo.Long);
 			await (s.DeleteAsync(foo));

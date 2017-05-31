@@ -76,9 +76,9 @@ namespace NHibernate.Test.TypeParameters
 			statement.Connection = connection;
 			t.Enlist(statement);
 			statement.Parameters[0].Value = id;
-			var reader = await (statement.ExecuteReaderAsync(CancellationToken.None));
+			var reader = await (statement.ExecuteReaderAsync());
 
-			Assert.IsTrue(await (reader.ReadAsync(CancellationToken.None)), "A row should have been returned");
+			Assert.IsTrue(await (reader.ReadAsync()), "A row should have been returned");
 			Assert.IsTrue(reader.GetValue(reader.GetOrdinal("VALUE_ONE")) == DBNull.Value,
 			              "Default value should have been mapped to null");
 			Assert.IsTrue(reader.GetValue(reader.GetOrdinal("VALUE_TWO")) == DBNull.Value,

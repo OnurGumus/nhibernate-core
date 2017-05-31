@@ -18,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2898
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -69,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 				using (var cmd = session.Connection.CreateCommand())
 				{
 					cmd.CommandText = "DELETE FROM ItemWithLazyProperty";
-					await (cmd.ExecuteNonQueryAsync(CancellationToken.None));
+					await (cmd.ExecuteNonQueryAsync());
 				}
 			}
 
@@ -97,7 +96,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 				using (var cmd = session.Connection.CreateCommand())
 				{
 					cmd.CommandText = "DELETE FROM ItemWithLazyProperty";
-					await (cmd.ExecuteNonQueryAsync(CancellationToken.None));
+					await (cmd.ExecuteNonQueryAsync());
 				}
 			}
 
