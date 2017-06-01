@@ -68,28 +68,14 @@ namespace NHibernate.Test.NHSpecificTest
 
 		public Task<object> ReadElementAsync(DbDataReader rs, object owner, string[] aliases, ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			try
-			{
-				// TODO:  Add CollectionPersisterStub.ReadElement implementation
-				return Task.FromResult<object>(null);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			// TODO:  Add CollectionPersisterStub.ReadElement implementation
+			return Task.FromResult<object>(null);
 		}
 
 		public Task<object> ReadIndexAsync(DbDataReader rs, string[] aliases, ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			try
-			{
-				// TODO:  Add CollectionPersisterStub.ReadIndex implementation
-				return Task.FromResult<object>(null);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			// TODO:  Add CollectionPersisterStub.ReadIndex implementation
+			return Task.FromResult<object>(null);
 		}
 
 		public Task InitializeAsync(object key, ISessionImplementor session, CancellationToken cancellationToken)
@@ -100,28 +86,14 @@ namespace NHibernate.Test.NHSpecificTest
 
 		public Task<object> ReadKeyAsync(DbDataReader rs, string[] aliases, ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			try
-			{
-				// TODO:  Add CollectionPersisterStub.ReadKey implementation
-				return Task.FromResult<object>(null);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			// TODO:  Add CollectionPersisterStub.ReadKey implementation
+			return Task.FromResult<object>(null);
 		}
 
 		public Task<object> ReadIdentifierAsync(DbDataReader rs, string alias, ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			try
-			{
-				// TODO:  Add CollectionPersisterStub.ReadIdentifier implementation
-				return Task.FromResult<object>(null);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			// TODO:  Add CollectionPersisterStub.ReadIdentifier implementation
+			return Task.FromResult<object>(null);
 		}
 
 		#endregion

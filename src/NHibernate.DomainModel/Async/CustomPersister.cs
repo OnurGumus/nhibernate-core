@@ -37,14 +37,7 @@ namespace NHibernate.DomainModel
 
 		public Task<object[]> GetNaturalIdentifierSnapshotAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			try
-			{
-				return Task.FromResult<object[]>(null);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object[]>(ex);
-			}
+			return Task.FromResult<object[]>(null);
 		}
 
 		public async Task<object> LoadAsync(object id, object optionalObject, LockMode lockMode, ISessionImplementor session, CancellationToken cancellationToken)
@@ -115,14 +108,7 @@ namespace NHibernate.DomainModel
 
 		public Task<object[]> GetDatabaseSnapshotAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			try
-			{
-				return Task.FromResult<object[]>(null);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object[]>(ex);
-			}
+			return Task.FromResult<object[]>(null);
 		}
 
 		public Task<object> GetCurrentVersionAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
@@ -139,14 +125,7 @@ namespace NHibernate.DomainModel
 
 		public Task<object> ForceVersionIncrementAsync(object id, object currentVersion, ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			try
-			{
-				return Task.FromResult<object>(null);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			return Task.FromResult<object>(null);
 		}
 
 		public Task ProcessInsertGeneratedPropertiesAsync(object id, object entity, object[] state, ISessionImplementor session, CancellationToken cancellationToken)
