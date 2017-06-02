@@ -21,87 +21,75 @@ namespace NHibernate.Linq
 		{
 			cachableQueryableMethods = new Dictionary<string, MethodInfo>
 			{
-				{"Count", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Count())},
-				{"CountParam", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Count(o => true))},
+				{"Count", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int>(new int[] { }).Count())},
+				{"CountParam", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int>(new int[] { }).Count(o => true))},
 
-				{"LongCount", GetMethod(() => new EnumerableQuery<long>(new long[] { }).LongCount())},
-				{"LongCountParam", GetMethod(() => new EnumerableQuery<long>(new long[] { }).LongCount(o => true))},
+				{"LongCount", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<long>(new long[] { }).LongCount())},
+				{"LongCountParam", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<long>(new long[] { }).LongCount(o => true))},
 
-				{"Any", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Any())},
-				{"AnyParam", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Any(o => true))},
+				{"Any", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int>(new int[] { }).Any())},
+				{"AnyParam", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int>(new int[] { }).Any(o => true))},
 
-				{"First", GetMethod(() => new EnumerableQuery<int>(new int[] { }).First())},
-				{"FirstParam", GetMethod(() => new EnumerableQuery<int>(new int[] { }).First(o => true))},
+				{"First", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int>(new int[] { }).First())},
+				{"FirstParam", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int>(new int[] { }).First(o => true))},
 
-				{"FirstOrDefault", GetMethod(() => new EnumerableQuery<int>(new int[] { }).FirstOrDefault())},
-				{"FirstOrDefaultParam", GetMethod(() => new EnumerableQuery<int>(new int[] { }).FirstOrDefault(o => true))},
+				{"FirstOrDefault", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int>(new int[] { }).FirstOrDefault())},
+				{"FirstOrDefaultParam", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int>(new int[] { }).FirstOrDefault(o => true))},
 
-				{"Single", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Single())},
-				{"SingleParam", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Single(o => true))},
+				{"Single", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int>(new int[] { }).Single())},
+				{"SingleParam", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int>(new int[] { }).Single(o => true))},
 
-				{"SingleOrDefault", GetMethod(() => new EnumerableQuery<int>(new int[] { }).SingleOrDefault())},
-				{"SingleOrDefaultParam", GetMethod(() => new EnumerableQuery<int>(new int[] { }).SingleOrDefault(o => true))},
+				{"SingleOrDefault", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int>(new int[] { }).SingleOrDefault())},
+				{"SingleOrDefaultParam", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int>(new int[] { }).SingleOrDefault(o => true))},
 
-				{"Min", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Min())},
-				{"MinParam", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Min(o => true))},
+				{"Min", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int>(new int[] { }).Min())},
+				{"MinParam", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int>(new int[] { }).Min(o => true))},
 
-				{"Max", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Max())},
-				{"MaxParam", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Max(o => true))},
+				{"Max", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int>(new int[] { }).Max())},
+				{"MaxParam", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int>(new int[] { }).Max(o => true))},
 
-				{"SumInt", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Sum())},
-				{"SumInt?", GetMethod(() => new EnumerableQuery<int?>(new int?[] { }).Sum())},
-				{"SumLong", GetMethod(() => new EnumerableQuery<long>(new long[] { }).Sum())},
-				{"SumLong?", GetMethod(() => new EnumerableQuery<long?>(new long?[] { }).Sum())},
-				{"SumFloat", GetMethod(() => new EnumerableQuery<float>(new float[] { }).Sum())},
-				{"SumFloat?", GetMethod(() => new EnumerableQuery<float?>(new float?[] { }).Sum())},
-				{"SumDouble", GetMethod(() => new EnumerableQuery<double>(new double[] { }).Sum())},
-				{"SumDouble?", GetMethod(() => new EnumerableQuery<double?>(new double?[] { }).Sum())},
-				{"SumDecimal", GetMethod(() => new EnumerableQuery<decimal>(new decimal[] { }).Sum())},
-				{"SumDecimal?", GetMethod(() => new EnumerableQuery<decimal?>(new decimal?[] { }).Sum())},
-				{"SumIntParam", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Sum(o => 1))},
-				{"SumInt?Param", GetMethod(() => new EnumerableQuery<int?>(new int?[] { }).Sum(o => (int?)1))},
-				{"SumLongParam", GetMethod(() => new EnumerableQuery<long>(new long[] { }).Sum(o => (long)1))},
-				{"SumLong?Param", GetMethod(() => new EnumerableQuery<long?>(new long?[] { }).Sum(o => (long?)1))},
-				{"SumFloatParam", GetMethod(() => new EnumerableQuery<float>(new float[] { }).Sum(o => (float)1))},
-				{"SumFloat?Param", GetMethod(() => new EnumerableQuery<float?>(new float?[] { }).Sum(o => (float?)1))},
-				{"SumDoubleParam", GetMethod(() => new EnumerableQuery<double>(new double[] { }).Sum(o => (double)1))},
-				{"SumDouble?Param", GetMethod(() => new EnumerableQuery<double?>(new double?[] { }).Sum(o => (double?)1))},
-				{"SumDecimalParam", GetMethod(() => new EnumerableQuery<decimal>(new decimal[] { }).Sum(o => (decimal)1))},
-				{"SumDecimal?Param", GetMethod(() => new EnumerableQuery<decimal?>(new decimal?[] { }).Sum(o => (decimal?)1))},
+				{"SumInt", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int>(new int[] { }).Sum())},
+				{"SumInt?", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int?>(new int?[] { }).Sum())},
+				{"SumLong", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<long>(new long[] { }).Sum())},
+				{"SumLong?", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<long?>(new long?[] { }).Sum())},
+				{"SumFloat", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<float>(new float[] { }).Sum())},
+				{"SumFloat?", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<float?>(new float?[] { }).Sum())},
+				{"SumDouble", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<double>(new double[] { }).Sum())},
+				{"SumDouble?", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<double?>(new double?[] { }).Sum())},
+				{"SumDecimal", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<decimal>(new decimal[] { }).Sum())},
+				{"SumDecimal?", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<decimal?>(new decimal?[] { }).Sum())},
+				{"SumIntParam", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int>(new int[] { }).Sum(o => 1))},
+				{"SumInt?Param", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int?>(new int?[] { }).Sum(o => (int?)1))},
+				{"SumLongParam", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<long>(new long[] { }).Sum(o => (long)1))},
+				{"SumLong?Param", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<long?>(new long?[] { }).Sum(o => (long?)1))},
+				{"SumFloatParam", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<float>(new float[] { }).Sum(o => (float)1))},
+				{"SumFloat?Param", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<float?>(new float?[] { }).Sum(o => (float?)1))},
+				{"SumDoubleParam", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<double>(new double[] { }).Sum(o => (double)1))},
+				{"SumDouble?Param", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<double?>(new double?[] { }).Sum(o => (double?)1))},
+				{"SumDecimalParam", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<decimal>(new decimal[] { }).Sum(o => (decimal)1))},
+				{"SumDecimal?Param", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<decimal?>(new decimal?[] { }).Sum(o => (decimal?)1))},
 
-				{"AverageInt", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Average())},
-				{"AverageInt?", GetMethod(() => new EnumerableQuery<int?>(new int?[] { }).Average())},
-				{"AverageLong", GetMethod(() => new EnumerableQuery<long>(new long[] { }).Average())},
-				{"AverageLong?", GetMethod(() => new EnumerableQuery<long?>(new long?[] { }).Average())},
-				{"AverageFloat", GetMethod(() => new EnumerableQuery<float>(new float[] { }).Average())},
-				{"AverageFloat?", GetMethod(() => new EnumerableQuery<float?>(new float?[] { }).Average())},
-				{"AverageDouble", GetMethod(() => new EnumerableQuery<double>(new double[] { }).Average())},
-				{"AverageDouble?", GetMethod(() => new EnumerableQuery<double?>(new double?[] { }).Average())},
-				{"AverageDecimal", GetMethod(() => new EnumerableQuery<decimal>(new decimal[] { }).Average())},
-				{"AverageDecimal?", GetMethod(() => new EnumerableQuery<decimal?>(new decimal?[] { }).Average())},
-				{"AverageIntParam", GetMethod(() => new EnumerableQuery<int>(new int[] { }).Average(o => 1))},
-				{"AverageInt?Param", GetMethod(() => new EnumerableQuery<int?>(new int?[] { }).Average(o => (int?)1))},
-				{"AverageLongParam", GetMethod(() => new EnumerableQuery<long>(new long[] { }).Average(o => (long)1))},
-				{"AverageLong?Param", GetMethod(() => new EnumerableQuery<long?>(new long?[] { }).Average(o => (long?)1))},
-				{"AverageFloatParam", GetMethod(() => new EnumerableQuery<float>(new float[] { }).Average(o => (float)1))},
-				{"AverageFloat?Param", GetMethod(() => new EnumerableQuery<float?>(new float?[] { }).Average(o => (float?)1))},
-				{"AverageDoubleParam", GetMethod(() => new EnumerableQuery<double>(new double[] { }).Average(o => (double)1))},
-				{"AverageDouble?Param", GetMethod(() => new EnumerableQuery<double?>(new double?[] { }).Average(o => (double?)1))},
-				{"AverageDecimalParam", GetMethod(() => new EnumerableQuery<decimal>(new decimal[] { }).Average(o => (decimal)1))},
-				{"AverageDecimal?Param", GetMethod(() => new EnumerableQuery<decimal?>(new decimal?[] { }).Average(o => (decimal?)1))},
+				{"AverageInt", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int>(new int[] { }).Average())},
+				{"AverageInt?", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int?>(new int?[] { }).Average())},
+				{"AverageLong", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<long>(new long[] { }).Average())},
+				{"AverageLong?", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<long?>(new long?[] { }).Average())},
+				{"AverageFloat", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<float>(new float[] { }).Average())},
+				{"AverageFloat?", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<float?>(new float?[] { }).Average())},
+				{"AverageDouble", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<double>(new double[] { }).Average())},
+				{"AverageDouble?", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<double?>(new double?[] { }).Average())},
+				{"AverageDecimal", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<decimal>(new decimal[] { }).Average())},
+				{"AverageDecimal?", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<decimal?>(new decimal?[] { }).Average())},
+				{"AverageIntParam", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int>(new int[] { }).Average(o => 1))},
+				{"AverageInt?Param", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<int?>(new int?[] { }).Average(o => (int?)1))},
+				{"AverageLongParam", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<long>(new long[] { }).Average(o => (long)1))},
+				{"AverageLong?Param", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<long?>(new long?[] { }).Average(o => (long?)1))},
+				{"AverageFloatParam", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<float>(new float[] { }).Average(o => (float)1))},
+				{"AverageFloat?Param", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<float?>(new float?[] { }).Average(o => (float?)1))},
+				{"AverageDoubleParam", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<double>(new double[] { }).Average(o => (double)1))},
+				{"AverageDouble?Param", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<double?>(new double?[] { }).Average(o => (double?)1))},
+				{"AverageDecimalParam", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<decimal>(new decimal[] { }).Average(o => (decimal)1))},
+				{"AverageDecimal?Param", ReflectHelper.GetMethodDefinition(() => new EnumerableQuery<decimal?>(new decimal?[] { }).Average(o => (decimal?)1))},
 			};
-		}
-
-		private static MethodInfo GetMethod<T>(Expression<Func<T>> expression)
-		{
-			var member = expression.Body as MethodCallExpression;
-			if (member == null)
-			{
-				throw new ArgumentException("Expression is not a method", nameof(expression));
-			}
-			return member.Method.IsGenericMethod
-				? member.Method.GetGenericMethodDefinition()
-				: member.Method;
 		}
 
 		#region AnyAsync

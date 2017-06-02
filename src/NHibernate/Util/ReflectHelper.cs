@@ -36,8 +36,19 @@ namespace NHibernate.Util
 		/// <seealso cref="MethodInfo.GetGenericMethodDefinition"/>
 		public static MethodInfo GetMethodDefinition<TSource>(Expression<Action<TSource>> method)
 		{
-			MethodInfo methodInfo = GetMethod(method);
-			return methodInfo.IsGenericMethod ? methodInfo.GetGenericMethodDefinition() : methodInfo;
+			return GetMethodDefinition((LambdaExpression)method);
+		}
+
+		/// <summary>
+		/// Extract the <see cref="MethodInfo"/> from a given expression.
+		/// </summary>
+		/// <typeparam name="TSource">The declaring-type of the method.</typeparam>
+		/// <param name="method">The method.</param>
+		/// <returns>The <see cref="MethodInfo"/> of the no-generic method or the generic-definition for a generic-method.</returns>
+		/// <seealso cref="MethodInfo.GetGenericMethodDefinition"/>
+		public static MethodInfo GetMethodDefinition<TSource>(Expression<Func<TSource>> method)
+		{
+			return GetMethodDefinition((LambdaExpression)method);
 		}
 
 		/// <summary>
@@ -48,10 +59,7 @@ namespace NHibernate.Util
 		/// <returns>The <see cref="MethodInfo"/> of the method.</returns>
 		public static MethodInfo GetMethod<TSource>(Expression<Action<TSource>> method)
 		{
-			if (method == null)
-				throw new ArgumentNullException(nameof(method));
-
-			return ((MethodCallExpression)method.Body).Method;
+			return GetMethod((LambdaExpression)method);
 		}
 
 		/// <summary>
@@ -62,8 +70,7 @@ namespace NHibernate.Util
 		/// <seealso cref="MethodInfo.GetGenericMethodDefinition"/>
 		public static MethodInfo GetMethodDefinition(Expression<System.Action> method)
 		{
-			MethodInfo methodInfo = GetMethod(method);
-			return methodInfo.IsGenericMethod ? methodInfo.GetGenericMethodDefinition() : methodInfo;
+			return GetMethodDefinition((LambdaExpression)method);
 		}
 
 		/// <summary>
@@ -73,10 +80,7 @@ namespace NHibernate.Util
 		/// <returns>The <see cref="MethodInfo"/> of the method.</returns>
 		public static MethodInfo GetMethod(Expression<System.Action> method)
 		{
-			if (method == null)
-				throw new ArgumentNullException(nameof(method));
-
-			return ((MethodCallExpression)method.Body).Method;
+			return GetMethod((LambdaExpression)method);
 		}
 
 		/// <summary>
@@ -122,6 +126,20 @@ namespace NHibernate.Util
 				throw new ArgumentNullException(nameof(property));
 			}
 			return ((MemberExpression)property.Body).Member;
+		}
+
+		internal static MethodInfo GetMethodDefinition(LambdaExpression method)
+		{
+			var methodInfo = GetMethod(method);
+			return methodInfo.IsGenericMethod ? methodInfo.GetGenericMethodDefinition() : methodInfo;
+		}
+
+		internal static MethodInfo GetMethod(LambdaExpression method)
+		{
+			if (method == null)
+				throw new ArgumentNullException(nameof(method));
+
+			return ((MethodCallExpression)method.Body).Method;
 		}
 
 		internal static bool ParameterTypesMatch(ParameterInfo[] parameters, System.Type[] types)
