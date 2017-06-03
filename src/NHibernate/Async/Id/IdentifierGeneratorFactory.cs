@@ -65,29 +65,19 @@ namespace NHibernate.Id
 		/// Thrown if there is any problem getting the value from the <see cref="DbDataReader"/>
 		/// or with converting it to the <see cref="System.Type"/>.
 		/// </exception>
-		public static Task<object> GetAsync(DbDataReader rs, IType type, ISessionImplementor session, CancellationToken cancellationToken)
+		public static async Task<object> GetAsync(DbDataReader rs, IType type, ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
+			cancellationToken.ThrowIfCancellationRequested();
+			// here is an interesting one: 
+			// - MsSql's @@identity returns a Decimal
+			// - MySql LAST_IDENITY() returns an Int64 			
 			try
 			{
-				// here is an interesting one: 
-				// - MsSql's @@identity returns a Decimal
-				// - MySql LAST_IDENITY() returns an Int64 			
-				try
-				{
-					return type.NullSafeGetAsync(rs, rs.GetName(0), session, null, cancellationToken);
-				}
-				catch (Exception e)
-				{
-					return Task.FromException<object>(new IdentifierGenerationException("could not retrieve identifier value", e));
-				}
+				return await (type.NullSafeGetAsync(rs, rs.GetName(0), session, null, cancellationToken)).ConfigureAwait(false);
 			}
-			catch (Exception ex)
+			catch (Exception e)
 			{
-				return Task.FromException<object>(ex);
+				throw new IdentifierGenerationException("could not retrieve identifier value", e);
 			}
 		}
 	}

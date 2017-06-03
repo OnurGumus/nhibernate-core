@@ -145,7 +145,7 @@ namespace NHibernate.Test.Interceptor
 			ITransaction t = s.BeginTransaction();
 			Image i = new Image();
 			i.Name = "compincomp";
-			i = (Image)s.Merge(i);
+			i = (Image)await (s.MergeAsync(i));
 			Assert.IsNotNull(i.Details);
 			Assert.AreEqual(checkPerm, i.Details.Perm1);
 			Assert.AreEqual(checkComment, i.Details.Comment);

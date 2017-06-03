@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2011
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					mergedCopy = (Order) session.Merge(newOrder);
+					mergedCopy = (Order) await (session.MergeAsync(newOrder));
 					await (tx.CommitAsync());
 				}
 			}

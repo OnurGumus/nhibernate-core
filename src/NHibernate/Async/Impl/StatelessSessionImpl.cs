@@ -66,34 +66,24 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override Task<object> InternalLoadAsync(string entityName, object id, bool eager, bool isNullable, CancellationToken cancellationToken)
+		public override async Task<object> InternalLoadAsync(string entityName, object id, bool eager, bool isNullable, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				using (new SessionIdLoggingContext(SessionId))
+				CheckAndUpdateSessionStatus();
+				IEntityPersister persister = Factory.GetEntityPersister(entityName);
+				object loaded = temporaryPersistenceContext.GetEntity(GenerateEntityKey(id, persister));
+				if (loaded != null)
 				{
-					CheckAndUpdateSessionStatus();
-					IEntityPersister persister = Factory.GetEntityPersister(entityName);
-					object loaded = temporaryPersistenceContext.GetEntity(GenerateEntityKey(id, persister));
-					if (loaded != null)
-					{
-						return Task.FromResult<object>(loaded);
-					}
-					if (!eager && persister.HasProxy)
-					{
-						return Task.FromResult<object>(persister.CreateProxy(id, this));
-					}
-					//TODO: if not loaded, throw an exception
-					return GetAsync(entityName, id, cancellationToken);
+					return loaded;
 				}
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
+				if (!eager && persister.HasProxy)
+				{
+					return persister.CreateProxy(id, this);
+				}
+				//TODO: if not loaded, throw an exception
+				return await (GetAsync(entityName, id, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -314,23 +304,13 @@ namespace NHibernate.Impl
 		/// <param name="entity">A new transient instance </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> the identifier of the instance </returns>
-		public Task<object> InsertAsync(object entity, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> InsertAsync(object entity, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				using (new SessionIdLoggingContext(SessionId))
-				{
-					CheckAndUpdateSessionStatus();
-					return InsertAsync(null, entity, cancellationToken);
-				}
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
+				CheckAndUpdateSessionStatus();
+				return await (InsertAsync(null, entity, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -445,22 +425,12 @@ namespace NHibernate.Impl
 
 		/// <summary> Retrieve a entity. </summary>
 		/// <returns> a detached entity instance </returns>
-		public Task<object> GetAsync(string entityName, object id, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> GetAsync(string entityName, object id, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				using (new SessionIdLoggingContext(SessionId))
-				{
-					return GetAsync(entityName, id, LockMode.None, cancellationToken);
-				}
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
+				return await (GetAsync(entityName, id, LockMode.None, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -478,22 +448,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private Task<object> GetAsync(System.Type persistentClass, object id, CancellationToken cancellationToken)
+		private async Task<object> GetAsync(System.Type persistentClass, object id, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				using (new SessionIdLoggingContext(SessionId))
-				{
-					return GetAsync(persistentClass.FullName, id, cancellationToken);
-				}
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
+				return await (GetAsync(persistentClass.FullName, id, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 

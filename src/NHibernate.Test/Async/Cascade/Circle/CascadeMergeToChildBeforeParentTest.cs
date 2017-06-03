@@ -91,7 +91,7 @@ namespace NHibernate.Test.Cascade.Circle
 				route.Nodes.Add(pickupNode);
 				route.Nodes.Add(deliveryNode);
 		
-				Route mergedRoute = (Route)session.Merge(route);
+				Route mergedRoute = (Route)await (session.MergeAsync(route));
 	
 				await (transaction.CommitAsync());
 			}
@@ -162,7 +162,7 @@ namespace NHibernate.Test.Cascade.Circle
 				vehicle.TransientField = "anewvalue";
 				vehicle.Route = route;
 		
-				Route mergedRoute = (Route)session.Merge(route);
+				Route mergedRoute = (Route)await (session.MergeAsync(route));
 		
 				await (transaction.CommitAsync());
 			}
@@ -249,7 +249,7 @@ namespace NHibernate.Test.Cascade.Circle
 				vehicle.TransientField = "anewvalue";
 				vehicle.Route = route;
 		
-				Route mergedRoute = (Route)session.Merge(route);
+				Route mergedRoute = (Route)await (session.MergeAsync(route));
 	
 				await (transaction.CommitAsync());
 			}

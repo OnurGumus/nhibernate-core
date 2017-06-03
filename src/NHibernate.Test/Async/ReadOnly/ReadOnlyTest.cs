@@ -616,7 +616,7 @@ namespace NHibernate.Test.ReadOnly
 			t = s.BeginTransaction();
 			DataPoint dpManaged = await (s.GetAsync<DataPoint>(dp.Id));
 			s.SetReadOnly(dpManaged, true);
-			DataPoint dpMerged = (DataPoint)s.Merge(dp);
+			DataPoint dpMerged = (DataPoint)await (s.MergeAsync(dp));
 			Assert.That(dpManaged, Is.SameAs(dpMerged));
 			await (t.CommitAsync());
 			s.Close();

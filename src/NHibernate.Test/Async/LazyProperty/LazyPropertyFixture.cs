@@ -133,7 +133,7 @@ namespace NHibernate.Test.LazyProperty
 
 			using (ISession s = OpenSession())
 			{
-				s.Merge(book);
+				await (s.MergeAsync(book));
 			}
 		}
 

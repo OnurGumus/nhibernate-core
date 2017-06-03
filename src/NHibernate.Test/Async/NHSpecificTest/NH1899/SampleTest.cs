@@ -59,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1899
 
             using (ISession session2 = OpenSession()) 
 			{
-                entity = session2.Merge(entity);
+                entity = await (session2.MergeAsync(entity));
             }
         }
     }

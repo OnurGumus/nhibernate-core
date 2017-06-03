@@ -44,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.NH401
 			mem.Expirydate = DateTime.Now.AddYears(1);
 			mem.Joindate = DateTime.Now;
 
-			sess.Merge(mem);
+			await (sess.MergeAsync(mem));
 			await (sess.FlushAsync());
 
 			sess.Close();

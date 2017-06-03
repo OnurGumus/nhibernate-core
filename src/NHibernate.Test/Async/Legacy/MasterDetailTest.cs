@@ -131,7 +131,7 @@ namespace NHibernate.Test.Legacy
 			Category copiedCat;
 			using (ISession s = OpenSession())
 			{
-				copiedCat = s.Merge(cat);
+				copiedCat = await (s.MergeAsync(cat));
 				await (s.FlushAsync());
 			}
 			Assert.IsFalse(copiedCat == cat);
@@ -148,7 +148,7 @@ namespace NHibernate.Test.Legacy
 
 			using (ISession s = OpenSession())
 			{
-				newSubCat = s.Merge(newSubCat);
+				newSubCat = await (s.MergeAsync(newSubCat));
 				Assert.IsTrue(newSubCat.Name.Equals("new sub"));
 				Assert.AreEqual(1, newSubCat.Subcategories.Count);
 				cat	= (Category)newSubCat.Subcategories[0];
@@ -178,7 +178,7 @@ namespace NHibernate.Test.Legacy
 			child.Name = "child2";
 
 			// Save parent and cascade update detached child
-			Category persistentParent = s.Merge(parent);
+			Category persistentParent = await (s.MergeAsync(parent));
 			Assert.IsTrue(persistentParent.Subcategories.Count == 1);
 			Assert.AreEqual(((Category) persistentParent.Subcategories[0]).Name, "child2");
 			await (s.FlushAsync());

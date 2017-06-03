@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH958
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				person = session.Merge(person);
+				person = await (session.MergeAsync(person));
 				await (transaction.CommitAsync());
 			}
 
@@ -75,7 +75,7 @@ namespace NHibernate.Test.NHSpecificTest.NH958
             using (ITransaction transaction = session.BeginTransaction())
             {
                 // the transient hobby "test" is inserted and updated
-                person = session.Merge(person);
+                person = await (session.MergeAsync(person));
                 await (transaction.CommitAsync());
             }
 

@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3817
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				session.Merge(itinerary);
+				await (session.MergeAsync(itinerary));
 				await (transaction.CommitAsync());
 			}
 		}

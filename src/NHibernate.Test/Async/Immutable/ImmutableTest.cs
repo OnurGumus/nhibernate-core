@@ -955,7 +955,7 @@ namespace NHibernate.Test.Immutable
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Contract)s.Merge(c);
+			c = (Contract)await (s.MergeAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(NHibernateUtil.IsInitialized(c.Variations), Is.True);
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -1015,7 +1015,7 @@ namespace NHibernate.Test.Immutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c.CustomerName = "foo bar";
-			c = (Contract)s.Merge(c);
+			c = (Contract)await (s.MergeAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(NHibernateUtil.IsInitialized(c.Variations), Is.True);
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -1077,7 +1077,7 @@ namespace NHibernate.Test.Immutable
 			t = s.BeginTransaction();
 			cv1 = c.Variations.First();
 			cv1.Text = "blah blah";
-			c = (Contract)s.Merge(c);
+			c = (Contract)await (s.MergeAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(NHibernateUtil.IsInitialized(c.Variations), Is.True);
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -1138,7 +1138,7 @@ namespace NHibernate.Test.Immutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c.Variations.Add(new ContractVariation(3, c));
-			s.Merge(c);
+			await (s.MergeAsync(c));
 			try
 			{
 				await (t.CommitAsync());
@@ -1253,7 +1253,7 @@ namespace NHibernate.Test.Immutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 			cv1.Infos.Add(new Info("cv1 info"));
-			s.Merge(c);
+			await (s.MergeAsync(c));
 			await (t.CommitAsync());
 			s.Close();
 	
@@ -1366,7 +1366,7 @@ namespace NHibernate.Test.Immutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 			cv1Info.Text = "new cv1 info";
-			s.Merge(c);
+			await (s.MergeAsync(c));
 			await (t.CommitAsync());
 			s.Close();
 	

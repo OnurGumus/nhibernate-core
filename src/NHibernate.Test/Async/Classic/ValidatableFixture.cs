@@ -119,7 +119,7 @@ namespace NHibernate.Test.Classic
 			{
 				using (ISession s = OpenSession())
 				{
-					s.Merge(v);
+					await (s.MergeAsync(v));
 					await (s.FlushAsync());
 				}
 				Assert.Fail("Updated an invalid entity");
@@ -134,7 +134,7 @@ namespace NHibernate.Test.Classic
 			{
 				using (ISession s = OpenSession())
 				{
-					s.Merge(v1);
+					await (s.MergeAsync(v1));
 					await (s.FlushAsync());
 				}
 				Assert.Fail("saved an invalid entity");

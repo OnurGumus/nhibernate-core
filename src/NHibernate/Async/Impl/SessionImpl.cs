@@ -57,41 +57,21 @@ namespace NHibernate.Impl
 		/// <param name="obj"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		public Task<object> SaveAsync(object obj, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> SaveAsync(object obj, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				using (new SessionIdLoggingContext(SessionId))
-				{
-					return FireSaveAsync(new SaveOrUpdateEvent(null, obj, this), cancellationToken);
-				}
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
+				return await (FireSaveAsync(new SaveOrUpdateEvent(null, obj, this), cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
-		public Task<object> SaveAsync(string entityName, object obj, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> SaveAsync(string entityName, object obj, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				using (new SessionIdLoggingContext(SessionId))
-				{
-					return FireSaveAsync(new SaveOrUpdateEvent(entityName, obj, this), cancellationToken);
-				}
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
+				return await (FireSaveAsync(new SaveOrUpdateEvent(entityName, obj, this), cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -205,24 +185,13 @@ namespace NHibernate.Impl
 				await (FireUpdateAsync(new SaveOrUpdateEvent(null, obj, id, this), cancellationToken)).ConfigureAwait(false);
 			}
 		}
-
+async 
 		Task<IList> FindAsync(string query, object[] values, IType[] types, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				return Task.FromCanceled<
-		IList>(cancellationToken);
-			}
-			try
-			{
-				using (new SessionIdLoggingContext(SessionId))
-				{
-					return ListAsync(query.ToQueryExpression(), new QueryParameters(types, values), cancellationToken);
-				}
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<IList>(ex);
+				return await (ListAsync(query.ToQueryExpression(), new QueryParameters(types, values), cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -317,41 +286,21 @@ namespace NHibernate.Impl
 
 		// TODO: Scroll(string query, QueryParameters queryParameters)
 
-		public Task<int> DeleteAsync(string query, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<int> DeleteAsync(string query, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				return Task.FromCanceled<int>(cancellationToken);
-			}
-			try
-			{
-				using (new SessionIdLoggingContext(SessionId))
-				{
-					return DeleteAsync(query, NoArgs, NoTypes, cancellationToken);
-				}
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<int>(ex);
+				return await (DeleteAsync(query, NoArgs, NoTypes, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
-		public Task<int> DeleteAsync(string query, object value, IType type, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<int> DeleteAsync(string query, object value, IType type, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				return Task.FromCanceled<int>(cancellationToken);
-			}
-			try
-			{
-				using (new SessionIdLoggingContext(SessionId))
-				{
-					return DeleteAsync(query, new[] { value }, new[] { type }, cancellationToken);
-				}
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<int>(ex);
+				return await (DeleteAsync(query, new[] { value }, new[] { type }, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -563,22 +512,12 @@ namespace NHibernate.Impl
 
 		#endregion
 
-		public Task<object> MergeAsync(string entityName, object obj, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> MergeAsync(string entityName, object obj, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				using (new SessionIdLoggingContext(SessionId))
-				{
-					return FireMergeAsync(new MergeEvent(entityName, obj, this), cancellationToken);
-				}
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
+				return await (FireMergeAsync(new MergeEvent(entityName, obj, this), cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -594,22 +533,12 @@ namespace NHibernate.Impl
 			return (T)await (MergeAsync(entityName, (object)entity, cancellationToken)).ConfigureAwait(false);
 		}
 
-		public Task<object> MergeAsync(object obj, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> MergeAsync(object obj, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				using (new SessionIdLoggingContext(SessionId))
-				{
-					return MergeAsync(null, obj, cancellationToken);
-				}
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
+				return await (MergeAsync(null, obj, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -748,22 +677,12 @@ namespace NHibernate.Impl
 		/// <exception cref="ObjectNotFoundException">
 		/// Thrown when the object with the specified id does not exist in the database.
 		/// </exception>
-		public Task<object> LoadAsync(System.Type entityClass, object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> LoadAsync(System.Type entityClass, object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				using (new SessionIdLoggingContext(SessionId))
-				{
-					return LoadAsync(entityClass.FullName, id, lockMode, cancellationToken);
-				}
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
+				return await (LoadAsync(entityClass.FullName, id, lockMode, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -807,22 +726,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public Task<object> LoadAsync(System.Type entityClass, object id, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> LoadAsync(System.Type entityClass, object id, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				using (new SessionIdLoggingContext(SessionId))
-				{
-					return LoadAsync(entityClass.FullName, id, cancellationToken);
-				}
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
+				return await (LoadAsync(entityClass.FullName, id, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -844,22 +753,12 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public Task<object> GetAsync(System.Type entityClass, object id, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<object> GetAsync(System.Type entityClass, object id, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				using (new SessionIdLoggingContext(SessionId))
-				{
-					return GetAsync(entityClass.FullName, id, cancellationToken);
-				}
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
+				return await (GetAsync(entityClass.FullName, id, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 

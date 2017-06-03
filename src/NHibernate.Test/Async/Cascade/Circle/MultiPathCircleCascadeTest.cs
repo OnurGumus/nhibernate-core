@@ -86,7 +86,7 @@ namespace NHibernate.Test.Cascade.Circle
 			{
 				try
 				{
-					session.Merge(node);
+					await (session.MergeAsync(node));
 					Assert.Fail("should have thrown an exception");
 				}
 				catch (Exception ex)
@@ -120,7 +120,7 @@ namespace NHibernate.Test.Cascade.Circle
 			{
 				try
 				{
-					session.Merge(node);
+					await (session.MergeAsync(node));
 					Assert.Fail("should have thrown an exception");
 				}
 				catch (Exception ex)
@@ -152,7 +152,7 @@ namespace NHibernate.Test.Cascade.Circle
 			{
 				try
 				{
-					session.Merge(route);
+					await (session.MergeAsync(route, cancellationToken));
 					Assert.Fail("should have thrown an exception");
 				}
 				catch (Exception ex)
@@ -182,7 +182,7 @@ namespace NHibernate.Test.Cascade.Circle
 	
 			ISession s = base.OpenSession();
 			s.BeginTransaction();
-			s.Merge(route);
+			await (s.MergeAsync(route));
 			await (s.Transaction.CommitAsync());
 			s.Close();
 	
@@ -208,7 +208,7 @@ namespace NHibernate.Test.Cascade.Circle
 			s.BeginTransaction();
 
 			Node pickupNode = route.Nodes.First(n => n.Name == "pickupNodeB");
-			pickupNode = (Node)s.Merge(pickupNode);
+			pickupNode = (Node)await (s.MergeAsync(pickupNode));
 			
 			await (s.Transaction.CommitAsync());
 			s.Close();
@@ -235,7 +235,7 @@ namespace NHibernate.Test.Cascade.Circle
 			s.BeginTransaction();
 
 			Node deliveryNode = route.Nodes.First(n => n.Name == "deliveryNodeB");
-			deliveryNode = (Node)s.Merge(deliveryNode);
+			deliveryNode = (Node)await (s.MergeAsync(deliveryNode));
 			
 			await (s.Transaction.CommitAsync());
 			s.Close();
@@ -260,7 +260,7 @@ namespace NHibernate.Test.Cascade.Circle
 	
 			ISession s = OpenSession();
 			s.BeginTransaction();
-			Tour tour = (Tour)s.Merge(route.Nodes.First().Tour);
+			Tour tour = (Tour)await (s.MergeAsync(route.Nodes.First().Tour));
 			await (s.Transaction.CommitAsync());
 			s.Close();
 	
@@ -293,7 +293,7 @@ namespace NHibernate.Test.Cascade.Circle
 			else
 				transport = node.DeliveryTransports.First();
 	
-			transport = (Transport)s.Merge(transport);
+			transport = (Transport)await (s.MergeAsync(transport));
 	
 			await (s.Transaction.CommitAsync());
 			s.Close();

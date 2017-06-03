@@ -84,7 +84,7 @@ namespace NHibernate.Test.GenericTest.IdBagGeneric
 			using( ISession s = OpenSession() )
 			using( ITransaction t = s.BeginTransaction() )
 			{
-				copiedA = s.Merge(a);
+				copiedA = await (s.MergeAsync(a));
 				await (t.CommitAsync());
 			}
 

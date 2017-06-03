@@ -71,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 				await (session.FlushAsync());
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(2));
 
-				session.Merge(contact);
+				await (session.MergeAsync(contact));
 			}
 		}
 		[Test]
@@ -101,7 +101,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 				await (session.FlushAsync());
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(2));
 
-				session.Merge(contact);
+				await (session.MergeAsync(contact));
 			}
 		}
 		[Test]
@@ -132,7 +132,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 				await (session.FlushAsync());
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(3));
 
-				session.Merge(contact);
+				await (session.MergeAsync(contact));
 			}
 		}
 	}

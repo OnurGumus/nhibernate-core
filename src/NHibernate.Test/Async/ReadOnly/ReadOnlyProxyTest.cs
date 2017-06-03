@@ -945,7 +945,7 @@ namespace NHibernate.Test.ReadOnly
 			s.SetReadOnly(dpLoaded, true);
 			await (CheckReadOnlyAsync(s, dpLoaded, true));
 			Assert.That(NHibernateUtil.IsInitialized(dpLoaded), Is.False);
-			DataPoint dpMerged = (DataPoint)s.Merge(dp);
+			DataPoint dpMerged = (DataPoint)await (s.MergeAsync(dp));
 			Assert.That(dpMerged, Is.SameAs(dpLoaded));
 			Assert.That(NHibernateUtil.IsInitialized(dpLoaded), Is.True);
 			Assert.That(dpLoaded.Description, Is.EqualTo("changed"));
@@ -997,7 +997,7 @@ namespace NHibernate.Test.ReadOnly
 			await (CheckReadOnlyAsync(s, dpLoaded, false));
 			s.SetReadOnly(dpLoaded, true);
 			await (CheckReadOnlyAsync(s, dpLoaded, true));
-			DataPoint dpMerged = (DataPoint)s.Merge(dp);
+			DataPoint dpMerged = (DataPoint)await (s.MergeAsync(dp));
 			Assert.That(dpMerged, Is.SameAs(dpLoaded));
 			Assert.That(dpLoaded.Description, Is.EqualTo("changed"));
 			await (CheckReadOnlyAsync(s, dpLoaded, true));
@@ -1047,7 +1047,7 @@ namespace NHibernate.Test.ReadOnly
 			s.SetReadOnly(dpLoaded, true);
 			await (CheckReadOnlyAsync(s, dpLoaded, true));
 			Assert.That(NHibernateUtil.IsInitialized(dpLoaded), Is.False);
-			DataPoint dpMerged = (DataPoint)s.Merge(dpEntity);
+			DataPoint dpMerged = (DataPoint)await (s.MergeAsync(dpEntity));
 			Assert.That(dpMerged, Is.SameAs(dpLoaded));
 			Assert.That(NHibernateUtil.IsInitialized(dpLoaded), Is.True);
 			Assert.That(dpLoaded.Description, Is.EqualTo("changed"));
@@ -1100,7 +1100,7 @@ namespace NHibernate.Test.ReadOnly
 			await (CheckReadOnlyAsync(s, dpLoaded, false));
 			s.SetReadOnly(dpLoaded, true);
 			await (CheckReadOnlyAsync(s, dpLoaded, true));
-			DataPoint dpMerged = (DataPoint)s.Merge(dpEntity);
+			DataPoint dpMerged = (DataPoint)await (s.MergeAsync(dpEntity));
 			Assert.That(dpMerged, Is.SameAs(dpLoaded));
 			Assert.That(dpLoaded.Description, Is.EqualTo("changed"));
 			await (CheckReadOnlyAsync(s, dpLoaded, true));
@@ -1148,7 +1148,7 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(s.IsReadOnly(dpEntity), Is.False);
 			s.SetReadOnly(dpEntity, true);
 			Assert.That(s.IsReadOnly(dpEntity), Is.True);
-			DataPoint dpMerged = (DataPoint)s.Merge(dp);
+			DataPoint dpMerged = (DataPoint)await (s.MergeAsync(dp));
 			Assert.That(dpMerged, Is.SameAs(dpEntity));
 			Assert.That(dpEntity.Description, Is.EqualTo("changed"));
 			Assert.That(s.IsReadOnly(dpEntity), Is.True);

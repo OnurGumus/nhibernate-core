@@ -38,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH523
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				s.Merge(a);
+				await (s.MergeAsync(a));
 				await (t.CommitAsync());
 			}
 

@@ -240,7 +240,7 @@ namespace NHibernate.Test.Component.Basic
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)s.Merge(emp);
+				emp = (Employee)await (s.MergeAsync(emp));
 				await (t.CommitAsync());
 				s.Close();
 			}
@@ -262,7 +262,7 @@ namespace NHibernate.Test.Component.Basic
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)s.Merge(emp);
+				emp = (Employee)await (s.MergeAsync(emp));
 				await (t.CommitAsync());
 				s.Close();
 			}
@@ -288,7 +288,7 @@ namespace NHibernate.Test.Component.Basic
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)s.Merge(emp);
+				emp = (Employee)await (s.MergeAsync(emp));
 				await (t.CommitAsync());
 				s.Close();
 			}
@@ -316,7 +316,7 @@ namespace NHibernate.Test.Component.Basic
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)s.Merge(emp);
+				emp = (Employee)await (s.MergeAsync(emp));
 				await (t.CommitAsync());
 				s.Close();
 			}
@@ -344,7 +344,7 @@ namespace NHibernate.Test.Component.Basic
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)s.Merge(emp);
+				emp = (Employee)await (s.MergeAsync(emp));
 				await (t.CommitAsync());
 				s.Close();
 			}

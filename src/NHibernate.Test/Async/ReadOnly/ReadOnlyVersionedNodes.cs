@@ -313,7 +313,7 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				parent = (VersionedNode) s.Merge(parent);
+				parent = (VersionedNode) await (s.MergeAsync(parent));
 				s.SetReadOnly(parent, true);
 				await (s.Transaction.CommitAsync());
 			}
@@ -366,7 +366,7 @@ namespace NHibernate.Test.ReadOnly
 				s.BeginTransaction();
 				VersionedNode parentManaged = await (s.GetAsync<VersionedNode>(parent.Id));
 				s.SetReadOnly(parentManaged, true);
-				VersionedNode parentMerged = (VersionedNode) s.Merge(parent);
+				VersionedNode parentMerged = (VersionedNode) await (s.MergeAsync(parent));
 				Assert.That(parentManaged, Is.SameAs(parentMerged));
 				await (s.Transaction.CommitAsync());
 			}
@@ -414,7 +414,7 @@ namespace NHibernate.Test.ReadOnly
 			using (var s = OpenSession())
 			{
 				s.BeginTransaction();
-				parent = (VersionedNode) s.Merge(parent);
+				parent = (VersionedNode) await (s.MergeAsync(parent));
 				await (s.Transaction.CommitAsync());
 			}
 
@@ -426,7 +426,7 @@ namespace NHibernate.Test.ReadOnly
 			{
 				s.BeginTransaction();
 				VersionedNode parentGet = await (s.GetAsync<VersionedNode>(parent.Id));
-				s.Merge(parent);
+				await (s.MergeAsync(parent));
 				await (s.Transaction.CommitAsync());
 			}
 
@@ -438,7 +438,7 @@ namespace NHibernate.Test.ReadOnly
 			{
 				s.BeginTransaction();
 				VersionedNode parentLoad = await (s.LoadAsync<VersionedNode>(parent.Id));
-				s.Merge(parent);
+				await (s.MergeAsync(parent));
 				await (s.Transaction.CommitAsync());
 			}
 
@@ -582,7 +582,7 @@ namespace NHibernate.Test.ReadOnly
 			using (ISession s = OpenSession())
 			{
 				s.BeginTransaction();
-				child = (VersionedNode) s.Merge(child);
+				child = (VersionedNode) await (s.MergeAsync(child));
 				s.SetReadOnly(child, true);
 				await (s.Transaction.CommitAsync());
 			}
@@ -635,7 +635,7 @@ namespace NHibernate.Test.ReadOnly
 				s.BeginTransaction();
 				VersionedNode childManaged = await (s.GetAsync<VersionedNode>(child.Id));
 				s.SetReadOnly(childManaged, true);
-				VersionedNode childMerged = (VersionedNode) s.Merge(child);
+				VersionedNode childMerged = (VersionedNode) await (s.MergeAsync(child));
 				Assert.That(childManaged, Is.SameAs(childMerged));
 				await (s.Transaction.CommitAsync());
 			}

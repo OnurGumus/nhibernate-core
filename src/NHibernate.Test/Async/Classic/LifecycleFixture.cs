@@ -95,7 +95,7 @@ namespace NHibernate.Test.Classic
 			Sfi.Statistics.Clear();
 			using (ISession s = OpenSession())
 			{
-				s.Merge(v);
+				await (s.MergeAsync(v));
 				await (s.FlushAsync());
 			}
 			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(0));
@@ -103,7 +103,7 @@ namespace NHibernate.Test.Classic
 			var v1 = new EntityWithLifecycle("Shinobi", 0, 10);
 			using (ISession s = OpenSession())
 			{
-				s.Merge(v1);
+				await (s.MergeAsync(v1));
 				await (s.FlushAsync());
 			}
 			Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(0));

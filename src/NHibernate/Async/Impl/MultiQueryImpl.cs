@@ -43,42 +43,32 @@ namespace NHibernate.Impl
 		/// Return the query results of all the queries
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public async Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			using (new SessionIdLoggingContext(session.SessionId))
 			{
-				return Task.FromCanceled<IList>(cancellationToken);
-			}
-			try
-			{
-				using (new SessionIdLoggingContext(session.SessionId))
+				bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
+				combinedParameters = CreateCombinedQueryParameters();
+
+				if (log.IsDebugEnabled)
 				{
-					bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
-					combinedParameters = CreateCombinedQueryParameters();
-
-					if (log.IsDebugEnabled)
+					log.DebugFormat("Multi query with {0} queries.", queries.Count);
+					for (int i = 0; i < queries.Count; i++)
 					{
-						log.DebugFormat("Multi query with {0} queries.", queries.Count);
-						for (int i = 0; i < queries.Count; i++)
-						{
-							log.DebugFormat("Query #{0}: {1}", i, queries[i]);
-						}
-					}
-
-					try
-					{
-						Before();
-						return cacheable ? ListUsingQueryCacheAsync(cancellationToken) : ListIgnoreQueryCacheAsync(cancellationToken);
-					}
-					finally
-					{
-						After();
+						log.DebugFormat("Query #{0}: {1}", i, queries[i]);
 					}
 				}
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<IList>(ex);
+
+				try
+				{
+					Before();
+					return cacheable ? await (ListUsingQueryCacheAsync(cancellationToken)) .ConfigureAwait(false): await (ListIgnoreQueryCacheAsync(cancellationToken)).ConfigureAwait(false);
+				}
+				finally
+				{
+					After();
+				}
 			}
 		}
 

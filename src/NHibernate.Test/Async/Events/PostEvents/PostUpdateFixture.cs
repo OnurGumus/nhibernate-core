@@ -115,7 +115,7 @@ namespace NHibernate.Test.Events.PostEvents
 				{
 					using (ITransaction tx = s.BeginTransaction())
 					{
-						s.Merge(toModify);
+						await (s.MergeAsync(toModify));
 						await (tx.CommitAsync());
 					}
 				}

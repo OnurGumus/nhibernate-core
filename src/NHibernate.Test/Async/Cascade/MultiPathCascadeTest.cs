@@ -51,7 +51,7 @@ namespace NHibernate.Test.Cascade
 	
 			s = base.OpenSession();
 			s.BeginTransaction();
-			a = (A)s.Merge(a);
+			a = (A)await (s.MergeAsync(a));
 			await (s.Transaction.CommitAsync());
 			s.Close();
 	
@@ -78,7 +78,7 @@ namespace NHibernate.Test.Cascade
 			s.BeginTransaction();
 			A aLoaded = await (s.LoadAsync<A>(a.Id));
 			Assert.That(aLoaded, Is.InstanceOf<INHibernateProxy>());
-			Assert.That(s.Merge(a), Is.SameAs(aLoaded));
+			Assert.That(await (s.MergeAsync(a)), Is.SameAs(aLoaded));
 			await (s.Transaction.CommitAsync());
 			s.Close();
 	
@@ -152,7 +152,7 @@ namespace NHibernate.Test.Cascade
 			
 			s = base.OpenSession();
 			s.BeginTransaction();
-			a = (A)s.Merge(a);
+			a = (A)await (s.MergeAsync(a));
 			await (s.Transaction.CommitAsync());
 			s.Close();
 	
@@ -171,8 +171,8 @@ namespace NHibernate.Test.Cascade
 			s.BeginTransaction();
 			try
 			{
-				s.Merge(a);
-				s.Merge(h);
+				await (s.MergeAsync(a));
+				await (s.MergeAsync(h));
 				Assert.Fail("should have thrown TransientObjectException");
 			}
 			catch (TransientObjectException)
@@ -204,7 +204,7 @@ namespace NHibernate.Test.Cascade
 	
 			s = base.OpenSession();
 			s.BeginTransaction();
-			a = (A)s.Merge(a);
+			a = (A)await (s.MergeAsync(a));
 			await (s.Transaction.CommitAsync());
 			s.Close();
 	
@@ -223,8 +223,8 @@ namespace NHibernate.Test.Cascade
 			s.BeginTransaction();
 			try
 			{
-				s.Merge(a);
-				s.Merge(g);
+				await (s.MergeAsync(a));
+				await (s.MergeAsync(g));
 				Assert.Fail("should have thrown TransientObjectException");
 			}
 			catch (TransientObjectException )
@@ -256,7 +256,7 @@ namespace NHibernate.Test.Cascade
 	
 			s = base.OpenSession();
 			s.BeginTransaction();
-			a = (A)s.Merge(a);
+			a = (A)await (s.MergeAsync(a));
 			await (s.Transaction.CommitAsync());
 			s.Close();
 	
@@ -275,8 +275,8 @@ namespace NHibernate.Test.Cascade
 			s.BeginTransaction();
 			try
 			{
-				s.Merge(a);
-				s.Merge(h);
+				await (s.MergeAsync(a));
+				await (s.MergeAsync(h));
 				Assert.Fail("should have thrown TransientObjectException");
 			}
 			catch (TransientObjectException)

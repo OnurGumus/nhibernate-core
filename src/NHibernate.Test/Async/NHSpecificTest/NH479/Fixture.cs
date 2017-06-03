@@ -43,8 +43,8 @@ namespace NHibernate.Test.NHSpecificTest.NH479
 			{
 				using (ITransaction t = s.BeginTransaction())
 				{
-					s.Merge(main);
-					s.Merge(aggregate);
+					await (s.MergeAsync(main));
+					await (s.MergeAsync(aggregate));
 					await (t.CommitAsync());
 				}
 

@@ -1027,7 +1027,7 @@ namespace NHibernate.Test.ReadOnly
 				{
 					s.DefaultReadOnly = true;
 					DataPoint dpManaged = await (s.GetAsync<DataPoint>(dp.Id));
-					DataPoint dpMerged = (DataPoint)s.Merge(dp);
+					DataPoint dpMerged = (DataPoint)await (s.MergeAsync(dp));
 					Assert.That(dpManaged, Is.SameAs(dpMerged));
 					await (t.CommitAsync());
 				}
@@ -1078,20 +1078,20 @@ namespace NHibernate.Test.ReadOnly
 					Assert.That(s.IsReadOnly(dpProxy), Is.True);
 					Assert.That(NHibernateUtil.IsInitialized(dpProxy), Is.False);
 					await (s.EvictAsync(dpProxy));
-					dpProxy = (DataPoint)s.Merge(dpProxy);
+					dpProxy = (DataPoint)await (s.MergeAsync(dpProxy));
 					Assert.That(s.IsReadOnly(dpProxy), Is.True);
 					Assert.That(NHibernateUtil.IsInitialized(dpProxy), Is.False);
-					dpProxy = (DataPoint)s.Merge(dp);
+					dpProxy = (DataPoint)await (s.MergeAsync(dp));
 					Assert.That(s.IsReadOnly(dpProxy), Is.True);
 					Assert.That(NHibernateUtil.IsInitialized(dpProxy), Is.True);
 					Assert.That(dpProxy.Description, Is.EqualTo("description"));
 					await (s.EvictAsync(dpProxy));
-					dpProxy = (DataPoint)s.Merge(dpProxy);
+					dpProxy = (DataPoint)await (s.MergeAsync(dpProxy));
 					Assert.That(s.IsReadOnly(dpProxy), Is.True);
 					Assert.That(NHibernateUtil.IsInitialized(dpProxy), Is.True);
 					Assert.That(dpProxy.Description, Is.EqualTo("description"));
 					dpProxy.Description = null;
-					dpProxy = (DataPoint)s.Merge(dp);
+					dpProxy = (DataPoint)await (s.MergeAsync(dp));
 					Assert.That(s.IsReadOnly(dpProxy), Is.True);
 					Assert.That(NHibernateUtil.IsInitialized(dpProxy), Is.True);
 					Assert.That(dpProxy.Description, Is.EqualTo("description"));

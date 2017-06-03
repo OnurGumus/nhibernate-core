@@ -27,32 +27,22 @@ namespace NHibernate.Impl
 	public partial class SqlQueryImpl : AbstractQueryImpl, ISQLQuery
 	{
 
-		public override Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<IList>(cancellationToken);
-			}
+			cancellationToken.ThrowIfCancellationRequested();
+			VerifyParameters();
+			IDictionary<string, TypedValue> namedParams = NamedParams;
+			NativeSQLQuerySpecification spec = GenerateQuerySpecification(namedParams);
+			QueryParameters qp = GetQueryParameters(namedParams);
+
+			Before();
 			try
 			{
-				VerifyParameters();
-				IDictionary<string, TypedValue> namedParams = NamedParams;
-				NativeSQLQuerySpecification spec = GenerateQuerySpecification(namedParams);
-				QueryParameters qp = GetQueryParameters(namedParams);
-
-				Before();
-				try
-				{
-					return Session.ListAsync(spec, qp, cancellationToken);
-				}
-				finally
-				{
-					After();
-				}
+				return await (Session.ListAsync(spec, qp, cancellationToken)).ConfigureAwait(false);
 			}
-			catch (Exception ex)
+			finally
 			{
-				return Task.FromException<IList>(ex);
+				After();
 			}
 		}
 
@@ -75,32 +65,22 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override Task<IList<T>> ListAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<IList<T>> ListAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<IList<T>>(cancellationToken);
-			}
+			cancellationToken.ThrowIfCancellationRequested();
+			VerifyParameters();
+			IDictionary<string, TypedValue> namedParams = NamedParams;
+			NativeSQLQuerySpecification spec = GenerateQuerySpecification(namedParams);
+			QueryParameters qp = GetQueryParameters(namedParams);
+
+			Before();
 			try
 			{
-				VerifyParameters();
-				IDictionary<string, TypedValue> namedParams = NamedParams;
-				NativeSQLQuerySpecification spec = GenerateQuerySpecification(namedParams);
-				QueryParameters qp = GetQueryParameters(namedParams);
-
-				Before();
-				try
-				{
-					return Session.ListAsync<T>(spec, qp, cancellationToken);
-				}
-				finally
-				{
-					After();
-				}
+				return await (Session.ListAsync<T>(spec, qp, cancellationToken)).ConfigureAwait(false);
 			}
-			catch (Exception ex)
+			finally
 			{
-				return Task.FromException<IList<T>>(ex);
+				After();
 			}
 		}
 
@@ -122,28 +102,18 @@ namespace NHibernate.Impl
 			throw new NotSupportedException("SQL queries do not currently support enumeration");
 		}
 
-		public override Task<int> ExecuteUpdateAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<int> ExecuteUpdateAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<int>(cancellationToken);
-			}
+			cancellationToken.ThrowIfCancellationRequested();
+			IDictionary<string,TypedValue> namedParams = NamedParams;
+			Before();
 			try
 			{
-				IDictionary<string,TypedValue> namedParams = NamedParams;
-				Before();
-				try
-				{
-					return Session.ExecuteNativeUpdateAsync(GenerateQuerySpecification(namedParams), GetQueryParameters(namedParams), cancellationToken);
-				}
-				finally
-				{
-					After();
-				}
+				return await (Session.ExecuteNativeUpdateAsync(GenerateQuerySpecification(namedParams), GetQueryParameters(namedParams), cancellationToken)).ConfigureAwait(false);
 			}
-			catch (Exception ex)
+			finally
 			{
-				return Task.FromException<int>(ex);
+				After();
 			}
 		}
 

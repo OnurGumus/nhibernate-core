@@ -62,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3590
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					s.Merge(_entity);
+					await (s.MergeAsync(_entity));
 					await (tx.CommitAsync());
 				}
 			}

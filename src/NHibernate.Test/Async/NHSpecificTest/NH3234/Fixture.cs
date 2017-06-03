@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3234
 		private static async Task SaveAsync(ISession session, GridWidget widget, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (widget.Id != Guid.Empty && !session.Contains(widget))
-				widget = session.Merge(widget);
+				widget = await (session.MergeAsync(widget, cancellationToken));
 
 			await (session.SaveOrUpdateAsync(widget, cancellationToken));
 			await (session.FlushAsync(cancellationToken));

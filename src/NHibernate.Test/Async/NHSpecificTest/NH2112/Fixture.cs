@@ -58,7 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2112
             using (ISession s = OpenSession())
             using (ITransaction tx = s.BeginTransaction())
             {
-                A aCopy = (A)s.Merge(a);
+                A aCopy = (A)await (s.MergeAsync(a));
                 await (s.FlushAsync());
                 await (tx.CommitAsync());
             }

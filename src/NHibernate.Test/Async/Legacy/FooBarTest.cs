@@ -5525,7 +5525,7 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				Baz persistentBaz = await (s.GetAsync(typeof(Baz), baz.Code)) as Baz;
-				Baz copiedBaz = s.Merge(baz);
+				Baz copiedBaz = await (s.MergeAsync(baz));
 				Assert.AreSame(persistentBaz, copiedBaz);
 
 				await (s.DeleteAsync(persistentBaz));

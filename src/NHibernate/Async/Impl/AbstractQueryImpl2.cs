@@ -24,107 +24,67 @@ namespace NHibernate.Impl
 	public abstract partial class AbstractQueryImpl2 : AbstractQueryImpl
 	{
 
-		public override Task<int> ExecuteUpdateAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<int> ExecuteUpdateAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<int>(cancellationToken);
-			}
+			cancellationToken.ThrowIfCancellationRequested();
+			VerifyParameters();
+			var namedParams = NamedParams;
+			Before();
 			try
 			{
-				VerifyParameters();
-				var namedParams = NamedParams;
-				Before();
-				try
-				{
-					return Session.ExecuteUpdateAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams), cancellationToken);
-				}
-				finally
-				{
-					After();
-				}
+				return await (Session.ExecuteUpdateAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams), cancellationToken)).ConfigureAwait(false);
 			}
-			catch (System.Exception ex)
+			finally
 			{
-				return Task.FromException<int>(ex);
+				After();
 			}
 		}
 
-		public override Task<IEnumerable> EnumerableAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<IEnumerable> EnumerableAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<IEnumerable>(cancellationToken);
-			}
+			cancellationToken.ThrowIfCancellationRequested();
+			VerifyParameters();
+			var namedParams = NamedParams;
+			Before();
 			try
 			{
-				VerifyParameters();
-				var namedParams = NamedParams;
-				Before();
-				try
-				{
-					return Session.EnumerableAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams), cancellationToken);
-				}
-				finally
-				{
-					After();
-				}
+				return await (Session.EnumerableAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams), cancellationToken)).ConfigureAwait(false);
 			}
-			catch (System.Exception ex)
+			finally
 			{
-				return Task.FromException<IEnumerable>(ex);
+				After();
 			}
 		}
 
-		public override Task<IEnumerable<T>> EnumerableAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<IEnumerable<T>> EnumerableAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<IEnumerable<T>>(cancellationToken);
-			}
+			cancellationToken.ThrowIfCancellationRequested();
+			VerifyParameters();
+			var namedParams = NamedParams;
+			Before();
 			try
 			{
-				VerifyParameters();
-				var namedParams = NamedParams;
-				Before();
-				try
-				{
-					return Session.EnumerableAsync<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams), cancellationToken);
-				}
-				finally
-				{
-					After();
-				}
+				return await (Session.EnumerableAsync<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams), cancellationToken)).ConfigureAwait(false);
 			}
-			catch (System.Exception ex)
+			finally
 			{
-				return Task.FromException<IEnumerable<T>>(ex);
+				After();
 			}
 		}
 
-		public override Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<IList>(cancellationToken);
-			}
+			cancellationToken.ThrowIfCancellationRequested();
+			VerifyParameters();
+			var namedParams = NamedParams;
+			Before();
 			try
 			{
-				VerifyParameters();
-				var namedParams = NamedParams;
-				Before();
-				try
-				{
-					return Session.ListAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams), cancellationToken);
-				}
-				finally
-				{
-					After();
-				}
+				return await (Session.ListAsync(ExpandParameters(namedParams), GetQueryParameters(namedParams), cancellationToken)).ConfigureAwait(false);
 			}
-			catch (System.Exception ex)
+			finally
 			{
-				return Task.FromException<IList>(ex);
+				After();
 			}
 		}
 
@@ -144,29 +104,19 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override Task<IList<T>> ListAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
+		public override async Task<IList<T>> ListAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<IList<T>>(cancellationToken);
-			}
+			cancellationToken.ThrowIfCancellationRequested();
+			VerifyParameters();
+			var namedParams = NamedParams;
+			Before();
 			try
 			{
-				VerifyParameters();
-				var namedParams = NamedParams;
-				Before();
-				try
-				{
-					return Session.ListAsync<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams), cancellationToken);
-				}
-				finally
-				{
-					After();
-				}
+				return await (Session.ListAsync<T>(ExpandParameters(namedParams), GetQueryParameters(namedParams), cancellationToken)).ConfigureAwait(false);
 			}
-			catch (System.Exception ex)
+			finally
 			{
-				return Task.FromException<IList<T>>(ex);
+				After();
 			}
 		}
 

@@ -85,7 +85,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3374
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				session.Merge(document);
+				await (session.MergeAsync(document));
 			}
 		}
 
@@ -100,19 +100,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3374
 			}
 		}
 
-		private Task<Document> LoadDetachedEntityAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task<Document> LoadDetachedEntityAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			try
+			using (ISession session = OpenSession())
+			using (session.BeginTransaction())
 			{
-				using (ISession session = OpenSession())
-				using (session.BeginTransaction())
-				{
-					return session.GetAsync<Document>(1, cancellationToken);
-				}
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<Document>(ex);
+				return await (session.GetAsync<Document>(1, cancellationToken));
 			}
 		}
 	}
