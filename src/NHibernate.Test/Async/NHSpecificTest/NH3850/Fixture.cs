@@ -152,6 +152,74 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 
 		// Failing case till NH-3850 is fixed
 		[Test]
+		public async Task AllBBaseWithNameAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var result = await (session.Query<DomainClassBExtendedByA>().AllAsync(dc => dc.Name == _searchName1));
+				Assert.IsFalse(result);
+			}
+		}
+
+		// Non-reg case
+		[Test]
+		public async Task AllCBaseWithNameAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var result = await (session.Query<DomainClassCExtendedByD>().AllAsync(dc => dc.Name == _searchName1));
+				Assert.IsFalse(result);
+			}
+		}
+
+		// Non-reg case
+		[Test]
+		public async Task AllEWithNameAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var result = await (session.Query<DomainClassE>().AllAsync(dc => dc.Name == _searchName1));
+				Assert.IsFalse(result);
+			}
+		}
+
+		// Non-reg case
+		[Test]
+		public async Task AllFWithNameAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var result = await (session.Query<DomainClassF>().AllAsync(dc => dc.Name == _searchName1));
+				Assert.IsTrue(result);
+			}
+		}
+
+		// Non-reg case
+		[Test]
+		public async Task AllGBaseWithNameAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var result = await (session.Query<DomainClassGExtendedByH>().AllAsync(dc => dc.Name == _searchName1));
+				Assert.IsFalse(result);
+			}
+		}
+
+		// Non-reg case
+		[Test]
+		public async Task AllGBaseWithNameFilteredByNameAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var result = await (session.Query<DomainClassGExtendedByH>()
+					.Where(dc => dc.Name == _searchName1)
+					.AllAsync(dc => dc.Name == _searchName1));
+				Assert.IsTrue(result);
+			}
+		}
+
+		// Failing case till NH-3850 is fixed
+		[Test]
 		public async Task AnyBBaseAsync()
 		{
 			using (var session = OpenSession())
@@ -307,7 +375,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				}
 				else
 				{
-					Assert.That(() => { dcQuery.Average(dc => dc.NonNullableDecimal); },
+					Assert.That(() => { return dcQuery.AverageAsync(dc => dc.NonNullableDecimal, cancellationToken); },
 						// After fix
 						Throws.InstanceOf<InvalidOperationException>()
 						// Before fix
@@ -792,7 +860,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				}
 				else
 				{
-					Assert.That(() => { dcQuery.Max(dc => dc.NonNullableDecimal); },
+					Assert.That(() => { return dcQuery.MaxAsync(dc => dc.NonNullableDecimal, cancellationToken); },
 						// After fix
 						Throws.InstanceOf<InvalidOperationException>()
 						// Before fix
@@ -876,7 +944,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				}
 				else
 				{
-					Assert.That(() => { dcQuery.Min(dc => dc.NonNullableDecimal); },
+					Assert.That(() => { return dcQuery.MinAsync(dc => dc.NonNullableDecimal, cancellationToken); },
 						// After fix
 						Throws.InstanceOf<InvalidOperationException>()
 						// Before fix
@@ -1099,7 +1167,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				}
 				else
 				{
-					Assert.That(() => { dcQuery.Sum(dc => dc.NonNullableDecimal); },
+					Assert.That(() => { return dcQuery.SumAsync(dc => dc.NonNullableDecimal, cancellationToken); },
 						// After fix
 						Throws.InstanceOf<InvalidOperationException>()
 						// Before fix

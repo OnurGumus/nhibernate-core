@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2234
 		var qry = from item in s.Query<SomethingLinq>() where item.Relation == MyUserTypes.Value1 select item;
 
 			await (qry.ToListAsync());
-			Assert.That(() => qry.ToList(), Throws.Nothing);
+			Assert.That(() => qry.ToListAsync(), Throws.Nothing);
 		}
 	  }
 	}

@@ -23,24 +23,76 @@ namespace NHibernate.Type
 	public partial interface IType : ICacheAssembler
 	{
 
-		/// <include file='..\..\Type\IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, String[], ISessionImplementor, Object)"]/*'
-		/// /> 
+		/// <summary>
+		/// When implemented by a class, gets an instance of the object mapped by
+		/// this IType from the <see cref="DbDataReader"/>.
+		/// </summary>
+		/// <param name="rs">The <see cref="DbDataReader"/> that contains the values</param>
+		/// <param name="names">
+		/// The names of the columns in the <see cref="DbDataReader"/> that contain the
+		/// value to populate the IType with.
+		/// </param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>The object mapped by this IType.</returns>
+		/// <remarks>
+		/// Implementors should handle possibility of null values.
+		/// </remarks>
 		Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken);
 
-		/// <include file='..\..\Type\IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, String, ISessionImplementor, Object)"]/*'
-		/// /> 
+		/// <summary>
+		/// When implemented by a class, gets an instance of the object
+		/// mapped by this IType from the <see cref="DbDataReader"/>.
+		/// </summary>
+		/// <param name="rs">The <see cref="DbDataReader"/> that contains the values</param>
+		/// <param name="name">The name of the column in the <see cref="DbDataReader"/> that contains the
+		/// value to populate the IType with.</param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>The object mapped by this IType.</returns>
+		/// <remarks>
+		/// Implementations should handle possibility of null values.
+		/// This method might be called if the IType is known to be a single-column type.
+		/// </remarks>
 		Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken);
 
-		/// <include file='..\..\Type\IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.Hydrate"]/*'
-		/// /> 
+		/// <summary>
+		/// When implemented by a class, retrieves an instance of the mapped class,
+		/// or the identifier of an entity or collection from a <see cref="DbDataReader"/>.
+		/// </summary>
+		/// <param name="rs">The <see cref="DbDataReader"/> that contains the values.</param>
+		/// <param name="names">
+		/// The names of the columns in the <see cref="DbDataReader"/> that contain the
+		/// value to populate the IType with.
+		/// </param>
+		/// <param name="session">The session.</param>
+		/// <param name="owner">The parent Entity.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>An identifier or actual object mapped by this IType.</returns>
+		/// <remarks>
+		/// <para>
+		/// This is useful for 2-phase property initialization - the second phase is a call to
+		/// <c>ResolveIdentifier()</c>
+		/// </para>
+		/// <para>
+		/// Most implementors of this method will just pass the call to <c>NullSafeGet()</c>.
+		/// </para>
+		/// </remarks>
 		Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken);
 
-		/// <include file='..\..\Type\IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.ResolveIdentifier"]/*'
-		/// /> 
+		/// <summary>
+		/// When implemented by a class, maps identifiers to Entities or Collections.
+		/// </summary>
+		/// <param name="value">An identifier or value returned by <c>Hydrate()</c>.</param>
+		/// <param name="session">The session.</param>
+		/// <param name="owner">The parent Entity.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>The Entity or Collection referenced by this Identifier.</returns>
+		/// <remarks>
+		/// This is the second phase of 2-phase property initialization.
+		/// </remarks>
 		Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken);
 
 		/// <summary>
@@ -49,26 +101,37 @@ namespace NHibernate.Type
 		/// </summary>
 		Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken);
 
-		/// <include file='..\..\Type\IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.Copy"]/*'
-		/// /> 
-		Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready, CancellationToken cancellationToken);
-
-		/// <summary> 
+		/// <summary>
 		/// During merge, replace the existing (target) value in the entity we are merging to
 		/// with a new (original) value from the detached entity we are merging. For immutable
 		/// objects, or null values, it is safe to simply return the first parameter. For
 		/// mutable objects, it is safe to return a copy of the first parameter. For objects
-		/// with component values, it might make sense to recursively replace component values. 
+		/// with component values, it might make sense to recursively replace component values.
 		/// </summary>
-		/// <param name="original">the value from the detached entity being merged </param>
-		/// <param name="target">the value in the managed entity </param>
+		/// <param name="original">The value from the detached entity being merged.</param>
+		/// <param name="target">The value in the managed entity.</param>
+		/// <param name="session"></param>
+		/// <param name="owner"></param>
+		/// <param name="copiedAlready"></param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>The value to be merged.</returns>
+		Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready, CancellationToken cancellationToken);
+
+		/// <summary>
+		/// During merge, replace the existing (target) value in the entity we are merging to
+		/// with a new (original) value from the detached entity we are merging. For immutable
+		/// objects, or null values, it is safe to simply return the first parameter. For
+		/// mutable objects, it is safe to return a copy of the first parameter. For objects
+		/// with component values, it might make sense to recursively replace component values.
+		/// </summary>
+		/// <param name="original">The value from the detached entity being merged.</param>
+		/// <param name="target">The value in the managed entity.</param>
 		/// <param name="session"></param>
 		/// <param name="owner"></param>
 		/// <param name="copyCache"></param>
 		/// <param name="foreignKeyDirection"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <returns> the value to be merged </returns>
+		/// <returns>The value to be merged.</returns>
 		Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection, CancellationToken cancellationToken);
 	}
 }

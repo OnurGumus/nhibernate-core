@@ -356,6 +356,14 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(results.Count, Is.EqualTo(10));
 		}
 
+		[Test, KnownBug("NH-????")]
+		public async Task GroupByAndAllAsync()
+		{
+			//NH-2566
+			var namesAreNotEmpty = await (db.Users.GroupBy(p => p.Name).Select(g => g.Key).AllAsync(name => name.Length > 0));
+			Assert.That(namesAreNotEmpty, Is.True);
+		}
+
 		[Test]
 		public async Task GroupByAndAnyAsync()
 		{

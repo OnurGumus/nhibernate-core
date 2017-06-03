@@ -47,6 +47,32 @@ namespace NHibernate.Test.NHSpecificTest.NH3951
 		}
 
 		[Test]
+		public async Task AllNamedBobAsync()
+		{
+			using (ISession session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var result = await (session.Query<Entity>()
+					.AllAsync(e => e.Name == "Bob"));
+
+				Assert.AreEqual(false, result);
+			}
+		}
+
+		[Test]
+		public async Task AllNamedWithAtLeast3CharAsync()
+		{
+			using (ISession session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var result = await (session.Query<Entity>()
+					.AllAsync(e => e.Name.Length > 2));
+
+				Assert.AreEqual(true, result);
+			}
+		}
+
+		[Test]
 		public async Task AllNamedBobWorkaroundAsync()
 		{
 			using (ISession session = OpenSession())

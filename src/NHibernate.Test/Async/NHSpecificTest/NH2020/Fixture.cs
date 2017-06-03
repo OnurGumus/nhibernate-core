@@ -67,7 +67,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2020
 			{
 				var one = await (s.LoadAsync<One>(oneId));
 				await (s.DeleteAsync(one));
-				Assert.That(() => tx.Commit(), Throws.TypeOf<ConstraintViolationException>());
+				Assert.That(() => tx.CommitAsync(), Throws.TypeOf<ConstraintViolationException>());
 			}
 		}
 	}

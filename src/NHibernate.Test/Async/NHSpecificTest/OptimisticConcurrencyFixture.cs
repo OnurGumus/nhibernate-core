@@ -71,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest
 						? Throws.InstanceOf<StaleStateException>()
 						: Throws.InstanceOf<StaleObjectStateException>();
 
-					Assert.That(() => session.Flush(), expectedException);
+					Assert.That(() => session.FlushAsync(), expectedException);
 				}
 			}
 			finally
@@ -110,7 +110,7 @@ namespace NHibernate.Test.NHSpecificTest
 						? Throws.InstanceOf<StaleStateException>()
 						: Throws.InstanceOf<StaleObjectStateException>();
 
-					Assert.That(() => session.Flush(), expectedException);
+					Assert.That(() => session.FlushAsync(), expectedException);
 				}
 			}
 			finally

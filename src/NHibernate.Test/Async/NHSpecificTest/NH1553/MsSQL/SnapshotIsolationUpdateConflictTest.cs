@@ -97,7 +97,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 				        .And.Property("EntityName").EqualTo(typeof(Person).FullName)
 				        .And.Property("Identifier").EqualTo(p2.Id);
 
-			Assert.That(() => SavePerson(p2), expectedException);
+			Assert.That(() => SavePersonAsync(p2), expectedException);
 		}
 
 		/// <summary>
@@ -135,10 +135,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 						        .And.Property("Identifier").EqualTo(p2.Id);
 
 					Assert.That(
-						() =>
+						async 						() =>
 						{
-							session2.Flush();
-							tr2.Commit();
+							await (session2.FlushAsync());
+							await (tr2.CommitAsync());
 						},
 						expectedException);
 				}

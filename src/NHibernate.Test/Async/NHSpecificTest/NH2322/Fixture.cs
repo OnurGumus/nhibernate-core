@@ -55,7 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2322
 				var p = await (s.GetAsync<Person>(id));
 				p.Name = "changing the name...";
 
-				Assert.That(delegate() { t.Commit(); }, Throws.Nothing);
+				Assert.That(delegate() { return t.CommitAsync(); }, Throws.Nothing);
 			}
 		}
 	}

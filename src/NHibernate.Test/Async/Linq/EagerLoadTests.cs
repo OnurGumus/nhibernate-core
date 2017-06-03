@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class EagerLoadTestsAsync : LinqTestCase
 	{
@@ -92,6 +91,14 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual(91, x.Count);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(x[0].Orders));
 			Assert.IsTrue(NHibernateUtil.IsInitialized(x[0].Orders.First().OrderLines));
+		}
+
+		[Test]
+		public void WhenFetchSuperclassCollectionThenNotThrowsAsync()
+		{
+			// NH-2277
+			Assert.That(() => session.Query<Lizard>().Fetch(x => x.Children).ToListAsync(), Throws.Nothing);
+			session.Close();
 		}
 
 		[Test]

@@ -57,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2245
 				// Now delete from second session
 				using (ITransaction trans2 = session2.BeginTransaction())
 				{
-					Assert.That(() => session2.Delete(f2), Throws.Nothing);
+					Assert.That(() => session2.DeleteAsync(f2), Throws.Nothing);
 					await (trans2.CommitAsync());
 				}
 			}

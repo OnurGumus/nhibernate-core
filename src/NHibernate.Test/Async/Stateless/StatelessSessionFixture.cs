@@ -189,5 +189,17 @@ namespace NHibernate.Test.Stateless
 				}
 			}
 		}
+
+		[Test]
+		public void HavingDetachedCriteriaThenCanGetExecutableCriteriaFromStatelessSessionAsync()
+		{
+			var dc = DetachedCriteria.For<Paper>();
+			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			{
+				ICriteria criteria = null;
+				Assert.That(() => criteria = dc.GetExecutableCriteria(ss), Throws.Nothing);
+				Assert.That(() => criteria.ListAsync(), Throws.Nothing);
+			}
+		}
 	}
 }

@@ -329,11 +329,11 @@ namespace NHibernate
 		/// This operation cascades to associated instances if the association is mapped
 		/// with <tt>cascade="merge"</tt>.<br/>
 		/// The semantics of this method are defined by JSR-220.
+		/// </summary>
 		/// <param name="entityName">Name of the entity.</param>
 		/// <param name="obj">a detached instance with state to be copied </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> an updated persistent instance </returns>
-		/// </summary>
-		/// <returns></returns>
 		Task<object> MergeAsync(string entityName, object obj, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
@@ -360,11 +360,11 @@ namespace NHibernate
 		/// This operation cascades to associated instances if the association is mapped
 		/// with <tt>cascade="merge"</tt>.<br/>
 		/// The semantics of this method are defined by JSR-220.
+		/// </summary>
 		/// <param name="entityName">Name of the entity.</param>
 		/// <param name="entity">a detached instance with state to be copied </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> an updated persistent instance </returns>
-		/// </summary>
-		/// <returns></returns>
 		Task<T> MergeAsync<T>(string entityName, T entity, CancellationToken cancellationToken = default(CancellationToken)) where T : class;
 
 		/// <summary>

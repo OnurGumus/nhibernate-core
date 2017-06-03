@@ -16,10 +16,22 @@ using NHibernate.Linq;
 namespace NHibernate.Test.Linq.ByMethod
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class SumTestsAsync : LinqTestCase
 	{
+		[Test]
+		public void EmptySumDecimalAsync()
+		{
+			Assert.That(
+				() =>
+				{
+					return db.OrderLines.Where(ol => false).SumAsync(ol => ol.Discount);
+				},
+				// Before NH-3850
+				Throws.InstanceOf<HibernateException>()
+				// After NH-3850
+				.Or.InstanceOf<InvalidOperationException>());
+		}
 
 		[Test]
 		public async Task EmptySumCastNullableDecimalAsync()

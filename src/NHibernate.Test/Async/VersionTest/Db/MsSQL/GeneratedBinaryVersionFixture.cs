@@ -115,7 +115,7 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 						? Throws.InstanceOf<StaleStateException>()
 						: Throws.InstanceOf<StaleObjectStateException>();
 
-					Assert.That(() => session.Flush(), expectedException);
+					Assert.That(() => session.FlushAsync(), expectedException);
 				}
 			}
 			finally

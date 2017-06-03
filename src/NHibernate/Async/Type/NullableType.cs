@@ -24,9 +24,7 @@ namespace NHibernate.Type
 	public abstract partial class NullableType : AbstractType
 	{
 
-		/// <include file='..\..\Type\IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, String[], ISessionImplementor, Object)"]/*'
-		/// /> 
+		/// <inheritdoc />
 		/// <remarks>
 		/// This has been sealed because no other class should override it.  This 
 		/// method calls <see cref="NullSafeGetAsync(DbDataReader, String,CancellationToken)" /> for a single value.  
@@ -123,9 +121,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		/// <include file='..\..\Type\IType.cs.xmldoc' 
-		///		path='//members[@type="IType"]/member[@name="M:IType.NullSafeGet(DbDataReader, String, ISessionImplementor, Object)"]/*'
-		/// /> 
+		/// <inheritdoc />
 		/// <remarks>
 		/// <para>
 		/// This implementation forwards the call to <see cref="NullSafeGetAsync(DbDataReader, String,CancellationToken)" />.

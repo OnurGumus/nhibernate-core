@@ -66,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2065
 				Assert.That(
 					() =>
 					{
-						s.Lock(person, LockMode.None);
+						return s.LockAsync(person, LockMode.None);
 					},
 					Throws.TypeOf<HibernateException>()
 					      .And.Message.EqualTo(
