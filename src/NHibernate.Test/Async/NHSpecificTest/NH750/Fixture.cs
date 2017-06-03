@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 	{
 		protected override void OnTearDown()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				s.Delete("from Device");
 				s.Delete("from Drive");
@@ -36,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			Drive dr3 = new Drive("Drive 3");
 			Device dv1 = new Device("Device 1");
 			Device dv2 = new Device("Device 2");
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				await (s.SaveAsync(dr1));
 				await (s.SaveAsync(dr2));
@@ -50,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			dv1.Drives.Add(dr2);
 			dv2.Drives.Add(dr1);
 			dv2.Drives.Add(dr3);
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				dvSavedId[0] = (int) await (s.SaveAsync(dv1));
 				dvSavedId[1] = (int) await (s.SaveAsync(dv2));
@@ -58,7 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			}
 			dv1 = null;
 			dv2 = null;
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				await (s.DeleteAsync(dr3));
 				await (s.FlushAsync());

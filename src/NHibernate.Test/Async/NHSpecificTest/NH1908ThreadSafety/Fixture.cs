@@ -41,14 +41,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1908ThreadSafety
 			// By clearing the connection pool the tables will get dropped. This is done by the following code.
 			var fbConnectionType = ReflectHelper.TypeFromAssembly("FirebirdSql.Data.FirebirdClient.FbConnection", "FirebirdSql.Data.FirebirdClient", false);
 			var clearPool = fbConnectionType.GetMethod("ClearPool");
-			var sillyConnection = sessions.ConnectionProvider.GetConnection();
+			var sillyConnection = Sfi.ConnectionProvider.GetConnection();
 			clearPool.Invoke(null, new object[] { sillyConnection });
-			sessions.ConnectionProvider.CloseConnection(sillyConnection);
+			Sfi.ConnectionProvider.CloseConnection(sillyConnection);
 		}
 
 		private async Task ScenarioRunningWithMultiThreadingAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			{
 				session
 					.EnableFilter("CurrentOnly")

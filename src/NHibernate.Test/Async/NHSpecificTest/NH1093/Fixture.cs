@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1093
 
 		private async Task CleanupAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = OpenSession())
 			{
 				using (s.BeginTransaction())
 				{
@@ -46,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1093
 
 		private async Task FillDbAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = OpenSession())
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
@@ -92,13 +92,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1093
 			}
 		}
 
-		protected override void BuildSessionFactory()
+		protected override DebugSessionFactory BuildSessionFactory()
 		{
 			// Without configured cache, should log warn.
 			using (var ls = new LogSpy(LogManager.GetLogger(typeof(FixtureAsync).Assembly, "NHibernate"), Level.Warn))
 			{
-				base.BuildSessionFactory();
+				var factory = base.BuildSessionFactory();
 				Assert.That(ls.GetWholeLog(), Does.Contain("Fake cache used"));
+				return factory;
 			}
 		}
 	}

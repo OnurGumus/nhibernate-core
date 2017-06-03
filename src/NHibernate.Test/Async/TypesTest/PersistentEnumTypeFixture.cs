@@ -44,7 +44,7 @@ namespace NHibernate.Test.TypesTest
 				await (s.FlushAsync());
 			}
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				await (s.CreateQuery("select new PersistentEnumHolder(p.A, p.B) from PersistentEnumClass p").ListAsync());
 				await (s.DeleteAsync("from PersistentEnumClass"));
@@ -61,7 +61,7 @@ namespace NHibernate.Test.TypesTest
 				await (s.FlushAsync());
 			}
 
-			ISession s2 = sessions.OpenSession();
+			ISession s2 = Sfi.OpenSession();
 			try
 			{
 				Assert.ThrowsAsync<QueryException>(
@@ -85,7 +85,7 @@ namespace NHibernate.Test.TypesTest
 				await (s.FlushAsync());
 			}
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				var saved = await (s.GetAsync<PersistentEnumClass>(1));
 				Assert.That(saved.A, Is.EqualTo(A.Two));

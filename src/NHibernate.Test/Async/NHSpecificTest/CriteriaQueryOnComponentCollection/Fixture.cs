@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 
 		protected override void OnSetUp()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			using (s.BeginTransaction())
 			{
 				var parent = new Employee
@@ -63,7 +63,7 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 
 		protected override void OnTearDown()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			using (s.BeginTransaction())
 			{
 				s.Delete("from System.Object");
@@ -75,7 +75,7 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 		[Test]
 		public async Task CanQueryByCriteriaOnSetOfCompositeElementAsync()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				var list = await (s.CreateCriteria<Employee>()
 				            .CreateCriteria("ManagedEmployees")
@@ -92,7 +92,7 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 		[Test]
 		public async Task CanQueryByCriteriaOnSetOfElementAsync()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				var list = await (s.CreateCriteria<Employee>()
 				            .CreateCriteria("Amounts")
@@ -111,7 +111,7 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 		[TestCase(JoinType.InnerJoin)]
 		public async Task CanQueryByCriteriaOnSetOfElementByCreateAliasAsync(JoinType joinType, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				var list = await (s.CreateCriteria<Employee>("x")
 				            .CreateAlias("x.Amounts", "amount", joinType)
@@ -129,7 +129,7 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 		[Test]
 		public async Task CanQueryByCriteriaOnSetOfCompositeElement_UsingDetachedCriteriaAsync()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				var list = await (s.CreateCriteria<Employee>()
 				            .Add(Subqueries.PropertyIn("id",

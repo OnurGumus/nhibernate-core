@@ -29,14 +29,14 @@ namespace NHibernate.Test.NHSpecificTest.NH776
 
 			try
 			{
-				using (ISession session = sessions.OpenSession())
+				using (ISession session = Sfi.OpenSession())
 				{
 					await (session.SaveAsync(a));
 
 					await (session.FlushAsync());
 				}
 
-				using (ISession session = sessions.OpenSession())
+				using (ISession session = Sfi.OpenSession())
 				{
 					A loadedA = (A) await (session.LoadAsync(typeof(A), 1));
 					Assert.IsNull(loadedA.NotProxied);

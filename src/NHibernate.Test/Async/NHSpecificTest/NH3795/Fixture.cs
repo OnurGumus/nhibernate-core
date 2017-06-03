@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		[Test]
 		public async Task TestFieldAliasInQueryOverAsync()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				A rowalias = null;
 				await (s.QueryOver(() => AAliasField)
@@ -46,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		[Test]
 		public async Task TestFieldAliasInQueryOverWithConversionAsync()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				B rowalias = null;
 				await (s.QueryOver(() => AAliasField)
@@ -60,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		[Test]
 		public async Task TestFieldAliasInJoinAliasAsync()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				Child rowalias = null;
 				await (s.QueryOver<Parent>()
@@ -75,7 +75,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		[Test]
 		public async Task TestFieldAliasInJoinQueryOverAsync()
 		{
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				Child rowalias = null;
 				await (s.QueryOver<Parent>()
@@ -91,7 +91,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		public async Task TestAliasInQueryOverAsync()
 		{
 			A aAlias = null;
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				A rowalias = null;
 				await (s.QueryOver(() => aAlias)
@@ -107,7 +107,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		public async Task TestAliasInQueryOverWithConversionAsync()
 		{
 			A aAlias = null;
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				B rowalias = null;
 				await (s.QueryOver(() => aAlias)
@@ -123,7 +123,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		{
 			Child childAlias = null;
 
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				Child rowalias = null;
 				await (s.QueryOver<Parent>()
@@ -140,7 +140,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 		{
 			Child childAlias = null;
 
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				Child rowalias = null;
 				await (s.QueryOver<Parent>()

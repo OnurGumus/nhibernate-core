@@ -11,6 +11,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -23,7 +24,7 @@ namespace NHibernate.Type
 	public partial class DateTime2Type : DateTimeType
 	{
 
-		public override Task<object> NextAsync(object current, Engine.ISessionImplementor session, CancellationToken cancellationToken)
+		public override Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -32,7 +33,7 @@ namespace NHibernate.Type
 			return SeedAsync(session, cancellationToken);
 		}
 
-		public override Task<object> SeedAsync(Engine.ISessionImplementor session, CancellationToken cancellationToken)
+		public override Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

@@ -2434,17 +2434,17 @@ namespace NHibernate.Test.Criteria
 		{
 			using (ISession session = OpenSession())
 			{
-				bool current = sessions.Statistics.IsStatisticsEnabled;
-				sessions.Statistics.IsStatisticsEnabled = true;
-				sessions.Statistics.Clear();
+				bool current = Sfi.Statistics.IsStatisticsEnabled;
+				Sfi.Statistics.IsStatisticsEnabled = true;
+				Sfi.Statistics.Clear();
 				DetachedCriteria dc = DetachedCriteria.For(typeof (Student))
 				.Add(Property.ForName("Name").Eq("Gavin King"))
 				.SetProjection(Property.ForName("StudentNumber"))
 				.SetCacheable(true);
-				Assert.That(sessions.Statistics.QueryCacheMissCount,Is.EqualTo(0));
-				Assert.That(sessions.Statistics.QueryCacheHitCount, Is.EqualTo(0));
+				Assert.That(Sfi.Statistics.QueryCacheMissCount,Is.EqualTo(0));
+				Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(0));
 				await (dc.GetExecutableCriteria(session).ListAsync());
-				Assert.That(sessions.Statistics.QueryCacheMissCount, Is.EqualTo(1));
+				Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(1));
 
 				dc = DetachedCriteria.For(typeof(Student))
 				.Add(Property.ForName("Name").Eq("Gavin King"))
@@ -2452,9 +2452,9 @@ namespace NHibernate.Test.Criteria
 				.SetCacheable(true);
 				await (dc.GetExecutableCriteria(session).ListAsync());
 
-				Assert.That(sessions.Statistics.QueryCacheMissCount, Is.EqualTo(1));
-				Assert.That(sessions.Statistics.QueryCacheHitCount, Is.EqualTo(1));
-				sessions.Statistics.IsStatisticsEnabled = false;
+				Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(1));
+				Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1));
+				Sfi.Statistics.IsStatisticsEnabled = false;
 			}
 		}
 		

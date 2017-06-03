@@ -188,8 +188,8 @@ namespace NHibernate.Test.ConnectionTest
 		{
 			Prepare();
 
-			using (var originalConnection = await (sessions.ConnectionProvider.GetConnectionAsync(CancellationToken.None)))
-			using (var session = sessions.WithOptions().Connection(originalConnection).OpenSession())
+			using (var originalConnection = await (Sfi.ConnectionProvider.GetConnectionAsync(CancellationToken.None)))
+			using (var session = Sfi.WithOptions().Connection(originalConnection).OpenSession())
 			{
 				var silly = new Silly("silly");
 				await (session.SaveAsync(silly));

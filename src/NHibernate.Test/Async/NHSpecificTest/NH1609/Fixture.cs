@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1609
 		[Test]
 		public async Task TestAsync()
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			using (session.BeginTransaction())
 			{
 				EntityA a1 = await (CreateEntityAAsync(session));

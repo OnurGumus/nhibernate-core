@@ -50,7 +50,7 @@ namespace NHibernate.Test.CompositeId
 
 		protected override void OnTearDown()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				s.Delete("from ClassWithCompositeId");
 				s.Flush();

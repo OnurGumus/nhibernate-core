@@ -51,7 +51,7 @@ namespace NHibernate.Test.Ondelete
 			await (t.CommitAsync());
 			s.Close();
 
-			IStatistics statistics = sessions.Statistics;
+			IStatistics statistics = Sfi.Statistics;
 			statistics.Clear();
 
 			s = OpenSession();

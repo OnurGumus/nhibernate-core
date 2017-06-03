@@ -95,7 +95,7 @@ namespace NHibernate.Test.NHSpecificTest
 				Assert.AreEqual(1, parent2.ChildrenNoAdd.Count);
 			}
 
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				await (session.DeleteAsync("from LLParent"));
 				await (session.FlushAsync());

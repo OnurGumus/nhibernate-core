@@ -30,7 +30,7 @@ namespace NHibernate.Test.SystemTransactions
 		public async Task TwoTransactionScopesInsideOneSessionAsync()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (var session = sessions.WithOptions().Interceptor(interceptor).OpenSession())
+			using (var session = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 				using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
@@ -53,7 +53,7 @@ namespace NHibernate.Test.SystemTransactions
 		public async Task OneTransactionScopesInsideOneSessionAsync()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (var session = sessions.WithOptions().Interceptor(interceptor).OpenSession())
+			using (var session = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 				using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
@@ -118,11 +118,11 @@ namespace NHibernate.Test.SystemTransactions
 
 			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
-				var ownConnection1 = await (sessions.ConnectionProvider.GetConnectionAsync(cancellationToken));
+				var ownConnection1 = await (Sfi.ConnectionProvider.GetConnectionAsync(cancellationToken));
 
 				try
 				{
-					using (s1 = sessions.WithOptions().Connection(ownConnection1).Interceptor(interceptor).OpenSession())
+					using (s1 = Sfi.WithOptions().Connection(ownConnection1).Interceptor(interceptor).OpenSession())
 					{
 						await (s1.CreateCriteria<object>().ListAsync(cancellationToken));
 					}
@@ -132,7 +132,7 @@ namespace NHibernate.Test.SystemTransactions
 				}
 				finally
 				{
-					sessions.ConnectionProvider.CloseConnection(ownConnection1);
+					Sfi.ConnectionProvider.CloseConnection(ownConnection1);
 				}
 			}
 

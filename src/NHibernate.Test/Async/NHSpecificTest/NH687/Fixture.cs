@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH687
 			try
 			{
 				int child1Id, child2Id;
-				using (ISession session = sessions.OpenSession())
+				using (ISession session = Sfi.OpenSession())
 				{
 					await (session.SaveAsync(foo));
 
@@ -52,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH687
 					await (session.FlushAsync());
 				}
 
-				using (ISession session = sessions.OpenSession())
+				using (ISession session = Sfi.OpenSession())
 				{
 					Foo r = await (session.GetAsync<Foo>(foo.Id));
 					Assert.IsNotNull(r);

@@ -28,7 +28,7 @@ namespace NHibernate.Test.SystemTransactions
 		public async Task CanUseSystemTransactionsToCommitAsync()
 		{
 			object identifier;
-			using(ISession session = sessions.OpenSession())
+			using(ISession session = Sfi.OpenSession())
 			using(TransactionScope tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				W s = new W();
@@ -37,7 +37,7 @@ namespace NHibernate.Test.SystemTransactions
 				tx.Complete();
 			}
 
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			using (TransactionScope tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				W w = await (session.GetAsync<W>(identifier));

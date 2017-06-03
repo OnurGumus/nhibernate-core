@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH719
 
 			try
 			{
-				using (ISession session = sessions.OpenSession())
+				using (ISession session = Sfi.OpenSession())
 				{
 					await (session.SaveAsync(a));
 					await (session.SaveAsync(b));
@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH719
 					await (session.FlushAsync());
 				}
 
-				using (ISession session = sessions.OpenSession())
+				using (ISession session = Sfi.OpenSession())
 				{
 					// runs OK, since it's not cached
 					NotCached nc = (NotCached) await (session.LoadAsync(typeof(NotCached), 1));
@@ -54,7 +54,7 @@ namespace NHibernate.Test.NHSpecificTest.NH719
 				}
 
 				// 2nd run fails, when data is read from the cache
-				using (ISession session = sessions.OpenSession())
+				using (ISession session = Sfi.OpenSession())
 				{
 					// runs OK, since it's not cached
 					NotCached nc = (NotCached) await (session.LoadAsync(typeof(NotCached), 1));

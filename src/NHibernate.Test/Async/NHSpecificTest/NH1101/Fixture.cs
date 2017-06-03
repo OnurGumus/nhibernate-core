@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1101
 			{
 				a = await (s.GetAsync<A>(savedId));
 
-				IStatistics statistics = sessions.Statistics;
+				IStatistics statistics = Sfi.Statistics;
 				statistics.Clear();
 
 				Assert.IsNotNull(a.B); // an instance of B was created
@@ -58,7 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1101
 			{
 				a = await (s.LoadAsync<A>(savedId));
 
-				IStatistics statistics = sessions.Statistics;
+				IStatistics statistics = Sfi.Statistics;
 				statistics.Clear();
 
 				Assert.IsNotNull(a.B); // an instance of B was created

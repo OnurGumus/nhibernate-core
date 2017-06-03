@@ -43,7 +43,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				string str = (string) NHibernateUtil.String.Get(rs, index);
+				string str = (string) NHibernateUtil.String.Get(rs, index, session);
 				return string.IsNullOrEmpty(str) ? null : str;
 			}
 		}

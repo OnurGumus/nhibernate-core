@@ -56,21 +56,21 @@ namespace NHibernate.Test.NHSpecificTest.NH2856
 					.Fetch(p => p.Address)
 					.Cacheable();
 
-				sessions.Statistics.Clear();
+				Sfi.Statistics.Clear();
 
 				var result = await (query.ToListAsync()); // Execute the query
 
 				Assert.That(result.Count, Is.EqualTo(1));
-				Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(1));
-				Assert.That(sessions.Statistics.QueryCacheHitCount, Is.EqualTo(0));
+				Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(1));
+				Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(0));
 
-				sessions.Statistics.Clear();
+				Sfi.Statistics.Clear();
 
 				var cachedResult = await (query.ToListAsync()); // Re-execute the query
 
 				Assert.That(cachedResult.Count, Is.EqualTo(1));
-				Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(0));
-				Assert.That(sessions.Statistics.QueryCacheHitCount, Is.EqualTo(1));
+				Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(0));
+				Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1));
 			}
 		}
 

@@ -31,7 +31,7 @@ namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 		[Test]
 		public async Task TestNormalBoundaryAsync()
 		{
-			var persister = sessions.GetEntityPersister(typeof(Entity).FullName);
+			var persister = Sfi.GetEntityPersister(typeof(Entity).FullName);
 			Assert.That(persister.IdentifierGenerator, Is.TypeOf<SequenceStyleGenerator>());
 
 			var generator = (SequenceStyleGenerator)persister.IdentifierGenerator;

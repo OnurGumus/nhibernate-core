@@ -27,17 +27,17 @@ namespace NHibernate.Type
 		/// <inheritdoc />
 		/// <remarks>
 		/// This has been sealed because no other class should override it.  This 
-		/// method calls <see cref="NullSafeGetAsync(DbDataReader, String,CancellationToken)" /> for a single value.  
+		/// method calls <see cref="NullSafeGetAsync(DbDataReader, String, ISessionImplementor,CancellationToken)" /> for a single value.  
 		/// It only takes the first name from the string[] names parameter - that is a 
 		/// safe thing to do because a Nullable Type only has one field.
 		/// </remarks>
-		public override sealed Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
+		public sealed override Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return NullSafeGetAsync(rs, names[0], cancellationToken);
+			return NullSafeGetAsync(rs, names[0], session, cancellationToken);
 		}
 
 		/// <summary>
@@ -45,6 +45,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="rs">The DataReader positioned on the correct record</param>
 		/// <param name="names">An array of field names.</param>
+		/// <param name="session">The session for which the operation is done.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The value off the field from the DataReader</returns>
 		/// <remarks>
@@ -56,13 +57,13 @@ namespace NHibernate.Type
 		/// 
 		/// TODO: determine if this is needed
 		/// </remarks>
-		public virtual Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, CancellationToken cancellationToken)
+		public virtual Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return NullSafeGetAsync(rs, names[0], cancellationToken);
+			return NullSafeGetAsync(rs, names[0], session, cancellationToken);
 		}
 
 		/// <summary>
@@ -70,6 +71,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="rs">The <see cref="DbDataReader" /> positioned on the correct record.</param>
 		/// <param name="name">The name of the field to get the value from.</param>
+		/// <param name="session">The session for which the operation is done.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The value of the field.</returns>
 		/// <remarks>
@@ -78,11 +80,11 @@ namespace NHibernate.Type
 		/// from this method.
 		/// </para>
 		/// <para>
-		/// If the value is not null, then the method <see cref="Get(DbDataReader, Int32)"/> 
+		/// If the value is not null, then the method <see cref="Get(DbDataReader, Int32, ISessionImplementor)"/> 
 		/// is called and that method is responsible for retrieving the value.
 		/// </para>
 		/// </remarks>
-		public virtual async Task<object> NullSafeGetAsync(DbDataReader rs, string name, CancellationToken cancellationToken)
+		public virtual async Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			int index = rs.GetOrdinal(name);
@@ -102,7 +104,7 @@ namespace NHibernate.Type
 				object val;
 				try
 				{
-					val = Get(rs, index);
+					val = Get(rs, index, session);
 				}
 				catch (InvalidCastException ice)
 				{
@@ -124,21 +126,21 @@ namespace NHibernate.Type
 		/// <inheritdoc />
 		/// <remarks>
 		/// <para>
-		/// This implementation forwards the call to <see cref="NullSafeGetAsync(DbDataReader, String,CancellationToken)" />.
+		/// This implementation forwards the call to <see cref="NullSafeGetAsync(DbDataReader, String, ISessionImplementor,CancellationToken)" />.
 		/// </para>
 		/// <para>
 		/// It has been "sealed" because the Types inheriting from <see cref="NullableType"/>
 		/// do not need to and should not override this method.  All of their implementation
-		/// should be in <see cref="NullSafeGetAsync(DbDataReader, String,CancellationToken)" />.
+		/// should be in <see cref="NullSafeGetAsync(DbDataReader, String, ISessionImplementor,CancellationToken)" />.
 		/// </para>
 		/// </remarks>
-		public override sealed Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken)
+		public sealed override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return NullSafeGetAsync(rs, name, cancellationToken);
+			return NullSafeGetAsync(rs, name, session, cancellationToken);
 		}
 
 		#region override of System.Object Members

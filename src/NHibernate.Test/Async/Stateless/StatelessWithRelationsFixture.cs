@@ -34,7 +34,7 @@ namespace NHibernate.Test.Stateless
 			const string crocodileFather = "Crocodile father";
 			const string crocodileMother = "Crocodile mother";
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				var rf = new Reptile { Description = crocodileFather };
@@ -53,7 +53,7 @@ namespace NHibernate.Test.Stateless
 
 			const string humanFather = "Fred";
 			const string humanMother = "Wilma";
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				var hf = new Human { Description = "Flinstone", Name = humanFather };
@@ -69,7 +69,7 @@ namespace NHibernate.Test.Stateless
 				await (tx.CommitAsync());
 			}
 
-			using (IStatelessSession s = sessions.OpenStatelessSession())
+			using (IStatelessSession s = Sfi.OpenStatelessSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				IList<Family<Human>> hf = await (s.CreateQuery("from HumanFamily").ListAsync<Family<Human>>());
@@ -89,7 +89,7 @@ namespace NHibernate.Test.Stateless
 				await (tx.CommitAsync());
 			}
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				await (s.DeleteAsync("from HumanFamily"));

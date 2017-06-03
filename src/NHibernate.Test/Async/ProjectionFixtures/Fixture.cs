@@ -33,7 +33,7 @@ namespace NHibernate.Test.ProjectionFixtures
 
         protected override void OnSetUp()
         {
-            using(var s = sessions.OpenSession())
+            using(var s = Sfi.OpenSession())
             using(var tx = s.BeginTransaction())
             {
                 var root = new TreeNode
@@ -66,7 +66,7 @@ namespace NHibernate.Test.ProjectionFixtures
 
         protected override void OnTearDown()
         {
-            using(var s = sessions.OpenSession())
+            using(var s = Sfi.OpenSession())
             using (var tx = s.BeginTransaction())
             {
                 s.Delete("from TreeNode");
@@ -83,7 +83,7 @@ namespace NHibernate.Test.ProjectionFixtures
 			    Assert.Ignore(
 				    "Test checks for exact sql and expects an error to occur in a case which is not erroneous on all databases.");
 
-		    string pName = ((ISqlParameterFormatter) sessions.ConnectionProvider.Driver).GetParameterName(0);
+		    string pName = ((ISqlParameterFormatter) Sfi.ConnectionProvider.Driver).GetParameterName(0);
 		    string expectedMessagePart0 =
 			    string.Format("could not execute query" + Environment.NewLine +
 			                  "[ SELECT this_.Id as y0_, count(this_.Area) as y1_ FROM TreeNode this_ WHERE this_.Id = {0} ]",
@@ -103,7 +103,7 @@ namespace NHibernate.Test.ProjectionFixtures
 
 		    var e = Assert.ThrowsAsync<GenericADOException>(async () =>
 		    {
-			    using (var s = sessions.OpenSession())
+			    using (var s = Sfi.OpenSession())
 			    using (var tx = s.BeginTransaction())
 			    {
 				    var criteria = projection.GetExecutableCriteria(s);
@@ -133,7 +133,7 @@ namespace NHibernate.Test.ProjectionFixtures
                     .Add(Projections.Count(Projections.Property("grandchild.Key.Id")))
                 );
 
-            using(var s = sessions.OpenSession())
+            using(var s = Sfi.OpenSession())
             using(var tx = s.BeginTransaction())
             {
                 var criteria = projection.GetExecutableCriteria(s);

@@ -41,11 +41,11 @@ namespace NHibernate.Test.FilterTest
 			// Force a collection into the second level cache, with its non-filtered elements
 			Salesperson sp = (Salesperson) await (session.LoadAsync(typeof(Salesperson), testData.steveId));
 			await (NHibernateUtil.InitializeAsync(sp.Orders));
-			ICollectionPersister persister = ((ISessionFactoryImplementor) sessions)
+			ICollectionPersister persister = ((ISessionFactoryImplementor) Sfi)
 				.GetCollectionPersister(typeof(Salesperson).FullName + ".Orders");
 			Assert.IsTrue(persister.HasCache, "No cache for collection");
 			CacheKey cacheKey =
-				new CacheKey(testData.steveId, persister.KeyType, persister.Role, (ISessionFactoryImplementor) sessions);
+				new CacheKey(testData.steveId, persister.KeyType, persister.Role, (ISessionFactoryImplementor) Sfi);
 			CollectionCacheEntry cachedData = (CollectionCacheEntry)persister.Cache.Cache.Get(cacheKey);
 			Assert.IsNotNull(cachedData, "collection was not in cache");
 

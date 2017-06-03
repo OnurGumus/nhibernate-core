@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.HqlOnMapWithForumula
 		[Test]
 		public async Task TestBugAsync()
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				await (s.CreateQuery("from A a where 1 in elements(a.MyMaps)")
 					.ListAsync());

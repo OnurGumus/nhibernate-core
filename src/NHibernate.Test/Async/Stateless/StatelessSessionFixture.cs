@@ -46,7 +46,7 @@ namespace NHibernate.Test.Stateless
 			Document doc;
 			DateTime? initVersion;
 
-			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			using (IStatelessSession ss = Sfi.OpenStatelessSession())
 			{
 				ITransaction tx;
 				using (tx = ss.BeginTransaction())
@@ -104,7 +104,7 @@ namespace NHibernate.Test.Stateless
 		[Test]
 		public async Task HqlBulkAsync()
 		{
-			IStatelessSession ss = sessions.OpenStatelessSession();
+			IStatelessSession ss = Sfi.OpenStatelessSession();
 			ITransaction tx = ss.BeginTransaction();
 			var doc = new Document("blah blah blah", "Blahs");
 			await (ss.InsertAsync(doc));
@@ -135,7 +135,7 @@ namespace NHibernate.Test.Stateless
 		{
 			Paper paper;
 
-			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			using (IStatelessSession ss = Sfi.OpenStatelessSession())
 			{
 				ITransaction tx;
 				using (tx = ss.BeginTransaction())
@@ -158,7 +158,7 @@ namespace NHibernate.Test.Stateless
 		{
 			Paper paper;
 
-			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			using (IStatelessSession ss = Sfi.OpenStatelessSession())
 			{
 				using (ITransaction tx = ss.BeginTransaction())
 				{
@@ -167,7 +167,7 @@ namespace NHibernate.Test.Stateless
 					await (tx.CommitAsync());
 				}
 			}
-			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			using (IStatelessSession ss = Sfi.OpenStatelessSession())
 			{
 				using (ITransaction tx = ss.BeginTransaction())
 				{
@@ -177,7 +177,7 @@ namespace NHibernate.Test.Stateless
 					await (tx.CommitAsync());
 				}
 			}
-			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			using (IStatelessSession ss = Sfi.OpenStatelessSession())
 			{
 				using (ITransaction tx = ss.BeginTransaction())
 				{
@@ -194,7 +194,7 @@ namespace NHibernate.Test.Stateless
 		public void HavingDetachedCriteriaThenCanGetExecutableCriteriaFromStatelessSessionAsync()
 		{
 			var dc = DetachedCriteria.For<Paper>();
-			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			using (IStatelessSession ss = Sfi.OpenStatelessSession())
 			{
 				ICriteria criteria = null;
 				Assert.That(() => criteria = dc.GetExecutableCriteria(ss), Throws.Nothing);

@@ -52,7 +52,7 @@ namespace NHibernate.Test.Stateless.Fetching
 				await (tx.CommitAsync());
 			}
 
-			using (IStatelessSession ss = sessions.OpenStatelessSession())
+			using (IStatelessSession ss = Sfi.OpenStatelessSession())
 			using (ITransaction tx = ss.BeginTransaction())
 			{
 				ss.BeginTransaction();

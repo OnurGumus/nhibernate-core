@@ -22,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1837
 	{
 		protected override void OnSetUp()
 		{
-			sessions.Statistics.IsStatisticsEnabled = true;
+			Sfi.Statistics.IsStatisticsEnabled = true;
 			using(ISession session=this.OpenSession())
 			using(ITransaction tran=session.BeginTransaction())
 			{
@@ -49,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1837
 		public async Task ExecutesOneQueryWithUniqueResultWithChildCriteriaNonGenericAsync()
 		{
 	
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 			using (ISession session = this.OpenSession())
 			{
 				var criteria = session.CreateCriteria(typeof(Order),"o");
@@ -57,13 +57,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1837
 					.Add(Restrictions.Eq("c.Id", 1))
 					.SetProjection(Projections.RowCount())
 					.UniqueResultAsync());
-				Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(1));
+				Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(1));
 			}
 		}
 		[Test]
 		public async Task ExecutesOneQueryWithUniqueResultWithChildCriteriaGenericAsync()
 		{
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 			using (ISession session = this.OpenSession())
 			{
 				await (session.CreateCriteria(typeof (Order), "o")
@@ -71,32 +71,32 @@ namespace NHibernate.Test.NHSpecificTest.NH1837
 					.Add(Restrictions.Eq("c.Id", 1))
 					.SetProjection(Projections.RowCount())
 					.UniqueResultAsync<int>());
-				Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(1));
+				Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(1));
 			}
 		}
 		[Test]
 		public async Task ExecutesOneQueryWithUniqueResultWithCriteriaNonGenericAsync()
 		{
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 			using (ISession session = this.OpenSession())
 			{
 				await (session.CreateCriteria(typeof (Order), "o")
 					.SetProjection(Projections.RowCount())
 					.UniqueResultAsync());
-				Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(1));
+				Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(1));
 			}
 		}
 
 		[Test]
 		public async Task ExecutesOneQueryWithUniqueResultWithCriteriaGenericAsync()
 		{
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 			using (ISession session = this.OpenSession())
 			{
 				await (session.CreateCriteria(typeof (Order), "o")
 					.SetProjection(Projections.RowCount())
 					.UniqueResultAsync<int>());
-				Assert.That(sessions.Statistics.QueryExecutionCount, Is.EqualTo(1));
+				Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(1));
 			}
 		}
 	}

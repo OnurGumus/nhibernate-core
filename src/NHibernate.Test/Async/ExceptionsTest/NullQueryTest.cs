@@ -47,7 +47,7 @@ namespace NHibernate.Test.ExceptionsTest
 			catch (Exception sqle)
 			{
 				Assert.DoesNotThrow(
-					() => ADOExceptionHelper.Convert(sessions.SQLExceptionConverter, sqle, "could not get or update next value", null));
+					() => ADOExceptionHelper.Convert(Sfi.SQLExceptionConverter, sqle, "could not get or update next value", null));
 			}
 			finally
 			{

@@ -75,7 +75,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 		public async Task WillNotCrashOnDtcPrepareFailureAsync()
 		{
 			var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = OpenSession())
 			{
 				await (s.SaveAsync(new Person {NotNullData = null}));  // Cause a SQL not null constraint violation.
 			}
@@ -102,7 +102,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 				Assert.Ignore("Firebird driver does not support distributed transactions");
 
 			var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = OpenSession())
 			{
 				new ForceEscalationToDistributedTx(true); //will rollback tx
 				await (s.SaveAsync(new Person { CreatedAt = DateTime.Today }));
@@ -131,7 +131,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			{
 				using (var txscope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
-					using (ISession s = sessions.OpenSession())
+					using (ISession s = OpenSession())
 					{
 						var person = new Person { CreatedAt = DateTime.Now };
 						await (s.SaveAsync(person));
@@ -161,7 +161,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			{
 				using (var txscope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
-					using (ISession s = sessions.OpenSession())
+					using (ISession s = OpenSession())
 					{
 						var person = new Person {CreatedAt = DateTime.Now};
 						await (s.SaveAsync(person));
@@ -188,7 +188,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 			object id;
 			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
-				using (ISession s = sessions.OpenSession())
+				using (ISession s = OpenSession())
 				{
 					id = await (s.SaveAsync(new Person {CreatedAt = DateTime.Today}));
 
@@ -200,7 +200,7 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 
 			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
-				using (ISession s = sessions.OpenSession())
+				using (ISession s = OpenSession())
 				{
 					new ForceEscalationToDistributedTx();
 
@@ -217,12 +217,12 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 		{
 			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
-				using (ISession s = sessions.OpenSession())
+				using (ISession s = OpenSession())
 				{
 					await (s.FlushAsync());
 				}
 
-				using (ISession s = sessions.OpenSession())
+				using (ISession s = OpenSession())
 				{
 					await (s.FlushAsync());
 				}

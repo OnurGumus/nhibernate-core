@@ -28,7 +28,7 @@ namespace NHibernate.Test.TransactionTest
 		public async Task CommitAsync()
 		{
 			var interceptor = new RecordingInterceptor();
-			using (var session = sessions.WithOptions().Interceptor(interceptor).OpenSession())
+			using (var session = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
 			{
 				ITransaction tx = session.BeginTransaction();
 				await (tx.CommitAsync());
@@ -68,9 +68,9 @@ namespace NHibernate.Test.TransactionTest
 			var interceptor = new RecordingInterceptor();
 			ISession s;
 
-			using (var ownConnection = await (sessions.ConnectionProvider.GetConnectionAsync(cancellationToken)))
+			using (var ownConnection = await (Sfi.ConnectionProvider.GetConnectionAsync(cancellationToken)))
 			{
-				using (s = sessions.WithOptions().Connection(ownConnection).Interceptor(interceptor).OpenSession())
+				using (s = Sfi.WithOptions().Connection(ownConnection).Interceptor(interceptor).OpenSession())
 				using (s.BeginTransaction())
 				{
 					await (s.CreateCriteria<object>().ListAsync(cancellationToken));

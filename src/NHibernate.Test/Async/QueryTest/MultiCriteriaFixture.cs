@@ -50,7 +50,7 @@ namespace NHibernate.Test.QueryTest
 		{
 			base.OnSetUp();
 
-			this.sessions.Statistics.Clear();
+			this.Sfi.Statistics.Clear();
 		}
 
 		protected override void OnTearDown()
@@ -134,7 +134,7 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task CanUseSecondLevelCacheWithPositionalParametersAsync()
 		{
-			var cacheHashtable = MultipleQueriesFixtureAsync.GetHashTableUsedAsQueryCache(sessions);
+			var cacheHashtable = MultipleQueriesFixtureAsync.GetHashTableUsedAsQueryCache(Sfi);
 			cacheHashtable.Clear();
 
 			await (CreateItemsAsync());
@@ -151,7 +151,7 @@ namespace NHibernate.Test.QueryTest
 			//set the query in the cache
 			await (DoMutiQueryAndAssertAsync());
 
-			var cacheHashtable = MultipleQueriesFixtureAsync.GetHashTableUsedAsQueryCache(sessions);
+			var cacheHashtable = MultipleQueriesFixtureAsync.GetHashTableUsedAsQueryCache(Sfi);
 			var cachedListEntry = (IList)new ArrayList(cacheHashtable.Values)[0];
 			var cachedQuery = (IList)cachedListEntry[1];
 
@@ -163,7 +163,7 @@ namespace NHibernate.Test.QueryTest
 			var secondQueryResults = (IList)cachedQuery[1];
 			secondQueryResults[0] = 2;
 
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				var criteria = s.CreateCriteria(typeof(Item))
 					.Add(Restrictions.Gt("id", 50));
@@ -185,14 +185,14 @@ namespace NHibernate.Test.QueryTest
 			await (CreateItemsAsync());
 
 			await (DoMutiQueryAndAssertAsync());
-			Assert.AreEqual(0, sessions.Statistics.QueryCacheHitCount);
-			Assert.AreEqual(1, sessions.Statistics.QueryCacheMissCount);
-			Assert.AreEqual(1, sessions.Statistics.QueryCachePutCount);
+			Assert.AreEqual(0, Sfi.Statistics.QueryCacheHitCount);
+			Assert.AreEqual(1, Sfi.Statistics.QueryCacheMissCount);
+			Assert.AreEqual(1, Sfi.Statistics.QueryCachePutCount);
 
 			await (DoMutiQueryAndAssertAsync());
-			Assert.AreEqual(1, sessions.Statistics.QueryCacheHitCount);
-			Assert.AreEqual(1, sessions.Statistics.QueryCacheMissCount);
-			Assert.AreEqual(1, sessions.Statistics.QueryCachePutCount);
+			Assert.AreEqual(1, Sfi.Statistics.QueryCacheHitCount);
+			Assert.AreEqual(1, Sfi.Statistics.QueryCacheMissCount);
+			Assert.AreEqual(1, Sfi.Statistics.QueryCachePutCount);
 		}
 
 		[Test]

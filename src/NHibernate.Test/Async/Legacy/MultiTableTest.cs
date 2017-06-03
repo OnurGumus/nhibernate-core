@@ -78,7 +78,7 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 
-			sessions.Evict(typeof(SubMulti));
+			Sfi.Evict(typeof(SubMulti));
 
 			s = OpenSession();
 			// TODO: I don't understand why h2.0.3/h2.1 issues a select statement here

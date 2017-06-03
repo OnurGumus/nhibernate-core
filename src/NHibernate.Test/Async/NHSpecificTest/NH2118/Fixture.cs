@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2118
 		{
 			base.OnSetUp();
 
-			using(var s = sessions.OpenStatelessSession())
+			using(var s = Sfi.OpenStatelessSession())
 			using(var tx = s.BeginTransaction())
 			{
 				s.Insert(new Person {FirstName = "Bart", LastName = "Simpson"});
@@ -37,7 +37,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2118
 		[Test]
 		public async Task CanGroupByWithoutSelectAsync()
 		{
-			using(var s = sessions.OpenSession())
+			using(var s = Sfi.OpenSession())
 			using (s.BeginTransaction())
 			{
 				var groups = await (s.Query<Person>().GroupBy(p => p.LastName).ToListAsync());
@@ -49,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2118
 		protected override void OnTearDown()
 		{
 			base.OnTearDown();
-			using(var s = sessions.OpenStatelessSession())
+			using(var s = Sfi.OpenStatelessSession())
 			using (var tx = s.BeginTransaction())
 			{
 				s.CreateQuery("delete from Person").ExecuteUpdate();

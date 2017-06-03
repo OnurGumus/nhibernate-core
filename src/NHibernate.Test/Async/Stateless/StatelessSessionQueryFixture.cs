@@ -88,10 +88,10 @@ namespace NHibernate.Test.Stateless
 		[Test]
 		public async Task CriteriaAsync()
 		{
-			var testData = new TestData(sessions);
+			var testData = new TestData(Sfi);
 			await (testData.createDataAsync());
 
-			using (IStatelessSession s = sessions.OpenStatelessSession())
+			using (IStatelessSession s = Sfi.OpenStatelessSession())
 			{
 				Assert.AreEqual(1, (await (s.CreateCriteria<Contact>().ListAsync())).Count);
 			}
@@ -102,10 +102,10 @@ namespace NHibernate.Test.Stateless
 		[Test]
 		public async Task CriteriaWithSelectFetchModeAsync()
 		{
-			var testData = new TestData(sessions);
+			var testData = new TestData(Sfi);
 			await (testData.createDataAsync());
 
-			using (IStatelessSession s = sessions.OpenStatelessSession())
+			using (IStatelessSession s = Sfi.OpenStatelessSession())
 			{
 				Assert.AreEqual(1, (await (s.CreateCriteria<Contact>().SetFetchMode("Org", FetchMode.Select).ListAsync())).Count);
 			}
@@ -116,10 +116,10 @@ namespace NHibernate.Test.Stateless
 		[Test]
 		public async Task HqlAsync()
 		{
-			var testData = new TestData(sessions);
+			var testData = new TestData(Sfi);
 			await (testData.createDataAsync());
 
-			using (IStatelessSession s = sessions.OpenStatelessSession())
+			using (IStatelessSession s = Sfi.OpenStatelessSession())
 			{
 				Assert.AreEqual(1, (await (s.CreateQuery("from Contact c join fetch c.Org join fetch c.Org.Country").ListAsync<Contact>())).Count);
 			}

@@ -50,7 +50,7 @@ namespace NHibernate.Type
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return NullSafeGetAsync(rs, new string[] {name}, session, owner, cancellationToken);
+			return NullSafeGetAsync(rs, new[] { name }, session, owner, cancellationToken);
 		}
 
 		public Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken)

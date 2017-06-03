@@ -46,16 +46,16 @@ namespace NHibernate.Test.Ado
 		[Description("The batcher should run all INSERT queries in only one roundtrip.")]
 		public async Task OneRoundTripInsertsAsync()
 		{
-			sessions.Statistics.Clear();
+			Sfi.Statistics.Clear();
 			await (FillDbAsync());
 
-			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
 			await (CleanupAsync());
 		}
 
 		private async Task CleanupAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (s.BeginTransaction())
 			{
 				await (s.CreateQuery("delete from VerySimple").ExecuteUpdateAsync(cancellationToken));
@@ -66,7 +66,7 @@ namespace NHibernate.Test.Ado
 
 		private async Task FillDbAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				await (s.SaveAsync(new VerySimple {Id = 1, Name = "Fabio", Weight = 119.5}, cancellationToken));
@@ -81,20 +81,20 @@ namespace NHibernate.Test.Ado
 		{
 			await (FillDbAsync());
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				var vs1 = await (s.GetAsync<VerySimple>(1));
 				var vs2 = await (s.GetAsync<VerySimple>(2));
 				vs1.Weight -= 10;
 				vs2.Weight -= 1;
-				sessions.Statistics.Clear();
+				Sfi.Statistics.Clear();
 				await (s.UpdateAsync(vs1));
 				await (s.UpdateAsync(vs2));
 				await (tx.CommitAsync());
 			}
 
-			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
 			await (CleanupAsync());
 		}
 
@@ -102,7 +102,7 @@ namespace NHibernate.Test.Ado
 		[Description("SqlClient: The batcher log output should be formatted")]
 		public async Task BatchedoutputShouldBeFormattedAsync()
 		{
-			if (sessions.Settings.BatcherFactory is SqlClientBatchingBatcherFactory == false)
+			if (Sfi.Settings.BatcherFactory is SqlClientBatchingBatcherFactory == false)
 				Assert.Ignore("This test is for SqlClientBatchingBatcher only");
 
 			using (var sqlLog = new SqlLogSpy())
@@ -122,18 +122,18 @@ namespace NHibernate.Test.Ado
 		{
 			await (FillDbAsync());
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				var vs1 = await (s.GetAsync<VerySimple>(1));
 				var vs2 = await (s.GetAsync<VerySimple>(2));
-				sessions.Statistics.Clear();
+				Sfi.Statistics.Clear();
 				await (s.DeleteAsync(vs1));
 				await (s.DeleteAsync(vs2));
 				await (tx.CommitAsync());
 			}
 
-			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
 			await (CleanupAsync());
 		}
 
@@ -148,7 +148,7 @@ namespace NHibernate.Test.Ado
 			{
 				using (var sl = new SqlLogSpy())
 				{
-					sessions.Statistics.Clear();
+					Sfi.Statistics.Clear();
 					await (FillDbAsync());
 					string logs = sl.GetWholeLog();
 					Assert.That(logs, Does.Not.Contain("Adding to batch").IgnoreCase);
@@ -157,7 +157,7 @@ namespace NHibernate.Test.Ado
 				}
 			}
 
-			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
 			await (CleanupAsync());
 		}
 
@@ -172,7 +172,7 @@ namespace NHibernate.Test.Ado
 			{
 				using (var sl = new SqlLogSpy())
 				{
-					sessions.Statistics.Clear();
+					Sfi.Statistics.Clear();
 					await (FillDbAsync());
 					string logs = sl.GetWholeLog();
 					Assert.That(logs, Does.Contain("batch").IgnoreCase);
@@ -187,7 +187,7 @@ namespace NHibernate.Test.Ado
 				}
 			}
 
-			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
 			await (CleanupAsync());
 		}
 
@@ -198,14 +198,14 @@ namespace NHibernate.Test.Ado
 			{
 				using (var sl = new SqlLogSpy())
 				{
-					sessions.Statistics.Clear();
+					Sfi.Statistics.Clear();
 					await (FillDbAsync());
 					string logs = sl.GetWholeLog();
 					Assert.That(logs, Does.Contain("Batch commands:").IgnoreCase);
 				}
 			}
 
-			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
 			await (CleanupAsync());
 		}
 
@@ -218,7 +218,7 @@ namespace NHibernate.Test.Ado
 			{
 				using (var sl = new SqlLogSpy())
 				{
-					sessions.Statistics.Clear();
+					Sfi.Statistics.Clear();
 					await (FillDbAsync());
 					foreach (var loggingEvent in sl.Appender.GetEvents())
 					{
@@ -240,7 +240,7 @@ namespace NHibernate.Test.Ado
 				}
 			}
 
-			Assert.That(sessions.Statistics.PrepareStatementCount, Is.EqualTo(1));
+			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
 			await (CleanupAsync());
 		}
 	}

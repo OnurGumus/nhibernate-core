@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1574
 				await (session.FlushAsync());
 			}
 
-			using (IStatelessSession session = sessions.OpenStatelessSession())
+			using (IStatelessSession session = Sfi.OpenStatelessSession())
 			{
 				IQuery query = session.CreateQuery("from SpecializedPrincipal p");
 				IList<Principal> principals = await (query.ListAsync<Principal>());

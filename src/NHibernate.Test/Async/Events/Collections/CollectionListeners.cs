@@ -12,7 +12,6 @@ using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Event;
 using NHibernate.Event.Default;
-using NHibernate.Impl;
 
 namespace NHibernate.Test.Events.Collections
 {

@@ -52,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 
 		protected override void OnTearDown()
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			{
 				session.Delete("from Person");
 				session.Flush();
@@ -66,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		{
 			int personId = await (CreatePersonAsync());
 
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			{
 				var futurePerson = session.CreateCriteria<Person>()
 					.Add(Restrictions.Eq("Id", personId))
@@ -80,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		{
 			await (CreatePersonAsync());
 
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			{
 				var futureCount = session.CreateCriteria<Person>()
 					.SetProjection(Projections.RowCount())
@@ -94,7 +94,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		{
 			int personId = await (CreatePersonAsync());
 
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			{
 				var futurePerson = session.CreateQuery("from Person where Id = :id")
 					.SetInt32("id", personId)
@@ -108,7 +108,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		{
 			await (CreatePersonAsync());
 
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			{
 				var futureCount = session.CreateQuery("select count(*) from Person")
 					.FutureValue<long>();
@@ -121,7 +121,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		{
 			var personId = await (CreatePersonAsync());
 
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			{
 				var futurePerson = session.Query<Person>()
 					.Where(x => x.Id == personId)
@@ -132,7 +132,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 
 		private async Task<int> CreatePersonAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			using (var session = sessions.OpenSession())
+			using (var session = Sfi.OpenSession())
 			{
 				var person = new Person();
 				await (session.SaveAsync(person, cancellationToken));

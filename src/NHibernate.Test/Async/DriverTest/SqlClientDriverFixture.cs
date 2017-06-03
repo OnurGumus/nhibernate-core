@@ -83,7 +83,7 @@ namespace NHibernate.Test.DriverTest
 		[Test]
 		public async Task QueryPlansAreReusedAsync()
 		{
-			if (!(sessions.ConnectionProvider.Driver is SqlClientDriver))
+			if (!(Sfi.ConnectionProvider.Driver is SqlClientDriver))
 				Assert.Ignore("Test designed for SqlClientDriver only");
 
 			using (ISession s = OpenSession())

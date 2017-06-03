@@ -38,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaFromHql
 			await (CreateDataAsync());
 
 			using (SqlLogSpy spy = new SqlLogSpy())
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
 				Person result = await (session.CreateQuery(@"
@@ -54,7 +54,7 @@ where p.Parent is null")
 			}
 
 			using (SqlLogSpy spy = new SqlLogSpy())
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
 				Person result = await (session.CreateCriteria(typeof(Person))
@@ -72,7 +72,7 @@ where p.Parent is null")
 
 		private async Task DeleteDataAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
 				await (session.DeleteAsync("from Person", cancellationToken));
@@ -82,7 +82,7 @@ where p.Parent is null")
 
 		private async Task CreateDataAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
 				Person root = new Person();

@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH734
 		[TestAttribute]
 		public async Task LimitProblemAsync()
 		{
-			using (ISession session = sessions.OpenSession())
+			using (ISession session = Sfi.OpenSession())
 			{
 				ICriteria criteria = session.CreateCriteria(typeof(MyClass));
 				criteria.SetMaxResults(100);

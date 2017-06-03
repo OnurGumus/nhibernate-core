@@ -626,7 +626,7 @@ namespace NHibernate.Test.Legacy
 
 			// NOTE: H2.1 has getSessions().openSession() here (and below),
 			// instead of just the usual openSession()
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				s.FlushMode = FlushMode.Manual;
 
@@ -665,7 +665,7 @@ namespace NHibernate.Test.Legacy
 			///////////////////////////////////////////////////////////////////////////
 			// Test updates across serializations
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				s.FlushMode = FlushMode.Manual;
 				Simple simple = (Simple) await (s.GetAsync(typeof(Simple), 10L));
@@ -688,7 +688,7 @@ namespace NHibernate.Test.Legacy
 
 			///////////////////////////////////////////////////////////////////////////
 			// Test deletions across serializations
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			{
 				s.FlushMode = FlushMode.Manual;
 				Simple simple = (Simple) await (s.GetAsync(typeof(Simple), 10L));

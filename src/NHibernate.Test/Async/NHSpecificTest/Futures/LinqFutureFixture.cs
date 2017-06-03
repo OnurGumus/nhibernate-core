@@ -56,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		{
 			IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
 
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
 				var p1 = new Person { Name = "Parent" };
@@ -69,7 +69,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 				s.Clear(); // we don't want caching
 			}
 
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				var persons10 = s.Query<Person>()
 					.FetchMany(p => p.Children)
@@ -104,7 +104,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 		{
 			IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
 			
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
 				var p1 = new Person { Name = "Parent" };
@@ -117,7 +117,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 				s.Clear(); // we don't want caching
 			}
 
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				var persons = s.Query<Person>()
 					.FetchMany(p => p.Children)
@@ -162,7 +162,7 @@ namespace NHibernate.Test.NHSpecificTest.Futures
 				await (tx.CommitAsync());
 			}
 
-			using (var s = sessions.OpenSession())
+			using (var s = Sfi.OpenSession())
 			{
 				var meContainer = s.Query<Person>()
 								   .Where(x => x.Id == personId)

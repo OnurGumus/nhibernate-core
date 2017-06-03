@@ -53,14 +53,14 @@ namespace NHibernate.Test.TypedManyToOne
 			cust.BillingAddress = bill;
 			cust.ShippingAddress = ship;
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				await (s.PersistAsync(cust));
 				await (t.CommitAsync());
 			}
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				IList results = await (s.CreateQuery("from Customer cust left join fetch cust.BillingAddress where cust.CustomerId='abc123'").ListAsync());
@@ -75,7 +75,7 @@ namespace NHibernate.Test.TypedManyToOne
 				await (t.CommitAsync());
 			}
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				await (s.SaveOrUpdateAsync(cust));
@@ -98,14 +98,14 @@ namespace NHibernate.Test.TypedManyToOne
 			cust.CustomerId = "xyz123";
 			cust.Name = "Matt";
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				await (s.PersistAsync(cust));
 				await (t.CommitAsync());
 			}
 
-			using (ISession s = sessions.OpenSession())
+			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				IList results = await (s.CreateQuery("from Customer cust left join fetch cust.BillingAddress where cust.CustomerId='xyz123'").ListAsync());

@@ -51,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public async Task DisconnectShouldNotCloseUserSuppliedConnectionAsync()
 		{
-			var conn = await (sessions.ConnectionProvider.GetConnectionAsync(CancellationToken.None));
+			var conn = await (Sfi.ConnectionProvider.GetConnectionAsync(CancellationToken.None));
 			try
 			{
 				using (ISession s = OpenSession())
@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 			finally
 			{
-				sessions.ConnectionProvider.CloseConnection(conn);
+				Sfi.ConnectionProvider.CloseConnection(conn);
 			}
 		}
 	}

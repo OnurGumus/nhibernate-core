@@ -59,7 +59,7 @@ namespace NHibernate.Test.Stats
 		[Test]
 		public async Task CollectionFetchVsLoadAsync()
 		{
-			IStatistics stats = sessions.Statistics;
+			IStatistics stats = Sfi.Statistics;
 			stats.Clear();
 
 			ISession s = OpenSession();
@@ -151,7 +151,7 @@ namespace NHibernate.Test.Stats
 		[Test]
 		public async Task QueryStatGatheringAsync()
 		{
-			IStatistics stats = sessions.Statistics;
+			IStatistics stats = Sfi.Statistics;
 			stats.Clear();
 
 			ISession s = OpenSession();
@@ -233,7 +233,7 @@ namespace NHibernate.Test.Stats
 				await (tx.CommitAsync());
 			}
 
-			IStatistics stats = sessions.Statistics;
+			IStatistics stats = Sfi.Statistics;
 			stats.Clear();
 			using (ISession s = OpenSession())
 			{
@@ -250,7 +250,7 @@ namespace NHibernate.Test.Stats
 
 			stats.Clear();
 
-			var driver = sessions.ConnectionProvider.Driver;
+			var driver = Sfi.ConnectionProvider.Driver;
 			if (driver.SupportsMultipleQueries)
 			{
 				using (var s = OpenSession())

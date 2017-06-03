@@ -41,7 +41,7 @@ namespace NHibernate.Test.Ondelete
 		[Test]
 		public async Task JoinedSubclassAsync()
 		{
-			IStatistics statistics = sessions.Statistics;
+			IStatistics statistics = Sfi.Statistics;
 			statistics.Clear();
 
 			ISession s = OpenSession();
