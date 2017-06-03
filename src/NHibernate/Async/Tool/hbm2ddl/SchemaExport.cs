@@ -165,8 +165,7 @@ namespace NHibernate.Tool.hbm2ddl
 				log.Debug(formatted);
 				if (exportOutput != null)
 				{
-					cancellationToken.ThrowIfCancellationRequested();
-					await (exportOutput.WriteLineAsync(formatted)).ConfigureAwait(false);
+					exportOutput.WriteLine(formatted);
 				}
 				if (execute)
 				{

@@ -68,7 +68,7 @@ namespace NHibernate.Id
 					{
 						if (await (reader.ReadAsync(cancellationToken)).ConfigureAwait(false))
 						{
-							_next = !await (reader.IsDBNullAsync(0, cancellationToken)) .ConfigureAwait(false)? Convert.ToInt64(reader.GetValue(0)) + 1 : 1L;
+							_next = !reader.IsDBNull(0) ? Convert.ToInt64(reader.GetValue(0)) + 1 : 1L;
 						}
 						else
 						{

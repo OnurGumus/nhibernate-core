@@ -32,19 +32,19 @@ namespace NHibernate.Type
 			return NullSafeGetAsync(rs, names[0], session, owner, cancellationToken);
 		}
 
-		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken)
+		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			int index = rs.GetOrdinal(name);
-
-			if (await (rs.IsDBNullAsync(index, cancellationToken)).ConfigureAwait(false))
+			if (cancellationToken.IsCancellationRequested)
 			{
-				return null;
+				return Task.FromCanceled<object>(cancellationToken);
 			}
-			else
+			try
 			{
-				string str = (string) NHibernateUtil.String.Get(rs, index, session);
-				return string.IsNullOrEmpty(str) ? null : str;
+				return Task.FromResult<object>(NullSafeGet(rs, name, session, owner));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
 			}
 		}
 
