@@ -52,10 +52,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2192
 			using (var s = Sfi.OpenSession())
 			{
 				var count =
-(					await (s.CreateQuery("select ci from ContentItem ci where ci.Name = :v1")
+					(await (s.CreateQuery("select ci from ContentItem ci where ci.Name = :v1")
 						.SetParameter("v1", "Test")
-						.ListAsync<ContentItem>(cancellationToken))
-)						.Count;
+						.ListAsync<ContentItem>(cancellationToken)))
+						.Count;
 
 				return count;
 			}

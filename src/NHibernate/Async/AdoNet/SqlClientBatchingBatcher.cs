@@ -52,7 +52,7 @@ namespace NHibernate.AdoNet
 				{
 					Log.Debug("Adding to batch:" + lineWithParameters);
 				}
-				_currentBatch.Append((System.Data.SqlClient.SqlCommand) batchUpdate);
+				_currentBatch.Append((System.Data.SqlClient.SqlCommand)batchUpdate);
 
 				if (_currentBatch.CountOfCommands >= _batchSize)
 				{
@@ -69,30 +69,31 @@ namespace NHibernate.AdoNet
 		protected override async Task DoExecuteBatchAsync(DbCommand ps, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			Log.DebugFormat("Executing batch");
-			await (CheckReadersAsync(cancellationToken)).ConfigureAwait(false);
-			await (PrepareAsync(_currentBatch.BatchCommand, cancellationToken)).ConfigureAwait(false);
-			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
-			{
-				Factory.Settings.SqlStatementLogger.LogBatchCommand(_currentBatchCommandsLog.ToString());
-				_currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
-			}
-
-			int rowsAffected;
 			try
 			{
-				rowsAffected = _currentBatch.ExecuteNonQuery();
+				Log.DebugFormat("Executing batch");
+				await (CheckReadersAsync(cancellationToken)).ConfigureAwait(false);
+				await (PrepareAsync(_currentBatch.BatchCommand, cancellationToken)).ConfigureAwait(false);
+				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
+				{
+					Factory.Settings.SqlStatementLogger.LogBatchCommand(_currentBatchCommandsLog.ToString());
+				}
+				int rowsAffected;
+				try
+				{
+					rowsAffected = _currentBatch.ExecuteNonQuery();
+				}
+				catch (DbException e)
+				{
+					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
+				}
+
+				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowsAffected);
 			}
-			catch (DbException e)
+			finally
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
+				ClearCurrentBatch();
 			}
-
-			Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowsAffected);
-
-			_currentBatch.Dispose();
-			_totalExpectedRowsAffected = 0;
-			_currentBatch = CreateConfiguredBatch();
 		}
 	}
 }

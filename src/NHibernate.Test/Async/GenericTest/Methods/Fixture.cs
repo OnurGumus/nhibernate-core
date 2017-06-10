@@ -123,8 +123,8 @@ namespace NHibernate.Test.GenericTest.Methods
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				One one2 = ( One ) await (s.CreateQuery( "from One" ).UniqueResultAsync());
-				IList<Many> results = await ((await (s.CreateFilterAsync( one2.Manies, "where X = 10" ))
-)					.ListAsync<Many>());
+				IList<Many> results = await ((await (s.CreateFilterAsync( one2.Manies, "where X = 10" )))
+					.ListAsync<Many>());
 
 				Assert.AreEqual( 1, results.Count );
 				Assert.AreEqual( 10, results[ 0 ].X );
@@ -139,8 +139,8 @@ namespace NHibernate.Test.GenericTest.Methods
 			using( ITransaction t = s.BeginTransaction() )
 			{
 				One one2 = ( One ) await (s.CreateQuery( "from One" ).UniqueResultAsync());
-				IEnumerable<Many> results = await ((await (s.CreateFilterAsync( one2.Manies, "where X = 10" ))
-)					.EnumerableAsync<Many>());
+				IEnumerable<Many> results = await ((await (s.CreateFilterAsync( one2.Manies, "where X = 10" )))
+					.EnumerableAsync<Many>());
 				IEnumerator<Many> en = results.GetEnumerator();
 
 				Assert.IsTrue( en.MoveNext() );

@@ -135,7 +135,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 						        .And.Property("Identifier").EqualTo(p2.Id);
 
 					Assert.That(
-						async 						() =>
+						async () =>
 						{
 							await (session2.FlushAsync());
 							await (tr2.CommitAsync());

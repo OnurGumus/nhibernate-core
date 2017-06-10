@@ -335,7 +335,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(1, (await (s.CreateCriteria(typeof(Part)).ListAsync())).Count);
 			//there is a where condition on Part mapping
 			Assert.AreEqual(1,
-(			                await (s.CreateCriteria(typeof(Part))
+			                (await (s.CreateCriteria(typeof(Part))
 			                	.Add(Expression.Eq("Id", p1.Id))
 			                	.ListAsync())).Count);
 			Assert.AreEqual(1, (await (s.CreateQuery("from Part").ListAsync())).Count);
@@ -380,41 +380,41 @@ namespace NHibernate.Test.Legacy
 			await (s.SaveAsync(c));
 
 			Assert.AreEqual(1,
-(			                await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.OneToMany[2] = s").ListAsync
+			                (await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.OneToMany[2] = s").ListAsync
 			                	())).Count);
 			Assert.AreEqual(1,
-(			                await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.ManyToMany[2] = s").
+			                (await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.ManyToMany[2] = s").
 			                	ListAsync())).Count);
 			Assert.AreEqual(1,
-(			                await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where s = c.OneToMany[2]").ListAsync
+			                (await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where s = c.OneToMany[2]").ListAsync
 			                	())).Count);
 			Assert.AreEqual(1,
-(			                await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where s = c.ManyToMany[2]").
+			                (await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where s = c.ManyToMany[2]").
 			                	ListAsync())).Count);
 			Assert.AreEqual(1, (await (s.CreateQuery("select c from c in class ContainerX where c.OneToMany[0].Name = 's'").ListAsync())).Count);
 			Assert.AreEqual(1, (await (s.CreateQuery("select c from c in class ContainerX where c.ManyToMany[0].Name = 's'").ListAsync())).Count);
 			Assert.AreEqual(1,
-(			                await (s.CreateQuery("select c from c in class ContainerX where 's' = c.OneToMany[2 - 2].Name").ListAsync())).Count);
+			                (await (s.CreateQuery("select c from c in class ContainerX where 's' = c.OneToMany[2 - 2].Name").ListAsync())).Count);
 			Assert.AreEqual(1,
-(			                await (s.CreateQuery("select c from c in class ContainerX where 's' = c.ManyToMany[(3+1)/4-1].Name").ListAsync())).
+			                (await (s.CreateQuery("select c from c in class ContainerX where 's' = c.ManyToMany[(3+1)/4-1].Name").ListAsync())).
 			                	Count);
 			if (Dialect.SupportsSubSelects)
 			{
 				Assert.AreEqual(1,
-(				                await (s.CreateQuery(
-				                	"select c from c in class ContainerX where c.ManyToMany[ c.ManyToMany.maxIndex ].Count = 2").ListAsync())
-)				                	.Count);
+				                (await (s.CreateQuery(
+				                	"select c from c in class ContainerX where c.ManyToMany[ c.ManyToMany.maxIndex ].Count = 2").ListAsync()))
+				                	.Count);
 				Assert.AreEqual(1,
-(				                await (s.CreateQuery(
-				                	"select c from c in class ContainerX where c.ManyToMany[ maxindex(c.ManyToMany) ].Count = 2").ListAsync())
-)				                	.Count);
+				                (await (s.CreateQuery(
+				                	"select c from c in class ContainerX where c.ManyToMany[ maxindex(c.ManyToMany) ].Count = 2").ListAsync()))
+				                	.Count);
 			}
 			Assert.AreEqual(1,
-(			                await (s.CreateQuery(
+			                (await (s.CreateQuery(
 			                	"select c from c in class ContainerX where c.OneToMany[ c.ManyToMany[0].Count ].Name = 's'").ListAsync())).
 			                	Count);
 			Assert.AreEqual(1,
-(			                await (s.CreateQuery(
+			                (await (s.CreateQuery(
 			                	"select c from c in class ContainerX where c.ManyToMany[ c.OneToMany[0].Count ].Name = 's'").ListAsync())).
 			                	Count);
 
@@ -471,8 +471,8 @@ namespace NHibernate.Test.Legacy
 				"select c, c.Parent, c.Parent.Count from c in class NHibernate.DomainModel.Child order by c.Parent.Count").
 				EnumerableAsync());
 			Assert.AreEqual(1,
-(			                await (s.CreateQuery("FROM p in CLASS NHibernate.DomainModel.Parent WHERE p.Count=?").SetInt32(0, 66).ListAsync())
-)			                	.Count, "1-1 query");
+			                (await (s.CreateQuery("FROM p in CLASS NHibernate.DomainModel.Parent WHERE p.Count=?").SetInt32(0, 66).ListAsync()))
+			                	.Count, "1-1 query");
 			await (s.DeleteAsync(c));
 			await (s.DeleteAsync(p));
 			await (t.CommitAsync());

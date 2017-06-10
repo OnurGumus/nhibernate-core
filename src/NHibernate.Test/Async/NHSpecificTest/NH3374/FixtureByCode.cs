@@ -8,9 +8,7 @@
 //------------------------------------------------------------------------------
 
 
-using System.Linq;
 using NHibernate.Cfg.MappingSchema;
-using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
@@ -27,9 +25,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3374
 			mapper.Class<Document>(rc =>
 			{
 				rc.Id(x => x.Id, idMapper => idMapper.Generator(Generators.Identity));
-				rc.ManyToOne(x => x.Blob, m =>
+				rc.ManyToOne(x => x.Blob,
+					m =>
 					{
 						m.Cascade(Mapping.ByCode.Cascade.All);
+						m.Column("`Blob`");
 					});
 				rc.Property(x => x.Name);
 			});
@@ -42,21 +42,31 @@ namespace NHibernate.Test.NHSpecificTest.NH3374
 							y.Length(int.MaxValue);
 							y.Lazy(true);
 						});
+					map.Table("`Blob`");
 				});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
+
+		private int _blobId;
+		private int _docId;
 
 		protected override void OnSetUp()
 		{
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				var e1 = new Document { Name = "Bob" };
-				e1.Blob = new Blob { Bytes = new byte[] { 1, 2, 3 } };
+				var e1 = new Document
+				{
+					Name = "Bob",
+					Blob = new Blob {Bytes = new byte[] {1, 2, 3}}
+				};
+
 				session.Save(e1);
-				
 				session.Flush();
+
+				_blobId = e1.Blob.Id;
+				_docId = e1.Id;
 				transaction.Commit();
 			}
 		}
@@ -83,7 +93,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3374
 			document.Blob = blob;
 
 			using (ISession session = OpenSession())
-			using (ITransaction transaction = session.BeginTransaction())
+			using (session.BeginTransaction())
 			{
 				await (session.MergeAsync(document));
 			}
@@ -94,7 +104,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3374
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var blob = await (session.GetAsync<Blob>(1, cancellationToken));
+				var blob = await (session.GetAsync<Blob>(_blobId, cancellationToken));
 				await (NHibernateUtil.InitializeAsync(blob.Bytes, cancellationToken));
 				return blob;
 			}
@@ -105,7 +115,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3374
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				return await (session.GetAsync<Document>(1, cancellationToken));
+				return await (session.GetAsync<Document>(_docId, cancellationToken));
 			}
 		}
 	}

@@ -58,29 +58,31 @@ namespace NHibernate.AdoNet
 		protected override async Task DoExecuteBatchAsync(DbCommand ps, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			Log.DebugFormat("Executing batch");
-			await (CheckReadersAsync(cancellationToken)).ConfigureAwait(false);
-			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
-			{
-				Factory.Settings.SqlStatementLogger.LogBatchCommand(currentBatchCommandsLog.ToString());
-				currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
-			}
-
-			int rowsAffected;
 			try
 			{
-				rowsAffected = currentBatch.ExecuteNonQuery();
+				Log.DebugFormat("Executing batch");
+				await (CheckReadersAsync(cancellationToken)).ConfigureAwait(false);
+				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
+				{
+					Factory.Settings.SqlStatementLogger.LogBatchCommand(currentBatchCommandsLog.ToString());
+				}
+
+				int rowsAffected;
+				try
+				{
+					rowsAffected = currentBatch.ExecuteNonQuery();
+				}
+				catch (DbException e)
+				{
+					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
+				}
+
+				Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected);
 			}
-			catch (DbException e)
+			finally
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
+				ClearCurrentBatch();
 			}
-
-			Expectations.VerifyOutcomeBatched(totalExpectedRowsAffected, rowsAffected);
-
-			currentBatch.Dispose();
-			totalExpectedRowsAffected = 0;
-			currentBatch = CreateConfiguredBatch();
 		}
 	}
 }

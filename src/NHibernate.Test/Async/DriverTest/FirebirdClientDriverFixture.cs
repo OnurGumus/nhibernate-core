@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Data;
 using System.Data.Common;
 using NHibernate.Driver;
@@ -29,48 +30,58 @@ namespace NHibernate.Test.DriverTest
 		public async Task ConnectionPooling_OpenThenCloseThenOpenAnotherOne_OnlyOneConnectionIsPooledAsync()
 		{
 			MakeDriver();
+
+			_driver.ClearPool(_connectionString);
+
+			var allreadyEstablished = await (GetEstablishedConnectionsAsync());
+
 			var connection1 = MakeConnection();
 			var connection2 = MakeConnection();
 
 			//open first connection
 			await (connection1.OpenAsync());
-			await (VerifyCountOfEstablishedConnectionsIsAsync(1));
+			await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 1, "After first open"));
 
 			//return it to the pool
 			connection1.Close();
-			await (VerifyCountOfEstablishedConnectionsIsAsync(1));
+			await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 1, "After first close"));
 
 			//open the second connection
 			await (connection2.OpenAsync());
-			await (VerifyCountOfEstablishedConnectionsIsAsync(1));
+			await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 1, "After second open"));
 
 			//return it to the pool
 			connection2.Close();
-			await (VerifyCountOfEstablishedConnectionsIsAsync(1));
+			await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 1, "After second close"));
 		}
 
 		[Test]
 		public async Task ConnectionPooling_OpenThenCloseTwoAtTheSameTime_TowConnectionsArePooledAsync()
 		{
 			MakeDriver();
+
+			_driver.ClearPool(_connectionString);
+
+			var allreadyEstablished = await (GetEstablishedConnectionsAsync());
+
 			var connection1 = MakeConnection();
 			var connection2 = MakeConnection();
 
 			//open first connection
 			await (connection1.OpenAsync());
-			await (VerifyCountOfEstablishedConnectionsIsAsync(1));
+			await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 1, "After first open"));
 
 			//open second one
 			await (connection2.OpenAsync());
-			await (VerifyCountOfEstablishedConnectionsIsAsync(2));
+			await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 2, "After second open"));
 
 			//return connection1 to the pool
 			connection1.Close();
-			await (VerifyCountOfEstablishedConnectionsIsAsync(2));
+			await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 2, "After first close"));
 
 			//return connection2 to the pool
 			connection2.Close();
-			await (VerifyCountOfEstablishedConnectionsIsAsync(2));
+			await (VerifyCountOfEstablishedConnectionsIsAsync(allreadyEstablished + 2, "After second close"));
 		}
 
 		private void MakeDriver()
@@ -91,10 +102,10 @@ namespace NHibernate.Test.DriverTest
 			return result;
 		}
 
-		private async Task VerifyCountOfEstablishedConnectionsIsAsync(int expectedCount, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task VerifyCountOfEstablishedConnectionsIsAsync(int expectedCount, string step, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var physicalConnections = await (GetEstablishedConnectionsAsync(cancellationToken));
-			Assert.That(physicalConnections, Is.EqualTo(expectedCount));
+			Assert.That(physicalConnections, Is.EqualTo(expectedCount), step);
 		}
 
 		private async Task<int> GetEstablishedConnectionsAsync(CancellationToken cancellationToken = default(CancellationToken))
@@ -106,7 +117,7 @@ namespace NHibernate.Test.DriverTest
 				using (var cmd = conn.CreateCommand())
 				{
 					cmd.CommandText = "select count(*) from mon$attachments where mon$attachment_id <> current_connection";
-					return (int)await (cmd.ExecuteScalarAsync(cancellationToken));
+					return Convert.ToInt32(await (cmd.ExecuteScalarAsync(cancellationToken)));
 				}
 			}
 		}

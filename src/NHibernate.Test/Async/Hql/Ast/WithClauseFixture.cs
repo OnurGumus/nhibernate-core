@@ -66,7 +66,7 @@ namespace NHibernate.Test.Hql.Ast
 					ListAsync());
 
 			Assert.ThrowsAsync<InvalidWithClauseException>(
-				async 				() =>
+				async () =>
 				await (s.CreateQuery("from Human h inner join h.offspring o with o.mother.father = :cousin").SetEntity("cousin",
 				                                                                                                await (s.LoadAsync<Human>(123L)))
 					.ListAsync()));

@@ -84,12 +84,12 @@ namespace NHibernate.Test.Legacy
 			// TODO: I don't understand why h2.0.3/h2.1 issues a select statement here
 
 			Assert.AreEqual(2,
-(							await (s.CreateQuery(
+							(await (s.CreateQuery(
 								"select s from SubMulti as sm join sm.Children as s where s.Amount>-1 and s.Name is null").ListAsync())).
 								Count);
 			Assert.AreEqual(2, (await (s.CreateQuery("select elements(sm.Children) from SubMulti as sm").ListAsync())).Count);
 			Assert.AreEqual(1,
-(							await (s.CreateQuery(
+							(await (s.CreateQuery(
 								"select distinct sm from SubMulti as sm join sm.Children as s where s.Amount>-1 and s.Name is null")
 								.ListAsync())).Count);
 			sm = (SubMulti) await (s.LoadAsync(typeof(SubMulti), id));
@@ -106,7 +106,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual("FOO", sm.Derived, "should have uppercased the column in a formula");
 
 			IEnumerator enumer =
-(				await (s.CreateQuery("select distinct s from s in class SubMulti where s.MoreChildren[1].Amount < 1.0").EnumerableAsync())).
+				(await (s.CreateQuery("select distinct s from s in class SubMulti where s.MoreChildren[1].Amount < 1.0").EnumerableAsync())).
 					GetEnumerator();
 			Assert.IsTrue(enumer.MoveNext());
 			Assert.AreSame(sm, enumer.Current);

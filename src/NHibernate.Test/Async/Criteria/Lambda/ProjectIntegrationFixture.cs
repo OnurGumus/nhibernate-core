@@ -62,8 +62,8 @@ namespace NHibernate.Test.Criteria.Lambda
 				var actual = (await (s.QueryOver<Person>(() => personAlias)
 					.Select(p => p.Name, p => personAlias.Age)
 					.OrderBy(p => p.Age).Asc
-					.ListAsync<object[]>())
-)					.Select(props => new
+					.ListAsync<object[]>()))
+					.Select(props => new
 					{
 						TestName = (string) props[0],
 						TestAge = (int) props[1],

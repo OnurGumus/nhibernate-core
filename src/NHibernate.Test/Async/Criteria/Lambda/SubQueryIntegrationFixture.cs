@@ -85,8 +85,8 @@ namespace NHibernate.Test.Criteria.Lambda
 					.JoinQueryOver(c => c.Parent)
 					.Where(p => p.Name == "Name 1" && p.Age == 1)
 					.Select(c => c.Nickname, c => c.Age)
-					.ListAsync<object[]>())
-)					.Select(props => new
+					.ListAsync<object[]>()))
+					.Select(props => new
 					{
 						Name = (string) props[0],
 						Age = (int) props[1],
@@ -112,8 +112,8 @@ namespace NHibernate.Test.Criteria.Lambda
 					.SelectList(list => list
 						.Select(c => childAlias.Nickname)
 						.Select(c => c.Age))
-					.ListAsync<object[]>())
-)					.Select(props => new
+					.ListAsync<object[]>()))
+					.Select(props => new
 					{
 						Name = (string) props[0],
 						Age = (int) props[1],
@@ -146,8 +146,8 @@ namespace NHibernate.Test.Criteria.Lambda
 						.Select(p => p.Name)
 						.SelectSubQuery(childCountQuery).WithAlias(() => childCountAlias))
 					.OrderByAlias(() => childCountAlias).Desc
-					.ListAsync<object[]>())
-)					.Select(props => new
+					.ListAsync<object[]>()))
+					.Select(props => new
 					{
 						Name = (string) props[0],
 						ChildCount = (int) props[1],

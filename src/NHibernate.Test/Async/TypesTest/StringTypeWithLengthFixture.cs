@@ -82,7 +82,7 @@ namespace NHibernate.Test.TypesTest
 				int maxStringLength = GetLongStringMappedLength();
 
 				var ex = Assert.CatchAsync<Exception>(
-				async 				() =>
+				async () =>
 					{
 						using (ISession s = OpenSession())
 						{
@@ -114,7 +114,7 @@ namespace NHibernate.Test.TypesTest
 					Assert.Ignore("SQLite does not enforce specified string lengths.");
 
 				var ex = Assert.CatchAsync<Exception>(
-				async 				() =>
+				async () =>
 					{
 						using (ISession s = OpenSession())
 						{

@@ -61,17 +61,17 @@ namespace NHibernate.Test.Pagination
 			using (ITransaction t = s.BeginTransaction())
 			{
 				int size =
-(					await (s.CreateSQLQuery("select Id, xval, yval, Description from DataPoint order by xval, yval").AddEntity(
+					(await (s.CreateSQLQuery("select Id, xval, yval, Description from DataPoint order by xval, yval").AddEntity(
 						typeof (DataPoint)).SetMaxResults(5).ListAsync())).Count;
 				Assert.That(size, Is.EqualTo(5));
 				size = (await (s.CreateQuery("from DataPoint dp order by dp.X, dp.Y").SetFirstResult(5).SetMaxResults(2).ListAsync())).Count;
 				Assert.That(size, Is.EqualTo(2));
 				size =
-(					await (s.CreateCriteria(typeof (DataPoint)).AddOrder(Order.Asc("X")).AddOrder(Order.Asc("Y")).SetFirstResult(8).ListAsync())).
+					(await (s.CreateCriteria(typeof (DataPoint)).AddOrder(Order.Asc("X")).AddOrder(Order.Asc("Y")).SetFirstResult(8).ListAsync())).
 						Count;
 				Assert.That(size, Is.EqualTo(2));
 				size =
-(					await (s.CreateCriteria(typeof(DataPoint)).AddOrder(Order.Asc("X")).AddOrder(Order.Asc("Y")).SetMaxResults(10).SetFirstResult(8).ListAsync())).
+					(await (s.CreateCriteria(typeof(DataPoint)).AddOrder(Order.Asc("X")).AddOrder(Order.Asc("Y")).SetMaxResults(10).SetFirstResult(8).ListAsync())).
 						Count;
 				Assert.That(size, Is.EqualTo(2));
 				await (t.CommitAsync());

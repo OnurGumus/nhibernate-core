@@ -103,7 +103,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				resultCount =
-(					await (s.CreateQuery("select ai.Name, count(*) from AnotherItem ai group by ai.Name").SetCacheable(true).SetCacheRegion(
+					(await (s.CreateQuery("select ai.Name, count(*) from AnotherItem ai group by ai.Name").SetCacheable(true).SetCacheRegion(
 						"Statistics").ListAsync())).Count;
 				await (tx.CommitAsync());
 			}

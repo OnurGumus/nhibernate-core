@@ -185,8 +185,8 @@ namespace NHibernate.Impl
 				await (FireUpdateAsync(new SaveOrUpdateEvent(null, obj, id, this), cancellationToken)).ConfigureAwait(false);
 			}
 		}
-async 
-		Task<IList> FindAsync(string query, object[] values, IType[] types, CancellationToken cancellationToken)
+
+		async Task<IList> FindAsync(string query, object[] values, IType[] types, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(SessionId))
@@ -369,7 +369,7 @@ async
 
 				CollectionFilterImpl filter =
 					new CollectionFilterImpl(queryString, collection, this,
-(											 await (GetFilterQueryPlanAsync(collection, queryString, null, false, cancellationToken)).ConfigureAwait(false)).ParameterMetadata);
+											 (await (GetFilterQueryPlanAsync(collection, queryString, null, false, cancellationToken)).ConfigureAwait(false)).ParameterMetadata);
 				//filter.SetComment(queryString);
 				return filter;
 			}

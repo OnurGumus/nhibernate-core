@@ -166,8 +166,8 @@ namespace NHibernate.Test.Linq
 		public async Task OrderedPagedProductsWithOuterProjectionAsync()
 		{
 			//NH-3108
-			var inMemoryIds = (await (db.Products.ToListAsync())
-)				.OrderBy(p => p.ProductId)
+			var inMemoryIds = (await (db.Products.ToListAsync()))
+				.OrderBy(p => p.ProductId)
 				.Skip(10).Take(20)
 				.Select(p => p.ProductId)
 				.ToList();
@@ -185,8 +185,8 @@ namespace NHibernate.Test.Linq
 		public async Task OrderedPagedProductsWithInnerProjectionAsync()
 		{
 			//NH-3108 (not failing)
-			var inMemoryIds = (await (db.Products.ToListAsync()) 
-)				.OrderBy(p => p.ProductId) 
+			var inMemoryIds = (await (db.Products.ToListAsync())) 
+				.OrderBy(p => p.ProductId) 
 				.Select(p => p.ProductId)
 				.Skip(10).Take(20)
 				.ToList();
@@ -204,8 +204,8 @@ namespace NHibernate.Test.Linq
 		public async Task DescendingOrderedPagedProductsWithOuterProjectionAsync()
 		{
 			//NH-3108
-			var inMemoryIds = (await (db.Products.ToListAsync())
-)				.OrderByDescending(p => p.ProductId)
+			var inMemoryIds = (await (db.Products.ToListAsync()))
+				.OrderByDescending(p => p.ProductId)
 				.Skip(10).Take(20)
 				.Select(p => p.ProductId)
 				.ToList();
@@ -223,8 +223,8 @@ namespace NHibernate.Test.Linq
 		public async Task DescendingOrderedPagedProductsWithInnerProjectionAsync()
 		{
 			//NH-3108 (not failing)
-			var inMemoryIds = (await (db.Products.ToListAsync())
-)				.OrderByDescending(p => p.ProductId) 
+			var inMemoryIds = (await (db.Products.ToListAsync()))
+				.OrderByDescending(p => p.ProductId) 
 				.Select(p => p.ProductId)
 				.Skip(10).Take(20)
 				.ToList();
@@ -245,8 +245,8 @@ namespace NHibernate.Test.Linq
 				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
 
 			//NH-2588
-			var inMemoryIds = (await (db.Products.ToListAsync())
-)				.OrderByDescending(x => x.ProductId)
+			var inMemoryIds = (await (db.Products.ToListAsync()))
+				.OrderByDescending(x => x.ProductId)
 				.Skip(10).Take(20)
 				.Where(x => x.UnitsInStock > 0)
 				.ToList();
@@ -267,8 +267,8 @@ namespace NHibernate.Test.Linq
 				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
 
 			//NH-2588
-			var inMemoryIds = (await (db.Products.ToListAsync())
-)				.OrderByDescending(x => x.ProductId)
+			var inMemoryIds = (await (db.Products.ToListAsync()))
+				.OrderByDescending(x => x.ProductId)
 				.Skip(10).Take(20)
 				.Where(x => x.UnitsInStock > 0)
 				.OrderBy(x => x.Name)
@@ -291,8 +291,8 @@ namespace NHibernate.Test.Linq
 				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
 
 			//NH-2588
-			var inMemoryIds = (await (db.Products.ToListAsync())
-)				.Where(x => x.UnitsInStock < 100)
+			var inMemoryIds = (await (db.Products.ToListAsync()))
+				.Where(x => x.UnitsInStock < 100)
 				.OrderByDescending(x => x.ProductId)
 				.Skip(10).Take(20)
 				.Where(x => x.UnitsInStock > 0)
@@ -317,8 +317,8 @@ namespace NHibernate.Test.Linq
 				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
 
 			//NH-2588
-			var inMemoryIds = (await (db.Products.ToListAsync())
-)				.OrderByDescending(x => x.ProductId)
+			var inMemoryIds = (await (db.Products.ToListAsync()))
+				.OrderByDescending(x => x.ProductId)
 				.Skip(10).Take(20)
 				.Where(x => x.UnitsInStock > 0)
 				.ToList();
@@ -343,8 +343,8 @@ namespace NHibernate.Test.Linq
 				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
 
 			//NH-2588
-			var inMemoryIds = (await (db.Products.ToListAsync())
-)				.OrderByDescending(x => x.ProductId)
+			var inMemoryIds = (await (db.Products.ToListAsync()))
+				.OrderByDescending(x => x.ProductId)
 				.Skip(10).Take(20)
 				.Where(x => x.UnitsInStock > 0)
 				.Select(x => x.ProductId)
@@ -367,8 +367,8 @@ namespace NHibernate.Test.Linq
 				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
 
 			//NH-2588
-			var inMemoryIds = (await (db.Products.ToListAsync())
-)				.OrderByDescending(x => x.ProductId)
+			var inMemoryIds = (await (db.Products.ToListAsync()))
+				.OrderByDescending(x => x.ProductId)
 				.Skip(10).Take(20)
 				.Where(x => x.UnitsInStock > 0)
 				.Select(x => new { x.ProductId })

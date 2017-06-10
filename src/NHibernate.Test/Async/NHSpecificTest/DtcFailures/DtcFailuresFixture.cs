@@ -198,6 +198,9 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 				}
 			}
 
+			// Dodging "latency" due to db still haven't actually committed a distributed tx after scope disposal.
+			Thread.Sleep(100);
+
 			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				using (ISession s = OpenSession())
@@ -209,6 +212,9 @@ namespace NHibernate.Test.NHSpecificTest.DtcFailures
 					tx.Complete();
 				}
 			}
+
+			// Dodging "latency" due to db still haven't actually committed a distributed tx after scope disposal.
+			Thread.Sleep(100);
 		}
 
 		[Test]

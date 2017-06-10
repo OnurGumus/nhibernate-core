@@ -500,8 +500,8 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(2, (await ((await (s.CreateFilterAsync(master.Details, "where this.id > -1"))).ListAsync())).Count);
 			Assert.AreEqual(2, (await ((await (s.CreateFilterAsync(master.Details, "select this.Master where this.id > -1"))).ListAsync())).Count);
 			Assert.AreEqual(2,
-(			                await ((await (s.CreateFilterAsync(master.Details, "select m from m in class Master where this.id > -1 and this.Master=m"))
-)			                	.ListAsync())).Count);
+			                (await ((await (s.CreateFilterAsync(master.Details, "select m from m in class Master where this.id > -1 and this.Master=m")))
+			                	.ListAsync())).Count);
 			Assert.AreEqual(0, (await ((await (s.CreateFilterAsync(master.Incoming, "where this.id > -1 and this.Name is not null"))).ListAsync())).Count);
 
 			IQuery filter = await (s.CreateFilterAsync(master.Details, "select max(this.I)"));
@@ -995,7 +995,7 @@ namespace NHibernate.Test.Legacy
 				Assert.IsNotNull(list[1]);
 
 				IEnumerator enumer =
-(					await (s.CreateQuery("from c in class Category where c.Name = NHibernate.DomainModel.Category.RootCategory").EnumerableAsync())).
+					(await (s.CreateQuery("from c in class Category where c.Name = NHibernate.DomainModel.Category.RootCategory").EnumerableAsync())).
 						GetEnumerator();
 				Assert.IsTrue(enumer.MoveNext());
 			}

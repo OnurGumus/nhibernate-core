@@ -117,7 +117,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                     bo.BO1 = null;
                     break;
                 case TBO1_BO2_J.BO1:
-(                    await (bo.GetOrCreateBO1Async(s, cancellationToken))).BO2 = null;
+                    (await (bo.GetOrCreateBO1Async(s, cancellationToken))).BO2 = null;
                     break;
                 case TBO1_BO2_J.ValueNull:
                     set(await ((await (bo.GetOrCreateBO1Async(s, cancellationToken))).GetOrCreateBO2Async(s, cancellationToken)), null);
@@ -141,16 +141,16 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                     bo.BO1 = null;
                     break;
                 case TBO1_BO3_L.BO1:
-(                    await (bo.GetOrCreateBO1Async(s, cancellationToken))).BO3 = null;
+                    (await (bo.GetOrCreateBO1Async(s, cancellationToken))).BO3 = null;
                     break;
                 case TBO1_BO3_L.ValueNull:
-(                    await ((await (bo.GetOrCreateBO1Async(s, cancellationToken))).GetOrCreateBO3Async(s, cancellationToken))).L1 = 0; // L1 is int, not int?
+                    (await ((await (bo.GetOrCreateBO1Async(s, cancellationToken))).GetOrCreateBO3Async(s, cancellationToken))).L1 = 0; // L1 is int, not int?
                     break;
                 case TBO1_BO3_L.Zero:
-(                    await ((await (bo.GetOrCreateBO1Async(s, cancellationToken))).GetOrCreateBO3Async(s, cancellationToken))).L1 = 0;
+                    (await ((await (bo.GetOrCreateBO1Async(s, cancellationToken))).GetOrCreateBO3Async(s, cancellationToken))).L1 = 0;
                     break;
                 case TBO1_BO3_L.One:
-(                    await ((await (bo.GetOrCreateBO1Async(s, cancellationToken))).GetOrCreateBO3Async(s, cancellationToken))).L1 = 1;
+                    (await ((await (bo.GetOrCreateBO1Async(s, cancellationToken))).GetOrCreateBO3Async(s, cancellationToken))).L1 = 1;
                     break;
                 default:
                     throw new Exception("Value " + value + " not handled in code");

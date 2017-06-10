@@ -84,7 +84,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3567
 												   .Add(Restrictions.Eq("Content", "I"))
 												   .SetProjection(Projections.Id());
 					var numberOfComments =
-(						await (session.CreateCriteria(typeof(Comment))
+						(await (session.CreateCriteria(typeof(Comment))
 							.Add(Subqueries.PropertyIn("Post.Id", subquery))
 							.ListAsync())).Count;
 					Assert.That(numberOfComments, Is.EqualTo(2), "Query with sub-query returned an invalid number of rows.");
@@ -97,7 +97,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3567
 												   .CreateCriteria("Site")
 												   .Add(Restrictions.Eq("Name", "Site 3"));
 					numberOfComments =
-(						await (session.CreateCriteria(typeof(Comment))
+						(await (session.CreateCriteria(typeof(Comment))
 							.Add(Subqueries.PropertyIn("Post.Id", subquery))
 							.ListAsync())).Count;
 
