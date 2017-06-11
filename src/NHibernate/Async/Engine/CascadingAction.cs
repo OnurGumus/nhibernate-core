@@ -66,12 +66,6 @@ namespace NHibernate.Engine
 		}
 
 		#endregion
-		#region Static helper methods
-
-		#endregion
-		#region The CascadingAction implementations
-
-		#endregion
 
 		/// <content>
 		/// Contains generated async methods
@@ -230,28 +224,28 @@ namespace NHibernate.Engine
 		}
         
 		/// <content>
-        /// Contains generated async methods
-        /// </content>
-        private partial class PersistCascadingAction : CascadingAction
+		/// Contains generated async methods
+		/// </content>
+		private partial class PersistCascadingAction : CascadingAction
 		{
 			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken)
 			{
-			if (cancellationToken.IsCancellationRequested)
-			{
-			return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				if (log.IsDebugEnabled)
+				if (cancellationToken.IsCancellationRequested)
 				{
-					log.Debug("cascading to persist: " + entityName);
+					return Task.FromCanceled<object>(cancellationToken);
 				}
-				return session.PersistAsync(entityName, child, (IDictionary)anything, cancellationToken);
-			}
-			catch (Exception ex)
-			{
-			return Task.FromException<object>(ex);
-			}
+				try
+				{
+					if (log.IsDebugEnabled)
+					{
+						log.Debug("cascading to persist: " + entityName);
+					}
+					return session.PersistAsync(entityName, child, (IDictionary)anything, cancellationToken);
+				}
+				catch (Exception ex)
+				{
+					return Task.FromException<object>(ex);
+				}
 			}
 		}
 

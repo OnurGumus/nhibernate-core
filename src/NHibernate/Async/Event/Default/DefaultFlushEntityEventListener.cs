@@ -52,7 +52,7 @@ namespace NHibernate.Event.Default
 
 			if (await (IsUpdateNecessaryAsync(@event, mightBeDirty, cancellationToken)).ConfigureAwait(false))
 			{
-				substitute = await (ScheduleUpdateAsync(@event, cancellationToken)) .ConfigureAwait(false)|| substitute;
+				substitute = await (ScheduleUpdateAsync(@event, cancellationToken)).ConfigureAwait(false) || substitute;
 			}
 
 			if (status != Status.Deleted)
@@ -290,7 +290,7 @@ namespace NHibernate.Event.Default
 					bool isVersionIncrementRequired = IsVersionIncrementRequired(@event, entry, persister, dirtyProperties);
 
 					object nextVersion = isVersionIncrementRequired ?
-						await (Versioning.IncrementAsync(entry.Version, persister.VersionType, @event.Session, cancellationToken)) .ConfigureAwait(false):
+						await (Versioning.IncrementAsync(entry.Version, persister.VersionType, @event.Session, cancellationToken)).ConfigureAwait(false) :
 						entry.Version; //use the current version
 
 					Versioning.SetVersion(values, nextVersion, persister);

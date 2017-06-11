@@ -51,13 +51,6 @@ namespace NHibernate.AdoNet
 			return connection;
 		}
 
-		#region Serialization
-
-		#endregion
-		#region IDeserializationCallback Members
-
-		#endregion
-
 		public async Task<DbCommand> CreateCommandAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();

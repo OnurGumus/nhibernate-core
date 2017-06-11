@@ -67,12 +67,12 @@ namespace NHibernate.Engine
 					else
 					{
 						string entityName = entityType.GetAssociatedEntityName();
-						return await (IsNullifiableAsync(entityName, value, cancellationToken)) .ConfigureAwait(false)? null : value;
+						return await (IsNullifiableAsync(entityName, value, cancellationToken)).ConfigureAwait(false) ? null : value;
 					}
 				}
 				else if (type.IsAnyType)
 				{
-					return await (IsNullifiableAsync(null, value, cancellationToken)) .ConfigureAwait(false)? null : value;
+					return await (IsNullifiableAsync(null, value, cancellationToken)).ConfigureAwait(false) ? null : value;
 				}
 				else if (type.IsComponentType)
 				{

@@ -31,10 +31,6 @@ namespace NHibernate.Id.Enhanced
 	{
 		private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();
 
-		#region Implementation of IConfigurable
-
-		#endregion
-
 
 		[MethodImpl()]
 		public virtual async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken)

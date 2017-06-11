@@ -487,18 +487,18 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public Task WhereFloatEqualAsync()
 		{
-	try
-	{
-			var query = from item in session.Query<Foo>()
+			try
+			{
+				var query = from item in session.Query<Foo>()
 						where item.Float.Equals(-1)
 						select item;
 
-			return ObjectDumper.WriteAsync(query);
-	}
-	catch (Exception ex)
-	{
-	return Task.FromException<object>(ex);
-	}
+				return ObjectDumper.WriteAsync(query);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}	
 
 		[Test]

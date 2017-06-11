@@ -244,9 +244,5 @@ namespace NHibernate.AdoNet
 		/// is supported then it should hold of on executing the batch until explicitly told to.
 		/// </remarks>
 		public abstract Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken);
-
-		#region IDisposable Members
-
-		#endregion
 	}
 }

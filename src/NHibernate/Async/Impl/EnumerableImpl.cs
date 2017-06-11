@@ -118,9 +118,5 @@ namespace NHibernate.Impl
 				_session.DefaultReadOnly = sessionDefaultReadOnlyOrig;
 			}
 		}		
-
-		#region IDisposable Members
-
-		#endregion
 	}
 }

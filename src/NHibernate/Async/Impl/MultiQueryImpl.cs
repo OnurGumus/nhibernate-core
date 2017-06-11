@@ -35,10 +35,6 @@ namespace NHibernate.Impl
 	public partial class MultiQueryImpl : IMultiQuery
 	{
 
-		#region Parameters setting
-
-		#endregion
-
 		/// <summary>
 		/// Return the query results of all the queries
 		/// </summary>
@@ -63,7 +59,7 @@ namespace NHibernate.Impl
 				try
 				{
 					Before();
-					return cacheable ? await (ListUsingQueryCacheAsync(cancellationToken)) .ConfigureAwait(false): await (ListIgnoreQueryCacheAsync(cancellationToken)).ConfigureAwait(false);
+					return cacheable ? await (ListUsingQueryCacheAsync(cancellationToken)).ConfigureAwait(false) : await (ListIgnoreQueryCacheAsync(cancellationToken)).ConfigureAwait(false);
 				}
 				finally
 				{

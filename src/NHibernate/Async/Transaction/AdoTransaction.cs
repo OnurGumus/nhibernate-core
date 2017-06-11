@@ -27,8 +27,8 @@ namespace NHibernate.Transaction
 	{
 
 		/// <summary>
-		/// Commits the <see cref="ITransaction"/> by flushing the <see cref="ISession"/>
-		/// and committing the <see cref="DbTransaction"/>.
+		/// Commits the <see cref="ITransaction"/> by flushing asynchronously the <see cref="ISession"/>
+		/// then committing synchronously the <see cref="DbTransaction"/>.
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <exception cref="TransactionException">
@@ -84,9 +84,5 @@ namespace NHibernate.Transaction
 				}
 			}
 		}
-
-		#region System.IDisposable Members
-
-		#endregion
 	}
 }

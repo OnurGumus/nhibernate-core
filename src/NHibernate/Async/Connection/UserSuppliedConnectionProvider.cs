@@ -37,10 +37,6 @@ namespace NHibernate.Connection
 		/// </exception>
 		public override Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<DbConnection>(cancellationToken);
-			}
 			throw new InvalidOperationException("The user must provide an ADO.NET connection - NHibernate is not creating it.");
 		}
 	}

@@ -40,6 +40,7 @@ namespace NHibernate.Dialect.Lock
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
+			return InternalLockAsync();
 			async Task InternalLockAsync()
 			{
 				// todo : should we additionally check the current isolation mode explicitly?
@@ -90,7 +91,6 @@ namespace NHibernate.Dialect.Lock
 					throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, exceptionContext);
 				}
 			}
-			return InternalLockAsync();
 		}
 
 		#endregion

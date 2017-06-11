@@ -25,19 +25,6 @@ namespace NHibernate.Dialect
 	/// </content>
 	public partial class SybaseSQLAnywhere10Dialect : Dialect
 	{
-
-		#region IDENTITY or AUTOINCREMENT support
-
-		#endregion
-		#region LIMIT/OFFSET support
-
-		#endregion
-		#region Lock acquisition support
-
-		#endregion
-		#region Temporary table support
-
-		#endregion
 		#region Callable statement support
 
 		public override async Task<DbDataReader> GetResultSetAsync(DbCommand statement, CancellationToken cancellationToken)

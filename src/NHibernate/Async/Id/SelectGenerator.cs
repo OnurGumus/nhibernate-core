@@ -27,13 +27,6 @@ namespace NHibernate.Id
 	public partial class SelectGenerator : AbstractPostInsertGenerator, IConfigurable
 	{
 
-		#region Overrides of AbstractPostInsertGenerator
-
-		#endregion
-		#region Implementation of IConfigurable
-
-		#endregion
-
 		#region Nested type: SelectGeneratorDelegate
 
 		/// <content>

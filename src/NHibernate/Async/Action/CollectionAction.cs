@@ -35,13 +35,5 @@ namespace NHibernate.Action
 		public abstract Task ExecuteAsync(CancellationToken cancellationToken);
 
 		#endregion
-
-		#region IComparable<CollectionAction> Members
-
-		#endregion
-
-		#region IDeserializationCallback Members
-
-		#endregion
 	}
 }

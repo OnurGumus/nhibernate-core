@@ -75,12 +75,5 @@ namespace NHibernate.Collection
 				array.SetValue(await (persister.ElementType.AssembleAsync(cached[i], Session, owner, cancellationToken)).ConfigureAwait(false), i);
 			}
 		}
-
-		#region ICollection Members
-
-		#endregion
-		#region IEnumerable Members
-
-		#endregion
 	}
 }

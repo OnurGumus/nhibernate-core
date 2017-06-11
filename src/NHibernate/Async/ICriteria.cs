@@ -49,7 +49,7 @@ namespace NHibernate
 		/// Get the results and fill the <see cref="IList"/>
 		/// </summary>
 		/// <param name="results">The list to fill with the results.</param>
-	/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		Task ListAsync(IList results, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>

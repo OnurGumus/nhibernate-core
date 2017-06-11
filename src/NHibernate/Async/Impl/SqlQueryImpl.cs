@@ -86,19 +86,11 @@ namespace NHibernate.Impl
 
 		public override Task<IEnumerable> EnumerableAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<IEnumerable>(cancellationToken);
-			}
 			throw new NotSupportedException("SQL queries do not currently support enumeration");
 		}
 
 		public override Task<IEnumerable<T>> EnumerableAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<IEnumerable<T>>(cancellationToken);
-			}
 			throw new NotSupportedException("SQL queries do not currently support enumeration");
 		}
 

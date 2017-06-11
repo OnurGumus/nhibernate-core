@@ -144,8 +144,5 @@ namespace NHibernate.Persister.Entity
 		Task ProcessUpdateGeneratedPropertiesAsync(object id, object entity, object[] state, ISessionImplementor session, CancellationToken cancellationToken);
 
 		#endregion
-		#region stuff that is Tuplizer-centric
-
-		#endregion
 	}
 }

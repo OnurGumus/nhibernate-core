@@ -52,10 +52,6 @@ namespace NHibernate.Impl
 	/// </content>
 	public sealed partial class SessionFactoryImpl : ISessionFactoryImplementor, IObjectReference
 	{
-
-		#region IObjectReference Members
-
-		#endregion
 		#region ISessionFactoryImplementor Members
 
 		/// <summary>
@@ -119,10 +115,6 @@ namespace NHibernate.Impl
 
 			eventListeners.DestroyListeners();
 		}
-
-		#endregion
-
-		#region NHibernate specific
 
 		#endregion
 	}

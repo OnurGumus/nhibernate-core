@@ -44,13 +44,6 @@ namespace NHibernate.Impl
 	public sealed partial class SessionImpl : AbstractSessionImpl, IEventSource, ISerializable, IDeserializationCallback
 	{
 
-		#region System.Runtime.Serialization.ISerializable Members
-
-		#endregion
-		#region System.Runtime.Serialization.IDeserializationCallback Members
-
-		#endregion
-
 		/// <summary>
 		/// Save a transient object. An id is generated, assigned to the object and returned
 		/// </summary>
@@ -987,10 +980,6 @@ namespace NHibernate.Impl
 				}
 			}
 		}
-
-		#region System.IDisposable Members
-
-		#endregion
 
 		private async Task FilterAsync(object collection, string filter, QueryParameters queryParameters, IList results, CancellationToken cancellationToken)
 		{

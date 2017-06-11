@@ -48,11 +48,5 @@ namespace NHibernate.Action
 		}
 
 		#endregion
-		#region IComparable<EntityAction> Members
-
-		#endregion
-		#region IDeserializationCallback Members
-
-		#endregion
 	}
 }

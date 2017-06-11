@@ -104,9 +104,5 @@ namespace NHibernate.Id.Insert
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> The generated identifier </returns>
 		protected internal abstract Task<object> GetResultAsync(ISessionImplementor session, DbDataReader rs, object entity, CancellationToken cancellationToken);
-
-		#region NH Specific
-
-		#endregion
 	}
 }

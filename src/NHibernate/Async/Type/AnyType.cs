@@ -31,10 +31,6 @@ namespace NHibernate.Type
 
 		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
 			throw new NotSupportedException("object is a multicolumn type");
 		}
 
@@ -72,10 +68,6 @@ namespace NHibernate.Type
 
 		public override Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
 			throw new NotSupportedException("any mappings may not form part of a property-ref");
 		}
 

@@ -30,7 +30,7 @@ namespace NHibernate.Engine
 	
 		private async Task ExecuteActionsAsync(IList list, CancellationToken cancellationToken)
 		{
-	cancellationToken.ThrowIfCancellationRequested();
+			cancellationToken.ThrowIfCancellationRequested();
 			int size = list.Count;
 			for (int i = 0; i < size; i++)
 				await (ExecuteAsync((IExecutable)list[i], cancellationToken)).ConfigureAwait(false);

@@ -89,10 +89,6 @@ namespace NHibernate.Impl
 
 		public override Task<object> ImmediateLoadAsync(string entityName, object id, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
 			throw new SessionException("proxies cannot be fetched by a stateless session");
 		}
 
@@ -172,55 +168,31 @@ namespace NHibernate.Impl
 		
 		public override Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<IEnumerable>(cancellationToken);
-			}
 			throw new NotImplementedException();
 		}
 
 		public override Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<IEnumerable<T>>(cancellationToken);
-			}
 			throw new NotImplementedException();
 		}
 
 		public override Task<IList> ListFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<IList>(cancellationToken);
-			}
 			throw new NotSupportedException();
 		}
 
 		public override Task<IList<T>> ListFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<IList<T>>(cancellationToken);
-			}
 			throw new NotSupportedException();
 		}
 
 		public override Task<IEnumerable> EnumerableFilterAsync(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<IEnumerable>(cancellationToken);
-			}
 			throw new NotSupportedException();
 		}
 
 		public override Task<IEnumerable<T>> EnumerableFilterAsync<T>(object collection, string filter, QueryParameters parameters, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<IEnumerable<T>>(cancellationToken);
-			}
 			throw new NotSupportedException();
 		}
 
@@ -581,9 +553,6 @@ namespace NHibernate.Impl
 				UnresolvableObjectException.ThrowIfNull(result, id, persister.EntityName);
 			}
 		}
-
-		#endregion
-		#region IDisposable Members
 
 		#endregion
 

@@ -45,9 +45,5 @@ namespace NHibernate.Id
 				return Task.FromException<object>(ex);
 			}
 		}
-
-		#region IPostInsertIdentifierGenerator Members
-
-		#endregion
 	}
 }

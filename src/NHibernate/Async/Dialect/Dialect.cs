@@ -36,24 +36,7 @@ namespace NHibernate.Dialect
 	/// </content>
 	public abstract partial class Dialect
 	{
-
-		#region Constructors and factory methods
-
-		#endregion
-		#region Database type mapping support
-
-		#endregion
-		#region DDL support
-
-		#endregion
-		#region Lock acquisition support
-
-		#endregion
 		#region Table support
-
-		#region Temporary table support
-
-		#endregion
 		#endregion
 		#region Callable statement support
 
@@ -67,36 +50,11 @@ namespace NHibernate.Dialect
 		/// <throws>  SQLException Indicates problems extracting the result set. </throws>
 		public virtual Task<DbDataReader> GetResultSetAsync(DbCommand statement, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<DbDataReader>(cancellationToken);
-			}
 			throw new NotSupportedException(GetType().FullName + " does not support resultsets via stored procedures");
 		}
 
 		#endregion
-		#region Constraint support
-
-		#endregion
 		#region Native identifier generation
-		#region IDENTITY support
-
-		#endregion
-		#region SEQUENCE support
-
-		#endregion
-		#endregion
-		#region Miscellaneous support
-
-		#endregion
-		#region Limit/offset support
-
-		#endregion
-		#region Identifier quoting support
-
-		#endregion
-		#region Union subclass support
-
 		#endregion
 	}
 }
