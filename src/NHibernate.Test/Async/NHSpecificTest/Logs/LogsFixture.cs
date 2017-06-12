@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 		[Test]
 		public async Task WillGetSessionIdFromSessionLogsAsync()
 		{
-			ThreadContext.Properties["sessionId"] = new SessionIdCapturer();
+			GlobalContext.Properties["sessionId"] = new SessionIdCapturer();
 
 			using (var spy = new TextLogSpy("NHibernate.SQL", "%message | SessionId: %property{sessionId}"))
 			using (var s = Sfi.OpenSession())
@@ -56,8 +56,11 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 			}
 		}
 
-		public class SessionIdCapturer
+		// IFixingRequired interface ensures the value is evaluated at log time rather than at log buffer flush time.
+		public class SessionIdCapturer : IFixingRequired
 		{
+			public object GetFixedObject() => ToString();
+
 			public override string ToString()
 			{
 				return SessionIdLoggingContext.SessionId.ToString();
