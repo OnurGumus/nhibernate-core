@@ -24,11 +24,6 @@ namespace NHibernate.Id.Enhanced
 	public partial class SequenceStyleGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
 
-		#region Implementation of IConfigurable
-
-
-		#endregion
-
 		#region Implementation of IIdentifierGenerator
 
 		public virtual Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken)
@@ -46,9 +41,6 @@ namespace NHibernate.Id.Enhanced
 				return Task.FromException<object>(ex);
 			}
 		}
-
-		#endregion
-		#region Implementation of IPersistentIdentifierGenerator
 
 		#endregion
 	}

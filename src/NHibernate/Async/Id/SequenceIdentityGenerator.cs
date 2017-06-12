@@ -39,11 +39,5 @@ namespace NHibernate.Id
 		}
 
 		#endregion
-		#region Implementation of IPostInsertIdentifierGenerator
-
-		#endregion
-		#region Nested type: SequenceIdentityDelegate
-
-		#endregion
 	}
 }

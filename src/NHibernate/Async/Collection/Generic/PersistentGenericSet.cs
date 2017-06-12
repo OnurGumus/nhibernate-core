@@ -87,21 +87,5 @@ namespace NHibernate.Collection.Generic
 			}
 			return element;
 		}
-
-		#region ISet<T> Members
-
-		#endregion
-		#region ICollection<T> Members
-
-		#endregion
-		#region IEnumerable Members
-
-		#endregion
-		#region IEnumerable<T> Members
-
-		#endregion
-		#region DelayedOperations
-
-		#endregion
 	}
 }

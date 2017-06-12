@@ -56,8 +56,8 @@ namespace NHibernate.Driver
 			cancellationToken.ThrowIfCancellationRequested();
 			return new BatcherDataReaderWrapper(batcher, command)
 			{
-				reader = await (batcher.ExecuteReaderAsync(command, cancellationToken))
-.ConfigureAwait(false)			};
+				reader = await (batcher.ExecuteReaderAsync(command, cancellationToken)).ConfigureAwait(false)
+			};
 		}
 	}
 }

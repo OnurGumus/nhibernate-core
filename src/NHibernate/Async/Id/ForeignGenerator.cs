@@ -84,8 +84,5 @@ namespace NHibernate.Id
 		}
 
 		#endregion
-		#region IConfigurable Members
-
-		#endregion
 	}
 }

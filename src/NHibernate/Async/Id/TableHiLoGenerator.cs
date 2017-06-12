@@ -28,10 +28,6 @@ namespace NHibernate.Id
 	{
 		private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();
 
-		#region IConfigurable Members
-
-		#endregion
-
 		#region IIdentifierGenerator Members
 
 		/// <summary>

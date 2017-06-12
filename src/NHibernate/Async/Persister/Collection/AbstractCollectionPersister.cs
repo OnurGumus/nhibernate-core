@@ -126,8 +126,8 @@ namespace NHibernate.Persister.Collection
 					//bool callable = DeleteAllCallable;
 					bool useBatch = expectation.CanBeBatched;
 					var st = useBatch
-						? await (session.Batcher.PrepareBatchCommandAsync(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes, cancellationToken))
-.ConfigureAwait(false)						: await (session.Batcher.PrepareCommandAsync(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
+						? await (session.Batcher.PrepareBatchCommandAsync(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes, cancellationToken)).ConfigureAwait(false)
+						: await (session.Batcher.PrepareCommandAsync(SqlDeleteString.CommandType, SqlDeleteString.Text, SqlDeleteString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 
 					try
 					{
@@ -428,8 +428,8 @@ namespace NHibernate.Persister.Collection
 			object entryId = null;
 			int offset = 0;
 			var st = useBatch
-				? await (session.Batcher.PrepareBatchCommandAsync(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes, cancellationToken))
-.ConfigureAwait(false)				: await (session.Batcher.PrepareCommandAsync(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
+				? await (session.Batcher.PrepareBatchCommandAsync(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false)
+				: await (session.Batcher.PrepareCommandAsync(SqlInsertRowString.CommandType, SqlInsertRowString.Text, SqlInsertRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 			try
 			{
 				//offset += expectation.Prepare(st, factory.ConnectionProvider.Driver);
@@ -472,9 +472,6 @@ namespace NHibernate.Persister.Collection
 		}
 
 		#region NH specific
-
-		#region IPostInsertIdentityPersister Members
-		#endregion
 
 		/// <summary>
 		/// Perform an SQL INSERT, and then retrieve a generated identifier.

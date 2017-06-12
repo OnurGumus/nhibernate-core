@@ -31,10 +31,6 @@ namespace NHibernate.Id
 	public partial class SequenceGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
 
-		#region IConfigurable Members
-
-		#endregion
-
 		#region IIdentifierGenerator Members
 
 		/// <summary>
@@ -81,9 +77,6 @@ namespace NHibernate.Id
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "could not get next sequence value");
 			}
 		}
-
-		#endregion
-		#region IPersistentIdentifierGenerator Members
 
 		#endregion
 	}

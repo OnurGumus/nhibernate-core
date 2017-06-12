@@ -76,24 +76,5 @@ namespace NHibernate.Collection.Generic
 					(TValue)await (persister.ElementType.AssembleAsync(array[i + 1], Session, owner, cancellationToken)).ConfigureAwait(false);
 			}
 		}
-
-		#region IDictionary<TKey,TValue> Members
-
-		#endregion
-		#region ICollection<KeyValuePair<TKey,TValue>> Members
-
-		#endregion
-		#region ICollection Members
-
-		#endregion
-		#region IEnumerable<KeyValuePair<TKey,TValue>> Members
-
-		#endregion
-		#region IEnumerable Members
-
-		#endregion
-		#region DelayedOperations
-
-		#endregion
 	}
 }

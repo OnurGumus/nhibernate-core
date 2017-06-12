@@ -120,6 +120,7 @@ namespace NHibernate.Persister.Entity
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
+			return InternalForceVersionIncrementAsync();
 			async Task<object> InternalForceVersionIncrementAsync()
 			{
 
@@ -164,7 +165,6 @@ namespace NHibernate.Persister.Entity
 				}
 				return nextVersion;
 			}
-			return InternalForceVersionIncrementAsync();
 		}
 
 		/// <summary>
@@ -430,8 +430,8 @@ namespace NHibernate.Persister.Entity
 			{
 				// Render the SQL query
 				var insertCmd = useBatch
-					? await (session.Batcher.PrepareBatchCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken))
-.ConfigureAwait(false)					: await (session.Batcher.PrepareCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false);
+					? await (session.Batcher.PrepareBatchCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false)
+					: await (session.Batcher.PrepareCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 
 				try
 				{
@@ -542,8 +542,8 @@ namespace NHibernate.Persister.Entity
 			{
 				int index = 0;
 				var statement = useBatch
-					? await (session.Batcher.PrepareBatchCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken))
-.ConfigureAwait(false)					: await (session.Batcher.PrepareCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false);
+					? await (session.Batcher.PrepareBatchCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false)
+					: await (session.Batcher.PrepareCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 				try
 				{
 					//index += expectation.Prepare(statement, factory.ConnectionProvider.Driver);
@@ -672,8 +672,8 @@ namespace NHibernate.Persister.Entity
 			{
 				int index = 0;
 				var statement = useBatch 
-					? await (session.Batcher.PrepareBatchCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)) 
-.ConfigureAwait(false)					: await (session.Batcher.PrepareCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false);
+					? await (session.Batcher.PrepareBatchCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false) 
+					: await (session.Batcher.PrepareCommandAsync(sql.CommandType, sql.Text, sql.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 
 				try
 				{
@@ -940,6 +940,7 @@ namespace NHibernate.Persister.Entity
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
+			return InternalProcessInsertGeneratedPropertiesAsync();
 			async Task InternalProcessInsertGeneratedPropertiesAsync()
 			{
 
@@ -960,7 +961,6 @@ namespace NHibernate.Persister.Entity
 					session.PersistenceContext.RemoveEntity(session.GenerateEntityKey(id, this));
 				}
 			}
-			return InternalProcessInsertGeneratedPropertiesAsync();
 		}
 
 		public Task ProcessUpdateGeneratedPropertiesAsync(object id, object entity, object[] state, ISessionImplementor session, CancellationToken cancellationToken)
@@ -973,6 +973,7 @@ namespace NHibernate.Persister.Entity
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
+			return InternalProcessUpdateGeneratedPropertiesAsync();
 			async Task InternalProcessUpdateGeneratedPropertiesAsync()
 			{
 
@@ -990,7 +991,6 @@ namespace NHibernate.Persister.Entity
 					await (ProcessGeneratedPropertiesWithLoaderAsync(id, entity, session, cancellationToken)).ConfigureAwait(false);
 				}
 			}
-			return InternalProcessUpdateGeneratedPropertiesAsync();
 		}
 
 		private async Task ProcessGeneratedPropertiesWithGeneratedSqlAsync(object id, object entity, object[] state, 			ISessionImplementor session, SqlString selectionSQL, ValueInclusion[] generationInclusions, CancellationToken cancellationToken)
@@ -1078,6 +1078,7 @@ namespace NHibernate.Persister.Entity
 			{
 				return Task.FromCanceled<object[]>(cancellationToken);
 			}
+			return InternalGetNaturalIdentifierSnapshotAsync();
 			async Task<object[]> InternalGetNaturalIdentifierSnapshotAsync()
 			{
 				if (log.IsDebugEnabled)
@@ -1159,10 +1160,6 @@ namespace NHibernate.Persister.Entity
 					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 				}
 			}
-			return InternalGetNaturalIdentifierSnapshotAsync();
 		}
-
-		#region NH specific
-		#endregion
 	}
 }

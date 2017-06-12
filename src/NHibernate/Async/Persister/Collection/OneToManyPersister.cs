@@ -176,9 +176,5 @@ namespace NHibernate.Persister.Collection
 				throw ADOExceptionHelper.Convert(SQLExceptionConverter, sqle, "could not update collection rows: " + MessageHelper.CollectionInfoString(this, collection, id, session));
 			}
 		}
-
-		#region NH Specific
-
-		#endregion
 	}
 }

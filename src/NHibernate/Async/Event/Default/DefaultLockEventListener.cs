@@ -40,6 +40,7 @@ namespace NHibernate.Event.Default
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
+			return InternalOnLockAsync();
 			async Task InternalOnLockAsync()
 			{
 
@@ -72,7 +73,6 @@ namespace NHibernate.Event.Default
 
 				await (UpgradeLockAsync(entity, entry, @event.LockMode, source, cancellationToken)).ConfigureAwait(false);
 			}
-			return InternalOnLockAsync();
 		}
 
 		private async Task CascadeOnLockAsync(LockEvent @event, IEntityPersister persister, object entity, CancellationToken cancellationToken)

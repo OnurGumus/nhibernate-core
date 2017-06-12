@@ -175,11 +175,5 @@ namespace NHibernate.Engine
 		}
 
 		#endregion
-
-		#region IDeserializationCallback Members
-
-		#endregion
-		#region ISerializable Members
-		#endregion
 	}
 }

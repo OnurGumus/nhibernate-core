@@ -73,9 +73,5 @@ namespace NHibernate.Type
 				return Task.FromException<object>(ex);
 			}
 		}
-
-		#region override of System.Object Members
-
-		#endregion
 	}
 }

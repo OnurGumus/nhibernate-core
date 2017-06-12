@@ -27,10 +27,6 @@ namespace NHibernate.Id.Enhanced
 	public partial class TableStructure : TransactionHelper, IDatabaseStructure
 	{
 
-		#region Implementation of IDatabaseStructure
-
-		#endregion
-
 		#region Overrides of TransactionHelper
 
 		public override async Task<object> DoWorkInCurrentTransactionAsync(ISessionImplementor session, DbConnection conn, DbTransaction transaction, CancellationToken cancellationToken)

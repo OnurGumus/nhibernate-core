@@ -154,10 +154,6 @@ namespace NHibernate.Type
 
 		public override Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
 			throw new NotSupportedException("collection mappings may not form part of a property-ref");
 		}
 
@@ -217,9 +213,5 @@ namespace NHibernate.Type
 
 			return target;
 		}
-
-		#region Methods added in NH
-
-		#endregion
 	}
 }

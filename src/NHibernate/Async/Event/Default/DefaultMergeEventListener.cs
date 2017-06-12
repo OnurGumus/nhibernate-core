@@ -216,7 +216,7 @@ namespace NHibernate.Event.Default
 	
 		private async Task<object> MergeTransientEntityAsync(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache, CancellationToken cancellationToken)
 		{
-	cancellationToken.ThrowIfCancellationRequested();
+			cancellationToken.ThrowIfCancellationRequested();
 			IEntityPersister persister = source.GetEntityPersister(entityName, entity);
 
 			object id = persister.HasIdentifierProperty ? persister.GetIdentifier(entity) : null;
@@ -286,28 +286,28 @@ namespace NHibernate.Event.Default
 	
 		private Task SaveTransientEntityAsync(object entity, string entityName, object requestedId, IEventSource source, IDictionary copyCache, CancellationToken cancellationToken)
 		{
-	if (cancellationToken.IsCancellationRequested)
-	{
-	return Task.FromCanceled<object>(cancellationToken);
-	}
-	try
-	{
-			// this bit is only *really* absolutely necessary for handling
-			// requestedId, but is also good if we merge multiple object
-			// graphs, since it helps ensure uniqueness
-			if (requestedId == null)
+			if (cancellationToken.IsCancellationRequested)
 			{
-				return SaveWithGeneratedIdAsync(entity, entityName, copyCache, source, false, cancellationToken);
+				return Task.FromCanceled<object>(cancellationToken);
 			}
-			else
+			try
 			{
-				return SaveWithRequestedIdAsync(entity, requestedId, entityName, copyCache, source, cancellationToken);
+				// this bit is only *really* absolutely necessary for handling
+				// requestedId, but is also good if we merge multiple object
+				// graphs, since it helps ensure uniqueness
+				if (requestedId == null)
+				{
+					return SaveWithGeneratedIdAsync(entity, entityName, copyCache, source, false, cancellationToken);
+				}
+				else
+				{
+					return SaveWithRequestedIdAsync(entity, requestedId, entityName, copyCache, source, cancellationToken);
+				}
 			}
-	}
-	catch (Exception ex)
-	{
-	return Task.FromException<object>(ex);
-	}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		protected virtual async Task EntityIsDetachedAsync(MergeEvent @event, IDictionary copyCache, CancellationToken cancellationToken)

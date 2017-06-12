@@ -129,9 +129,5 @@ namespace NHibernate.Persister.Collection
 												 SqlUpdateRowString.Text);
 			}
 		}
-
-		#region NH Specific
-
-		#endregion
 	}
 }

@@ -31,13 +31,6 @@ namespace NHibernate.Impl
 	public abstract partial class AbstractQueryImpl : IQuery
 	{
 
-		#region Parameters
-
-		#endregion
-		#region Query properties
-
-		#endregion
-
 		#region Execution methods
 
 		public abstract Task<int> ExecuteUpdateAsync(CancellationToken cancellationToken = default(CancellationToken));

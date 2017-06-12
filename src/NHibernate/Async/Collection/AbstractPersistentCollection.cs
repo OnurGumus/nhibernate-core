@@ -258,16 +258,5 @@ namespace NHibernate.Collection
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The object that was contained in the row.</returns>
 		public abstract Task<object> ReadFromAsync(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor, 										object owner, CancellationToken cancellationToken);
-
-		#region - Hibernate Collection Proxy Classes
-
-		/*
-		 * These were needed by Hibernate because Java's collections provide methods
-		 * to get sublists, modify a collection with an iterator - all things that 
-		 * Hibernate needs to be made aware of.  If .net changes their collection interfaces
-		 * then we can readd these back in.
-		 */
-
-		#endregion
 	}
 }

@@ -183,8 +183,8 @@ namespace NHibernate.Loader
 			}
 
 			return forcedResultTransformer == null
-					   ? await (GetResultColumnOrRowAsync(row, queryParameters.ResultTransformer, resultSet, session, cancellationToken))
-.ConfigureAwait(false)					   : forcedResultTransformer.TransformTuple(await (GetResultRowAsync(row, resultSet, session, cancellationToken)).ConfigureAwait(false),
+					   ? await (GetResultColumnOrRowAsync(row, queryParameters.ResultTransformer, resultSet, session, cancellationToken)).ConfigureAwait(false)
+					   : forcedResultTransformer.TransformTuple(await (GetResultRowAsync(row, resultSet, session, cancellationToken)).ConfigureAwait(false),
 																ResultRowAliases);
 		}
 
@@ -1203,9 +1203,5 @@ namespace NHibernate.Loader
 			}
 			return result;
 		}
-
-		#region NHibernate specific
-
-		#endregion
 	}
 }

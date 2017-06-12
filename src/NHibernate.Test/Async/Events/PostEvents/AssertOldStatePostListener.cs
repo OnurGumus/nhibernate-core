@@ -17,9 +17,9 @@ namespace NHibernate.Test.Events.PostEvents
 	using System.Threading;
  
 	/// <content>
- /// Contains generated async methods
- /// </content>
- public partial class AssertOldStatePostListener : IPostUpdateEventListener
+	/// Contains generated async methods
+	/// </content>
+	public partial class AssertOldStatePostListener : IPostUpdateEventListener
 	{
 
 		public Task OnPostUpdateAsync(PostUpdateEvent @event, CancellationToken cancellationToken)

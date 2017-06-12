@@ -27,10 +27,6 @@ namespace NHibernate.Id.Enhanced
 	public partial class SequenceStructure : IDatabaseStructure
 	{
 
-		#region IDatabaseStructure Members
-
-		#endregion
-
 		#region Nested type: SequenceAccessCallback
 
 		/// <content>

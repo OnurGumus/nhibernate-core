@@ -56,10 +56,6 @@ namespace NHibernate.Param
 
 			public Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 			{
-				if (cancellationToken.IsCancellationRequested)
-				{
-					return Task.FromCanceled<object>(cancellationToken);
-				}
 				throw new InvalidOperationException();
 			}
 
@@ -82,64 +78,36 @@ namespace NHibernate.Param
 
 			public Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 			{
-				if (cancellationToken.IsCancellationRequested)
-				{
-					return Task.FromCanceled<object>(cancellationToken);
-				}
 				throw new InvalidOperationException();
 			}
 
 			public Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 			{
-				if (cancellationToken.IsCancellationRequested)
-				{
-					return Task.FromCanceled<object>(cancellationToken);
-				}
 				throw new InvalidOperationException();
 			}
 
 			public Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 			{
-				if (cancellationToken.IsCancellationRequested)
-				{
-					return Task.FromCanceled<object>(cancellationToken);
-				}
 				throw new InvalidOperationException();
 			}
 
 			public Task<object> ResolveIdentifierAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 			{
-				if (cancellationToken.IsCancellationRequested)
-				{
-					return Task.FromCanceled<object>(cancellationToken);
-				}
 				throw new InvalidOperationException();
 			}
 
 			public Task<object> SemiResolveAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 			{
-				if (cancellationToken.IsCancellationRequested)
-				{
-					return Task.FromCanceled<object>(cancellationToken);
-				}
 				throw new InvalidOperationException();
 			}
 
 			public Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copiedAlready, CancellationToken cancellationToken)
 			{
-				if (cancellationToken.IsCancellationRequested)
-				{
-					return Task.FromCanceled<object>(cancellationToken);
-				}
 				throw new InvalidOperationException();
 			}
 
 			public Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, ForeignKeyDirection foreignKeyDirection, CancellationToken cancellationToken)
 			{
-				if (cancellationToken.IsCancellationRequested)
-				{
-					return Task.FromCanceled<object>(cancellationToken);
-				}
 				throw new InvalidOperationException();
 			}
 		}
