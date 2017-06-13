@@ -2397,12 +2397,11 @@ namespace NHibernate.Linq
 		/// Wraps the query in a deferred <see cref="IAsyncEnumerable{T}"/> which enumeration will trigger a batch of all pending future queries.
 		/// </summary>
 		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to convert to a future query.</param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the later work of enumerating the result of <paramref name="source"/>.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <returns>A <see cref="IAsyncEnumerable{T}"/>.</returns>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is <see langword="null"/>.</exception>
 		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
-		public static IAsyncEnumerable<TSource> ToFutureAsync<TSource>(this IQueryable<TSource> source, CancellationToken cancellationToken = default(CancellationToken))
+		public static IAsyncEnumerable<TSource> ToFutureAsync<TSource>(this IQueryable<TSource> source)
 		{
 			if (source == null)
 			{
@@ -2412,7 +2411,7 @@ namespace NHibernate.Linq
 			{
 				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
 			}
-			return (IAsyncEnumerable<TSource>)provider.ExecuteFutureAsync(source.Expression, cancellationToken);
+			return (IAsyncEnumerable<TSource>)provider.ExecuteFutureAsync(source.Expression);
 		}
 
 		/// <summary>
@@ -2420,12 +2419,11 @@ namespace NHibernate.Linq
 		/// when its <see cref="IFutureValueAsync{T}.GetValue"/> is called.
 		/// </summary>
 		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to convert to a future query.</param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the later work of enumerating the result of <paramref name="source"/>.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <returns>A <see cref="IFutureValueAsync{T}"/>.</returns>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is <see langword="null"/>.</exception>
 		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
-		public static IFutureValueAsync<TSource> ToFutureValueAsync<TSource>(this IQueryable<TSource> source, CancellationToken cancellationToken = default(CancellationToken))
+		public static IFutureValueAsync<TSource> ToFutureValueAsync<TSource>(this IQueryable<TSource> source)
 		{
 			if (source == null)
 			{
@@ -2435,10 +2433,10 @@ namespace NHibernate.Linq
 			{
 				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
 			}
-			var future = provider.ExecuteFutureAsync(source.Expression, cancellationToken);
+			var future = provider.ExecuteFutureAsync(source.Expression);
 			if (future is IAsyncEnumerable<TSource> asyncEnumerable)
 			{
-				return new FutureValueAsync<TSource>(async () => await asyncEnumerable.ToList(cancellationToken).ConfigureAwait(false));
+				return new FutureValueAsync<TSource>(async cancellationToken => await asyncEnumerable.ToList(cancellationToken).ConfigureAwait(false));
 			}
 
 			return (FutureValueAsync<TSource>)future;
@@ -2450,13 +2448,12 @@ namespace NHibernate.Linq
 		/// </summary>
 		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to convert to a future query.</param>
 		/// <param name="selector">An aggregation function to apply to <paramref name="source"/>.</param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the later work of enumerating the result of <paramref name="source"/>.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <typeparam name="TResult">The type of the value returned by the function represented by <paramref name="selector"/>.</typeparam>
 		/// <returns>A <see cref="IFutureValueAsync{T}"/>.</returns>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is <see langword="null"/>.</exception>
 		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
-		public static IFutureValueAsync<TResult> ToFutureValueAsync<TSource, TResult>(this IQueryable<TSource> source, Expression<Func<IQueryable<TSource>, TResult>> selector, CancellationToken cancellationToken = default(CancellationToken))
+		public static IFutureValueAsync<TResult> ToFutureValueAsync<TSource, TResult>(this IQueryable<TSource> source, Expression<Func<IQueryable<TSource>, TResult>> selector)
 		{
 			if (source == null)
 			{
@@ -2468,7 +2465,7 @@ namespace NHibernate.Linq
 			}
 			var expression = ReplacingExpressionTreeVisitor.Replace(selector.Parameters.Single(), source.Expression, selector.Body);
 
-			return (IFutureValueAsync<TResult>)provider.ExecuteFutureAsync(expression, cancellationToken);
+			return (IFutureValueAsync<TResult>)provider.ExecuteFutureAsync(expression);
 		}
 
 		#endregion

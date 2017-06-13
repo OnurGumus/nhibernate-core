@@ -18,7 +18,7 @@ namespace NHibernate.Linq
 		object ExecuteFuture(Expression expression);
 		void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters);
 		Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken);
-		object ExecuteFutureAsync(Expression expression, CancellationToken cancellationToken);
+		object ExecuteFutureAsync(Expression expression);
 	}
 
 	public partial class DefaultQueryProvider : INhQueryProvider
@@ -69,11 +69,11 @@ namespace NHibernate.Linq
 			return ExecuteFutureQuery(nhLinqExpression, query);
 		}
 
-		public virtual object ExecuteFutureAsync(Expression expression, CancellationToken cancellationToken)
+		public virtual object ExecuteFutureAsync(Expression expression)
 		{
 			IQuery query;
 			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query);
-			return ExecuteFutureQueryAsync(nhLinqExpression, query, cancellationToken);
+			return ExecuteFutureQueryAsync(nhLinqExpression, query);
 		}
 
 		public async Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
@@ -129,16 +129,16 @@ namespace NHibernate.Linq
 			return result;
 		}
 
-		static readonly MethodInfo FutureAsync = ReflectHelper.GetMethodDefinition<IQuery>(q => q.FutureAsync<object>(default(CancellationToken)));
-		static readonly MethodInfo FutureValueAsync = ReflectHelper.GetMethodDefinition<IQuery>(q => q.FutureValueAsync<object>(default(CancellationToken)));
+		static readonly MethodInfo FutureAsync = ReflectHelper.GetMethodDefinition<IQuery>(q => q.FutureAsync<object>());
+		static readonly MethodInfo FutureValueAsync = ReflectHelper.GetMethodDefinition<IQuery>(q => q.FutureValueAsync<object>());
 
-		protected virtual object ExecuteFutureQueryAsync(NhLinqExpression nhLinqExpression, IQuery query, CancellationToken cancellationToken)
+		protected virtual object ExecuteFutureQueryAsync(NhLinqExpression nhLinqExpression, IQuery query)
 		{
 			var method = nhLinqExpression.ReturnType == NhLinqExpressionReturnType.Sequence
 				? FutureAsync.MakeGenericMethod(nhLinqExpression.Type)
 				: FutureValueAsync.MakeGenericMethod(nhLinqExpression.Type);
 
-			var result = method.Invoke(query, new object[] {cancellationToken});
+			var result = method.Invoke(query, null);
 
 			if (nhLinqExpression.ExpressionToHqlTranslationResults.PostExecuteTransformer != null)
 			{
