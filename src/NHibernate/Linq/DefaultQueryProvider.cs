@@ -130,13 +130,12 @@ namespace NHibernate.Linq
 		}
 
 		static readonly MethodInfo FutureAsync = ReflectHelper.GetMethodDefinition<IQuery>(q => q.FutureAsync<object>());
-		static readonly MethodInfo FutureValueAsync = ReflectHelper.GetMethodDefinition<IQuery>(q => q.FutureValueAsync<object>());
 
 		protected virtual object ExecuteFutureQueryAsync(NhLinqExpression nhLinqExpression, IQuery query)
 		{
 			var method = nhLinqExpression.ReturnType == NhLinqExpressionReturnType.Sequence
 				? FutureAsync.MakeGenericMethod(nhLinqExpression.Type)
-				: FutureValueAsync.MakeGenericMethod(nhLinqExpression.Type);
+				: FutureValue.MakeGenericMethod(nhLinqExpression.Type);
 
 			var result = method.Invoke(query, null);
 
