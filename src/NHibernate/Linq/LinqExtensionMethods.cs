@@ -2499,10 +2499,9 @@ namespace NHibernate.Linq
 
 			var provider = (INhQueryProvider) nhQueryable.Provider;
 			var future = provider.ExecuteFuture(nhQueryable.Expression);
-			// Here we assume that the DelayedEnumerator<T> is used
-			if (future is IEnumerable<T> enumerable && future is IAsyncEnumerable<T> asyncEnumerable)
+			if (future is DelayedEnumerator<T> enumerable)
 			{
-				return new FutureValue<T>(() => enumerable, async cancellationToken => await asyncEnumerable.ToList(cancellationToken).ConfigureAwait(false));
+				return new FutureValue<T>(() => enumerable, async cancellationToken => await enumerable.ToList(cancellationToken).ConfigureAwait(false));
 			}
 
 			return (IFutureValue<T>) future;
