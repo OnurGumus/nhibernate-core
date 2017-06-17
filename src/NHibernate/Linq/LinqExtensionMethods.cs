@@ -2391,31 +2391,6 @@ namespace NHibernate.Linq
 
 		#endregion
 
-		#region ToFutureAsync
-
-		/// <summary>
-		/// Wraps the query in a deferred <see cref="IAsyncEnumerable{T}"/> which enumeration will trigger a batch of all pending future queries.
-		/// </summary>
-		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to convert to a future query.</param>
-		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
-		/// <returns>A <see cref="IAsyncEnumerable{T}"/>.</returns>
-		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is <see langword="null"/>.</exception>
-		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
-		public static IAsyncEnumerable<TSource> ToFutureAsync<TSource>(this IQueryable<TSource> source)
-		{
-			if (source == null)
-			{
-				throw new ArgumentNullException(nameof(source));
-			}
-			if (!(source.Provider is INhQueryProvider provider))
-			{
-				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
-			}
-			return (IAsyncEnumerable<TSource>)provider.ExecuteFutureAsync(source.Expression);
-		}
-
-		#endregion
-
 		public static IQueryable<T> Query<T>(this ISession session)
 		{
 			return new NhQueryable<T>(session.GetSessionImplementation());
@@ -2480,7 +2455,7 @@ namespace NHibernate.Linq
 			return new NhQueryable<T>(query.Provider, callExpression);
 		}
 
-		public static IEnumerable<T> ToFuture<T>(this IQueryable<T> query)
+		public static IFutureEnumerable<T> ToFuture<T>(this IQueryable<T> query)
 		{
 			var nhQueryable = query as QueryableBase<T>;
 			if (nhQueryable == null)
@@ -2488,7 +2463,7 @@ namespace NHibernate.Linq
 
 			var provider = (INhQueryProvider) nhQueryable.Provider;
 			var future = provider.ExecuteFuture(nhQueryable.Expression);
-			return (IEnumerable<T>) future;
+			return (IFutureEnumerable<T>) future;
 		}
 
 		public static IFutureValue<T> ToFutureValue<T>(this IQueryable<T> query)

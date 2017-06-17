@@ -18,7 +18,6 @@ namespace NHibernate.Linq
 		object ExecuteFuture(Expression expression);
 		void SetResultTransformerAndAdditionalCriteria(IQuery query, NhLinqExpression nhExpression, IDictionary<string, Tuple<object, IType>> parameters);
 		Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken);
-		object ExecuteFutureAsync(Expression expression);
 	}
 
 	public partial class DefaultQueryProvider : INhQueryProvider
@@ -69,13 +68,6 @@ namespace NHibernate.Linq
 			return ExecuteFutureQuery(nhLinqExpression, query);
 		}
 
-		public virtual object ExecuteFutureAsync(Expression expression)
-		{
-			IQuery query;
-			NhLinqExpression nhLinqExpression = PrepareQuery(expression, out query);
-			return ExecuteFutureQueryAsync(nhLinqExpression, query);
-		}
-
 		public async Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
 		{
 			return (TResult)await ExecuteAsync(expression, cancellationToken).ConfigureAwait(false);
@@ -120,24 +112,6 @@ namespace NHibernate.Linq
 				: FutureValue.MakeGenericMethod(nhLinqExpression.Type);
 
 			var result = method.Invoke(query, new object[0]);
-
-			if (nhLinqExpression.ExpressionToHqlTranslationResults.PostExecuteTransformer != null)
-			{
-				((IDelayedValue) result).ExecuteOnEval = nhLinqExpression.ExpressionToHqlTranslationResults.PostExecuteTransformer;
-			}
-
-			return result;
-		}
-
-		static readonly MethodInfo FutureAsync = ReflectHelper.GetMethodDefinition<IQuery>(q => q.FutureAsync<object>());
-
-		protected virtual object ExecuteFutureQueryAsync(NhLinqExpression nhLinqExpression, IQuery query)
-		{
-			var method = nhLinqExpression.ReturnType == NhLinqExpressionReturnType.Sequence
-				? FutureAsync.MakeGenericMethod(nhLinqExpression.Type)
-				: FutureValue.MakeGenericMethod(nhLinqExpression.Type);
-
-			var result = method.Invoke(query, null);
 
 			if (nhLinqExpression.ExpressionToHqlTranslationResults.PostExecuteTransformer != null)
 			{
